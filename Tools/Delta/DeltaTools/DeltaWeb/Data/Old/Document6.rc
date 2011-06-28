@@ -1,0 +1,7 @@
+#include "defines.h"
+
+		_document _id("videos") _title("Videos")
+		[_video url "http://www.youtube.com/watch?v=OFBHDtDVhqE"],
+		[_video url "http://www.youtube.com/watch?v=4KLl9JVgTiM"],
+		[_video url "http://www.youtube.com/watch?v=v0MaOg1ToXk"]
+		

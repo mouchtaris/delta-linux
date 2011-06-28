@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workspace name="UIGenerator" version="alpha">
+    <WorkspaceProperties>
+        <symbolic>UIGenerator.wsp</symbolic>
+        <startup>Project\UIGenerator.dproj</startup>
+        <config>0</config>
+        <collapsed>0</collapsed>
+        <breakpoints>break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="Project" name="Project\UIGenerator.dproj"/>
+</Workspace>

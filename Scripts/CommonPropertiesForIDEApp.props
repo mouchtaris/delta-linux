@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\Base\Util;..\..\Base\MVC;..\..\Base\MVCGeneric;..\..\Base\GenericWidgets;..\..\Base\GUIUtils;..\..\Base\Threading;..\..\Base\Network;..\..\Base\Encoding;..\..\Base\Blackboard;..\..\Base\BigFixedInt;..\..\Base\Properties;..\..\Base\Sound;..\..\Base\Timers;..\..\ThirdPartyBase\AdditionalWidgets;..\..\IDE\IDECore;..\..\IDE\ComponentBase;..\..\IDE\ComponentListener;..\..\IDE\ComponentDataTypes;..\..\IDE\ComponentInitializer;..\..\IDE\Message;..\..\IDE\ScriptManager;..\..\IDE\ScriptMessageRecorder;..\..\IDE\UserCommand;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

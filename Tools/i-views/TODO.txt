@@ -1,0 +1,55 @@
+1) Chaeck difiens' names in IviewComponent
+OK) 2) BookmarkManager to Refresh
+OK 3) Refresh mono to tetragono pou 8elw otan kounw to pontikh kai oxi olo ton grafo
+OK 4) otan exw to hand tool na na mn emfanizontai xrwmta kai ta lipa opos kai ta tooltips.
+OK 5) Bookmark to rectangle na dw ti paei straba 
+FREEZ 6) hurisic na o ftia3w kai auto
+OK 7) focal point sto lens tool kai ti alo 8elei na tou kanw
+OK 8) Todo des sto BookmarkManager t0 double refresh sto AddBookMark, kai sto remove all Bookmarks
+OK 9) Na dw giati den fortwnei kala to innerEdgesDistance apo to config 
+OK 10) LayoutCalulator: FOR_ALL_EDGES_SET_CONDITIONALY_SLOT_RENDERING_INFO na ginie sunarthsh.
+OK 11) Common begignig Edges: Otan exw back edge na to bazw na arxizei apo ta aristra
+12) Sto commonBeginingEdges 8a prepei gia ta inner edges na tous dinw diaforetiko tail pos
+OK 13) To save Image na to kanw se 3exwsisth class
+OK 14) Mesa sto Graph na bgalw ta arxista defines pou exw.
+OK 15) Exw mia functions sta layers pou den thn kalw pote. Einai H GetMaxMinorRadiusOfLayer
+OK 16) IsEqualEdges apo to InnerEdgesOrderingHeuristic 8elei alo onoma
+17) Na dw pos 8a ftia3w to save image
+OK 18) Problhma me bookmarks otan kanoume update ta params
+OK 19) Na pigenw sto slot kai oxi sto vertex sto find opos kai ti skata kanei  zoom manager
+OK 20) giati ta vertices peftoun to ena panw sto alo.
+OK 21) anti Refresh Rect kai leenstool
+22) #define HIGHLIGHT_EDGES(FUNC, VISITED_VERTICES, IS_INCOMING, COLOUR ) na ginei function
+OK 23) na dw an xriazetai h HideOrShowVertices
+24) Na koita3w ligo twn kwdika mesa sto HighlightCurrentVertex. Na to balw se mia ta3h.
+25) EDGE_CREATION_COMMON_INITS na dw ti xriazomai apo auta.
+OK 26) HasFullContents kai HideContents ti skata kanw????
+? 27) Otan ftiaxnw ton grafw na tou bazw full contents alla an prepei na ta emfanizw
+	san krifa na ta kanw hide ? 
+28) FindAddOn::Undo na dw ths sun8ikes pou exw balei mesa
+29) duplicate code in GetSlotColourByKeyTypeInfo, GetEdgeColour
+OK 30) Mesa sthn CreateLayers na kanw thn for me ta layers kai oxi etsi opos einai twra
+OK 31) Na mporw na to sozw se diaforetika idi files (dot, SVG, ...)
+
+
+
+
+
+
+====================================================================================
+What we have to delete every time.
+
+ConvertToGraph:		Graph *
+					VertexToDebugInfoMapping *
+				
+LayerComputation:	GraphLayers *
+
+GraphCoordinator:	Delete these objects evry time to create a new graph and when 
+							GraphCoordinator's destractor is called
+							
+							
+LayoutCalculator:	LayersRenderingInfo *
+					must be called Clear;
+					
+
+						

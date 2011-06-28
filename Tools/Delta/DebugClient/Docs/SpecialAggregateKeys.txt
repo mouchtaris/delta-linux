@@ -1,0 +1,95 @@
+*************************************************
+Anthony Savidis, April 2010
+[Content is specific to a Delta language frontend]
+Explanations on some special (reserved) keys for 
+aggregate values, as part of the encoding method of 
+the debugger backend in the Delta language.
+**************************************************
+
+///////////////////////////////////////////////////
+
+[WHEN USING ExprTypeData / ExprTypeDataMany FUNCTIONS ]
+
+A special attribute for object contents is provided, for either
+RC or XML encoding, with name 'keytypeinfo', with access through an 
+RC or XML loaded object similar to 'displaydesc', with two 
+possible values: 
+
+'NOKEYTYPE'			: no type information is provided for keys
+'KEYTYPE' <type>	: type information is <type>
+
+For the ExprTypeData / ExprTypeDataMany functions, you should check
+the reserved attribute 'keytypeinfo'; if its value is the empty string,
+you assume 'NOKEYTYPE', else the value carries the <type> 
+matching one of those below.
+
+The viable values for <type> are the following:
+'OBJECT_PSEUDO_KEY'				Pseudo key for internal object slots
+'OBJECT_INHERITANCE_PSEUDO_KEY'	Pseudo key for inheritance-related internal object slots
+'OBJECT_DELEGATION_PSEUDO_KEY'	Pseudo key for delegation-related internal object slots
+'OBJECT_ATTRIBUTE_KEY'			Modified key for user-defined attribute object slots
+'OBJECT_OPERATOR_KEY'			Operator key for (user-defined) object operator methods
+'EXTERNID_USER_PSEUDO_KEY'		Psuedo key for user-defined externid slots
+'EXTERNID_PSEUDO_KEY'			Pseudo key for internal externid slots
+'AGGREGATE_PSEUDO_KEY'			Pseudo key in aggregates for internal slots (most general case)
+
+Frontend developers may display such contents (including possibly their keys)
+in a special configurable manner. 
+
+It is suggested to make the following configuration groups:
+* delegation pseudo keys		OBJECT_DELEGATION_PSEUDO_KEY
+* inheritance pseudo keys		OBJECT_INHERITANCE_PSEUDO_KEY
+* operator keys					OBJECT_OPERATOR_KEY
+* attribute modified keys		OBJECT_ATTRIBUTE_KEY
+* externid user-keys			EXTERNID_USER_PSEUDO_KEY
+* rest internal pseudo keys		OBJECT_PSEUDO_KEY, AGGREGATE_PSEUDO_KEY, EXTERNID_PSEUDO_KEY
+
+A common special-purpose pseudo key for both objects (as OBJECT_PSEUDO_KEY) 
+and externids (as EXTERNID_USER_PSEUDO_KEY) is '_madein_', with visible key
+'{madein}', providing information about the creation point of an object / externid.
+Its content has the following grammar (symbols not analyzed further
+are tokens, e is the empty string, [] means optional):
+
+MadeIn:				File | Internal
+File:				file '<file name>', line digit+ [, FuncDetails]
+Internal:			internal [ '<info text>' [ , InfoDetails ] ]
+InfoDetails:		FuncDetails | ExternId '<type string>'
+FuncDetails:		MethodFunc '<func name>' | LibraryFunc '<func name>'
+
+This information may be used by debuggers to track down the exact file and location
+that an object / externid is created by the program. For example, when MadeIn has
+content matching the File grammar symbol, the file name and line can be parsed,
+thus by making the 'madein' slot in a debugger's frontend clickable, users can
+view the creation point.
+
+Similarly a common special-purpose pseudo key for methods and functions 
+(as AGGREGATE_PSEUDO_KEY) is '_definedin_', with visible key '{definedin}',
+providing information about the definition point of a function / method.
+Its content has the following simple grammar:
+
+DefinedIn: file '<file name>', line digit+
+
+This information can be also used to track down the exact definition
+location of function / method values displayed by debugger frontends.
+
+///////////////////////////////////////////////////
+
+[WHEN USING ObjectGraph FUNCTIONS]
+
+Every object slot of a node is a quintuple as follows:
+
+<	
+	string		:	key						,
+	bool		:	is key aggregate?		,			
+	string		:	content					,		
+	bool		:	is content aggergate?	,	
+	string	:	:	key type information
+>
+
+The values of the fifth field, being key-type information,
+are actually the values for <type> explained earlier
+for the users of the ExprTypeData / ExprTypeDataMany functions.
+
+///////////////////////////////////////////////////
+
+

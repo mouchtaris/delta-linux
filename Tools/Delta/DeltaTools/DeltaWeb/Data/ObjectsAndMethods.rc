@@ -1,0 +1,177 @@
+///////////////////////////////////////////////////////////////////
+// Content documents for Delta web site.
+// A. Savidis, April 2011.
+///////////////////////////////////////////////////////////////////
+ 
+#include "defines.h"
+
+START_DOC("d_objects", "Objects and methods"),
+index ["Objects", "Methods"],
+
+[_text [
+
+"Object constructor expressions allow create objects with an initial number of
+members, being either data slots or methods. There are various syntactic styles to
+introduce members as shown below:",
+
+NL2,
+
+CODE_BLOCK "
+n = 10, m = 20;
+a = [
+	{ \"x\" : 1 },		// data slot with index 'x' and value 1
+	{ (n+m) : 2 }, 		// data slot with index 30 and value 2
+	{ #y 	: 3 },		// data slot with index 'y' (#<id> is stringify) and value 3
+	@z		: 4,		// data slot with index 'z' as @<id> : expr is sugar for {#id : expr }
+	{ .w	: 5 },		// data slot with index 'w' (.<id> as index same as \"<id>\") and value 5
+	{ #k, #l, #m : 6 },	// three data slots 'k', 'l', 'm' all with value 6
+	{ (function g{}) : list_new(1,2,3) }, 	// data slot with index function g and value a list
+	{ l = list_new() : [] }					// data slot with index a list and value an empty obj
+];
+l.push_back();			// vars can be defined inside object ctors (the latter do not affect the scope)
+a[g].push_back(4,5,6);	// indexing with a function is perfectly legal.
+a[l][0] = 20;			// as seen, all Delta values cna be uses as object indices.
+",
+
+NL2,
+
+"Normally, object creation will pertain to a designed class, with the exception
+of objects that are simply needed to carry a few methods and some data that
+do not necessarily map to a class in the conceptual domain. These are 'objects
+on demand' which are created ex nihilo as needed. To model a class we can use constructor
+functions, also known as factory methods. Such functions take the name of
+their design-domain class. In some languages they are semantically distinguished
+as in Javascript (they imply classes which may help in autocompletion tools or
+even in optimization - the Javascript V8 engine relies on that). In Delta they are 
+just normal functions. An example is provided below:",
+
+NL2,
+
+CODE_BLOCK "
+function Student (name, address, age) {
+	return [
+		@name 	: name,
+		@adress : address,
+		@age	: age,
+		method rename (s) { self.name = s; },			 // the simplest syntactic form
+		@rename 	 : (method (s) { self.name = s; }),	 // this alternative also supported
+		{ \"rename\" : (method (s) { self.name = s; }) } // both are syntactic sugar for this
+	];
+}
+
+st1 = Student(\"John\", \"Singleton\", 42);
+st2 = Student(\"Robert\", \"Rodriguez\", 39);
+st2.rename(\"Maria\");
+r1 = st1.rename;			// method values carry their owner internally
+r1(\"Anna\");				// thus this is equivalent to st1.rename(\"Maria\")
+r1.self = st2;				// but we may alter the owner dynamically
+r1(\"Jose\");				// hence this call is performed on 'st2'
+r1.self = [];				// can even redirect to a new object
+r1.self = nil;				// runtime error: cannot strip-off owner entirely
+",
+
+NL2,
+
+"Besides methods explicitly declared within object constructors, orphan methods
+are also supported in Delta. Combined together with the ability to change the
+owner (self), it allows flexibly assemble method suites on demand, by optionally reusing
+existing methods in a non-intrusive and dependency free manner (unlike inheritance).
+Naturally, the methods will behave correctly once invoked with a self providing
+an appropriate context for all self-related references. An interesting spin-off gain
+of the ability to redirect methods to other objects is that such objects remain ignorant
+of the fact other methods refer to them; this allows add behavior on objects
+in a totally transparent way. Lets consider the example below:",
+
+NL2,
+
+CODE_BLOCK "
+using std;
+method dist (a) 					// what is an 'a' or self ? anything offering (x,y) slots
+	{ return sqrt(sqr(self.x - a.x) + sqr(self.y - a.y)); } 
+vec3d = [ { #x, #y, #z : 0 } ];		// x, y, z slots, all initialised to 0
+pt2d  = [ @x : 1, @y : 2 ];			// x, y slots with initial values 1 and 2
+dist.self = pt2d;					// 'dist' uses 'pt2d' as owner which has no idea about it
+print(dist(vec3d));					// here it is called standalone, again 'pt2d' is not aware 
+pt2d.dist = dist;					// but now we explicitly add a slot with value 'dist'
+pt2d.dist(pt2d);					// now called as a method of 'pt2d'
+",
+
+NL2,
+
+"Copy on objects is possible by using ", !dsrc "std::tabcopy(a)", " library function
+accepting an object and returning a shallow copy of it. Method values whose owner
+is the copied object 'a' are copied by setting as new owner the newlly created object.
+An example is provided below:",
+
+NL2,
+
+CODE_BLOCK "
+using std;
+a = [1, 2, 4, @x : \"hello\", method f(s) { self.x = s; } ];
+b = tabcopy(a);
+print(a.x);					// prints 'hello'
+a.f(\"world\");				// change applied on 'a'
+print(a.x);					// prints 'world'
+print(b.x);					// prints 'hello'
+b.f(\"universe\");			// change applied on 'b'
+print(b.x);					// prints 'universe'
+method g { print(self.x); }	// orphan method
+print(g.self);				// this is an empty object
+a[0] = g;					// just store the method value in [0]
+c = tabcopy(a);				// shallow copy
+assert c[0].self != c;		// the copied method retains its owner
+c[0]();						// will print nil, since no 'x' slot in g.self
+c[0].self = c;				// we redirect it to have 'c' as owner
+c[0]();						// prints 'world' ('x' slot of 'c' object)
+",
+
+NL2,
+
+"Iteration is possible either by using the std library (", !dsrc "tableiter_", " functions),
+or by using a ", !dsrc "foreach", " loop. The iteration order is implementation defined,
+thus the programmer should not rely on that. Also, iteration in ", !dsrc "foreach", " is safe 
+even when the current iterator is removed. Examples follow below:",
+
+NL2,
+
+CODE_BLOCK "
+st = Student(\"James\", \"Cameron\", 64);
+foreach(val, st)			// loop on values (keys remain hidden), 'val' is user-defined var 
+	print(val);
+foreach (key:val, st)		// loop on keys and values, 'key' a user-defined var too
+	print(key, \":\", val);
+a = [];
+foreach (a.key : a.val, st)	// the key and value place holders are just lvalues
+	print(a.key, \":\", a.val);
+",
+
+NL2,
+
+"In case the newlly created object must be used during construction the ", !dsrc "@self", 
+" keyword ", !italic "(new self)", " can be used for this purpose. It is allowed only ", 
+!emphatic "within, and in the same scope as", " object construction expressions. While 
+it can be normally used to access methods or data slots care must be taken since at the 
+point of use the object may be only partially created, thus not all members are available 
+for access. Examples follow below:",
+
+NL2,
+
+CODE_BLOCK "
+a = [
+	@x 		: 1,
+	@name 	: \"shreck\",
+	@world	: @self.name + \" for ever\",		// 'name' slot has been created (safe)
+	method act 
+		{ print(\"play the role!\"); return self; },
+	@y		: (lambda(a){ a.act().x })(@self),	// calls lambda calling 'act' on new self (safe)
+	@z 		: @self.sequel(),					// calls 'sequel' on new self (fails, 'sequel' not yet added)	
+	method sequel 
+		{ return @world + \" after\"; }
+];
+"
+
+] ]
+
+END_DOC
+
+///////////////////////////////////////////////////////////////////

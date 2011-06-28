@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="CommonPropertiesForBase"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="..\Util;..\MVC;..\Encoding;..\Threading;..\XML;..\GenericWidgets;..\Properties;..\..\ThirdPartyBase\AdditionalWidgets;..\..\ThirdPartyBase\PropertyGrid"
+		PreprocessorDefinitions="BASE_EXPORTS"
+	/>
+</VisualStudioPropertySheet>

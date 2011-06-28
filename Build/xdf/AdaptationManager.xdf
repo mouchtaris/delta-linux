@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="AdaptationManager"	type="DynamicLib"  uri="./extensions/AdaptationManager.dll">
+		<dependency>Shell</dependency>
+	</component>
+
+	<component id="ProfileRoot"		type="DynamicLib"  uri="./extensions/AdaptationManager.dll">
+		<dependency>ProfileManager</dependency>
+	</component>
+
+	<component id="Profile"			type="DynamicLib"  uri="./extensions/AdaptationManager.dll">
+		<dependency>ProfileRoot</dependency>
+	</component>
+
+	<component id="Config"			type="DynamicLib"  uri="./extensions/AdaptationManager.dll">
+		<dependency>BaseConfigResource</dependency>
+	</component>
+
+	<component id="DeltaScriptConfig"	type="DynamicLib"  uri="./extensions/AdaptationManager.dll">
+		<dependency>Config</dependency>
+	</component>
+
+	<component id="ProfileConfig"		type="DynamicLib"  uri="./extensions/AdaptationManager.dll">
+		<dependency>Config</dependency>
+	</component>
+</extension>

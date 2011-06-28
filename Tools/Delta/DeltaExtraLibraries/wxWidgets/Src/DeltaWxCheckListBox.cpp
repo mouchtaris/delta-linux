@@ -1,0 +1,117 @@
+#include "DeltaWxCheckListBox.h"
+#include "DeltaWxListBox.h"
+#include "DeltaWxWindow.h"
+#include "DeltaWxPoint.h"
+#include "DeltaWxSize.h"
+#include "DeltaWxValidator.h"
+#include "DDebug.h"
+#include "DeltaVirtualMachine.h"
+#include "DeltaTable.h"
+#include "DeltaLibFuncBinder.h"
+#include "DeltaStdLibTemplates.h"
+#include "DeltaLibraryObjectCreator.h"
+#include "udynamiclibloader.h"
+#include "wxWrapperUtilFunctions.h"
+//
+
+////////////////////////////////////////////////////////////////
+
+#define WX_FUNC_DEF(name) WX_FUNC_DEF1(checklistbox, name)
+#define WX_FUNC(name) WX_FUNC1(checklistbox, name)
+
+WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
+WX_FUNC_DEF(check)
+WX_FUNC_DEF(ischecked)
+
+WX_FUNCS_START
+	WX_FUNC(construct),
+	WX_FUNC(destruct),
+	WX_FUNC(check),
+	WX_FUNC(ischecked)
+WX_FUNCS_END
+
+////////////////////////////////////////////////////////////////
+
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "ischecked")
+
+DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(CheckListBox, "checklistbox", ListBox)
+
+////////////////////////////////////////////////////////////////
+
+static bool GetKeys (void* val, DeltaValue* at) 
+{
+	return DLIB_WXTYPECAST_BASE(CheckListBox, val, checklistbox) ?
+		DPTR(getter)->GetAllKeys(val, at) : false ;
+}
+
+static bool GetBaseClass (void* val, DeltaValue* at) 
+{
+	wxListBox *_parent = DLIB_WXTYPECAST_BASE(ListBox, val, listbox);
+	DeltaWxListBox *parent = DNEWCLASS(DeltaWxListBox, (_parent));
+	WX_SETOBJECT_EX(*at, ListBox, parent)
+	return true;
+}
+
+static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
+	{ "keys",				&GetKeys,				DELTA_GETBYSTRING_NO_PRECOND	},
+	{ "ListBox",			&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
+};
+
+WX_LIBRARY_FUNCS_IMPLEMENTATION(CheckListBox, checklistbox);
+
+////////////////////////////////////////////////////////////////
+
+WX_FUNC_ARGRANGE_START(checklistbox_construct, 0, 8, Nil)
+	wxCheckListBox *wxlistbox = (wxCheckListBox*) 0;
+	DeltaWxCheckListBox *listbox = (DeltaWxCheckListBox*) 0;
+	if (n == 0) {
+		wxlistbox = new wxCheckListBox();
+	} else if (n >= 2) {
+		DLIB_WXGET_BASE(window, Window, parent)
+		WX_GETDEFINE(id)
+		wxPoint pos = wxDefaultPosition;
+		wxSize size = wxDefaultSize;
+		wxArrayString choices;
+		long style = 0;
+		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
+		wxString name = wxListBoxNameStr;
+		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 5) {
+			WX_GETTABLE(choices_table)
+			int num = choices_table->Total();
+			for (int i = 0; i < num; ++i) {
+				DeltaValue value;
+				choices_table->Get(DeltaValue(DeltaNumberValueType(i)), &value);
+				if (value.Type() == DeltaValue_String) {
+					choices.Add(wxString(value.ToString().c_str(), wxConvUTF8));
+				}
+			}
+		}
+		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
+		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
+		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
+		wxlistbox = new wxCheckListBox(parent, id, pos, size, choices, style, *validator, name);
+	}
+	if (wxlistbox) listbox = DNEWCLASS(DeltaWxCheckListBox, (wxlistbox));
+	WX_SETOBJECT(CheckListBox, listbox)
+}
+
+DLIB_FUNC_START(checklistbox_destruct, 1, Nil)
+	DLIB_WXDELETE(checklistbox, CheckListBox, listbox)
+}
+
+WX_FUNC_ARGRANGE_START(checklistbox_check, 2, 3, Nil)
+	DLIB_WXGET_BASE(checklistbox, CheckListBox, listbox)
+	WX_GETNUMBER(item)
+	bool bCheck = true;
+	if (n >= 3) { WX_GETBOOL_DEFINED(bCheck) }
+	listbox->Check(item, bCheck);
+}
+
+DLIB_FUNC_START(checklistbox_ischecked, 2, Nil)
+	DLIB_WXGET_BASE(checklistbox, CheckListBox, listbox)
+	WX_GETNUMBER(item)
+	WX_SETBOOL(listbox->IsChecked(item))
+}

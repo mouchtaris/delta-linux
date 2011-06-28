@@ -1,0 +1,388 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Actions">
+      <UniqueIdentifier>{6db24519-2a78-415f-8bd3-6908c3abc715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Target">
+      <UniqueIdentifier>{18203a81-2a37-4f53-ac9f-34ac2b20353f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\API">
+      <UniqueIdentifier>{c606b8cf-05e1-468d-b0b1-3a6698939d2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Errors">
+      <UniqueIdentifier>{ae017b5c-ff48-4e76-a355-c7d0bf95e478}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Intermediate">
+      <UniqueIdentifier>{f6e37721-83a5-406d-9704-449308910bd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Optimizer">
+      <UniqueIdentifier>{84f0dcce-20e4-47bd-ba7e-743332212d44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser">
+      <UniqueIdentifier>{d3fc30a1-2bfc-4028-9b97-a79ef79c23bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scanner">
+      <UniqueIdentifier>{19ae27bc-d571-416a-96f9-a5717004503c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Symbols">
+      <UniqueIdentifier>{7fb94941-95c6-4faf-937c-8b5c53da63a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AST">
+      <UniqueIdentifier>{8c5a8456-0bef-43a4-9759-bf1e8be85514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dependencies">
+      <UniqueIdentifier>{f707af71-d82e-453a-9add-4bd47e200348}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{b0127a70-c444-44c4-8582-d83b0aaae9e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Actions">
+      <UniqueIdentifier>{d68d3405-59e5-4dfc-a7bc-88e8218789b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Target">
+      <UniqueIdentifier>{31f53657-0615-494c-99b5-1f2eeb63919f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\API">
+      <UniqueIdentifier>{2ee2143c-ba54-44ea-9a52-899f2f629f5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Errors">
+      <UniqueIdentifier>{957426d5-42bc-4566-b6aa-03703080fe9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Itermediate">
+      <UniqueIdentifier>{7d0c67d9-7750-481d-91f5-4350853a6ba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Optimizer">
+      <UniqueIdentifier>{022a85cf-ecd3-468a-9453-f8d0aa7fc196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Symbols">
+      <UniqueIdentifier>{3d2465cd-8d20-4a2f-8f49-a6934e995c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AST">
+      <UniqueIdentifier>{f6e96d08-629d-49f2-8afd-a0425ac63550}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dependencies">
+      <UniqueIdentifier>{921fd851-49f4-499a-9f39-f096980500a7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\AutoCollection.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DebugNamingForStaticVars.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ExceptionHandlingActions.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Expr.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LocalDataHandling.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseActions.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseArithmetic.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseAssignments.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseAttributes.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseConstants.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseControlFlowStmts.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseFunctionsAndCalls.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseLogical.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseLvalues.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseParms.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseStmts.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseTableConstruction.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseTerms.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseTernary.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\SelectiveStepInPreparator.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\TypeCheck.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Unparsable.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Unparse.cpp">
+      <Filter>Source Files\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\TargetCode.cpp">
+      <Filter>Source Files\Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\CompilerAPI.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaCompilerInit.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaCompErrorMsg.cpp">
+      <Filter>Source Files\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DescriptiveParseErrorHandler.cpp">
+      <Filter>Source Files\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\FunctionValueReturnChecker.cpp">
+      <Filter>Source Files\Intermediate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\InterCode.cpp">
+      <Filter>Source Files\Intermediate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Optimizer.cpp">
+      <Filter>Source Files\Optimizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\UnusedTempAssignElimination.cpp">
+      <Filter>Source Files\Optimizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaParser.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaLexAnalyser.cpp">
+      <Filter>Source Files\Scanner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryDefsParser.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryDefsScanner.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryFuncSignatures.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryNamespace.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryNamespaceHolder.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryTypes.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Symbol.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTAttributeStringifier.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTCreationActions.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTNode.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTTranslationVisitor.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTUnparseVisitor.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaScanner.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaSyntax.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\BuildDependencies.cpp">
+      <Filter>Source Files\Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesParser.cpp">
+      <Filter>Source Files\Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesScanner.cpp">
+      <Filter>Source Files\Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\FunctionReturnTypesManager.cpp">
+      <Filter>Source Files\Symbols</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaParser.y">
+      <Filter>Source Files\Parser</Filter>
+    </None>
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaLexAnalyser.l">
+      <Filter>Source Files\Scanner</Filter>
+    </None>
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaScanner.l">
+      <Filter>Source Files\AST</Filter>
+    </None>
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaSyntax.y">
+      <Filter>Source Files\AST</Filter>
+    </None>
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesParser.y">
+      <Filter>Source Files\Dependencies</Filter>
+    </None>
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesScanner.l">
+      <Filter>Source Files\Dependencies</Filter>
+    </None>
+    <None Include="Deps.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\AutoCollection.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DebugNamingForStaticVars.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Expr.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\GlobalData.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LocalDataHandling.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseActions.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseParms.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseParmsP.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseTableConstruction.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\SelectiveStepInPreparator.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TypeCheck.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Unparsable.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Unparse.h">
+      <Filter>Header Files\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TargetCode.h">
+      <Filter>Header Files\Target</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TargetCodeP.h">
+      <Filter>Header Files\Target</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\CompilerAPI.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompilerDefs.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompilerInit.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaParser.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaSyntax.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\unistd.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompErrorDefs.h">
+      <Filter>Header Files\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompErrorMsg.h">
+      <Filter>Header Files\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DescriptiveParseErrorHandler.h">
+      <Filter>Header Files\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\FunctionValueReturnChecker.h">
+      <Filter>Header Files\Itermediate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\InterCode.h">
+      <Filter>Header Files\Itermediate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Optimizer.h">
+      <Filter>Header Files\Optimizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\UnusedTempAssignElimination.h">
+      <Filter>Header Files\Optimizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryDefsParser.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryDefsScanner.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryFuncSignatures.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryNamespace.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryNamespaceHolder.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryTypes.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Symbol.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TypeTag.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTAttributeStringifier.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTCreationActions.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTEvaluationHelpers.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTNode.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTTags.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTTranslationVisitor.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTUnparseVisitor.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\BuildDependencies.h">
+      <Filter>Header Files\Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaDependenciesParser.h">
+      <Filter>Header Files\Dependencies</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

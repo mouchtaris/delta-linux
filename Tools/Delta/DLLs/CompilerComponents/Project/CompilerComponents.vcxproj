@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{56A22761-A765-45CE-8448-60C1C15B9C78}</ProjectGuid>
+    <RootNamespace>CompilerComponents</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\lib\debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\objs\debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\lib\release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\objs\release\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)D</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\AutoCollection.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DebugNamingForStaticVars.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ExceptionHandlingActions.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Expr.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\FunctionReturnTypesManager.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LocalDataHandling.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseActions.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseArithmetic.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseAssignments.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseAttributes.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseConstants.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseControlFlowStmts.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseFunctionsAndCalls.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseLogical.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseLvalues.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseParms.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseStmts.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseTableConstruction.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseTerms.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ParseTernary.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\SelectiveStepInPreparator.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\TypeCheck.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Unparsable.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Unparse.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\TargetCode.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\CompilerAPI.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaCompilerInit.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaCompErrorMsg.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DescriptiveParseErrorHandler.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\FunctionValueReturnChecker.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\InterCode.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Optimizer.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\UnusedTempAssignElimination.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaParser.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaLexAnalyser.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryDefsParser.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryDefsScanner.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryFuncSignatures.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryNamespace.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryNamespaceHolder.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\LibraryTypes.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\Symbol.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTAttributeStringifier.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTCreationActions.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTNode.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTTranslationVisitor.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTUnparseVisitor.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaScanner.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaSyntax.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\BuildDependencies.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesParser.cpp" />
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesScanner.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaParser.y" />
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaLexAnalyser.l" />
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaScanner.l" />
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaSyntax.y" />
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesParser.y" />
+    <None Include="..\..\..\DeltaCompiler\Src\DeltaDependenciesScanner.l" />
+    <None Include="Deps.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\AutoCollection.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DebugNamingForStaticVars.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Expr.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\GlobalData.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LocalDataHandling.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseActions.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseParms.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseParmsP.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParseTableConstruction.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\SelectiveStepInPreparator.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TypeCheck.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Unparsable.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Unparse.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TargetCode.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TargetCodeP.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\CompilerAPI.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompilerDefs.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompilerInit.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaParser.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaSyntax.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\unistd.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompErrorDefs.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompErrorMsg.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DescriptiveParseErrorHandler.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\FunctionValueReturnChecker.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\InterCode.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Optimizer.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\UnusedTempAssignElimination.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryDefsParser.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryDefsScanner.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryFuncSignatures.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryNamespace.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryNamespaceHolder.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\LibraryTypes.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\Symbol.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\TypeTag.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTAttributeStringifier.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTCreationActions.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTEvaluationHelpers.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTNode.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTTags.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTTranslationVisitor.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTUnparseVisitor.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\BuildDependencies.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaDependenciesParser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BytecodeStructures\Project\BytecodeStructures.vcxproj">
+      <Project>{bec371d3-e221-4bac-ba70-3aed5c4f0150}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ReadersWriters\Project\ReadersWriters.vcxproj">
+      <Project>{9c0f9ac1-ed6c-41c3-8078-ce565e945b75}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyntaxTree\Project\SyntaxTree.vcxproj">
+      <Project>{325efb2c-b985-4ddf-97e6-5fcf2a5e3bb3}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
+      <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

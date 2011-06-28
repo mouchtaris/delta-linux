@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<components>
+	<component path="AdaptationManager.xdf"/>
+	<component path="AutoAdjustDebugTools.xdf"/>
+	<component path="BuildTreeListView.xdf"/>
+	<component path="BreakpointsView.xdf"/>
+	<component path="CommonComponents.xdf"/>
+	<component path="ComponentSpy.xdf"/>
+	<component path="DebugTooltips.xdf"/>
+	<component path="DeltaCompiler.xdf"/>
+	<component path="DeltaComponentDirectory.xdf"/>
+	<component path="DeltaDebugElements.xdf"/>
+	<component path="DeltaVMDebugged.xdf"/>
+	<component path="DeploymentAPI.xdf"/>
+	<component path="DMSLCompiler.xdf"/>
+	<component path="Editor.xdf"/>
+	<component path="EditorManager.xdf"/>
+	<component path="ErrorList.xdf"/>
+	<component path="ExpressionTreeListView.xdf"/>
+	<component path="ExpressionWatches.xdf"/>
+	<component path="FindReplace.xdf"/>
+	<component path="FindResults.xdf"/>
+	<component path="HTMLViewer.xdf"/>
+	<component path="IViews.xdf"/>
+	<component path="LineCounter.xdf"/>
+	<component path="Monitors.xdf"/>
+	<component path="Output.xdf"/>
+	<component path="ProjectManager.xdf"/>
+	<component path="QuickWatch.xdf"/>
+	<component path="RecentReturnValuesView.xdf"/>
+	<component path="RecentWorkspaces.xdf"/>
+	<component path="SourceBrowser.xdf"/>
+	<component path="VariableView.xdf"/>
+</components>

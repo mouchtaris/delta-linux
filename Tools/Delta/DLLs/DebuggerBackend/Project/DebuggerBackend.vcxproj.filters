@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\ExpressionEvaluator">
+      <UniqueIdentifier>{cfa15b35-d427-41bc-bb72-3a0a5c6ea625}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Server">
+      <UniqueIdentifier>{41c29539-7f73-4e75-b322-71b3895712cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extensions">
+      <UniqueIdentifier>{99801fe8-7f73-4c59-8089-5e0af7fe809a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Facade">
+      <UniqueIdentifier>{3238ef73-6b0b-4bb4-a9b6-80ef701ea3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{af09d6d0-ab6e-433a-a253-0dddc6de7e0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ExpressionEvaluator">
+      <UniqueIdentifier>{45fe5bbe-f0f4-48fc-8df9-0466c912591c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Extensions">
+      <UniqueIdentifier>{4cb62685-7583-4572-9094-0b2d13f85ac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Facade">
+      <UniqueIdentifier>{1b9575d9-e73a-4c96-9d49-0bfd45048646}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Server">
+      <UniqueIdentifier>{647f1dc4-5bc3-4cce-9db3-77342e782256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\WatchValue">
+      <UniqueIdentifier>{0f5e7911-c64b-4dac-89c4-14c4b71888d1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugAttributeInformation.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugClosureInformation.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugEvaluatedExpr.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprLexAn.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprLibraryFunctions.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprParseActions.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprParser.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprParserAPI.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugMonitors.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugReservedTableAttributes.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueRcEncoder.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueTextEncoders.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueXmlEncoder.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DeltaValueToDebugWatchValueInfo.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugServer\Src\DebugServer.cpp">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugServer\Src\DispatchRequest.cpp">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugCallStackInspector.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugContextHandler.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugExecutionBreakController.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugExecutionCallbacks.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugExtensions.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugLinesWithCodeHolder.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugMessengerProxy.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugRecentFunctionResults.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugServerBreakPoints.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugTraceCommandHandler.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugUserVarsInspector.cpp">
+      <Filter>Source Files\Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaDebuggedVMFacade\Src\DeltaDebuggedVMFacade.cpp">
+      <Filter>Source Files\Facade</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\DebugExprEvaluator\Src\DebugExprParser.y">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </None>
+    <None Include="..\..\..\Manuals\DebuggerExpressions.txt" />
+    <None Include="Deps.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugAttributeInformation.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugClosureInformation.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugEvaluatedExpr.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprLexAn.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParseActions.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParser.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParserAPI.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueRcEncoder.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueRcEncodingDefs.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueTextEncoders.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueXmlEncoder.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueXmlEncodingDefs.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DeltaValueToDebugWatchValueInfo.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugCallStackInspector.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugCommands.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugContextHandler.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExecutionBreakController.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExtensions.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExtensionsInit.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExtensionsStdDefs.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugLinesWithCodeHolder.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugMessengerProxy.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugRecentFunctionResults.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugServerBreakPoints.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugTraceCommandHandler.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugUserVarsInspector.h">
+      <Filter>Header Files\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaDebuggedVMFacade\Include\DeltaDebuggedVMFacade.h">
+      <Filter>Header Files\Facade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugServer\Include\DebugServer.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugWatchValueInfo\Include\DebugWatchValueInfo.h">
+      <Filter>Header Files\WatchValue</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

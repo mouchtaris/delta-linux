@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Profile name="simple" version="pre-alpha">
+    <ProfileProperties/>
+    <Child type="DeltaScriptConfig">simple_profile.dsc</Child>
+</Profile>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="Common Properties For Find and Replace Usage"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories=".\..\..\..\FindReplace\Automaton;.\..\..\..\FindReplace\FindAndReplaceManager;.\..\..\..\FindReplace\FindAndReplaceUserInterface;.\..\..\..\FindReplace\KeyLogger;.\..\..\..\FindReplace\Parser;.\..\..\..\FindReplace\RegularExpressions;.\..\..\..\FindReplace\Scripts;.\..\..\..\FindReplace\StringMatching;.\..\..\..\FindReplace\Templates;.\..\..\..\FindReplace\TextSource;"
+	/>
+</VisualStudioPropertySheet>

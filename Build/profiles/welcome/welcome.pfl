@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Profile name="welcome" version="0.9">
+    <ProfileProperties/>
+    <Child type="DeltaScriptConfig">welcome.dsc</Child>
+</Profile>

@@ -1,0 +1,39 @@
+#******************************************
+# CORBA corba namespace and library.
+#******************************************
+corba_getapi
+@enter
+corba
+@type
+client
+@type
+server
+@type
+deferredcall
+@const
+SERVER_DLL					"DeltaCorbaServer.dll"
+@const
+SERVER_DLL_DEBUG			"DeltaCorbaServerD.dll"
+@const
+CLIENT_DLL					"DeltaCorbaClient.dll"
+@const
+CLIENT_DLL_DEBUG			"DeltaCorbaClientD.dll"
+init						(...) 								: Bool
+cleanup						()									: Void
+enum						(s:String)							: String
+union						(...)								: Object
+connect						(name:String)						: client
+connect_by_ior				(ior:String)						: client
+resolve_initial_references	(name:String)						: client
+invoke						(clientInst:client,func:String,...)	: Any
+invoke_deferred				(clientInst:client,func:String,...)	: deferredcall
+server						(id:String,serverImpl:Object)		: server
+run							()									: Void
+shutdown					()									: Void
+destroy						(serverInst:server)					: Void
+register					(serverInst:server,name:String)		: Bool
+ior							(serverInst:server)					: String
+@exit
+#******************************************
+# CORBA corba namespace and library.
+#******************************************

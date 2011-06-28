@@ -1,0 +1,25 @@
+Value:					(Simple | Composite) Tag
+Tag:					STRING
+Simple:					SIMPLE STRING
+
+Composite:				COMPOSITE Overview AbsoluteReference Contents
+Overview:				STRING
+AbsoluteReference:		STRING
+Contents:				BEGIN ContentList END
+ContentsList:			ContentList Content | Content
+Content:				CONTENT SubIndex KeyAccess DisplayDesc FieldKeys 
+
+SubIndex:				SUBINDEX STRING
+KeyAccess:				VISIBLE | HIDDEN
+DisplayDesc:			DESC STRING | NODESC
+
+FieldKeys:				BEGIN FieldKeyList END
+FieldKeyList:			FieldKeyList FieldKey | FieldKey
+
+FieldKey:				FIELDKEY   DisplayedKey KeyContentReference
+DisplayedKey:			STRING
+KeyContentReference:	NOKEYREF | KEYREF STRING // Only for composite keys
+
+
+
+

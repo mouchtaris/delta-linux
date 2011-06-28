@@ -1,0 +1,19 @@
+The MVC project defines the basic components of the MVC (Model-View-Controller) framework that is used throughout the application. The basic classes are designed to provide a minimal non-intrusive interface to the distinct structural elements of the framework.
+
+Thus the basic classes that define the framework (MVCBase.h) are:
+
+* ModelBase - It is the superclass of all the model components. A model in the framework encapsulates all the data as well as their storage policy and their update logic. The models in this specific instantiation of MVC are active. That means that they are responsible for notifying the interested views about a modification in the contained data.
+
+* ViewBase - It is the superclass of all the View components. A view of a specific model is responsible for rendering that object on the screen. Additionally, a view may provide means for manipulating the state of the observed model. In that case, the view delegates all the changes to its associated controller, which after evaluating the modification decides to either discard it or to propagate it to the observed model. Subsequently, the model notifies all the interested views about the change (see also MVC.png).
+
+* ControllerBase - It is the superclass of all the Controller components. When a specific view provides the means to modify the observed object, the role of a controller is described above (Viewbase). Nonetheless, a controller object is needed even when the view does not modify the associated model. In that case it may handle a request for activating a specific entry (if it is a button, an activatable list entry, etc.) or it may adjust some visual parameters of the associated view object.
+
+It is evident from the above description that view objects are tightly coupled with controllers. Every view instantiation needs to have one controller instantiation to operate correctly on an observed model object. Because of that tight coupling and because of the inevitable restrictions imposed by the underlying GUI toolkit, in practice, most view objects function also as controller objects. This means that a specialized view class may inherit from both the ViewBase and the ControllerBase classes. Lastly, there are cases where the complete functional separation of a process to the MVC-imposed roles is very difficult and/or inefficient. In such cases it is acceptable to implement a monolithic class that implements all the three roles of the MVC framework. Then, the monolithic object would inherit from all the provided classes, namely, ModelBase, ViewBase and ControllerBase. Ofcourse such a monolithic design does not preclude the association of multiple views to the implemented model. It just diminishes the reusability of the controller and view objects.
+
+The design of the basic classes of the MVC framework had the following goals:
+
+1) Provide an interface for tagging and outlining the functional role of each class
+2) Make no assumpsions for the behavior or context of use of a derived class
+3) Allow a derived class to inherit from some or all the provided classes (interfaces)
+
+To be continued...

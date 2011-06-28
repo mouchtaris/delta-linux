@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workspace name="Sparrow" version="alpha">
+    <WorkspaceProperties>
+        <symbolic>Sparrow.wsp</symbolic>
+        <startup>sparrowlib\sparrowlib.dproj</startup>
+        <config>0</config>
+        <collapsed>0</collapsed>
+        <breakpoints>break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="Project" name="sparrowlib\sparrowlib.dproj"/>
+    <Child type="Project" name="..\extension_scripts\extensions.dproj"/>
+    <Child type="Project" name="..\profiles\profiles.dproj"/>
+</Workspace>

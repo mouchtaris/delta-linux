@@ -1,0 +1,81 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Util", "..\..\Base\Util\Util.vcproj", "{EE40F72C-E1A0-4A2F-9E51-3240DDB883CB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Network", "..\..\Base\Network\Network.vcproj", "{3B96578C-D551-474C-9E4E-D21B2D98FB34}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BigFixedInt", "..\..\Base\BigFixedInt\BigFixedInt.vcproj", "{1645EEB8-7FFD-4A89-B696-48958CECA1DE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TalkieCommon", "TalkieCommon\TalkieCommon.vcproj", "{C8A8CB5E-495E-4FB8-B77B-397918DBFD58}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CentralizedDirectoryServer", "CentralizedDirectoryServer\CentralizedDirectoryServer.vcproj", "{5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CentralizedDirectoryApp", "CentralizedDirectoryApp\CentralizedDirectoryApp.vcproj", "{683AFEE0-5614-4AF8-94DC-3B33FCB992E1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE40F72C-E1A0-4A2F-9E51-3240DDB883CB} = {EE40F72C-E1A0-4A2F-9E51-3240DDB883CB}
+		{C8A8CB5E-495E-4FB8-B77B-397918DBFD58} = {C8A8CB5E-495E-4FB8-B77B-397918DBFD58}
+		{3B96578C-D551-474C-9E4E-D21B2D98FB34} = {3B96578C-D551-474C-9E4E-D21B2D98FB34}
+		{5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3} = {5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CentralizedDirectoryGUIApp", "CentralizedDirectoryGUIApp\CentralizedDirectoryGUIApp.vcproj", "{36AEB233-CE4E-42C9-AF9C-1DCCBCAA733D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3} = {5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3}
+		{3B96578C-D551-474C-9E4E-D21B2D98FB34} = {3B96578C-D551-474C-9E4E-D21B2D98FB34}
+		{89968F81-EF98-4752-B804-8E6E3170648F} = {89968F81-EF98-4752-B804-8E6E3170648F}
+		{C8A8CB5E-495E-4FB8-B77B-397918DBFD58} = {C8A8CB5E-495E-4FB8-B77B-397918DBFD58}
+		{EE40F72C-E1A0-4A2F-9E51-3240DDB883CB} = {EE40F72C-E1A0-4A2F-9E51-3240DDB883CB}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CentralizedDirectoryGUICore", "CentralizedDirectoryGUICore\CentralizedDirectoryGUICore.vcproj", "{89968F81-EF98-4752-B804-8E6E3170648F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Encoding", "..\..\Base\Encoding\Encoding.vcproj", "{C0570BB5-F759-46BA-9492-5AF1F9CF180A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE40F72C-E1A0-4A2F-9E51-3240DDB883CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EE40F72C-E1A0-4A2F-9E51-3240DDB883CB}.Debug|Win32.Build.0 = Debug|Win32
+		{EE40F72C-E1A0-4A2F-9E51-3240DDB883CB}.Release|Win32.ActiveCfg = Release|Win32
+		{EE40F72C-E1A0-4A2F-9E51-3240DDB883CB}.Release|Win32.Build.0 = Release|Win32
+		{3B96578C-D551-474C-9E4E-D21B2D98FB34}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3B96578C-D551-474C-9E4E-D21B2D98FB34}.Debug|Win32.Build.0 = Debug|Win32
+		{3B96578C-D551-474C-9E4E-D21B2D98FB34}.Release|Win32.ActiveCfg = Release|Win32
+		{3B96578C-D551-474C-9E4E-D21B2D98FB34}.Release|Win32.Build.0 = Release|Win32
+		{1645EEB8-7FFD-4A89-B696-48958CECA1DE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1645EEB8-7FFD-4A89-B696-48958CECA1DE}.Debug|Win32.Build.0 = Debug|Win32
+		{1645EEB8-7FFD-4A89-B696-48958CECA1DE}.Release|Win32.ActiveCfg = Release|Win32
+		{1645EEB8-7FFD-4A89-B696-48958CECA1DE}.Release|Win32.Build.0 = Release|Win32
+		{C8A8CB5E-495E-4FB8-B77B-397918DBFD58}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8A8CB5E-495E-4FB8-B77B-397918DBFD58}.Debug|Win32.Build.0 = Debug|Win32
+		{C8A8CB5E-495E-4FB8-B77B-397918DBFD58}.Release|Win32.ActiveCfg = Release|Win32
+		{C8A8CB5E-495E-4FB8-B77B-397918DBFD58}.Release|Win32.Build.0 = Release|Win32
+		{5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3}.Debug|Win32.Build.0 = Debug|Win32
+		{5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3}.Release|Win32.ActiveCfg = Release|Win32
+		{5ECA1192-9FC7-4013-BC41-14ED5D7B5BB3}.Release|Win32.Build.0 = Release|Win32
+		{683AFEE0-5614-4AF8-94DC-3B33FCB992E1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{683AFEE0-5614-4AF8-94DC-3B33FCB992E1}.Debug|Win32.Build.0 = Debug|Win32
+		{683AFEE0-5614-4AF8-94DC-3B33FCB992E1}.Release|Win32.ActiveCfg = Release|Win32
+		{683AFEE0-5614-4AF8-94DC-3B33FCB992E1}.Release|Win32.Build.0 = Release|Win32
+		{36AEB233-CE4E-42C9-AF9C-1DCCBCAA733D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{36AEB233-CE4E-42C9-AF9C-1DCCBCAA733D}.Debug|Win32.Build.0 = Debug|Win32
+		{36AEB233-CE4E-42C9-AF9C-1DCCBCAA733D}.Release|Win32.ActiveCfg = Release|Win32
+		{36AEB233-CE4E-42C9-AF9C-1DCCBCAA733D}.Release|Win32.Build.0 = Release|Win32
+		{89968F81-EF98-4752-B804-8E6E3170648F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{89968F81-EF98-4752-B804-8E6E3170648F}.Debug|Win32.Build.0 = Debug|Win32
+		{89968F81-EF98-4752-B804-8E6E3170648F}.Release|Win32.ActiveCfg = Release|Win32
+		{89968F81-EF98-4752-B804-8E6E3170648F}.Release|Win32.Build.0 = Release|Win32
+		{C0570BB5-F759-46BA-9492-5AF1F9CF180A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C0570BB5-F759-46BA-9492-5AF1F9CF180A}.Debug|Win32.Build.0 = Debug|Win32
+		{C0570BB5-F759-46BA-9492-5AF1F9CF180A}.Release|Win32.ActiveCfg = Release|Win32
+		{C0570BB5-F759-46BA-9492-5AF1F9CF180A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Profile name="Sparrow Devel" version="pre-alpha">
+    <ProfileProperties/>
+    <Child type="ProfileConfig">sparrow_devel.conf</Child>
+    <Child type="DeltaScriptConfig">sparrow_devel.dsc</Child>
+</Profile>

@@ -1,0 +1,88 @@
+*************************************************
+Anthony Savidis, April 2009
+Quick ref of extra stuff for debug expr evaluator.
+**************************************************
+
+Special object attributes:
+_length_				: of Object, list, vector (number of elements), ret Number
+_indices_				: as tabindices, ret Object
+_bases_					: as getbases, ret Object
+_derived_				: as getderived, ret Object
+_mostderived_			: as getmostderived, ret Object
+_delegates_				: as getdelegates, ret Object
+_delegators_			: as getdelegators, ret Object
+_vm_					: of function or method, ret VM
+_boundargs_				: of library function, list
+_overloadingenabled_	: of boolean type
+_madein_				: of string type (creation information)
+_closure_				: internal ExternId with showing closure vars (if a closure exists)
+
+Special indexing modes for Objects:
+<obj>.@<id> or <obj>..@<id> is used to extract detailed information
+for attribute slots as an internal ExternId which allows the following indices:
+_value_	: for the content value
+@set	: for the getter value
+@get	: for the setter value
+_type_	: always returns '<attribute>'
+
+
+Special externid attributes:
+_type_					: of type string, the externid library-specific type
+_userdata_				: the user data (object) of externids (when supported)
+_madein_				: of string type (creation information)
+
+
+Special indexing mode for containers:
+[i], i number in [0, _length_(c)-1], for c one of: Table, Object, list, vector
+
+Special indexing mode for functions or methods:
+_definedin_				: of string type (where actually defined in the source)
+
+Special callable unary functions:
+_typeof_				: as typeof, ret String
+_isundefined_			: as isundefined, ret Bool
+_externidtype_			: as externidtype, ret String
+_getvaluetag_			: as getvaluetag, ret String
+
+
+Special callable functions (mostly for use by the debugger UI, but can call too):
+_2object_(obj_serial_no)						:	from a serial number to object 
+_2vm_(obj_serial_no or id)						:	from a serial number or id to VM
+_2method_(addr, obj_serial_no, vm_serial_no)	:	from an address, object and vm to a method
+_2function_(addr, obj_serial_no, vm_serial_no)	:	from an address and vm to a function
+_2externid_(externid_serial_no)					:	from a serial number to an external object
+
+
+Reference modes for variables:
+function.<id>				: queries only in formal args
+local <id>					: queries a closest local var
+local <id> <block serial>	: queries local var of enclosing block (func block is 0, then ++)
+::<id> 						: queries closest global var
+::<id> <block serial>		: queries global var of enclosing block global space is 0, then ++)
+static.{<func>::}*<id>		: queries static var, optionally in a function; when the same name for
+							  static vars appears N times in the same function or the main program,
+							  then they are all named with a suffix <i>, i : 1...N, following their
+							  order of appearence.
+
+
+Common language expressions that can be also queried:
+self						:	inside methods
+@self						:	inside object construction expressions
+lambda						:	inside functions or methods
+@<id>						:	inside methods for attribute access (without invocation, same as self..<id>)
+
+
+Monitors through expression evaluation:
+$new <id> = <expr>			: add new monitor for the value of <expr>
+$delete <id>				: removes monitor
+$<id>						: extracts the value of a monitor
+
+
+Assignments possible through the following (special) expression forms
+(their value is the new content of the l-value):
+::<id>					= <expr>
+function.<id>			= <expr>
+local <id>				= <expr>
+static.{<func>::}*<id>	= <expr>
+
+**************************************************

@@ -1,0 +1,85 @@
+#include "defines.h"
+
+		_document _id("homepage") _title("Welcome to the webpage of DELTA")
+		index ["delta","Delta","DELTA","programming","language","news","homepage"],
+		[
+			_section _id("idelta") _title("What is Delta?")
+			[_image _path("images\leuka1.PNG") _wrap _right descr "wrap image right"],
+			[_text ["The Delta language, i.e. Dynamic Embeddable Language for Extending Applications, 
+					is a scripting language developed to facilitate postproduction extension of 
+					application frameworks, ensuring that the application-core source code in the native 
+					language can stay completely unaffected. Such an instrument is particularly critical 
+					when there is a basic application kernel constituting a resource of mainly invariant 
+					added-value functionality, while the rest of the application logic tends to be more fluid 
+					and extensible, while, from a software-engineering perspective, is usually less demanding. 
+					The design of such scripting languages is usually driven by the needs: (a) to enable a 
+					lower-entrance barrier for application extension programmers; (b) to eliminate the runtime 
+					propagation of potential software defects in application extensions to the basic application 
+					engine; and (c) to allow application extensions or modifications to be easily created, 
+					communicated, installed, and deployed.", @linebreak, @linebreak] ],			
+			[	_section _id("codesample") _class("highlight")
+				[_text [
+						CTAB0 	"function MakeClass(class) { ", COMMENT	"// Makes a simple prototype with one method only."	NL
+						CTAB1		"return	["	NL
+						CTAB2			"{#class : class }," NL
+						CTAB2			"method @operator-(x,y) {"	NL
+						CTAB3				"if (y.class == self.class) return x.val - y.val;"	NL
+						CTAB3				"else return undefined(); ", COMMENT	"// Retry."	NL
+						CTAB2			"}"	NL
+						CTAB1		"];" NL
+						CTAB0	"}"
+					]
+				]
+			],
+			[_text [@linebreak]]			
+		],
+		/*[
+			_section 
+			[_video url "http://www.youtube.com/v/GwQMnpUsj8I&hl=en&fs=1"],
+			[_text [@linebreak]]		
+		],*/
+		[
+			_section _id("isparrow") _title("Sparrow IDE")
+			[_text ["Sparrow is an IDE for the Delta dynamic object based language, developed following two key objectives:
+					a) To support extensibility of features, allowing such extensions to be developed using Sparrow, i.e. it is a circular IDE.
+					b) To facilitate open deployment by third parties to build domain oriented IDEs, i.e. it is a meta IDE."]],
+			[_link sectionref "sparrowdownload", text "Download Sparrow"]
+		],
+		[
+			_section _id("contact") _title("Contact Info")
+			[_text ["Postal Address:  	Institute of Computer Science (ICS)"		NL
+					"Foundation for Research and Technology - Hellas (FORTH)"		NL
+					"Human-Computer Interaction Laboratory"							NL
+					"and Centre for Universal Access and Assistive Technologies"	NL
+					"N. Plastira 100, Vassilika Vouton"								NL
+					"GR - 70013 Heraklion, Crete, Greece"							NL
+					"Tel.: 	+30-2810-391741"	NL
+					"Fax: 	+30-2810-391740"	NL
+					"E-mail: hci@ics.forth.gr"
+				]
+			]
+		]
+		/*
+		[
+			_section _title("News")
+			index ["section","sectionIndex","INDEX"],
+			[
+				_text
+				[
+					!emphatic !red "! ",
+					!emphatic "Python 3.1.1 released" NL
+					"The first bugfix release of the 3.1 series has been released." NL
+					!footnote "Published: Sat, 16 August 2009 22:00:00 -0700" PP
+					!emphatic "PyCon 2010 Atlanta: Call for Proposals" NL
+					"The Call for Proposals has been posted. Proposals are due by October 1 2009." NL
+					!footnote "Published: Sat, 15 August 2009 07:53:00 -0500" PP
+					!emphatic !red "! ",
+					!emphatic "Python 3.1.1rc1 Released" NL
+					"The release candidate of Python 3.1.1 is now available." NL
+					!footnote "Published: Thu, 13 August 2009 16:00:00 -0700" PP
+					!emphatic "RuPy Call for Papers" NL
+					"RuPy'09 :: Strongly Dynamic Conference has announced its Call for Papers. The third edition of the conference will take place in November 7-8, Poznan, Poland." NL
+					!footnote "Published: Fri, 24 Jul 2009 14:10:00 -0700"
+				]
+			]
+		]*/			

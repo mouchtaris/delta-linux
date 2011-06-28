@@ -1,0 +1,1 @@
+Sparrow_d.exe --profile "profiles/Sparrow Devel/Sparrow Devel.pfl" --configuration DebuggedComponents.xdf

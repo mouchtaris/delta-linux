@@ -1,0 +1,27 @@
+// Sample resource for resource loader.
+
+Data [
+	/* /* */
+	Films 		[ "Run", "Jump", "Walk", "Punch", "Defend" ],
+	
+	Animations [ 
+		"Run Ahead" :	[ Frames 17,  	Start 0,  	End 17,  	Delay 30 ],
+		Jump	[ Frames 9,  	Start 0, 	End 9, 		Delay 30 ],
+		Walk	[ Frames 11, 	Start 0, 	End 11,		Delay 30 ],
+		Punch	[ Frames 11, 	Start 0, 	End 11,		Delay 50 ],
+		Defend	[ Frames 15, 	Start 0, 	End 17,		Delay 50 ]
+	],
+	*/
+	0, 1, 2, 3, 4, 
+	@6,
+	5, 6, 7, 8, 9, 10,
+		
+	@12,
+	!class !method "hello",
+	20 : "-1", 
+	11, 12, 13, 14, 15,
+	21 : "-2",
+	
+	[ @3, 9, 10, 11 ]
+]
+

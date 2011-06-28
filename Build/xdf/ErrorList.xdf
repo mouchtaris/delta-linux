@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="ErrorList"  type="DynamicLib"  uri="./extensions/ErrorList.dll">
+		<dependency>Shell</dependency>
+	</component>
+</extension>

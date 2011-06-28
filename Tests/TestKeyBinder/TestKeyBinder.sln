@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestKeyBinder", "TestKeyBinder.vcproj", "{3370E3FD-D215-4822-8F8B-1184D0A28F65}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EAE56632-FF63-473B-99EE-1B2DAF781931} = {EAE56632-FF63-473B-99EE-1B2DAF781931}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyBinder", "..\..\ThirdPartyBase\KeyBinder\KeyBinder.vcproj", "{EAE56632-FF63-473B-99EE-1B2DAF781931}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3370E3FD-D215-4822-8F8B-1184D0A28F65}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3370E3FD-D215-4822-8F8B-1184D0A28F65}.Debug|Win32.Build.0 = Debug|Win32
+		{3370E3FD-D215-4822-8F8B-1184D0A28F65}.Release|Win32.ActiveCfg = Release|Win32
+		{3370E3FD-D215-4822-8F8B-1184D0A28F65}.Release|Win32.Build.0 = Release|Win32
+		{EAE56632-FF63-473B-99EE-1B2DAF781931}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EAE56632-FF63-473B-99EE-1B2DAF781931}.Debug|Win32.Build.0 = Debug|Win32
+		{EAE56632-FF63-473B-99EE-1B2DAF781931}.Release|Win32.ActiveCfg = Release|Win32
+		{EAE56632-FF63-473B-99EE-1B2DAF781931}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

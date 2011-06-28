@@ -1,0 +1,249 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{8a101d96-d948-40e9-97c7-ef9f3040ece7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DefensiveHeap">
+      <UniqueIdentifier>{c42aecef-ba00-44af-b88e-443432f8eaa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DefensiveHeap">
+      <UniqueIdentifier>{cedc959e-a206-419c-b94c-bbaf5d0ffa39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{e539bfb7-fc87-4ebd-9297-d87536d40476}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Deps.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\DebugLib\Include\DAllocationStats.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugLib\Include\DAssert.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugLib\Include\DDebug.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugLib\Include\DDefaultAllocator.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugLib\Include\DMemoryCapsule.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugLib\Include\DMemoryManager.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugLib\Include\DSmallAllocatorTemplate.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugLib\Include\DSmallObjectAllocator.h">
+      <Filter>Header Files\DefensiveHeap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ualgorithms.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uarraydoublelist.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ubinaryio.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ucachememory.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ucallbacks.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ucrosscast.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ucycliceval.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\udebugsupport.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uderivablecheck.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\udynamiclibloader.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ueditormixin.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uerrorclass.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ufiles.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ufunctors.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ugeometry.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uhash.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uinit.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uinstanceholder.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ulatedestructor.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ulexutil.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\unamebasedinstantiator.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\unestedstate.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uptr.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\urecyclefactory.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\usafeiterators.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\usharedresourceholder.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\usig.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\usingleton.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\usmartlist.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ustlhelpers.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ustrings.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\usystem.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uthreadlib.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\utreenode.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\utypelists.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\utypes.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uvalidatable.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uvalidator.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uvector.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uvirtualclass.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\UtilLib\Src\ubinaryio.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\udynamiclibloader.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\ueditormixin.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uerrorclass.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uerrorno.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\ufiles.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\ugeometry.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uhash.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uinit.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\ulatedestructor.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\ulexutil.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\usafeiterators.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\ustrings.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\usystem.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uthreadlib.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\utreenode.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uvalidatable.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uvalidator.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugLib\Src\DAllocationStats.cpp">
+      <Filter>Source Files\DefensiveHeap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugLib\Src\DDebug.cpp">
+      <Filter>Source Files\DefensiveHeap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugLib\Src\DMemoryCapsule.cpp">
+      <Filter>Source Files\DefensiveHeap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugLib\Src\DMemoryManager.cpp">
+      <Filter>Source Files\DefensiveHeap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DebugLib\Src\DSmallObjectAllocator.cpp">
+      <Filter>Source Files\DefensiveHeap</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,24 @@
+#ifndef	CORBA_SERVER_LIB_DEFS_H
+#define	CORBA_SERVER_LIB_DEFS_H
+
+#include "utypes.h"
+
+#if defined(CORBASERVER_EXPORT) && defined(CORBASERVER_IMPORT)
+#error "Can't define both CORBASERVER_EXPORT and CORBASERVER_IMPORT!"
+#endif
+
+#if	defined(CORBASERVER_EXPORT)
+#define	CORBASERVER_CLASS	UDLL_EXPORT_CPP
+#define	CORBASERVER_FUNC	UDLL_EXPORT_CPP
+#define	CORBASERVER_CFUNC	UDLL_EXPORT_C
+#elif defined(CORBA_CLIENT_LIB_IMPORT)
+#define	CORBASERVER_CLASS	UDLL_IMPORT_CPP
+#define	CORBASERVER_FUNC	UDLL_IMPORT_CPP
+#define	CORBASERVER_CFUNC	UDLL_IMPORT_C
+#else
+#define	CORBASERVER_CLASS
+#define	CORBASERVER_FUNC extern
+#define	CORBASERVER_CFUNC extern
+#endif
+
+#endif	// Do not add stuff beyond this point.

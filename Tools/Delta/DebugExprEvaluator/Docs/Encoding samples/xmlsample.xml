@@ -1,0 +1,25 @@
+<value type="COMPOSITE">
+	<contents>
+		<overview>Table(0xf)[&lt;type:COMPOSITE&gt;,&lt;value:Table(0x1b)[&lt;contents:Table(0x15)[&lt;0:Table(0x14)[&lt;fieldkeys:Table(0x12)[&lt;0:Table(0x11)[&lt;keycontentref:Table(0x10)[&lt;type:NOKEYREF&gt;]&gt;,&lt;keyaccess:VISIBLE&gt;,&lt;displayedkey:value&gt;]&gt;,&lt;displaydesc:Table(0x13)[&lt;type:NODESC&gt;]&gt;]&gt;,&lt;subindex:value&gt;]&gt;,&lt;1:Table(0x1a)[&lt;fieldkeys:Table(0x18)[&lt;0:Table(0x17)[&lt;keycontentref:Table(0x16)[&lt;type:NOKEYREF&gt;]&gt;,&lt;keyaccess:VISIBLE&gt;,&lt;displayedkey:type&gt;]&gt;,&lt;displaydesc:Table(0x19)[&lt;type:NODESC&gt;]&gt;]&gt;,&lt;subindex:type&gt;]&gt;,&lt;overview:Table(0xf)[&lt;type:COMPOSITE&gt;,&lt;value:Table(0x1b)[&lt;contents:Table(0x19)[&lt;0:Table(0x18)[&lt;fieldkeys:Table(0x13)[&lt;0:Table(0x11)[&lt;keycontentref:Table(0x10)[&lt;type:NOKEYREF&gt;]&gt;,&lt;keyaccess:Table(0x12)[&lt;type:VISIBLE&gt;]&gt;,&lt;displayedkey:line&gt;]&gt;,&lt;1:Table(0x15)[&lt;keycontentref:Table(0x14)[&lt;type:NOKEYREF&gt;]&gt;,&lt;keyaccess:Table(0x16)[&lt;type:VISIBLE&gt;]&gt;,&lt;displayedkey:vm&gt;]&gt;,&lt;displaydesc:Table(0x17)[&lt;type:DESC&gt;,&lt;value:&lt;vm&gt;&gt;]&gt;]&gt;,&lt;subindex:_vm_&gt;]&gt;,&lt;1:Table(0x1a)[]&gt;]&gt;,&lt;overview:Table&lt;&gt;&gt;]&gt;]&gt;]&gt;]&gt;]</overview>
+		<content subindex="type">
+			<displaydesc type="NODESC"></displaydesc>
+			<keyaccess>VISIBLE</keyaccess>
+			<fieldkeys>
+				<fieldkey>
+					<keycontentref type="NOKEYREF"></keycontentref>
+					<displayedkey>type</displayedkey>
+					</fieldkey>
+				</fieldkeys>
+			</content>
+		<content subindex="value">
+			<displaydesc type="NODESC"></displaydesc>
+			<keyaccess>VISIBLE</keyaccess>
+			<fieldkeys>
+				<fieldkey>
+					<keycontentref type="NOKEYREF"></keycontentref>
+					<displayedkey>value</displayedkey>
+					</fieldkey>
+				</fieldkeys>
+			</content>
+		</contents>
+	</value>

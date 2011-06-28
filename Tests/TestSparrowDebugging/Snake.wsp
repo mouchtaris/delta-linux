@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workspace name="Snake" version="pre-alpha">
+    <WorkspaceProperties>
+        <startup>22 serialization::archive 4 0 0 1 0 45 22 serialization::archive 4 0 0 10 main.dproj</startup>
+        <config>22 serialization::archive 4 0 0 1 0 39 22 serialization::archive 4 0 0 5 debug</config>
+        <breakpoints>22 serialization::archive 4 0 0 1 0 43 22 serialization::archive 4 0 0 9 break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="Project">main.dproj</Child>
+</Workspace>

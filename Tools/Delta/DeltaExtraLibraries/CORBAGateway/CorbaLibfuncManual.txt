@@ -1,0 +1,55 @@
+*************************************************
+Yannis Lilis, June 2010
+Quick reference for the Corba library functions.
+*************************************************
+
+Table		corba_getapi()						Getting API for corba library
+
+COMMON ******************************************
+
+Bool		init(String(str1),...String(strn))	Performs corba initialization. Input strings are initial references.
+												e.g. init("NameService=file://../ns.ior", "InterfaceRepository=file://../if_repo.ior")
+Void		cleanup()							Performs corba cleanup.
+
+String		enum(String(scoped_name))			Utility fuction to create a corba enumerated (just sets the type tag).
+
+Proto		union()								Returns an undefined corba union structure (an empty table)
+Proto		union(Any(val))						Returns an corba union with the default index and the given value.
+Proto		union(String(type),Any(val))		Returns an corba union with the given type and value.
+
+CLIENT ******************************************
+
+ExternId	connect(String(name))							Connects to the given corba service (name based connection)
+															Returns an object reference to use for remote invocations.
+ExternId	connect_by_ior(String(ior))						Connects to the given corba service (ior based connection)
+															Returns an object reference to use for remote invocations.
+ExternId	resolve_initial_references(String(name))		Resolves and connects to an initial service.
+															e.g. resolve_initial_references("NameService");
+
+Any			invoke(ExternId(obj),String(func),...)			Performs an invocation on the remote corba object.
+ExternId	invoke_deferred(ExternId(obj),String(func),...)	Performs a deferred invocation on the remote corba object.
+
+After the creation of a client invoke and invoke_deferred can be used with an OO syntax.
+
+A deferred invocation returns an garbage collectable ExternId with bound internal libfuncs that allow checking the invocation status.
+The bound libfuncs (accessible with an OO syntax) are: Bool isfinished() and Any getresponse().
+
+Deferred call usage example:
+	client = connect(...);
+	call = client.invoke_deferred(...);
+	while(not call.isfinished());
+	result = call.getresponse();
+
+SERVER ******************************************
+
+ExternId	server(String(interfaceId),Table(serverImpl))	Creates a corba server implementing the given interface id.
+															The table argument is to provide the server implementation.
+
+Void		run()											Runs the corba server until shutdown is invoked.
+Void		shutdown()										Stops the server execution causing is to break it's run loop.
+
+Void		destroy(ExternId(server))						Destroys a corba server.
+Bool		register(ExternId(server),String(name))			Registers a corba server to the NamingService with the given name.
+String		ior(ExternId(server))							Returns the ior of the server.
+
+After the creation of a server object, destroy, register and ior can be used with an OO syntax.

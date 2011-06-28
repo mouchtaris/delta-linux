@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="IViews"  type="DynamicLib"  uri="./extensions/IViews.dll">
+	</component>
+</extension>

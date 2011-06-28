@@ -1,0 +1,210 @@
+*************************************************
+Lilis Ioannis, October 2009
+Quick reference for the Sparrow library functions.
+*************************************************
+
+*** Types use in Sparrow Libfuncs and delta component calls ***
+Handle:		[
+				{.class		: "Handle"	},
+				{.class_id	: String	},
+				{.serial	: Number	}
+			]
+
+Instance:	Handle | String(class)
+	A component instance is a handle specifying the exact component,
+	or a class id that specifies the focused instance of the given component class.
+
+List:		std::list(Value, Value, ...)
+
+Any "typed" list version can be used. For example:
+StringList:	std::list(String, String, ...)
+
+Map:		[
+				{.class	: "Map"	},
+				{.value	: [
+						{ String(index1) : Value },
+						{ String(index2) : Value },
+						...
+						{ String(indexN) : Value }
+					]
+				}
+			]
+Similarly, any "typed" map version can be used (Just replace generic Value with specific type)
+
+Pair:		[
+				{.class		: "Pair"	},
+				{.first		: Value		},
+				{.second	: Value		}
+			]
+
+Tuple:		[
+				{.class		: "Tuple"	},
+				Value, Value, ...	//numericlly indexed values
+			]
+
+Font:		[
+				{.class		: "wxFont"	},
+				{.size		: Number	},
+				{.family	: String	},	//optional, with possible values: DEFAULT, DECORATIVE, ROMAN, SCRIPT, SWISS, MODERN, TELETYPE. Default value is DEFAULT.
+				{.style		: String	},	//optional, with possible values: NORMAL, SLANT, ITALIC. Default value is NORMAL.
+				{.weight	: String	},	//optional, with possible values: NORMAL, LIGHT, BOLD. Default value is NORMAL.
+				{.underline	: Bool		}	//optional, by default false
+				{.facename	: String	}	//optional, by default empty
+			]
+
+Color		[
+				{.class	: "wxColour"},
+				{.r		: Number	},
+				{.g		: Number	},
+				{.b		: Number	},
+				{.a		: Number	}
+			]
+
+UserCommandDesc:	[
+						{.class			: "UserCommandDesc"	},
+						{.class_id		: String			},
+						{.function_name	: String			}
+						{.flags			: Number			},
+						{.isCheck		: Bool				},	//optional, by default false
+						{.enabled		: Bool				},	//optional, by default true
+						{.image			: String			}	//optional, by default empty
+					]
+					
+BaseProperty:		[
+						{.class			: String	},	//Name of property class
+						{.label			: String	},	//GUI property label
+						{.description	: String	},	//GUI property description	(optional, by default empty)
+						{.category		: String	},	//GUI grouping category		(optional, by default empty)
+						{.visible		: Bool		}	//GUI visibility			(optional, by default true)
+					]
+
+The following properties contain all BaseProperty entries in addition to their own.
+
+BasePrimitiveProperty:	[ { .value : Value} ]
+
+DerivedPrimitiveProperties (class -> value type): 
+	IntProperty				->	Number
+	BoolProperty			->	Bool
+	RealProperty			->	Number
+	StringProperty			->	String
+	StringListProperty		->	StringList
+	FileProperty			->	String(path)
+	DirectoryProperty		->	String(dir)
+	FontProperty			->	Font
+	ColorProperty			->	Color
+	FileListProperty		->	StringList(paths)
+	DirectoryListProperty	->	StringList(dir)
+
+
+IntRangeProperty:	[
+						{.min	: Number },
+						{.min	: Number },
+						{.value : Number }
+					]
+
+EnumStringProperty:	[
+						{.options	: StringList	},
+						{.index		: Number		},						
+					]
+
+DateProperty:		[
+						{.day	: Number },
+						{.month : Number },
+						{.year	: Number },
+					]
+
+AggregateProperty:	[ {.properties : StringPropertyMap } ] where:
+
+AggregateListProperty:	[
+							{.type			: AggregateProperty		},
+							{.properties	: AggregatePropertyList	}
+						]
+
+MultiChoiceProperty:	[
+							{.value	: StringBoolMap	}
+						]
+
+*************************************************
+
+MISCELLANEOUS************************************
+
+String		spw::print(x0, ..., xN)		Print to output and returns a string representation of its argument list
+String		spw::installationdir()		Returns the sparrow installation directory
+
+CONSTRUCTION API**********************
+void		spw::registercomponent(String(class) [, String(base_class)])	Registers a new component with the given class id, optionally deriving from base_class.
+void		spw::unregistercomponent(String(class))						Unregisters the component with the given id.
+void		spw::setcomponentmetadata(String(class), String(name), String(desc), String(author), String(version))
+
+void		spw::class_impl_static_function(String(class_id), String(function_name), Callable(function), String(signature)[, String(doc_string)]).
+void		spw::class_impl_member_function(class_id, function_name, function, signature[, doc_string]).
+void		spw::class_decl_required_member_function(class_id, function_name, signature[, doc_string]).
+void		spw::class_remove_static_function(class_id, function_name).
+void		spw::class_remove_member_function(class_id, function_name).
+void		spw::inst_impl_required_member_function(class_id, function_name, function).
+void		spw::inst_impl_dynamic_member_function(class_id, function_name, function, signature[, doc_string]).
+void		spw::inst_remove_dynamic_member_function(class_id, function_name).
+
+void		spw::class_impl_static_handler(class_id, signal, function[, doc_string]).
+void		spw::class_impl_member_handler(class_id, signal, function[, doc_string]).
+void		spw::class_decl_required_member_handler(class_id, signal[, doc_string]).
+void		spw::class_remove_static_handler(class_id, signal).
+void		spw::class_remove_member_handler(class_id, signal).
+void		spw::inst_impl_required_member_handler(class_id, signal, function).
+void		spw::inst_impl_dynamic_member_handler(class_id, function, signal[, doc_string]).
+void		spw::inst_remove_dynamic_member_handler(class_id, signal).
+
+void		spw::class_impl_static_command(user_cmd, function, command[, doc_string]).
+void		spw::class_impl_member_command(user_cmd, function, command[, doc_string]).
+void		spw::class_decl_required_member_command(user_cmd, command[, doc_string]).
+void		spw::class_remove_static_command(class_id, command).
+void		spw::class_remove_member_command(class_id, command).
+void		spw::inst_impl_required_member_command(class_id, function_name, function).
+void		spw::inst_impl_dynamic_member_command(user_cmd, function, command[, doc_string]).
+void		spw::inst_remove_dynamic_member_command(class_id, command).
+
+void		spw::class_decl_static_signal(class_id, signal, arglist).
+void		spw::class_decl_member_signal(class_id, signal, arglist).
+void		spw::class_signal(signal, class_id, args...).
+void		spw::inst_signal(signal, handle, args...).
+
+void		spw::registerimage(String(image_id), String(path))	Registers the image corresponding to the given path to havethe given id.
+void		spw::unregisterimage(String(image_id))				Unregisters an image by its id.
+
+void		spw::addclassproperty(String(class), String(prop_id), Property(property))
+void		spw::removeclassproperty(String(class), String(prop_id))
+
+void		spw::addinstanceproperty(Instance(comp), String(prop_id), Property(property))
+void		spw::removeinstanceproperty(Instance(comp), String(prop_id))
+
+
+CONTROL API**********************
+Bool		spw::loadcomponent(String(class))							Loads and registers the component.
+Handle		spw::createcomponent(String(class) [, Instance(parent)])	Creates a new component of the given class with an optional parent.
+void		spw::destroycomponent(Instance(comp))						Destroys the given component instance.
+void		spw::setparent(Handle(comp), Instance(parent))				Sets the parent of an component instance.
+
+Handle		spw::thiscomponent()										Returns the calling component handle
+Handle		spw::basecomponent([Handle(component)])						Returns the base class component handle of the calling component (if any).
+																		If no component is specified the calling component is assumed as target.
+Handle		spw::mostbasecomponent([Handle(component)])					Returns the last non-script base class component handle of the calling component (if any).
+																		This is needed to get the actual classId and serial for matching slots targeted for the base class.
+																		If no component is specified the calling component is assumed as target.
+Handle		spw::getcomponent(String(class) [, Number(serial])			Returns the focused IDE component given a component class id.
+String[]	spw::getcomponents()										Returns a list with the names of the components in the registry.
+
+Property	spw::getclassproperty(String(class), String(prop_id))		Returns the target class property given a component class id.
+Property	spw::getinstanceproperty(Instance(comp), String(prop_id))	Returns the target instance property given for the given component.
+Property	spw::getproperty(Instance(comp), String(prop_id))			Returns the target property given (instance or class) for the given component.
+Bool		spw::propertytablesetdirty(String(class), Bool(dirty))		Sets dirty/clean state to the property table of the class with the given id.
+																		If the property table is empty the call is ignored and false is returned.
+
+Value		spw::call(Instance(comp), String(func), args...)			Calls an exported function from the specified component.
+void		spw::setundo(Instance(comp), String(function), args...)		Sets the undo action for the specified component.
+
+Number		spw::settimer(Number(id), Number(time), Bool(continuous), Instance(comp), String(func), args...)	Sets the timer data with the given id.
+																												The timer performs the component call "comp.func(args)" every 'time' msecs.
+																												If id == -1 it starts a new timer. The return value is the id of the timer.
+void		spw::canceltimer(Number(id))																		Cancels the timer with the given id.
+
+*************************************************

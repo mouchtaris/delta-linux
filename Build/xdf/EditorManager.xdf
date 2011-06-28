@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="EditorManager"  type="DynamicLib"  uri="./extensions/EditorManager.dll">
+		<dependency>Shell</dependency>
+		<dependency>Editor</dependency>
+	</component>
+</extension>

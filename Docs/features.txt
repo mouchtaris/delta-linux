@@ -1,0 +1,85 @@
+
+DELTAIDE Feature List
+---------------------
+
+1.	editor
+	a.	syntax highlighting
+	b.	collapsing blocks
+	c.	auto-completion
+	d.	automatic indentation
+	e.	automatic typing/visual aids (e.g. block auto-closing)
+	f.	(???) on-the-fly syntax errors detection
+	g.	automatic reference detection of variables
+	h.	(???) UTF-8 oeo?
+	i.	breakpoints
+		i.	insertion / deletion
+		ii.	navigation
+	j.	bookmarking
+		i.	insertion / deletion
+		ii.	navigation
+	k.	configuration
+		i.	fonts
+		ii.	highlighting color schemes
+		iii.(???) default encoding
+		iv.	tab-size
+		v.	indentation
+	l. syntax directed editing on demand (RDP, incomplete Parse Trees, dynamic input strings)
+
+2.	code snippets
+	a.	user provided variables
+	b.	cursor management
+	c.	(???) management of persistent snippets (NOTE: it may require merging with editor)
+	d.  (???) patterns, variable number of arguments
+
+3.	debugger
+	a.	call stack
+	b.	watches
+		i.	local
+		ii.	auto
+		iii.user
+		iv.	expression evaluator
+	d.	running functionality
+		i.	run
+		ii.	stop
+		iii.step over/in/out
+		iv.	run to cursor
+		v.	continue
+		vi.	(conditional) breakpoints
+
+4.	output console (compilation messages)
+	a.	filters support
+	b.	save support
+
+5.	(???) task list
+	a.	comment keywords extraction e.g. TODO, FIXME
+
+6.	workspace manager
+	a.	multiple projects support
+	b.	directory hierarchies
+	c.	dynamic context menus
+	d.	file name categorization filters
+
+7.	class (???) / function view
+
+8.	main UI (IDE framework) (shell)
+	a.	menu bar
+	b.	toolbar area
+		i.	groups of toolbar (reorderable)
+	c.	docking areas
+		i.	up / down
+		ii.	left / right
+	d.	group of central containers (MDI / tabbed)
+	e.  status bar
+
+9.	(???) does a given program complete?
+
+10. (???) refactoring tools
+
+11. (???) architectural tools
+
+12. Plugin API / style
+
+13. Documentation system
+	a. context sensitive help
+	b. (???) delta reference
+	c. (???) interactive delta shell

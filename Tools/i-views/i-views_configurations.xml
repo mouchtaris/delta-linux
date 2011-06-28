@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration_params>
+  <Layout name="drawVertexWithFullContents"       value="true"   type="boolean"  />  
+  <Layout name="verticesDistance" 		            value="64.0f"   type="double"   />   <!--distance Between Vertices In Layer-->
+  <Layout name="layersDistance"                   value="256.0f"  type="double"   />   <!--distance Between layers-->
+  <Layout name="layersAlignment"                  value="2"       type="long"     />  
+  <Layout name="distanceFromLayerWidth"           value="32.0f"   type="double"   />  <!--separation Between Layer And Vertex-->
+  <Layout name="distanceFromLayerHeight"          value="32.0f"   type="double"   />  <!--separation Between Layer And Vertex-->
+  <Layout name="distanceFromTopLeftCornerWidth"   value="128.0f"  type="double"   />  
+  <Layout name="distanceFromTopLeftCornerHeight"  value="128.0f"  type="double"   />  
+  <Layout name="vertexWidth"                      value="256.0f"  type="double"   />  
+  <Layout name="expandButtonWidth"                value="16.0f"   type="double"   />  
+  <Layout name="absRefDistanceWidth"              value="8.0f"    type="double"   />  <!--separation Between absRefText and mainRect-->
+  <Layout name="absRefDistanceHeight"             value="8.0f"    type="double"   />  <!--separation Between absRefText and mainRect-->
+  <Layout name="distanceFromSlotWidth"            value="8.0f"    type="double"   />  <!--separation Between TextRect And SlotRect-->
+  <Layout name="distanceFromSlotHeight"           value="8.0f"    type="double"   />  <!--separation Between TextRect And SlotRect-->
+
+  <Rendering name="absRefColour"                  value="0 0 0"    type="colour"   />
+  <Rendering name="defaultColour"                 value="0 0 0"    type="colour"   />
+  <Rendering name="delegationColour"              value="0 0 0"    type="colour"   />
+  <Rendering name="inheritanceColour"             value="0 0 0"    type="colour"   />
+
+
+  <Rendering name="backEdgeColour"                value="0 0 255"    type="colour"   />
+  <Rendering name="crossEdgeColour"               value="255 0 0"    type="colour"   />
+  <Rendering name="forwardEdgeColour"             value="0 0 0"    type="colour"   />
+  <Rendering name="pathHighlightingIncomingEdgesColour"             value="0 255 255"    type="colour"   />
+  <Rendering name="pathHighlightingOutgoingEdgesColour"             value="255 255 0"    type="colour"   />
+  <Rendering name="highlightcurrentVertexColour"             value="255 165 0"    type="colour"   />
+  <Rendering name="highlightRelativeSlots"             value="0 0 255"    type="colour"   />
+
+</configuration_params>
+

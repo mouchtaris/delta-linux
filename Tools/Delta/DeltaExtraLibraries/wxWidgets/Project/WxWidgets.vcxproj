@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{31FB0856-D815-49ED-B474-A6FFF82D9660}</ProjectGuid>
+    <RootNamespace>WxWidgets</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\lib\debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\objs\debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\lib\release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\objs\release\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaVirtualMachine\Include;..\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaStdLib\Include;$(WXWIN28)\Include;$(WXWIN28)\lib\vc_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32; _DEBUG;DVM_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;DWXWIDGETS_EXPORT;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;rpcrt4.lib;wxmsw28ud_adv.lib;wxmsw28ud_aui.lib;wxmsw28ud_html.lib;wxmsw28ud_core.lib;wxmsw28ud_richtext.lib;wxbase28ud.lib;wxbase28ud_xml.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxexpatd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)_d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(WXWIN28)\lib\vc_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaVirtualMachine\Include;..\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaStdLib\Include;$(WXWIN28)\Include;$(WXWIN28)\lib\vc_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;DVM_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;DWXWIDGETS_EXPORT;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4267;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;rpcrt4.lib;wxmsw28u_adv.lib;wxmsw28u_aui.lib;wxmsw28u_html.lib;wxmsw28u_core.lib;wxmsw28u_richtext.lib;wxbase28u.lib;wxbase28u_xml.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(WXWIN28)\lib\vc_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\DeltaWxWidgetsLib.cpp" />
+    <ClCompile Include="..\Src\wxWrapperUtilFunctions.cpp" />
+    <ClCompile Include="..\Src\DeltaWxBitmapButton.cpp" />
+    <ClCompile Include="..\Src\DeltaWxButton.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCalendarCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCheckBox.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCheckListBox.cpp" />
+    <ClCompile Include="..\Src\DeltaWxChoice.cpp" />
+    <ClCompile Include="..\Src\DeltaWxChoicebook.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCollapsiblePane.cpp" />
+    <ClCompile Include="..\Src\DeltaWxColourPickerCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxComboBox.cpp" />
+    <ClCompile Include="..\Src\DeltaWxControl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxControlWithItems.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDatePickerCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDirFilterListCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDirPickerCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFilePickerCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFontPickerCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGauge.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGenericDirCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxListbook.cpp" />
+    <ClCompile Include="..\Src\DeltaWxListBox.cpp" />
+    <ClCompile Include="..\Src\DeltaWxListCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxListView.cpp" />
+    <ClCompile Include="..\Src\DeltaWxNotebook.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPickerBase.cpp" />
+    <ClCompile Include="..\Src\DeltaWxRadioBox.cpp" />
+    <ClCompile Include="..\Src\DeltaWxRadioButton.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSearchCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSlider.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSpinButton.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSpinCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxStaticBox.cpp" />
+    <ClCompile Include="..\Src\DeltaWxStaticLine.cpp" />
+    <ClCompile Include="..\Src\DeltaWxStaticText.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTextCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxToggleButton.cpp" />
+    <ClCompile Include="..\Src\DeltaWxToolBar.cpp" />
+    <ClCompile Include="..\Src\DeltaWxToolbook.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTreebook.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTreeCtrl.cpp" />
+    <ClCompile Include="..\Src\DeltaWxColourDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDirDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFileDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFindReplaceDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFontDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMessageDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMultiChoiceDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxNumberEntryDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPageSetupDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPasswordEntryDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPrintDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxProgressDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSingleChoiceDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTextEntryDialog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWizard.cpp" />
+    <ClCompile Include="..\Src\DeltaWxActivateEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCalendarEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxChildFocusEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxChoicebookEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxClipboardTextEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCloseEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCollapsiblePaneEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxColourPickerEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCommandEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxContextMenuEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDateEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDisplayChangedEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDropFilesEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxEraseEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxEvtHandler.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFileDirPickerEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFindDialogEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFocusEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFontPickerEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxHelpEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxIconizeEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxIdleEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxInitDialogEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxJoystickEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxKeyEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxListbookEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMaximizeEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMenuEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMouseCaptureChangedEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMouseCaptureLostEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMouseEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMoveEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxNavigationKeyEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxNotebookEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxNotifyEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPaletteChangedEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxQueryNewPaletteEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxScrollEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxScrollWinEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSetCursorEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxShowEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSizeEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSpinEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSplitterEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSysColourChangedEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTimerEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxToolbookEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTreebookEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTreeEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxUpdateUIEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWindowCreateEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWindowDestroyEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWizardEvent.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFrame.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSplashScreen.cpp" />
+    <ClCompile Include="..\Src\DeltaWxBitmap.cpp" />
+    <ClCompile Include="..\Src\DeltaWxBrush.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCursor.cpp" />
+    <ClCompile Include="..\Src\DeltaWxIcon.cpp" />
+    <ClCompile Include="..\Src\DeltaWxIconBundle.cpp" />
+    <ClCompile Include="..\Src\DeltaWxImage.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMask.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPen.cpp" />
+    <ClCompile Include="..\Src\DeltaWxLog.cpp" />
+    <ClCompile Include="..\Src\DeltaWxLogChain.cpp" />
+    <ClCompile Include="..\Src\DeltaWxLogWindow.cpp" />
+    <ClCompile Include="..\Src\DeltaWxAboutDialogInfo.cpp" />
+    <ClCompile Include="..\Src\DeltaWxAcceleratorEntry.cpp" />
+    <ClCompile Include="..\Src\DeltaWxAcceleratorTable.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCalendarDateAttr.cpp" />
+    <ClCompile Include="..\Src\DeltaWxCaret.cpp" />
+    <ClCompile Include="..\Src\DeltaWxClassInfo.cpp" />
+    <ClCompile Include="..\Src\DeltaWxColour.cpp" />
+    <ClCompile Include="..\Src\DeltaWxColourData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDateSpan.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDateTime.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDropTarget.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFont.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFontData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGlobalFunctions.cpp" />
+    <ClCompile Include="..\Src\DeltaWxIconLocation.cpp" />
+    <ClCompile Include="..\Src\DeltaWxIndividualLayoutConstraint.cpp" />
+    <ClCompile Include="..\Src\DeltaWxLayoutConstraints.cpp" />
+    <ClCompile Include="..\Src\DeltaWxListItemAttr.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPalette.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPoint.cpp" />
+    <ClCompile Include="..\Src\DeltaWxRect.cpp" />
+    <ClCompile Include="..\Src\DeltaWxRegion.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSize.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSizerFlags.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTextAttr.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTimeSpan.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTreeItemData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTreeItemId.cpp" />
+    <ClCompile Include="..\Src\DeltaWxVisualAttributes.cpp" />
+    <ClCompile Include="..\Src\DeltaWxApp.cpp" />
+    <ClCompile Include="..\Src\DeltaWxBufferedDC.cpp" />
+    <ClCompile Include="..\Src\DeltaWxClientDC.cpp" />
+    <ClCompile Include="..\Src\DeltaWxDC.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFindReplaceData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGenericValidator.cpp" />
+    <ClCompile Include="..\Src\DeltaWxImageList.cpp" />
+    <ClCompile Include="..\Src\DeltaWxJoystick.cpp" />
+    <ClCompile Include="..\Src\DeltaWxListItem.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMemoryDC.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMenu.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMenuItem.cpp" />
+    <ClCompile Include="..\Src\DeltaWxObject.cpp" />
+    <ClCompile Include="..\Src\DeltaWxObjectRefData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPageSetupDialogData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPaintDC.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPrintData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPrintDialogData.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSizerItem.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTextValidator.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTimer.cpp" />
+    <ClCompile Include="..\Src\DeltaWxToolBarToolBase.cpp" />
+    <ClCompile Include="..\Src\DeltaWxToolTip.cpp" />
+    <ClCompile Include="..\Src\DeltaWxValidator.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWindowDC.cpp" />
+    <ClCompile Include="..\Src\DeltaWxBoxSizer.cpp" />
+    <ClCompile Include="..\Src\DeltaWxFlexGridSizer.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGridSizer.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSizer.cpp" />
+    <ClCompile Include="..\Src\DeltaWxStaticBoxSizer.cpp" />
+    <ClCompile Include="..\Src\DeltaWxStdDialogButtonSizer.cpp" />
+    <ClCompile Include="..\Src\DeltaWxMenuBar.cpp" />
+    <ClCompile Include="..\Src\DeltaWxPanel.cpp" />
+    <ClCompile Include="..\Src\DeltaWxScrolledWindow.cpp" />
+    <ClCompile Include="..\Src\DeltaWxSplitterWindow.cpp" />
+    <ClCompile Include="..\Src\DeltaWxStatusBar.cpp" />
+    <ClCompile Include="..\Src\DeltaWxTopLevelWindow.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWindow.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWizardPage.cpp" />
+    <ClCompile Include="..\Src\DeltaWxWizardPageSimple.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\DeltaWxWidgets.h" />
+    <ClInclude Include="..\Include\DeltaWxWidgetsLib.h" />
+    <ClInclude Include="..\Include\wxWrapperUtilFunctions.h" />
+    <ClInclude Include="..\Include\DeltaWxBitmapButton.h" />
+    <ClInclude Include="..\Include\DeltaWxButton.h" />
+    <ClInclude Include="..\Include\DeltaWxCalendarCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxCheckBox.h" />
+    <ClInclude Include="..\Include\DeltaWxCheckListBox.h" />
+    <ClInclude Include="..\Include\DeltaWxChoice.h" />
+    <ClInclude Include="..\Include\DeltaWxChoicebook.h" />
+    <ClInclude Include="..\Include\DeltaWxCollapsiblePane.h" />
+    <ClInclude Include="..\Include\DeltaWxColourPickerCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxComboBox.h" />
+    <ClInclude Include="..\Include\DeltaWxControl.h" />
+    <ClInclude Include="..\Include\DeltaWxControlWithItems.h" />
+    <ClInclude Include="..\Include\DeltaWxDatePickerCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxDirFilterListCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxDirPickerCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxFilePickerCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxFontPickerCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxGauge.h" />
+    <ClInclude Include="..\Include\DeltaWxGenericDirCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxListbook.h" />
+    <ClInclude Include="..\Include\DeltaWxListBox.h" />
+    <ClInclude Include="..\Include\DeltaWxListCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxListView.h" />
+    <ClInclude Include="..\Include\DeltaWxNotebook.h" />
+    <ClInclude Include="..\Include\DeltaWxPickerBase.h" />
+    <ClInclude Include="..\Include\DeltaWxRadioBox.h" />
+    <ClInclude Include="..\Include\DeltaWxRadioButton.h" />
+    <ClInclude Include="..\Include\DeltaWxSearchCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxSlider.h" />
+    <ClInclude Include="..\Include\DeltaWxSpinButton.h" />
+    <ClInclude Include="..\Include\DeltaWxSpinCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxStaticBox.h" />
+    <ClInclude Include="..\Include\DeltaWxStaticLine.h" />
+    <ClInclude Include="..\Include\DeltaWxStaticText.h" />
+    <ClInclude Include="..\Include\DeltaWxTextCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxToggleButton.h" />
+    <ClInclude Include="..\Include\DeltaWxToolBar.h" />
+    <ClInclude Include="..\Include\DeltaWxToolbook.h" />
+    <ClInclude Include="..\Include\DeltaWxTreebook.h" />
+    <ClInclude Include="..\Include\DeltaWxTreeCtrl.h" />
+    <ClInclude Include="..\Include\DeltaWxMenuBar.h" />
+    <ClInclude Include="..\Include\DeltaWxPanel.h" />
+    <ClInclude Include="..\Include\DeltaWxScrolledWindow.h" />
+    <ClInclude Include="..\Include\DeltaWxSplitterWindow.h" />
+    <ClInclude Include="..\Include\DeltaWxStatusBar.h" />
+    <ClInclude Include="..\Include\DeltaWxTopLevelWindow.h" />
+    <ClInclude Include="..\Include\DeltaWxWindow.h" />
+    <ClInclude Include="..\Include\DeltaWxWizardPage.h" />
+    <ClInclude Include="..\Include\DeltaWxWizardPageSimple.h" />
+    <ClInclude Include="..\Include\DeltaWxColourDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxDirDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxFileDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxFindReplaceDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxFontDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxMessageDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxMultiChoiceDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxNumberEntryDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxPageSetupDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxPasswordEntryDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxPrintDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxProgressDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxSingleChoiceDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxTextEntryDialog.h" />
+    <ClInclude Include="..\Include\DeltaWxWizard.h" />
+    <ClInclude Include="..\Include\DeltaWxActivateEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxCalendarEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxChildFocusEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxChoicebookEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxClipboardTextEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxCloseEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxCollapsiblePaneEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxColourPickerEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxCommandEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxContextMenuEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxDateEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxDisplayChangedEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxDropFilesEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxEraseEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxEvtHandler.h" />
+    <ClInclude Include="..\Include\DeltaWxFileDirPickerEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxFindDialogEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxFocusEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxFontPickerEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxHelpEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxIconizeEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxIdleEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxInitDialogEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxJoystickEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxKeyEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxListbookEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxMaximizeEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxMenuEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxMouseCaptureChangedEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxMouseCaptureLostEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxMouseEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxMoveEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxNavigationKeyEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxNotebookEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxNotifyEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxPaletteChangedEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxQueryNewPaletteEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxScrollEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxScrollWinEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxSetCursorEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxShowEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxSizeEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxSpinEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxSplitterEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxSysColourChangedEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxTimerEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxToolbookEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxTreebookEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxTreeEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxUpdateUIEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxWindowCreateEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxWindowDestroyEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxWizardEvent.h" />
+    <ClInclude Include="..\Include\DeltaWxFrame.h" />
+    <ClInclude Include="..\Include\DeltaWxSplashScreen.h" />
+    <ClInclude Include="..\Include\DeltaWxBitmap.h" />
+    <ClInclude Include="..\Include\DeltaWxBrush.h" />
+    <ClInclude Include="..\Include\DeltaWxCursor.h" />
+    <ClInclude Include="..\Include\DeltaWxIcon.h" />
+    <ClInclude Include="..\Include\DeltaWxIconBundle.h" />
+    <ClInclude Include="..\Include\DeltaWxImage.h" />
+    <ClInclude Include="..\Include\DeltaWxMask.h" />
+    <ClInclude Include="..\Include\DeltaWxPen.h" />
+    <ClInclude Include="..\Include\DeltaWxLog.h" />
+    <ClInclude Include="..\Include\DeltaWxLogChain.h" />
+    <ClInclude Include="..\Include\DeltaWxLogWindow.h" />
+    <ClInclude Include="..\Include\DeltaWxAboutDialogInfo.h" />
+    <ClInclude Include="..\Include\DeltaWxAcceleratorEntry.h" />
+    <ClInclude Include="..\Include\DeltaWxAcceleratorTable.h" />
+    <ClInclude Include="..\Include\DeltaWxCalendarDateAttr.h" />
+    <ClInclude Include="..\Include\DeltaWxCaret.h" />
+    <ClInclude Include="..\Include\DeltaWxClassInfo.h" />
+    <ClInclude Include="..\Include\DeltaWxColour.h" />
+    <ClInclude Include="..\Include\DeltaWxColourData.h" />
+    <ClInclude Include="..\Include\DeltaWxDateSpan.h" />
+    <ClInclude Include="..\Include\DeltaWxDateTime.h" />
+    <ClInclude Include="..\Include\DeltaWxDropTarget.h" />
+    <ClInclude Include="..\Include\DeltaWxFont.h" />
+    <ClInclude Include="..\Include\DeltaWxFontData.h" />
+    <ClInclude Include="..\Include\DeltaWxGlobalFunctions.h" />
+    <ClInclude Include="..\Include\DeltaWxIconLocation.h" />
+    <ClInclude Include="..\Include\DeltaWxIndividualLayoutConstraint.h" />
+    <ClInclude Include="..\Include\DeltaWxLayoutConstraints.h" />
+    <ClInclude Include="..\Include\DeltaWxListItemAttr.h" />
+    <ClInclude Include="..\Include\DeltaWxPalette.h" />
+    <ClInclude Include="..\Include\DeltaWxPoint.h" />
+    <ClInclude Include="..\Include\DeltaWxRect.h" />
+    <ClInclude Include="..\Include\DeltaWxRegion.h" />
+    <ClInclude Include="..\Include\DeltaWxSize.h" />
+    <ClInclude Include="..\Include\DeltaWxSizerFlags.h" />
+    <ClInclude Include="..\Include\DeltaWxTextAttr.h" />
+    <ClInclude Include="..\Include\DeltaWxTimeSpan.h" />
+    <ClInclude Include="..\Include\DeltaWxTreeItemData.h" />
+    <ClInclude Include="..\Include\DeltaWxTreeItemId.h" />
+    <ClInclude Include="..\Include\DeltaWxVisualAttributes.h" />
+    <ClInclude Include="..\Include\DeltaWxApp.h" />
+    <ClInclude Include="..\Include\DeltaWxBufferedDC.h" />
+    <ClInclude Include="..\Include\DeltaWxClientDC.h" />
+    <ClInclude Include="..\Include\DeltaWxDC.h" />
+    <ClInclude Include="..\Include\DeltaWxFindReplaceData.h" />
+    <ClInclude Include="..\Include\DeltaWxGenericValidator.h" />
+    <ClInclude Include="..\Include\DeltaWxImageList.h" />
+    <ClInclude Include="..\Include\DeltaWxJoystick.h" />
+    <ClInclude Include="..\Include\DeltaWxListItem.h" />
+    <ClInclude Include="..\Include\DeltaWxMemoryDC.h" />
+    <ClInclude Include="..\Include\DeltaWxMenu.h" />
+    <ClInclude Include="..\Include\DeltaWxMenuItem.h" />
+    <ClInclude Include="..\Include\DeltaWxObject.h" />
+    <ClInclude Include="..\Include\DeltaWxObjectRefData.h" />
+    <ClInclude Include="..\Include\DeltaWxPageSetupDialogData.h" />
+    <ClInclude Include="..\Include\DeltaWxPaintDC.h" />
+    <ClInclude Include="..\Include\DeltaWxPrintData.h" />
+    <ClInclude Include="..\Include\DeltaWxPrintDialogData.h" />
+    <ClInclude Include="..\Include\DeltaWxSizerItem.h" />
+    <ClInclude Include="..\Include\DeltaWxTextValidator.h" />
+    <ClInclude Include="..\Include\DeltaWxTimer.h" />
+    <ClInclude Include="..\Include\DeltaWxToolBarToolBase.h" />
+    <ClInclude Include="..\Include\DeltaWxToolTip.h" />
+    <ClInclude Include="..\Include\DeltaWxValidator.h" />
+    <ClInclude Include="..\Include\DeltaWxWindowDC.h" />
+    <ClInclude Include="..\Include\DeltaWxBoxSizer.h" />
+    <ClInclude Include="..\Include\DeltaWxFlexGridSizer.h" />
+    <ClInclude Include="..\Include\DeltaWxGridSizer.h" />
+    <ClInclude Include="..\Include\DeltaWxSizer.h" />
+    <ClInclude Include="..\Include\DeltaWxStaticBoxSizer.h" />
+    <ClInclude Include="..\Include\DeltaWxStdDialogButtonSizer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\WxWidgetsLibFuncs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
+      <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DLLs\VirtualMachineComponents\Project\VirtualMachineComponents.vcxproj">
+      <Project>{8e7fd87f-7874-468a-913c-eb3837233606}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

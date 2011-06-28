@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Profile name="beginner" version="pre-alpha">
+    <ProfileProperties/>
+    <Child type="ProfileConfig">beginner.conf</Child>
+    <Child type="DeltaScriptConfig">beginner.dsc</Child>
+</Profile>

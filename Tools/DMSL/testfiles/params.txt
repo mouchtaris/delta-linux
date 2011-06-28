@@ -1,0 +1,7 @@
+abilities.pointing = accurate
+net = "la"
+webknowledge = normal
+vision = true
+three = "3"
+number = 5
+set = {1, 2, 3}

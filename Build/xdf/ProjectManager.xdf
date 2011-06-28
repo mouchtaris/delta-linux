@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="ProjectManager"  type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>Shell</dependency>
+	</component>
+
+	<component id="VirtualContainer" type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>ProjectManager</dependency>
+	</component>
+	<component id="Container"       type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>VirtualContainer</dependency>
+	</component>
+
+	<component id="Workspace"       type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>Container</dependency>
+	</component>
+
+	<component id="Project"         type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>Container</dependency>
+	</component>
+
+	<component id="Filter"         type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>Workspace</dependency>
+	</component>
+	
+	<component id="Script"          type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>GenericFile</dependency>
+		<dependency>DeltaCompiler</dependency>
+	</component>
+</extension>

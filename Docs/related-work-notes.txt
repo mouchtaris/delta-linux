@@ -1,0 +1,24 @@
+List of IDEs:
+http://en.wikipedia.org/wiki/List_of_integrated_development_environments
+
+Comparison of IDEs:
+http://en.wikipedia.org/wiki/Comparison_of_integrated_development_environments
+
+-- C / C++ --
+
+* Visual Studio - http://en.wikipedia.org/wiki/Visual_studio
+* Kdevelop - http://en.wikipedia.org/wiki/KDevelop
+* Anjuta - http://en.wikipedia.org/wiki/Anjuta
+
+-- Scripting --
+
+* ActiveState Komodo - http://en.wikipedia.org/wiki/ActiveState_Komodo
+
+
+-- Java --
+
+* Eclipse IDE - http://en.wikipedia.org/wiki/Eclipse_%28software%29
+* Netbeans - http://en.wikipedia.org/wiki/Netbeans
+* IntelliJ IDEA - http://en.wikipedia.org/wiki/IntelliJ_IDEA
+* Code blocks - http://en.wikipedia.org/wiki/Code_blocks
+* JBuilder - http://en.wikipedia.org/wiki/Jbuilder

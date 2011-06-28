@@ -1,0 +1,31 @@
+type "COMPOSITE"
+value [
+	contents [
+		[
+			keyaccess "VISIBLE",
+			displaydesc [type "NODESC"],
+			fieldkeys [
+				[
+					keycontentref [type "NOKEYREF"],
+					displayedkey "value"
+				],
+				size 1
+			],
+			subindex "value"
+		],
+		[
+			keyaccess "VISIBLE",
+			displaydesc [type "NODESC"],
+			fieldkeys [
+				[
+					keycontentref [type "NOKEYREF"],
+					displayedkey "type"
+				],
+				size 1
+			],
+			subindex "type"
+		],
+		size 2,
+		overview "Table(0xf)[<type:COMPOSITE>,<value:Table(0x1b)[<contents:Table(0x15)[<0:Table(0x14)[<fieldkeys:Table(0x12)[<0:Table(0x11)[<keycontentref:Table(0x10)[<type:NOKEYREF>]>,<keyaccess:VISIBLE>,<displayedkey:value>]>,<displaydesc:Table(0x13)[<type:NODESC>]>]>,<subindex:value>]>,<1:Table(0x1a)[<fieldkeys:Table(0x18)[<0:Table(0x17)[<keycontentref:Table(0x16)[<type:NOKEYREF>]>,<keyaccess:VISIBLE>,<displayedkey:type>]>,<displaydesc:Table(0x19)[<type:NODESC>]>]>,<subindex:type>]>,<overview:Table(0xf)[<type:COMPOSITE>,<value:Table(0x1b)[<contents:Table(0x19)[<0:Table(0x18)[<fieldkeys:Table(0x13)[<0:Table(0x11)[<keycontentref:Table(0x10)[<type:NOKEYREF>]>,<keyaccess:Table(0x12)[<type:VISIBLE>]>,<displayedkey:line>]>,<1:Table(0x15)[<keycontentref:Table(0x14)[<type:NOKEYREF>]>,<keyaccess:Table(0x16)[<type:VISIBLE>]>,<displayedkey:vm>]>,<displaydesc:Table(0x17)[<type:DESC>,<value:<vm>>]>]>,<subindex:_vm_>]>,<1:Table(0x1a)[]>]>,<overview:Table<>>]>]>]>]>]"
+	]
+]

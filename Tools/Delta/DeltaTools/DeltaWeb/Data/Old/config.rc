@@ -1,0 +1,6 @@
+style			"Data\\style.rc"
+script			"script.js"
+content			"Data\\metacontent.rc"
+output_html		"result.html"
+out_dir			"Out\\"
+output_css		"styles.css"

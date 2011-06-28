@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestScintilla", "TestScintilla.vcproj", "{CE7959B9-E9AF-4189-934E-24BB5F8D4B11}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2DEDDD53-4391-48FA-9D91-0F29B9462E27} = {2DEDDD53-4391-48FA-9D91-0F29B9462E27}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WXScintilla", "..\..\ThirdPartyBase\WXScintilla\WXScintilla.vcproj", "{2DEDDD53-4391-48FA-9D91-0F29B9462E27}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE7959B9-E9AF-4189-934E-24BB5F8D4B11}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE7959B9-E9AF-4189-934E-24BB5F8D4B11}.Debug|Win32.Build.0 = Debug|Win32
+		{CE7959B9-E9AF-4189-934E-24BB5F8D4B11}.Release|Win32.ActiveCfg = Release|Win32
+		{CE7959B9-E9AF-4189-934E-24BB5F8D4B11}.Release|Win32.Build.0 = Release|Win32
+		{2DEDDD53-4391-48FA-9D91-0F29B9462E27}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2DEDDD53-4391-48FA-9D91-0F29B9462E27}.Debug|Win32.Build.0 = Debug|Win32
+		{2DEDDD53-4391-48FA-9D91-0F29B9462E27}.Release|Win32.ActiveCfg = Release|Win32
+		{2DEDDD53-4391-48FA-9D91-0F29B9462E27}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

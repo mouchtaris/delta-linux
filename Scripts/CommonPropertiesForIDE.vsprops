@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="CommonPropertiesForIDE"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="..\..\Base\Util;..\..\Base\MVC;..\..\Base\MVCGeneric;..\..\Base\GenericWidgets;..\..\Base\GUIUtils;..\..\Base\ConsoleHost;..\..\Base\Threading;..\..\Base\Network;..\..\Base\Encoding;..\..\Base\Blackboard;..\..\Base\DynamicLoader;..\..\Base\BigFixedInt;..\..\Base\Properties;..\..\Base\PropertiesGUI;..\..\Base\Sound;..\..\Base\Timers;..\..\Base\FileChangeWatcher;..\..\Base\PathManagement;..\..\Base\XML;..\..\ThirdPartyBase\KeyBinder;..\..\ThirdPartyBase\AdditionalWidgets;..\..\IDE\IDECore;..\..\IDE\ComponentBase;..\..\IDE\ComponentCaller;..\..\IDE\ComponentLoader;..\..\IDE\ComponentListener;..\..\IDE\ComponentDataTypes;..\..\IDE\CommonComponents;..\..\IDE\ComponentInitializer;..\..\IDE\IDEWidgets;..\..\IDE\UndoManager;..\..\IDE\Message;..\..\IDE\ResourceRegistries;..\..\IDE\ScriptManager;..\..\IDE\ScriptMessageRecorder;..\..\IDE\UserCommand"
+		PreprocessorDefinitions="IDECORE_EXPORTS"
+	/>
+</VisualStudioPropertySheet>

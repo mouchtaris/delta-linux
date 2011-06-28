@@ -1,0 +1,3 @@
+UtilAndDefensiveHeap	UTILLIB_IMPORT  DDEBUG_IMPORT
+
+To use the DLL:			SOCKETLIB_IMPORT

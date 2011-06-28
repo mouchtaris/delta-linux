@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="IDEComponent"		type="BuiltIn"/>
+	<component id="DockableComponent"	type="BuiltIn"/>
+
+	<component id="TreeCtrlComponent"	type="BuiltIn"/>
+	<component id="TreeItemComponent"	type="BuiltIn"/>
+	<component id="TextFile"		type="BuiltIn"/>
+	<component id="GenericFile"		type="BuiltIn"/>
+
+	<component id="ListViewComponent"	type="BuiltIn"/>
+	<component id="TreeListViewComponent"	type="BuiltIn"/>
+	<component id="Shell"			type="BuiltIn"/>
+</extension>

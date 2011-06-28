@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{255813B9-3ED9-4017-A65D-7047BC9A5948}</ProjectGuid>
+    <RootNamespace>IDECore</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Scripts\CommonPropertiesForIDE.props" />
+    <Import Project="..\..\Scripts\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\Scripts\DeltaideCommonLibsRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Scripts\CommonPropertiesForIDE.props" />
+    <Import Project="..\..\Scripts\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\Scripts\DeltaideCommonLibsDebug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\Build\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\Build\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;IDECORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IDECORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ResourceRegistries\BitmapRegistry.cpp" />
+    <ClCompile Include="..\ComponentBase\Component.cpp" />
+    <ClCompile Include="..\IDEWidgets\ComponentConfigurationDialog.cpp" />
+    <ClCompile Include="..\CommonComponents\ComponentContainer.cpp" />
+    <ClCompile Include="..\ComponentDataTypes\ComponentDataTypeConverter.cpp" />
+    <ClCompile Include="..\ComponentBase\ComponentEntry.cpp" />
+    <ClCompile Include="..\ComponentBase\ComponentFactory.cpp" />
+    <ClCompile Include="..\ComponentBase\ComponentFuncEntry.cpp" />
+    <ClCompile Include="..\ComponentCaller\ComponentFunctionCaller.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="..\ComponentCaller\ComponentFunctionCallerSafe.cpp" />
+    <ClCompile Include="..\ComponentDataTypes\ComponentHandle.cpp" />
+    <ClCompile Include="..\ComponentBase\ComponentHolder.cpp" />
+    <ClCompile Include="..\ComponentInitializer\ComponentInitializer.cpp" />
+    <ClCompile Include="..\ComponentLoader\ComponentLoader.cpp" />
+    <ClCompile Include="..\IDEWidgets\ComponentMenu.cpp" />
+    <ClCompile Include="..\ComponentInitializer\ComponentRegistrar.cpp" />
+    <ClCompile Include="..\ComponentBase\ComponentRegistry.cpp" />
+    <ClCompile Include="..\ComponentCaller\ComponentSignalEmitter.cpp" />
+    <ClCompile Include="..\ComponentBase\ComponentSignalRegistry.cpp" />
+    <ClCompile Include="..\IDEWidgets\ComponentToolbar.cpp" />
+    <ClCompile Include="..\IDEWidgets\ComponentTreeView.cpp" />
+    <ClCompile Include="..\ComponentCaller\ComponentUndoRegistrar.cpp" />
+    <ClCompile Include="..\UserCommand\ComponentUserCommand.cpp" />
+    <ClCompile Include="..\ComponentDataTypes\ComponentUserCommandDesc.cpp" />
+    <ClCompile Include="..\CommonComponents\DockableComponent.cpp" />
+    <ClCompile Include="..\IDEWidgets\FileSelectionDialog.cpp" />
+    <ClCompile Include="..\ComponentBase\FunctionUtils.cpp" />
+    <ClCompile Include="..\CommonComponents\GenericFile.cpp" />
+    <ClCompile Include="..\IDEWidgets\HTMLExt.cpp" />
+    <ClCompile Include="..\CommonComponents\IDEComponent.cpp" />
+    <ClCompile Include="IDECore.cpp" />
+    <ClCompile Include="..\IDEWidgets\IDEDialogs.cpp" />
+    <ClCompile Include="..\IDEWidgets\KeyBinderFrame.cpp" />
+    <ClCompile Include="..\CommonComponents\ListViewComponent.cpp" />
+    <ClCompile Include="..\UserCommand\MenuParser.cpp" />
+    <ClCompile Include="..\Message\Message.cpp" />
+    <ClCompile Include="..\Message\MessageRouter.cpp" />
+    <ClCompile Include="..\Message\MessageRouterServer.cpp" />
+    <ClCompile Include="..\Message\MessageUtils.cpp" />
+    <ClCompile Include="..\CommonComponents\MultipleTextInputDialog.cpp" />
+    <ClCompile Include="..\CommonComponents\NewItemDialog.cpp" />
+    <ClCompile Include="..\CommonComponents\Shell.cpp" />
+    <ClCompile Include="..\CommonComponents\TextFile.cpp" />
+    <ClCompile Include="..\CommonComponents\TextInputDialog.cpp" />
+    <ClCompile Include="..\CommonComponents\TreeCtrlComponent.cpp" />
+    <ClCompile Include="..\CommonComponents\TreeItemComponent.cpp" />
+    <ClCompile Include="..\CommonComponents\TreeListViewComponent.cpp" />
+    <ClCompile Include="..\UndoManager\UndoManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IDECommon.h" />
+    <ClInclude Include="IDECore.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Base\BaseLibrary\BaseLibrary.vcxproj">
+      <Project>{d39911b6-2b65-4a27-bb3d-31f6c45a4b5a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ThirdPartyBase\ThirdPartyBaseLibrary\ThirdPartyBaseLibrary.vcxproj">
+      <Project>{20df00e7-7db3-4322-84ef-811d564bef9a}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

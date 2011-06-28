@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PropertyTable>
+    <toDrawVertexCont>1</toDrawVertexCont>
+    <toDrawLayersRect>1</toDrawLayersRect>
+    <renderingProp>
+        <selectionColour>rgb(0, 255, 255)</selectionColour>
+        <pathHighOutEdgesColour>rgb(255, 128, 0)</pathHighOutEdgesColour>
+        <pathHighInEdgesColour>rgb(128, 0, 0)</pathHighInEdgesColour>
+        <operatorColour>rgb(0, 100, 245)</operatorColour>
+        <internalColour>rgb(32, 178, 170)</internalColour>
+        <innerUpEdgeColour>rgb(255, 0, 128)</innerUpEdgeColour>
+        <innerDownEdgeColour>rgb(0, 100, 0)</innerDownEdgeColour>
+        <inheritanceColour>rgb(255, 0, 255)</inheritanceColour>
+        <highRelativeSlotsColour>rgb(0, 0, 255)</highRelativeSlotsColour>
+        <highCurVertexColour>rgb(255, 165, 0)</highCurVertexColour>
+        <highCurSlotColour>rgb(0, 255, 255)</highCurSlotColour>
+        <forwardEdgeColour>rgb(0, 0, 0)</forwardEdgeColour>
+        <externidColour>rgb(32, 178, 170)</externidColour>
+        <delegationColour>rgb(0, 0, 0)</delegationColour>
+        <defaultColour>rgb(0, 0, 0)</defaultColour>
+        <backEdgeColour>rgb(0, 0, 255)</backEdgeColour>
+        <attributeColour>rgb(0, 100, 245)</attributeColour>
+        <absRefColour>rgb(0, 0, 0)</absRefColour>
+    </renderingProp>
+    <layoutProp>
+        <verticesDist>64</verticesDist>
+        <vertexW>256</vertexW>
+        <layersDist>256</layersDist>
+        <innerEdgesDist>38</innerEdgesDist>
+        <expandButtonW>16</expandButtonW>
+        <distFromTopLeftCornerW>128</distFromTopLeftCornerW>
+        <distFromTopLeftCornerH>128</distFromTopLeftCornerH>
+        <distFromRectW>8</distFromRectW>
+        <distFromRectH>8</distFromRectH>
+        <distFromLayerW>32</distFromLayerW>
+        <distFromLayerH>32</distFromLayerH>
+        <bookmarkW>128</bookmarkW>
+        <absRefDistW>8</absRefDistW>
+        <absRefDistH>8</absRefDistH>
+    </layoutProp>
+    <layersProp>2</layersProp>
+    <font>arial 12</font>
+</PropertyTable>

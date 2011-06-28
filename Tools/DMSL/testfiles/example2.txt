@@ -1,0 +1,28 @@
+//Decision Making for screen calibration
+
+def widths { 1400, 1024, 800, 640 }
+def heights { 1050, 768, 600, 480 }
+def defaultScreenSize "800 X 600"
+
+def validBrightness {0, 1, 2, 3, 4, 5, 6, 7, 8 }
+def defaultBrightness 6
+
+component ScreenCalibration [
+	evaluate ScreenSize
+	evaluate ScreenContrast
+]
+
+component ScreenSize [
+	if  hasattr("screen.width")  and hasattr("screen.height") and
+	    params."screen.width" in widths and params."screen.height" in heights then
+		activate params."screen.width" + " X " + params."screen.height"
+	else
+		activate defaultScreenSize
+]
+
+component ScreenContrast [
+	if hasattr("screen.brightness") and params."screen.brightness" in validBrightness then
+		activate "brightness " + params."screen.brightness"
+	else
+		activate "brightness " + defaultBrightness
+]

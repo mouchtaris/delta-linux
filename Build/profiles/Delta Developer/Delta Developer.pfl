@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Profile name="Delta Developer" version="pre-alpha">
+    <ProfileProperties/>
+    <Child type="ProfileConfig">delta_devel.conf</Child>
+    <Child type="DeltaScriptConfig">delta_devel.dsc</Child>
+</Profile>

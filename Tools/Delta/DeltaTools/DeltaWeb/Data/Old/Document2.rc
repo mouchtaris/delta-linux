@@ -1,0 +1,225 @@
+#include "defines.h"
+		
+		_document _id("features") _title("Delta Features")
+		index ["text","fonts","welcome","university","uoc","Computer","Science","CSD"],
+		[
+			_section _title("Variables and dynamic typing")
+			[_text ["In Delta, all variable declarations are implicit by use, except of formal arguments that are optionally listed in the context of function definitions. By default, use of a named variable causes instant declaration at the present scope if the name cannot be resolved either to a previously defined variable within enclosing scopes or as a library function. Variables defined at global scope have static linkage. Additionally a variable name can be qualified with the prefixes: local (i.e. resolve only at current scope, with automatic declaration if not found), static (i.e. local and with static linkage), <n> with n  N (i.e. resolution only at the n-th outer scope, <0> is a synonym for local),
+					and global (i.e. resolve only at global cope). In Figure 3, examples for variable use and scope resolution are provided.
+					x = y = z = w = 10; // Implicit declarations at global scope
+					function f(y) { // Formal argument \"y\" at local scope
+					y = 10; // Formal argument \"y\" referenced
+					local y = 20; // \"local y\" resolves to formal argument \"y\"
+					<1>y = // Resolves to global \"y\"
+					30; <0> global w; // Same as \"local w = <1>w;\"
+					w = static x = <1>x; // Local and static \"x\" assigned the \"<1>x\"
+					}
+					Figure 3: Examples of variable declarations \"by use\" with scope resolution."]
+			],
+			[
+				_section _title("Statically typed values with dynamically typed variables")
+				[_text ["Variables gain initially the type undefined, 
+						which is altered dynamically during runtime according 
+						to content modification. While variables are dynamically typed, 
+						values are always statically typed; no type definitions are 
+						supported in the Delta language. In particular, some data types 
+						cannot appear even as compile-time values, but may be only internally 
+						manifested as returned values of specific library functions (i.e. the 
+						types reference and extern of Figure 4,). The complete list of all 
+						data types is provided in Figure 4, with simple examples 
+						of values pertaining to each type."]],
+				[	
+					_table(11,3)
+					[
+						[_text [!emphatic "Type"]],
+						[_text [!emphatic "Description"]],
+						[_text [!emphatic "Examples"]]
+					],
+					[
+						[_text [!emphatic "number"]],
+						[_text ["There is a single type for numbers, internally represented as a double precision floating number."]],
+						[_text [!code "10 20.345 987 0x56"]]
+					],
+					[
+						[_text [!emphatic "string"]],
+						[_text ["Character sequences, no null terminator."]],
+						[_text [!code "\"this\" \"this\\\"and\\\" this\""]]
+					],
+					[
+						[_text [!emphatic "boolean"]],
+						[_text ["True / false value."]],
+						[_text [!code "true false TRUE FALSE"]]
+					],	
+					[
+						[_text [!emphatic "table"]],
+						[_text ["Associative table. Both keys and values can be of any type. Extended examples for table construction will follow later."]],
+						[_text [!code "[] [1,2,3,4] [[],[[]]"]]
+					],
+					[
+						[_text [!emphatic "reference"]],
+						[_text ["Reference to a variable. De-reference functions over non-references affect the supplied variable directly. Reference of a reference returns the original reference."]],
+						[_text [!code "p = reference(q);", 	!quotation " // \"q\" ref" 	NL
+								!code "set(p, \"this\");",	!quotation " // Sets \"q\""	NL
+								!code "set(z, get(p));",	!quotation " // \"z=get(q)\"" NL
+								!code "w = reference(p);",	!quotation " // \"q\" ref"
+							]
+						]
+					],
+					[
+						[_text [!emphatic "extern"]],
+						[_text ["Used for application-specific object types created only through library functions. The application may supply a descriptive type name."]],
+						[_text [!code "a = list(10, 20 ,30 ,40);" 	NL
+								!code "i = list_iter(a);"			NL
+								!code "print(typeof(a));",	!quotation " // \"list\"" NL
+								!code "print(typeof(i));",	!quotation " // \"iterator\""
+							]
+						]
+					],
+					[
+						[_text [!emphatic "normalfunc"]],
+						[_text ["Normal non-member functions"]],
+						[_text [!code "function f(x,y){ return x+y; }"]]
+					],
+					[
+						[_text [!emphatic "memberfunc"]],
+						[_text ["Member functions inside tables. More comprehensive examples will follow later."]],
+						[_text [!code "t = [ ( member(){} ) ];" NL
+								!quotation "Table \"t\" has a single element at index 0, being a member function."]]
+					],
+					[
+						[_text [!emphatic "libfunc"]],
+						[_text ["A host-environment library function. Those can be manipulated as values too."]],
+						[_text [!code "f = print;",	!quotation " // Gets lib func." NL
+								!code "f(\"hello\");",	!quotation " // Calls indirectly."]]
+					],
+					[
+						[_text [!emphatic "nil"]],
+						[_text ["This type is gained when assigned the constant value nil (i.e. singleton type)."]],
+						[_text [!code "p = nil;"]]
+					]
+				]
+			],
+			[
+				_section _title("Runtime type identification - the 'typeof' function")
+				[_text ["To enable runtime type identification, the typeof library function is provided, accepting a single expression argument, while returning its corresponding type, taken from the left column of Figure 4, in the form of a string value. For example, the call typeof(typeof) returns \"libfunc\", typeof(reference(x)) returns \"reference\", and typeof(static y) returns \"undefined\" (y is declared by use)."]]
+			],
+			[
+				_section title "Associative tables"
+			],
+			[
+				_section title "Dynamic management of call by reference"
+			],
+			[
+				_section title "Built-in 'assert' clauses and 'debug' qualified statements",
+				[_text [@section, @linebreak]]
+			]
+		],
+		[
+			_section _title("Functions")
+			[_text ["Programmer defined functions are first-class objects in Delta, appearing as values within program expressions, while constituting normally assignable content for program variables. Issuing function signatures, like the C function prototypes, is not supported, while function definitions are syntactically treated like statements. The advantageous features of Delta regarding functions are mainly related to:
+					The capability of implementing modular runtime function overloading, with an argument matching dispatch pattern, relying upon: runtime type identification, late binding of actual arguments (to be explained later) and associative tables.
+					The support for polymorphic higher-order functions, through the employment of table member functions and late binding of actual arguments. This is discussed in the next Section, since it requires the presentation of the object-oriented extensions of associative tables, to play the role of object prototypes."]
+			],
+			[
+				_section _title("Function values and unnamed functions")
+				[_text ["Although functions are syntactically treated like statements, they do not result on the generation of particular executable code within the control flow at the point of definition. Functions appear as values in two syntactic forms: (a) by direct reference to the function name; and (b) by enclosing a complete function definition in parenthesis (), referred as the expression form of function definition. Unnamed functions can be also defined, however, always in the context of a parenthesized expression form."]]
+			],
+			[
+				_section _title("Static and late binding for library functions")
+				[_text ["Library functions are also treated as first-class objects, meaning their value can be gained and deployed in ways similar to programmer-defined functions. However, in the Delta language, library functions exhibit more flexible deployment since they may be called in two ways:
+						As evaluated expressions of libfunc type (i.e. native language function address). The values of such expressions originate from the engagement of library function names in program expressions, being statically bind by the compiler to the corresponding library function values.
+						As evaluated expressions of string type. In this case, the string value is looked-up within the whole collection of library functions. If a library function matches such a name, it is called. Else a runtime error is posted. Alternatively, the getlibfunc(id) library function can be used, id denoting an expression of string type, which returns the corresponding library function value if any, else nil. This way, all calls can be made with libfunc expressions, while the programmer may supply error checking for the cases where the dynamic binding to a library function value fails."]
+				]
+			
+			],
+			[
+				_section _title("Dynamic manipulation of actual arguments")
+				[_section title "Runtime argument extraction and type checking"],
+				[_section title "Late binding of actual arguments"],
+				[_section title "Dynamic function overloading"],
+				[_section title "Dynamic operator overloading"],
+				[_section title "Multiple returned values and multiple assignments"]
+			]
+		]/*,
+		[
+			_table(2,3)
+			[
+				[_text  	[ "" ]				],
+				[_text	[ !emphatic "1.0" ] 	],
+				[_text	[ !emphatic "1.1" ]	 	]
+			],
+			[
+				[_text [ "Version:" ]			],
+				[_imagelink _path("images\leuka2.PNG") 	_url("http://www.csd.uoc.gr")	descr ""],
+				[_imagelink _path("images\leuka1.PNG")	_ref("thirdpage") 				descr ""]
+			]
+		],
+		[
+			_section _title("Section A")
+			[_text ["This is section A"] ]
+		],
+		[
+			_section _title("Section B")
+			[
+				_section _title("Section B.1")
+				[_text ["This is section B.1"] ]
+			],
+			[
+				_section _title("Section B.2")
+				[
+					_section _title("Section B.2.a")
+					[_text ["This is section B.2.a"] ]
+				],
+				[
+					_section _title("Section B.2.b")
+					[_text ["This is section B.2.b"] ]
+				]
+			],
+			[
+				_section _title("Section B.3")
+				[_text ["This is section B.3"] ]
+			]
+		],
+		[
+			_section _title("Section C")
+			[_text ["This is section C"] ]
+		],
+		[
+			_section
+			[
+				_text
+				[
+					!emphatic "Welcome",
+					" to the University of Crete and to the Department of Computer Science! Seize the opportunity to fathom the intricacies of Information Technology. Discover all the possible paths that lead to a more advanced technological future and make your own meaningful contribution to it."
+				]
+			],
+			[_link _ref("homepage")	text "This is a link to our homepage."]
+		],
+		[
+			_section _title("Another welcome")
+			[
+				_text
+				[
+					!code "Welcome",
+					" to the University of Crete and to the Department of Computer Science! Seize the opportunity to fathom the intricacies of Information Technology. Discover all the possible paths that lead to a more advanced technological future and make your own meaningful contribution to it."
+				]
+			]
+		],
+		[
+			_section _title("Welcome to the Computer Science Department")
+			[_image _path("images\leuka1.PNG")	descr "Computer Science Department"],
+			[_text ["Who would deny that Information and Communication Technologies have been anything short of revolutionary? Their rate of advance cannot be matched by other technologies. Their infiltration into human society has been phenomenal. People are still struggling to cope with the new technical artifacts. New concepts and products are incessantly identified and scientists are always challenging our expectations and presuppositions."]	],
+			[_image _path("images\leuka2.PNG") descr "Computer Science Department"],
+			[_text ["The Department of Computer Science at the University of Crete attempts to address all the significant issues that bewilder and fascinate scientists and practitioners alike. Our faculty is devoted to tenacious study and thorough research. Our students are the recipients of a high-level educational experience. Our graduates are provided with all the necessary skills in order to efficiently cope with the challenges of their discipline."] ],
+			[
+				_section _title("Yet Another welcome (this is a section inside the section)")
+				index ["section","sectionIndex","INDEX"],
+				[
+					_text
+					[
+						!code "Welcome",
+						" to the University of Crete and to the Department of Computer Science! Seize the opportunity to fathom the intricacies of Information Technology. Discover all the possible paths that lead to a more advanced technological future and make your own meaningful contribution to it."
+					]
+				]
+			]
+		]*/			

@@ -1,0 +1,42 @@
+DebugInfo
+------------------------> UndoRedo
+
+Geometry
+------------------------> 
+
+
+
+Graphs
+------------------------> DebugInfo
+------------------------> UndoRedo
+------------------------> DeltaVM
+------------------------>  (DeltaVMFuncReturnTypes.h, wx, Call, Common)
+
+
+Featurs (??? UserInterface??)
+------------------------> Graphs
+------------------------> Geometry
+------------------------> LayoutCalculator
+------------------------> LayoutRenderingPrimitives
+
+
+LayoutCalculator
+------------------------> Graphs
+------------------------> Geometry
+------------------------> DebugInfo
+------------------------> LayoutRenderingPrimitives
+
+
+
+LayoutRenderingPrimitives
+------------------------> Geometry
+
+
+LayredGraphRenderer
+------------------------> 
+
+
+
+
+
+.\..\..\..\..\Components\DeltaVM

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- The supported languages, don't touch them! -->
+<Languages>
+  <Language name="C" ext="c" lexerId="3" commentLine="//" commentStart="/*" commentEnd="*/">
+    <StyleDef name="Comments" id="1 2" fgColor="0 128 0"/>
+    <StyleDef name="Documentation comments" id="3 15" fgColor="0 180 0"/>
+    <StyleDef name="String literals" id="6" fgColor="135 0 0"/>
+    <StyleDef name="Number literals" id="4" fgColor="127 0 0"/>
+    <StyleDef name="Preprocessor directives" id="9" fgColor="0 0 200"/>
+    <StyleDef name="Main keywords" id="5" fgColor="0 0 240"/>
+    <StyleDef name="Type keywords" id="16" fgColor="0 0 240"/>
+    <StyleDef name="Documentation keywords" id="17" fgColor="0 0 240"/>
+
+    <Property name="styling.within.preprocessor" value="1"/>
+    <Property name="fold" value="1"/>
+    <Property name="fold.comment" value="1"/>
+    <Property name="fold.preprocessor" value="1"/>
+
+    <Keywords name="Main keywords">if else switch case default break goto return for while do continue typedef sizeof NULL</Keywords>
+    <Keywords name="Type keywords">void struct union enum char short int long double float signed unsigned const static extern auto register volatile</Keywords>
+    <Keywords name="Documentation keywords">a addindex addtogroup anchor arg attention author b brief bug c class code date def defgroup deprecated dontinclude e em endcode endhtmlonly endif endlatexonly endlink endverbatim enum example exception f$ f[ f] file fn hideinitializer htmlinclude htmlonly if image include ingroup internal invariant interface latexonly li line link mainpage name namespace nosubgrouping note overload p page par param post preref relates remarks return retval sa section see showinitializer since skip skipline struct subsection test throw throws todo typedef union until var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }</Keywords>
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="C++" ext="h hpp hxx cpp cxx cc" lexerId="3" commentLine="//" commentStart="/*" commentEnd="*/">
+    <StyleDef name="Comments" id="1 2" fgColor="0 128 0"/>
+    <StyleDef name="Documentation comments" id="3 15" fgColor="0 180 0"/>
+    <StyleDef name="String literals" id="6" fgColor="135 0 0"/>
+    <StyleDef name="Number literals" id="4" fgColor="127 0 0"/>
+    <StyleDef name="Preprocessor directives" id="9" fgColor="0 0 200"/>
+    <StyleDef name="Main keywords" id="5" fgColor="0 0 240"/>
+    <StyleDef name="Type keywords" id="16" fgColor="0 0 240"/>
+    <StyleDef name="Documentation keywords" id="17" fgColor="0 0 240"/>
+
+    <Property name="styling.within.preprocessor" value="1"/>
+    <Property name="fold" value="1"/>
+    <Property name="fold.comment" value="1"/>
+    <Property name="fold.preprocessor" value="1"/>
+
+    <Keywords name="Main keywords">if else switch case default break goto return for while do continue typedef sizeof NULL new delete throw try catch namespace operator this const_cast static_cast dynamic_cast reinterpret_cast true false using typeid and and_eq bitand bitor compl not not_eq or or_eq xor xor_eq </Keywords>
+    <Keywords name="Type keywords">void struct union enum char short int long double float signed unsigned const static extern auto register volatile bool class private protected public friend inline template virtual asm explicit typename</Keywords>
+    <Keywords name="Documentation keywords">a addindex addtogroup anchor arg attention author b brief bug c class code date def defgroup deprecated dontinclude e em endcode endhtmlonly endif endlatexonly endlink endverbatim enum example exception f$ f[ f] file fn hideinitializer htmlinclude htmlonly if image include ingroup internal invariant interface latexonly li line link mainpage name namespace nosubgrouping note overload p page par param post preref relates remarks return retval sa section see showinitializer since skip skipline struct subsection test throw throws todo typedef union until var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }</Keywords>
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="Java" ext="java" lexerId="3" commentLine="//" commentStart="/*" commentEnd="*/">
+    <StyleDef name="Comments" id="1 2" fgColor="0 128 0"/>
+    <StyleDef name="Documentation comments" id="3 15" fgColor="0 180 0"/>
+    <StyleDef name="String literals" id="6" fgColor="135 0 0"/>
+    <StyleDef name="Number literals" id="4" fgColor="127 0 0"/>
+    <StyleDef name="Preprocessor directives" id="9" fgColor="0 0 200"/>
+    <StyleDef name="Main keywords" id="5" fgColor="0 0 240"/>
+    <StyleDef name="Type keywords" id="16" fgColor="0 0 240"/>
+    <StyleDef name="Documentation keywords" id="17" fgColor="0 0 240"/>
+
+    <Property name="fold" value="1"/>
+    <Property name="fold.comment" value="1"/>
+
+    <Keywords name="Main keywords">instanceof assert if else switch case default break goto return for while do continue new throw throws try catch finally this super extends implements import true false null</Keywords>
+    <Keywords name="Type keywords">package transient strictfp void char short int long double float const static volatile byte boolean class interface native private protected public final abstract synchronized enum</Keywords>
+    <Keywords name="Documentation keywords">a addindex addtogroup anchor arg attention author b brief bug c class code date def defgroup deprecated dontinclude e em endcode endhtmlonly endif endlatexonly endlink endverbatim enum example exception f$ f[ f] file fn hideinitializer htmlinclude htmlonly if image include ingroup internal invariant interface latexonly li line link mainpage name namespace nosubgrouping note overload p page par param post preref relates remarks return retval sa section see showinitializer since skip skipline struct subsection test throw throws todo typedef union until var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }</Keywords>
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="Assembly" ext="asm" lexerId="34" commentLine=";" commentStart="" commentEnd="">
+    <Keywords name="Main keywords">aaa aad aam aas adc add and call cbw clc cld cli cmc cmp cmps cmpsb cmpsw cwd daa das dec div esc hlt idiv imul in inc int into iret ja jae jb jbe jc jcxz je jg jge jl jle jmp jna jnae jnb jnbe jnc jne jng jnge jnl jnle jno jnp jns jnz jo jp jpe jpo js jz lahf lds lea les lods lodsb lodsw loop loope loopew loopne loopnew loopnz loopnzw loopw loopz loopzw mov movs movsb movsw mul neg nop not or out pop popf push pushf rcl rcr ret retf retn rol ror sahf sal sar sbb scas scasb scasw shl shr stc std sti stos stosb stosw sub test wait xchg xlat xlatb xor bound enter ins insb insw leave outs outsb outsw popa pusha pushw arpl lar lsl sgdt sidt sldt smsw str verr verw clts lgdt lidt lldt lmsw ltr bsf bsr bt btc btr bts cdq cmpsd cwde insd iretd iretdf  iretf jecxz lfs lgs lodsd loopd  looped  loopned  loopnzd  loopzd  lss movsd movsx movzx outsd popad popfd pushad pushd  pushfd scasd seta setae setb setbe setc sete setg setge setl setle setna setnae setnb setnbe setnc setne setng setnge setnl setnle setno setnp setns setnz seto setp setpe setpo sets setz shld shrd stosd bswap cmpxchg invd  invlpg  wbinvd  xadd lock rep repe repne repnz repz cflush cpuid emms femms cmovo cmovno cmovb cmovc cmovnae cmovae cmovnb cmovnc cmove cmovz cmovne cmovnz cmovbe cmovna cmova cmovnbe cmovs cmovns cmovp cmovpe cmovnp cmovpo cmovl cmovnge cmovge cmovnl cmovle cmovng cmovg cmovnle cmpxchg486 cmpxchg8b  loadall loadall286 ibts icebp int1 int3 int01 int03 iretw popaw popfw pushaw pushfw rdmsr rdpmc rdshr rdtsc rsdc rsldt rsm rsts salc smi smint smintold svdc svldt svts syscall sysenter sysexit sysret ud0 ud1 ud2 umov xbts wrmsr wrshr</Keywords>
+    <Keywords name="Secondary keywords">f2xm1 fabs fadd faddp fbld fbstp fchs fclex fcom fcomp fcompp fdecstp fdisi fdiv fdivp fdivr fdivrp feni ffree fiadd ficom ficomp fidiv fidivr fild fimul fincstp finit fist fistp fisub fisubr fld fld1 fldcw fldenv fldenvw fldl2e fldl2t fldlg2 fldln2 fldpi fldz fmul fmulp fnclex fndisi fneni fninit fnop fnsave fnsavew fnstcw fnstenv fnstenvw fnstsw fpatan fprem fptan frndint frstor frstorw fsave fsavew fscale fsqrt fst fstcw fstenv fstenvw fstp fstsw fsub fsubp fsubr fsubrp ftst fwait fxam fxch fxtract fyl2x fyl2xp1 fsetpm fcos fldenvd fnsaved fnstenvd fprem1 frstord fsaved fsin fsincos fstenvd fucom fucomp fucompp fcomi fcomip ffreep fcmovb fcmove fcmovbe fcmovu fcmovnb fcmovne fcmovnbe fcmovnu</Keywords>
+    <Keywords name="Type keywords">ah al ax bh bl bp bx ch cl cr0 cr2 cr3 cr4 cs cx dh di dl dr0 dr1 dr2 dr3 dr6 dr7 ds dx eax ebp ebx ecx edi edx es esi esp fs gs si sp ss st tr3 tr4 tr5 tr6 tr7 st0 st1 st2 st3 st4 st5 st6 st7 mm0 mm1 mm2 mm3 mm4 mm5 mm6 mm7 xmm0 xmm1 xmm2 xmm3 xmm4 xmm5 xmm6 xmm7</Keywords>
+    <Keywords name="Documentation keywords">.186 .286 .286c .286p .287 .386 .386c .386p .387 .486 .486p .8086 .8087 .alpha .break .code .const .continue .cref .data .data?  .dosseg .else .elseif .endif .endw .err .err1 .err2 .errb .errdef .errdif .errdifi .erre .erridn .erridni .errnb .errndef .errnz .exit .fardata .fardata? .if .lall .lfcond .list .listall .listif .listmacro .listmacroall  .model .no87 .nocref .nolist .nolistif .nolistmacro .radix .repeat .sall .seq .sfcond .stack .startup .tfcond .type .until .untilcxz .while .xall .xcref .xlist alias align assume catstr comm comment db dd df dosseg dq dt dup dw echo else elseif elseif1 elseif2 elseifb elseifdef elseifdif elseifdifi elseife elseifidn elseifidni elseifnb elseifndef end endif endm endp ends eq equ even exitm extern externdef extrn for forc ge goto group gt high highword if if1 if2 ifb ifdef ifdif ifdifi ife  ifidn ifidni ifnb ifndef include includelib instr invoke irp irpc label le length lengthof local low lowword lroffset lt macro mask mod .msfloat name ne offset opattr option org %out page popcontext proc proto ptr public purge pushcontext record repeat rept seg segment short size sizeof sizestr struc struct substr subtitle subttl textequ this title type typedef union while width db dw dd dq dt resb resw resd resq rest incbin equ times %define %idefine %xdefine %xidefine %undef %assign %iassign %strlen %substr %macro %imacro %endmacro %rotate .nolist %if %elif %else %endif %ifdef %ifndef %elifdef %elifndef %ifmacro %ifnmacro %elifmacro %elifnmacro %ifctk %ifnctk %elifctk %elifnctk %ifidn %ifnidn %elifidn %elifnidn %ifidni %ifnidni %elifidni %elifnidni %ifid %ifnid %elifid %elifnid %ifstr %ifnstr %elifstr %elifnstr %ifnum %ifnnum %elifnum %elifnnum %error %rep %endrep %exitrep %include %push %pop %repl struct endstruc istruc at iend align alignb %arg %stacksize %local %line bits use16 use32 section absolute extern global common cpu org section group import export</Keywords>
+    <Keywords name="type3">$ ? @b @f addr basic byte c carry? dword far far16 fortran fword near near16 overflow? parity? pascal qword  real4  real8 real10 sbyte sdword sign? stdcall sword syscall tbyte vararg word zero? flat near32 far32 abs all assumes at casemap common compact cpu dotname emulator epilogue error export expr16 expr32 farstack flat forceframe huge language large listing ljmp loadds m510 medium memory nearstack nodotname noemulator nokeyword noljmp nom510 none nonunique nooldmacros nooldstructs noreadonly noscoped nosignextend nothing notpublic oldmacros oldstructs os_dos para private prologue radix readonly req scoped setif2 smallstack tiny use16 use32 uses a16 a32 o16 o32 byte word dword nosplit $ $$ seq wrt flat large small .text .data .bss near far %0 %1 %2 %3 %4 %5 %6 %7 %8 %9</Keywords>
+    <Keywords name="type4">addpd addps addsd addss andpd andps andnpd andnps cmpeqpd cmpltpd cmplepd cmpunordpd cmpnepd cmpnltpd cmpnlepd cmpordpd cmpeqps cmpltps cmpleps cmpunordps cmpneps cmpnltps cmpnleps cmpordps cmpeqsd cmpltsd cmplesd cmpunordsd cmpnesd cmpnltsd cmpnlesd cmpordsd cmpeqss cmpltss cmpless cmpunordss cmpness cmpnltss cmpnless cmpordss comisd comiss cvtdq2pd cvtdq2ps cvtpd2dq cvtpd2pi cvtpd2ps cvtpi2pd cvtpi2ps cvtps2dq cvtps2pd cvtps2pi cvtss2sd cvtss2si cvtsd2si cvtsd2ss cvtsi2sd cvtsi2ss cvttpd2dq cvttpd2pi cvttps2dq cvttps2pi cvttsd2si cvttss2si divpd divps divsd divss fxrstor fxsave ldmxscr lfence mfence maskmovdqu maskmovdq maxpd maxps paxsd maxss minpd minps minsd minss movapd movaps movdq2q movdqa movdqu movhlps movhpd movhps movd movq movlhps movlpd movlps movmskpd movmskps movntdq movnti movntpd movntps movntq movq2dq movsd movss movupd movups mulpd mulps mulsd mulss orpd orps packssdw packsswb packuswb paddb paddsb paddw paddsw paddd paddsiw paddq paddusb paddusw pand pandn pause paveb pavgb pavgw pavgusb pdistib pextrw pcmpeqb pcmpeqw pcmpeqd pcmpgtb pcmpgtw pcmpgtd pf2id pf2iw pfacc pfadd pfcmpeq pfcmpge pfcmpgt pfmax pfmin pfmul pmachriw pmaddwd pmagw pmaxsw pmaxub pminsw pminub pmovmskb pmulhrwc pmulhriw pmulhrwa pmulhuw pmulhw pmullw pmuludq pmvzb pmvnzb pmvlzb pmvgezb pfnacc pfpnacc por prefetch prefetchw prefetchnta prefetcht0 prefetcht1 prefetcht2 pfrcp pfrcpit1 pfrcpit2 pfrsqit1 pfrsqrt pfsub pfsubr pi2fd pf2iw pinsrw psadbw pshufd pshufhw pshuflw pshufw psllw pslld psllq pslldq psraw psrad psrlw psrld psrlq psrldq psubb psubw psubd psubq psubsb psubsw psubusb psubusw psubsiw pswapd punpckhbw punpckhwd punpckhdq punpckhqdq punpcklbw punpcklwd punpckldq punpcklqdq pxor rcpps rcpss rsqrtps rsqrtss sfence shufpd shufps sqrtpd sqrtps sqrtsd sqrtss stmxcsr subpd subps subsd subss ucomisd ucomiss unpckhpd unpckhps unpcklpd unpcklps xorpd xorps</Keywords>
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="HTML" ext="html htm" lexerId="4" commentLine="" commentStart="&lt;!--" commentEnd="--&gt;">
+    <Keywords name="Main keywords">!doctype a abbr accept-charset accept accesskey acronym action address align alink alt applet archive area axis b background base basefont bdo bgcolor big blockquote body border br button caption cellpadding cellspacing center char charoff charset checkbox checked cite class classid clear code codebase codetype col colgroup color cols colspan compact content coords data datafld dataformatas datapagesize datasrc datetime dd declare defer del dfn dir disabled div dl dt em enctype event face fieldset file font for form frame frameborder frameset h1 h2 h3 h4 h5 h6 head headers height hidden hr href hreflang hspace html http-equiv i id iframe image img input ins isindex ismap kbd label lang language leftmargin legend li link longdesc map marginwidth marginheight maxlength media menu meta method multiple name noframes nohref noresize noscript noshade nowrap object ol onblur onchange onclick ondblclick onfocus onkeydown onkeypress onkeyup onload onmousedown onmousemove onmouseover onmouseout onmouseup optgroup option onreset onselect onsubmit onunload p param password profile pre prompt public q radio readonly rel reset rev rows rowspan rules s samp scheme scope script select selected shape size small span src standby start strike strong style sub submit summary sup tabindex table target tbody td text textarea tfoot th thead title topmargin tr tt type u ul usemap valign value valuetype var version vlink vspace width xml xmlns</Keywords>
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="Python" ext="py" lexerId="2" commentLine="#">
+    <StyleDef name="Comments" id="1" fgColor="0 128 0"/>
+    <StyleDef name="Number literals" id="2" fgColor="127 0 0"/>
+    <StyleDef name="String literals" id="3 6 7" fgColor="135 0 0"/>
+    <StyleDef name="Main keywords" id="5" fgColor="0 0 240"/>
+
+    <Property name="fold" value="1"/>
+
+    <Keywords name="Main keywords">and as assert break class continue def del elif else except exec finally for from global if import in is lambda None not or pass print raise return triple try while with yield</Keywords>
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="Windows batch" lexerId="12" ext="bat cmd nt">
+    <Keywords name="Main keywords">rem set if else exist errorlevel for in do break call chcp cd chdir choice cls country ctty date del erase dir echo exit goto loadfix loadhigh mkdir md move path pause prompt rename ren rmdir rd shift time type ver verify vol com con lpt nul defined not errorlevel cmdextversion</Keywords>
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="XML" ext="xml xsml xsl dproj wsp xdf" lexerId="5" commentLine="" commentStart="&lt;!--" commentEnd="--&gt;">
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="NSIS" ext="nsi nsh" lexerId="43" commentLine=";" commentStart="/*" commentEnd="*/">
+    <Keywords name="Main keywords">Abort AddBrandingImage AddSize AllowRootDirInstall AllowSkipFiles AutoCloseWindow BGFont BGGradient BrandingText BringToFront Call CallInstDLL Caption ChangeUI CheckBitmap ClearErrors CompletedText ComponentText CopyFiles CRCCheck CreateDirectory CreateFont CreateShortCut Delete DeleteINISec DeleteINIStr DeleteRegKey DeleteRegValue DetailPrint DetailsButtonText DirShow DirText DirVar DirVerify DisabledBitmap EnabledBitmap EnableWindow EnumRegKey EnumRegValue Exch Exec ExecShell ExecWait ExpandEnvStrings File FileBufSize FileClose FileErrorText FileOpen FileRead FileReadByte FileSeek FileWrite FileWriteByte FindClose FindFirst FindNext FindWindow FlushINI Function FunctionEnd GetCurInstType GetCurrentAddress GetDlgItem GetDLLVersion GetDLLVersionLocal GetErrorLevel GetFileTime GetFileTimeLocal GetFullPathName GetFunctionAddress GetInstDirError GetLabelAddress GetTempFileName Goto HideWindow Icon IfAbort IfErrors IfFileExists IfRebootFlag IfSilent InitPluginsDir InstallButtonText InstallColors InstallDir InstallDirRegKey InstProgressFlags InstType InstTypeGetText InstTypeSetText IntCmp IntCmpU IntFmt IntOp IsWindow LangString LangStringUP LicenseBkColor LicenseData LicenseForceSelection LicenseLangString LicenseText LoadLanguageFile LockWindow LogSet LogText MessageBox MiscButtonText Name OutFile Page PageEx PageExEnd PluginDir Pop Push Quit ReadEnvStr ReadINIStr ReadRegDWORD ReadRegStr Reboot RegDLL Rename RequestExecutionLevel ReserveFile Return RMDir SearchPath Section SectionDivider SectionEnd SectionGetFlags SectionGetInstTypes SectionGetSize SectionGetText SectionGroup SectionGroupEnd SectionIn SectionSetFlags SectionSetInstTypes SectionSetSize SectionSetText SendMessage SetAutoClose SetBrandingImage SetCompress SetCompressionLevel SetCompressor SetCompressorDictSize SetCtlColors SetCurInstType SetDatablockOptimize SetDateSave SetDetailsPrint SetDetailsView SetErrorLevel SetErrors SetFileAttributes SetFont SetOutPath SetOverwrite SetPluginUnload SetRebootFlag SetShellVarContext SetSilent SetStaticBkColor ShowInstDetails ShowUninstDetails ShowWindow SilentInstall SilentUnInstall Sleep SpaceTexts StrCmp StrCmpS StrCpy StrLen SubSection SubSectionEnd UninstallButtonText UninstallCaption UninstallEXEName UninstallIcon UninstallSubCaption UninstallText UninstPage UnRegDLL Var VIAddVersionKey VIProductVersion WindowIcon WriteINIStr WriteRegBin WriteRegDWORD WriteRegExpandStr WriteRegStr WriteUninstaller XPStyle !AddIncludeDir !AddPluginDir !appendfile !cd !define !delfile !echo !else !endif !error !execute !ifdef !ifmacrodef !ifmacrondef !ifndef !include !insertmacro !macro !macroend !packhdr !system !tempfile !undef !verbose !warning</Keywords>
+    <Keywords name="Secondary keywords">$0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $R0 $R1 $R2 $R3 $R4 $R5 $R6 $R7 $R8 $R9 $APPDATA $CMDLINE $DESKTOP $EXEDIR $HWNDPARENT $INSTDIR $OUTDIR $PROGRAMFILES ${NSISDIR} $\n $\r $QUICKLAUNCH $SMPROGRAMS $SMSTARTUP $STARTMENU $SYSDIR $TEMP $WINDIR</Keywords>
+    <Keywords name="Type keywords">ARCHIVE FILE_ATTRIBUTE_ARCHIVE FILE_ATTRIBUTE_HIDDEN FILE_ATTRIBUTE_NORMAL FILE_ATTRIBUTE_OFFLINE FILE_ATTRIBUTE_READONLY FILE_ATTRIBUTE_SYSTEM FILE_ATTRIBUTE_TEMPORARY HIDDEN HKCC HKCR HKCU HKDD HKEY_CLASSES_ROOT HKEY_CURRENT_CONFIG HKEY_CURRENT_USER HKEY_DYN_DATA HKEY_LOCAL_MACHINE HKEY_PERFORMANCE_DATA HKEY_USERS HKLM HKPD HKU IDABORT IDCANCEL IDIGNORE IDNO IDOK IDRETRY IDYES MB_ABORTRETRYIGNORE MB_DEFBUTTON1 MB_DEFBUTTON2 MB_DEFBUTTON3 MB_DEFBUTTON4 MB_ICONEXCLAMATION MB_ICONINFORMATION MB_ICONQUESTION MB_ICONSTOP MB_OK MB_OKCANCEL MB_RETRYCANCEL MB_RIGHT MB_SETFOREGROUND MB_TOPMOST MB_YESNO MB_YESNOCANCEL NORMAL OFFLINE READONLY SW_SHOWMAXIMIZED SW_SHOWMINIMIZED SW_SHOWNORMAL SYSTEM TEMPORARY auto colored false force hide ifnewer nevershow normal off on show silent silentlog smooth true try</Keywords>
+    <Keywords name="Documentation keywords" />
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <Language name="Actionscript" ext="as mx" commentLine="//" commentStart="/*" commentEnd="*/">
+    <Keywords name="Main keywords">add for lt tellTarget and function ne this break ge new typeof continue gt not var delete if on void do ifFrameLoaded onClipEvent while else in or with eq le return instanceof case default switch</Keywords>
+    <Keywords name="Type keywords">arguments constructor class dynamic false extends implements import interface intrinsic newline null private public super static true undefined Accessibility Arguments Array Boolean Button Camera ContextMenu ContextMenuItem CustomActions Color Date Error Function Key LoadVars LocalConnection Math Microphone Mouse MovieClip MovieClipLoader NetConnection NetStream Number PrintJob Object TextField StyleSheet TextFormat TextSnapshot SharedObject Selection Sound Stage String System XML XMLNode XMLSocket Void abs acos asin atan atan2 ceil cos exp floor log max min pow random round sin sqrt tan onActivity onChanged onClose onConnect onData onDragOut onDragOver onEnterFrame onID3 onKeyDown onKeyUp onKillFocus onLoad onLoadComplete onLoadError onLoadInit onLoadProgress onLoadStart onMouseDown onMouseMove onMouseUp onMouseWheel onPress onRelease onReleaseOutside onResize onRollOut onRollOver onScroller onSelect onSetFocus onSoundComplete onStatus onUnload onUpdate onXML addListener addPage addProperty addRequestHeader allowDomain allowInsecureDomain appendChild apply applyChanges asfunction attachAudio attachMovie attachSound attachVideo beginFill beginGradientFill call ceil charAt charCodeAt clear clearInterval cloneNode close concat connect copy cos createElement createEmptyMovieClip createTextField createTextNode curveTo domain duplicateMovieClip endFill escape eval evaluate exp findText floor fscommand flush fromCharCode get getAscii getBeginIndex getBounds getBytesLoaded getBytesTotal getCaretIndex getCode getCount getDate getDay getDepth getEndIndex getFocus getFontList getFullYear getHours getInstanceAtDepth getLocal getMilliseconds getMinutes getMonth getNewTextFormat getNextHighestDepth getPan getProggress getProperty getRGB getSeconds getSelected getSelectedText getSize getStyle getStyleNames getSWFVersion getText getTextExtent getTextFormat getTextSnapshot getTime getTimer getTimezoneOffset getTransform getURL getUTCDate getUTCDay getUTCFullYear getUTCHours getUTCMilliseconds getUTCMinutes getUTCMonth getUTCSeconds getVersion getVolume getYear globalToLocal gotoAndPlay gotoAndStop hasChildNodes hide hideBuiltInItems hitTest hitTestTextNearPos indexOf insertBefore install isActive isDown isToggled join lastIndexOf lineStyle lineTo list load loadClip loadMovie loadMovieNum loadSound loadVariables loadVariablesNum localToGlobal log mbchr mblength mbord mbsubstring min MMExecute moveTo nextFrame nextScene parseCSS parseFloat parseInt parseXML pause play pop pow prevScene print printAsBitmap printAsBitmapNum printNum push random registerClass removeListener removeMovieClip removeNode removeTextField replaceSel replaceText reverse round seek send sendAndLoad setBufferTime set setDate setFocus setFullYear setGain setHours setInterval setMask setMilliseconds setMinutes setMode setMonth setMotionLevel setNewTextFormat setPan setProperty setQuality setRate setRGB setSeconds setSelectColor setSelected setSelection setSilenceLevel setStyle setTextFormat setTime setTransform setUseEchoSuppression setUTCDate setUTCFullYear setUTCHours setUTCMilliseconds setUTCMinutes setUTCMonth setUTCSeconds setVolume setYear shift show showSettings silenceLevel silenceTimeout sin slice sort sortOn splice split sqrt start startDrag stop stopAllSounds stopDrag substr substring swapDepths tan toggleHighQuality toLowerCase toString toUpperCase trace unescape uninstall unLoadClip unloadMovie unloadMovieNum unshift unwatch updateAfterEvent updateProperties useEchoSuppression valueOf watch endinitclip include initclip __proto__ _accProps _alpha _currentframe _droptarget _focusrect _framesloaded _global _height _highquality _level _lockroot _name _parent _quality _root _rotation _soundbuftime _target _totalframes _url _visible _width _x _xmouse _xscale _y _ymouse _yscale activityLevel align allowDomain allowInsecureDomain attributes autoSize avHardwareDisable background backgroundColor bandwidth blockIndent bold border borderColor bottomScroll bufferLenght bufferTime builtInItems bullet bytesLoaded bytesTotal callee caller capabilities caption childNodes color condenseWhite contentType currentFps customItems data deblocking docTypeDecl duration embedFonts enabled exactSettings firstChild focusEnabled font fps gain globalStyleFormat hasAccessibility hasAudio hasAudioEncoder hasEmbeddedVideo hasMP3 hasPrinting hasScreenBroadcast hasScreenPlayback hasStreamingAudio hasStreamingVideo hasVideoEncoder height hitArea hscroll html htmlText indent index italic instanceof int ignoreWhite isDebugger isDown isFinite italic language lastChild leading leftMargin length loaded localFileReadDisable manufacturer maxChars maxhscroll maxscroll menu message motionLevel motionTimeout mouseWheelEnabled multiline muted name names NaN nextSibling nodeName nodeType nodeValue os parentNode password pixelAspectRatio playerType previousSibling prototype quality rate restrict resolutionX resolutionY rightMargin scaleMode screenColor screenDPI screenResolutionX screenResolutionY scroll selectable separatorBefore showMenu size smoothing status styleSheet tabChildren tabEnabled tabIndex tabStops target targetPath text textColor textHeight textWidth time trackAsMenu type underline url useCodepage useEchoSuppression useHandCursor variable version visible width wordWrap xmlDecl</Keywords>
+  </Language>
+
+   <!-- ************************************************************* -->
+
+  <Language name="DMSL" ext="dmsl" lexerId="3" commentLine="//" commentStart="/*" commentEnd="*/">
+    <StyleDef name="Comments" id="1 2" fgColor="0 128 0"/>
+    <StyleDef name="Documentation comments" id="3 15" fgColor="0 180 0"/>
+    <StyleDef name="String literals" id="6" fgColor="135 0 0"/>
+    <StyleDef name="Number literals" id="4" fgColor="127 0 0"/>
+    <StyleDef name="Main keywords" id="5" fgColor="0 0 240"/>
+    <StyleDef name="Type keywords" id="16" fgColor="0 128 192"/>
+
+    <Property name="fold" value="1"/>
+    <Property name="fold.comment" value="1"/>
+
+    <Keywords name="Main keywords">and or not if then else case when otherwise true TRUE false FALSE component params stereotype  def </Keywords>
+    <Keywords name="Type keywords">activate cancel evaluate adapt library call isactive tonumber hasattr random cansupport </Keywords>
+  </Language>
+  
+  <!-- ************************************************************* -->
+
+  <Language name="Delta" ext="dsc" lexerName="delta">
+
+    <StyleDef name="Unary keywords" id="4" fgColor="0 0 240"/>
+    <StyleDef name="Leaf keywords" id="5" fgColor="0 0 240"/>
+
+    <StyleDef name="While keyword" id="6" fgColor="0 0 240"/>
+    <StyleDef name="For keyword" id="7" fgColor="0 0 240"/>
+    <StyleDef name="Foreach keyword" id="8" fgColor="0 0 240"/>
+    <StyleDef name="If keyword" id="9" fgColor="0 0 240"/>
+    <StyleDef name="Else keyword" id="10" fgColor="0 0 240"/>
+    <StyleDef name="Try keyword" id="11" fgColor="0 0 240"/>
+    <StyleDef name="Trap keyword" id="12" fgColor="0 0 240"/>
+
+    <StyleDef name="Function keyword" id="13" fgColor="0 0 240"/>
+    <StyleDef name="Function name" id="14" fgColor="0 100 245"/>
+
+    <StyleDef name="Stringified id" id="15" fgColor="128 64 0"/>
+    <StyleDef name="Std libfuncs" id="16" fgColor="0 100 245"/>
+    <StyleDef name="Libfuncs" id="17" fgColor="0 100 245 "/>
+    <StyleDef name="Attributes" id="18" fgColor="100 60 25"/>
+    <StyleDef name="Variables" id="19" fgColor="0 0 0"/>
+    <StyleDef name="Constant values" id="20" fgColor="135 0 0"/>
+    <StyleDef name="Arguments" id="21" fgColor="135 0 0"/>
+
+    <StyleDef name="Table string key" id="27" fgColor="100 60 25"/>
+
+    <StyleDef name="Cpp" id="29" fgColor="255 0 0"/>
+    <StyleDef name="Comments" id="30" fgColor="0 128 0"/>
+
+    <Property name="fold" value="1"/>
+    <LangExt path="EditorExtensions/DeltaEditorExtension"/>
+
+    <!--
+    <StyleDef name="Documentation comments" id="15" fgColor="0 180 0"/>
+    <StyleDef name="Number literals" id="18" fgColor="127 0 0"/>
+    <StyleDef name="Type keywords" id="16" fgColor="0 0 240"/>
+    <StyleDef name="Documentation keywords" id="17" fgColor="0 0 240"/>
+    -->
+
+  </Language>
+
+  <!-- ************************************************************* -->
+
+  <!--
+	<Language name="" ext="" commentLine="" commentStart="" commentEnd="">
+          <Keywords name="Main keywords"></Keywords>
+		<Keywords name="Secondary keywords"></Keywords>
+          <Keywords name="Type keywords"></Keywords>
+        <Keywords name="Documentation keywords"></Keywords>
+		<Keywords name="type3"></Keywords>
+		<Keywords name="type4"></Keywords>
+      </Language>
+-->
+
+</Languages>

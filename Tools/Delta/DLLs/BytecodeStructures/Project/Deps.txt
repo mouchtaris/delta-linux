@@ -1,0 +1,4 @@
+UtilAndDefensiveHeap	UTILLIB_IMPORT  DDEBUG_IMPORT
+ReadersWriters			READERS_IMPORT
+
+To use the DLL:			DBYTECODE_IMPORT

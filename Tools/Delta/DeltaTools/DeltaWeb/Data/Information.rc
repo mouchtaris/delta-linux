@@ -1,0 +1,137 @@
+///////////////////////////////////////////////////////////////////
+// Information document for Delta web site.
+// A. Savidis, May 2010.
+///////////////////////////////////////////////////////////////////
+ 
+#include "defines.h"
+
+///////////////////////////////////////////////////////////////////
+// Language
+///////////////////////////////////////////////////////////////////
+
+START_DOC("d_information", "Information"),
+index ["Information", "Credits", "Download"],
+
+START_SEC("si_credits", "Credits")
+	
+	TEXT(
+		"The Delta language, its Sparrow IDE, and all accompanying tools 
+		or libraries, have been developed at the "
+	),
+	
+	LINK(
+		"http://www.ics.forth.gr/",
+		"Institute of Computer Science, FORTH"
+	),
+
+	[_text [
+		".", NL2,
+
+		"The Delta language is designed, developed, extended and maintained by ", !green "Anthony Savidis", 
+		!italic " (2004-present)", ". The latter includes the compiler, virtual machine, standard library, debugger 
+		backend / frontend and the Disco console debugger. He is also the chief architect and development supervisor of all
+		implementation activities related to the Delta language.",
+		NL2,
+		
+		!green "Yannis Georgalis", " and ", !green "Themistoklis Bourdenas", " co-developed the initial 
+		version of the Sparrow IDE as part of their Masters work ", !italic "(2006-2007)", ".",
+		NL2,
+	
+		!green "Yannis Lilis", ": (i) enhanced the project manager and debugger user-interface of the Sparrow IDE, 
+		while he fixed numerous bugs of the initial version ", !italic "(2007)", "; (ii) implemented in the Delta language
+		an extension component of the Sparrow IDE to support tree views for expression watches ", !italic "(2008)", "; and (iii) 
+		implemented the linkage with Corba, enabling build Corba clients or servers direclty 
+		in the Delta language ", !italic "(2009)", ".",
+		NL2,
+
+		!green "Nikos Koutsopoulos", " implemented the search and replace facility of the editor
+		as part of his Diploma work ", !italic "(2009)", ".",
+		NL2,
+
+		!green "Andreas Maragudakis", ": (i) implemented an XML parser which loads XML documents into Delta objects
+		as part of his Diploma work ", !italic "(2009)", "; and (ii) implemented the porting of wxWidgets as a dynamically-loaded
+		Delta library ", !italic "(2010)", ".",
+		NL2,
+
+		!green "Irini Papakwnstantinou", " implemented in the Delta language the source browser of the Sparrow IDE 
+		(an extension component) as part of her Diploma work ", !italic "(2009)", ".",
+		NL2,
+
+		!green "Nikos Muhtaris ", "implemented the porting of the Delta language under Linux (by implementing 
+		in Delta a converter from Visual Studio .sln and .vcproj files to Makefiles) as part of his 
+		pre-Master's work ", !italic "(2010)", ".",
+		NL2,
+
+		!green "Kostantinos Mousikos", " implemented in the Delta language a generator of interactive web documents
+		 as part of his Diploma work. The latter has been used to produce the (entire) current site ", !italic "(2009)", ".",
+		
+		NL2,
+
+		!green "Christos Despotakis", " implemented in the Delta language the build tree view of the Sparrow IDE
+		 (an extension component) as part of his pre-Diploma work ", !italic "(2010)", ".",
+		
+		NL2
+		]
+	],
+	
+	TEXT("Site development, maintainence and contact person: "), 
+	LINK("http://www.ics.forth.gr/hci/people/as.html", "Anthony Savidis")
+
+END_SEC,	// si_credits
+
+START_SEC("si_download", "Download")
+	
+	TEXT("You can download the installer (Windows executable only) of the Sparrow IDE from "),
+	
+	LINK(
+		"http://www.ics.forth.gr/hci/files/plang/sparrow-setup.exe",
+		"here"
+	),
+
+	[_text [
+		". You may also gain the current version of the source code (Visual Studio 2005 Solution),",
+		!emphatic !error " for non-commercial purposes only", ", through our Subversion server, using an 
+		anonymous checkout, as follows (please consider that the checkout operation may take
+		a few minutes due to the various binary files included in the distribution, besides the
+		source code files): ",
+		
+		NL2,
+		
+		!courier "svn co svn://139.91.186.127/deltaide/trunk"
+		]
+	],
+
+	TEXT(
+		CNL2
+		"After svn checkout, a folder structure will be created under a directory named
+		'trunk', containing the implementation sources of the Sparrow IDE and the Delta language.
+		Below we indicate the actual path to the Delta language implementation folders."
+		NLC2
+	),
+
+	FIGURE(
+		"images/content/sparrow_folders_outline.jpg", 
+		center,  
+		"*** Spotting the Delta language folders in the svn folder hierarchy ***"
+	),
+
+	TEXT(
+		CNL1
+		"Additionally, within the 'Sparrow/trunk/IDE' directory you will find the
+		'IDE.sln' file, being a Visual Studio 2005 solution file for the entire language 
+		distribution (including the Delta language components and the IDE istelf). Once opened, 
+		it displays the solution hierarchy outlined below, where we spot the path to the
+		Delta language components."
+		NLC1
+	),
+
+	FIGURE(
+		"images/content/sparrow_solution_outline.jpg", 
+		center,  
+		"*** Spotting the Delta language componets in the solution hierarchy ***"
+	)
+
+END_SEC	// si_download
+
+
+END_DOC

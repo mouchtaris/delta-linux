@@ -1,0 +1,9 @@
+BytecodeStructures			DBYTECODE_IMPORT
+VirtualMachineComponents	DVM_IMPORT RCLOAD_IMPORT
+CompilerComponents			DCOMPLIB_IMPORT
+UtilAndDefensiveHeap		UTILLIB_IMPORT  DDEBUG_IMPORT
+ReadersWriters				READERS_IMPORT
+Sockets						SOCKETLIB_IMPORT
+DebuggerCommon				DVMDEBUGCOMMON_IMPORT
+
+To use the DLL:				DVMDEBUG_IMPORT

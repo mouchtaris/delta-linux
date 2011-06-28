@@ -1,0 +1,61 @@
+*************************************************
+Lilis Ioannis, August 2010
+Reference for Delta Components
+*************************************************
+
+Each Delta Component is implemented as a single script that provides the code
+for both the component class as well as the component instances.
+
+The code for the component class may contain:
+
+TASK			|	FUNCTION_NAME
+--------------------------------------------------
+class loading 		|	ClassLoad
+class unloading 	|	ClassUnload
+static initialization	|	Initialize
+static cleanup		|	CleanUp
+static functions	|	(user defined)
+static member functions*|	(user defined)
+static handlers		|	(user defined)
+static member handlers*	|	(user defined)
+static commands		|	(user defined)
+static member commands*	|	(user defined)
+
+* The static members are actually member functions that are provided by default by the class
+  and consist of static functions taking the instance as a first argument.
+
+The code for the component instances may contain:
+
+TASK			|	FUNCTION_NAME
+--------------------------------------------------
+constructor		|	Constructor
+destructor		|	Destructor
+gui generation		|	GenerateWindow
+member functions	|	(user defined)
+dynamic functions	|	(user defined)
+member handlers		|	(user defined)
+dynamic handlers	|	(user defined)
+member commands		|	(user defined)
+dynamic commands	|	(user defined)
+
+The sequence is as follows:
+When loading a component the ClassLoad function is invoked to perform the component registration.
+The ClassLoad function should contain static function/handler/command registrations as well as 
+image registrations for the component class.
+Within its body there should also be an invocation to a user defined function to set the 
+component class properties (typically named SetProperties).
+
+After the class is loaded, the Initialize function is invoked to perform any static class
+initializations.
+
+The class is loaded and initialized and instances of it can be created.
+When creating an instance, the Constructor fuction is invoked to register the member functions
+and possibly perform any instance initialization (non-gui instances).
+For gui instances, the GenerateWindows function is invoked after the constructor to handle all
+remaining instance initialization (member function registration should still be performed
+at the Constructor function)
+
+When destroying an instance, the Destructor function is invoked to perform any instance cleanup.
+
+When unloading the class, the CleanUp function is invoked to perform any static class cleanup and
+then the ClassUnload function is invoked to unload the class.

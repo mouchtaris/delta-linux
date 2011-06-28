@@ -1,0 +1,266 @@
+///////////////////////////////////////////////////////////////////
+// Style definitions for the Delta web site.
+// A. Savidis, November 2010.
+///////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////
+// Standard styles
+
+logo [			//  Can be commented out. No logo will be appear.
+	path		"images/delta_logo_small.png",
+	height		100,
+	width		100
+]
+
+titlebar [		// Can be commented out. No titlebar will be created.
+	background	"images/title_bar.jpg",
+	color		"#eff9ff"
+]
+
+primaryTitle [
+	color		"blue",
+	font		"arial"
+]
+
+secondaryTitle	[
+	color		"green",
+	font		"serif"
+]
+
+pageBgColor			"white"
+contentBgColor		"white"
+
+toc	[	 			// Can be commented out. No table of contents will be created.
+	width			25,
+	bgColor			"#E8E8E8",
+	color			"blue",
+	font			"arial",
+	size			"18px"
+]
+
+menu [
+	direction			"horizontal",	// horizontal / vertical
+	width				160,
+	backButton			"images/back.png",
+	homeButton			"images/home.png",
+	forwButton  		"images/for.png",
+	printButton			"images/print.png"
+]
+
+menuButton	[
+	background			"images/tint-blue.jpg",
+	backgroundMouseover	"images/tint-blue-dark.jpg",
+	textColor			"white",
+	textColorMouseOver	"white"
+]
+
+submenu	[
+	background			"rgb(218, 237, 252)",
+	backgroundMouseover	"rgb(61, 157, 237)",
+	textColor			"black",
+	textColorMouseOver	"white"
+]
+
+imagetext [
+	color				"rgb(128,64,0)",
+	font				"sans-serif",
+	wight				"bold",
+	size				"12px"
+]
+
+///////////////////////////////////////////////////////////////
+// Extensible user-defined styles (via HTML class field).
+
+class		[
+				[
+					name 		"normal",	// Obligatory, always needed!
+					style		"normal"
+				],
+				
+				[
+					name		"dsrc",		// Delta source
+					family		"courier new",
+					size		"small"
+				],
+
+				[
+					name		"doc",		// Documentation using highlighting
+					family		"courier new",
+					size		"small",
+					background	"rgb(180,222,231)"
+				],
+
+				[
+					name		"courier",
+					family		"courier new",
+					size		"14px",
+					weight		"bold",
+					color		"black"
+				],
+
+				[
+					name		"cpp",	// C++ source
+					family		"courier new",
+					size		"small",
+					color		"blue"
+				],
+
+				[ 	
+					name			"operator",	// Operators
+					family			"courier new",
+					size			"16px",
+					weight			"bold",
+					color			"blue"
+				],
+
+				[ name	"deltacode" ],
+
+				////////////////////////////////////////////////
+				// Syntax highlighting styles follow.
+
+				[	name	"d_kwd", 			color "blue" 				],
+				[	name	"d_number", 		color "red" 				],
+				[	name	"d_stringconst", 	color "red" 				],
+				[	name	"d_stringify", 		color "brown" 				],
+				[	name	"d_attr", 			color "brown" 				],
+				[	name	"d_funcname", 		color "rgb(0,128,255)" 		],
+				[	name	"d_formals", 		color "rgb(117,58,0)",	style "italic" 	],
+				[ 	name	"d_comment",		color "green", 			style "italic" 	],
+				[ 	name	"d_ident",			color "rgb(56,56,56)", 	style "italic" 	],
+				[ 	name	"d_libfunc",		color "rgb(0,64,128)", 	weight "bold"	],
+				[ 	name	"d_binaryop",		color "rgb(147,73,0)"		],
+				[ 	name	"d_overloadedop",	color "blue" 				],
+				[ 	name	"d_objectop",		color "black", weight "bold"],
+				[ 	name	"d_punctuation",	color "rgb(100,100,100)" 	],
+
+
+				////////////////////////////////////////////////
+				[
+					name		"pseudocode",
+					style		"italic",
+					family		"arial"
+				],
+
+				[	name		"italic",
+					style		"italic"
+				],
+
+				[
+					name		"emphatic",
+					weight		"bold"
+				],
+
+				[
+					name		"definition",
+					family		"arial",
+					style		"italic",
+					color		"blue",
+					weight		"bold"
+				],
+
+				[
+					name		"blue",
+					color		"blue"
+				],
+
+				[
+					name		"red",
+					color		"red"
+				],
+
+				[
+					name		"green",
+					color		"green"
+				],
+
+				[
+					name		"quotation",
+					style		"italic"
+				],
+
+				[
+					name		"formula",
+					size		"larger",
+					weight		"lighter"
+				],
+
+				[
+					name		"footnote",
+					family		"times",
+					size		"smaller"
+				],
+
+				[
+					name		"alert",
+					decoration	"none",
+					size		"larger",
+					background	"yellow",
+					color		"red"
+				],
+
+				[
+					name		"comment",
+					color		"green",
+					size		"11pt",
+					style		"italic"
+				],
+
+				[
+					name		"error",
+					color		"red",
+					style		"italic"
+				],
+				[
+					name		"note",
+					color		"blue",
+					style		"italic",
+					decoration 	"underline"
+				// 	size		"smaller"
+				//	background	"yellow"
+				],
+
+				[
+					name		"index_terms",
+					color		"blue",
+					weight		"bold"
+				],
+
+				[	// reveal 'display' if in the index the locations are to be
+					// displayed after the term has been clicked.
+
+					name		"index_locations",
+					color		"green",
+					style		"italic",
+					weight		"normal",
+					size		"smaller",
+					background	"#EaEaEa"
+				//	display	"none",	
+				],	
+			
+				[
+					name		"lightgray",
+					color		"#E8E8E8"
+				],
+
+				[
+					name		"warning",
+					style		"italic",
+					size		"larger",
+					weight		"bold",
+					decoration	"underline",
+					color		"magenta"
+				],
+
+				[
+					name		"highlight",
+					background	"#00FFFF"
+				],
+
+				[
+					name		"shaded",
+					background	"#C4C4C4"	// R(196),G(196),B(196), mild grey
+				]
+			]
+
+///////////////////////////////////////////////////////////////////

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="DeltaVM"  type="DynamicLib"  uri="./extensions/DeltaVMDebugged.dll">
+		<dependency>Output</dependency>
+	</component>
+</extension>

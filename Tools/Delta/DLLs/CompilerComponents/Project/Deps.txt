@@ -1,0 +1,6 @@
+UtilAndDefensiveHeap	UTILLIB_IMPORT DDEBUG_IMPORT
+BytecodeStructures		DBYTECODE_IMPORT 
+ReadersWriters			READERS_IMPORT
+SyntaxTree				SYNTAXTREELIB_IMPORT
+
+To use the DLL:			DCOMPLIB_IMPORT

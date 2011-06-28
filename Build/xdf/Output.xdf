@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="Output"  type="DynamicLib"  uri="./extensions/Output.dll">
+		<dependency>Shell</dependency>
+	</component>
+	<component id="BuildOrder"  type="DynamicLib"  uri="./extensions/Output.dll">
+		<dependency>Shell</dependency>
+	</component>
+</extension>

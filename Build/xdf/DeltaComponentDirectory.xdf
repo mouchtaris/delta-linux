@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="DeltaComponentDirectory"	type="DynamicLib"  uri="./extensions/DeltaComponentDirectory.dll">
+		<dependency>DockableComponent</dependency>
+	</component>
+</extension>

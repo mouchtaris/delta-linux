@@ -1,0 +1,13 @@
+directory_icon	ICON	"directory.ico"
+logo_text		BITMAP	"Resources/logo-text.bmp"
+
+person			BITMAP	"../Application/Resources/person-small.bmp"
+person_red		BITMAP	"../Application/Resources/person-small-red.bmp"
+person_prince	BITMAP	"../Application/Resources/person-small-prince.bmp"
+person_bender	BITMAP	"../Application/Resources/person-small-bender.bmp"
+person_towelie	BITMAP	"../Application/Resources/person-small-towelie.bmp"
+person_owl		BITMAP	"../Application/Resources/person-small-owl.bmp"
+person_notis	BITMAP	"../Application/Resources/person-small-notis.bmp"
+person_guitar	BITMAP	"../Application/Resources/person-small-guitar.bmp"
+person_cartman	BITMAP	"../Application/Resources/person-small-cartman.bmp"
+person_alig		BITMAP	"../Application/Resources/person-small-alig.bmp"

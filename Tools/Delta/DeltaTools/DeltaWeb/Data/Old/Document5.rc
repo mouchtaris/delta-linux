@@ -1,0 +1,64 @@
+#include "defines.h"
+
+		_document _id("downloads") _title("Downloads")
+		index ["download","delta","sparrow"],
+		[
+			_section _id("deltadownload") _title("Delta Language")
+			[
+				_table(3,4) _class("red")
+				[
+					[_text  [ !emphatic "Compiler" ]				],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/compiler_source.rar")	text "Source"			],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/compiler_win.rar")		text "Binary (Windows)"	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/compiler_linux.rar")		text "Binary (Linux)"	]
+				],
+				[
+					[_text	[ !emphatic "Virtual Machine" ]		 	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/vm_source.rar")	text "Source"			],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/vm_win.rar")		text "Binary (Windows)"	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/vm_linux.rar")	text "Binary (Linux)"	]
+				],
+				[
+					[_text	[ !emphatic "Console Debugger" ]	 	],
+					[_link _class("green") _url("http://www.csd.uoc.gr/~mousikos/files/cdb_source.rar")	text "Source"			],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/cdb_win.rar")	text "Binary (Windows)"	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/cdb_linux.rar")	text "Binary (Linux)"	]
+				]
+			],
+			[_text [@linebreak]]
+		],
+		[
+			_section _id("sparrowdownload") _title("Sparrow IDE")
+			[
+				_table(1,1)
+				[
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/sparrow.rar")	text "Sparrow IDE installer (Windows)"]
+				]
+			],
+			[_text [@linebreak]]
+		],
+		[
+			_section _id("xlibdownload") _title("External Libraries")
+			[
+				_table(3,4)
+				[
+					[_text  [ !emphatic "XML" ]		],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/xml_source.rar")		text "Source"			],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/xml_win.rar")		text "Binary (Windows)"	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/xml_linux.rar")		text "Binary (Linux)"	]
+				],
+				[
+					[_text	[ !emphatic "CORBA" ]	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/corba_source.rar")	text "Source"			],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/corba_win.rar")		text "Binary (Windows)"	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/corba_linux.rar")	text "Binary (Linux)"	]
+				],
+				[
+					[_text	[ !emphatic "2D accelerated graphics" ]	 	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/2d_source.rar")	text "Source"			],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/2d_win.rar")		text "Binary (Windows)"	],
+					[_link _url("http://www.csd.uoc.gr/~mousikos/files/2d_linux.rar")	text "Binary (Linux)"	]
+				]
+			],
+			[_text [@linebreak]]
+		]

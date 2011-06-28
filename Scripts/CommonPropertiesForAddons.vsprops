@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="CommonPropertiesForAddons"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="..\..\..\Base\Util;..\..\..\Base\MVC;..\..\..\Base\MVCGeneric;..\..\..\Base\GenericWidgets;..\..\..\Base\GUIUtils;..\..\..\Base\ConsoleHost;..\..\..\Base\Threading;..\..\..\Base\Network;..\..\..\Base\Encoding;..\..\..\Base\BigFixedInt;..\..\..\Base\Sound;..\..\..\Base\Timers;..\..\..\Base\FileChangeWatcher;..\..\..\ThirdPartyBase\AdditionalWidgets"
+	/>
+</VisualStudioPropertySheet>

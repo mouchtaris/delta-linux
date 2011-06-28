@@ -1,0 +1,22 @@
+*************************************************
+Anthony Savidis, April 2010
+Explanations on getting object graph.
+**************************************************
+
+There are two ways to extract an object graph: (i) assuming a
+directed graph, meaning 'depth' parameter is used to count path length 
+by following *only* outgoing edges; and (ii) assuming an undirected
+graph, where the 'depth' parameter counts path length by following
+either incoming or outgoing edges.
+
+Either way, the object graph retains internally, in object slots, 
+information allowing identify all directed edges.
+
+Finally, the expression that is provided to the debugger backend for 
+extracting the object graph is of special importance to frontend 
+developers since it is seen as the starting node of the graph. There
+is a pseudo node in the graph with id "_<STARTNODE>_" having a single
+slot with key "_<STARTNODEABSREF>_" and value the id of this starting node.
+
+
+

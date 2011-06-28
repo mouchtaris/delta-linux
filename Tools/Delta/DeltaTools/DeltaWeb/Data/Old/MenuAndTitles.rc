@@ -1,0 +1,162 @@
+#include "defines.h"
+
+maintitle
+[
+	primary			"Delta Programming Language",
+	primaryClass	"emphatic",
+	secondary		"Dynamic Embeddable Language for exTending Applications",
+	secondaryClass	"normal"
+]
+mainmenu	[
+	[
+		_submenu _title("Delta")
+		[
+			[ _simpleitem _title("About")			sectionref 		"idelta"		],
+			[ _simpleitem _title("Features") 		documentref 	"features"		],
+			[ _simpleitem _title("Sparrow IDE")		sectionref 		"isparrow"		],
+			[ _simpleitem _title("Code samples") 	sectionref 		"textstyles"	],
+			[ _simpleitem _title("Applications")	documentref 	"downloads"		]
+		]
+	],
+	[
+		_submenu _title("Documentation") documentref "reference",
+		[
+			[_simpleitem _title("Language reference")	documentref "reference"	],
+			[
+				_submenu _title("Library reference") documentref "#",
+				[
+					[_simpleitem _title("Standard library") documentref "libfuncs"],
+					[
+						_submenu _title("External libraries") documentref "libfuncs",
+						[
+							[_simpleitem _title("XML")						documentref "libfuncs"],
+							[_simpleitem _title("CORBA")					documentref "libfuncs"],
+							[_simpleitem _title("2D accelerated graphics")	documentref "libfuncs"]
+						]
+					]
+				]
+			],
+			[
+				_submenu _title("Sparrow IDE") documentref "secondpage",
+				[
+					[_simpleitem _title("Tutorials") 	documentref "libfuncs"],
+					[_simpleitem _title("Manual") 		documentref "libfuncs"]
+				]
+			],
+			[_simpleitem _title("Videos")		documentref "videos"],
+			[_simpleitem _title("Index")		documentref "indexingterms"	],
+			[_simpleitem _title("FAQ")			documentref "#"],
+			[_simpleitem _title("Wiki")			url "http://www.wikipedia.org"]
+		]
+	],
+	[
+		_submenu _title("Downloads")	documentref "downloads",
+		[
+			/*[
+				_submenu _title("Delta language")	sectionref "deltadownload",
+				[
+					[
+						_submenu _title("Compiler")		sectionref "deltadownload",
+						[
+							[_simpleitem _title("Source") 		documentref "#"	],
+							[_simpleitem _title("Binaries") 	documentref "#"	],
+							[
+								_submenu _title("Binaries")		sectionref "deltadownload",
+								[
+									[_simpleitem _title("Windows") 		documentref "#"	],
+									[_simpleitem _title("Linux")		documentref "#"	]
+								]
+							]
+						]
+					],
+					[
+						_submenu _title("Virtual machine")		sectionref "deltadownload",
+						[
+							[_simpleitem _title("Source") 		documentref "#"	],
+							[_simpleitem _title("Binaries") 	documentref "#"	],
+							[
+								_submenu _title("Binaries")		sectionref "deltadownload",
+								[
+									[_simpleitem _title("Windows") 		documentref "#"	],
+									[_simpleitem _title("Linux")		documentref "#"	]
+								]
+							]
+						]
+					],
+					[
+						_submenu _title("Console debugger")		sectionref "deltadownload",
+						[
+							[_simpleitem _title("Source") 		documentref "#"	],
+							[_simpleitem _title("Binaries") 	documentref "#"	],
+							[
+								_submenu _title("Binaries")		sectionref "deltadownload",
+								[
+									[_simpleitem _title("Windows") 		documentref "#"	],
+									[_simpleitem _title("Linux")		documentref "#"	]
+								]
+							]
+						]
+					]
+				]
+			],*/
+			[_simpleitem _title("Delta Language") 		sectionref "deltadownload"		],
+			[_simpleitem _title("Sparrow IDE") 			sectionref "sparrowdownload"	],
+			[_simpleitem _title("External libraries") 	sectionref "xlibdownload"		]
+			/*[
+				_submenu _title("External libraries")	sectionref "deltadownload",
+				[
+					[
+						_submenu _title("XML")		sectionref "deltadownload",
+						[
+							[_simpleitem _title("Source") 		documentref "#"	],
+							[_simpleitem _title("Binaries") 	documentref "#"	],
+							[
+								_submenu _title("Binaries")		sectionref "deltadownload",
+								[
+									[_simpleitem _title("Windows") 		documentref "#"	],
+									[_simpleitem _title("Linux")		documentref "#"	]
+								]
+							]
+						]
+					],
+					[
+						_submenu _title("CORBA")		sectionref "deltadownload",
+						[
+							[_simpleitem _title("Source") 		documentref "#"	],
+							[_simpleitem _title("Binaries") 	documentref "#"	],
+							[
+								_submenu _title("Binaries")		sectionref "deltadownload",
+								[
+									[_simpleitem _title("Windows") 		documentref "#"	],
+									[_simpleitem _title("Linux")		documentref "#"	]
+								]
+							]
+						]
+					],
+					[
+						_submenu _title("2D accelerated graphics")	sectionref "deltadownload",
+						[
+							[_simpleitem _title("Source") 		documentref "#"	],
+							[_simpleitem _title("Binaries") 	documentref "#"	],
+							[
+								_submenu _title("Binaries")		sectionref "deltadownload",
+								[
+									[_simpleitem _title("Windows") 		documentref "#"	],
+									[_simpleitem _title("Linux")		documentref "#"	]
+								]
+							]
+						]
+					]
+				]
+			]*/
+		]
+	],
+	[
+		_submenu _title("Contact")				documentref "#",
+		[
+			[_simpleitem _title("Contact information") 	sectionref "contact"			],
+			[_simpleitem _title("Forum") 				url "http://www.forums.gr"		],
+			[_simpleitem _title("Blog")					url "http://www.blogger.com"	]
+		]
+	]
+]

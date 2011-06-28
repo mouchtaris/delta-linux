@@ -1,0 +1,5 @@
+UtilAndDefensiveHeap		UTILLIB_IMPORT  DDEBUG_IMPORT
+VirtualMachineComponents	DVM_IMPORT
+DeltaCorbaCommon			CORBACOMMON_IMPORT
+
+To use the DLL:				CORBASERVER_IMPORT

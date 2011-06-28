@@ -1,0 +1,64 @@
+// -*- C++ -*-
+// $Id: Bank.idl,v 1.1.1.1 2008-03-11 15:47:38 vz Exp $
+
+module Bank
+{
+  // = TITLE
+  // This module has two interfaces. One represents a bank Account and
+  // the other is a factory to create the Account Objects.
+
+  interface Account
+  {
+    // = TITLE
+    // This interface represents an account with operations to check
+    // balance, deposit and withdraw.
+
+    exception Overdraft
+    {
+      // = TITLE
+      // This exception is raised if the client tries to
+      // withdraw more money than the current balance.
+
+      string reason;
+    };
+
+    readonly attribute string name;
+    // The <name> of this account.
+
+    readonly attribute float balance;
+    // Attribute to obtain the current <balance>.
+
+    void deposit (in float amount);
+    // Add <amount> to this account.
+
+    void withdraw (in float amount) raises (Overdraft);
+    // Withdraw <amount> from this account.
+  };
+
+  interface SavingsAccount : Account {
+    void withdrawAll ();
+    // Withdraw all money in the account
+  };
+
+
+  interface AccountManager
+  {
+    // = TITLE
+    // This interface is a factory for the <Account> objects. It has
+    // operations to create <Account>s and to delete them.
+
+    Account open (in string name, in float initial_balance, in boolean is_savings_account);
+    // Returns the <Account> associated with <name>.  If this is the
+    // first time <name> has been seen, the server will create the
+    // account.  Otherwise, the server will return back an object
+    // reference to a previously created account.
+
+    void close (in Account account_);
+    // Close down the account and release its resources if it's the
+    // last reference to the <account>.  Once this call is made it
+    // is no longer valid to access the <account>.
+
+    oneway void shutdown ();
+    // This operation shuts down the server.
+  };
+};

@@ -1,0 +1,201 @@
+**************************************************
+Anthony Savidis, November 2009
+Quick reference for Delta operator overloading.
+**************************************************
+
+[ALL OPERATORS ARE ALSO SUBJECT TO INHERITANCE, DELEGATION AND "." OVERLOADED QUERY]
+
+ALL OPERATORS may be also used UNQUOTED as indices either for table
+construction or within table use (dot use). For arithemic and relational operators 
+this applies to suffix forms as well.
+
+
+[Arithmetic operators]***************************
+
+"+"		"-"		"*"		"/"		"%"				Callable f(x,y), x = self (operator owner and caller)
+"+_"	"-_"	"*_"	"/_"	"%_"			Callable f(x,y), y = self (operator owner and caller)
+
+t = [ { + : (method(x, y) { <code here> }) } ];
+t = [ method @operator+(x, y) { <code here> } ];	// Alternative syntax.
+
+t + 10;		<=>		t.+(t, 10);
+
+t = [ { +_ : (method(x, y) { <code here> }) } ];
+t = [ method @operator+_ (x, y) { <code here> } ]; // Alternative syntax.
+10 + t;		<=>		t.+_(10, t);
+
+NOTE ON SUFFIX FORMS: Their role is to allow an object apply its overloaded
+binary operator even when it is supplied as the second argument. For example,
+lets asume 'y = 1 + x;' where x overloads addition with a number. In this case, when
+calling x's binary addition operator we should pass also the information that
+the caller x comes second. Delta semantically separates the situation as follows:
+In x + 1 it calls x.+(x, 1) and in  1 + x it calls x.+_(1, x). Then, in the 
+binary function of the suffix form the programmer should handle the semantics 
+that the caller is the second argument. An example follows.
+
+t = [	{ -			: (function(t, n) { return t.tonumber() - n; })},
+		{ -_		: (function(n, t) { return n - t.tonumber(); })},
+		{ .val		: 0 }, 
+		{ .tonumber : (method(){ return self.val; })}	];
+		
+print(t - 1, 2 - t);
+
+EXCEPTION (STRING): Plus (+) operator overloading does not apply if an argument is 
+string. In this case the string concatenation is applied. However, an object is 
+allowed to overload string conversion which will be used upon concatenation.
+
+NOTE ON RETURN VALUE: In case you return undefined() explicitly: (a) if it is 
+by the operator of the LHS operand, the value is ignored and the RHS operand is
+tried for overloading; (b) if from the RHS operand, the operator is considered 
+as failing since none of the arguments overloads it. 
+
+[Relational operators]***************************
+
+"!="	 "=="	 ">="	 "<="	 ">"	 "<"	Callable f(x,y),  x = self (operator owner and caller)
+"!=_"	 "==_"	 ">=_"	 "<=_"	 ">_"	 "<_"	Callable f(x,y),  y = self (operator owner and caller)
+
+t = [ { == : (method(x,y) { <code here> }) } ];
+t = [ method @operator== (x,y) { <code here> } ]; 	// Alternative syntax.
+
+t == [];	<=>		t.==(t, []);
+
+t = [ { ==_ : (method(x,y) { <code here> }) } ];
+t = [ method @operator==_ (x,y) { <code here> } ]; 	// Alternative syntax.
+
+[] == t;	<=>		t.==_([], t);
+
+NOTE ON RETURN VALUE: The same rule as for arithmetic operators applies.
+
+[Function call - functor]*************************
+"()"			Callable f 
+
+function proxy(f) {
+	return [ 
+		{ #f : f }, 
+		method @operator(){ self.f(...); } 
+	];
+}
+
+proxy(f) equivalent g for each callable g.
+
+
+[Assignment operator]*****************************
+Its role is to assign and return the result.
+"="			Callable f(x,y),  called as f(x,y) x =self (operator owner and caller)
+
+t = [ { = : (method(x, y) { <code here>  return <something>; }) } ];
+t = [ method @operator=(x, y) { <code here>  return <something>; } ];	// Alternative syntax.
+
+t = [];		<=>		(t = t.=(t, []))
+
+NOTE ON RETURN VALUE: In case you return 'undefined' the assignment 
+operator is ignored and the RHS operand is tried for type casting.
+Else, the return value is assigned to the l-value. To implement
+an assignment that only sets the contents of the l-value from the
+r-value, but does not change it, simply return the l-value.
+
+function Point (x,y) {
+	return [ 
+		{ #x, #y : x, y },
+		method @operator=(lv, rv) {	// rv is also 'self'
+			@x = pt.x, @y = pt.y;
+			return lv;
+		}
+	];
+}
+
+p1 = Point(1,2);
+p1 = Point(3,4);	// Sets p1, but does not change it to be the new object.
+
+
+[Type casting - convert to an lvalue]**************
+
+It is an analogy to =_ (suffix form of assignment) that is missing
+in Delta because it is covered by type casting (conversion). Thus, it actually
+performs the assignment from the rvalue side.
+
+"=()"			Callable f(x, y), for x = y, with y = self (operator owner and caller)
+t1 = [ { =() : (method(x, y) { <convert y to x> return <something>; })} ];
+t2 = [];
+t2 = t1;	<=>		t2 = t1.=()(t2, t1);
+
+The result of the overloaded type casting is assigned to the lvalue.
+You may return the lvalue in case you do not wish to alter an object
+but only its contents.
+
+NOTE ON RETURN VALUE: In case you return 'undefined' the type casting
+operator is ignored.
+
+[To string - arbitrary string conversion]***********
+"tostring()"	Callable f() returning string
+
+
+[Dot operator - only local lookup ]*****************
+Set always in quoted form.
+"." or "[]"							Callable f(t,i),  called as f(t,i) (result returned is found content)
+".=" or "[]="						Callable f(t,i,c), called as f(t,i,c) (result returned is newlly set content)
+
+
+[ATTENTION NOTE-I]
+Care should be taken when overloading dot since it will be used by the VM
+to query for presence of all the rest of operators! Do not assume blindly that 
+only your program will index fields of objects and treat such indices only
+with the semantics in your program. Make your dot overloader ready to respond
+to queries of overloaded operators. 
+
+In case you overloaded dot, but did not overload through it built-in operators,
+then you must implement it as follows:
+
+{"."	: (method(t, i) {
+			if (isoverloadableoperator(i)) return nil;
+			<do the normal indexing job for 'i'>
+		})}
+		
+The latter makes sure that when the VM asks the object for a built-in operator
+the response is nil, meaning no overloading of other operators via dot is applied.
+
+
+[ATTENTION NOTE-II]
+In case you define the dot overloading method for ".=" all subsequent additions
+(set calls) to its object will be performed using this method. If you introduce
+the method as part of an object constructor expression, then all entries below it
+will be actually added using the overloaded operator. Check the following example.
+
+t = [
+	{ #x, #y :  0 },
+	11, 22, 33,
+	
+	method @operator.=(t,i,v) { /* code here */ },
+	
+	44, 55, 66,
+	{ #z: 0 }
+];
+
+The additions t[3] = 44; t[4] = 55; t[5] = 66; and t.z = 0; after the
+overloaded operator will be performed via the t[".="] and not via the
+built-in version. In case you wish the additions to take place through
+the built-in operator only simply place the overloaded operator definition 
+as the last element of the object construction expression.
+
+
+[ATTENTION NOTE-III]
+For arithmetic, relational, assignment and type-casting operators
+there are global versions supported through library functions.
+
+These are invoked last, only when all other tests imply overloading is not
+supported or that the operators returned a 'retry' request.
+
+Handling of global operator overloading is possible through the
+following std library functions:
+
+void		setarithmeticoperator(op, callable)
+void		setrelationaloperator (op, callable)
+void		setassignmentoperator (callable)
+void		settypecastingoperator(callable)
+			
+Value		getarithmeticoperator (op)
+Value		getrelationaloperator (op)
+Value		getassignmentoperator ()
+Value		gettypecastingoperator ()
+
+**************************************************

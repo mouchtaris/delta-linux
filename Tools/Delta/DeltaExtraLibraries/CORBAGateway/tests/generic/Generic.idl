@@ -1,0 +1,91 @@
+/* -*- C++ -*- */
+// $Id: Echo.idl,v 1.1.1.1 2008-03-11 15:47:38 vz Exp $
+
+#if !defined (_ECHO_IDL)
+#define _ECHO_IDL
+
+module TestModule {
+	 interface Interface1 {
+		readonly attribute long innerAttr;
+	 };
+	 interface Interface2 {
+		 struct Point { long x, y; };
+		 enum Currency {pound, dollar, yen, franc};
+	 };
+ };
+interface Generic
+{
+  // = TITLE
+  // Defines an interface that encapsulates operations that return the
+  // mesg string to be displayed and shuts down the server.
+
+  readonly attribute long x;
+  attribute string str;
+
+ const long MaxAccounts = 10000;
+
+ enum Currency {pound, dollar, yen, franc};
+
+ 	exception TestException {
+	  string msg;
+	};
+
+  struct Point {
+	  long coords[2];
+  };
+
+  struct Circle {
+	  Point p;
+	  double radius;
+  };
+
+  typedef sequence<Object> List;
+  typedef sequence<Generic> GenericList;
+
+	union Date switch (long) {
+	  case 1: string stringFormat;
+	  case 2: float floatFormat;
+	  default: long digitalFormat;
+	};
+
+	union UnionBool switch (boolean) {
+	  case FALSE: string stringFormat;
+	  default: long digitalFormat;
+	};
+
+	union UnionEnum switch (Currency) {
+	  case pound: string poundFormat;
+	  case dollar: string dollarFormat;
+	  case yen: string yenFormat;
+	  //case franc: string francFormat;
+	  //default: long digitalFormat;
+	};
+
+  boolean test(in string dummy, out string out1, inout long foo) raises(TestException);
+
+  any TestAny(in any val);
+
+  boolean TestBool(in boolean b);
+
+  ::TestModule::Interface1 TestExtern(in ::TestModule::Interface2::Point p);
+
+  Currency TestEnum(in Currency c);
+  Date TestUnion(in Date d);
+  UnionBool TestUnionBool(in UnionBool d);
+  UnionEnum TestUnionEnum(in UnionEnum d);
+  Circle TestStruct(in Point p);
+  char TestChar(in char c);
+
+  List echo_list (in string message);
+  // This operation returns the message as a sequence of Objects and
+  // displays it on the screen as a string.
+
+  string echo_string (in string message);
+  // This operation returns the message as a string and displays it on
+  // the screen.
+
+  oneway void shutdown ();
+  // This operation will shutdown the server.
+};
+
+#endif /* _ECHO_IDL */

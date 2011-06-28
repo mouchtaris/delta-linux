@@ -1,0 +1,48 @@
+// Initialization values
+gfx [
+	mode			"overlayed",
+	depth			"detect",
+	videoscreen		false
+]
+
+Data [
+	bg 		"snakebg.bmp",
+	tiles	"snaketiles.bmp",
+	stage	5	// Put a starting stage you wish.
+]
+
+consts [
+	// Don't change those unless radically changing bgs and terrain.
+	//
+	TILE_W			27,
+	TILE_H			32,
+	TILES_NHORIZ	6,
+	TILES_NVERT		4,
+	TERRAIN_W		567,
+	TERRAIN_H		544,
+	START_ROW		8,
+	START_COL		10,	
+	TERRAIN_X1		28,
+	TERRAIN_Y1		36,
+	SCORE_X			676,
+	SCORE_Y			175,
+	STAGE_X			676,
+	STAGE_Y			220,
+	HIGH_SCORE_X	676,
+	HIGH_SCORE_Y	280,
+	
+	TERRAIN_MENU	"[F1: New game, ESC: Quit]",
+	STAGE_MENU		"[F1: Next stage ESC: Quit]",
+	RESUME_MESSAGE	"[Paused: Press space to resume]",
+	AUTOMOVE_TIME	200, 
+	AUTOMOVE_DEC	3,	
+
+	NUM_FLIES		5,
+	NUM_APPLES		5,
+	INC_FLIES		5,
+	INC_APPLES		5,
+	BONUS_FLY		150,
+	BONUS_APPLE		100,
+	TEXT_COLOR		[255, 255, 0 ],
+	INPUT_PACE		50
+]

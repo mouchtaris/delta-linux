@@ -1,0 +1,99 @@
+1) wxWidgets [http://www.wxwidgets.org/]
+
+wxWidgets was started in 1992 by Julian Smart at the University of Edinburgh. Initially started as a project
+for creating applications portable across Unix and Windows, it has grown to support the Mac platform,
+WinCE, and many other toolkits and platforms. The number of developers contributing to the project is now in the dozens
+and the toolkit has a strong userbase that includes everyone from open source developers to corporations such as AOL.
+So what is special about wxWidgets compared with other cross-platform GUI toolkits?
+
+wxWidgets gives you a single, easy-to-use API for writing GUI applications on multiple platforms that still utilize the
+native platform's controls and utilities. Link with the appropriate library for your platform (Windows/Unix/Mac, others coming shortly)
+and compiler (almost any popular C++ compiler), and your application will adopt the look and feel appropriate to that platform. On top of
+great GUI functionality, wxWidgets gives you: online help, network programming, streams, clipboard and drag and drop, multithreading,
+image loading and saving in a variety of popular formats, database support, HTML viewing and printing, and much much more.
+
+2) Boost [http://www.boost.org/]
+
+Boost provides free peer-reviewed portable C++ source libraries.
+
+We emphasize libraries that work well with the C++ Standard Library.
+Boost libraries are intended to be widely useful, and usable across a broad spectrum of applications.
+The Boost license encourages both commercial and non-commercial use.
+
+We aim to establish "existing practice" and provide reference implementations so that Boost libraries are suitable for eventual standardization.
+Ten Boost libraries are already included in the C++ Standards Committee's Library Technical Report (TR1) as a step toward
+becoming part of a future C++ Standard.
+More Boost libraries are proposed for the upcoming TR2.
+
+3) asio [http://asio.sourceforge.net/]
+
+asio is a cross-platform C++ library for network programming that provides developers with a consistent asynchronous I/O model using a modern C++ approach.
+
+NOTE: to be merged with Boost 1.34 (sometime in the future)
+
+4) wxScintilla [http://wxcode.sourceforge.net/components/wxscintilla/]
+
+wxScintilla implements the Scintilla editing control with the wxWidgets API.
+It's derived from wxStyledTextCtrl (done by Robin Dunn) and has the same functionality and a similar API.
+The almost singular difference (beside naming) is it has a much faster release cycle.
+
+5) wxSpellChecker [http://wxcode.sourceforge.net/components/wxspellchecker/]
+
+wxSpellChecker is an library that provides an API to use various spell checker engines through wxWidgets classes or a C interface.
+The developer should have flexibility in the dialog design (using XML resources) and the spell checking interface (only Aspell
+and Myspell are supported at this time). For maximum control, developers can derive dialog classes from wxSpellCheckDialogInterface
+and create more customized dialogs.
+
+6) wxChart [http://wxcode.sourceforge.net/components/wxchart/]
+
+wxChart is a control that allows you to create charts. At the moment the type of charts available are Bar, Bar 3D, Pie and Pie 3D.
+
+7) wxPropertyGrid [http://wxpropgrid.sourceforge.net/cgi-bin/index/]
+
+wxPropertyGrid is a property sheet control for wxWidgets. In other words, it is a specialized two-column grid for editing
+properties such as strings, numbers, flagsets, string arrays, and colours.
+
+8) wxDockIt [http://wxextended.sourceforge.net/index.html]
+
+wxDockIt is a docking library for wxWidgets which provides the necessary functions to support docking windows of different types:
+
+    * Floating dockwindows
+    * Embedded resizable panes
+    * Movable sliding toolbars
+
+9) wxFlatNotebook [http://sourceforge.net/projects/wxflatnotebook/]
+
+This class represents a flat notebook control for the wxWidgets C++ GUI frame work, which manages multiple windows with
+associated tabs using different styles
+
+wxFlatNoteBook is a tabbed "notebook" interface much like what you see in Visual Studio. It has lots of professional
+looking rendering and custom drawn styles.
+
+10) wxFlatMenu, wxFlatMenuBar [http://wxforum.shadonet.com/viewtopic.php?t=10497]
+
+wxFlatMenu has just been released on the wxWidgets forums. This provides custom drawn menus much like what you
+see in Windows XP applications like Office and Visual Studio (both 2003/2005 and 2007 look).
+
+11) IFM [http://ifm.sourceforge.net/]
+IFM, short for Interface Managent System, is a library that provides dockable window support for your application: The user can move
+around windows as they see fit to create the user interface layout that they prefer.
+
+IFM is gui-toolkit agnostic, so you can use it in your application regardless of what platform you are on or what gui-toolkit you are using.
+If your toolkit is not currently supported, adding support for it is easy and simply requires you to implement the interface that IFM uses to
+interact with the gui-toolkit.
+
+12) wxAUI [http://www.kirix.com/community/wxaui.html]
+
+wxAUI is an Advanced User Interface library that aims to implement "cutting-edge" interface usability and design features so developers
+can quickly and easily create beautiful and usable application interfaces.
+
+Discussion about dockable windows:
+http://www.divil.co.uk/net/learning/articles/dockablewindows.aspx
+
+13) KeyBinder [http://wxcode.sourceforge.net/components/keybinder/]
+
+A generic system to bind one or more key shortcut to the commands you want (menu commands or whatever you like).
+A pre-built panel and a complete system to view/remove/add/edit command shortcuts is included. Also key profiles
+are supported and a complete load/save system based on wxConfig is present. Integrates with your applications with few
+modifications and allows the users to customize all the commands he wants, bypassing the limitation of a single keybind
+to each command.

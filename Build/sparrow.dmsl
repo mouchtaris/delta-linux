@@ -1,0 +1,33 @@
+
+//Decision Making for a DeltaIDE
+
+stereotype DeltaBeginnerUser : params.user.delta_exp = beginner
+stereotype DeltaAdvancedUser : params.user.delta_exp = advanced
+
+stereotype IDEProgrammer : params.user.ide_programmer = true
+stereotype Debugging : params.user.delta_debug = true
+
+component Shell [
+
+	activate ProjectManager
+	activate FindAndReplace
+
+	if hasattr(user.delta_exp) and DeltaBeginnerUser then
+		activate EditorManager
+		activate Output
+		activate BuildOrder
+		activate ErrorList
+
+	if hasattr(user.delta_exp) and DeltaAdvancedUser then [
+		activate AdaptationManager
+	]
+
+	if hasattr(user.delta_debug) and Debugging then [
+		activate DeltaCallStackView
+	]
+
+	if hasattr(user.ide_programmer) and IDEProgrammer then [
+		activate DeltaComponentDirectory
+		activate ComponentSpy
+	]
+]

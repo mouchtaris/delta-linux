@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="alpha">
+    <component id="AutoAdjustDebugTools" type="DeltaScript" uri="extension_scripts/AutoAdjustDebugTools.dsc"/>
+</extension>

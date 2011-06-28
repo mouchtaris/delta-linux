@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workspace name="sample_workspace" version="alpha">
+    <WorkspaceProperties>
+        <symbolic>sample_workspace.wsp</symbolic>
+        <startup>FreeCell.dproj</startup>
+        <config>0</config>
+        <collapsed>0</collapsed>
+        <breakpoints>break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="Project" name="FreeCell.dproj"/>
+    <Child type="Project" name="wxWidgetsSample.dproj"/>
+</Workspace>

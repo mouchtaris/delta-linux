@@ -1,0 +1,94 @@
+#include "defines.h"
+
+		_document _id("libfuncs") _title("Library Functions")
+		[
+			_section _id("misc") _title("MISCELLANEOUS")
+			[
+				_section
+				[_text [@section] ],
+				[
+					_section title "print(v1,...,vn)",
+					[_text [ "Output (default is console)." , @section ] ]
+				],
+				[
+					_section title "Value callglobal(String,[args])",
+					[_text ["Calls a function at program scope by name.", @section] ]
+				],
+				[
+					_section title "String	typeof(Value)",
+					[_text [@section] ]
+				],
+				[
+					_section title "bool isundefined(Value)",
+					[_text [@section] ]
+				],
+				[
+					_section title "String	externidtype(ExternId)",
+					[_text ["Returns user-defined extra type for extern ids." , @section] ]
+				],
+				[
+					_section title "Proto externiduserdata(ExternId)",
+					[_text ["Returns standard supported user data for extern ids." , @section] ]
+				],
+				[
+					_section title "Bool isoverloadableoperator(String)",
+					[_text ["Should be used with dot overloading to check if an op is requested." , @section] ]
+				],
+				[
+					_section title "bool equal(x,y)",
+					[_text ["Equality test, ignoring overloading." , @section] ]
+				],
+				[
+					_section title "Number currenttime()",
+					[_text [@section] ]
+				],
+				[
+					_section title "error(String)",
+					[_text ["Causes an error at the calling VM." , @section] ]
+				],
+				[
+					_section title "String tostring(Value)",
+					[_text ["Conversion to string, respects overloading." , @section] ]
+				],
+				[
+					_section title "LibFunc	libfuncget(String)",
+					[_text ["Get a lib func by name at runtime." , @section] ]
+				],
+				[
+					_section title "Bool libfuncisbound(f)",
+					[_text ["Returns if a library func was bound with args" , @section] ]
+				],
+				[
+					_section title "LibFunc	libfuncbind(f, [args])",
+					[_text ["Returns a lib func binding args to f. If f was bound, its args are copied first." , @section] ]
+				],
+				[
+					_section title "LibFunc	libfuncunbound(f)",
+					[_text ["Retuns a lib func for f with no bound args." , @section] ]
+				]
+			]
+		],
+		[
+			_section _id("dll") _title("DLLs")
+			[
+				_section
+				[_text [@section] ],
+				[
+					_section title "ExternId dllimport(String(path), String(func))",
+					[_text [ "May install lib funcs, load and run scripts upon initialisation." , @section ] ]
+				],
+				[
+					_section title "Result dllinvoke(ExternId(dll), String(func))",
+					[_text ["Result type is [{.succeeded: <Boolean>}, {.value: <String> } ].", @section] ]
+				],
+				[
+					_section title "Bool dllhasfunction(ExternId(dll), String(func))",
+					[_text [ "Returns true if funciton exists." , @section] ]
+				],
+				[
+					_section title "dllunimport(ExternId(dll))",
+					[_text [@section] ]
+				]
+			]
+		]
+

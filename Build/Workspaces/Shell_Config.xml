@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PropertyTable>
+    <state>22 serialization::archive 4 0 0 1 0 43 22 serialization::archive 4 0 0 9 maximized</state>
+    <size>
+        <width>22 serialization::archive 4 0 0 1 0 32 22 serialization::archive 4 1024</width>
+        <height>22 serialization::archive 4 0 0 1 0 31 22 serialization::archive 4 768</height>
+    </size>
+    <position>
+        <y>22 serialization::archive 4 0 0 1 0 30 22 serialization::archive 4 30</y>
+        <x>22 serialization::archive 4 0 0 1 0 30 22 serialization::archive 4 80</x>
+    </position>
+    <init_profile>22 serialization::archive 4 0 0 1 0 75 22 serialization::archive 4 0 0 40 profiles/Sparrow Devel/Sparrow Devel.pfl</init_profile>
+</PropertyTable>

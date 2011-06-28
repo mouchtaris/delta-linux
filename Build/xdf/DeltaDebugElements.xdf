@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="DeltaCallStackView"  type="DynamicLib"  uri="./extensions/DeltaDebugElements.dll"/>
+	<component id="DeltaQuickWatch"  type="DynamicLib"  uri="./extensions/DeltaDebugElements.dll"/>
+</extension>

@@ -1,0 +1,591 @@
+*************************************************
+Anthony Savidis, June 2010
+Quick reference for the Delta standard library functions.
+*************************************************
+
+CONSTANTS *****************************************
+
+To check against the result of typeof():
+TYPEOF_NUMBER			
+TYPEOF_STRING			
+TYPEOF_TABLE			
+TYPEOF_OBJECT			
+TYPEOF_PROGRAMFUNC	
+TYPEOF_LIBRARYFUNC	
+TYPEOF_BOOL			
+TYPEOF_EXTERNID		
+TYPEOF_NIL			
+TYPEOF_METHODFUNC		
+TYPEOF_UNDEFINED
+		
+To use while processing the results of vmextractbuilddeps():
+DEPENDENCY_NOT_FOUND
+DEPENDENCY_ONE_FOUND
+DEPENDENCY_MANY_FOUND
+
+To check the designated superclass of an object or externid
+like 'a[std::ALGORITHMS_SUPERCLASS] == std::ALGORITHMS_ITERATOR'
+
+ALGORITHMS_SUPERCLASS
+ALGORITHMS_ITERATOR
+ALGORITHMS_CONTAINER
+
+Values to the optional PacketWrapping parameter for sockets:
+SOCKET_PACKET_ORIGINAL
+SOCKET_PACKET_ADD_SIZE
+
+Table		std_getapi()						Getting API for std library (alternative use)
+
+MISCELLANEOUS(misc)********************************
+
+			print(v1,...,vn)					Output (default is console).
+Value		callglobal(String,[args])			Calls a function at program scope by name
+String		typeof(Value)						Returns one of the following:
+												'Number'
+												'String'
+												'Table'
+												'Object'
+												'ProgramFunc'
+												'LibraryFunc'
+												'Bool'
+												'ExternId'
+												'Nil'
+												'MethodFunc'
+												'Undefined'
+bool		iscallable(x)						Returns true if a function or a functor.
+bool		isundefined(Value)
+bool		isnil(value)						
+String		externidtype(ExternId)				Returns user-defined extra type for extern ids
+Object		externiduserdata(ExternId)			Returns standard supported user data for extern ids
+Value		taggedvalue(val, String)			Returns a value with a tag, also passed on assignment 
+												(put empty string to remove tag).
+String		getvaluetag(val)					Returns the type tag of a value (default is empty string).
+
+Bool		isoverloadableoperator(val)			Should be used with dot overloading to identify 
+												when an opertator is requested.
+bool		equal(x,y)							Equality test, ignoring operator overloading 
+												(useful among objects / externids).
+Number		currenttime()
+String		getenvironmentvar (String(id))		Returns value of an environment var (Nil if not found)
+			error(String)						Causes an error at the calling VM
+String		tostring(Value)						Conversion to string, respects overloading
+
+
+GLOBAL OPERATOR OVERLOADING(op)********************
+
+Those functions overload globally (their operator functions are called 
+when everything else fails in operator resolution).
+
+			setarithmeticoperator(op, callable)	
+			setrelationaloperator (op, callable)
+			setassignmentoperator (callable)
+			settypecastingoperator(callable)
+Value		getarithmeticoperator (op)
+Value		getrelationaloperator (op)
+Value		getassignmentoperator ()
+Value		gettypecastingoperator ()
+
+
+LIBFUNC MANIPULATION(lib)**************************
+
+LibFunc		libfuncget(String)					Get a lib func by name at runtime
+Bool		libfuncisbound(f)					Returns if a library func was bound with args
+LibFunc		libfuncbind(f, [args])				Returns a lib func binding args to f; 
+												if f was bound, its args are copied first.
+LibFunc		libfuncunbound(f)					Retuns a lib func for f with no bound args.
+List / Nil	libfuncgetboundargs(f)				Returns bounds args list (reference) or nil (if no bound args);
+												editing the list is editing the bound args of 'f' lib function.
+
+RESOURCE LOADER (TAGLESS XML)(rc)******************
+
+Object		rcload(String(path))				Loads config data.
+			rcsetpreprocessor(					Sets preprocessor use.
+				String(cpp),					Full exe path; pass empty string to disable preprocessing phase.
+				String(includeFlags)			Include flags; pass empty string when 'cpp' arg is empty too.
+			)			
+Table		rcparse(String(text))				Loads from a text string
+String		rcloadgeterror()					Get error if parsing failed
+Bool		rcstore(t, path)					Store a table in rc format
+
+
+OBJECTS(TABLES)(tab)*******************************
+
+Value		tabget(t, i)						Local, unoverloaded
+			tabset(t, i, c)						Local, unoverloaded
+			tabnewattribute(t, id, set, get)	Adds a new attribute entry
+			tabredefineattribute(t,id,set,get)	Changes set / get of an already existing attribute
+			tabsetattribute(t,id,content)		Sets locally the internal attribute slot (unoverloaded access)
+Value		tabgetattribute(t,id)				Gets locally the internal attribute slot (unoverloaded access)
+Number		tablength(t)
+Table		tabindices(t)						Returns indices of a table as a new table with numeric indices
+Table		tabcopy(t)							Shallow copy
+			tabclear(t)							Clears locally (no effect on inheritance stuff)
+			tabenableoverloading(t)				Enables overloading (default is always enabled)
+			tabdisableoverloading(t)			Disables overloading
+Bool		tabisoverloadingenabled(t)			Returns true if overloading is enabled.
+			tabsetmethod(t1, t2, i, j)			(requires t2[j] method) t1[i] = t2[j], t1[i].owner = t1
+			tabextend(dest, src)				Copies fields of src to dest, setting also method ownership to dest
+Method		tabmethodonme(t,m)					Returns a method value like m, but with self now set to t.
+ExternId	tabserialise(t)						Returns an output buffer (keeps only bool, number, 
+												string and object values).
+Table		tabdeserialise(inputbuffer(ib))		Deserialises from an input buffer (nil if serialisaiton failed).
+
+Iter		tableiter_new()
+Iter		tableiter_setbegin(i,t)		
+Iter		tableiter_setend(i,t)		
+			tableiter_checkend(i,t)
+			tableiter_checkbegin(i,t)
+			tableiter_equal(i,j)
+			tableiter_assign(i,j)	
+Iter		tableiter_copy(i)			
+Iter		tableiter_fwd(i)		
+Number		tableiter_getcounter(i)				Counter of current iteration element
+Table		tableiter_getcontainer(i)	
+Value		tableiter_getval(i)					Get value at current position
+			tableiter_setval(i,v)				Change value at current position (r/w access allowed)
+Value		tableiter_getindex(i)				Get index of current position (no setindex is provided)
+
+
+DLLs(dll)******************************************
+
+ExternId	dllimport(String(path), String(func))			May install lib funcs, load and run scripts upon initialisation.
+ExternId	dllimportdeltalib(String(path), String(func))	Same as dllimport but also calls an 'Install' function after loading
+			dllimportaddpath (path:String)					Adds a path to resolve dll files in all dllimport functions
+Result		dllinvoke(ExternId(dll), String(func))			Result type is [{.succeeded: <Boolean>}, {.value: <String> } ]
+Bool		dllhasfunction(ExternId(dll), String(func))		Returns true if function 'func' exists in the dll.
+			dllunimport(ExternId(dll))
+			dllunimportdeltalib(ExternId(dll))				Same as dllunimport, but also calls an 'CleanUp' function before unloading
+
+
+SUBOBJECT TREES(obj)*******************************
+
+			inherit(derived, base)				Added as left-most parent (more recent)
+			inheritredirect(derived, base)		Cancels base's old derived if any and performs normal inherit
+			uninherit(derived, base)
+bool		isderived(derived, base)
+Table		getbases(obj)						Numerically indexed [0,..N-1], i < j => i most recent base than j
+Object		getbase(obj, i)						Equivalent to getbases(obj)[i], but way more fast.
+Object		getderived(obj)						The single child
+Object		getmostderived(obj)					The most derived in the tree
+			
+
+DELEGATION CHAINS(obj)******************************
+
+			delegate(from, to)					
+			undelegate(from, to)
+Bool		isdelegate(from, to)				If there is a delegation path from --> to
+Bool		isdirectdelegate(from, to)			If there is a delegation link from -> to
+Bool		isdelegator(to, from)				Returns if isdirectdelegate(from, to)
+Table		getdelegates(obj)					Returns all direct delegates
+Table		getdelegators(obj)					Returns all y such that isdelegator(obj,y), or, 
+												equivalently, isdirectdelegate(y, obj)
+
+
+BINARY INPUT / OUTPUT BUFFERS(in,out)**************
+
+After creation can use functions with an OO syntax (obj.method) without
+the prefixes 'inputbuffer_' and 'outputbuffer_'
+
+Next is garbage collectable:
+ExternId	inputbuffer_new(ExternId(ob))		Makes an input buffer from an output buffer 'ob'
+			inputbuffer_set(ib, ob)				Sets again an existing input buffer 'ib' from output buffer 'ob'
+			inputbuffer_rewind(ib)				Repositions at start
+Number		inputbuffer_size(ib)				Total size in bytes
+Number		inputbuffer_remaining(ib)			Total remaining bytes to be read
+Bool		inputbuffer_eof(ib)					If at end of buffer
+
+Next is garbage collectable:
+ExternId	outputbuffer_new()					Makes a new empty output bufefr
+			outputbuffer_append(dest, src)		Append to 'dest' output buffer the 'src' (copied)
+Bool		outputbuffer_isempty(ob)			If nothing written yet
+Number		outputbuffer_size(ob)				Total bytes written on output buffer
+Number		outputbuffer_totalpackets(ob)		Total number of separate write operations over 'ob'
+			outputbuffer_clear(ob)				Clears everything written to 'ob'
+			outputbuffer_flush(ob, fp)			Flushes to a file (does not affect 'ob')
+
+
+BINARY READERS/ WRITERS(reader,writer)**************
+
+After creation can use functions with an OO syntax (obj.method) without
+the prefixes 'reader_' and 'writer_'
+
+Next is garbage collectable:
+ExternId	reader_fromfile(fp)					Makes a bin reader from a file pointer
+ExternId	reader_frominputbuffer(ib)			Makes a bin reader from an input buffer
+Number		reader_read_ui8(r)			
+Number		reader_read_ui16(r)			
+Number		reader_read_i16(r)			
+Number		reader_read_ui32(r)			
+Number		reader_read_i32(r)			
+Number		reader_read_bool8(r)			
+Number		reader_read_real64(r)		
+String		reader_read_string(r)		
+InputBuffer	reader_read_buffer(r, size)
+
+Next is garbage collectable:
+ExternId	writer_fromfile(fp)					Makes a bin writer from a file pointer	
+ExternId	writer_fromoutputbuffer(ob)			Makes a bin writer from an output buffer
+			writer_write_ui8(w, Number)				
+			writer_write_ui16(w, Number)				
+			writer_write_i16(w, Number)				
+			writer_write_ui32(w, Number)				
+			writer_write_i32(w, Number)				
+			writer_write_bool8(w, Number)			
+			writer_write_real64(w, Number)			
+			writer_write_string(w, String)			
+			writer_write_buffer(w, b)			An input / output buffer is supplied that is flushed
+												(in case of input buffer only the remaining bytes are flushed).
+
+
+NON-BLOCKING SOCKETS(socket)***********************	
+
+After creation can use functions with an OO syntax (obj.method) without
+the prefix 'socket_'
+
+ExternId	socket_createforclient()					Produces a client socket
+			socket_createforserver(Number(port))		Produces a server socket
+			socket_destroy(socket)						Destroyes a socket (and closes connection)
+			socket_connecttoserver(						Connects to a server (check with socket_isconnectionbroken if ok)
+				clientsocket, 
+				String(address), 
+				Number(port), 
+				Number(timeout)		// if 0, one try is only performed
+			)
+ExternId	socket_acceptclient(						Accepts a client (if failed returns Nil)
+				serversocket,
+				Bool(blocking),		// will block until connected
+				Number(timeout)		// only if non-blocking is used
+			)			
+Bool		socket_isconnectionbroken(socket)
+
+PacketWrapping below can be either:
+std::SOCKET_PACKET_ORIGINAL			// users packets as they are
+std::SOCKET_PACKET_ADD_SIZE			// size (unsigned long, net byte ordering) preceeds user packets
+											
+Bool		socket_ismessagepending(
+				socket 
+				[, String(PacketWrapping) = SOCKET_PACKET_ADD_SIZE]
+			)
+			socket_waitanymessage(
+				socket, 
+				Number(timeout)		// if timeout is 0 we wait forever until a message is received
+				[, String(PacketWrapping) = SOCKET_PACKET_ADD_SIZE]
+			)
+InputBuffer	socket_receive(					Receives incoming data as an input buffer (if no message returns nil)
+				socket
+				[, String(PacketWrapping)]
+			)	
+InputBuffer	socket_blockreceive(			Blocking receipt of incoming data as an input buffer
+				socket
+				[, String(PacketWrapping) = SOCKET_PACKET_ADD_SIZE]
+			)	
+			socket_send(					Sends data from an output buffer
+				socket, 
+				ExternId(outputbuffer)
+				[, String(PacketWrapping) = SOCKET_PACKET_ADD_SIZE]
+			)
+	
+	
+STRINGS(str)***************************************
+
+Number		strlen(s)
+String		strslice(s, l1,r1,l2,r2,...,ln,rn)	Returns:		s[l1]+...+s[r1] +...+ s[ln]+...+s[rn].
+												Requires:		li <= ri, 0 <= li or ri <= strlen(s)-1.
+												Special case:	if ri is 0, then ri assumed strlen(s)-1.
+Number		strsub(s1,s2)						Returns index of first occurence of s2 in s1, else -1
+String		strlower(s)
+String		strupper(s)
+Number		strbyte(s, Number(i))			s[i] character ASCII value
+String		strchar(s, Number(i))			s[i] character as a string value
+String		strbytestr(Number(c))			c ASCII value to String
+Bool		strisalpha(Number(i))			Tests an ASCII code (alpha)
+Bool		strisalnum(Number(i))			Tests an ASCII code (alphanumeric)
+Bool		strisdigit(Number(i))			Tests an ASCII code (decimal digit)
+Bool		strisspace(Number(i))			Tests an ASCII code (white space)
+Bool		strisprint(Number(i))			Tests an ASCII code (printable at console )
+Bool		strislower(Number(i))			Tests an ASCII code (lowercase letter)
+Bool		strisupper(Number(i))			Tests an ASCII code (uppercase letter)
+Bool		strisident(s)					Returns true if s is a legal Delta identifier
+Bool		strisprefix(s, s_prefix)		Returns true if s_prefix is a prefix of s
+String		strrep(s,n)						s+...+s n times
+Number		strtonum(String)
+String list	strtokenise(					Tokenizes a string 's' to a sequence of strings
+				s:String,					using character tokens from 'tokens'
+				tokens:String
+			)
+Bool		strsavetofile(					Overwrites file at 'path' as a new text file with content from 'text'
+				String(text), 
+				String(path)
+			) 
+
+
+MATH FUNCTIONS(math)*******************************
+
+Number		sqr(x)
+Number		sqrt(x)
+Number		cos(theta)						theta in degrees
+Number		sin(theta)
+Number		tan(theta)
+Number		abs(x)
+Number		max(x1,...,xn)
+Number		min(x1,...,xn)
+Number		random(n)						In 0,...,n-1
+Number		randomise()
+Number		power(x, exp)					x ^ exp
+Number		pi()
+Number		fractionalpart(x)
+Number		integerpart (x)
+
+
+FILE I/O(file)*************************************
+
+After creation can use functions with an OO syntax (obj.method) without
+the prefix 'file' (for those functions accepting fp as an argument).
+
+Normally, you will use the filewrite and fileread functions
+for very simply needs, as in most cases you will deploy the 
+function set for readers / writers and binary I/O buffers.
+
+ExternId	fileopen(path, mode)			mode is any of 'rt', 'wt', 'at', 'rb', 'wb', 'ab'
+			fileclose(fp)	
+			fileremove(path)
+			filewrite(fp, x1, ..., xn)		Textual write
+Value		fileread(fp, type)				Textual read, type is any of 'string', 'number', 'bool'
+String		filegetline(fp)					Reads next text line from file
+Bool		fileend(fp)
+String		filetmpname()
+			fileexecute(String(cmmd))		OS shell command execution
+			
+
+VM SHARED MEMORY(sh)******************************
+
+This is actually in-process, but cross-vm shared memory
+enabling to interoperate intuitively among different scripts
+(vms at runtime).
+
+Bool		shexists(String id)
+			shwrite(id, val)
+Value		shread(id)
+			shdelete(id)
+Table		shobject()						Internal shared object returned,
+											that is the same for all vms.
+
+BITWISE OPERATORS(bit)*****************************
+
+Number		bitand(Number x, Number y)
+Number		bitor(x, y)
+Number		bitnot(x)
+Number		bitxor(x, y)
+Number		bitshright(x, n)
+Number		bitshleft(x, n)
+
+
+VM LOADING(vm)*************************************
+
+VM			vmget(id)
+Table		vmfuncs(vm / id)				Get all globals funcs in a table indexed with their names.
+Value		vmcall(vm / id, String(func)[, arg1,...,arg-n])
+String		vmid(vm)
+Func		vmfuncaddr(vm / id, String(func))
+VM			vmthis()
+VM			vmload(String(srcPath), String(unique id))
+			vmloadaddpath (path:String)		Adds a loading path used by all functions loading bytecode into vms
+VM			vmloadfrominputbuffer(ExternId(ib), String(unique id))
+VM			vmloadfromreader(ExternId(reader), String(unique id))
+			vmrun(VM)
+			vmunload(VM)
+VM			vmof(Function or Method)		If was unloaded, it returns nil
+Bool		vmisvalid(VM)					Returns if the VM is alive
+			vmseterrorinvalidatesall(Bool)
+Bool		vmhaserror(VM)
+			vmreseterror(VM)				Cannot be called from code of the erroneous VM 
+Bool		vmhaserrorsomewhere()			If there is a VM which produced an error
+			vmresetallerrors()				Reset errors in all vms
+String		vmgeterrorreport()
+Table		vmcurrcall()					Returns information on the present call as a tuple:
+											[	tag:	<number>, 
+												func:	<function value or undef if in global code>,
+												name:	<function name or 'at global code'>
+												vm:		<the vm in which the call is made>
+											]
+Table		vmnextcall(Number(callTag))		Returns the next call of the call whose tag is supplied.
+											If the current call is the bottom call, Nil is return instead.
+											Normally you make t = vmcurrcal(); t = vmnextcall(t.tag);
+String		vmgetstacktrace()				Returns the stack trace as a string (includes new lines).
+
+Also, the following functions may be called as methods using a VM 'x', without
+the prefix 'vm', and without passing the vm as a parameter:
+
+			x.call(String(func)[, arg1,...,arg-n]) same as vmcall(x, String(func)[, arg1,...,arg-n])
+			x.funcs					
+			x.funcaddr	
+			x.run				
+			x.haserror	
+
+COMPILATION(vm)***********************************
+
+bool		vmcomp						(String(srcPath), String(destPath), Callable onError(String errr), Bool(productionMode))
+bool		vmcompstring				(String(code),	  String(destPath), Callable onError(String errr), Bool(productionMode))
+bool		vmcomponwriter				(String(srcPath), ExternId(writer), Callable onError(String errr), Bool(productionMode))
+bool		vmcompstringonwriter		(String(code),    ExternId(writer), Callable onError(String errr), Bool(productionMode))
+ExternId	vmcompstringtooutputbuffer	(String(code),    Callable onError(String err), Bool(productionMode))
+ExternId	vmcomptooutputbuffer		(String(srcPath), Callable onError(String err), Bool(productionMode))
+list		vmextractbuilddeps			(String(srcPath))	Parses depedencies ('using' #<id>) and returns:
+															list of strings where every pair <A,B> of them explains how the deps were
+															resolves: A is the resolved full path and B is one of: "non_found" (then
+															A is the unresolved file name), "one_found" (then A is the full path) and 
+															"many_found" (then A encompasses all viable full path separated with ;).
+
+BYTECODE LIBRARIES(vm)******************************
+
+The following library functions belong to the nested namespace 'libs' within 'std' 
+namespace. They allow treat compiled binaries (byte code) as libraries with a logical 
+identifier, once initially registered using the 'register' function-set below.
+
+When an 'import' call is made, a distinct vm instance is produced for non-shared libraries, 
+that is also directly run. For shared libraries this is done only once upon the first 'import'
+invocation. The vms created this way may be explicitly released using 'unimport' function.
+This works fine for shared libraries too (they are released with a reference counter). 
+
+Also, vms are protected depending on the way the are created, so it is illegal 
+to 'vmunload' vms made with 'import' and to 'unimport' vms made with 
+'vmload' (you will get a runtime error if you do this). 
+
+		libs::registercopied		(String(id), String(byte code path))
+		libs::registercopied		(String(id), inputbuffer (byte code stream))
+		libs::registershared		(String(id), String(byte code path))
+		libs::registershared		(String(id), inputbuffer (byte code stream))
+bool	libs::isregisteredcopied	(String(id))
+bool	libs::isregisteredshared	(String(id))
+		libs::unregister			(String(id))
+VM		libs::import				(String(id))		
+		libs::unimport				(VM)
+
+
+LISTS AND LIST ITERATOS(list)**********************
+
+Next is garbage collectable:
+List		list_new()
+			list_push_back(l, x1,...,xn)
+			list_push_front(l, x1,...,xn)
+Value		list_pop_back(l)
+Value		list_back(l)
+Value		list_pop_front(l)
+Value		list_front(l)
+			list_insert(l, iterator i, x)		Insert x before i
+Bool		list_remove(l, x)					Returns whether x was actually found and removed
+			list_erase(l, iterator i)
+			list_clear(l)
+Number		list_total(l)
+Iter		list_iterator(l)					Returns a new iterator of a reset state
+
+Also, all previous functions, except list_new, may be called as methods
+using a list variable, without the 'list_' prefix.
+
+Next is garbage collectable:
+Iter		listiter_new()
+Iter		listiter_setbegin(i, l)		
+Iter		listiter_setend(i, l)		
+Bool		listiter_checkend(i, l)
+Bool		listiter_checkbegin(i, l)
+Bool		listiter_equal(i, j)		
+			listiter_assign(i, j)		
+Iter		listiter_copy(i)			
+Iter		listiter_fwd(i)				
+Iter		listiter_bwd(i)	
+Number		listiter_getcounter(i)		Counter of current iteration element
+list		listiter_getcontainer(i)	
+Value		listiter_getval(i)
+			listiter_setval(i, x)
+
+Also, all previous functions, except listiter_new, may be called as methods
+using a list iterator variable, without the 'listiter_' prefix.
+
+
+VECTOR(vector)**************************************
+
+Next is garbage collectable:
+Vec			vector_new() 
+			vector_setval(v, i, x)
+Value		vector_getval(v, i)
+Value		vector_front(v)				
+Value		vector_back(v)				
+			vector_push_front(v,x)		
+			vector_push_back(v,x)		
+			vector_pop_front(v)			
+			vector_pop_back(v)			
+			vector_resize(v, n)			Expands the vector at only if n > vector_total(v).
+										Introduces new undefined elements.
+			vector_total(v)
+			vector_iterator(v)			Returns a new iterator of a reset state
+			
+Also, all previous functions, except vector_new, may be called as methods
+using a vector variable, without the 'vector_' prefix.
+
+Iter		vectoriter_new(n)		n is initial size (mandatory).
+Iter		vectoriter_setbegin(i,v)	
+Iter		vectoriter_setend(i,v)		
+Bool		vectoriter_checkend(i,v)	
+Bool		vectoriter_checkbegin(i,v)
+			vectoriter_equal(i,j)
+			vectoriter_assign(i,j)		
+Iter		vectoriter_copy(i)			
+Iter		vectoriter_fwd(i)			
+Iter		vectoriter_bwd(i)			
+Number		vectoriter_getcounter(i)	Counter of current iteration element
+vector		vectoriter_getcontainer(i)	
+Value		vectoriter_getval(i)
+			vectoriter_setval(i,x)
+Number		vectoriter_getindex(i)
+
+Also, all previous functions, except vectoriter_new, may be called as methods
+using a vector iterator variable, without the 'vectoriter_' prefix.
+
+
+ALGORITHMS(algo)*********************************
+
+The following algorithms work with existing containers and iterators, but also work with user defined containers and iterators that
+follow the standard library API. The container must have a method "iterator" that returns an iterator object and the iterator must 
+have the following methods: fwd, (equal or operator '=='), setbegin, setend, getval, copy and getcontainer. To see the proper signature 
+of the methods above, see the API of the standard library containers and iterators. In the functions below:
+
+start, end		iterators 
+cont			container 
+x				any value 
+pred			callable Bool pred(Iter)
+func			callable pred(Iter)
+eraser			callable eraser(container, iterator)
+
+Iter		find(x, start, end)							Returns an iterator to the first element in the range 
+														[start,end) that compares equal to x, or end if not found.
+Iter		find(x, cont[, end])						Same as before, except start is the first element in container cont
+List		find_all(x, start, end)						Returns a list with iterators to all the elements in the 
+														range [start,end) that compares equal to x
+List		find_all(x, cont[, end])					Same as before, except start is the first element in container cont
+Iter		find_if(pred, start, end)					Returns an iterator to the first element in the range [start,end) for 
+														which pred is satisfied.
+Iter		find_if(pred, cont[, end])					Same as before, except start is the first element in container cont
+List		find_all_if(pred, start, end)				Returns a list with iterators to all the elements in the range 
+														[start,end) for pred is satisfied.
+List		find_all_if(pred, cont[, end])				Same as before, except start is the first element in container cont
+			apply(func, start, end)						Applies func to all the elements in range [start,end)
+			apply(func, cont[, end])					Same as before, except start is the first element in container cont
+Iter		remove(x, start, end[, eraser])				Removes from the range [start,end) the first element with a value 
+														equal to x and returns an iterator to the following element, 
+														or end if no element found. If an eraser passed, it is called instead
+														of the default erase policy.
+Iter		remove(x, cont[, end, eraser])				Same as before, except start is the first element in container cont
+			remove_all(x, start, end[, eraser])			Removes from the range [start,end) all the elements with a value 
+														equal to x. If an eraser passed, it is called instead
+														of the default erase policy.
+			remove_all(x, cont[, end, eraser])			Same as before, except start is the first element in container cont
+Iter		remove_if(pred, start, end[, eraser])		Removes from the range [start,end) the first element for which pred 
+														is statisfied and returns an iterator to the following element, 
+														or end if no element found. If an eraser passed, it is called instead
+														of the default erase policy.
+Iter		remove_if(pred, cont[, end, eraser])		Same as before, except start is the first element in container cont
+			remove_all_if(pred, start, end[, eraser])	Removes from the range [start,end) all the elements for which pred 
+														is statisfied. If an eraser passed, it is used to remove the element.
+			remove_all_if(pred, cont[, end, eraser])	Same as before, except start is the first element in container cont
+
+*************************************************

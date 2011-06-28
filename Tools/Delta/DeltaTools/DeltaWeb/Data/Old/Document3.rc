@@ -1,0 +1,69 @@
+#include "defines.h"
+
+		_document _id("reference") _title("Delta language grammar") _class("red")
+		index ["text","formating","styles","fonts","sizes","colors","highlighting"],
+		[
+			_section _id("deltareference")
+			[
+				_text
+				[
+					"code ::= { def }"	NL
+					"def ::= [ 'debug' ] ( [ stmt ] ';' | namedfunc )"	NL
+					"namedfunc ::= 'function' id funcbody"	NL
+					"unnamedfunc ::= 'function' funcbody"	NL
+					"funcbody ::= '(' [ id { ',' id } ] ')' block"	NL
+					"block ::= '{' code '}'"	NL
+					"stmt ::= expr | whilest | forst | ifst | 'break' | 'continue' |"	NL
+					"'return' [ expr ] | block | assertion | 'const' id '=' expr"	NL
+					"whilest ::= while '(' expr ')' stmt | 'do' stmt 'while' '(' expr ')'"	NL
+					"forst ::= 'for' '(' exprlist ';' expr ';' exprlist ')' stmt"	NL
+					"ifst :: 'if' '(' expr ')' stmt [ 'else' stmt ]"	NL
+					"exprlist ::= [ expr { ',' expr } ]"	NL
+					"expr := assign | primary | boolean | arith"	NL
+					"assign ::= lval '=' expr | lval '+=' expr | lval '-=' expr |"	NL
+					"lval '*=' expr | lval '/=' expr"	NL
+					"lval ::= [ 'local' | 'static' | 'global' | '<' number '>' ] id | tableitem"	NL
+					"tableitem ::= ['bound'] (expr '.' id | expr '[' expr ']' | expr '.' string)"	NL
+					"primary ::= lval | lval '++' | '++' lval | lval '--' | '--' lval | const"	NL
+					"funccall | '(' (namedfunc | unamedfunc) ')' | table | 'self'"	NL
+					"| '<' number '>' 'self' | 'arguments' | '-' expr | 'not' expr"	NL
+					"funccall ::= expr '(' [ actual { ',' actual } ] ')'"	NL
+					"actual ::= expr | '|' expr '|'"	NL
+					"const ::= 'nil' | 'true' | 'false' | number | string"	NL
+					"boolean ::= expr boolop expr"	NL
+					"arith ::= expr arithop expr"	NL
+					"arithop ::= '+' | '-' | '*' | '/' | '%'"	NL
+					"boolop ::= 'or' | 'and' | '<' | '>' | '<=' | '>=' | '==' | '!='"	NL
+					"table ::= '[' [ field { ',' field } ] ']'"	NL
+					"field ::= '{' expr {',' expr } ':' fieldval '}' | fieldval"	NL
+					"fieldval ::= expr | '(' 'member' funcbody ')'"	NL
+					"assertion ::= 'assert' expr | 'assert' '(' expr ')'"	SS
+					@linebreak
+				]
+			]
+		],
+		[
+			_section _id("textstyles") _title("Alternative text styles")
+			[
+				_text
+				[
+					"This is the normal style."								PP
+					!emphatic "This is the emphatic style."					PP
+					!code "This is the code style."							PP
+					!pseudocode "This is the pseudocode style."				PP
+					!definition "This is the definition style."				PP
+					!quotation "This is the quotation style."				PP
+					!formula "This is the formula style."					PP
+					!footnote "This is the footnote style."					PP
+					!highlight "This is highlighted text."					PP
+					!warning "This is the warning style."					SS
+					!code !emphatic "This is emphatic code."				NL
+					!footnote !pseudocode "This is pseudoce in a footnote."	NL
+					!quotation !formula "This is a formula on quotation."	SS
+					!red "This is the normal style in red."					PP
+					!lightgray "This is the normal style in #E8E8E8."		PP
+					!emphatic !green "This is green and emphatic."			PP
+					!emphatic !blue !definition "This is the definition style in blue and emphatic."
+				]
+			]
+		]

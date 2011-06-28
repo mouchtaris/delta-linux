@@ -1,0 +1,1690 @@
+///////////////////////////////////////////////////////////////////
+// Content documents for Delta web site.
+// A. Savidis, November 2009.
+///////////////////////////////////////////////////////////////////
+ 
+#include "defines.h"
+
+///////////////////////////////////////////////////////////////////
+// Language
+///////////////////////////////////////////////////////////////////
+
+START_DOC("homepage", "Overview"),
+index ["Overview"],
+
+START_SEC("sl_overview", "Language type")
+[_text [
+	!italic !blue !emphatic "The Delta language	is untyped object-based (classless), dynamically-typed (weakly, duck typing), lexically-scoped, 
+	garbage collected, compiled to platform-neutral byte code, run by a virtual machine", ". In this sense, it has similarities to Lua and JavaScript, 
+	but not to Python and Ruby - the last two, although dynamic, are class-based and typed. A Delta source program (.dsc files - DeltaSource Code) is 
+	compiled to platform-neutral byte code (.dbc files - Delta Byte Code) which can be loaded and run by a virtual machine. 
+	Every loaded program has its own separate virtual machine with its own runtime stack. Virtual machines are
+	first-class values carrying loaded programs being essentially first-class packages. A source program in Delta is 
+	a sequence of statements mixed with function definitions. When a program is run, all such statements (not the function
+	definitions) are sequentially executed.", 
+	
+	NL2,
+	
+	"Delta programs may run standalone or may be embedded in C++ applications. In the former case,
+	a Delta program may load and use application-specific libraries as dynamic libraries (DLLs), implying
+	gluing or application logic code is written in Delta. This development model is increasingly
+	becoming popular for scripting languages. In the latter case, application developers
+	decide explicit extension points in their code by implementing hooks to invoke Delta code. This model 
+	treats Delta as a tool to allow post-production application extensions, and it was a popular model for 
+	exploiting scripting languages in the past (currently it is is fading out).",
+
+	NL2,
+
+	"The two models, both supported by Delta, are outlined below. We believe that the second model 
+	will dominate: high-performance, application-specific libraries (we can call that an application engine) 
+	will be programmed in the native language, while the entire logic for an actual application will be 
+	programmed in the scripting	language.", 
+
+	NL2
+	]				
+],
+
+FIGURE(
+	"images/content/scripting_models.jpg", 
+	center,  
+	"***Application scripting models (both supported by Delta)***"
+)
+
+END_SEC,	// sl_overview
+
+START_SEC("sl_impl", "Language implementation")
+index ["Implementation", "Research objectives"],
+[_text [
+	"The Delta language has a full-fledged multi-platform implementation in C++, with the current source-code base being 
+	approximately 200 KLOCs. The language and its tools are all implemented from scratch, meaning they do not rely 
+	on third-party language tools or technologies (like DLR, Eclipse or Visual Studio). Overall, our
+	implementation includes: compiler, virtual machine, debugger backend and frontend, standard runtime library, 
+	extra libraries (XML, Corba, wxWidgets), and an IDE with self-extensibility, syntax highlighting and 
+	two source-level debuggers.",
+	
+	NL2,
+	
+	"The language system offers a powerful embedding library (for interoperation with C++) and a feature we call
+	just-in-time tracing collection that disposes objects immediately after they become useless. Additionally,
+	it supports collection for native objects (users may provide to Delta any C++ object, including containers of 
+	Delta values, that can be collected by the Delta garbage collection system).", 
+
+	NL2,
+
+	!italic !blue !emphatic "Our work in the Delta language combines research on: language design, language implementation, 
+	and integrated development environments.", 
+	NL2,
+	!italic !blue !emphatic "We strongly believe that the combined focus on all these research 
+	areas leads to more rapid progress and more useful results in each individual area.", 
+	NL2, 
+	!italic !blue !emphatic "We are constantly working on the interplay of languages and tools, where both are (re)designed 
+	and (re)implemented to empower each other for the benefit of their users. In particular, our work in the Delta language and 
+	the Sparrow IDE reflects our focus on the following research topics:",
+
+	NL2,
+
+	!emphatic !italic "Dynamic untyped object-based languages for full-power untyped OO programming", 
+	!italic "(classes, overloading, inheritance, polymorphism, genericity).", NL2,
+  
+	!emphatic !italic "Debugger friendly virtual machines", !italic "(runtime collection of metadata 
+	which cannot be statically computed).", NL2,
+
+	!emphatic !italic "Next generation debugger backends", !italic "(language-agnostic object inspection,
+	object graphs with referrers and  referrents information, object slot classification properties).", NL2,
+
+	!emphatic !italic "IDEs supporting whitebox add-ons", !italic "(users can define, manage, control, 
+	inspect and refine add-ons).", NL2,
+
+	!emphatic !italic "IDEs supporting fast and easy circular debugging of add-ons", !italic "(allow to debug addons 
+	within the entire running IDE using the IDE itself).", NL2
+	]				
+]
+
+END_SEC,	// sl_overview
+
+START_SEC("sl_codesample", "Language style")
+[_text [
+
+	"Below there are a few code samples that are indicative of the Delta language style.
+	As in many languages, variables are implicitly declared by use, while they are dynamically
+	typed (they take at runtime the type of the value they are assigned). Also, variables are
+	lexically scoped.", 
+
+CODE_BLOCK "
+x = 10; 						// 'x' declared, assigned 10, type becomes 'Number' 
+{								// opening a block (entering scope) 
+	x = \"hello\";				// previous (global) 'x, now assigned 'hello', type set as 'String' 
+	print(typeof(x));			// prints type of global 'x', being 'String' 
+	local x = ::x +\",world\";	// new local 'x' at block scope assigned the global 'x' + ',world' 
+	print(typeof(x));			// prints type of local 'x' (closest one), being 'String' 
+	print(typeof(::x));			// prints type of global 'x', also being 'String' 
+	print(x, \"/n\");			// prints value of local 'x' and a new line 
+	print(typeof(print));		// prints type of library func 'print' being 'LibraryFunc' 
+}								// closing the block (exiting scope)
+",
+
+	"Function definitions are syntactically like statements. To use a function definition directly as an expression 
+	it has to be surrounded by parenthesis. Anonymous functions are supported by simply skipping the function name.
+	When a function has no arguments you may optionally skip the '()' part denoting empty arguments.", 
+
+CODE_BLOCK "
+function f (x,y) 					// definition of a named function 'f' at global scope
+	{ return x + y; } 				// no trailing ';' is needed after func (harmless to add one)
+print(typeof(f)); 					// prints type of 'f' being 'ProgramFunc' string
+const nl = \"/n\"; 					// defines a constant 'nl' at global scope
+print((x = f)(\"1\", 2), nl); 		// assigns 'f' to 'x', calls 'f' with '1' and 2, printing '12' 
+f = x; 								// compile error, as user-defined functions are not variables 
+id = 								// 'id' is a var asigned a func expression
+	( function(x){ return x; } ); 	// any func definition around ( ) is an expression 
+print(id(id)); 						// calls 'id' on itself, printing the anonymous function value 
+",
+
+	"Objects are created ex nihilo by object construction expressions of the form ", !definition "[ <slot definitions> ]",
+	" and are garbage collected. Slot definitions concern explicitly or automatically indexed slots (the latter take successive 
+	numeric indices, following their order of appearence, starting from 0). For indices any value
+	may be used, not just numbers or strings, except nil that can be used neither as a slot index nor as a slot value.
+	In fact, setting a slot with ", !dsrc "nil"," causes removal, while testing the existence of a slot
+	is possible by comparing its value with ", !dsrc "nil", " (since it can't be a slot value).",
+
+CODE_BLOCK "
+a = []; 							// ex nihilo creation of an empty object 
+a = [\"one\", 2, function three{}];	// make an object with three elements indexed as [0] [1] [2]
+print(a[0], a[1], a[2]); 			// prints 'one', 2 and the value of the 'three' function 
+three();							// notice that 'three' is a visible function at this point
+a.three();							// runtime error, functions are not indexed by name
+a.three = three;					// should add explicitly a slot with a desriable index
+a = [ @three : function {} ];		// this is the way to do it in object constructors
+a = [ { \"x\", \"y\" : 10, 20 } ]; 	// make an object with slots 'x' : 10 and 'y' : 20 
+a.x = a.y = \"goodbye, world\"; 	// write 'x' and 'y' slots with the same 'String' value 
+print(typeof(a), typeof([])); 		// prints 'Object' twice, as the type of all objects is 'Object' 
+a = [
+	method move (dx, dy) {			// methods are allowed only inside object expressions 
+		self.x += dx;				// 'self' is a keyword referring to the method owner object  
+		self.y += dy;				// slots are late bound, requested upon method invocation
+	},
+	{ \"$1\" : method{} }			// alternative syntax if the method name is not an identifier
+]; 
+a.x = a.y = 30; 					// here we actually set the 'x' and 'y' slots of 'a'
+a.move(-10, -10); 					// and we invoke a method by its name
+a.\"move\"(-10, -10);				// this syntax is also possible
+a.\"$1\"();							// it is usefull to access methods with non-identifier names
+a[\"$1\"]();						// this is the traditional style and applies too
+print(a.x == nil);					// will print 'false'
+a.x = nil;							// will remove 'x' slot
+print(a.x == nil);					// now will print 'true'
+print(a[nil]);						// runtime error: nil is forbidden as a key
+",
+
+	"Typical control flow statements are supported like if-else, while, for and an extensible foreach
+	enabling iteration on user-defined containers. The syntax resembles that of C.",
+
+CODE_BLOCK "
+if (foo) 
+	print(\"true\"); 
+else 
+	print(\"false\"); 
+while (bar) {
+	print(\"still true\"); 
+	if (foo) 
+		break; 
+	else 
+		continue; 
+} 
+for (local i = 0; i < N; ++i) 
+	(function{})(); 					// invoke an anonymous function
+foreach (x, [0, 1, 2, 3, 4]) 			// iteration order in objects is undefined
+	print(x); 
+foreach (f, [function{}, function{}]) 	// the object slots are two anonymous functions
+	f();
+"
+	]				
+]
+END_SEC,	// sl_codesample
+
+START_SEC("sl_stdfeatures", "Standard features")
+
+TEXT(
+	"Below we provide a list of features which are standard in the Delta language. Such features are 
+	typically met in advanced dynamic, class-based or classless, languages. For the detailed description 
+	you may refer to the "
+), 
+DOC_REF("d_guide", "programming guide"), 
+TEXT(" document."),
+
+[_text [
+
+	NL2,
+	!definition "Untyped objects with ex nihilo construction", 			NL1,
+	"Object instances are produced at runtime every time an object constructor expression
+	is evaluated. Such expressions have the syntax ", !blue !italic "[ <slot definitions> ]",
+	", while with every evaluation a new distinct instance is produced. Examples are provided below:",
+
+CODE_BLOCK "
+a = [ 1, 3, 5 ]; 			// an object with slots <0:1, 1:3, 2:5> (first is auto key) 
+print(a[0], a[1], a[2]);	// syntax to access slots of any key type is <obj>[<key>]
+b = [ { #x, #y : 0 } ];		// an object <x:0, y:0> with #<id> being equivalent to \"<id>\"
+b = [ @x : 0, @y : 0 ];		// alternative syntax with @<id> : expr same as { \"<id>\" : expr }
+b.x = 20; 					// accessing slots of identifier keys (syntactic sugar to b[\"x\"]) 
+c = [ method f{} ]; 		// an object <f: method{}> 
+c = [ @self ]; 				// '@self' (kwd) refers to the object under creation 
+print(c == c[0]); 			// will print 'true' 
+",
+	
+	!definition "First-class anonymous methods", 						NL1,
+	"Method definitions are allowed ", !italic "only as slot definitions", " of object constructor
+	expressions, while ", !italic "they are always anonymous", ". Methods can be stored in slots of any key value,
+	besides string-identifier keys; however, for identifier keys syntactic sugar is provided to make
+	method definitions more clear. The reason methods are anonymous is because they always 'reside' within
+	object slots visible with their respective indices (keys). Thus, since it is always possible to refer to 
+	method slots, there is no need to statically 'lock' the name of a method.", NL2, 
+	"The latter allows change the way a method is referred (its slot key) dynamically, 
+	or even use multiple such keys. Additionally, as explained under the section on '"
+	]
+],
+DOC_REF("d_features", "novel features"), 
+
+[_text [ 
+	"', we allow methods to be added and invoked on any object, a sort of ", !italic !blue "fine-grained reuse 
+	downto individual methods, like traits", ". Examples on methods are provided below:", 
+
+CODE_BLOCK "
+a = [ 	@f : method {},			// new object on var 'a' with a method in slot 'f' 
+		@g : method {} 	];		// and another method in slot 'g'
+a.f(); 							// invoking a method for an identifier key 
+a.\"f\"(); 						// this is also valid and works for any string key
+f();							// compile error (not a callable), as methods invisible outside
+b = [ method f{} ]; 			// this is syntactic sugar for method slots with id keys 
+b.f(); 							// syntactic sugar of field access applies as before 
+c = [ { \"$1\" : method{} } ]; 	// methods may be stored to slots of non-id string keys
+d = [ { -1 : method{} } ]; 		// methods may be stored to slots of any key
+c[\"$1\"](); 					// the generic syntax for slot access can be used 
+c.\"$1\"(); 					// this form can be used too 
+d[-1]();						// for non-string keys the [] syntax is used
+fm = a.f; 						// 'fm' is a method value, copying 'a.f' 
+fm(); 							// can be called directly not requiring an object 
+fm = c.\"$1\";					// as before we get the method value
+fm();							// and we invoke it without the object
+print(fm.self);					// will print object 'c' ('self' key allowed only on methods)
+print(fm.self == c);			// will print 'true'
+print(fm.self.self);			// will print 'nil' (for objects 'self' is a user-defined slot)
+fm.self.self = \"foo\";			// sets 'self' slot of 'fm' owner to 'foo'
+print(fm.self.self);			// this will print 'foo'
+",
+
+	!definition "Self-object visibility inside methods", 	NL1,
+	"In Delta, ", !italic !emphatic "self", " (keyword) is an automatic internal parameter (no need to explicitly declare it),
+	and refers to the object receiving the method invocation request. It applies only inside methods.",
+ 
+CODE_BLOCK "
+a = [						// 'a' is a new object 
+	method add(d) 			// it has a method named 'add'
+		{ self.val += d; } 	// in methods we use 'self' to access slots
+]; 	
+a.val = 10; 				// we can introduce slots on objects dynamically
+a.add(20); 					// here when 'a.add' is invoked 'self' is 'a' 
+",
+
+	!definition "First-class functions", 					NL1,
+	!italic "Function names are r-values (immutable)", " that can be normally used in expressions,
+	stored in object slots and passed to- or returned by- functions (higher-order functions).
+	Examples are provided below:", 
+	
+CODE_BLOCK "
+function foo 				// a function with no parameters - may skip '()'
+	{ print(\"foo\"); } 		
+function bar (f) 
+	{ f(); return f; } 		// a function invoking and returning its argument 
+bar(foo); 					// will print 'foo' 
+function h(f, g, x)			// a function with function (callable) arguments 
+	{ return g(f(x)); } 
+h(bar, bar, foo); 			// will print 'foo' twice 
+bar(bar(foo))(); 			// will print 'foo' three times
+a = [ foo, bar ]; 			// make an object with two function slots 
+a[1](a[1](a[0]))(); 		// this is equivalent to 'bar(bar(foo))()' 
+",
+
+	!definition "Function definitions as expressions", 		NL1,
+	"A function definition can be used as an expression when surrounded by parenthesis, that is ",
+	!italic !emphatic "(<function def>)", " is a function value. Such values can be involved in expressions
+	as with function names. A function defined this way is visible inside the entire block where the expression 
+	appears. ", !italic "The parenthesis are optional when the function definition appears as an argument to a call,
+	or as a value in a slot defintion", ". Examples are provided below:",
+	
+CODE_BLOCK "
+(function foo { print(\"foo\"); })(); 	// 'foo' defined and invoked directly here
+print(
+	function bar (f) 					// 'bar' defined and supplied as  an argument
+		{ f(); return f; }
+); 
+[ { 0 : function{} } ]; 				// anonymous function as an explicitly indexed slot 
+[ function g{} ]; 						// named function as an automatically indexed slot 
+foo(); bar(foo); g();					// all named functions are visible at this point 
+",
+
+	!definition "Anonymous and lambda functions", 			NL1,
+	"Anonymous and lambda functions are supported, which when combined with the previous feature move closer
+	to a functional programming style. Examples are provided below:",
+	
+CODE_BLOCK "
+l = std::list_new(							// make a list with a few initial elements 
+		10, 								// list elements may be of any type
+		\"hello\", 
+		\"world\",
+		function(l) 						// an anonymous function element
+			{ print(l); }
+	); 
+foreach(x, l) 
+	(function(x) { 							// define an anonymous function
+		if (typeof(x) == \"ProgramFunc\")	// test the type of a value dynamically
+			x(l);							// we invoke funcs passing 'l' as arg
+	})(); 									// invoke the anonymous func per element
+(function(f){ f(); })(						// anonymous func invoked directly
+	function{}								// anonymous func supplied as argument
+);
+(f = (function{}))();						// anonymous func assigned to 'f', then invoked
+",
+	
+	!italic "Lambda functions are syntactic sugar for anonymous functions that return a single
+	expression", " (clearly, not a lot of typing is saved). Usually they are preferred due to
+	stylistic reasons by being closer to the functional look-and-feel. Here are a few examples:",
+	
+CODE_BLOCK "
+(function (cont, pred, action) {				// an anonymous function with three args
+	foreach (local x, cont)						// iterate to elements 'x' of container 'cont' 
+		if (pred(x)) 							// if the predicate 'pred' is satisfied on 'x' 
+			action(x);							// then invoke 'action' on 'x' 
+})(												// we invoke directly the anonymous function 
+	l, 											// the previously defined list 'l' 
+	lambda(x)									// a lambda function with a single arg
+		{ typeof(x)==\"Number\" and x%2==0 },	// the predicate is satisfied for even numbers 
+	lambda(x)									// a lambda function with a single arg
+		{ print(x) }							// it prints its arg
+);												// it will print '10' 
+",
+
+	!definition "Anonymous reference to enclosing function or method", 	NL1,
+	"As explained earlier, besides anonymous and lambda functions, in Delta all methods
+	are anonymous. In such cases, if recursive invocation is needed, or when the
+	value of the function / method must be used in an expression, we need a way to allow
+	refer to the current anonymous function / method. This is possible through the ", 
+	!dsrc !blue "@lambda", " keyword, which is a general 'synonym' for the current
+	function / method (in fact, it can be used even within explicitly named functions).
+	Examples are provided below:",
+
+CODE_BLOCK "
+fib =	(function(n) { 	// as an anonymous function
+			if (n == 0) 
+				return 0; 
+			else if (n == 1) 
+				return 1; 
+			else return @lambda(n-1) + @lambda(n-2); 
+		});				// enclosing parantheses necessary
+",
+	
+	"In the previous code 'fib' is a variable, so, although its tempting to add ", !dsrc "fib(n-1)+fib(n-2)", " in place
+	of the previous code, the function will then depend on the value of global variable 'fib', an apparent malpractice. 
+	An alternative version using lambda functions follows. Notice that in Delta the syntax of the
+	ternary operator is ", !italic !blue "( expr ? expr : expr )", " meaning the extra surrounding
+	pair of parenthesis is mandatory (a little more verbose than C).", 
+	
+CODE_BLOCK "
+fib = lambda(n) // as a lambda function
+		{ ( n < 2 ? n : @lambda(n-1) + @lambda(n-2) ) }; 
+",
+
+	!definition "Nested functions with closures", 		NL1,
+	"Nested functions are supported that normally provide access to global
+	variables, and all functions visible at the point of their definition. Additionally,
+	via closures, access is granted to local variables and formal arguments 
+	of the outer, i.e. directly enclosing, function and to local variables of any outer block 
+	of the main program only if the current function is a top-level function. The latter constitute the
+	closure for an inner function, and are called closure vars, and upvalues of its closure. Additionally, 
+	in the Delta language access is provided to all closure vars of the outer function (thus an inner 
+	function has access to closure of its outer function).",
+
+	NL2,
+
+	"Although closures are supported in the Delta language, all their goodies can be
+	effectively emulated through ", !italic !emphatic "functors", " which essentially prescribe 
+	functions with state. The choice depends on your preference in using either a function object with 
+	a whitebox state where all facilities of the object system directly apply (functor) or a function with
+	a blackbox state (closure)."
+	]
+],
+
+TEXT("For more information on functors you you may refer to the  "), 
+DOC_REF("d_overloading", "operator overloading"),
+
+[ _text	[
+		" document for more details. Simple examples showing use of nested functions
+		and closures are provided below.",
+
+CODE_BLOCK "
+function f {
+	const N = 10;			// a constant local to 'f'
+	function f(x,y) {
+		function g { 
+			local v = N;	// non-local constants are visible
+			const N = 20;	// but can be redefined (shadowed)
+			return f(x, y); // 'x' and 'y' visible, closure vars for 'g'
+			return f(0,0);	// outer 'f' is visible
+			local x;		// this is local 'x' declaration
+		}
+		local x;			// this will shadow the 'x' arg
+		function 
+			{ x = 20; }		// 'x' visible, closure var for anonymous func
+		function
+			{ ::f(); }		// global 'f' function visible
+	}
+}
+
+y;							// implicit declaration of global 'y'
+{							// a block at global space
+	local x;				// 'x' is a local var (block scope)
+	function {
+		x = 20; 			// 'x' visible, clsoure var for anonymous func
+		y = 20;				// but can access directly global 'y'
+	}
+}
+
+function bind1st(f, x) 		// A simple binder using closures.
+	{ return lambda { f(x, |arguments|) }; }
+",
+	NL1,
+	"It should be noted that, debugging-wise, closures are always whitebox 
+	in the Delta language due to the powerful debugger inspection 
+	features which allow view closure contents (see figure below)."
+	]
+],
+
+FIGURE(
+	"images/content/closures_in_debugger.jpg", 
+	center,  
+	"***The closure shown during debug inspection***"
+)
+
+END_SEC,	// sl_stdfeatures
+
+START_SEC("sl_keywords", "Keywords and operators")
+[_text[
+
+!definition "Keywords",
+CODE_BLOCK "	
+if 			else 		while 		for 	foreach 	
+break 		continue 	function	method 	using 		
+try 		trap 		throw 		static 	local 		
+const		lambda 		@lambda 	@set 	@get 
+self 		@self 		@operator 	return 	assert		
+onevent 	arguments	nil			and 	not 		
+or 			true 		false
+",
+
+!definition "Operators", NL1,
+
+!italic  "Arithmetic", NL1,
+!operator "+ - * / %", NL2,
+
+!italic 	"Pre / post increment / decrement", NL1,
+!operator "++	--", NL2,		
+
+!italic  "Ternary", NL1,
+!operator "( ? : )", NL2,
+
+!italic  "Relational", NL1,
+!operator "!=	== > < >= <=", NL2,
+
+!italic  "Logical", NL1,
+!operator "and not or", NL2,
+
+!italic  "Function call /  expression grouping", NL1,
+!operator "()", NL2,
+
+!italic  "Slot access", NL1,
+!operator "[] [[]] . 	..", NL2,
+
+!italic  "Assignments", NL1,
+!operator "= 	+=	-=	/=	*=	%=", NL2,
+
+!italic "For operator overloading", NL1,
+!operator "+_ -_ *_ /_ %_", NL1,
+!operator "==_ !=_ <_ >_ <=_ >=_", NL1,
+!operator ".= =()", NL2,
+
+!italic  "Special", NL1,
+!operator ":: # ... @", NL2,
+
+!italic  "Punctuation", NL1,
+!operator "{ } ; , : "
+]
+]
+END_SEC	// sl_keywords
+
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Novel features 				
+///////////////////////////////////////////////////////////////////
+
+START_DOC("d_features", "Novel features"),
+index ["Novel features"],
+
+START_SEC("sl_mutable_owner", "Methods with a mutable self")
+index ["Mutable self", "Methods" ],
+
+[_text [
+	"In Delta, methods are fully supported as first-class values, enabling access or mutate the owner 
+	object (self). Internally, method values are atomic pairs of a code address and an object reference (self).",
+	!italic "Every time an object constructor expression is evaluated and a new object instance is produced, all method
+	definitions from this expression introduce method-value slots to the newly created object. Each such method-value
+	slot is given as object reference (self) the new object.", " When a method is invoked, the owner object is always passed 
+	as an implicit parameter named self, visible inside the method body.", 
+	
+	NL2,
+	
+	"Because method values already carry the value of self, they can be 
+	called without syntactically requiring to denote the calee object. The latter is a feature also 
+	supported by Python. The examples below demonstrate the invocation of method values without requiring
+	an object and the feature of owner mutation.",
+
+	NL2,
+CODE_BLOCK "
+a = [  										// 'a' takes a reference to a new object 
+	method foo 								// the new object has a 'foo' method
+		{ print(self.val); }				// the method prints the self 'val' slot
+];
+m1 = a.foo; 								// 'm1' is a method value copying 'foo' value 
+print(m1.self); 							// 'm1' self slot can be freely taken 
+print(m1.self == a);						// will print 'true'
+m1.self.val = 23;							// we can access all slots of the self object normally
+m1(); 										// we invoke 'm1' directly, this will print '23' 
+a = [ @val : \"twenty three\" ]; 			// we set 'a' as another new object 
+m2 = m1; 									// 'm2' is a copy of the 'm1' method value 
+m1.self = a; 								// we mutate the owner of 'm1' method to be the new 'a'
+m1(); 										// this will now print 'twenty three' 
+m2(); 										// but this prints '23' as 'm2' has the previous onwer 
+m2.self = m1.self; 							// however, we can change 'm2' owner to be that of 'm1'
+m2(); 										// thus now 'm2' prints 'twenty three' as well 
+a.bar = tabmethodonme(						// this library function accepts an object ('a' here) 
+			a,								// and a method (slot [0] of new object here) and
+			[ method(v) { @val = v; } ][0]	// returns a copy of the method value with owner
+		);									// the supplied object (thus 'a')
+a.bar(23);									// invokes the new method with self being 'a'
+a.foo = tabmethodonme(a, m1);				// add 'm1' method in new 'a' object with 'foo' key
+a.foo();									// will print '23' as 'val' slot changed by the method
+",
+
+	NL1,
+	
+	"A mutable owner allows programmers to create new objects by combinig selectively methods from 
+	other objects. This allows fine-grained reuse of methods without requiring build or rely on inheritance schemes, 
+	something that may allow better separation of concerns for some reuse scenarios. Additionally, the ability to invoke
+	methods directly as functions, without syntactically requiring an object, enables methods 
+	play the role of functors, i.e. functions with their onwn copied state visible via self slot.
+	As shown below, the owner object of a method (i.e. self slot), is also displayed when inspecting
+	method values.",
+	NL2
+	]
+],
+
+FIGURE(
+	"images/content/methods_self_in_debugger.jpg", 
+	center,  
+	"***The owner object ('self' slot) of methods is shown during debug inspection***"
+),
+
+TEXT(NL1),
+TEXT("More information is provided in the discussion on "),
+DOC_REF("d_methods", "methods"), TEXT(".")
+
+END_SEC,	// sl_mutable_owner
+
+//****************************************
+
+START_SEC("sl_orphan_methods", "Orphan methods")
+index ["Methods", "Orphan methods" ],
+
+[_text [
+	"As mentioned earlier, in the Delta language all methods carry internally their self 
+	object, which is also syntactically accessible via ", !emphatic ".self", " and binds to the
+	object in which it is initially hosted. Thus, to get a method, one has to always define an object
+	construction expression encompassing the desired method, and then get the method through the object. 
+	But there are many situtations where methods are simply defined to be applied to various objects 
+	with differing slots (one could say those objects are of a different designed class). In this case,
+	the object constructor is just syntactic overhead. For this purpose, orphan methods are supported as 
+	shown by the examples below. Notice that orphan operator methods are not supported. Syntactically, 
+	orphan methods are treated just like functions.",
+	
+	NL2,
+	
+CODE_BLOCK "
+method m {}							// Orphan method definition - this 'm' is a variable.
+m = [ method {}][0];				// Actually, the previous is syntactic sugar for this.
+m = nil;							// Orphan methods define vars when their name is seen first time.
+function f {}						// Function definition, this 'f' is immutable.
+f = nil;							// Thus this would cause a compile-time error.
+method f {}							// This is an error too, as we try to assign a method to immutable 'f'
+m = (method {});					// The parentheses are needed here to make method definitions be expressions.
+method print_xy { print(@x, @y); }	// This method prints the 'x' and 'y' local slots / attributes.
+print_xy();							// The initial object has no 'x' or 'y' thus prints NilNil
+print_xy.self.x = 10;				// Here we can even use the internal object of an orphan method.
+print_xy.self.y = 20;				// And set its slots, as we do here.
+print_xy();							// This will now print 1020
+print(print_xy.self[0]);			// Notice that an orphan method is stored in the [0] slot of its initial self.
+print_xy.self = [ @x : 9, @y : 7 ];	// Here we change the 'self' object (owner) of 'print_xy' method
+print_xy();							// Hence, this call will now print '97'
+print(print_xy.self[0]);			// This will print 'Nil' since the new self has no [0] slot.
+"
+	]
+],
+
+TEXT("More information is provided in the discussion on "),
+DOC_REF("d_methods", "methods"), TEXT(".")
+
+END_SEC,	// sl_orphan_methods
+
+//****************************************
+
+START_SEC("sl_operator_overloading", "Binary-operator overloading")
+index ["Operator overloading", "Binary-operator overloading"],
+
+[_text [
+	"Although Delta is a classless language, it offers a facility for (untyped) overloading of
+	binary operators by objects with expressive power similar to typed overloading. The basic
+	arithmetic and relational operators can be overloaded, as well as the assignment and the
+	conversion operator:", NL2,
+	
+	!dsrc "Arithmetic:", 	TAB2 	!dsrc !blue !emphatic "+ - * / %", 			NL1,
+	!dsrc "Relational:", 	TAB2	!dsrc !blue !emphatic "> < >= <= == !=", 	NL1,
+	!dsrc "Assignment:",	TAB2	!dsrc !blue !emphatic "=", 					NL1,
+	!dsrc "Conversion:",	TAB2 	!dsrc !blue !emphatic "=()",				NL2,
+		
+	"The examples below demonstrate how ", !definition "untyped object-based operator overloading", 
+	" is supported. As shown, operator functions are first-class values, indexed using their operator lexeme.", NL2,
+
+CODE_BLOCK "
+function Point (x, y) { 				// an example of a 'Point' factory function
+	return [ 							// creates and returns new object everytime
+		@class : #Point, 				// user defined 'class' slot; #<id> same as \"<id>\" 
+		{ #x, #y : x, y }, 				// assignment to object slots from the arguments 
+		method @operator+(l, r) { 		// both arguments supplied to binary operator functions 
+			assert r.class == #Point;	// a trivial form of user-defined type checking 
+			return	Point(				// we return a new temp Point object
+						@x + r.x, 		// @<id> is same as self.<id>  
+						@y + r.y
+					); 
+       }
+    ];
+} 
+
+pt1 = Point(1,2);						// make a sample 'Point' instance
+pt2 = pt1 + Point(-1,-2); 				// 'pt2' is the result of adding 'pt1' with a temp 'Point' 
+print(pt1.+); 							// could also write pt1[\"+\"]; prints the operator method 
+pt2[+] = nil; 							// we remove the operator method (unoverloading) from 'pt2' 
+pt3 = pt2 + pt1; 						// fails at runtime since 'pt2' does not overload '+' 
+pt2.+ = Point(0,0).+; 					// we reoverload 'pt2' taking the operator from temp 'Point' 
+pt2.+.self = pt2; 						// and then we set the operator method's owner to be 'pt2' 
+pt3 = pt2 + pt1; 						// now the operator invocation will succeed 
+tabdisableoverloading(pt2);				// we can disable overloading on 'pt2'
+pt2 + pt1;								// runtime error, overloading disabled for 'pt2'
+pt1.+_ = pt1.+;							// we allow 'pt1' overload '+' even when at RHS
+pt2 + pt1;								// here pt1.+_(pt2, pt1) is called, thus handled by 'pt1'
+tabenableoverloading(pt2);				// we enable overloading on 'pt2'
+pt2 + pt1;								// now pt2.+(pt2, pt1) is called, thus handled by 'pt2'
+",
+	
+	"As shown below, because overloaded operators in Delta are treated as first-class object slots,
+	they are displayed when inspecting objects through the debugger as all other slots.",
+	NL2
+	]
+],
+
+FIGURE(
+	"images/content/operators_in_debugger.jpg", 
+	center,  
+	"***The operator slots of objects are shown during debug inspection***"
+),
+TEXT(NL1),
+
+TEXT(
+	"More information on the overloading of binary operators as well
+	as all the rest of operators is provided in the discussion on "
+),
+DOC_REF("d_overloading", "operator overloading"), TEXT(".")
+END_SEC, // sl_operator_overloading
+
+//****************************************
+
+START_SEC("sl_dot_overloading", "Dot overloading")
+index ["Operator overloading", "Dot overloading", "Proxies"],
+
+[_text [
+	"Dot overloading is the ability to supply a user-defined method for slot access. The latter
+	concerns both the reading and writing of object slots, handled via two separate operators:", !definition "dot", 
+	" and ", !definition "dot-assign", ". These operators are overloaded dynamically on objects
+	by simply setting two reserved slots for the keys: ", !dsrc !emphatic "'.'", " for the dot operator, and ", 
+	!dsrc !emphatic "'.='", " for the dot-assign operator. The built-in operators are still available via 
+	the library functions ", !definition "tabget(<obj>, <key>)", " and ", !definition "tabset(<obj>, <key>, <value>)", 
+	" . The example below illustrates the various ways in which dot overloading is supported.",
+	NL2,
+
+CODE_BLOCK "
+function dot(obj, key) 					// a trivial user-defined dot calling the built-in version 
+       { return tabget(obj, key); } 	// 'dot' is not a reserved name, we could name it 'foo' 
+function dot_assign(obj, key, val) 		// a trivial user-defined dot-assign calling the built-in version 
+       { tabset(obj, key, val); } 		// 'dot_assign' is not a reserved name, we could name it 'bar' 
+a = []; 								// just making an empty object for our example 
+a[.] = dot, a[.=] = dot_assign; 		// we just overloaded the dot and dot-assign methods
+print(a[.], a[.=]); 					// they are normal slots, so can be extracted and printed 
+a.x = 10, a.y = 20; 					// these are now handled by the our 'dot' and 'dot_assign' functions
+a[.=] = nil; 							// by removing either or both slots we return to the built-in version
+",	
+
+	"Dot overloading is useful for implementing user-defined objects models, including custom
+	object-based inheritance frameworks, but also for creating very intuitive proxies. Below we
+	demonstrate the implementation of a proxy factory which delegates all slot access to its 
+	associated object:", NL2,
+
+CODE_BLOCK "
+function Proxy (a) { 
+	return [ 
+		@server : a, 								// we store the server in a slot 
+		method @operator.(obj, key) 				// dot overloading syntax using operator methods
+			{ return tabget(obj, #server)[key]; }, 	// we use built-in dot to get 'server' object slot 
+		method @operator.=(obj, key, val) 			// here we similarly overload dot-assign 
+			{ tabget(obj, #server)[key] = val; } 	// and again redirect dot-assign to the 'server'
+       ]; 
+} 
+a = Proxy([]); 										// make a proxy for an empty server object 
+a.x = a.y = 20; 									// these slots are set on the server object 
+print(tabget(a, #server)); 							// we may still get the server via the built-in dot
+a = Proxy(a); 										// and we can even make a proxy for a proxy object 
+",
+
+	"As shown below, because dot operators in Delta are treated as first-class object slots
+	(as all the rest of overloaded operators), they are displayed when inspecting 
+	objects using the debugger as any other slot.",
+
+	NL2
+	]
+],
+
+FIGURE(
+	"images/content/dot_overloading_in_debugger.jpg", 
+	center,  
+	"***The dot and dot-assign operator slots shown during a debug session***"
+),
+TEXT(NL1),
+
+TEXT(
+	"More information on dot overloading as well as all the rest of operators 
+	is provided in the discussion on "
+),
+DOC_REF("d_overloading", "operator overloading"), TEXT(".")
+END_SEC, // sl_dot_overloading
+
+//****************************************
+
+START_SEC("sl_function_call_overloading", "Function-call overloading")
+index ["Operator overloading", "Function-call overloading", "Binders"],
+[_text [
+	"Function-call overloading allows objects be called syntactically as functions, thus be callables,
+	commonly referred as ", !definition "functors", ". Functors are conceptually functions with
+	their local copied state or memory. Since in our case functors are objects, such local state
+	is syntactically visible through ", !dsrc "self", " . Overloading of the function-call
+	operator is done by simply setting the reserved slot for the key ", !dsrc !emphatic "'()'", " with
+	a callable value (function, method or another functor). As with all other overloaded operators, 
+	it is a first-class slot that can be read, written or erased. Functors allow to implement higher-order
+	functions easily. Below we provide a few simple examples regarding functors.",
+	
+	NL2,
+	
+CODE_BLOCK "
+function const_func (c) { 					// produces functor f(x) = 'c' (i.e., constant function) 
+	return [ 								// make a new object everytime
+		@val : c, 							// store the constant 'c' as a slot of the functor object
+		method @operator() 					// a method overloading the function-call operator 
+			{ return @val; } 				// returns the slot storing constant value 
+       ]; 
+} 
+
+c_hw = const_func(\"hello, wolrd\"); 		// make 'c_hw' equivalent to f(x) = 'hello, world' 
+print(c_hw()); 								// will print 'hello, world' 
+c_23 = const_func(23); 						// make 'c_23' equivalent to f(x) = 23
+print(c_23()); 								// prints '23' 
+c_const = const_func(const_func); 			// make 'c_const' equivalent to f(x) = 'const_func' 
+c_nil = c_const()(nil); 					// here 'c_const()' is equivalent to 'const_func' 
+print(c_nil.()); 							// prints the function-call slot of 'c_nil' 
+c_23.() = nil; 								// removes the function-call slot of 'c_23' 
+print(c_23()); 								// fails at runtime since 'c_23' no more a callable 
+",
+
+	"One interesting use of functors in the Delta language is for easily implementing",
+	!definition "binder generators", ", or simply binders. Take a look at the code fragment below:", 
+	NL2,
+
+CODE_BLOCK "
+function bind_1st(f,x) { 					// produces g(y) as f(x,y) 
+	return [ 								// we return a functor object actually 
+		{ #f, #x: f, x }, 					// store locally 'f' and 'x' 
+		method @operator() 					// binders are functors 
+			{ return @f(@x,...); } 			// '...' passes all actual args of current func
+       ]; 
+} 
+p_hw = bind_1st(print, \"hello, world\");	// a binder for the std::print
+p_hw(\"n\"); 								// will print 'hello, world' with a new line 
+",
+
+	"The previous binder allows bind only the first argument. We can further generalize
+	to make", !emphatic " a binder for the first N arguments", " as follows:", NL2,
+
+CODE_BLOCK "
+function bind_n (f...) { 					// '...' as a suffix of formals implies var args 
+	arguments.pop_front(); 					// skip the 'f' argument being the first one
+    return [ 
+		{ #f, #args: f, arguments }, 		// we store the bound 'arguments' locally 
+		method @operator() 
+			{ return @f(|@args|,...); } 	// pass stored 'args' and all actual args 
+       ]; 
+} 
+p_hw = bind_n(
+			print, 
+			\"hello\", \", world\"			// here we bind two arguments with a signle call 
+		);
+p_hw(); 									// prints 'hello, world' 
+",
+
+	"In the previous code, the use of ", !dsrc "arguments", " and of the expression ", 
+	!dsrc !blue "|@args|", " deserves explanation. In Delta, ", !dsrc "arguments", " is a keyword, being
+	an automatically created vector carrying all arguments to a function / method invocation as ",
+	!dsrc "arguments[0], arguments[1],..., arguments[N-1]", " with N being the total number
+	of arguments. This vector is not actually used by Delta to access the arguments inside functions or 
+	methods, but is provided for user access, meaning it can be edited and stored as needed. 
+	Now, the expression ", !dsrc !blue "|<expr>|", " within an a list of actual arguments is
+	a directive to push onto the stack all elements of <expr> as follows:", NL2,
+
+	!blue !quotation "<expr>[0], <expr>[1], ..., <expr>[N]", " for vectors (0...size()-1),
+	objects (only numerically indexed elements with successive 0...tablength(a)-1 indices 
+	must exist) and lists (the elements are actually pushed front to back without indexing).",
+	
+	NL2,
+
+	"For instance, the call ", !dsrc "print(\"a\", true, []);", 
+	", can be also made as either ", !dsrc "t = [ \"a\", true, [] ]; print(|t|);", 
+	" or ", !dsrc "v = std::vector_new(3); v.push_back(\"a\"); v.push_back(true);
+	v.push_back([]); print(|v|);", 
+
+	". This feature allows to store and supply arguments to calls dynamically,
+	without requiring to syntactically enumerate the arguments as part of the 
+	invocation expression.",
+
+	NL2, 
+
+	"Below we provide a snapshot from a debug session where we inspect the contents of the
+	'p_hw' functor (function object) of our earlier example. As shown, the function-call operator
+	appears as a normal slot for the (reserved) index '()', storing a method value.",
+	NL2	
+	]
+],
+
+FIGURE(
+	"images/content/functors_in_debugger.jpg", 
+	center,  
+	"***The function-call operator slot for a functor during a debug session***"
+),
+TEXT(NL1),
+
+TEXT(
+	"More information on function-call overloading as well as all the rest of operators 
+	is provided in the discussion on "
+),
+DOC_REF("d_overloading", "operator overloading"), TEXT(".")
+END_SEC, // sl_function_call_overloading
+
+//****************************************
+
+START_SEC("sl_subobject_trees", "Subobject trees")
+index ["Subobject trees", "Object-based inheritance", "Untyped inheritance"],
+[_text [
+	"In Delta, untyped object-based inheritance is supported. In general, untyped object-based languages 
+	support inheritance with untyped mechanisms enabling the creation of webs of objects mimicking either
+	the structure of typed class graphs, or the structure of typed subclass instances by making
+	entire self-contained objects. The former concerns "
+	]
+],
+
+DOC_REF("d_delegation", "delegation"), 
+TEXT(", while the latter concerns "),
+DOC_REF("d_subobjects", "subobject trees"), 
+[_text [
+	". The example below illustrates how subobject trees are constructed and how they behave
+	in terms of slot access (lookup semantics). ", NL2,
+
+CODE_BLOCK "
+a = []; 						// an empty object 
+b = [ { #x, #y : 10, 20 } ]; 	// a simple object with two slots 'x' and 'y' 
+inherit(a, b); 					// we just set 'b' as the base subobject of 'a' 
+print(a.x); 					// this resolves to 'b.x' since 'b' base of 'x' 
+a.x = nil; 						// here we erase 'x' from more recent owner (removes 'b.x')
+print(b.x); 					// this will print 'nil' 
+a.x = 10; 						// this 'x' slot is created locally at 'a' side 
+b.x = -10; 						// but this also refers to 'a.x' (dot returns most recent version) 
+print(a.x); 					// so this will print '-10' 
+b..x = 10;						// double dot accesses local slots thus we take 'x' at 'b' side 
+print(a.x); 					// again 'a.x' is the most recent 'x' slot 
+inherit(b, a); 					// runtime error, cycles are forbidden 
+print(isderived(a, b)); 		// prints 'true' 
+uninherit(a ,b); 				// we break the inheritance link between 'a' and 'b' 
+print(isderived(a, b)); 		// thus now it prints 'false' 
+",
+	
+	"A slightly more comprehensive example follows below, showing a subobject tree
+	composed out of five distinct objects. Technically, subobjects are just normal objects,
+	called subobjects to denote their participation in a tree which aims to emulate
+	a subclass instance of class-based (typed) inheritance.", NL2,
+
+CODE_BLOCK "
+function New(id) 
+       { return [ @id: id ]; } 
+inherit(b1 = New(#b1), a2 = New(#a2)); 
+inherit(b1, a1 = New(#a1)); 
+inherit(b2 = New(#b2), a3 = New(#a3)); 
+inherit(c = New(#c), b2); 
+inherit(c, b1); 
+",
+	"The resulting tree structure from this code snippet, as well as the ability to inspect
+	the inheritance links among subobjects during debugging are illustrated below (the graphical
+	tree is not displayed by the debugger, but was added manually to the debug session snapshot).",
+	NL1	
+	]
+],
+
+FIGURE(
+	"images/content/subobject_trees_in_debugger.jpg", 
+	center,  
+	"***Inspecting inheritance links among objects through the debugger***"
+),
+TEXT(NL1),
+
+TEXT("More information may be found on the elaborate discussion on  "),
+DOC_REF("d_subobjects", "subobject tress"), TEXT(".")
+END_SEC, // sl_subobject_trees
+
+//****************************************
+
+START_SEC("sl_first_class_vms", "First-class virtual machines")
+index ["Virtual machines", "First-class packages", "Modules"],
+[_text [
+	"In a Delta program one may load another compiled program (byte code) using a special set of 
+	library functions. Such a loaded program is handled through a virtual machine, a first-class value
+	enabling to run the program (execute its global statements) and invoke or extract any global function.
+	Thus, a virtual machine instance plays the role of a dynamically loaded library or package. A single
+	program may be loaded multiple times into distinct independent virtual machines. Lets consider the example
+	below with two sources, one playing the role of the library and another of the client prorgam:", NL2,
+
+CODE_BLOCK "
+//***************************************
+// lib.dsc, playing the role of a package 
+//***************************************
+function foo 				// a 'foo' global function, visible outside 
+	{ /* some code */ } 
+function bar { 				// a 'bar' global function, also visible outside 	
+	/* some code */ 
+	function f{} 			// an 'f' inner function, not visible outside 
+}
+
+//***************************************
+// client.dbc, playing the role of a client 
+// Assume lib.dsc was compiled to lib.dbc 
+//***************************************
+lib_vm = vmload( 			// 'vmload' is the library function to load byte code 
+			\"lib.dbc\" 	// we load 'lib.dbc' into a new vm instance 
+			\"lib\" 		// 'lib' is the supplied vm id (has to be unique) 
+		 ); 
+vmrun(lib_vm); 				// vmrun executes global code is mandatory before using a vm 
+lib_vm.foo(); 				// invokes 'foo' implemented in 'lib.dsc' 
+print(lib_vm.bar); 			// all vm functions are normal functions (first-class values) 
+lib_vm.f(); 				// runtime error, since only global functions are visible 
+lib_vm.bar.f(); 			// runtime error, something like this is is not supported
+vm = vmget(\"lib\"); 		// can get a vm instance by id from everywhere 
+f = vm.foo; 				// we get 'foo' function value 
+f(); 						// this works fine, it invokes 'foo' of 'lib' vm 
+vmunload(vm); 				// with 'vmunload' we destroy a vm instance 
+f(); 						// runtime error, since its vm instance was destroyed 
+",
+	NL1,
+	
+	"It is very common for byte code loaded into virtual machine instances to concern functionality 
+	that is aimed to be used in a form of a shared dynamic library. In this case, although the vm API
+	still suffices, the std::libs API is provided which requires less calls to handle registration, 
+	loading and sharing. The example below illustrates its use.",
+
+	NL2,
+
+CODE_BLOCK "
+libs::registercopied(#lib, 	\"lib.dbc\");	// Register a copied lib (vm created on loading) from a file.
+libs::registercopied(						// Register a byte code buffer as a copied library.
+	#dyn_foo,
+	std::inputbuffer_new(					// Turn it to an input buffer
+		std::vmcompstringtooutputbuffer(	// Compile text code into a byte code buffer
+			\"function foo { throw \\\"foo\\\"; }\", 
+			(function(err){ print(err,\"\\n\"); }), 			
+			false
+		)
+	)
+);  
+l1 = libs::import(#lib);					// Loads and makes a new vm instances
+l2 = libs::import(#dyn_foo);				// Loads only once and returns vm instance.
+l3 = libs::import(#dyn_foo);
+assert l2 == l3;							// Because 'dyn_foo' is a shared library.
+l4 = libs::import(#lib);					
+assert l4 != l1;							// Because 'lib' is a copied library.
+try d.foo(); trap e { print(e, \"\\n\"); }
+
+libs::unimport(l1);
+libs::unimport(l2);
+libs::unimport(l3);							// Even when shared 'unimport' is needed (ref counted).
+libs::unimport(l4);
+",
+	NL2,
+	
+	"Apart from this sort of dynamic management of virtual machines, there is a special
+	language feature that is more similar to 'import' like facilities met in other languages.
+	More specifically, one may deploy the ", !blue !dsrc "using #<ident>;", " directive which
+	has the following effect: the file named ", !italic !dsrc !blue "'<ident>.dbc'", " is searched
+	during compilation in all build paths. Once found, its function table (visible functions only)
+	is loaded and all its functions become statically available to the program via ", !dsrc !blue !italic
+	"<ident>::<func name>", ". Such loaded byte code is shared automatically if any other Delta program 
+	that is loaded in the same execution session happens to also use the same byte code file (thus
+	they behave like automatically-loaded shared dynamic libraries). The example below demonstrates
+	the way this directive can be used.",
+
+	NL2,
+
+CODE_BLOCK "
+// File 'server.dsc'
+function foo {}
+function bar {}
+function local f {} 	// Hidden outside
+{ function g {} }		// Also hidden outside (non-global scope)
+
+// File 'client.dsc'
+using #server;
+server::foo();			// Ok, imported function visible.
+server::bar();			// Ok, imported function visible.
+server::f();			// Error, function not found in 'server' function table.
+vm = vmget(#server);	// We can even get the vm of the library.
+vm.foo();				// Runtime lookup compared to server::foo which is at compile-time
+server::foo = 10;		// Error, it is immutable.
+vm.f = nil;				// Ok, just overwritten 'f' slot within vm's userdata.
+",
+
+	NL2,	
+
+	"Below we provide a snapshot from a debug session where we inspect a virtual machine value. 
+	All built-in library functions for vms and all user-defined global functions of the loaded byte code,
+	appear as slots within a 'userdata' reserved entry. In Delta, vms are native objects (they are implemented in C++). 
+	All native objects have a reserved 'userdata' entry that is an editable Delta object. Every operation that is 
+	allowed to Delta objects also applies to native objects by internal redirection to the 'userdata' object.
+	Thus, developers of native objects may populate the 'userdata' entry with slots that have to be accessible
+	from within Delta code. Also, used byte code files are loaded by the autocompletion mechanism of the
+	Delta editor (in Sparrow), as shown in the picture below.",
+	NL2	
+	]	
+],
+
+FIGURE(
+	"images/content/vm_values_in_debugger.jpg", 
+	center,  
+	"***Inspecting the 'userdata' entry of vm native values in a debug session***"
+),
+FIGURE(
+	"images/content/autocomplete_using_bytecode.jpg", 
+	center,  
+	"***Autocompletion for byte code libraries in the 'using #<ident>' directive***"
+),
+TEXT(NL1),
+
+TEXT("More information may be found on the elaborate discussion on  "),
+DOC_REF("d_vms", "virtual machines"), TEXT(".")
+END_SEC, // sl_first_class_vms
+
+//****************************************
+
+START_SEC("sl_untyped_attributes", "Untyped attribute pattern")
+
+index ["Attribute pattern"],
+[_text [
+	"The attribute pattern appears in classes when there are pairs of methods with signatures: ", 
+	!definition "Set<id>(T)", " and ", !definition "T Get<id>()", " with ", !italic "<id>", " a property name, and ",
+	!italic "T", "	a type name. Languages like C# or ActionScript support this pattern by enabling class clients access 
+	such attributes through objects with the syntactic abstraction of field access like ", !italic "<inst>.<id>", 
+	", while generating code to actually invoke the respective ", !italic "Set", " and ", !italic "Get", " methods. No support 
+	in classless languages for this pattern is met. However, ", !definition "in Delta an untyped dynamic version of the
+	attribute pattern is fully supported", ". More specifically, let's check the example below:",
+	NL1,
+
+CODE_BLOCK "
+function Point(x, y) { 
+	return [
+		@x { 							// an 'x' attribute definition
+			@set method(v)  			// defining the 'x' set method
+				{ @x = v; @xf(self); }	// which invokes self.xf callback too 
+			@get method { return @x; }	// defining the 'x' get method
+		}, 
+		@y { 							// a 'y' attribute definition 
+			@set method(v)  			// defining the 'Y' set method
+				{ @y = v; @yf(self); }	// which invokes self.yf callback too 
+			@get method { return @y; } 	// defining the 'y' get method 
+		},
+ 
+		{ #xf, #yf : function(pt){} },	// empty implementations of listener callbacks 
+		{ #x,  #y  : x, y }, 			// optional, but desirable, init values to 'x', 'y'
+
+		method set_x_listener(f) 		// method to set the 'x' property listener callback 
+			{ @xf = f; },
+		method set_y_listener(f) 		// method to set the 'y' property listener callback 
+			{ @yf = f; }
+	];
+}
+pt = Point(10,20); 
+pt.x = 20; 								// internally invokes the set method 
+pt.set_y_listener(						// set a listere on 'y' 
+	function(pt){ print(pt.y); }		// to actually print its value 
+); 
+pt.y = -10; 							// will set 'y' to '-10' and print '-10' 
+tabredefineattribute( 					// we can redefine the set / get methods 
+	pt, 
+	#x, 
+	function(v){}, 						// setter comes first (here it is nop)
+	function{ return 0; } 				// getter follows (constantly returning 0).
+); 
+",
+
+	"Below we provide a snapshot from a debug session showing how detailed information for such
+	attribute-type slots is fully provided. The snapshot is from a run of the previous example.",
+	NL2	
+	]
+],
+
+FIGURE(
+	"images/content/attributes_in_debugger.jpg", 
+	center,  
+	"***Inspecting attribute details in a debug session***"
+),
+TEXT(NL1),
+
+TEXT("More information on attributes may be found on the  "),
+DOC_REF("d_guide", "programming guide"), TEXT(".")
+END_SEC, // sl_untyped_attributes
+
+//****************************************
+
+START_SEC("sl_embedding_support", "Advanced embedding support")
+
+index ["Embedding"],
+[_text [
+	"All components of the Delta language are implemented in C++, the later referred as the
+	native language hereafter. The two basic modes of interoperation between Delta and native
+	application code concern cross-language invocations as follows:",
+	NL2,
+
+	!blue !italic "Delta -> C++ (via library functions)", NL1,
+	"Library functions are implemented as C++ functions and are registered 
+	to the Delta runtime system, becoming available to Delta programs.", 
+	NL2,
+			
+	!blue !italic "C++ -> Delta (via the virtual machine library)", NL1,
+	!italic !emphatic "(i)", 
+	" Using a virtual machine instance C++ programmers may 
+	extract and invoke directly Delta functions (parameter passing
+	and extraction of the return value is naturally supported).", NL2,
+
+	!italic !emphatic "(ii)", 
+	" When a library function is called, the native application code may store 
+	any Delta value in its own structures. Such values may well be
+	callable values, like functions, methods, function objects and library
+	functions. The later may be directly invoked from within C++ code.", 
+	NL2,
+	
+	"The example below shows how we can create a vm instance, load a Delta program,
+	run it, catch any exceptions, test for any runtime errors and delete the vm
+	after validating it was not already deleted by the running program. Notice
+	that destruction of the current executing vm is possible in Delta by 
+	calling ", !blue !dsrc "vmunload(vmthis());", " after which execution will
+	be stopped issuing also an error.",
+
+CPP_BLOCK "
+#include \"Delta.h\"
+DeltaVirtualMachine* vm;								// Declare a vm ptr
+vm = DNEWCLASS(DeltaVirtualMachine, (\"my_vm_id\"));	// Create a dynamic vm instance
+util_ui32 sn = vm->GetSerialNo();						// We record the unique vm serial no
+if (DPTR(vm)->Load(\"my_test.dbc\"))					// Load some byte code
+	DELTA_EXCEPTIONS_NATIVE_TRY 						// Native try block block for Delta code
+		DPTR(vm)->Run();								// Running the Delta program stmts
+	DELTA_EXCEPTIONS_NATIVE_TRAP(e) 					// Native catch block for a Delta exception
+		printf(\"%s/n\", e.ConvertToString().c_str());	// Printing the exception value as string
+if (UERROR_ISRAISED()) {								// Check for any execution errors
+	printf(\"%s/n\", UERROR_GETREPORT().c_str());		// Print the error report
+	UERROR_CLEAR();										// We clear the error
+}
+if (ValidatableHandler::Validate(vm, sn))				// Is still a valid vm?
+	{ DDELETE(vm); unullify(vm); }						// Delete vm and nullify ptr
+",
+		
+		"The virtual machine class provides a comprehensive API
+		for embedding support, part of which is provided below.
+		Typically, manipulation of actual arguments and return value is needed 
+		when implementing library functions for Delta, while extraction of
+		functions directly from a vm instance is needed when functions with predefined
+		names, such as event handlers or callbacks, need to be invoked by native code.",
+		NL1,
+
+CPP_BLOCK "
+// From DeltaVirtualMachine.h
+
+void				PushActualArg (const DeltaValue&);
+util_ui16			TotalActualArgs (void);
+DeltaValue*			GetActualArg (util_ui16 argNo);
+void				SetReturnValue (const DeltaValue& val);
+const DeltaValue&	GetReturnValue (void) const;
+
+void				ExtCallGlobalFunc (const char* name);
+void				ExtCallGlobalFunc (DeltaCodeAddress funcAddr);
+void				ExtCallMethodFunc (DeltaCodeAddress funcAddr, DeltaTable* table);
+void				ExtCallFunction (DeltaValue* functor);
+
+bool				GlobalFuncExists (const char* name);
+bool				GlobalFuncExists (DeltaCodeAddress funcAddr);
+DeltaCodeAddress	GlobalFuncAddress (const char* name);
+const char*			GetFuncName (DeltaCodeAddress addr) const;
+
+DeltaCodeAddress	ValidateFuncAddress (DeltaCodeAddress funcAddr, bool isMethod = false);
+DeltaValue*			ValidateStackValuePtr (DeltaValue* val);
+",
+	
+	"The ", !dsrc "DeltaValue", " is the data structure for values manipulated by a Delta program.
+	It supports all Delta types, thus realizing a dynamically-typed value, and it offers a 
+	comprehensive API for reading, assignment, construction, and invocation (in case
+	it is a callable value). Part of this API is provided below.",
+
+CPP_BLOCK "
+// From DeltaValue.h
+
+//******GETTERS*******/
+const std::string&		ToString (void) const;
+DeltaNumberValueType	ToNumber (void) const;
+DeltaLibraryFunc		ToLibraryFunc (void) const;
+bool					ToBool (void) const;
+DeltaTable*				ToTable (void);
+void					ToProgramFunc (
+							DeltaCodeAddress*		funcAddr, 
+							DeltaVirtualMachine**	vm,
+							util_ui32*				serialNo = 0
+						);
+
+void					ToMethodFunc (
+							DeltaCodeAddress*		funcAddr, 
+							DeltaTable**			table,
+							DeltaVirtualMachine**	vm,
+							util_ui32*				serialNo = 0
+						);
+DeltaTable*				GetMethodSelf (void);
+util_ui32				ToExternIdSerialNo (void) const;
+void*					ToExternId (std::string& typeStr);
+void*					ToExternId (void);
+DeltaTable*				GetExternIdUserData (void);
+const std::string		GetExternIdTypeString (void) const;
+
+//******SETTERS*******/
+void					FromNumber (DeltaNumberValueType num);
+void					FromString (const std::string& s);
+void					FromBool (bool boolVal);
+void					FromTable (DeltaTable* table);
+void					FromExternId (
+							void*							val,
+							DeltaExternIdType				type = DeltaExternId_NonCollectable,
+							void							(*toString)(DeltaString*, void*) = 0,
+							const char*						typeStr = 0,
+							const DeltaExternIdFieldGetter*	fieldGetter = 0
+						);
+void					FromExternIdBySerialNo (util_ui32 serialNo);
+void 					FromLibraryFunc (
+							DeltaLibraryFunc			func, 
+							DeltaLibraryFuncArgsBinder* binder = (DeltaLibraryFuncArgsBinder*) 0
+						);
+void 					FromProgramFunc (DeltaCodeAddress funcAddr, DeltaVirtualMachine* vm);
+void 					FromMethodFunc (
+							DeltaCodeAddress		funcAddr, 
+							DeltaTable*				table, 
+							DeltaVirtualMachine*	vm
+						);
+void					ChangeMethodSelf (DeltaTable* table);
+void					FromNil (void);
+void					Undefine (void);
+",
+	"To demonstrate the ease of invoking Delta functions from within native code,
+	we discuss a quick and simple example. Lets consider a native callback ", 
+	!dsrc "OnSceneEntered(const std::string& sceneId)",
+	" invoked by a game application whenever a new scene is entered. 
+	Assume a virtual machine instance with identifier ", !dsrc "\"game_vm\"", 
+	" carrying the code for handling such application-specific events, assuming
+	global Delta functions are optionally defined with the same name. Then, this is how 
+	we can redirect the callback invocation directly to Delta code:",
+
+CPP_BLOCK "
+<some_return_type> <some_class>::OnSceneEntered (const std::string& sceneId) {
+	if (DeltaVirtualMachine* vm = VMRegistry().Get(\"game_vm\"))			// get vm
+		if (DeltaCodeAddress f = vm->GlobalFuncAddress(\"OnSceneEntered\"))	// get function
+			if (!DeltaValue(f,vm)(sceneId))									// make func value and call
+				handle_error_in_delta_code_here;							// runtime error occured
+}
+",
+	"The previous is possible due to the overloaded constructors and
+	the overloading of the function call operator offered by the ", 
+	!dsrc "DeltaValue", " class. When a callable Delta value is invoked,
+	as in the example, it passes all supplied arguments to the respective vm stack,
+	invokes the function, then retrieves and returns the result. The relevant 
+	API is shown below:",
+
+CPP_BLOCK "
+// From DeltaValue.h
+
+//******FUNCTION CALL OVERLOADING*******/
+// Arguments in normal order for methods below.
+#define	DARG const DeltaValue&
+bool operator()(DeltaValue* result = (DeltaValue*) 0);		// Argumentless
+bool operator()(DARG arg1,									DeltaValue* result = (DeltaValue*) 0);
+bool operator()(DARG arg1, DARG arg2,						DeltaValue* result = (DeltaValue*) 0);
+bool operator()(DARG arg1, DARG arg2, DARG arg3,			DeltaValue* result = (DeltaValue*) 0);
+bool operator()(DARG arg1, DARG arg2, DARG arg3, DARG arg4,	DeltaValue* result = (DeltaValue*) 0);
+#undef	DARG
+
+// Arguments in reverse order for methods below.
+bool operator()(const std::list<DeltaValue>& args,			DeltaValue* result = (DeltaValue*) 0);
+bool operator()(UPTR(const DeltaValue)* args, util_ui16 n,	DeltaValue* result = (DeltaValue*) 0);
+bool operator()(UPTR(const DeltaValue)* nullEndingArgs,		DeltaValue* result = (DeltaValue*) 0);
+
+//******CONSTRUCTORS*******/
+DeltaValue (void);	
+DeltaValue (const DeltaValue& val);
+DeltaValue (_Nil);	
+DeltaValue (const std::string& s);	
+DeltaValue (bool b);	
+DeltaValue (DeltaNumberValueType n);
+DeltaValue (		
+	void*							val,
+	DeltaExternIdType				type = DeltaExternId_NonCollectable,
+	void							(*toString)(DeltaString*, void*) 	= 0,
+	const char*						typeStr 							= 0,
+	const DeltaExternIdFieldGetter*	fieldGetter 						= 0
+);
+DeltaValue (DeltaTable* t);	
+DeltaValue (DeltaLibraryFunc lf, DeltaLibraryFuncArgsBinder* binder = 0);
+DeltaValue (DeltaCodeAddress pf, DeltaVirtualMachine* vm);
+DeltaValue (DeltaCodeAddress mf, DeltaTable* t, DeltaVirtualMachine* vm);
+"
+]],
+
+TEXT("More information may be found on "),
+DOC_REF("d_embedding", "embedding support"), TEXT(".")
+END_SEC, // sl_embedding_support
+
+START_SEC("sl_debugger_arch", "Complete debugger architecture")
+[ _text[
+
+	"The development of a debugger entails primarily three key components: (a) the 
+	debugger backend, being usually language or platform dependent; (b) the
+	debugger frontend, being in most cases tied to a specific backend; and (c) the
+	debugger user interface that has to deploy a specific frontend. The debugger backend 
+	is a lower-level language subsystem enabling to control and inspect a program's
+	execution (debuggee), while the frontend is a higher-level API for backend functionality 
+	aiming to support debugger user-interfaces (clients). The Delta language includes the thorough 
+	implementation of a debug architecture being outlined in the following figure. 
+	This architectural style is similar to the JPDA, since it adopts a physical split among 
+	the debugger backend and frontend.", NL2
+] ],
+
+FIGURE(
+	"images/content/debugger_architecture_overview.jpg", 
+	center,  
+	"***Overview of the Delta Debug Architecture (DDA)***"
+),
+
+[ _text[
+	NL1,
+	"The detailed architecture of a debugee in Delta is shown in the following figure.
+	What is apparently missing is a thread manager module, since, currently, the Delta language
+	lacks support for threads. The backend may be explicitly included in the build image of 
+	a program, in which case a debug session may be initiated / terminated at any point, and
+	as many times needed, during runtime. However, when not included, meaning the executable lacks
+	a debugger backend, it will be loaded dynamically by Delta in case of runtime error, in order to
+	allow users start a debug session and trace the bug. Besides the basic features, the DDA supports 
+	more advanced features such as:", NL2,
+
+	!italic !blue "- Selective step-in for lines with multiple / nested calls", NL1,
+	!italic !blue "- Conditional breakpoints", NL1,
+	!italic !blue "- Return values of local calls during tracing", NL1,
+	!italic !blue "- Support for object monitors", NL1,
+	!italic !blue "- Extraction of variables in current context", NL1,
+	!italic !blue "- Incremental query for aggregates", NL1,
+	!italic !blue "- Extraction of object graph with a depth parameter", NL2
+] ],
+
+FIGURE(
+	"images/content/debugger_architecture_details.jpg", 
+	center,  
+	"***Detailed debugeee architecture in Delta Debug Architecture (DDA)***"
+),
+
+[ _text[
+
+	NL1,
+	"The frontend API is to be deployed by developers of debugger user-interfaces.
+	Practically, this is rarely required, since Delta is already accompanied with two powerful
+	debugger user-interfaces: (a) ", !blue !italic !emphatic "Disco", ", a console-based standalone 
+	debugger; and (ii) ", !blue !italic !emphatic "Zen", ", a graphical debugger embodied within 
+	the Sparrow IDE of the Delta language. Below we show part of the frontend API.",
+
+CPP_BLOCK "
+// From DebugClient.h
+
+static void	Initialise (void);
+static bool	Connect (const std::string& host, util_ui32 port);
+static void	CleanUp (void);
+
+///////////////////////////////////////////////////////////////////////////
+// REQUESTS
+
+// Trace control **********************************************************
+static void	DoGo (void);		
+static void	DoStepOver (void);	
+static void	DoStepIn (void);	
+static void	DoGetAllPossibleCalls (void);
+static void	DoSelectiveStepIn (util_ui32 callOrder);	
+static void	DoRunTo (util_ui32 line);		
+static void	DoStepOut (void);
+static void	DoStart (void);	
+static void	DoStop (void);	
+static void	DoBreakExecution (void);	
+
+// Variable / expression value request and string conversion size *********
+static void	DoGetExpr (const std::string& expr);
+static void	DoGetExprMany (const std::list<std::string>& exprs);
+static void	DoGetExprTypeData (const std::string& formatId, const std::string& expr);
+static void	DoGetExprTypeDataMany (const std::string& formatId, const std::list<std::string>& exprs);
+static void	DoGetObjectGraph (const std::string& expr, util_ui32 depth);
+static void	DoGetVariables (void);		// At current context.
+static void	DoSetToStringMaxLength (util_ui32 maxLen);
+
+static void	DoGetDynamicCode (void);	// In case source code was produced at runtime.
+static void	DoAssignExpr (const std::string& lvalue, const std::string& rvalue);
+
+// Context control ********************************************************
+static void	DoStackUp (void);
+static void	DoStackDown (void);	
+
+// Break point control ****************************************************
+static void	DoAddBreakPoint (const std::string& source, util_ui32 line, const std::string& condition);
+static void	DoChangeBreakPointCondition (const std::string& source, util_ui32 line, const std::string& condition);
+static void	DoRemoveBreakPoint (const std::string& source, util_ui32 line);		
+static void	DoEnableBreakPoint (const std::string& source, util_ui32 line);		
+static void	DoDisableBreakPoint (const std::string& source, util_ui32 line);
+static void	DoEnableAllBreakPoints (const std::string& source);	
+static void	DoDisableAllBreakPoints (const std::string& source);	
+static void	DoRemoveAllBreakPoints (const std::string& source);	
+
+///////////////////////////////////////////////////////////////////////////
+// RESPONSES AND NOTIFICATIONS
+
+static bool	GetInfoStopPoint (
+				std::string*	source,		
+				util_ui32*		line, 
+				bool*			isGlobal,
+				std::string*	cond
+			);
+
+#define	GetInfoInfoBreakPointConditionError GetInfoInvalidBreakPoint
+
+static bool	GetInfoInvalidBreakPoint (
+				std::string*	source,
+				util_ui32*		line,		// The break point requested.
+				util_ui32*		newLine,	
+				std::string*	cond		// Condition, if "" no condition.
+			);
+
+static bool	GetInfoValidBreakPoint (		// Returns the original data supplied when adding.
+				std::string*	source,
+				util_ui32*		line,
+				std::string*	cond
+			);
+
+static bool	GetInfoCurrFunction (
+				std::string*	func,	
+				util_ui32*		defLine,	// If 0, it means it is an extern function.	
+				util_ui32*		callLine,
+				util_ui32*		scope,
+				std::string*	call
+			);
+
+static bool	GetInfoValue (std::string* content);
+static bool	GetInfoDynamicCode (std::string* source);
+static const std::string
+			GetDynamicCodeVirtualPath (const std::string& vmId);
+static bool	GetInfoValueMany (std::list< std::pair<std::string, bool> >& contents);
+static bool	GetInfoExprTypeData (std::string* content);
+static bool	GetInfoExprTypeDataMany (std::list< std::pair<std::string, bool> >& contents);
+static bool	GetInfoObjectGraph (ObjectGraph& graph);
+
+static bool	GetInfoErrorValue (std::string* error);
+static bool	GetInfoError (std::string* error);
+static bool	GetInfoBreakPointError (std::string* error);
+static bool	GetInfoWarning (std::string* error);
+
+static bool	GetInfoVariables (				// In current context
+				std::list< std::pair<std::string, std::string> >& vars
+			);
+static bool	GetInfoAllPossibleCalls (		// For selective step-in
+				std::list< std::pair<std::string, std::string> >& calls
+			);
+static bool	GetMostRecentFuncResults (		// For return values of recent local calls
+				std::list< std::pair<std::string, std::string> >& results
+			);
+"
+]],
+
+TEXT("More information may be found on "),
+DOC_REF("d_architecture", "implementation architecture"), TEXT(".")
+
+END_SEC, // sl_debugger_arch
+
+START_SEC("sl_ide", "Powerful self-extensible IDE")
+
+[ _text[
+	NL1,
+	"The Delta language is accompanied with a full-fledged IDE named ", !italic !emphatic "Sparrow",
+	" which is build around a component-based architecture enabling introduce new components as 
+	typical plug-ins. Such components can be implemented in two languages. The first option is C++, being
+	the language in which the IDE is actually programmed. In this case new components are characterised as ", 
+	!italic !emphatic !blue "native extensions", ". The second, and more interesting option, is to program them 
+	directly in Delta using the IDE they actually extend. For this reason such extension components
+	are characterised as ", !italic !emphatic !blue "circular extensions", ". The IDE currently encompasses 
+	a large number of circular extensions, all collected under a workspace named 'Sparrow' (there is no
+	requirement for users to put any future circular extensions under the same workspace, but it is suggested
+	for convenience to do so). All cirular extensions can be source-level debugged using the IDE itself through
+	a feature known as ", !italic !emphatic !blue "circular / self debugging", ". Below we provide a list of various
+	features supported by our Sparrow IDE:", NL2,
+	
+
+	!italic !blue "- Project manager (workspace and projects)", NL1,
+	!italic !blue "- Editor with syntax highligher (marks syntax errors too)", NL1,
+	!italic !blue "- Source-level debugger", NL1,
+	!italic !blue "- Source browser (as a circular extension)", NL1,
+	!italic !blue "- Introspection window for active components (enabling invocation)", NL1,
+	!italic !blue "- Configurations for individualised use (called adaptations)", NL1,
+	!italic !blue "- Self-debugging for circular extensions (via two running IDE instances)", NL1
+] ],
+
+FIGURE(
+	"images/content/sparrow_various_components.jpg", 
+	center,  
+	"*** Various standard components of the Sparrow IDE ***"
+),
+
+TEXT(
+	CNL1
+	"Another interesting feature helping to learn and understand more quickly the
+	Delta language syntax is the split view of the source code and its respective AST,
+	as shown in the picture below. In particular, if we click on a node of the AST, the
+	editor will immediately highlight the respective text segment."
+),
+
+FIGURE(
+	"images/content/editor_ast.jpg", 
+	center,  
+	"*** Split view of the source editor and the respective AST ***"
+),
+
+TEXT(
+	CNL1
+	"Our source editor is built on top of Scintilla, meaning many powerfull features 
+	are offered, like zooming and code folding. Additionally, at the current implementation
+	which does not include an IntelliSense component, our auto-completion features are restricted
+	to library items (namespaces, functions and constants) and self object slots."
+),
+
+FIGURE(
+	"images/content/editor_view.jpg", 
+	center,  
+	"*** Auto-completion editor features ***"
+),
+
+TEXT(CNL2 "More information may be found on the main section about the "),
+DOC_REF("d_ide", "IDE"), TEXT(".")
+
+END_SEC // sl_ide
+
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+
+#include "ObjectsAndMethods.rc"
+COMMA	
+
+///////////////////////////////////////////////////////////////////
+// Delegation					
+///////////////////////////////////////////////////////////////////
+
+START_DOC("d_delegation", "Delegation")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Subobject trees				
+///////////////////////////////////////////////////////////////////
+
+START_DOC("d_subobjects", "Subobject trees")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Functional features			
+///////////////////////////////////////////////////////////////////
+
+START_DOC("d_functional", "Functional features")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Operator overloading		
+///////////////////////////////////////////////////////////////////
+
+START_DOC("d_overloading", "Operator overloading")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Virtual machines			
+///////////////////////////////////////////////////////////////////
+START_DOC("d_vms", "Virtual machines")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Reflection support			
+///////////////////////////////////////////////////////////////////
+START_DOC("d_reflection", "Reflection support")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Embedding support			
+///////////////////////////////////////////////////////////////////
+START_DOC("d_embedding", "Embedding support")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Programming guide			
+///////////////////////////////////////////////////////////////////
+START_DOC("d_guide", "Programming guide")
+END_DOC,
+
+///////////////////////////////////////////////////////////////////
+// Implementation architecture
+///////////////////////////////////////////////////////////////////
+START_DOC("d_architecture", "Implementation architecture")
+END_DOC
+

@@ -1,0 +1,450 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\ConsoleHost">
+      <UniqueIdentifier>{85787159-b759-4b65-ac45-3c9afe7f196c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DynamicLoader">
+      <UniqueIdentifier>{cc61a067-c6ab-4fd1-89bc-2e9500c986e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GenericWidgets">
+      <UniqueIdentifier>{5ca1cfec-77e3-4a25-b1c9-b5ea11db776e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUIUtils">
+      <UniqueIdentifier>{a2f29623-9af7-4dfe-a548-a2f0efde5f66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{86b2a440-1af0-4b6c-90a6-13015ca698b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\XML">
+      <UniqueIdentifier>{0eaa963f-6c9e-484a-b16a-fb4ed3b02055}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{2f6a2dd2-e9a5-47e8-b27a-6509e004d02c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Timers">
+      <UniqueIdentifier>{87b2a060-2650-433f-89dc-f5cf39049a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Threading">
+      <UniqueIdentifier>{747e4611-3c89-40f4-b4f3-1f9abfc0444c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sound">
+      <UniqueIdentifier>{a1a43c14-1294-41bc-9f65-708ed7edab8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PropertiesGUI">
+      <UniqueIdentifier>{9c982651-7bf4-4c5e-83a4-f02e66255d8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Properties">
+      <UniqueIdentifier>{3b3bdc44-974c-4a47-a544-452939f42cfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PathManagement">
+      <UniqueIdentifier>{17121163-b212-42a7-b632-ea8492d71dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FileChangeWatcher">
+      <UniqueIdentifier>{c5afcab0-318d-4d82-b75e-3d4888bdd86e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\ConsoleHost">
+      <UniqueIdentifier>{0c2a5efc-2ee4-4cb6-bec7-653d2273d406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DynamicLoader">
+      <UniqueIdentifier>{551822cf-5dee-4e16-9664-75d4d72e9a43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Encoding">
+      <UniqueIdentifier>{bd048a81-b501-42ac-b162-ba578961e568}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GenericWidgets">
+      <UniqueIdentifier>{c9dfc08c-51dc-4d4e-9765-abd2ce6de826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GUIUtils">
+      <UniqueIdentifier>{5f5ce458-3c05-4bd4-98eb-4b56ac175ce2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network">
+      <UniqueIdentifier>{60465d75-ef79-490d-bb8d-ecebcf0cfcfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PathManagement">
+      <UniqueIdentifier>{fed46b05-40db-4697-96af-56db50156a72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Properties">
+      <UniqueIdentifier>{74925895-ec1a-4a64-877c-5a7c5d487335}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PropertiesGUI">
+      <UniqueIdentifier>{b61a02f0-5579-446a-8a80-cbf569b91313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sound">
+      <UniqueIdentifier>{b78b6065-d6c4-4295-9287-538d44ef5cdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Threading">
+      <UniqueIdentifier>{635ede97-98ff-44d7-8ed2-b05d336f9720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Timers">
+      <UniqueIdentifier>{9cb301bc-60e0-40f2-98f6-2443c9841374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{04a123ee-631d-43e4-b9ef-0a9b1132bca7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\XML">
+      <UniqueIdentifier>{9af1054c-b533-492e-a246-0789bac4a84d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FileChangeWatcher">
+      <UniqueIdentifier>{42df8419-7b9b-4030-8d8c-078d5598a1de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BaseLibraryInitializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ConsoleHost\ConsoleHost.cpp">
+      <Filter>Source Files\ConsoleHost</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DynamicLoader\DynamicLoader.cpp">
+      <Filter>Source Files\DynamicLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\GenericDialogs.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\HTMLWindow.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\ImageList.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\ImageSelectorCtrl.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\ItemListCtrl.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\NotebookCnt.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\RichTextCtrl.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GenericWidgets\TextCtrl.cpp">
+      <Filter>Source Files\GenericWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GUIUtils\InternalDataObject.cpp">
+      <Filter>Source Files\GUIUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GUIUtils\InternalDropTarget.cpp">
+      <Filter>Source Files\GUIUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\Connection.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\ConnectionHybrid.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\ConnectionUDP.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\Endpoint.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\GUIThreadCommandDispatcher.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\IOServiceThread.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\SequentialRequest.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XML\xml.cpp">
+      <Filter>Source Files\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\BinaryBuffer.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Common.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Hashing.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Singleton.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\Streams.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Util\StringUtils.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Timers\DelayedCaller.cpp">
+      <Filter>Source Files\Timers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Timers\SimpleTimer.cpp">
+      <Filter>Source Files\Timers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Threading\GUIThreadEventDispatcher.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Threading\Protect.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sound\Mixer.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sound\SoundManager.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertiesGUI\ChangeGUIPropertiesVisitor.cpp">
+      <Filter>Source Files\PropertiesGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertiesGUI\CreateGUIPropertiesVisitor.cpp">
+      <Filter>Source Files\PropertiesGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertiesGUI\DefaultGUIGenerator.cpp">
+      <Filter>Source Files\PropertiesGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Properties\ExtProperties.cpp">
+      <Filter>Source Files\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Properties\Properties.cpp">
+      <Filter>Source Files\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Properties\PropertiesFactory.cpp">
+      <Filter>Source Files\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Properties\PropertyTable.cpp">
+      <Filter>Source Files\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Properties\PropertyUtils.cpp">
+      <Filter>Source Files\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Properties\PropertyVisitor.cpp">
+      <Filter>Source Files\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Properties\XMLPropertyVisitor.cpp">
+      <Filter>Source Files\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PathManagement\PathManager.cpp">
+      <Filter>Source Files\PathManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="..\FileChangeWatcher\FileChangeWatcher.cpp">
+      <Filter>Source Files\FileChangeWatcher</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseLibraryInitializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ConsoleHost\ConsoleHost.h">
+      <Filter>Header Files\ConsoleHost</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DynamicLoader\DynamicLoader.h">
+      <Filter>Header Files\DynamicLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DynamicLoader\DynamicMain.h">
+      <Filter>Header Files\DynamicLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Encoding\Encoding.h">
+      <Filter>Header Files\Encoding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\GenericDialogs.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\HTMLWindow.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\ImageList.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\ImageSelectorCtrl.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\ItemListCtrl.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\NotebookCnt.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\RichTextCtrl.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GenericWidgets\TextCtrl.h">
+      <Filter>Header Files\GenericWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GUIUtils\CommonGUIUtils.h">
+      <Filter>Header Files\GUIUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GUIUtils\InternalDataObject.h">
+      <Filter>Header Files\GUIUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GUIUtils\InternalDropTarget.h">
+      <Filter>Header Files\GUIUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\CommandDispatcher.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\CommandServer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\Connection.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\ConnectionHybrid.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\ConnectionManager.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\ConnectionUDP.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\Endpoint.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\GUIThreadCommandDispatcher.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\GUIThreadCommandServer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\IOServiceThread.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\NetUtils.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\SequentialRequest.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PathManagement\PathManager.h">
+      <Filter>Header Files\PathManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\ExtProperties.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\Properties.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\PropertiesFactory.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\PropertyCreator.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\PropertyTable.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\PropertyUtils.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\PropertyVisitor.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Properties\XMLPropertyVisitor.h">
+      <Filter>Header Files\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertiesGUI\ChangeGUIPropertiesVisitor.h">
+      <Filter>Header Files\PropertiesGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertiesGUI\CreateGUIPropertiesVisitor.h">
+      <Filter>Header Files\PropertiesGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertiesGUI\DefaultGUIGenerator.h">
+      <Filter>Header Files\PropertiesGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sound\Mixer.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sound\SoundManager.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Threading\EventDispatcher.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Threading\GUIThreadEventDispatcher.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Threading\Protect.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Threading\ProtectedCommonTypes.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Timers\DelayedCaller.h">
+      <Filter>Header Files\Timers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Timers\SimpleTimer.h">
+      <Filter>Header Files\Timers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Adaptors.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Algorithms.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\BinaryBuffer.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Common.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Functional.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Hashing.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Holder.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\InstanceValidator.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\LibraryAPIDecls.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\MultiIndex.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Predicates.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\PrototypeFactory.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Serialization.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Singleton.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Streams.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\StringDefs.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\StringUtils.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\UndefineAllWin32Shit.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XML\xml.h">
+      <Filter>Header Files\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FileChangeWatcher\FileChangeWatcher.h">
+      <Filter>Header Files\FileChangeWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Util\Portability.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,572 @@
+State 25 contains 1 shift/reduce conflict.
+State 33 contains 1 shift/reduce conflict.
+
+Grammar
+rule 1    ResourceItems -> ResourceItems IndexedResource
+rule 2    ResourceItems -> IndexedResource
+rule 3    SavedId -> IDENT
+rule 4    ResourceIndex -> SavedId
+rule 5    ResourceIndex -> StringConst ':'
+rule 6    IndexedResource -> ResourceIndex UnindexedResource
+rule 7    IndexedResource -> UNSIGNED_CONST ':' UnindexedResource
+rule 8    IndexedResource -> SINGLETON SavedId ResourceValue
+rule 9    IndexedResource -> DIRECTIVE SavedId
+rule 10   UnindexedResource -> Literal
+rule 11   UnindexedResource -> '[' ResourceValues ']'
+rule 12   UnindexedResource -> '[' ']'
+rule 13   ResourceValue -> IndexedResource
+rule 14   ResourceValue -> UnindexedResource
+rule 15   Resource -> ResourceValue
+rule 16   Resource -> DIRECTIVE UNSIGNED_CONST
+rule 17   ResourceValues -> ResourceValues ',' Resource
+rule 18   ResourceValues -> Resource
+rule 19   Number -> NUMBER_CONST
+rule 20   Number -> UNSIGNED_CONST
+rule 21   Literal -> StringConst
+rule 22   Literal -> Number
+rule 23   Literal -> UMINUS Number
+rule 24   Literal -> BoolConst
+rule 25   BoolConst -> TRUE
+rule 26   BoolConst -> FALSE
+rule 27   StringConst -> StringConst STRING_CONST
+rule 28   StringConst -> STRING_CONST
+
+Terminals, with rules where they appear
+
+$ (-1)
+',' (44) 17
+':' (58) 5 7
+'[' (91) 11 12
+']' (93) 11 12
+error (256)
+IDENT (258) 3
+NUMBER_CONST (259) 19
+UNSIGNED_CONST (260) 7 16 20
+STRING_CONST (261) 27 28
+TRUE (262) 25
+FALSE (263) 26
+UMINUS (264) 23
+SINGLETON (265) 8
+DIRECTIVE (266) 9 16
+
+Nonterminals, with rules where they appear
+
+ResourceItems (16)
+    on left: 1 2, on right: 1
+SavedId (17)
+    on left: 3, on right: 4 8 9
+ResourceIndex (18)
+    on left: 4 5, on right: 6
+IndexedResource (19)
+    on left: 6 7 8 9, on right: 1 2 13
+UnindexedResource (20)
+    on left: 10 11 12, on right: 6 7 14
+ResourceValue (21)
+    on left: 13 14, on right: 8 15
+Resource (22)
+    on left: 15 16, on right: 17 18
+ResourceValues (23)
+    on left: 17 18, on right: 11 17
+Number (24)
+    on left: 19 20, on right: 22 23
+Literal (25)
+    on left: 21 22 23 24, on right: 10
+BoolConst (26)
+    on left: 25 26, on right: 24
+StringConst (27)
+    on left: 27 28, on right: 5 21 27
+
+
+state 0
+
+    IDENT	shift, and go to state 1
+    UNSIGNED_CONST	shift, and go to state 2
+    STRING_CONST	shift, and go to state 3
+    SINGLETON	shift, and go to state 4
+    DIRECTIVE	shift, and go to state 5
+
+    ResourceItems	go to state 6
+    SavedId	go to state 7
+    ResourceIndex	go to state 8
+    IndexedResource	go to state 9
+    StringConst	go to state 10
+
+
+
+state 1
+
+    SavedId  ->  IDENT .   (rule 3)
+
+    $default	reduce using rule 3 (SavedId)
+
+
+
+state 2
+
+    IndexedResource  ->  UNSIGNED_CONST . ':' UnindexedResource   (rule 7)
+
+    ':' 	shift, and go to state 11
+
+
+
+state 3
+
+    StringConst  ->  STRING_CONST .   (rule 28)
+
+    $default	reduce using rule 28 (StringConst)
+
+
+
+state 4
+
+    IndexedResource  ->  SINGLETON . SavedId ResourceValue   (rule 8)
+
+    IDENT	shift, and go to state 1
+
+    SavedId	go to state 12
+
+
+
+state 5
+
+    IndexedResource  ->  DIRECTIVE . SavedId   (rule 9)
+
+    IDENT	shift, and go to state 1
+
+    SavedId	go to state 13
+
+
+
+state 6
+
+    ResourceItems  ->  ResourceItems . IndexedResource   (rule 1)
+
+    $   	go to state 44
+    IDENT	shift, and go to state 1
+    UNSIGNED_CONST	shift, and go to state 2
+    STRING_CONST	shift, and go to state 3
+    SINGLETON	shift, and go to state 4
+    DIRECTIVE	shift, and go to state 5
+
+    SavedId	go to state 7
+    ResourceIndex	go to state 8
+    IndexedResource	go to state 14
+    StringConst	go to state 10
+
+
+
+state 7
+
+    ResourceIndex  ->  SavedId .   (rule 4)
+
+    $default	reduce using rule 4 (ResourceIndex)
+
+
+
+state 8
+
+    IndexedResource  ->  ResourceIndex . UnindexedResource   (rule 6)
+
+    NUMBER_CONST	shift, and go to state 15
+    UNSIGNED_CONST	shift, and go to state 16
+    STRING_CONST	shift, and go to state 3
+    TRUE	shift, and go to state 17
+    FALSE	shift, and go to state 18
+    UMINUS	shift, and go to state 19
+    '[' 	shift, and go to state 20
+
+    UnindexedResource	go to state 21
+    Number	go to state 22
+    Literal	go to state 23
+    BoolConst	go to state 24
+    StringConst	go to state 25
+
+
+
+state 9
+
+    ResourceItems  ->  IndexedResource .   (rule 2)
+
+    $default	reduce using rule 2 (ResourceItems)
+
+
+
+state 10
+
+    ResourceIndex  ->  StringConst . ':'   (rule 5)
+    StringConst  ->  StringConst . STRING_CONST   (rule 27)
+
+    STRING_CONST	shift, and go to state 26
+    ':' 	shift, and go to state 27
+
+
+
+state 11
+
+    IndexedResource  ->  UNSIGNED_CONST ':' . UnindexedResource   (rule 7)
+
+    NUMBER_CONST	shift, and go to state 15
+    UNSIGNED_CONST	shift, and go to state 16
+    STRING_CONST	shift, and go to state 3
+    TRUE	shift, and go to state 17
+    FALSE	shift, and go to state 18
+    UMINUS	shift, and go to state 19
+    '[' 	shift, and go to state 20
+
+    UnindexedResource	go to state 28
+    Number	go to state 22
+    Literal	go to state 23
+    BoolConst	go to state 24
+    StringConst	go to state 25
+
+
+
+state 12
+
+    IndexedResource  ->  SINGLETON SavedId . ResourceValue   (rule 8)
+
+    IDENT	shift, and go to state 1
+    NUMBER_CONST	shift, and go to state 15
+    UNSIGNED_CONST	shift, and go to state 29
+    STRING_CONST	shift, and go to state 3
+    TRUE	shift, and go to state 17
+    FALSE	shift, and go to state 18
+    UMINUS	shift, and go to state 19
+    SINGLETON	shift, and go to state 4
+    DIRECTIVE	shift, and go to state 5
+    '[' 	shift, and go to state 20
+
+    SavedId	go to state 7
+    ResourceIndex	go to state 8
+    IndexedResource	go to state 30
+    UnindexedResource	go to state 31
+    ResourceValue	go to state 32
+    Number	go to state 22
+    Literal	go to state 23
+    BoolConst	go to state 24
+    StringConst	go to state 33
+
+
+
+state 13
+
+    IndexedResource  ->  DIRECTIVE SavedId .   (rule 9)
+
+    $default	reduce using rule 9 (IndexedResource)
+
+
+
+state 14
+
+    ResourceItems  ->  ResourceItems IndexedResource .   (rule 1)
+
+    $default	reduce using rule 1 (ResourceItems)
+
+
+
+state 15
+
+    Number  ->  NUMBER_CONST .   (rule 19)
+
+    $default	reduce using rule 19 (Number)
+
+
+
+state 16
+
+    Number  ->  UNSIGNED_CONST .   (rule 20)
+
+    $default	reduce using rule 20 (Number)
+
+
+
+state 17
+
+    BoolConst  ->  TRUE .   (rule 25)
+
+    $default	reduce using rule 25 (BoolConst)
+
+
+
+state 18
+
+    BoolConst  ->  FALSE .   (rule 26)
+
+    $default	reduce using rule 26 (BoolConst)
+
+
+
+state 19
+
+    Literal  ->  UMINUS . Number   (rule 23)
+
+    NUMBER_CONST	shift, and go to state 15
+    UNSIGNED_CONST	shift, and go to state 16
+
+    Number	go to state 34
+
+
+
+state 20
+
+    UnindexedResource  ->  '[' . ResourceValues ']'   (rule 11)
+    UnindexedResource  ->  '[' . ']'   (rule 12)
+
+    IDENT	shift, and go to state 1
+    NUMBER_CONST	shift, and go to state 15
+    UNSIGNED_CONST	shift, and go to state 29
+    STRING_CONST	shift, and go to state 3
+    TRUE	shift, and go to state 17
+    FALSE	shift, and go to state 18
+    UMINUS	shift, and go to state 19
+    SINGLETON	shift, and go to state 4
+    DIRECTIVE	shift, and go to state 35
+    '[' 	shift, and go to state 20
+    ']' 	shift, and go to state 36
+
+    SavedId	go to state 7
+    ResourceIndex	go to state 8
+    IndexedResource	go to state 30
+    UnindexedResource	go to state 31
+    ResourceValue	go to state 37
+    Resource	go to state 38
+    ResourceValues	go to state 39
+    Number	go to state 22
+    Literal	go to state 23
+    BoolConst	go to state 24
+    StringConst	go to state 33
+
+
+
+state 21
+
+    IndexedResource  ->  ResourceIndex UnindexedResource .   (rule 6)
+
+    $default	reduce using rule 6 (IndexedResource)
+
+
+
+state 22
+
+    Literal  ->  Number .   (rule 22)
+
+    $default	reduce using rule 22 (Literal)
+
+
+
+state 23
+
+    UnindexedResource  ->  Literal .   (rule 10)
+
+    $default	reduce using rule 10 (UnindexedResource)
+
+
+
+state 24
+
+    Literal  ->  BoolConst .   (rule 24)
+
+    $default	reduce using rule 24 (Literal)
+
+
+
+state 25
+
+    Literal  ->  StringConst .   (rule 21)
+    StringConst  ->  StringConst . STRING_CONST   (rule 27)
+
+    STRING_CONST	shift, and go to state 26
+
+    STRING_CONST	[reduce using rule 21 (Literal)]
+    $default	reduce using rule 21 (Literal)
+
+
+
+state 26
+
+    StringConst  ->  StringConst STRING_CONST .   (rule 27)
+
+    $default	reduce using rule 27 (StringConst)
+
+
+
+state 27
+
+    ResourceIndex  ->  StringConst ':' .   (rule 5)
+
+    $default	reduce using rule 5 (ResourceIndex)
+
+
+
+state 28
+
+    IndexedResource  ->  UNSIGNED_CONST ':' UnindexedResource .   (rule 7)
+
+    $default	reduce using rule 7 (IndexedResource)
+
+
+
+state 29
+
+    IndexedResource  ->  UNSIGNED_CONST . ':' UnindexedResource   (rule 7)
+    Number  ->  UNSIGNED_CONST .   (rule 20)
+
+    ':' 	shift, and go to state 11
+
+    $default	reduce using rule 20 (Number)
+
+
+
+state 30
+
+    ResourceValue  ->  IndexedResource .   (rule 13)
+
+    $default	reduce using rule 13 (ResourceValue)
+
+
+
+state 31
+
+    ResourceValue  ->  UnindexedResource .   (rule 14)
+
+    $default	reduce using rule 14 (ResourceValue)
+
+
+
+state 32
+
+    IndexedResource  ->  SINGLETON SavedId ResourceValue .   (rule 8)
+
+    $default	reduce using rule 8 (IndexedResource)
+
+
+
+state 33
+
+    ResourceIndex  ->  StringConst . ':'   (rule 5)
+    Literal  ->  StringConst .   (rule 21)
+    StringConst  ->  StringConst . STRING_CONST   (rule 27)
+
+    STRING_CONST	shift, and go to state 26
+    ':' 	shift, and go to state 27
+
+    STRING_CONST	[reduce using rule 21 (Literal)]
+    $default	reduce using rule 21 (Literal)
+
+
+
+state 34
+
+    Literal  ->  UMINUS Number .   (rule 23)
+
+    $default	reduce using rule 23 (Literal)
+
+
+
+state 35
+
+    IndexedResource  ->  DIRECTIVE . SavedId   (rule 9)
+    Resource  ->  DIRECTIVE . UNSIGNED_CONST   (rule 16)
+
+    IDENT	shift, and go to state 1
+    UNSIGNED_CONST	shift, and go to state 40
+
+    SavedId	go to state 13
+
+
+
+state 36
+
+    UnindexedResource  ->  '[' ']' .   (rule 12)
+
+    $default	reduce using rule 12 (UnindexedResource)
+
+
+
+state 37
+
+    Resource  ->  ResourceValue .   (rule 15)
+
+    $default	reduce using rule 15 (Resource)
+
+
+
+state 38
+
+    ResourceValues  ->  Resource .   (rule 18)
+
+    $default	reduce using rule 18 (ResourceValues)
+
+
+
+state 39
+
+    UnindexedResource  ->  '[' ResourceValues . ']'   (rule 11)
+    ResourceValues  ->  ResourceValues . ',' Resource   (rule 17)
+
+    ']' 	shift, and go to state 41
+    ',' 	shift, and go to state 42
+
+
+
+state 40
+
+    Resource  ->  DIRECTIVE UNSIGNED_CONST .   (rule 16)
+
+    $default	reduce using rule 16 (Resource)
+
+
+
+state 41
+
+    UnindexedResource  ->  '[' ResourceValues ']' .   (rule 11)
+
+    $default	reduce using rule 11 (UnindexedResource)
+
+
+
+state 42
+
+    ResourceValues  ->  ResourceValues ',' . Resource   (rule 17)
+
+    IDENT	shift, and go to state 1
+    NUMBER_CONST	shift, and go to state 15
+    UNSIGNED_CONST	shift, and go to state 29
+    STRING_CONST	shift, and go to state 3
+    TRUE	shift, and go to state 17
+    FALSE	shift, and go to state 18
+    UMINUS	shift, and go to state 19
+    SINGLETON	shift, and go to state 4
+    DIRECTIVE	shift, and go to state 35
+    '[' 	shift, and go to state 20
+
+    SavedId	go to state 7
+    ResourceIndex	go to state 8
+    IndexedResource	go to state 30
+    UnindexedResource	go to state 31
+    ResourceValue	go to state 37
+    Resource	go to state 43
+    Number	go to state 22
+    Literal	go to state 23
+    BoolConst	go to state 24
+    StringConst	go to state 33
+
+
+
+state 43
+
+    ResourceValues  ->  ResourceValues ',' Resource .   (rule 17)
+
+    $default	reduce using rule 17 (ResourceValues)
+
+
+
+state 44
+
+    $   	go to state 45
+
+
+
+state 45
+
+    $default	accept

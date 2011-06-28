@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D39911B6-2B65-4A27-BB3D-31F6C45A4B5A}</ProjectGuid>
+    <RootNamespace>BaseLibrary</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Scripts\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\Scripts\DeltaideCommonLibsRelease.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForBase.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Scripts\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\Scripts\DeltaideCommonLibsDebug.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForBase.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\Build\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\Build\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;BASELIBRARY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;BASELIBRARY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BaseLibraryInitializer.cpp" />
+    <ClCompile Include="..\ConsoleHost\ConsoleHost.cpp" />
+    <ClCompile Include="..\DynamicLoader\DynamicLoader.cpp" />
+    <ClCompile Include="..\GenericWidgets\GenericDialogs.cpp" />
+    <ClCompile Include="..\GenericWidgets\HTMLWindow.cpp" />
+    <ClCompile Include="..\GenericWidgets\ImageList.cpp" />
+    <ClCompile Include="..\GenericWidgets\ImageSelectorCtrl.cpp" />
+    <ClCompile Include="..\GenericWidgets\ItemListCtrl.cpp" />
+    <ClCompile Include="..\GenericWidgets\NotebookCnt.cpp" />
+    <ClCompile Include="..\GenericWidgets\RichTextCtrl.cpp" />
+    <ClCompile Include="..\GenericWidgets\TextCtrl.cpp" />
+    <ClCompile Include="..\GUIUtils\InternalDataObject.cpp" />
+    <ClCompile Include="..\GUIUtils\InternalDropTarget.cpp" />
+    <ClCompile Include="..\Network\Connection.cpp" />
+    <ClCompile Include="..\Network\ConnectionHybrid.cpp" />
+    <ClCompile Include="..\Network\ConnectionUDP.cpp" />
+    <ClCompile Include="..\Network\Endpoint.cpp" />
+    <ClCompile Include="..\Network\GUIThreadCommandDispatcher.cpp" />
+    <ClCompile Include="..\Network\IOServiceThread.cpp" />
+    <ClCompile Include="..\Network\SequentialRequest.cpp" />
+    <ClCompile Include="..\XML\xml.cpp" />
+    <ClCompile Include="..\Util\BinaryBuffer.cpp" />
+    <ClCompile Include="..\Util\Common.cpp" />
+    <ClCompile Include="..\Util\Hashing.cpp" />
+    <ClCompile Include="..\Util\Singleton.cpp" />
+    <ClCompile Include="..\Util\Streams.cpp" />
+    <ClCompile Include="..\Util\StringUtils.cpp" />
+    <ClCompile Include="..\Timers\DelayedCaller.cpp" />
+    <ClCompile Include="..\Timers\SimpleTimer.cpp" />
+    <ClCompile Include="..\Threading\GUIThreadEventDispatcher.cpp" />
+    <ClCompile Include="..\Threading\Protect.cpp" />
+    <ClCompile Include="..\Sound\Mixer.cpp" />
+    <ClCompile Include="..\Sound\SoundManager.cpp" />
+    <ClCompile Include="..\PropertiesGUI\ChangeGUIPropertiesVisitor.cpp" />
+    <ClCompile Include="..\PropertiesGUI\CreateGUIPropertiesVisitor.cpp" />
+    <ClCompile Include="..\PropertiesGUI\DefaultGUIGenerator.cpp" />
+    <ClCompile Include="..\Properties\ExtProperties.cpp" />
+    <ClCompile Include="..\Properties\Properties.cpp" />
+    <ClCompile Include="..\Properties\PropertiesFactory.cpp" />
+    <ClCompile Include="..\Properties\PropertyTable.cpp" />
+    <ClCompile Include="..\Properties\PropertyUtils.cpp" />
+    <ClCompile Include="..\Properties\PropertyVisitor.cpp" />
+    <ClCompile Include="..\Properties\XMLPropertyVisitor.cpp" />
+    <ClCompile Include="..\PathManagement\PathManager.cpp" />
+    <ClCompile Include="..\FileChangeWatcher\FileChangeWatcher.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Util\Portability.h" />
+    <ClInclude Include="BaseLibraryInitializer.h" />
+    <ClInclude Include="..\ConsoleHost\ConsoleHost.h" />
+    <ClInclude Include="..\DynamicLoader\DynamicLoader.h" />
+    <ClInclude Include="..\DynamicLoader\DynamicMain.h" />
+    <ClInclude Include="..\Encoding\Encoding.h" />
+    <ClInclude Include="..\GenericWidgets\GenericDialogs.h" />
+    <ClInclude Include="..\GenericWidgets\HTMLWindow.h" />
+    <ClInclude Include="..\GenericWidgets\ImageList.h" />
+    <ClInclude Include="..\GenericWidgets\ImageSelectorCtrl.h" />
+    <ClInclude Include="..\GenericWidgets\ItemListCtrl.h" />
+    <ClInclude Include="..\GenericWidgets\NotebookCnt.h" />
+    <ClInclude Include="..\GenericWidgets\RichTextCtrl.h" />
+    <ClInclude Include="..\GenericWidgets\TextCtrl.h" />
+    <ClInclude Include="..\GUIUtils\CommonGUIUtils.h" />
+    <ClInclude Include="..\GUIUtils\InternalDataObject.h" />
+    <ClInclude Include="..\GUIUtils\InternalDropTarget.h" />
+    <ClInclude Include="..\Network\CommandDispatcher.h" />
+    <ClInclude Include="..\Network\CommandServer.h" />
+    <ClInclude Include="..\Network\Connection.h" />
+    <ClInclude Include="..\Network\ConnectionHybrid.h" />
+    <ClInclude Include="..\Network\ConnectionManager.h" />
+    <ClInclude Include="..\Network\ConnectionUDP.h" />
+    <ClInclude Include="..\Network\Endpoint.h" />
+    <ClInclude Include="..\Network\GUIThreadCommandDispatcher.h" />
+    <ClInclude Include="..\Network\GUIThreadCommandServer.h" />
+    <ClInclude Include="..\Network\IOServiceThread.h" />
+    <ClInclude Include="..\Network\NetUtils.h" />
+    <ClInclude Include="..\Network\SequentialRequest.h" />
+    <ClInclude Include="..\PathManagement\PathManager.h" />
+    <ClInclude Include="..\Properties\ExtProperties.h" />
+    <ClInclude Include="..\Properties\Properties.h" />
+    <ClInclude Include="..\Properties\PropertiesFactory.h" />
+    <ClInclude Include="..\Properties\PropertyCreator.h" />
+    <ClInclude Include="..\Properties\PropertyTable.h" />
+    <ClInclude Include="..\Properties\PropertyUtils.h" />
+    <ClInclude Include="..\Properties\PropertyVisitor.h" />
+    <ClInclude Include="..\Properties\XMLPropertyVisitor.h" />
+    <ClInclude Include="..\PropertiesGUI\ChangeGUIPropertiesVisitor.h" />
+    <ClInclude Include="..\PropertiesGUI\CreateGUIPropertiesVisitor.h" />
+    <ClInclude Include="..\PropertiesGUI\DefaultGUIGenerator.h" />
+    <ClInclude Include="..\Sound\Mixer.h" />
+    <ClInclude Include="..\Sound\SoundManager.h" />
+    <ClInclude Include="..\Threading\EventDispatcher.h" />
+    <ClInclude Include="..\Threading\GUIThreadEventDispatcher.h" />
+    <ClInclude Include="..\Threading\Protect.h" />
+    <ClInclude Include="..\Threading\ProtectedCommonTypes.h" />
+    <ClInclude Include="..\Timers\DelayedCaller.h" />
+    <ClInclude Include="..\Timers\SimpleTimer.h" />
+    <ClInclude Include="..\Util\Adaptors.h" />
+    <ClInclude Include="..\Util\Algorithms.h" />
+    <ClInclude Include="..\Util\BinaryBuffer.h" />
+    <ClInclude Include="..\Util\Common.h" />
+    <ClInclude Include="..\Util\Functional.h" />
+    <ClInclude Include="..\Util\Hashing.h" />
+    <ClInclude Include="..\Util\Holder.h" />
+    <ClInclude Include="..\Util\InstanceValidator.h" />
+    <ClInclude Include="..\Util\LibraryAPIDecls.h" />
+    <ClInclude Include="..\Util\MultiIndex.h" />
+    <ClInclude Include="..\Util\Predicates.h" />
+    <ClInclude Include="..\Util\PrototypeFactory.h" />
+    <ClInclude Include="..\Util\Serialization.h" />
+    <ClInclude Include="..\Util\Singleton.h" />
+    <ClInclude Include="..\Util\Streams.h" />
+    <ClInclude Include="..\Util\StringDefs.h" />
+    <ClInclude Include="..\Util\StringUtils.h" />
+    <ClInclude Include="..\Util\UndefineAllWin32Shit.h" />
+    <ClInclude Include="..\XML\xml.h" />
+    <ClInclude Include="..\FileChangeWatcher\FileChangeWatcher.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ThirdPartyBase\ThirdPartyBaseLibrary\ThirdPartyBaseLibrary.vcxproj">
+      <Project>{20df00e7-7db3-4322-84ef-811d564bef9a}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

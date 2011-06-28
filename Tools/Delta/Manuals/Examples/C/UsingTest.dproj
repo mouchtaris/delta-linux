@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project name="UsingTest.dproj" version="alpha">
+    <ProjectProperties>
+        <working_directory>./</working_directory>
+        <text>0</text>
+        <symbolic>C/UsingTest.dproj</symbolic>
+        <startup>c.dsc</startup>
+        <output_path>./</output_path>
+        <libs></libs>
+        <icode>0</icode>
+        <hostd></hostd>
+        <host></host>
+        <deployment>0</deployment>
+        <debug>1</debug>
+        <collapsed>0</collapsed>
+        <bytecode_path></bytecode_path>
+        <argsd></argsd>
+        <args></args>
+    </ProjectProperties>
+    <Child type="Script" name="A\a.dsc">
+        <ScriptProperties>
+            <working_directory>./</working_directory>
+            <text>0</text>
+            <symbolic>C/A/a.dsc</symbolic>
+            <output_path>./</output_path>
+            <libs></libs>
+            <icode>0</icode>
+            <deployment>1</deployment>
+            <debug>1</debug>
+            <collapsed>0</collapsed>
+            <bytecode_path>E</bytecode_path>
+        </ScriptProperties>
+    </Child>
+    <Child type="Script" name="B\b.dsc">
+        <ScriptProperties>
+            <working_directory>./</working_directory>
+            <text>0</text>
+            <symbolic>C/B/b.dsc</symbolic>
+            <output_path>./</output_path>
+            <libs></libs>
+            <icode>0</icode>
+            <deployment>1</deployment>
+            <debug>1</debug>
+            <collapsed>0</collapsed>
+            <bytecode_path>F</bytecode_path>
+        </ScriptProperties>
+    </Child>
+    <Child type="Script" name="A\E\e.dsc">
+        <ScriptProperties>
+            <working_directory>./</working_directory>
+            <text>0</text>
+            <symbolic>C/A/E/e.dsc</symbolic>
+            <output_path>./</output_path>
+            <libs></libs>
+            <icode>0</icode>
+            <deployment>1</deployment>
+            <debug>1</debug>
+            <collapsed>0</collapsed>
+            <bytecode_path></bytecode_path>
+        </ScriptProperties>
+    </Child>
+    <Child type="Script" name="B\F\f.dsc">
+        <ScriptProperties>
+            <working_directory>./</working_directory>
+            <text>0</text>
+            <symbolic>C/B/F/f.dsc</symbolic>
+            <output_path>./</output_path>
+            <libs></libs>
+            <icode>0</icode>
+            <deployment>1</deployment>
+            <debug>1</debug>
+            <collapsed>0</collapsed>
+            <bytecode_path></bytecode_path>
+        </ScriptProperties>
+    </Child>
+    <Child type="Script" name="c.dsc">
+        <ScriptProperties>
+            <working_directory>./out</working_directory>
+            <text>0</text>
+            <symbolic>C/c.dsc</symbolic>
+            <output_path>./</output_path>
+            <libs></libs>
+            <icode>0</icode>
+            <deployment>0</deployment>
+            <debug>1</debug>
+            <collapsed>0</collapsed>
+            <bytecode_path>A;B</bytecode_path>
+        </ScriptProperties>
+    </Child>
+</Project>

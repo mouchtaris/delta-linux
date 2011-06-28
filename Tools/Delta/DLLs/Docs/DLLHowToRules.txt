@@ -1,0 +1,10 @@
+Anthony Savidis, 2008.
+THE FOLLOWING RULES ARE ADEQAUTE TO CREATE DLLs
+
+1. Never export templates (classes or functions).
+2. Never have inline methods accessing static class data in exported classes (move implementation in the cpp).
+3. Use 'extern "C"' in export / import only for DLLs loaded after initiation, having procs taken by name.
+4. Never export classes having ONLY inline methods (whether static or not).
+5. Never export interfaces (i.e., classes with only pure virtual methods and inline ctor / dctor).
+6. Assume a DLL is an executable for link dependencies.
+7. A DLL to produce its .lib file it must export something.

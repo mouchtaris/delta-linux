@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A6F36DC1-335B-404B-8571-78E2141CB146}</ProjectGuid>
+    <RootNamespace>DebuggerBackend</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\lib\debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\objs\debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\lib\release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\objs\release\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)D</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\DebugWatchValueInfo\Include;..\..\..\DeltaDebugMessageEncoding\Include;..\..\..\DeltaStdLib\Include;..\..\..\SocketLib\Include;..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\ResourceLoaderLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugServer\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DebugExprEvaluator\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32; _DEBUG;DMV_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;READERS_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_EXPORT;DVMDEBUGCOMMON_IMPORT; DBYTECODE_IMPORT;DCOMPLIB_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\DeltaDebugMessageEncoding\Include;..\..\..\DebugWatchValueInfo\Include;..\..\..\DeltaStdLib\Include;..\..\..\SocketLib\Include;..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\ResourceLoaderLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugServer\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DebugExprEvaluator\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32; NDEBUG;DMV_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;READERS_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_EXPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;DCOMPLIB_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugAttributeInformation.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugClosureInformation.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugEvaluatedExpr.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprLexAn.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprLibraryFunctions.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprParseActions.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprParser.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprParserAPI.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugMonitors.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugReservedTableAttributes.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueRcEncoder.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueTextEncoders.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueXmlEncoder.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DeltaValueToDebugWatchValueInfo.cpp" />
+    <ClCompile Include="..\..\..\DebugServer\Src\DebugServer.cpp" />
+    <ClCompile Include="..\..\..\DebugServer\Src\DispatchRequest.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugCallStackInspector.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugContextHandler.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugExecutionBreakController.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugExecutionCallbacks.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugExtensions.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugLinesWithCodeHolder.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugMessengerProxy.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugRecentFunctionResults.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugServerBreakPoints.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugTraceCommandHandler.cpp" />
+    <ClCompile Include="..\..\..\DeltaVirtualMachineDebugExtensions\Src\DeltaDebugUserVarsInspector.cpp" />
+    <ClCompile Include="..\..\..\DeltaDebuggedVMFacade\Src\DeltaDebuggedVMFacade.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\DebugExprEvaluator\Src\DebugExprParser.y" />
+    <None Include="..\..\..\Manuals\DebuggerExpressions.txt" />
+    <None Include="Deps.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugAttributeInformation.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugClosureInformation.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugEvaluatedExpr.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprLexAn.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParseActions.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParser.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParserAPI.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueRcEncoder.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueRcEncodingDefs.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueTextEncoders.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueXmlEncoder.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueXmlEncodingDefs.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DeltaValueToDebugWatchValueInfo.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugCallStackInspector.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugCommands.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugContextHandler.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExecutionBreakController.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExtensions.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExtensionsInit.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugExtensionsStdDefs.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugLinesWithCodeHolder.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugMessengerProxy.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugRecentFunctionResults.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugServerBreakPoints.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugTraceCommandHandler.h" />
+    <ClInclude Include="..\..\..\DeltaVirtualMachineDebugExtensions\Include\DeltaDebugUserVarsInspector.h" />
+    <ClInclude Include="..\..\..\DeltaDebuggedVMFacade\Include\DeltaDebuggedVMFacade.h" />
+    <ClInclude Include="..\..\..\DebugServer\Include\DebugServer.h" />
+    <ClInclude Include="..\..\..\DebugWatchValueInfo\Include\DebugWatchValueInfo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BytecodeStructures\Project\BytecodeStructures.vcxproj">
+      <Project>{bec371d3-e221-4bac-ba70-3aed5c4f0150}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CompilerComponents\Project\CompilerComponents.vcxproj">
+      <Project>{56a22761-a765-45ce-8448-60c1c15b9c78}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DebuggerCommon\Project\DebuggerCommon.vcxproj">
+      <Project>{f9f82253-899e-4862-a03e-da6ee937139b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SocketLib\Project\SocketLib.vcxproj">
+      <Project>{ce9d2174-a1f1-48ee-927e-94ca4a752f4b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
+      <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VirtualMachineComponents\Project\VirtualMachineComponents.vcxproj">
+      <Project>{8e7fd87f-7874-468a-913c-eb3837233606}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

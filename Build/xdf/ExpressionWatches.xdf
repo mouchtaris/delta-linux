@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="alpha">
+    <component id="ExpressionWatches" type="DeltaScript" uri="extension_scripts/ExpressionWatches.dsc"/>
+</extension>

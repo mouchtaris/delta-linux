@@ -1,0 +1,6 @@
+copy "DeltaCorbaCommon\release\DeltaCorbaCommon.dll" "dlls\DeltaCorbaCommon.dll"
+copy "DeltaCorbaClient\release\DeltaCorbaClient.dll" "dlls\DeltaCorbaClient.dll"
+copy "DeltaCorbaServer\release\DeltaCorbaServer.dll" "dlls\DeltaCorbaServer.dll"
+copy "DeltaCorbaCommon\debug\DeltaCorbaCommonD.dll" "dlls\DeltaCorbaCommonD.dll"
+copy "DeltaCorbaClient\debug\DeltaCorbaClientD.dll" "dlls\DeltaCorbaClientD.dll"
+copy "DeltaCorbaServer\debug\DeltaCorbaServerD.dll" "dlls\DeltaCorbaServerD.dll"

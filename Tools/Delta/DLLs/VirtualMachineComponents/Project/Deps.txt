@@ -1,0 +1,7 @@
+UtilAndDefensiveHeap		UTILLIB_IMPORT  DDEBUG_IMPORT
+BytecodeStructures			DBYTECODE_IMPORT
+CompilerComponents			DCOMPLIB_IMPORT
+ReadersWriters				READERS_IMPORT
+Sockets						SOCKETLIB_IMPORT
+
+To use the DLL:				DVM_IMPORT RCLOAD_IMPORT

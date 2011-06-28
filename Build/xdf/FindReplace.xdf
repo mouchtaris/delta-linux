@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="FindAndReplace"  type="DynamicLib"  uri="./extensions/FindReplace.dll">
+	</component>
+</extension>

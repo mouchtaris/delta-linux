@@ -1,0 +1,38 @@
+//Decision Making for a Web Browser
+
+stereotype ExpertUser : params.user."web expertise" = "expert"
+stereotype FrequentUser : params.user."web expertise" = "frequent"
+
+stereotype BlindUser : params.user."visual ability" = blind
+stereotype SightedUser : params.user."visual ability" = "sighted"
+
+def installation params.context.installation
+
+component Toolbar [
+	if ExpertUser or FrequentUser then [
+		if installation = "kiosk" then
+			evaluate "kiosk toolbar"
+		else if installation = "desktop" then
+			evaluate "desktop toolbar"
+	]
+	else
+		activate "empty"
+]
+
+component "kiosk toolbar" [
+	if BlindUser then
+		activate "kiosk toolbar non-visual"
+	else if SightedUser then
+		activate "kiosk toolbar gui"
+	else
+		activate "user profile error"	//Unexpected user profile attribute value
+]
+
+component "desktop toolbar" [
+	if BlindUser then
+		activate "desktop toolbar non-visual"
+	else if SightedUser then
+		activate "desktop toolbar gui"
+	else
+		activate "user profile error"	//Unexpected user profile attribute value
+]

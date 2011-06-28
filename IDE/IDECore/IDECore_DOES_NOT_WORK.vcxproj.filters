@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\UserCommand">
+      <UniqueIdentifier>{4876abb0-c166-4b72-84e1-18df0216ae6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UndoManager">
+      <UniqueIdentifier>{9a2dc0db-1c3b-460b-9819-e825bcefda6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ResourceRegistries">
+      <UniqueIdentifier>{06d8c704-3eba-4a9c-a567-0d1e23feace6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Message">
+      <UniqueIdentifier>{841d4c33-7eda-4171-a845-aec777a5ef2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IDEWidgets">
+      <UniqueIdentifier>{c239bfb9-9b10-4fd2-87db-673a71b7d14c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CommonComponents">
+      <UniqueIdentifier>{2fb1a163-2d4b-422c-96d5-da6005fd1ff3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ComponentBase">
+      <UniqueIdentifier>{226ab6b6-2f05-4a34-abce-9c753d4c27e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ComponentCaller">
+      <UniqueIdentifier>{5c733c09-81f2-443d-a985-1c00d289ac32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ComponentDataTypes">
+      <UniqueIdentifier>{315355f5-78c5-4f4e-a500-7edebd158f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ComponentInitializer">
+      <UniqueIdentifier>{abfa4739-ddb4-473d-ba30-1e4682e043b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ComponentLoader">
+      <UniqueIdentifier>{8fb8166e-1904-48e1-ad80-3cd5d235b9f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\CommonComponents">
+      <UniqueIdentifier>{7c03905e-b175-4f0e-b00c-0313d0118c07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ComponentBase">
+      <UniqueIdentifier>{93a20e52-8b4e-4e21-8694-95db86e7d608}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ComponentCaller">
+      <UniqueIdentifier>{539b4368-8e6d-4e35-9206-a2dfb63573cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ComponentDataTypes">
+      <UniqueIdentifier>{41ab7ff9-d0f2-457a-993c-2cb4115b73c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ComponentInitializer">
+      <UniqueIdentifier>{a0901bbb-bfd5-4a43-a970-ded4bbc9c06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ComponentLoader">
+      <UniqueIdentifier>{f8cdcee4-2f5c-4cd1-9552-4b04a9ca49d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IDEWidgets">
+      <UniqueIdentifier>{3c2be6f1-413d-4d04-8322-ddf84f696a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Message">
+      <UniqueIdentifier>{14a6c6da-3001-4cf3-accd-c8b4042f6727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ResourceRegistries">
+      <UniqueIdentifier>{86bfa877-41b3-4a5f-9a8a-e92b6d2e899e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UndoManager">
+      <UniqueIdentifier>{d44a6d23-28bc-4a1a-b86d-61b0c9aa0020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UserCommand">
+      <UniqueIdentifier>{f8e4fe6c-4078-408f-b389-c7d4b1df4a93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IDECore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserCommand\ComponentUserCommand.cpp">
+      <Filter>Source Files\UserCommand</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserCommand\MenuParser.cpp">
+      <Filter>Source Files\UserCommand</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UndoManager\UndoManager.cpp">
+      <Filter>Source Files\UndoManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ResourceRegistries\BitmapRegistry.cpp">
+      <Filter>Source Files\ResourceRegistries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Message\Message.cpp">
+      <Filter>Source Files\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Message\MessageRouter.cpp">
+      <Filter>Source Files\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Message\MessageRouterServer.cpp">
+      <Filter>Source Files\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Message\MessageUtils.cpp">
+      <Filter>Source Files\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\ComponentConfigurationDialog.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\ComponentMenu.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\ComponentToolbar.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\ComponentTreeView.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\FileSelectionDialog.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\HTMLExt.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\IDEDialogs.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IDEWidgets\KeyBinderFrame.cpp">
+      <Filter>Source Files\IDEWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\ComponentContainer.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\DockableComponent.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\GenericFile.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\IDEComponent.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\ListViewComponent.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\MultipleTextInputDialog.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\NewItemDialog.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\Shell.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\TextFile.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\TextInputDialog.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\TreeCtrlComponent.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\TreeItemComponent.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonComponents\TreeListViewComponent.cpp">
+      <Filter>Source Files\CommonComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\Component.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\ComponentEntry.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\ComponentFactory.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\ComponentFuncEntry.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\ComponentHolder.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\ComponentRegistry.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\ComponentSignalRegistry.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentBase\FunctionUtils.cpp">
+      <Filter>Source Files\ComponentBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentCaller\ComponentFunctionCaller.cpp">
+      <Filter>Source Files\ComponentCaller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentCaller\ComponentFunctionCallerSafe.cpp">
+      <Filter>Source Files\ComponentCaller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentCaller\ComponentSignalEmitter.cpp">
+      <Filter>Source Files\ComponentCaller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentCaller\ComponentUndoRegistrar.cpp">
+      <Filter>Source Files\ComponentCaller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentDataTypes\ComponentDataTypeConverter.cpp">
+      <Filter>Source Files\ComponentDataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentDataTypes\ComponentHandle.cpp">
+      <Filter>Source Files\ComponentDataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentDataTypes\ComponentUserCommandDesc.cpp">
+      <Filter>Source Files\ComponentDataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentInitializer\ComponentInitializer.cpp">
+      <Filter>Source Files\ComponentInitializer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentInitializer\ComponentRegistrar.cpp">
+      <Filter>Source Files\ComponentInitializer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ComponentLoader\ComponentLoader.cpp">
+      <Filter>Source Files\ComponentLoader</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IDECommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IDECore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\ComponentContainer.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\DockableComponent.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\GenericFile.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\IDEComponent.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\ListViewComponent.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\MultipleTextInputDialog.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\NewItemDialog.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\Shell.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\TextFile.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\TextInputDialog.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\TreeCtrlComponent.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\TreeItemComponent.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonComponents\TreeListViewComponent.h">
+      <Filter>Header Files\CommonComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\Component.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\ComponentEntry.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\ComponentFactory.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\ComponentFuncEntry.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\ComponentHolder.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\ComponentMemberCallback.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\ComponentRegistry.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\ComponentSignalRegistry.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentBase\FunctionUtils.h">
+      <Filter>Header Files\ComponentBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\Call.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ComponentFunctionCaller.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ComponentFunctionCallerSafe.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ComponentSignalEmitter.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ComponentUndoRegistrar.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\DynamicCall.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ExportedFunctionDynamicStub.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ExportedFunctionSetup.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ExportedFunctionSkeleton.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ExportedFunctionStub.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ExportedFunctionStubCommon.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\Signal.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\Undo.h">
+      <Filter>Header Files\ComponentCaller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentDataTypes\ComponentDataTypeConverter.h">
+      <Filter>Header Files\ComponentDataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentDataTypes\ComponentHandle.h">
+      <Filter>Header Files\ComponentDataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentDataTypes\ComponentUserCommandDesc.h">
+      <Filter>Header Files\ComponentDataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentInitializer\ComponentBuilder.h">
+      <Filter>Header Files\ComponentInitializer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentInitializer\ComponentInitializer.h">
+      <Filter>Header Files\ComponentInitializer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentInitializer\ComponentRegistrar.h">
+      <Filter>Header Files\ComponentInitializer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentLoader\ComponentLoader.h">
+      <Filter>Header Files\ComponentLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\ComponentConfigurationDialog.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\ComponentMenu.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\ComponentToolbar.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\ComponentTreeView.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\FileSelectionDialog.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\HTMLExt.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\IDEDialogs.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IDEWidgets\KeyBinderFrame.h">
+      <Filter>Header Files\IDEWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Message\Message.h">
+      <Filter>Header Files\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Message\MessageRouter.h">
+      <Filter>Header Files\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Message\MessageRouterServer.h">
+      <Filter>Header Files\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Message\MessageUtils.h">
+      <Filter>Header Files\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ResourceRegistries\BitmapRegistry.h">
+      <Filter>Header Files\ResourceRegistries</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UndoManager\UndoManager.h">
+      <Filter>Header Files\UndoManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserCommand\ComponentUserCommand.h">
+      <Filter>Header Files\UserCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserCommand\MenuParser.h">
+      <Filter>Header Files\UserCommand</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

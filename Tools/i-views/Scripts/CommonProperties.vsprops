@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="Common Properties"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories=".\..\Include;.\..\..\Icons;.\..\..\Common\Include;.\..\..\ConfigurationLoader\Include;.\..\..\DebugInfo\Include;.\..\..\Features\Include;.\..\..\Geometry\Include;.\..\..\GraphSerialisers\Include;.\..\..\Graphs\Include;.\..\..\LayoutCalculator\Include;.\..\..\LayoutRenderingPrimitives\Include;.\..\..\LayredGraphRenderer\Include;.\..\..\UndoRedo\Include;.\..\..\UserInterface\Include;.\..\..\Utility\Include;.\..\..\..\..\Components\DeltaVM"
+	/>
+</VisualStudioPropertySheet>

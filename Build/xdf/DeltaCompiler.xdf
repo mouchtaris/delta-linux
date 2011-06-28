@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="DeltaCompiler"  type="DynamicLib"  uri="./extensions/DeltaCompiler.dll">
+		<dependency>Output</dependency>
+		<dependency>ErrorList</dependency>
+	</component>
+</extension>

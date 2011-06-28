@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="alpha">
+    <component id="LineCounter" type="DeltaScript" uri="extension_scripts/LineCounter.dsc"/>
+</extension>

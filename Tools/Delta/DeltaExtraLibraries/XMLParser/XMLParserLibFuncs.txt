@@ -1,0 +1,9 @@
+@enter
+xml
+@const
+DLL						"XMLParser.dll"
+load					(file :String) : Object
+parse					(doc  : String) : Object
+loadgeterror			() : String
+store					(docObject : Object, file : String) : Bool
+@exit

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="CommonPropertiesForIDEApp"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="..\..\Base\Util;..\..\Base\MVC;..\..\Base\MVCGeneric;..\..\Base\GenericWidgets;..\..\Base\GUIUtils;..\..\Base\Threading;..\..\Base\Network;..\..\Base\Encoding;..\..\Base\Blackboard;..\..\Base\BigFixedInt;..\..\Base\Properties;..\..\Base\Sound;..\..\Base\Timers;..\..\ThirdPartyBase\AdditionalWidgets;..\..\IDE\IDECore;..\..\IDE\ComponentBase;..\..\IDE\ComponentListener;..\..\IDE\ComponentDataTypes;..\..\IDE\ComponentInitializer;..\..\IDE\Message;..\..\IDE\ScriptManager;..\..\IDE\ScriptMessageRecorder;..\..\IDE\UserCommand"
+	/>
+</VisualStudioPropertySheet>

@@ -1,0 +1,32 @@
+**************************************************
+Anthony Savidis, August 2010
+Special cpp flags for the Delta virtual machine.
+**************************************************
+
+The following names may be optionally defined (cpp) when building 
+the virtual machine (by default they are not defined).
+
+DELTA_ENABLE_ASSIGNMENT_AND_RETURN_WARNINGS
+	This flag enables the following runtime checks, all of which issue
+	a respective warning, for assignments and function return values:
+	*	Function returning an undefined value
+	*	Getting (using in an expr) an undefined value returned by a function
+	*	Assigning a variable to itself (self assignment)
+	*	Assigning an undefined value to a variable (if the previous applies
+		this test is skipped)
+
+DELTA_SUICIDAL_VM_ERROR
+	Through this flag you enable posting of a runtime error when the currently 
+	executing vm deletes somehow (Delta / C++ embedding) itself.
+	
+DELTA_ZOMBIE_VM_ERROR
+	Through this flag you enable posting of a runtime error when the currently 
+	executing vm deletes somehow (Delta / C++ embedding) a caller vm. Because
+	a caller's (outer) execution loop is beneath the current vm in the callstack,
+	the result is to have an active execution loop of a zombi vm. 
+	
+	In case the flag is undefined, the Delta vm handles zombie vms gracefully 
+	by instantly exiting their execution loops when the runtime control returns
+	back to them after the callees are popped.
+
+**************************************************

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<extension version="alpha">
+	<component id="ComponentSpy"  type="DynamicLib"  uri="./extensions/ComponentSpy.dll">
+		<dependency>Shell</dependency>
+	</component>
+</extension>

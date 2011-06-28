@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workspace name="DeltaCorba" version="alpha">
+    <WorkspaceProperties>
+        <symbolic>DeltaCorba.wsp</symbolic>
+        <startup>bank\Bank.dproj</startup>
+        <config>0</config>
+        <collapsed>0</collapsed>
+        <breakpoints>break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="Project" name="echo\Echo.dproj"/>
+    <Child type="Project" name="generic\Generic.dproj"/>
+    <Child type="Project" name="bank\Bank.dproj"/>
+    <Child type="Project" name="deferred\DeferredEcho.dproj"/>
+    <Child type="Project" name="torrent\Torrent.dproj"/>
+</Workspace>

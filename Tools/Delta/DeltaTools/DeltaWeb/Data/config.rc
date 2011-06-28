@@ -1,0 +1,33 @@
+style				"Data\\style.rc"
+script				"script.js"
+content				"Data\\metacontent.rc"
+output_html			"Delta.html"
+out_dir				"Out\\"
+output_css			"styles.css"
+delta_style_name	"dsrc"
+cpp_style_name		"cpp"
+code_doc_style_name	"doc"
+pre_style_name		"program_code"
+
+css_inline			"
+	.program_code pre {
+			font-size: 			small;
+			color: 				black;
+			font-family: 		\"Courier New\", monospace;
+			border-top: 		#2f6fab 1px dashed;
+			border-bottom: 		#2f6fab 1px dashed; 
+			background-color: 	#e9e9e9;
+			padding-bottom:		0px;
+			padding-top:		0px;
+			padding-left:		0px;
+			padding-right:		0px;
+			overflow:			scroll;
+		}
+	.toc {
+		overflow:			scroll;
+		white-space:		nowrap;
+	}
+"
+
+code_prefix		"\n"
+code_suffix		"\n\n"

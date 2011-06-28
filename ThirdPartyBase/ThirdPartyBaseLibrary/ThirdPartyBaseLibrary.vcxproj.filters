@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\AdditionalWidgets">
+      <UniqueIdentifier>{aad8a9b3-0bcf-4955-aa7a-1dae908c4fe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KeyBinder">
+      <UniqueIdentifier>{f0c82b7b-32e9-4004-8746-6b3f8e5ddd77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PropertyGrid">
+      <UniqueIdentifier>{1ab260e0-0151-43ca-8082-2c060db8f378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\AdditionalWidgets">
+      <UniqueIdentifier>{d4d6144b-83f5-4bda-85c7-0852f5a635f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\KeyBinder">
+      <UniqueIdentifier>{4e554c88-165e-40fb-9754-285a4ad60dcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PropertyGrid">
+      <UniqueIdentifier>{6650ee3d-8c45-45f9-b9f1-a0586ed9f13e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\AdditionalWidgets\infowindow.cpp">
+      <Filter>Source Files\AdditionalWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AdditionalWidgets\treelistctrl.cpp">
+      <Filter>Source Files\AdditionalWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\KeyBinder\keybinder.cpp">
+      <Filter>Source Files\KeyBinder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\KeyBinder\menuutils.cpp">
+      <Filter>Source Files\KeyBinder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertyGrid\advprops.cpp">
+      <Filter>Source Files\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertyGrid\extraprops.cpp">
+      <Filter>Source Files\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertyGrid\manager.cpp">
+      <Filter>Source Files\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertyGrid\odcombo.cpp">
+      <Filter>Source Files\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertyGrid\propgrid.cpp">
+      <Filter>Source Files\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PropertyGrid\props.cpp">
+      <Filter>Source Files\PropertyGrid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AdditionalWidgets\IEHtmlWin.cpp">
+      <Filter>Source Files\AdditionalWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AdditionalWidgets\wxactivex.cpp">
+      <Filter>Source Files\AdditionalWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AdditionalWidgets\wxHyperlink.cpp">
+      <Filter>Source Files\AdditionalWidgets</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AdditionalWidgets\commonDefs.h">
+      <Filter>Header Files\AdditionalWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AdditionalWidgets\IEHtmlWin.h">
+      <Filter>Header Files\AdditionalWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AdditionalWidgets\infowindow.h">
+      <Filter>Header Files\AdditionalWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AdditionalWidgets\treelistctrl.h">
+      <Filter>Header Files\AdditionalWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AdditionalWidgets\wxactivex.h">
+      <Filter>Header Files\AdditionalWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AdditionalWidgets\wxHyperlink.h">
+      <Filter>Header Files\AdditionalWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\KeyBinder\keybinder.h">
+      <Filter>Header Files\KeyBinder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\KeyBinder\keybinderdef.h">
+      <Filter>Header Files\KeyBinder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\KeyBinder\menuutils.h">
+      <Filter>Header Files\KeyBinder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\advprops.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\extraprops.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\extras.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\manager.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\odcombo.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\pg_dox_mainpage.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\propdev.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PropertyGrid\propgrid.h">
+      <Filter>Header Files\PropertyGrid</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

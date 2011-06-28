@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\BreakpointHolder">
+      <UniqueIdentifier>{296b8fe6-c94c-47cf-83cb-87308170ea81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Messages">
+      <UniqueIdentifier>{e83cf16e-fd30-4bb6-b9f8-94d9b4bbf876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1a8055cd-0560-418b-909a-200ec567b965}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\BreakpointHolder">
+      <UniqueIdentifier>{de9fe644-4ce1-48c2-bf40-e33dcf5fb3a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Messages">
+      <UniqueIdentifier>{4a4aa431-686f-437f-858a-36acae55920d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\DebugBreakPointHolder\Src\DebugBreakPointHolder.cpp">
+      <Filter>Source Files\BreakpointHolder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaDebugMessageEncoding\Src\DeltaDebugMessageEncoding.cpp">
+      <Filter>Source Files\Messages</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\DebugBreakPointHolder\Include\DeltaDebuggerCommonDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugBreakPointHolder\Include\DebugBreakPointHolder.h">
+      <Filter>Header Files\BreakpointHolder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugBreakPointHolder\Include\DeltaBreakPoint.h">
+      <Filter>Header Files\BreakpointHolder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaDebugMessageEncoding\Include\DeltaDebugMessageEncoding.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Deps.txt" />
+  </ItemGroup>
+</Project>

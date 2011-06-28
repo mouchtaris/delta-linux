@@ -1,0 +1,22 @@
+#include	"MenuAndTitles.rc"
+
+maincontent	[
+	[
+#include	"Document1.rc"
+	],
+	[
+#include	"Document2.rc"
+	],
+	[
+#include	"Document3.rc"
+	],
+	[
+#include	"Document4.rc"
+	],
+	[
+#include	"Document5.rc"
+	],
+	[
+#include	"Document6.rc"
+	]
+]

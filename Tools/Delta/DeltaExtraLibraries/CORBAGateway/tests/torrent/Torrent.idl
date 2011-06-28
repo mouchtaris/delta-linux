@@ -1,0 +1,64 @@
+module TorrentClient {
+	interface TorrentInfo {
+		enum DownloadStatus {downloading, seeding, paused};
+		readonly attribute DownloadStatus status;
+		readonly attribute long connected_seeders;
+		readonly attribute long connected_leechers;
+		readonly attribute long time_elapsed;
+		readonly attribute long downloaded;
+		readonly attribute long remaining;
+		readonly attribute long uploaded;
+		readonly attribute long download_speed;
+		readonly attribute long upload_speed;
+		readonly attribute float ratio;
+	};
+
+	interface TorrentProperties {
+		attribute long download_limit;
+		attribute long upload_limit;
+		attribute boolean override_defaults;
+		attribute long priority;
+	};
+
+	interface Torrent {
+		readonly attribute string tracker;
+		readonly attribute string name;
+		readonly attribute long seeders;
+		readonly attribute long leechers;
+		readonly attribute long pieces;
+		readonly attribute long piece_size;
+	};
+
+	interface Client {
+		enum ActivityFilter {all, active, downloading, seeding, paused, finished};
+		typedef sequence<string> StringList;
+		typedef sequence<Torrent> TorrentList;
+
+		attribute long max_download_speed;
+		attribute long max_upload_speed;
+		attribute long max_global_connections;
+		attribute long max_connections_per_torrent;
+		attribute long max_active_torrents;
+		attribute string default_download_directory;
+
+		Torrent Create(in StringList files, in string tracker, in string name, in long piece_size);
+		Torrent Open(in string uri, in string path, in boolean start_download);
+		void Remove(in Torrent t);
+		
+		void Pause(in Torrent t);
+		void Resume(in Torrent t);
+
+		void PauseAll();
+		void ResumeAll();
+
+		TorrentProperties GetTorrentProperties(in Torrent t);
+		void SetTorrentProperties(in TorrentProperties properties);
+		TorrentInfo GetTorrentInfo(in Torrent t);
+
+		TorrentList Filter(in ActivityFilter filter);
+
+		string Statistics();
+
+		oneway void shutdown ();
+	};
+};

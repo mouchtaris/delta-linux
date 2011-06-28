@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workspace name="Tests" version="alpha">
+    <WorkspaceProperties>
+        <symbolic>Tests.wsp</symbolic>
+        <startup>ALADIN\Snake.dproj</startup>
+        <config>0</config>
+        <collapsed>0</collapsed>
+        <breakpoints>break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="Project" name="ALADIN\Snake.dproj"/>
+    <Child type="Project" name="Server.dproj"/>
+    <Child type="Project" name="Client.dproj"/>
+    <Child type="Project" name="Tests.dproj"/>
+    <Child type="Project" name="C\UsingTest.dproj"/>
+</Workspace>

@@ -1,0 +1,27 @@
+//Decision Making for a Memory Manager module in a software system
+
+stereotype Debug : params.state = "Debug"
+stereotype NoAggresiveOptimizations : params.OptimizationLevel in { 0, 1, 2 }
+
+component MemoryManager [
+	evaluate "allocation"
+	evaluate "deallocation"
+	if NoAggresiveOptimizations = false then [
+		cancel "memory optimizer"
+		activate "aggressive memory optimizer"
+	]
+]
+
+component allocation [
+	if Debug then
+		activate "debug new"
+	else
+		activate "new"
+]
+
+component deallocation [
+	if Debug then
+		activate "debug delete"
+	else
+		activate "delete"
+]

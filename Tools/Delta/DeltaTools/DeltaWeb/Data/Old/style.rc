@@ -1,0 +1,115 @@
+logo	/* Can be commented out. No logo will be appear */	
+			[
+				path			"images\\\\Delta_Logo_128_px.png",
+				height			64,
+				width			64
+			]
+titlebar	/* Can be commented out. No titlebar will be created. */
+			[
+				background		"images\\\\speed_up.jpg",
+				color			"#eff9ff"
+			]
+primaryTitle	[
+					color		"blue",
+					font		"arial"
+				]
+secondaryTitle	[
+					color		"green",
+					font		"serif"
+				]
+pageBgColor				"white"
+toc		 /* Can be commented out. No table of contents will be created. */
+			[	
+				width		25,
+				bgColor		"#E8E8E8",
+				color		"blue",
+				font		"tahoma",
+				size		"larger"
+			]
+contentBgColor			"white"
+menu		[
+				direction	"horizontal",	/* horizontal/vertical */
+				width		160,
+				backButton	"images\\\\back.gif",
+				homeButton	"images\\\\home.gif",
+				forwButton  "images\\\\for.gif"
+			]
+menuButton	[
+				background			"images\\\\tint-blue.jpg",
+				backgroundMouseover	"images\\\\tint-blue-dark.jpg",
+				textColor			"white"
+			]
+submenu		[
+				background			"white",
+				backgroundMouseover	"#eff9ff",
+				textColor			"black"
+			]
+class		[
+				[
+					name 		"normal",	/*OBLIGATORY*/
+					style		"normal"
+				],
+				[
+					name		"code",
+					family		"courier"
+				],
+				[
+					name		"pseudocode",
+					style		"italic",
+					family		"arial"
+				],
+				[
+					name		"emphatic",
+					weight		"bold"
+				],
+				[
+					name		"definition",
+					family		"arial",
+					decoration	"underline"
+				],
+				[
+					name		"quotation",
+					style		"italic"
+				],
+				[
+					name		"formula",
+					size		"larger",
+					weight		"lighter"
+				],
+				[
+					name		"footnote",
+					family		"times",
+					size		"smaller"
+				],
+				[
+					name		"red",
+					decoration	"none",
+					size		"larger",
+					background	"yellow",
+					color		"red"
+				],
+				[
+					name		"blue",
+					color		"blue"
+				],
+				[
+					name		"green",
+					color		"green"
+				],
+				[
+					name		"lightgray",
+					color		"#E8E8E8"
+				],
+				[
+					name		"warning",
+					style		"italic",
+					size		"larger",
+					weight		"bold",
+					decoration	"underline",
+					color		"magenta"
+				],
+				[
+					name		"highlight",
+					background	"#00FFFF"
+				]
+			]

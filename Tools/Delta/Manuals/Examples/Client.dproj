@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project name="Client.dproj" version="alpha">
+    <ProjectProperties>
+        <working_directory>./</working_directory>
+        <text>0</text>
+        <symbolic>Client.dproj</symbolic>
+        <startup>Client.dsc</startup>
+        <output_path>./</output_path>
+        <libs></libs>
+        <icode>0</icode>
+        <hostd></hostd>
+        <host></host>
+        <deployment>0</deployment>
+        <debug>1</debug>
+        <collapsed>0</collapsed>
+        <bytecode_path></bytecode_path>
+        <argsd></argsd>
+        <args></args>
+    </ProjectProperties>
+    <Child type="Script" name="Client.dsc">
+        <ScriptProperties>
+            <working_directory>./</working_directory>
+            <text>0</text>
+            <symbolic>Client.dsc</symbolic>
+            <output_path>./</output_path>
+            <libs></libs>
+            <icode>0</icode>
+            <deployment>0</deployment>
+            <debug>1</debug>
+            <collapsed>0</collapsed>
+            <bytecode_path></bytecode_path>
+        </ScriptProperties>
+    </Child>
+</Project>

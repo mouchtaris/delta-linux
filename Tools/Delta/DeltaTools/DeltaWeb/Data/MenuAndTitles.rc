@@ -1,0 +1,86 @@
+///////////////////////////////////////////////////////////////////
+// Structure of the Delta web site main menu in Delta Web RC language.
+// A. Savidis, November 2009.
+///////////////////////////////////////////////////////////////////
+
+#include "defines.h"
+
+maintitle
+[
+	primary			"The Delta programming language",
+	primaryClass	"normal",
+	secondary		"Dynamic embeddable language for extending applications",
+	secondaryClass	"normal"
+]
+
+mainmenu	[
+	[
+		_submenu _title("Language") 			documentref "homepage",
+		[
+			[ _simpleitem _title("Overview")					documentref 	"homepage"			],
+			[ _simpleitem _title("Novel features") 				documentref 	"d_features"		],
+			[ _simpleitem _title("Objects and methods")			documentref 	"d_objects"			],
+			[ _simpleitem _title("Delegation")					documentref 	"d_delegation"		],
+			[ _simpleitem _title("Subobject trees")				documentref 	"d_subobjects"		],
+			[ _simpleitem _title("Functional features")			documentref 	"d_functional"		],
+			[ _simpleitem _title("Operator overloading")		documentref 	"d_overloading"		],
+			[ _simpleitem _title("Virtual machines")			documentref 	"d_vms"				],
+			[ _simpleitem _title("Reflection support")			documentref 	"d_reflection"		],
+			[ _simpleitem _title("Embedding support")			documentref 	"d_embedding"		],
+			[ _simpleitem _title("Programming guide")			documentref 	"d_guide"			],
+			[ _simpleitem _title("Implementation architecture")	documentref 	"d_architecture"	],
+			[ _simpleitem _title("Index")						documentref 	"i_indexingterms"	]
+		]
+	],
+
+	[
+		_submenu _title("IDE") 					documentref "d_ide",
+		[
+			[_simpleitem _title("Overview")							sectionref "si_overview"	],
+			[_simpleitem _title("Editor and syntax highlighting")	sectionref "si_editor"		],
+			[_simpleitem _title("Building and running scripts")		sectionref "si_build"		],
+			[_simpleitem _title("Debugger features")				sectionref "si_debugger"	],
+			[_simpleitem _title("Self extensibility")				sectionref "si_extend"		],
+			[_simpleitem _title("Self debugging")					sectionref "si_self_debug"	]
+		]
+	],
+
+	[
+		_submenu _title("Standard library")		documentref "d_stdlib",
+		[
+			[_simpleitem _title("Constants")						sectionref "ss_consts"		],
+			[_simpleitem _title("Mischellaneous")					sectionref "ss_misc"		],
+			[_simpleitem _title("File I/O")							sectionref "ss_fileio"		],
+			[_simpleitem _title("Global operator overloading")		sectionref "ss_global_op"	],
+			[_simpleitem _title("Libfunc manipulation")				sectionref "ss_libfunc"		],
+			[_simpleitem _title("Resource loader")					sectionref "ss_rc"			],
+			[_simpleitem _title("Objects")							sectionref "ss_objects"		],
+			[_simpleitem _title("DLLs")								sectionref "ss_dll"			],
+			[_simpleitem _title("Inheritance")						sectionref "ss_inheritance"	],
+			[_simpleitem _title("Delegation")						sectionref "ss_delegation"	],
+			[_simpleitem _title("Binary buffers")					sectionref "ss_buffers"		],
+			[_simpleitem _title("Readers and writers")				sectionref "ss_readers"		],
+			[_simpleitem _title("Sockets")							sectionref "ss_sockets"		],
+			[_simpleitem _title("Strings")							sectionref "ss_strings"		],
+			[_simpleitem _title("Shared memory")					sectionref "ss_sharedmem"	],
+			[_simpleitem _title("Bit operators")					sectionref "ss_bitops"		],
+			[_simpleitem _title("Math functions")					sectionref "ss_math"		],
+			[_simpleitem _title("Virtual machine management")		sectionref "ss_vm"			],
+			[_simpleitem _title("Bytecode libraries")				sectionref "ss_bytecodelibs"], 
+			[_simpleitem _title("Runtime compilation")				sectionref "ss_comp"		],
+			[_simpleitem _title("List and iterators")				sectionref "ss_list"		],
+			[_simpleitem _title("Vector and iterators")				sectionref "ss_vector"		],
+			[_simpleitem _title("Algorithms")						sectionref "ss_algo"		]
+		]
+	],
+
+	[
+		_submenu _title("Information")			documentref "d_information",
+		[
+			[_simpleitem _title("Credits") 		sectionref "si_credits"		],
+			[_simpleitem _title("License") 		sectionref "si_license"		],
+			[_simpleitem _title("Download")		sectionref "si_download"	],
+			[_simpleitem _title("Reports") 		sectionref "si_reports"		]
+		]
+	]
+]

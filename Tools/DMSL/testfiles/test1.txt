@@ -1,0 +1,136 @@
+component another_main [
+	adapt main4
+]
+
+component main [
+	if not 3 in [] then activate "Empty range ok!"
+
+	if 3 in {1, [2..4], 5} then activate "Set-Range ok"
+
+	if [1+2..7] = [4..7, params.screen.height..params.screen.width, 3..tonumber("3.3")] then
+		activate "Range equality ok"
+	if 5 in params.range then activate "Single range ok"
+	if 5 in [1..6] then activate "Single range list ok"
+
+	if 1.1 in [1.1..4, 5..6] then activate "Range list ok"
+
+	if 5 in 1..6  then activate "No way!"
+]
+
+component case_main [
+	case params.user."web expertise"
+	[
+		when experts	[ activate number ]
+		when "expert"	activate "case works!"
+		otherwise	activate "otherwise"
+	]
+	case params.user."web expertise"
+	[
+		when "expert"	activate "case works!"
+		otherwise	[]
+	]
+]
+
+component main4 [
+	evaluate main1
+	evaluate main3
+]
+
+component main1 [
+	if isactive(comp2) then
+		activate comp3
+	else
+		activate comp2
+]
+
+component main2 [
+	if params.abilities.pointing == accurate then
+		activate comp3
+	else
+		activate comp2
+]
+
+
+component main3 [
+	evaluate linktargeting
+	evaluate library_test
+	evaluate random_test
+]
+
+component library_test [
+	library("test", "argument")
+	if true then [ library("test") ]
+]
+
+component random_test [
+	if random(3) = 0 then
+		activate one
+	else if random() = 1 then
+		activate two
+	else if random() = 2 then
+		activate three
+]
+
+component link [
+	evaluate linktargeting
+	evaluate linkselection
+	evaluate loadconfirmation
+	evaluate loadconfirmation_alternative
+]
+
+
+component linktargeting [
+	if params.abilities.pointing == accurate then
+		activate "manual pointing"
+	else
+		activate "gravity pointing"
+]
+
+component linkselection [
+	if params.webknowledge in {good, normal} then
+		activate "underlined text"
+	else
+		activate "push button"
+]
+
+component loadconfirmation [
+	if params.webknowledge in {low, none} or params.net == low then
+		activate "confirm dialogue"
+	else
+		activate "empty"
+]
+
+
+stereotype Blind : params.vision
+
+def set {{0, 1}, 1, 2, true, "lala"}
+def four "4"
+
+component loadconfirmation_alternative [
+  
+	if Blind then
+		activate "confirmation dialogue"
+	else
+	  activate "empty"
+
+	if "Blind" then
+		activate "confirmation dialogue"
+	else
+	  	activate "empty"
+
+	if tonumber("2" + params.three + four) == 234 then [ activate "lala"]
+	else [[]]
+
+	if (set == set) in {true} then 
+	  	activate "Set equality OK!"
+	else
+	  	activate "los poulos"
+	
+	if params.net + params.net in set then [ activate "Set OK!"]
+
+	activate "lala" + 3.14
+	if "lala" + 3.14 == "lala3.14" then activate "string + double!"
+
+	if +-+5 == 5 - 10 then activate unary_stuff
+	[activate test]
+]

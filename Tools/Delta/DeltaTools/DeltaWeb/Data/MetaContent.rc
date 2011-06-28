@@ -1,0 +1,26 @@
+///////////////////////////////////////////////////////////////////
+// Content documents for Delta web site.
+// A. Savidis, November 2009.
+///////////////////////////////////////////////////////////////////
+
+#include "MenuAndTitles.rc"
+
+maincontent	[
+
+#include 	"Language.rc"
+
+COMMA	
+#include 	"Information.rc"
+
+COMMA	
+#include 	"StdLib.rc"
+
+/*
+#include	"IDE.rc"		// TODO
+COMMA
+#include	"Reports.rc"	// TODO
+COMMA
+#include	"Download.rc"	// TODO
+*/
+
+]
