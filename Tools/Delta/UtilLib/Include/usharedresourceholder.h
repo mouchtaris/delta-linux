@@ -112,5 +112,29 @@ template <class RcTraits> class usharedresourceholder {
 };
 
 //---------------------------------------------------------------
+// Simple ref counted, shared, dynamic value holder.
+
+template <typename T> class urefcounted {
+	DFRIENDDESTRUCTOR()
+	private:
+	T						val;
+	util_ui32				refCounter;
+	urefcounted (const T& _val) : val(_val), refCounter(0){}
+	~urefcounted(){}
+
+	public:
+	T&						get (void) 
+								{ return val; }
+	const T&				get (void) const 
+								{ return val; }
+	void					inc_ref_counter (void)
+								{ ++refCounter; }
+	void					dec_ref_counter (void)
+								{ DASSERT(refCounter); if (!--refCounter) DDELETE(this); }
+	static urefcounted*		new_inst (const T& val) 
+								{ return DNEWCLASS(urefcounted, (val)); }
+};
+
+//---------------------------------------------------------------
 
 #endif	// Do not add stuff beyond this point.
