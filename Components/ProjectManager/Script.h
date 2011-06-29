@@ -70,6 +70,8 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION(void, OnFileNameChanged, (const Handle& editor, const String& uri));
 		DECLARE_EXPORTED_FUNCTION(void, OnCompileFinished, (const std::string& compiler, const Handle& script));
 		DECLARE_EXPORTED_FUNCTION(void, OnLibraryDefinitionsChanged, (const std::string& classId, const StringList newDefinitions));
+
+		DECLARE_EXPORTED_FUNCTION(void, OnWorkStarted, (const std::string& caller, const Handle& root, const String& task));
 		DECLARE_EXPORTED_FUNCTION(void, OnWorkCanceled, (const std::string& caller, const Handle& root, const String& task));
 		DECLARE_EXPORTED_FUNCTION(void, OnWorkCompleted, (const std::string& caller, const Handle& root, const String& task));
 
@@ -111,6 +113,7 @@ namespace ide
 		};
 
 		static ScriptPtrList*				s_allScripts;
+		static unsigned						s_buildNesting;
 		ScriptPtrList						m_buildDeps;
 		ScriptPtrList						m_buildDepsRetained;
 		StdStringList						m_externalBuildDepsRetained;
@@ -131,8 +134,10 @@ namespace ide
 		PseudoInitiators					m_pseudoInitiators;
 		bool								m_isApplication;
 		bool								m_isCleaned;
+		bool								m_upToDate;
 		static const Script*				m_cleanStarter;
 
+		static void							ResetUpToDate (void);
 		Script*								GetBuildInitiator (void);
 		void								SetBuildInitiator (Script* script);
 		bool								HasBuildPseudoInitiators (void) const;

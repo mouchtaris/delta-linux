@@ -217,18 +217,6 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_SLOT_MEMBER(Script, void, OnWorkCanceled, (const std::string& caller, const Handle& root,
-		const String& task), "WorkCanceled")
-	{ TerminateAllLaunchedCompilers(); }
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_SLOT_MEMBER(Script, void, OnWorkCompleted, (const std::string& caller, const Handle& root, 
-		const String& task), "WorkCompleted")
-		{}
-
-	//-----------------------------------------------------------------------
-
 	void Script::ComponentAppliedChangedProperties(const conf::PropertyTable& old, const conf::PropertyIdVec& changed)
 	{
 		HandleNewProperties(changed);

@@ -270,6 +270,7 @@ namespace ide {
 
 	boost::mutex			Script::s_mutex;
 	Script::ScriptPtrList*	Script::s_allScripts	= (ScriptPtrList*) 0;
+	unsigned				Script::s_buildNesting	= 0;
 	const Script*			Script::m_cleanStarter	= (Script*) 0;
 
 /////////////////////////////////////////////////////////////////////////
@@ -282,7 +283,8 @@ Script::Script(void) :
 	m_beingBuilt					(false),
 	m_runAutomatically				(false),
 	m_isApplication					(false),
-	m_isCleaned						(false){
+	m_isCleaned						(false),
+	m_upToDate						(false) {
 
 	MakeAllProperties();
 	s_allScripts->push_back(this);
@@ -1053,6 +1055,46 @@ void Script::SetInitiatedBuildIsCompleted (Script* script, unsigned long pid, bo
 			SetBuildCompleted(false, false);
 		}
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+void Script::ResetUpToDate (void) {
+	for (ScriptPtrList::iterator i = s_allScripts->begin(); i != s_allScripts->end(); ++i)
+		(*i)->m_upToDate = false;
+}
+
+//*******************************
+// FIXME: how do we get the main build start/completed events?
+
+EXPORTED_SLOT_MEMBER(
+		Script, 
+		void, 
+		OnWorkCanceled, 
+		(const std::string& caller, const Handle& root, const String& task), 
+		"WorkCanceled"
+	) {  TerminateAllLaunchedCompilers(); }
+
+//*******************************
+
+EXPORTED_SLOT_MEMBER(
+		Script, 
+		void, 
+		OnWorkCompleted, 
+		(const std::string& caller, const Handle& root, const String& task), 
+		"WorkCompleted"
+	){
+}
+
+//*******************************
+
+EXPORTED_SLOT_MEMBER(
+		Script, 
+		void, 
+		OnWorkStarted, 
+		(const std::string& caller, const Handle& root, const String& task), 
+		"WorkCompleted"
+	){
 }
 
 /////////////////////////////////////////////////////////////////////////
