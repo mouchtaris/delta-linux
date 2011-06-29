@@ -204,6 +204,12 @@ inline bool uhasnotfractional (double val)
 template <class T, const util_ui32 N>
 util_ui32 uarraysize (T (&P)[N]) { return N; }
 
+template <class T, const util_ui32 N>
+void uassignarray (const T (&from)[N],  T (&to)[N]) {
+	for (util_ui32 i = N; i--;)
+		to[i] = from[i];
+}
+
 template <typename Tlvalue, typename Trvalue>	// Use when should avoid hard-coding type casting.
 const Tlvalue ucastassign (Tlvalue& lvalue, const Trvalue& rvalue)
 	{ return lvalue = (Tlvalue) rvalue; }
