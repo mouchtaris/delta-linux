@@ -940,6 +940,7 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 	}
 
 	ClearBuildInformation();
+	m_upToDate = succeeded;
 
 	// Is it scheduled to run automatically ?
 	if (IsRunAutomaticallyAfterBuild())
@@ -1065,7 +1066,6 @@ void Script::ResetUpToDate (void) {
 }
 
 //*******************************
-// FIXME: how do we get the main build start/completed events?
 
 EXPORTED_SLOT_MEMBER(
 		Script, 
@@ -1073,7 +1073,13 @@ EXPORTED_SLOT_MEMBER(
 		OnWorkCanceled, 
 		(const std::string& caller, const Handle& root, const String& task), 
 		"WorkCanceled"
-	) {  TerminateAllLaunchedCompilers(); }
+	) { 
+	if (caller == "Workspace") {
+		TerminateAllLaunchedCompilers(); 
+		ResetUpToDate();
+		s_buildNesting = 0;
+	}
+}
 
 //*******************************
 
@@ -1084,6 +1090,10 @@ EXPORTED_SLOT_MEMBER(
 		(const std::string& caller, const Handle& root, const String& task), 
 		"WorkCompleted"
 	){
+	if (caller == "Workspace") {
+		ResetUpToDate();
+		s_buildNesting = 0;
+	}
 }
 
 //*******************************
@@ -1093,8 +1103,12 @@ EXPORTED_SLOT_MEMBER(
 		void, 
 		OnWorkStarted, 
 		(const std::string& caller, const Handle& root, const String& task), 
-		"WorkCompleted"
+		"WorkStarted"
 	){
+	if (caller == "Workspace") {
+		DASSERT(!s_buildNesting);
+		ResetUpToDate();	// Just to be sure it is in correct state
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -1378,6 +1392,9 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrLi
 unsigned long Script::BuildImpl (const UIntList& workId, Script* initiator) {
 
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
+	
+	if (m_upToDate)
+		return NO_COMPILER_THREAD_PID;
 
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
