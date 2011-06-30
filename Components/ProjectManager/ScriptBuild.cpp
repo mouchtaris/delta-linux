@@ -1393,10 +1393,15 @@ unsigned long Script::BuildImpl (const UIntList& workId, Script* initiator) {
 
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	
-	if (m_upToDate)
-		return NO_COMPILER_THREAD_PID;
-
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
+
+	if (m_upToDate) {
+		m_workId = workId;
+		if (initiator)
+			SetBuildInitiator(initiator);
+		SetBuildCompleted(true, false);
+		return NO_COMPILER_THREAD_PID;
+	}
 
 	if (IsBuildInProgressHandler(workId, initiator))
 		return NO_COMPILER_THREAD_PID;
