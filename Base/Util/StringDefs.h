@@ -100,11 +100,23 @@ typedef String::char_type char_type;
 
 #ifdef UNICODE
 
-inline const std::string str2std (const wxString& str)
-	{ return std::string(str.mb_str(wxConvUTF8)); }
+inline const std::string str2std (const wxString& str) {
+	std::string std(str.mb_str(wxConvUTF8));
+	if (std.empty() != str.empty())	//conversion failed
+		std = std::string(str.mb_str(wxConvISO8859_1));
+	if (std.empty() != str.empty())	//conversion failed
+		std = std::string(str.mb_str(wxConvLibc));
+	return std;
+}
 
-inline const wxString std2str (const std::string& std)
-	{ return wxString(std.c_str(), wxConvUTF8); }
+inline const wxString std2str (const std::string& std) {
+	wxString str(std.c_str(), wxConvUTF8);
+	if (str.empty() != std.empty())	//conversion failed
+		str = wxString(std.c_str(), wxConvISO8859_1);
+	if (str.empty() != std.empty())	//conversion failed
+		str = wxString(std.c_str(), wxConvLibc);
+	return str;
+}
 
 #else // ! UNICODE
 
