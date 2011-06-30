@@ -2136,8 +2136,8 @@ namespace ide
 		DeltaDebugClient::GetInfoWarning(&warning);
 		DeltaDebugClient::ResponseProcessed();
 
-		//Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
-		//	(util::std2str(std::string("\n") + warning + "\n"));
+		Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
+			(util::std2str(std::string("\n") + warning + "\n"));
 	}
 
 	//-----------------------------------------------------------------------
