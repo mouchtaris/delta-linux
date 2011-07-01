@@ -345,7 +345,7 @@ UTILLIB_FUNC bool uloadtextfile (const std::string& path, std::string* at) {
 ///////////////////////////////////////////////////////////////
 
 UTILLIB_FUNC const std::string ufileext (const char* fname) {
-	const char* dot = strchr(fname, '.');
+	const char* dot = strrchr(fname, '.');
 	return !dot ? "" : dot + 1;
 }
 
