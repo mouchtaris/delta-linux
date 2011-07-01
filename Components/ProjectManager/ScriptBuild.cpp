@@ -1500,8 +1500,8 @@ void Script::RunImpl (const std::string& func) {
 		SaveSource();
 		SetRunAutomaticallyAfterBuild(func);
 
-		if (!IsUpToDateCalculation()) 
-			Build(UIntList(1, 1));
+		if (!IsUpToDateCalculation())
+			BuildCtx();
 		else
 			RunCommit();
 	}
