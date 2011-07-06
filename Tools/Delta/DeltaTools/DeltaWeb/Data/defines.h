@@ -90,6 +90,8 @@
 
 #define	FIGURE(p,a,d)	[ type "image", path p, wrap "no", align #a, descr d ]
 #define	TEXT(t)			[ _text [ t ] ]
+#define	TEXT_START		[ _text [
+#define	TEXT_END		] ]
 #define	LINK(url, t)	[_link _url(url) text  t ]
 
 ///////////////////////////////////////////////////////////////////
