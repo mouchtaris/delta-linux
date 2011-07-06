@@ -44,8 +44,9 @@ START_SEC("si_credits", "Credits")
 		in the Delta language ", !italic "(2009)", ".",
 		NL2,
 
-		!green "Nikos Koutsopoulos", " implemented the search and replace facility of the editor
-		as part of his Diploma work ", !italic "(2009)", ".",
+		!green "Nikos Koutsopoulos", " implemented: (i) the search and replace facility of the editor
+		as part of his Diploma work ", !italic "(2009)", "; and (ii) the i-views component (interactive object 
+		graph for the source-level debugger) as part of his Masters work ", !italic "(2009-2011)", ".",
 		NL2,
 
 		!green "Andreas Maragudakis", ": (i) implemented an XML parser which loads XML documents into Delta objects
@@ -91,13 +92,20 @@ START_SEC("si_download", "Download")
 	[_text [
 		". You may also gain the current version of the source code (Visual Studio 2005 Solution),",
 		!emphatic !error " for non-commercial purposes only", ", through our Subversion server, using an 
-		anonymous checkout, as follows (please consider that the checkout operation may take
+		anonymous checkout from a console as follows (please consider that the checkout operation may take
 		a few minutes due to the various binary files included in the distribution, besides the
 		source code files): ",
 		
 		NL2,
 		
-		!courier "svn co svn://139.91.186.127/deltaide/trunk"
+		!courier "svn co https://139.91.186.36/svn/sparrow/trunk --username guest",
+
+		NL2,
+
+		"Alternatively you may use your own ghraphical svn client to checkout from repository",
+		!courier "https://139.91.186.36/svn/sparrow/trunk", " supplying as user name 'guest' and
+		an empty password."
+		
 		]
 	],
 

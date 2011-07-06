@@ -666,13 +666,13 @@ function ExtractTextContent (content) {
 				val.text = ExtendSpecialHTMLCharacters(content);			// Extend special HTML characters
 		}
 		else
-		if (ts != "Table") 
+		if (ts != std::TYPEOF_OBJECT) 
 			throw "Unexpected text content type " + ts;
 		else
 		if ((local n = tablength(local ti = tabindices(content))) != 1)	// Styled text is singleton.
 			throw "Unexpected number of elements " + n + " in styled text content";
 		else
-		if (typeof(ti[0]) == "Number") {								// Means separator [ "<directive>" ].
+		if (typeof(ti[0]) == std::TYPEOF_NUMBER) {						// Means separator [ "<directive>" ].
 			assert ti[0] == 0;
 			if (val.styles)
 				throw "Can't combine styles and directives together";
