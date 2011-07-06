@@ -658,12 +658,12 @@ function SyntaxHighlighter {
 function ExtractTextContent (content) {
 	
 	function Extract (content, val) {
-		if ((local ts = typeof(content)) == "String") {						// The actual text content.
-			assert not val.text; 											// Can be set only once.								
-			if (val.is_code)												// If code style.
+		if ((local ts = typeof(content)) == std::TYPEOF_STRING) {		// The actual text content.
+			assert not val.text; 										// Can be set only once.								
+			if (val.is_code)											// If code style.
 				val.text = SyntaxHighlighter()(content, val.lang);		// Perform syntax highlighting (extends HTML inside too).
-			else
-				val.text = ExtendSpecialHTMLCharacters(content);			// Extend special HTML characters
+			else	
+				val.text = ExtendSpecialHTMLCharacters(content);		// Extend special HTML characters
 		}
 		else
 		if (ts != std::TYPEOF_OBJECT) 
@@ -680,7 +680,7 @@ function ExtractTextContent (content) {
 			val.separator = content[0];									// Store the separator.		
 		}
 		else {
-			assert typeof(ti[0]) == "String";
+			assert typeof(ti[0]) == std::TYPEOF_STRING;
 			if (not val.styles)											// First style added?
 				val.styles = list_new();
 			val.styles.push_back(ti[0]);								// Accumulate style.
