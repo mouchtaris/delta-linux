@@ -15,8 +15,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\..\Lib/debug"
-			IntermediateDirectory=".\..\Objs/debug"
+			OutputDirectory=".\..\Lib\debug"
+			IntermediateDirectory=".\..\Objs\debug"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -41,15 +41,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Include,..\..\UtilLib\Include"
+				AdditionalIncludeDirectories="..\Include;..\..\UtilLib\Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\..\Objs\debug/Ddebug.pch"
-				AssemblerListingLocation=".\..\Objs/debug/"
-				ObjectFile=".\..\Objs/debug/"
-				ProgramDataBaseFileName=".\..\Objs/debug/"
+				PrecompiledHeaderFile=".\..\Objs\debug\Ddebug.pch"
+				AssemblerListingLocation=".\..\Objs\debug\"
+				ObjectFile=".\..\Objs\debug\"
+				ProgramDataBaseFileName=".\..\Objs\debug\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\..\Lib\debug/Ddebug.lib"
+				OutputFile=".\..\Lib\debug\Ddebug.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\..\Lib/Ddebug.bsc"
+				OutputFile=".\..\Lib\Ddebug.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -90,8 +90,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\..\lib/release"
-			IntermediateDirectory=".\..\objs/release"
+			OutputDirectory=".\..\Lib\release"
+			IntermediateDirectory=".\..\Objs\release"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -117,16 +117,16 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\Include,..\..\UtilLib\Include"
+				AdditionalIncludeDirectories="..\Include;..\..\UtilLib\Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=""
-				AssemblerListingLocation=".\..\objs/release/"
-				ObjectFile=".\..\objs/release/"
-				ProgramDataBaseFileName=".\..\objs/release/"
+				AssemblerListingLocation=".\..\Objs\release\"
+				ObjectFile=".\..\Objs\release\"
+				ProgramDataBaseFileName=".\..\Objs\release\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\..\lib\Release/Ddebug.lib"
+				OutputFile=".\..\Lib\release\Ddebug.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/Ddebug.bsc"
+				OutputFile=".\release\Ddebug.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"

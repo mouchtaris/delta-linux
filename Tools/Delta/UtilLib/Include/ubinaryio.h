@@ -261,7 +261,7 @@ namespace ubinaryio {
 		InputBuffer (void* buffer, util_ui32 size, bool copy = true);
 		InputBuffer (const OutputBuffer& ob);
 		InputBuffer (const InputBuffer& input) 
-			{ InputBuffer::InputBuffer(input.buffer, input.size); }
+			{ new(this) InputBuffer(input.buffer, input.size); }
 		virtual ~InputBuffer();
 	};
 }

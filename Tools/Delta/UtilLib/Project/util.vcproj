@@ -48,10 +48,10 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\..\objs\release/util.pch"
-				AssemblerListingLocation=".\..\objs\release/"
-				ObjectFile=".\..\objs\release/"
-				ProgramDataBaseFileName=".\..\objs\release/"
+				PrecompiledHeaderFile=".\..\objs\release\util.pch"
+				AssemblerListingLocation=".\..\objs\release\"
+				ObjectFile=".\..\objs\release\"
+				ProgramDataBaseFileName=".\..\objs\release\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -69,7 +69,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\..\lib\release/util.lib"
+				OutputFile=".\..\lib\release\util.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\..\lib/util.bsc"
+				OutputFile=".\..\lib\util.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -92,7 +92,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\..\Lib"
+			OutputDirectory="..\Lib\debug"
 			IntermediateDirectory=".\..\Objs\debug"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
@@ -123,10 +123,10 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\..\Objs\debug/util.pch"
-				AssemblerListingLocation=".\..\Objs\debug/"
-				ObjectFile=".\..\Objs\debug/"
-				ProgramDataBaseFileName=".\..\Objs\debug/"
+				PrecompiledHeaderFile=".\..\Objs\debug\util.pch"
+				AssemblerListingLocation=".\..\Objs\debug\"
+				ObjectFile=".\..\Objs\debug\"
+				ProgramDataBaseFileName=".\..\Objs\debug\"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\Lib\debug/util.lib"
+				OutputFile="..\Lib\debug\util.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\..\Lib/util.bsc"
+				OutputFile=".\..\Lib\util.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
