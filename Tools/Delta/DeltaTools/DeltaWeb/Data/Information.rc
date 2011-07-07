@@ -90,8 +90,8 @@ START_SEC("si_download", "Download")
 
 	TEXT_START
 		". You may also gain the current version of the source code (Visual Studio 2005 Solution),",
-		!emphatic !error " for non-commercial purposes only", ", through our Subversion server, using an 
-		anonymous checkout from a console as follows (please consider that the checkout operation may take
+		!emphatic !error " for non-commercial purposes only", ", through our Subversion server, using a 
+		checkout command from a console as follows (please consider that the checkout operation may take
 		a few minutes due to the various binary files included in the distribution, besides the
 		source code files): ",
 		
