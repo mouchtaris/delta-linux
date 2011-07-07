@@ -77,7 +77,7 @@ namespace ide
 		}
 		else {
 			boost::filesystem::path fullPath(boost::filesystem::current_path());
-			installationDirectory =  (std::string) fullPath.directory_string();
+			installationDirectory =  (std::string) fullPath.BOOST_FILESYSTEM_DIRECTORY_METHOD();
 		}
 #endif
 		fs::PathManager::Initialize();

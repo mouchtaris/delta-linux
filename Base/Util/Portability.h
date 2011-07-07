@@ -17,7 +17,7 @@
 
 #include <boost/version.hpp>
 #include <boost/checked_delete.hpp>
-
+#include <wx/version.h>
 
 /////////////////////////////////////////////////////////////////////////
 //                          Compiler Specific
@@ -27,43 +27,12 @@
 
 /////////////////////////////////////////////////////////////////////////
 //                                WX
-/////////////////////////////////////////////////////////////////////////
-//  Deciding which WX version is being used.
-//  If there is no WXVERSIONRELEASE or WXVERSIONMAJOR or WXVERSIONMINOR
-//  definition at this point, one of the options for version 2.8.3 or
-//  2.8.11 will be used, according to the definitions below. If none of
-//  them is defined, then the default fallback version is 2.8.3.
-//#define WX_VERSION_FALLBACK_2_8_3
-//#define WX_VERSION_FALLBACK_2_8_11
-#if !defined (WX_VERSION_FALLBACK_2_8_3) && !defined (WX_VERSION_FALLBACK_2_8_11)
-#	define	WX_VERSION_FALLBACK_2_8_3
-#endif // ensuring a WX_VERSION_FALLBACK_* definition
-
-#if !defined (WX_VERSION_RELEASE) || !defined (WX_VERSION_MAJOR) || !defined (WX_VERSION_MINOR)
-#	ifdef WX_VERSION_FALLBACK_2_8_3
-#		define	WX_VERSION_RELEASE	2
-#		define	WX_VERSION_MAJOR	8
-#		define	WX_VERSION_MINOR	3
-#	elif defined (WX_VERSION_FALLBACK_2_8_11)
-#		define	WX_VERSION_RELEASE	2
-#		define	WX_VERSION_MAJOR	8
-#		define	WX_VERSION_MINOR	11
-#	else
-#		error "No WX_VERSION_FALLBACK_* definition"
-#	endif
-#else // a WX version given explicitly
-//	do nothing
-#endif
-
 // Acquiring a C-string from a wx::string
 #if		WX_VERSION_RELEASE == 2 && WX_VERSION_MAJOR == 8 && WX_VERSION_MINOR < 11
 #	define	WX_C_STR	str
-#elif	WX_VERSION_RELEASE == 2 && WX_VERSION_MAJOR == 8 && WX_VERSION_MINOR == 11
-#	define	WX_C_STR	c_str
 #else
-#	error "Unknown WX version"
+#	define	WX_C_STR	c_str
 #endif
-
 
 /////////////////////////////////////////////////////////////////////////
 //                              Boost
@@ -104,16 +73,19 @@ typedef boost::asio::error boost_asio_error_t;
 #define BOOST_SPIRIT_CLASS_PARSE_INFO(TYPE)							boost::spirit::parse_info<TYPE>
 #define BOOST_SPIRIT_CLASSIC_PARSE									boost::spirit::parse
 #define BOOST_SPIRIT_CLASSIC_NAMESPACE								boost::spirit
+#define BOOST_FILESYSTEM_DIRECTORY_METHOD							directory_string
 
 // and tuple serialisation provided by boost 
 #include <boost/serialization/tuple.hpp>
 
-#elif (BOOST_VERSION / 100000) == 1 && (BOOST_VERSION / 100 % 1000) == 45
+#elif (BOOST_VERSION / 100000) == 1 && (BOOST_VERSION / 100 % 1000) >= 45
 ///////////////////////////////////////////////////
-// Using Boost 1.45 (New -- Sparrow not written according to this version)
-#define BOOST_1_45
+// Using Boost 1.45 or higher (New -- Sparrow not written according to this version)
 #include <boost/system/error_code.hpp>
 #include <boost/tuple/tuple.hpp>
+
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
 //
 // Error handling was changed in revision 35911 in order to comply
 // to the TR2 proposal.
@@ -177,6 +149,8 @@ namespace portability {
 #define BOOST_SPIRIT_CLASSIC_PARSE				boost::spirit::classic::parse
 #define BOOST_SPIRIT_CLASSIC_NAMESPACE			boost::spirit::classic
 //
+#define BOOST_FILESYSTEM_DIRECTORY_METHOD		string
+
 // We have to explicitly serialise tuple
 namespace boost {
 	namespace serialization {
