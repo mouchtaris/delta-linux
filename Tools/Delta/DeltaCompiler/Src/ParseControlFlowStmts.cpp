@@ -231,8 +231,13 @@ Stmt*	Translate_ForStmt (
 				{ DELTACOMP_WARNING_FOR_FALSE(); condValue = ParseParms::CondFalse; }
 		}
 
-		QUADS.Backpatch(DPTR(cond)->trueList, M3quad);	// Loop enter jump.
-		QUADS.Backpatch(QUADS.MakeList(Nquad), M1quad);	// Loop iteration jump.
+		QUADS.Backpatch(DPTR(cond)->trueList, M3quad);		// Loop enter jump.
+		if (M1quad != M2quad)								// Non-constant expression
+			QUADS.Backpatch(QUADS.MakeList(Nquad), M1quad);	// Loop iteration jump.
+		else {
+			DASSERT(cond->IsComputableBoolean());			// The only way for expr to produce no quads
+			QUADS.Backpatch(QUADS.MakeList(Nquad), M3quad);	// In case it is true the stmt is reentered
+		}
 
 		QUADS.Emit(DeltaIC_JUMP, NIL_EXPR, NIL_EXPR, NIL_EXPR, M2quad);	// Loop closure jump.
 		QUADS.Backpatch(cond->falseList, QUADS.NextQuadNo());
