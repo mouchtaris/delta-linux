@@ -319,6 +319,13 @@ template <class T> class ubag {
 		return *this;																\
 	}
 
+#define	UOVERLOADED_ASSIGN_VIA_CONVERTER_CONSTRUCTOR(_class,_rvalue)				\
+	const _class& operator=(const _rvalue& rvalue) {								\
+		if (this != &rvalue)														\
+			new (this) _class(rvalue);												\
+		return *this;																\
+	}
+
 //---------------------------------------------------------------
 
 #endif	// Do not add stuff beyond this point.
