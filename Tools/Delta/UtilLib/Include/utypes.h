@@ -321,8 +321,8 @@ template <class T> class ubag {
 
 #define	UOVERLOADED_ASSIGN_VIA_CONVERTER_CONSTRUCTOR(_class,_rvalue)				\
 	const _class& operator=(const _rvalue& rvalue) {								\
-		if (this != &rvalue)														\
-			new (this) _class(rvalue);												\
+		DASSERT((void*) this != (void*) &rvalue);									\
+		new (this) _class(rvalue);													\
 		return *this;																\
 	}
 
