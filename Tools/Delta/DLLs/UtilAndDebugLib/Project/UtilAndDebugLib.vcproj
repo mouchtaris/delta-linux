@@ -388,6 +388,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\UtilLib\Include\uinstancemanager.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\UtilLib\Include\ulatedestructor.h"
 					>
 				</File>
