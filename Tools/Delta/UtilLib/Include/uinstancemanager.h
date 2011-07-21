@@ -12,6 +12,8 @@
 #include "uerrorclass.h"
 #include "ufunctors.h"
 #include "urecyclefactory.h"
+#include <functional>
+#include <map>
 
 ///////////////////////////////////////////////////////////
 
@@ -97,6 +99,15 @@ template <
 	//******************************
 
 	public:
+	bool				In (object_type* inst) const {
+							Instances::const_iterator i = std::find_if(
+															insts.begin(),
+															insts.end(),
+															std::bind2nd(uequal_second<std::pair<key_type, object_type*>>(), inst)
+														);
+							return i != insts.end();
+						}
+	
 	object_type*		New (const key_type& key, const params_type& ctorParms) {
 							DASSERT(!Get(key));
 							return insts[key] = ctor(ctorParms); 
