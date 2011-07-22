@@ -41,13 +41,13 @@ void umemcpy(T* dest, const T* src) { memcpy(dest, src, sizeof(T)); }
 //---------------------------------------------------------------
 
 template <class T> void* POFFS (const void* p, T j) // Byte offset.
-    { return ((util_ui8*) p) + j; }
+	{ return ((util_ui8*) p) + j; }
 
 template <class T> void PINC (void*& p, T j) // Byte offset.
-    { p = POFFS(p, j); }
+	{ p = POFFS(p, j); }
 
 template <class T> void unullify (T*& p) 
-    { p = (T*) 0;}
+	{ p = (T*) 0;}
 
 inline util_ui32 PDIFF(const void* bigger, const void* smaller)
 	{ return ((util_uiptr) bigger) - ((util_uiptr) smaller); }

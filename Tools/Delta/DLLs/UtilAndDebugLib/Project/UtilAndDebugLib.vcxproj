@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\..\UtilLib\Include\uhash.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\uinit.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\uinstanceholder.h" />
+    <ClInclude Include="..\..\..\UtilLib\Include\uinstancemanager.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\ulatedestructor.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\ulexutil.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\unamebasedinstantiator.h" />

@@ -231,6 +231,9 @@
     <ClInclude Include="..\..\..\UtilLib\Include\uvirtualclass.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uinstancemanager.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Deps.txt" />
