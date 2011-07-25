@@ -321,7 +321,7 @@ UTILLIB_FUNC void* uloadbinaryfile (const char* path, util_ui32* size) {
 			return (void*) 0;
 		}
 		else {
-			void* data = new util_ui32[*size];
+			void* data = new util_ui8[*size];
 			fread(data, *size, 1, fp);
 			fclose(fp);
 			return data;
