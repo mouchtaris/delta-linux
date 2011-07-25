@@ -299,12 +299,16 @@ void DeltaAutoCompletion::SetLibraryFunctions (const SigList& defs, void* langMo
 		SetIsUsingStdLibrary(langModule);	// But still uses the std.
 	}
 
-	for (SigList::const_iterator i = defs.begin(); i != defs.end(); ++i) {
+	bool retainIterator = false;
+	for (SigList::const_iterator i = defs.begin(); i != defs.end(); retainIterator ? i : ++i) {
+		retainIterator = false;
 		std::string def = StripPreceedingAndTrailingBlanks(*i);
 		if (IsLibNameDefinition(def))
 			if (!(lib = GetAutoCompleteDefValue(def, DELTA_LIBRARYNAMESPACE_AUTOCOMP_LIBNAME)).empty()) {
-				if (IsExistingLibrary(lib))
+				if (IsExistingLibrary(lib)) {
 					i = SkipTillNextLibraryName(defs, i);
+					retainIterator = true;
+				}
 				else
 					AddNewLibrary(lib);
 				ReferToLibrary(lib, DNULLCHECK(langModule));
