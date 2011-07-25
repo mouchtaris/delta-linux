@@ -124,10 +124,10 @@ template <
 							return i != insts.end() ? i->second : (object_type*) 0;
 						}
 
-	void				SetRole (const std::string& role, const key_type& key) {
+	object_type*		SetRole (const std::string& role, const key_type& key) {
 							object_type* inst = Get(key);
 							DASSERT(inst);
-							roles[role] = inst;
+							return roles[role] = inst;
 						}
 	void				ResetRole (const std::string& role) 
 							{ roles.erase(role); }
