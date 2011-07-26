@@ -268,8 +268,10 @@ namespace ide
 	EXPORTED_CMD_FUNCTION(Profile, Edit, _("/{5}Edit"), MT_CTX, "")
 	{
 		Call<void (const std::string&)>(this, "DockableComponent", "EnsureVisibility")("EditorManager");
-		const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(GetURI());
-		Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		if (const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(GetURI()))
+			Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		else
+			gui::displayMessage(0, _("Error"), _("Unable to open profile file '") + GetURI() + _("'\n"));
 	}
 
 	//-----------------------------------------------------------------------

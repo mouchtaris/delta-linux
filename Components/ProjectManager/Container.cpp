@@ -195,8 +195,12 @@ namespace ide
 	EXPORTED_CMD_FUNCTION(Container, Edit, _("/{0}Edit--"), MT_CTX, "")
 	{
 		Call<void (const std::string&)>(this, "DockableComponent", "EnsureVisibility")("EditorManager");
-		const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(GetURI());
-		Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		if (const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(GetURI()))
+			Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		else
+			gui::displayMessage(0, _("Error"),
+				_("Unable to open ") + util::std2str(GetClassId()) + _(" file '") + GetURI() + _("'\n")
+			);
 	}
 
 	//-----------------------------------------------------------------------

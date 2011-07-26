@@ -153,9 +153,11 @@ namespace ide
 	{
 		DockableComponent::EnsureVisibility("EditorManager");
 		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
-		const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")
-			(sparrowDir + _T("sparrow.dmsl"));
-		Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		const String file = sparrowDir + _T("sparrow.dmsl");
+		if (const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(file))
+			Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		else
+			gui::displayMessage(0, _("Error"), _("Unable to open DMSL rule file '") + file + _("'\n"));
 	}
 
 	//-----------------------------------------------------------------------

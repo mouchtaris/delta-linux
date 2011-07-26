@@ -17,6 +17,7 @@
 
 #include "ComponentFunctionCallerSafe.h"
 #include "Call.h"
+#include "GenericDialogs.h"
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem/path.hpp>
@@ -101,8 +102,10 @@ namespace ide
 	EXPORTED_CMD_FUNCTION(TextFile, Open, _("/{0}Open"), MT_CTX, "")
 	{
 		Call<void (const std::string&)>(this, "DockableComponent", "EnsureVisibility")("EditorManager");
-		const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(GetURI());
-		Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		if (const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(GetURI()))
+			Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
+		else
+			gui::displayMessage(0, _("Error"), _("Unable to open file '") + GetURI() + _("'\n"));
 	}
 
 	//-----------------------------------------------------------------------

@@ -118,9 +118,10 @@ EXPORTED_MEMBER(EditorManager, const Handle, OpenDocument, (const String& uri))
 		Component* shell = ComponentRegistry::Instance().GetFocusedInstance("Shell");
 		if(shell) {
 			GUI_SCOPED_FREEZE(shell->GetWindow());
-			editor = this->NewEditor();
-			Call<void (const String&)>(this, editor, "Open")(normalizedUri);
-			Undo<void (String)>(this, "CloseDocument")(normalizedUri);
+			if (editor = this->NewEditor()) {
+				Call<void (const String&)>(this, editor, "Open")(normalizedUri);
+				Undo<void (String)>(this, "CloseDocument")(normalizedUri);
+			}
 		}
 	}
 	return editor;

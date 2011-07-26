@@ -540,6 +540,8 @@ editor::LanguageModuleIface::GotoDefinitionResult Editor::GotoGlobalDefinitionOf
 		if (!usedEditor) {	// Was not opened?
 			wasOpened	= false;
 			usedEditor	= Call<const Handle& (const String&)>(editor, "EditorManager", "OpenDocument")(uri);
+			if (!usedEditor)	//failed to open editor
+				return editor::LanguageModuleIface::GotoDefinitionFailedDefinitionNotFound;
 			Call<void (const Handle&)>(editor, usedEditor, "SetAssociatedComponent")(usedScripts.front());
 		}
 
