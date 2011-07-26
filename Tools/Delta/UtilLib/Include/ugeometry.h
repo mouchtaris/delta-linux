@@ -327,6 +327,15 @@ template <class T> void ucliprect (
 	r.y2 = umin(wy + wh - 1, r.y2);
 }
 
+template <typename T>	
+const T& utrim (T* val, const T& left, const T& right) {
+	if (*val < left)
+		return *val = left;
+	if (*val > right)
+		return *val = right;
+	return *val;
+}
+
 /////////////////////////////////////////////////////////////////
 // This function decides if a point is close to a rectangle, based 
 // on a positive distance threshold for each axis. With 0 threshold,

@@ -165,6 +165,24 @@ template <typename T> const T*	uaddress_of (const T* x)	{ return x; }
 			return *this;							\
 	}
 
+#define	UATTRIBUTEMETHOD_SCALAR(T,_var,_attr)				\
+	void Set##_attr(T _var##New) {_var = _var##New;}		\
+	T Get##_attr(void) const {return _var;}
+
+#define	UATTRIBUTEMETHOD_AGGREGATE(T,_var,_attr)			\
+	void Set##_attr(const T& _var##New) {_var = _var##New;}	\
+	const T& Get##_attr(void) const {return _var;}
+
+#define	UATTRIBUTEMETHOD_SCALAR_EX(T,_var,_attr,_check)		\
+	void Set##_attr(T _var##New)							\
+		{_check(_var##New); _var = _var##New; }				\
+	T Get##_attr(void) const {return _var;}
+
+#define	UATTRIBUTEMETHOD_AGGREGATE_EX(T,_var,_attr,_check)	\
+	void Set##_attr(const T& _var##New)						\
+		{_check(_var##New); _var = _var##New; }				\
+	const T& Get##_attr(void) const {return _var;}
+
 //---------------------------------------------------------------
 
 // This template converts a constant integer to a distinct type.
