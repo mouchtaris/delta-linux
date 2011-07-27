@@ -139,11 +139,11 @@ template <class T, bool useRef> struct ureftyper {};
 template <class T>				struct ureftyper<T, true>	{ typedef T& type; };
 template <class T>				struct ureftyper<T, false>	{ typedef T type; };
 
-template <typename T> 			struct uconst_off			{ typedef T t; };
-template <typename T> 			struct uconst_off<const T>	{ typedef typename uconst_off<T>::t t; };
+template <typename T> 			struct uconst_of			{ typedef T t; };
+template <typename T> 			struct uconst_of<const T>	{ typedef typename uconst_of<T>::t t; };
 
-template <typename T> 			struct uptr_off				{ typedef T t; };
-template <typename T> 			struct uptr_off<T*>			{ typedef typename uptr_off<T>::t t; };
+template <typename T> 			struct uptr_of				{ typedef T t; };
+template <typename T> 			struct uptr_of<T*>			{ typedef typename uptr_of<T>::t t; };
 
 template <typename T> const T*	uaddress_of (const T& x)	{ return &x; }
 template <typename T> T*		uaddress_of (T& x)			{ return &x; }
