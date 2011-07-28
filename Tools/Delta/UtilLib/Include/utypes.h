@@ -228,9 +228,7 @@ void uassignarray (const T (&from)[N],  T (&to)[N]) {
 		to[i] = from[i];
 }
 
-template <typename Tlvalue, typename Trvalue>	// Use when should avoid hard-coding type casting.
-const Tlvalue ucastassign (Tlvalue& lvalue, const Trvalue& rvalue)
-	{ return lvalue = (Tlvalue) rvalue; }
+//*****************************
 
 template <typename T> T& utempobj (const T& a)	// Use when a temp object should be passed as non-const ref.
 	{ return const_cast<T&>(a); }
@@ -250,14 +248,14 @@ template <typename FuncPtrT> static inline FuncPtrT const uvoid2func (void const
 // Also, in macro editions
 #if defined( __GNUG__ )
 #	define UFUNC2VOID(func_ptr_var)						ufunc2void(func_ptr_var)
-#	define UFUNCIN2VOID(func_ptr, void_ptr)				ufunc2void(func_ptr, void_ptr)
+#	define UFUNCIN2VOID(func_ptr, void_ptr)				ucastassign(func_ptr, void_ptr)
 #	define UVOID2FUNC(FuncPtrT, void_ptr)				uvoid2func<FuncPtrT>(void_ptr)
 #	define UVOIDIN2FUNC(void_ptr, FuncPtrT, func_ptr)	uvoid2func<FuncPtrT>(void_ptr, func_ptr) // template argument provided explicitly for better type checking
 #else
 #	define UFUNC2VOID(func_ptr_var)						((void*) func_ptr_var)
-#	define UFUNCIN2VOID(func_ptr, void_ptr)				(void_ptr = (void*) func_ptr)
+#	define UFUNCIN2VOID(func_ptr, void_ptr)				ucastassign(void_ptr, func_ptr)
 #	define UVOID2FUNC(FuncPtrT, void_ptr)				((FuncPtrT) void_ptr)
-#	define UVOIDIN2FUNC(void_ptr, FuncPtrT, func_ptr)	(func_ptr = (FuncPtrT) void_ptr)
+#	define UVOIDIN2FUNC(void_ptr, FuncPtrT, func_ptr)	ucastassign(func_ptr, void_ptr)
 #endif
 
 
@@ -269,6 +267,78 @@ template <typename FuncPtrT> static inline FuncPtrT const uvoid2func (void const
 #define UNOTHING3(A,B,C)
 #define UNOTHING4(A,B,C,D)
 #define UNOTHING5(A,B,C,D,E)
+
+//*****************************
+
+template <typename T> struct uvoidptrcaster {};
+
+template <typename T> struct uvoidptrcaster<T*> 
+	{ void* operator()(T* p) { return p; }  };
+
+template <typename R>
+struct uvoidptrcaster<R(*)(void)> 
+	{ void* operator()(R(*p)(void)) { return ufunc2void(p); }  };
+
+template <typename R, typename A1>
+struct uvoidptrcaster<R(*)(A1)> {
+	typedef R(*Rf)(A1);
+	void*		operator()(R(*p)(A1))	{ return ufunc2void(p); }  
+	Rf			operator()(const void*)	{ return uvoid2func(p); } 
+};
+
+template <typename R, typename A1, typename A2>
+struct uvoidptrcaster<R(*)(A1,A2)> {
+	typedef R(*Rf)(A1,A2);
+	void* operator()(R(*p)(A1,A2)) { return ufunc2void(p); }
+	Rf			operator()(const void*)  { return uvoid2func(p); } 
+};
+
+template <typename R, typename A1, typename A2, typename A3>
+struct uvoidptrcaster<R(*)(A1,A2,A3)> {
+	typedef R(*Rf)(A1,A2,A3);
+	void*	operator()(R(*p)(A1,A2,A3)) { return ufunc2void(p); } 
+	Rf		operator()(const void*)  { return uvoid2func(p); } 
+};
+
+template <typename R, typename A1, typename A2, typename A3, typename A4>
+struct uvoidptrcaster<R(*)(A1,A2,A3,A4)> {
+	typedef R(*Rf)(A1,A2,A3,A4);
+	void*	operator()(R(*p)(A1,A2,A3,A4)) { return ufunc2void(p); }
+	Rf		operator()(const void*)  { return uvoid2func(p); } 
+};
+
+template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5>
+struct uvoidptrcaster<R(*)(A1,A2,A3,A4,A5)> {
+	typedef R(*Rf)(A1,A2,A3,A4,A5);
+	void*	operator()(R(*p)(A1,A2,A3,A4,A5)) { return ufunc2void(p); }
+	Rf		operator()(const void*)  { return uvoid2func(p); } 
+};
+
+template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+struct uvoidptrcaster<R(*)(A1,A2,A3,A4,A5,A6)> {
+	typedef R(*Rf)(A1,A2,A3,A4,A5,A6);
+	void*	operator()(R(*p)(A1,A2,A3,A4,A5,A6)) { return ufunc2void(p); }
+	Rf		operator()(const void*)  { return uvoid2func(p); } 
+};
+
+template <typename Tl, typename Tr> struct ucastassigner  {
+	const Tl operator()(Tl& lv, const Tr& rv)
+		{ return lv = (Tl) rv; }
+};
+
+template <typename Tr> struct ucastassigner<void*&, Tr>  {
+	void* operator()(void*& lv, const Tr& rv) const
+		{ return lv = uvoidptrcaster<Tr>()(rv); }
+};
+
+template <typename Tl> struct ucastassigner<Tl*, const void*>  {
+	Tl* operator()(Tl*& lv, const void*& rv) const
+		{ return lv = uvoidptrcaster<Tl*>()(rv); }
+};
+
+template <typename Tl, typename Tr>	// Use when should avoid hard-coding type casting.
+const Tl ucastassign (Tl& lv,  const Tr& rv)
+	{ return ucastassigner<Tl, Tr>()(lv, rv); }
 
 //---------------------------------------------------------------
 // std::map adapter as a fast bag (essentially a set).

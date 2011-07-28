@@ -72,7 +72,7 @@ template <class RcTraits> class usharedresourceholder {
 		return i != byKey.end() ? i->second : (T*) 0;
 	}
 
-	const std::string getkey (T* rc) {
+	const std::string& getkey (T* rc) {
 		typename std::map<T*, entry>::iterator i = byRc.find(rc);
 		DASSERT(i != byRc.end() && i->second.second);
 		return i->second.first;

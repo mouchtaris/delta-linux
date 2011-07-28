@@ -542,7 +542,7 @@ void Execute_##op (DeltaInstruction* instr, DeltaVirtualMachine* vm) {						\
 	handler.Set(vm);																		\
 	DeltaValue* lv = DPTR(vm)->GetStorageObject(instr->DELTA_BINARY_ARITH_OPERAND_RESULT);	\
 	CACHE_ON_INSTRUCTION();																	\
-	ArithmeticOp_Func f	= 0x00;																\
+	ArithmeticOp_Func f	= uvoid2func<ArithmeticOp_Func>((void*) 0);							\
 	if (UVOIDIN2FUNC(instr->GetExecutor(), ArithmeticOp_Func, f))							\
 		(*f)(																				\
 			lhs,																			\
