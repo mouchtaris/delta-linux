@@ -60,7 +60,7 @@ static DeltaCacheProfiler cacheProfiler("Arithmetic");
 #define	IMPLEMENT_CACHED_OPERATION(name, expr, t1, t2,_precheck)							\
 void DELTAVALUE_OPERATION name (ARITHMETIC_FUNC_ARGS) {										\
 	_precheck;																				\
-	CACHE_SET(name##Cached);																\
+	CACHE_SET(& name##Cached);																\
 	result->FromNumber(expr);																\
 }																							\
 void DELTAVALUE_OPERATION name##Cached (ARITHMETIC_FUNC_ARGS) {								\

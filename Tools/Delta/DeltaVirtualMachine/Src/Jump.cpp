@@ -67,7 +67,7 @@ static DeltaCacheProfiler cacheProfiler("Jump");
 
 #define	IMPLEMENT_CACHED_OPERATION(name, expr, t1, t2)										\
 bool DELTAVALUE_OPERATION name (RELATIONAL_FUNC_ARGS) {										\
-	CACHE_SET(name##Cached);																\
+	CACHE_SET(& name##Cached);																\
 	return expr;																			\
 }																							\
 bool DELTAVALUE_OPERATION name##Cached (RELATIONAL_FUNC_ARGS) {								\

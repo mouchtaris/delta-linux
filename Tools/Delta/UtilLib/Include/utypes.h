@@ -272,72 +272,105 @@ template <typename FuncPtrT> static inline FuncPtrT const uvoid2func (void const
 
 template <typename T> struct uvoidptrcaster {};
 
-template <typename T> struct uvoidptrcaster<T*> 
-	{ void* operator()(T* p) { return p; }  };
+template <typename T>
+struct uvoidptrcaster<T*> {
+	void* operator()(T* p) const {
+#ifdef _DEBUG
+		// make sure that this template is used
+		// *only* for casting pointers-to-data
+		T* pcopy(p);
+		++pcopy;
+#endif // _DEBUG
+		return p;
+	}
+	T* operator()(void* p) const
+		{ return (T*) p; }
+};
 
 template <typename R>
-struct uvoidptrcaster<R(*)(void)> 
-	{ void* operator()(R(*p)(void)) { return ufunc2void(p); }  };
+struct uvoidptrcaster<R(*)(void)> {
+	typedef R(*Rf)(void);
+	void*	operator()(Rf p) const		{ return ufunc2void(p);	}
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); }
+};
 
 template <typename R, typename A1>
 struct uvoidptrcaster<R(*)(A1)> {
 	typedef R(*Rf)(A1);
-	void*		operator()(R(*p)(A1))	{ return ufunc2void(p); }  
-	Rf			operator()(const void*)	{ return uvoid2func(p); } 
+	void*	operator()(Rf p) const		{ return ufunc2void(p); }  
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); } 
 };
 
 template <typename R, typename A1, typename A2>
 struct uvoidptrcaster<R(*)(A1,A2)> {
 	typedef R(*Rf)(A1,A2);
-	void* operator()(R(*p)(A1,A2)) { return ufunc2void(p); }
-	Rf			operator()(const void*)  { return uvoid2func(p); } 
+	void*	operator()(Rf p) const 		{ return ufunc2void(p); }
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); } 
 };
 
 template <typename R, typename A1, typename A2, typename A3>
 struct uvoidptrcaster<R(*)(A1,A2,A3)> {
 	typedef R(*Rf)(A1,A2,A3);
-	void*	operator()(R(*p)(A1,A2,A3)) { return ufunc2void(p); } 
-	Rf		operator()(const void*)  { return uvoid2func(p); } 
+	void*	operator()(Rf p) const		{ return ufunc2void(p); } 
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); } 
 };
 
 template <typename R, typename A1, typename A2, typename A3, typename A4>
 struct uvoidptrcaster<R(*)(A1,A2,A3,A4)> {
 	typedef R(*Rf)(A1,A2,A3,A4);
-	void*	operator()(R(*p)(A1,A2,A3,A4)) { return ufunc2void(p); }
-	Rf		operator()(const void*)  { return uvoid2func(p); } 
+	void*	operator()(Rf p) const		{ return ufunc2void(p); }
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); } 
 };
 
 template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5>
 struct uvoidptrcaster<R(*)(A1,A2,A3,A4,A5)> {
 	typedef R(*Rf)(A1,A2,A3,A4,A5);
-	void*	operator()(R(*p)(A1,A2,A3,A4,A5)) { return ufunc2void(p); }
-	Rf		operator()(const void*)  { return uvoid2func(p); } 
+	void*	operator()(Rf p) const		{ return ufunc2void(p); }
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); } 
 };
 
 template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
 struct uvoidptrcaster<R(*)(A1,A2,A3,A4,A5,A6)> {
 	typedef R(*Rf)(A1,A2,A3,A4,A5,A6);
-	void*	operator()(R(*p)(A1,A2,A3,A4,A5,A6)) { return ufunc2void(p); }
-	Rf		operator()(const void*)  { return uvoid2func(p); } 
+	void*	operator()(Rf p) const		{ return ufunc2void(p); }
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); } 
 };
+
+template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+struct uvoidptrcaster<R(*)(A1,A2,A3,A4,A5,A6,A7)> {
+	typedef R(*Rf)(A1,A2,A3,A4,A5,A6,A7);
+	void*	operator()(Rf p) const		{ return ufunc2void(p); }
+	Rf		operator()(void* p) const	{ return uvoid2func<Rf>(p); } 
+};
+
+//*****************************
 
 template <typename Tl, typename Tr> struct ucastassigner  {
-	const Tl operator()(Tl& lv, const Tr& rv)
-		{ return lv = (Tl) rv; }
+	Tl operator()(Tl& lv, const Tr& rv) const {
+#ifdef _DEBUG
+		// make certain that this template is used
+		// *only* for casting pointers-to-data.
+		Tr rvcopy(rv);
+		++rvcopy;
+		Tl lvcopy(lv);
+		++lvcopy;
+#endif // _DEBUG
+		return lv = (Tl) rv;
+	}
 };
 
-template <typename Tr> struct ucastassigner<void*&, Tr>  {
+template <typename Tr> struct ucastassigner<void*, Tr>  {
 	void* operator()(void*& lv, const Tr& rv) const
 		{ return lv = uvoidptrcaster<Tr>()(rv); }
 };
 
-template <typename Tl> struct ucastassigner<Tl*, const void*>  {
-	Tl* operator()(Tl*& lv, const void*& rv) const
+template <typename Tl> struct ucastassigner<Tl*, void*>  {
+	Tl* operator()(Tl*& lv, void* const& rv) const
 		{ return lv = uvoidptrcaster<Tl*>()(rv); }
 };
 
 template <typename Tl, typename Tr>	// Use when should avoid hard-coding type casting.
-const Tl ucastassign (Tl& lv,  const Tr& rv)
+Tl ucastassign (Tl& lv,  const Tr& rv)
 	{ return ucastassigner<Tl, Tr>()(lv, rv); }
 
 //---------------------------------------------------------------
