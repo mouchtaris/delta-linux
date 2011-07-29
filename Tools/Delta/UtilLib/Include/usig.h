@@ -1,14 +1,84 @@
 // usig.h
-// Signature extraction templates. Just for the fun of it.
+// Signature extraction templates.
 // A. Savidis, May 2007.
 //
 
 #ifndef	USIG_H
 #define	USIG_H
 
+#include <string>
+
 //---------------------------------------------------------------
 
-#include <string>
+template <typename R> struct usig {
+	typedef typename R::result_type	result_type;
+};
+
+template <typename R>
+struct usig<R(*)(void)> {
+	typedef R		result_type;
+};
+
+template <typename R, typename A1>
+struct usig<R(*)(A1)> {
+	typedef R		result_type;
+	typedef A1		first_argument_type;
+};
+
+template <typename R, typename A1, typename A2>
+struct usig<R(*)(A1,A2)> {
+	typedef R		result_type;
+	typedef A1		first_argument_type;
+	typedef A2		second_argument_type;
+};
+
+template <typename R, typename A1, typename A2, typename A3>
+struct usig<R(*)(A1,A2,A3)> {
+	typedef R		result_type;
+	typedef A1		first_argument_type;
+	typedef A2		second_argument_type;
+	typedef A3		third_argument_type;
+};
+
+template <typename R, typename A1, typename A2, typename A3, typename A4>
+struct usig<R(*)(A1,A2,A3,A4)> {
+	typedef R		result_type;
+	typedef A1		first_argument_type;
+	typedef A2		second_argument_type;
+	typedef A4		fourth_argument_type;
+};
+
+template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5>
+struct usig<R(*)(A1,A2,A3,A4,A5)> {
+	typedef R		result_type;
+	typedef A1		first_argument_type;
+	typedef A2		second_argument_type;
+	typedef A4		fourth_argument_type;
+	typedef A5		fifth_argument_type;
+};
+
+template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+struct usig<R(*)(A1,A2,A3,A4,A5,A6)> {
+	typedef R		result_type;
+	typedef A1		first_argument_type;
+	typedef A2		second_argument_type;
+	typedef A4		fourth_argument_type;
+	typedef A5		fifth_argument_type;
+	typedef A6		sixth_argument_type;
+};
+
+template <typename R, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+struct usig<R(*)(A1,A2,A3,A4,A5,A6,A7)> {
+	typedef R		result_type;
+	typedef A1		first_argument_type;
+	typedef A2		second_argument_type;
+	typedef A4		fourth_argument_type;
+	typedef A5		fifth_argument_type;
+	typedef A6		sixth_argument_type;
+	typedef A7		seventh_argument_type;
+};
+
+//---------------------------------------------------------------
 
 // utostring is a trait type -> string
 //

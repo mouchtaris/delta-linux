@@ -10,6 +10,7 @@
 
 #include "DDebug.h"
 #include "utypes.h"
+#include "usig.h"
 
 #include <list>
 #include <functional>
@@ -24,7 +25,8 @@ template <class Tfun> class ucallbackwithclosure {
 	private:
 	Tfun	func;
 	void*	closure;
-								
+	typedef typename usig<Tfun>::result_type R;
+
 	public:
 	struct equal : public std::binary_function<ucallbackwithclosure, std::pair<Tfun, void*>, bool> {
 		bool operator()(const ucallbackwithclosure& cb, const std::pair<Tfun, void*>& f) const
@@ -48,16 +50,20 @@ template <class Tfun> class ucallbackwithclosure {
 	void				reset (void)
 							{ func = (Tfun) 0; closure = (void*) 0; }
 
-	void				operator() (void) const 
-							{ (*func)(closure); }
-	template <class C1> void operator()(C1 a1) const  
-							{ (*func)(a1, closure); }
-	template <class C1, class C2> void operator()(C1 a1, C2 a2) const  
-							{ (*func)(a1, a2, closure); }
-	template <class C1, class C2, class C3> void operator()(C1 a1, C2 a2, C3 a3) const  
-							{ (*func)(a1, a2, a3, closure); }
-	template <class C1, class C2, class C3, class C4> void operator()(C1 a1, C2 a2, C3 a3, C4 a4) const  
-							{ (*func)(a1, a2, a3, a4, closure); }
+	R					operator() (void) const 
+							{ return (*func)(closure); }
+	template <class C1> 
+	R					operator()(C1 a1) const  
+							{ return (*func)(a1, closure); }
+	template <class C1, class C2> 
+	R					operator()(C1 a1, C2 a2) const  
+							{ return (*func)(a1, a2, closure); }
+	template <class C1, class C2, class C3> 
+	R					operator()(C1 a1, C2 a2, C3 a3) const  
+							{ return (*func)(a1, a2, a3, closure); }
+	template <class C1, class C2, class C3, class C4> 
+	R					operator()(C1 a1, C2 a2, C3 a3, C4 a4) const  
+							{ return (*func)(a1, a2, a3, a4, closure); }
 
 	const ucallbackwithclosure&	operator=(const ucallbackwithclosure& cb)
 									{ new (this) ucallbackwithclosure(cb); return *this; }
@@ -84,7 +90,8 @@ template <class Tfun> class ucallbackwithclosure {
 template <class Tfun> class ucallbackalone {
 	private:
 	Tfun func;
-	
+	typedef typename usig<Tfun>::result_type R;
+
 	public:
 	struct equal : public std::binary_function<ucallbackalone, std::pair<Tfun, void*>, bool> {
 		bool operator()(const ucallbackalone& cb, const std::pair<Tfun, void*>& f) const
