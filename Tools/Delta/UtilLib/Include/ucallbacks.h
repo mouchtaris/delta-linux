@@ -99,7 +99,8 @@ template <class Tfun> class ucallbackalone {
 	};
 
 	Tfun f(void) const { return func; }
-	void operator()(void) const  { (*func)(); }
+	R operator()(void) const  { return (*func)(); }
+
 	ucallbackalone (const ucallbackalone& data) : func(data.func) {}
 	ucallbackalone (Tfun _func) : func(_func) {}
 	ucallbackalone (void) : func((Tfun) 0) {}
