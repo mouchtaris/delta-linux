@@ -145,6 +145,10 @@ template <typename T> 			struct uconst_of<const T>	{ typedef typename uconst_of<
 template <typename T> 			struct uptr_of				{ typedef T t; };
 template <typename T> 			struct uptr_of<T*>			{ typedef typename uptr_of<T>::t t; };
 
+template <typename T>			struct uconstref_of				{ typedef const T& t; };
+template <typename T>			struct uconstref_of<T&>			{ typedef typename uconstref_of<T>::t t; };
+template <typename T>			struct uconstref_of<const T&>	{ typedef typename uconstref_of<T>::t t; };
+
 template <typename T> const T*	uaddress_of (const T& x)	{ return &x; }
 template <typename T> T*		uaddress_of (T& x)			{ return &x; }
 template <typename T> T*		uaddress_of (T* x)			{ return x; }

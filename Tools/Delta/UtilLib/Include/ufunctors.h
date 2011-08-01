@@ -73,7 +73,10 @@ template <class T>
 void uptrnullifier (T*& p)	{ p = (T*) 0;}
 
 template <class T> 
-void uptrdestructor (T*& p) { DDELETE(p); p = (T*) 0;}
+void uptrdestructor (T*& p) { DDELETE(p); p = (T*) 0; shit++; }
+
+template <class T> 
+void uptrdestructor (T* const& p) { DDELETE(p); }
 
 template <class T> 
 void uarrdestructor (T*& p) { DDELARR(p); p = (T*) 0; }
@@ -103,7 +106,7 @@ class ufunctor_first : public std::unary_function<Ttuple, void> {
 
 	public:
 	void operator()(const Ttuple& t) const {
-		f(const_cast<Ttuple&>(t).first);
+		f(t.first);
 	}
 
 	ufunctor_first (const Tfun& _f) : f(_f) {}
@@ -117,7 +120,7 @@ class ufunctor_second : public std::unary_function<Ttuple, void> {
 
 	public:
 	void operator()(const Ttuple& t) const {
-		f(const_cast<Ttuple&>(t).second);
+		f(t.second);
 	}
 
 	ufunctor_second (const Tfun& _f) : f(_f) {}
@@ -131,7 +134,7 @@ class ufunctor_third : public std::unary_function<Ttuple, void> {
 
 	public:
 	void operator()(const Ttuple& t) const {
-		f(const_cast<Ttuple&>(t).third);
+		f(t.third);
 	}
 
 	ufunctor_third (const Tfun& _f) : f(_f) {}
@@ -200,7 +203,8 @@ template <class T1, class T2, class T3> struct utriple {
 	typedef T3 third_type;
 
 	void operator=(const utriple& t) 
-		{ new (this) utriple(t); }
+		{ new (this) utriple(t); }		// FIXME dangerous: reconstructing members without destructing them.
+										// Probably a better idea to delegate assignment to members.
 
 	utriple (const T1& _first, const T2& _second, const T3& _third) :
 		first(_first),
@@ -227,8 +231,9 @@ template <class T1, class T2, class T3, class T4> struct uquadruple  {
 	typedef T3 third_type;
 	typedef T4 fourth_type;
 
-	void operator=(const uquadruple& t) 
-		{ new (this) uquadruple(t); }
+	void operator=(const uquadruple& t)		
+		{ new (this) uquadruple(t); }	// FIXME dangerous: reconstructing members without destructing them.
+										// Probably a better idea to delegate assignment to members.
 
 	uquadruple (const T1& _first, const T2& _second, const T3& _third, const T4 _fourth) :
 		first(_first),
@@ -261,7 +266,8 @@ template <class T1, class T2, class T3, class T4, class T5> struct uquintuple  {
 	typedef T5 fifth_type;
 
 	void operator=(const uquintuple& t) 
-		{ new (this) uquintuple(t); }
+		{ new (this) uquintuple(t); }	// FIXME dangerous: reconstructing members without destructing them.
+										// Probably a better idea to delegate assignment to members.
 
 	uquintuple (const T1& _first, const T2& _second, const T3& _third, const T4 _fourth, const T5 _fifth) :
 		first(_first),
@@ -287,42 +293,43 @@ template <class T1, class T2, class T3, class T4, class T5> struct uquintuple  {
 template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::first_type > >
 struct uequal_first : public std::binary_function<Ttuple, typename Ttuple::first_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::first_type val) const {
-		return Fequal()(const_cast<Ttuple&>(t).first , val);
+		return Fequal()(t.first, val);
 	}
 };
 
 template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::second_type > >
 struct uequal_second : public std::binary_function<Ttuple, typename Ttuple::second_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::second_type val) const {
-		return Fequal()(const_cast<Ttuple&>(t).second , val);
+		return Fequal()(t.second, val);
 	}
 };
 
 template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::third_type > >
 struct uequal_third : public std::binary_function<Ttuple, typename Ttuple::third_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::third_type val) const {
-		return Fequal()(const_cast<Ttuple&>(t).third , val);
+		return Fequal()(t.third, val);
 	}
 };
 
 template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::fourth_type > >
 struct uequal_fourth : public std::binary_function<Ttuple, typename Ttuple::fourth_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::fourth_type val) const {
-		return Fequal()(const_cast<Ttuple&>(t).fourth , val);
+		return Fequal()(t.fourth, val);
 	}
 };
 
 /////////////////////////////////////////////////////////////////
 // FUNCTOR ADAPTERS FOR TUPLES.
+// FIXME: exact functionality replicated by ufunctor_first, ufunctor_second, etc...
 //
 template <class T, class F> class utuple_firstfunctor : public std::unary_function<T, void> {
 	private:
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(const_cast<T&>(t).first); }
+	void operator()(const T& t) const { f(t.first); }
 	utuple_firstfunctor (const F& _f) : f(_f){}
-	utuple_firstfunctor (const utuple_firstfunctor& p) : f(p.f){}
+	utuple_firstfunctor (const utuple_firstfunctor<T,F>& p) : f(p.f){}
 };
 
 template <class T, class F>
@@ -337,9 +344,9 @@ template <class T, class F> class utuple_secondfunctor : public std::unary_funct
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(const_cast<T&>(t).second); }
+	void operator()(const T& t) const { f(t.second); }
 	utuple_secondfunctor (const F& _f) : f(_f){}
-	utuple_secondfunctor (const utuple_secondfunctor& p) : f(p.f){}
+	utuple_secondfunctor (const utuple_secondfunctor<T,F>& p) : f(p.f){}
 };
 
 template <class T, class F>
@@ -354,14 +361,14 @@ template <class T, class F> class utuple_thirdfunctor : public std::unary_functi
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(const_cast<T&>(t).third); }
+	void operator()(const T& t) const { f(t.third); }
 	utuple_thirdfunctor (const F& _f) : f(_f){}
-	utuple_thirdfunctor (const utuple_thirdfunctor& p) : f(p.f){}
+	utuple_thirdfunctor (const utuple_thirdfunctor<T,F>& p) : f(p.f){}
 };
 
 template <class T, class F>
 const utuple_thirdfunctor<T, F> utuple_thirdfunctoriser (const F& f) {
-	return utuple_thirdfunctor<T, F>(f);
+	return utuple_thirdfunctor<T,F>(f);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -382,7 +389,7 @@ struct ufalseconditionalfunctor : public uconditionalfunctor {
 };
 
 template <class T> void ucalldestructor (T* ptr) {
-	ptr->~T();	// Never T::~T(), it ingores late binding.
+	ptr->~T();	// Never T::~T(), it ignores late binding.
 }
 
 template <class T> void ucalldestructor (T& val) {
@@ -401,7 +408,7 @@ template <class R, class T, class Tfunc> class unarybinder : public std::unary_f
 	public:
 	R operator()(void) const { return f(a); }
 	unarybinder (const Tfunc& _f, const T& _a) : f(_f), a(_a){}
-	unarybinder (const unarybinder& b) : f(b.f), a(b.a){}
+	unarybinder (const unarybinder<R,T,Tfunc>& b) : f(b.f), a(b.a){}
 };
 
 template <class R, class T, class Tfunc> 
@@ -419,14 +426,14 @@ class uvoid_unaryfunctor : public std::unary_function<T, void> {
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(const_cast<T&>(t)); }
+	void operator()(const T& t) const { f(t); }
 	uvoid_unaryfunctor (const F& _f) : f(_f){}
-	uvoid_unaryfunctor (const uvoid_unaryfunctor& p) : f(p.f){}
+	uvoid_unaryfunctor (const uvoid_unaryfunctor<T,F>& p) : f(p.f){}
 };
 
 template <class T, class F> 
 const uvoid_unaryfunctor<T, F> uvoid_unaryfunctor_adapter (const F& f) {
-	return uvoid_unaryfunctor<T, F>(f);
+	return uvoid_unaryfunctor<T,F>(f);
 }
 
 /////////////////////////////////////////////////////////////////
