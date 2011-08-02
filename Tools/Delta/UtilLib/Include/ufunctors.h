@@ -14,6 +14,7 @@
 
 #include "utypes.h"
 #include "DDebug.h"
+#include "usig.h"
 
 //---------------------------------------------------------------
 // The default asignment function relies upon the language
@@ -73,10 +74,7 @@ template <class T>
 void uptrnullifier (T*& p)	{ p = (T*) 0;}
 
 template <class T> 
-void uptrdestructor (T*& p) { DDELETE(p); p = (T*) 0; shit++; }
-
-template <class T> 
-void uptrdestructor (T* const& p) { DDELETE(p); }
+void uptrdestructor (T*& p) { DDELETE(p); p = (T*) 0; }
 
 template <class T> 
 void uarrdestructor (T*& p) { DDELARR(p); p = (T*) 0; }
@@ -497,5 +495,6 @@ ubinary_and (const F1& f1, const F2& f2)
 	{ return ubinary_operator_functor<F1, F2>(f1, f2, &ubinary_and_operator); }
 
 //---------------------------------------------------------------
+
 
 #endif	// Do not add stuff beyond this point.
