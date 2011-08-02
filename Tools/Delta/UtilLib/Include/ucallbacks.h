@@ -45,7 +45,7 @@ template <class Tfun> class ucallbackwithclosure {
 						
 	void*				c (void) const { return closure; }
 						
-	void				set (Tfun f, void* c) 
+	void				set (Tfun f, void* c = (void*) 0) 
 							{ func = f; closure = c; }
 	void				reset (void)
 							{ func = (Tfun) 0; closure = (void*) 0; }
@@ -72,7 +72,7 @@ template <class Tfun> class ucallbackwithclosure {
 		func(data.func), 
 		closure(data.closure) {}
 
-	ucallbackwithclosure (Tfun _func, void* _closure) : 
+	ucallbackwithclosure (Tfun _func, void* _closure = (void*) 0) : 
 		func(_func), 
 		closure(_closure) {}
 
