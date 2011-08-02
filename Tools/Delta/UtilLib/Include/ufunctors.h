@@ -22,7 +22,7 @@
 // key handlers, one of the following has to be seelcted, or
 //  another must be defined.
 //
-template <class T> struct uassigndefaultfunc : public std::binary_function<T, T, void> {
+template <typename T> struct uassigndefaultfunc : public std::binary_function<T, T, void> {
 	void operator()(T& t1, T t2) const { t1 = t2; }
 };
 
@@ -30,7 +30,7 @@ template <class T> struct uassigndefaultfunc : public std::binary_function<T, T,
 // The default comparison function relies upon the language
 // built-in equality testing supoprt.
 //
-template <class T> struct ucmpdefaultfunc : public std::binary_function<T, T, bool>  {
+template <typename T> struct ucmpdefaultfunc : public std::binary_function<T, T, bool>  {
 	bool operator()(const T& t1, const T& t2) const { return t1==t2; }
 };
 		
@@ -48,7 +48,7 @@ struct ustringless: public std::binary_function<const char*, const char*, bool> 
 	}
 };
 
-template <class T>
+template <typename T>
 struct uptrless : public std::binary_function<const T*, const T*, bool> {
 	bool operator()(const T* p1, const T* p2) const {
 		return ((util_ui32) p1) < ((util_ui32) p2);
@@ -58,25 +58,25 @@ struct uptrless : public std::binary_function<const T*, const T*, bool> {
 /////////////////////////////////////////////////////////////////
 // The default destructor function uses the language delete operator.
 //
-template <class T> struct uptrdestructorfunctor : public std::unary_function<T, void> {
+template <typename T> struct uptrdestructorfunctor : public std::unary_function<T, void> {
 	void operator() (T item) const { DDELETE(item); }
 };
 
-template <class T> struct uarrdestructorfunctor : public std::unary_function<T, void> {
+template <typename T> struct uarrdestructorfunctor : public std::unary_function<T, void> {
 	void operator() (T item) const { DDELARR(item); }
 };
 
-template <class T> struct uptrnullifierfunctor : public std::unary_function<T, void> {
+template <typename T> struct uptrnullifierfunctor : public std::unary_function<T, void> {
 	void operator() (T& p) const { p = (T) 0; }
 };
 
-template <class T> 
+template <typename T> 
 void uptrnullifier (T*& p)	{ p = (T*) 0;}
 
-template <class T> 
-void uptrdestructor (T*& p) { DDELETE(p); p = (T*) 0; }
+template <typename T> 
+void uptrdestructor (T*& p) { DDELETE(p); p = (T*) 0; }		// FIXME: duplicated functionality of udelete()
 
-template <class T> 
+template <typename T> 
 void uarrdestructor (T*& p) { DDELARR(p); p = (T*) 0; }
 
 template <typename T, typename Tdestructor> struct udestroyablewrapper {
@@ -96,7 +96,7 @@ template <typename T, typename Tdestructor> struct udestroyablewrapper {
 // a function pointer type.
 //
 
-template <class Ttuple, class Tfun> 
+template <typename Ttuple, typename Tfun> 
 class ufunctor_first : public std::unary_function<Ttuple, void> {
 
 	private:
@@ -106,11 +106,14 @@ class ufunctor_first : public std::unary_function<Ttuple, void> {
 	void operator()(const Ttuple& t) const {
 		f(t.first);
 	}
+	void operator()(Ttuple& t) const {
+		f(t.first);
+	}
 
 	ufunctor_first (const Tfun& _f) : f(_f) {}
 };
 
-template <class Ttuple, class Tfun> 
+template <typename Ttuple, typename Tfun> 
 class ufunctor_second : public std::unary_function<Ttuple, void> {
 
 	private:
@@ -120,11 +123,14 @@ class ufunctor_second : public std::unary_function<Ttuple, void> {
 	void operator()(const Ttuple& t) const {
 		f(t.second);
 	}
+	void operator()(Ttuple& t) const {
+		f(t.second);
+	}
 
 	ufunctor_second (const Tfun& _f) : f(_f) {}
 };
 
-template <class Ttuple, class Tfun> 
+template <typename Ttuple, typename Tfun> 
 class ufunctor_third : public std::unary_function<Ttuple, void> {
 
 	private:
@@ -132,6 +138,9 @@ class ufunctor_third : public std::unary_function<Ttuple, void> {
 
 	public:
 	void operator()(const Ttuple& t) const {
+		f(t.third);
+	}
+	void operator()(Ttuple& t) const {
 		f(t.third);
 	}
 
@@ -183,14 +192,14 @@ class udestroy_third : public	ufunctor_third<
 /////////////////////////////////////////////////////////////////
 // This is an equality functor for pointer content.
 //
-template <class T> struct uequal_ptrcontent : public std::binary_function<T*, T*, bool> {
+template <typename T> struct uequal_ptrcontent : public std::binary_function<T*, T*, bool> {
 	bool operator()(T* first, T* second) const 
 		{ return *first == *second; }
 };
 
 /////////////////////////////////////////////////////////////////
 
-template <class T1, class T2, class T3> struct utriple {
+template <typename T1, typename T2, typename T3> struct utriple {
 
 	T1	first;
 	T2	second;
@@ -217,7 +226,7 @@ template <class T1, class T2, class T3> struct utriple {
 
 /////////////////////////////////////////////////////////////////
 
-template <class T1, class T2, class T3, class T4> struct uquadruple  {
+template <typename T1, typename T2, typename T3, typename T4> struct uquadruple  {
 
 	T1	first;
 	T2	second;
@@ -249,7 +258,7 @@ template <class T1, class T2, class T3, class T4> struct uquadruple  {
 
 /////////////////////////////////////////////////////////////////
 
-template <class T1, class T2, class T3, class T4, class T5> struct uquintuple  {
+template <typename T1, typename T2, typename T3, typename T4, typename T5> struct uquintuple  {
 
 	T1	first;
 	T2	second;
@@ -288,28 +297,28 @@ template <class T1, class T2, class T3, class T4, class T5> struct uquintuple  {
 // and allow comparison with a selected member.
 //
 
-template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::first_type > >
+template <typename Ttuple, typename Fequal = std::equal_to< typename Ttuple::first_type > >
 struct uequal_first : public std::binary_function<Ttuple, typename Ttuple::first_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::first_type val) const {
 		return Fequal()(t.first, val);
 	}
 };
 
-template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::second_type > >
+template <typename Ttuple, typename Fequal = std::equal_to< typename Ttuple::second_type > >
 struct uequal_second : public std::binary_function<Ttuple, typename Ttuple::second_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::second_type val) const {
 		return Fequal()(t.second, val);
 	}
 };
 
-template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::third_type > >
+template <typename Ttuple, typename Fequal = std::equal_to< typename Ttuple::third_type > >
 struct uequal_third : public std::binary_function<Ttuple, typename Ttuple::third_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::third_type val) const {
 		return Fequal()(t.third, val);
 	}
 };
 
-template <class Ttuple, class Fequal = std::equal_to< typename Ttuple::fourth_type > >
+template <typename Ttuple, typename Fequal = std::equal_to< typename Ttuple::fourth_type > >
 struct uequal_fourth : public std::binary_function<Ttuple, typename Ttuple::fourth_type, bool> {
 	bool operator()(const Ttuple& t, typename Ttuple::fourth_type val) const {
 		return Fequal()(t.fourth, val);
@@ -320,51 +329,54 @@ struct uequal_fourth : public std::binary_function<Ttuple, typename Ttuple::four
 // FUNCTOR ADAPTERS FOR TUPLES.
 // FIXME: exact functionality replicated by ufunctor_first, ufunctor_second, etc...
 //
-template <class T, class F> class utuple_firstfunctor : public std::unary_function<T, void> {
+template <typename T, typename F> class utuple_firstfunctor : public std::unary_function<T, void> {
 	private:
 	F f;
 
 	public:
 	void operator()(const T& t) const { f(t.first); }
+	void operator()(T& t) const { f(t.first); }
 	utuple_firstfunctor (const F& _f) : f(_f){}
 	utuple_firstfunctor (const utuple_firstfunctor<T,F>& p) : f(p.f){}
 };
 
-template <class T, class F>
+template <typename T, typename F>
 const utuple_firstfunctor<T, F> utuple_firstfunctoriser (const F& f) {
 	return utuple_firstfunctor<T, F>(f);
 }
 
 //***********************
 
-template <class T, class F> class utuple_secondfunctor : public std::unary_function<T, void> {
+template <typename T, typename F> class utuple_secondfunctor : public std::unary_function<T, void> {
 	private:
 	F f;
 
 	public:
 	void operator()(const T& t) const { f(t.second); }
+	void operator()(T& t) const { f(t.second); }
 	utuple_secondfunctor (const F& _f) : f(_f){}
 	utuple_secondfunctor (const utuple_secondfunctor<T,F>& p) : f(p.f){}
 };
 
-template <class T, class F>
+template <typename T, typename F>
 const utuple_secondfunctor<T, F> utuple_secondfunctoriser (const F& f) {
 	return utuple_secondfunctor<T, F>(f);
 }
 
 //***********************
 
-template <class T, class F> class utuple_thirdfunctor : public std::unary_function<T, void> {
+template <typename T, typename F> class utuple_thirdfunctor : public std::unary_function<T, void> {
 	private:
 	F f;
 
 	public:
 	void operator()(const T& t) const { f(t.third); }
+	void operator()(T& t) const { f(t.third); }
 	utuple_thirdfunctor (const F& _f) : f(_f){}
 	utuple_thirdfunctor (const utuple_thirdfunctor<T,F>& p) : f(p.f){}
 };
 
-template <class T, class F>
+template <typename T, typename F>
 const utuple_thirdfunctor<T, F> utuple_thirdfunctoriser (const F& f) {
 	return utuple_thirdfunctor<T,F>(f);
 }
@@ -398,7 +410,7 @@ template <class T> void ucalldestructor (T& val) {
 // Binder class and function for unary functions.
 // The result is a function with no arguments.
 //
-template <class R, class T, class Tfunc> class unarybinder : public std::unary_function<void,R> {
+template <typename R, typename T, typename Tfunc> class unarybinder : public std::unary_function<void,R> {
 	private:
 	T a;
 	Tfunc f;
@@ -409,7 +421,7 @@ template <class R, class T, class Tfunc> class unarybinder : public std::unary_f
 	unarybinder (const unarybinder<R,T,Tfunc>& b) : f(b.f), a(b.a){}
 };
 
-template <class R, class T, class Tfunc> 
+template <typename R, typename T, typename Tfunc> 
 const unarybinder<R,T,Tfunc>  unarybind (const Tfunc& f, const T& a) {
 	return unarybinder<R,T,Tfunc>(f, a);
 }
@@ -418,18 +430,19 @@ const unarybinder<R,T,Tfunc>  unarybind (const Tfunc& f, const T& a) {
 // A way of converting non-void unary functors to void (ignoring returned result).
 // The adapter requires explicitly the argument type.
 //
-template <class T, class F> 
+template <typename T, typename F> 
 class uvoid_unaryfunctor : public std::unary_function<T, void> {
 	private:
 	F f;
 
 	public:
 	void operator()(const T& t) const { f(t); }
+	void operator()(T& t) const { f(t); }
 	uvoid_unaryfunctor (const F& _f) : f(_f){}
 	uvoid_unaryfunctor (const uvoid_unaryfunctor<T,F>& p) : f(p.f){}
 };
 
-template <class T, class F> 
+template <typename T, typename F> 
 const uvoid_unaryfunctor<T, F> uvoid_unaryfunctor_adapter (const F& f) {
 	return uvoid_unaryfunctor<T,F>(f);
 }
@@ -437,14 +450,14 @@ const uvoid_unaryfunctor<T, F> uvoid_unaryfunctor_adapter (const F& f) {
 /////////////////////////////////////////////////////////////////
 // A delegate functor calling its argument as a function.
 //
-template <class F> struct udelagatefunctor: public std::unary_function<F, void> {
+template <typename F> struct udelagatefunctor: public std::unary_function<F, void> {
 	void operator()(const F& f) const { f(); }
 };
 
 /////////////////////////////////////////////////////////////////
 // Whenever increment / decrement step functions are needed.
 //
-template <class T> struct ustep {
+template <typename T> struct ustep {
 	static void	inc (T* i) { ++(*i); }
 	static void	dec (T* i) { --(*i); }
 };
@@ -452,10 +465,10 @@ template <class T> struct ustep {
 /////////////////////////////////////////////////////////////////
 // Turning anything (non-constant) to a reference.
 //
-template <class T> T& utoref (T* p) { return *p; }
-template <class T> const T& utoref (const T* p) { return *p; }
-template <class T> T& utoref (T& p) { return p; }
-template <class T> const T& utoref (const T& p) { return p; }
+template <typename T> T& utoref (T* p) { return *p; }
+template <typename T> const T& utoref (const T* p) { return *p; }
+template <typename T> T& utoref (T& p) { return p; }
+template <typename T> const T& utoref (const T& p) { return p; }
 
 /////////////////////////////////////////////////////////////////
 
@@ -465,7 +478,7 @@ inline bool ubinary_or_operator (bool a, bool b)
 inline bool ubinary_and_operator (bool a, bool b) 
 	{ return a && b; }
 
-template <class F1, class F2> 
+template <typename F1, typename F2> 
 struct ubinary_operator_functor : public std::unary_function<
 										typename F1::argument_type, 
 										typename F1::result_type
@@ -486,11 +499,11 @@ struct ubinary_operator_functor : public std::unary_function<
 		_fn1(fn1), _fn2(fn2), _Op(Op){}
 };
 
-template <class F1, class F2> ubinary_operator_functor<F1, F2> 
+template <typename F1, typename F2> ubinary_operator_functor<F1, F2> 
 ubinary_or (const F1& f1, const F2& f2) 
 	{ return ubinary_operator_functor<F1, F2>(f1, f2, &ubinary_or_operator); }
 
-template <class F1, class F2> ubinary_operator_functor<F1, F2> 
+template <typename F1, typename F2> ubinary_operator_functor<F1, F2> 
 ubinary_and (const F1& f1, const F2& f2) 
 	{ return ubinary_operator_functor<F1, F2>(f1, f2, &ubinary_and_operator); }
 
