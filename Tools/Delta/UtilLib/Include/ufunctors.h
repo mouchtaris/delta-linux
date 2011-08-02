@@ -103,10 +103,10 @@ class ufunctor_first : public std::unary_function<Ttuple, void> {
 	Tfun f;
 
 	public:
-	void operator()(const Ttuple& t) const {
+	void operator()(typename uref_of<Ttuple>::t t) const {
 		f(t.first);
 	}
-	void operator()(Ttuple& t) const {
+	void operator()(typename uconstref_of<Ttuple>::t t) const {
 		f(t.first);
 	}
 
@@ -120,10 +120,10 @@ class ufunctor_second : public std::unary_function<Ttuple, void> {
 	Tfun f;
 
 	public:
-	void operator()(const Ttuple& t) const {
+	void operator()(typename uref_of<Ttuple>::t t) const {
 		f(t.second);
 	}
-	void operator()(Ttuple& t) const {
+	void operator()(typename uconstref_of<Ttuple>::t t) const {
 		f(t.second);
 	}
 
@@ -137,12 +137,13 @@ class ufunctor_third : public std::unary_function<Ttuple, void> {
 	Tfun f;
 
 	public:
-	void operator()(const Ttuple& t) const {
+	void operator()(typename uref_of<Ttuple>::t t) const {
 		f(t.third);
 	}
-	void operator()(Ttuple& t) const {
+	void operator()(typename uconstref_of<Ttuple>::t t) const {
 		f(t.third);
 	}
+
 
 	ufunctor_third (const Tfun& _f) : f(_f) {}
 };
@@ -334,8 +335,8 @@ template <typename T, typename F> class utuple_firstfunctor : public std::unary_
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(t.first); }
-	void operator()(T& t) const { f(t.first); }
+	void operator()(typename uref_of<T>::t t) const { f(t.first); }
+	void operator()(typename uconstref_of<T>::t t) const { f(t.first); }
 	utuple_firstfunctor (const F& _f) : f(_f){}
 	utuple_firstfunctor (const utuple_firstfunctor<T,F>& p) : f(p.f){}
 };
@@ -352,8 +353,8 @@ template <typename T, typename F> class utuple_secondfunctor : public std::unary
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(t.second); }
-	void operator()(T& t) const { f(t.second); }
+	void operator()(typename uref_of<T>::t t) const { f(t.second); }
+	void operator()(typename uconstref_of<T>::t t) const { f(t.second); }
 	utuple_secondfunctor (const F& _f) : f(_f){}
 	utuple_secondfunctor (const utuple_secondfunctor<T,F>& p) : f(p.f){}
 };
@@ -370,8 +371,8 @@ template <typename T, typename F> class utuple_thirdfunctor : public std::unary_
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(t.third); }
-	void operator()(T& t) const { f(t.third); }
+	void operator()(typename uref_of<T>::t t) const { f(t.third); }
+	void operator()(typename uconstref_of<T>::t t) const { f(t.third); }
 	utuple_thirdfunctor (const F& _f) : f(_f){}
 	utuple_thirdfunctor (const utuple_thirdfunctor<T,F>& p) : f(p.f){}
 };
@@ -436,8 +437,8 @@ class uvoid_unaryfunctor : public std::unary_function<T, void> {
 	F f;
 
 	public:
-	void operator()(const T& t) const { f(t); }
-	void operator()(T& t) const { f(t); }
+	void operator()(typename uref_of<T>::t t) const { f(t); }
+	void operator()(typename uconstref_of<T>::t t) const { f(t); }
 	uvoid_unaryfunctor (const F& _f) : f(_f){}
 	uvoid_unaryfunctor (const uvoid_unaryfunctor<T,F>& p) : f(p.f){}
 };
