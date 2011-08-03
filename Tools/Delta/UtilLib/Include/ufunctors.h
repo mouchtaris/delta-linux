@@ -508,6 +508,1014 @@ template <typename F1, typename F2> ubinary_operator_functor<F1, F2>
 ubinary_and (const F1& f1, const F2& f2) 
 	{ return ubinary_operator_functor<F1, F2>(f1, f2, &ubinary_and_operator); }
 
+/////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////
+// Additional by Nikos Mouchtaris <muhtaris@ics.forth.gr>
+// Added on the 1st of August, 2011.
+/////////////////////////////////////////////////////////////////
+// The following templates are defined:
+//
+// --- Functor supertypes (according to std::unary_function,
+//     std::binary_function, ...)
+// + uvoid_function		<Result>
+// + uunary_function	<Result, Argument1>
+// + ubinary_function	<Result, Argument1, Argument2>
+// + uternary_function	<Result, Argument1, Argument2, Argument3>
+//
+//
+// --- Specialisations of usig<> for functors' supertypes
+//
+//
+// --- Pointers to functions
+//   Each upointer_to_{*}_function type IS-A u{*}_function type.
+// + upointer_to_function (supertype)
+// + upointer_to_void_function		<Result>
+// + upointer_to_unary_function		<Result, Argument1>
+// + upointer_to_binary_function	<Result, Argument1, Argument2>
+// + upointer_to_ternary_function	<Result, Argument1, Argument2, Argument3>
+//
+// + uptr_fun(&funcaddr) -> upointer_to_{*}_function obj
+//
+//
+// --- Pointers to specific functions
+//   Each uspecific_pointer_to_{*}_function IS-A u{*}_function type.
+// + uspecific_pointer_to_void_function		<Result, &Func>
+// + uspecific_pointer_to_unary_function    <Result, Argument1, &Func>
+// + uspecific_pointer_to_binary_function   <Result, Argument1, Argument2, &Func>
+// + uspecific_pointer_to_ternary_function	<Result, Argument1, Argument2, Argument3, &Func>
+//
+//
+// --- Member function types
+//   Types for member functions of arity up to 1 already
+//   exist in namespace std::*. The alternatives provided
+//   here additionally offer (through their contract)
+//   type definitions for the Container-Type (of the
+//   member function), as well as uniformity of argument
+//   handling.
+//   Specifically, arguments are handled as much as possible
+//   as references, as they are passed to the original function.
+//
+//   Extras:
+//   struct *mem_fun* {
+//		typedef Container;
+//		typedef Func;
+//		...
+//   };
+// + uconst_mem_fun		<Result, Container>
+// + umem_fun			<Result, Container>
+// + uconst_mem_fun1	<Result, Container, Argument1>
+// + umem_fun1			<Result, Container, Argument1>
+// + uconst_mem_fun2	<Result, Container, Argument1, Argument2>
+// + umem_fun2			<Result, Container, Argument1, Argument2>
+//
+// + umemberfunctionpointer(funcptr) -> [const_]mem_fun{*} obj
+//
+//
+// --- Pointers to specific member functions
+//   Specific pointers to member functions provided for
+//   compile time optimisations.
+//   There is no way to get these types or objects
+//   "easily" from an adapter function. It would require
+//   template templating (which may exist, TODO check out).
+// + uspecific_const_mem_fun		<Result, Container, &Func>
+// + uspecific_mem_fun              <Result, Container, &Func>
+// + uspecific_const_mem_fun1       <Result, Container, Argument1, &Func>
+// + uspecific_mem_fun1             <Result, Container, Argument1, &Func>
+// + uspecific_const_mem_fun2       <Result, Container, Argument1, Argument2, &Func>
+// + uspecific_mem_fun2             <Result, Container, Argument1, Argument2, &Func>
+//
+//
+// --- Binders
+// Binders provided for functions with arity of two (2) or
+// three (3).
+// All binders are constructed by receiving the value to be bound
+// and optionally the operation to which the value is bound.
+// If the operation is not provided, it is default constructed.
+//
+// No binder for functions of arity 0 or 1 is provided. Use
+// unarybinder{} and unarybind() for those cases.
+//
+// + ubinder2_1st
+// + ubinder2_2nd
+// + ubinder3_1st
+// + ubinder3_2nd
+// + ubinder3_3rd
+// + ubind1st(val, op)
+// + ubind2nd(val, op)
+// + ubind3rd(val, op)
+//
+//
+// --- Traits for ubind*().
+// Custom functors should specialise the ubind_traits<Operation>
+// template if need to be bindable.
+// For functors that inherit from the u-functor-supertypes
+// (ubinary_function, etc), there are convencience default
+// traits:
+//		ubind2_traits<Operation>	for binary functors
+//		ubind3_traits<Operation>	for ternary functors.
+/////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////
+// Functor supertypes (according to std::unary_function, std::binary_function, ...)
+// + uvoid_function
+// + uunary_function
+// + ubinary_function
+// + uternary_function
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result>
+struct uvoid_function {
+	typedef _Result			result_type;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Argument1>
+struct uunary_function {
+	typedef _Result			result_type;
+	typedef _Argument1		argument_type;
+	typedef _Argument1		first_argument_type;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Argument1, typename _Argument2>
+struct ubinary_function {
+	typedef _Result			result_type;
+	typedef _Argument1		first_argument_type;
+	typedef _Argument2		second_argument_type;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Argument1, typename _Argument2, typename _Argument3>
+struct uternary_function {
+	typedef _Result			result_type;
+	typedef _Argument1		first_argument_type;
+	typedef _Argument2		second_argument_type;
+	typedef _Argument3		third_argument_type;
+};
+
+/////////////////////////////////////////////////////////////////
+// Specialisations of usig<> for functors' supertypes
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result>
+struct usig<uvoid_function<_Result> > {
+	typedef uvoid_function<_Result> Operation;
+
+	typedef typename Operation::result_type		result_type;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Argument1>
+struct usig<uunary_function<_Result, _Argument1> > {
+	typedef uunary_function<_Result, _Argument1> Operation;
+
+	typedef typename Operation::result_type				result_type;
+	typedef typename Operation::first_argument_type		first_argument_type;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Argument1, typename _Argument2>
+struct usig<ubinary_function<_Result, _Argument1, _Argument2> > {
+	typedef ubinary_function<_Result, _Argument1, _Argument2> Operation;
+
+	typedef typename Operation::result_type				result_type;
+	typedef typename Operation::first_argument_type		first_argument_type;
+	typedef typename Operation::second_argument_type	second_argument_type;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Argument1, typename _Argument2, typename _Argument3>
+struct usig<uternary_function<_Result, _Argument1, _Argument2, _Argument3> > {
+	typedef uternary_function<_Result, _Argument1, _Argument2,_Argument3> Operation;
+
+	typedef typename Operation::result_type				result_type;
+	typedef typename Operation::first_argument_type		first_argument_type;
+	typedef typename Operation::second_argument_type	second_argument_type;
+	typedef typename Operation::third_argument_type		third_argument_type;
+};
+
+/////////////////////////////////////////////////////////////////
+// Pointers to functions
+// + upointer_to_function (supertype)
+// + upointer_to_void_function
+// + upointer_to_unary_function
+// + upointer_to_binary_function
+// + upointer_to_ternary_function
+/////////////////////////////////////////////////////////////////
+
+template <typename T> struct urefto					{ typedef const T&	t; };
+template <typename T> struct urefto<T&>				{ typedef T&		t; };
+template <typename T> struct urefto<const T&>		{ typedef const T&	t; };
+
+template <typename T> struct uref_or_scal			{ typedef T		t; };
+template <typename T> struct uref_or_scal<T&>		{ typedef T&	t; };
+template <typename T> struct uref_or_scal<const T&>	{ typedef typename uref_or_scal<T>::t	t; };
+
+
+template <typename _Func>
+struct upointer_to_function {
+	typedef _Func		function_type;
+
+	function_type 		get_function (void) const
+							{ return f; }
+protected:
+	explicit			upointer_to_function (function_type const& _f): f(_f) { }
+	//	no virtual destructor!
+	function_type		f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Func = _Result (*) (void)>
+struct upointer_to_void_function: public upointer_to_function<_Func>, public uvoid_function<_Result> {
+	typedef upointer_to_function<_Func>		Base0;
+	typedef uvoid_function<_Result>			Base1;
+	typedef typename Base0::function_type	Func;
+	typedef typename Base1::result_type		Result;
+
+	Result		operator () (void) const
+					{ return (*f)(); }
+	explicit	upointer_to_void_function (Func const _f): Base0(_f), Base1() {}
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Arg1, typename _Func = _Result (*) (_Arg1)>
+struct upointer_to_unary_function: public upointer_to_function<_Func>, public uunary_function<_Result, _Arg1> {
+	typedef upointer_to_function<_Func>					Base0;
+	typedef uunary_function<_Result, _Arg1>				Base1;
+	typedef typename Base0::function_type				Func;
+	typedef typename Base1::result_type					Result;
+	typedef typename Base1::first_argument_type			Argument1;
+	typedef typename urefto<Argument1>::t				Ref1;
+
+	Result		operator () (Ref1 a) const
+					{ return (*f)(a); }
+	explicit	upointer_to_unary_function (Func const _f): Base0(_f), Base1() {}
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Arg1, typename _Arg2, typename _Func = _Result (*) (_Arg1, _Arg2)>
+struct upointer_to_binary_function: public upointer_to_function<_Func>, public ubinary_function<_Result, _Arg1, _Arg2> {
+	typedef upointer_to_function<_Func>					Base0;
+	typedef ubinary_function<_Result, _Arg1, _Arg2>		Base1;
+	typedef typename Base0::function_type				Func;
+	typedef typename Base1::result_type					Result;
+	typedef typename Base1::first_argument_type			Argument1;
+	typedef typename Base1::second_argument_type		Argument2;
+	typedef typename urefto<Argument1>::t				Ref1;
+	typedef typename urefto<Argument2>::t				Ref2;
+
+	Result		operator () (Ref1 a, Ref2 b) const
+					{ return (*f)(a, b); }
+	explicit	upointer_to_binary_function (Func const _f): Base0(_f), Base1() {}
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Arg1, typename _Arg2, typename _Arg3, typename _Func = _Result (*) (_Arg1, _Arg2, _Arg3)>
+struct upointer_to_ternary_function: public upointer_to_function<_Func>, public uternary_function<_Result, _Arg1, _Arg2, _Arg3> {
+	typedef upointer_to_function<_Func>						Base0;
+	typedef uternary_function<_Result, _Arg1, _Arg2, _Arg3>	Base1;
+	typedef typename Base0::function_type					Func;
+	typedef typename Base1::result_type						Result;
+	typedef typename Base1::first_argument_type				Argument1;
+	typedef typename Base1::second_argument_type			Argument2;
+	typedef typename Base1::third_argument_type				Argument3;
+	typedef typename urefto<Argument1>::t					Ref1;
+	typedef typename urefto<Argument2>::t					Ref2;
+	typedef typename urefto<Argument3>::t					Ref3;
+
+	Result		operator () (Ref1 a, Ref2 b, Ref3 c) const
+					{ return (*f)(a, b, c); }
+	explicit	upointer_to_ternary_function (Func const _f): Base0(_f), Base1() {}
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result>
+upointer_to_void_function<_Result> uptr_fun (_Result (*const func) (void))
+	{ return upointer_to_void_function<_Result>(func); }
+
+template <typename _Result, typename _Arg1>
+upointer_to_unary_function<_Result, _Arg1> uptr_fun (_Result (*const func) (_Arg1))
+	{ return upointer_to_unary_function<_Result, _Arg1>(func); }
+
+template <typename _Result, typename _Arg1, typename _Arg2>
+upointer_to_binary_function<_Result, _Arg1, _Arg2> uptr_fun (_Result (*const func) (_Arg1, _Arg2))
+	{ return upointer_to_binary_function<_Result, _Arg1, _Arg2>(func); }
+
+template <typename _Result, typename _Arg1, typename _Arg2, typename _Arg3>
+upointer_to_ternary_function<_Result, _Arg1, _Arg2, _Arg3> uptr_fun (_Result (*const func) (_Arg1, _Arg2, _Arg3))
+	{ return upointer_to_ternary_function<_Result, _Arg1, _Arg2, _Arg3>(func); }
+
+/////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////
+// Pointers to specific functions
+// + uspecific_pointer_to_void_function
+// + uspecific_pointer_to_unary_function
+// + uspecific_pointer_to_binary_function
+// + uspecific_pointer_to_ternary_function
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, _Result (*const _f) (void)>
+struct uspecific_pointer_to_void_function: public uvoid_function<_Result> {
+	typedef uspecific_pointer_to_void_function<_Result, _f>	Self;
+	typedef typename Self::result_type						Result;
+
+	Result				operator () (void) const
+							{ return (*_f)(); }
+
+	typedef _Result		(*function_type) (void);
+	function_type 		get_function (void) const
+							{ return _f; }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Arg1, _Result (*const _f) (_Arg1)>
+struct uspecific_pointer_to_unary_function: public uunary_function<_Result, _Arg1> {
+	typedef uspecific_pointer_to_unary_function<_Result, _Arg1, _f>	Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename urefto<Argument1>::t			Ref1;
+
+	Result				operator () (Ref1 a) const
+							{ return (*_f)(a); }
+
+	typedef _Result		(*function_type) (_Arg1);
+	function_type		get_function (void) const
+							{ return _f; }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Arg1, typename _Arg2, _Result (*const _f) (_Arg1, _Arg2)>
+struct uspecific_pointer_to_binary_function: public ubinary_function<_Result, _Arg1, _Arg2> {
+	typedef uspecific_pointer_to_binary_function<_Result, _Arg1, _Arg2, _f>		Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename Self::second_argument_type		Argument2;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename urefto<Argument2>::t			Ref2;
+
+	Result				operator () (Ref1 a, Ref2 b) const
+							{ return (*_f)(a, b); }
+
+	typedef _Result		(*function_type) (_Arg1, _Arg2);
+	function_type		get_function (void) const
+							{ return _f; }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Arg1, typename _Arg2, typename _Arg3, _Result (*const _f) (_Arg1, _Arg2, _Arg3)>
+struct uspecific_pointer_to_ternary_function: public uternary_function<_Result, _Arg1, _Arg2, _Arg3> {
+	typedef uspecific_pointer_to_ternary_function<_Result, _Arg1, _Arg2, _Arg3, _f>		Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename Self::second_argument_type		Argument2;
+	typedef typename Self::third_argument_type		Argument3;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename urefto<Argument2>::t			Ref2;
+	typedef typename urefto<Argument3>::t			Ref3;
+
+	Result				operator () (Ref1 a, Ref2 b, Ref3 c) const
+							{ return (*_f)(a, b, c); }
+
+	typedef _Result		(*function_type) (_Arg1, _Arg2, _Arg3);
+	function_type		get_function (void) const
+							{ return _f; }
+};
+
+/////////////////////////////////////////////////////////////////
+// Member function types
+//   Types for member functions of arity up to 1 already
+//   exist in namespace std::*. The alternatives provided
+//   here additionally offer (through their contract)
+//   type definitions for the Container-Type (of the
+//   member function), as well as uniformity of argument
+//   handling.
+//   Specifically, arguments are handled as much as possible
+//   as references, as they are passed to the original function.
+//
+//   Extras:
+//   struct *mem_fun* {
+//		typedef Container;
+//		typedef Func;
+//		...
+//   };
+// + uconst_mem_fun
+// + umem_fun
+// + uconst_mem_fun1
+// + umem_fun1
+// + uconst_mem_fun2
+// + umem_fun2
+// + umemberfunctionpointer(funcptr) -> [const_]mem_fun{*} obj
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T>
+struct uconst_mem_fun: public uunary_function<_Result, _T const*> {
+public:
+	typedef uconst_mem_fun<_Result, _T>					Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+
+	typedef _Result			(_T::* Func) (void) const;
+
+	explicit				uconst_mem_fun (Func const _f): f(_f) {}
+	Result					operator () (Container const inst) const
+								{ DASSERT(inst); return (inst->*f)(); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T>
+struct umem_fun: public uunary_function<_Result, _T*> {
+public:
+	typedef umem_fun<_Result, _T>						Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+
+	typedef _Result			(_T::* Func) (void);
+
+	explicit				umem_fun (Func const _f): f(_f) {}
+	Result					operator () (Container const inst) const
+								{ DASSERT(inst); return (inst->*f)(); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1>
+struct uconst_mem_fun1: public ubinary_function<_Result, _T const*, _Arg1> {
+public:
+	typedef uconst_mem_fun1<_Result, _T, _Arg1>			Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+	typedef typename Self::second_argument_type			Argument1;
+	typedef typename urefto<Argument1>::t				Ref1;
+
+	typedef _Result			(_T::* Func) (_Arg1) const;
+
+	explicit				uconst_mem_fun1 (Func const _f): f(_f) {}
+	Result					operator () (Container const inst, Ref1 a) const
+								{ DASSERT(inst); return (inst->*f)(a); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1>
+struct umem_fun1: public ubinary_function<_Result, _T*, _Arg1> {
+public:
+	typedef umem_fun1<_Result, _T, _Arg1>				Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+	typedef typename Self::second_argument_type			Argument1;
+	typedef typename urefto<Argument1>::t				Ref1;
+
+	typedef _Result			(_T::* Func) (_Arg1);
+
+	explicit				umem_fun1 (Func const _f): f(_f) {}
+	Result					operator () (Container const inst, Ref1 a) const
+								{ DASSERT(inst); return (inst->*f)(a); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2>
+struct uconst_mem_fun2: public uternary_function<_Result, _T const*, _Arg1, _Arg2> {
+public:
+	typedef uconst_mem_fun2<_Result, _T, _Arg1, _Arg2>	Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+	typedef typename Self::second_argument_type			Argument1;
+	typedef typename Self::third_argument_type			Argument2;
+	typedef typename urefto<Argument1>::t				Ref1;
+	typedef typename urefto<Argument2>::t				Ref2;
+
+	typedef _Result			(_T::* Func) (_Arg1, _Arg2) const;
+
+	explicit				uconst_mem_fun2 (Func const _f): f(_f) {}
+	Result					operator () (Container const inst, Ref1 a, Ref2 b) const
+								{ DASSERT(inst); return (inst->*f)(a, b); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2>
+struct umem_fun2: public uternary_function<_Result, _T*, _Arg1, _Arg2> {
+public:
+	typedef umem_fun2<_Result, _T, _Arg1, _Arg2>		Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+	typedef typename Self::second_argument_type			Argument1;
+	typedef typename Self::third_argument_type			Argument2;
+	typedef typename urefto<Argument1>::t				Ref1;
+	typedef typename urefto<Argument2>::t				Ref2;
+
+	typedef _Result			(_T::* Func) (_Arg1, _Arg2);
+
+	explicit				umem_fun2 (Func const _f): f(_f) {}
+	Result					operator () (Container const inst, Ref1 a, Ref2 b) const
+								{ DASSERT(inst); return (inst->*f)(a, b); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Container>
+umem_fun<_Result, _Container>						umemberfunctionpointer (_Result (_Container::* const func) (void))
+														{ return umem_fun<_Result, _Container>(func); }
+
+template <typename _Result, typename _Container>
+uconst_mem_fun<_Result, _Container>					umemberfunctionpointer (_Result (_Container::* const func) (void) const)
+														{ return uconst_mem_fun<_Result, _Container>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1>
+umem_fun1<_Result, _Container, _Arg1>				umemberfunctionpointer (_Result (_Container::* const func) (_Arg1))
+														{ return umem_fun1<_Result, _Container, _Arg1>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1>
+uconst_mem_fun1<_Result, _Container, _Arg1>			umemberfunctionpointer (_Result (_Container::* const func) (_Arg1) const)
+														{ return uconst_mem_fun1<_Result, _Container, _Arg1>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1, typename _Arg2>
+umem_fun2<_Result, _Container, _Arg1, _Arg2>		umemberfunctionpointer (_Result (_Container::* const func) (_Arg1, _Arg2))
+														{ return umem_fun2<_Result, _Container, _Arg1, _Arg2>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1, typename _Arg2>
+uconst_mem_fun2<_Result, _Container, _Arg1, _Arg2>	umemberfunctionpointer (_Result (_Container::* const func) (_Arg1, _Arg2) const)
+														{ return uconst_mem_fun2<_Result, _Container, _Arg1, _Arg2>(func); }
+
+/////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////
+// Pointers to specific member functions
+//   Specific pointers to member functions provided for
+//   compile time optimisations.
+//   There is no way to get these types or objects
+//   "easily" from an adapter function. It would require
+//   template templating (which may exist, TODO check out).
+// + uspecific_const_mem_fun
+// + uspecific_mem_fun
+// + uspecific_const_mem_fun1
+// + uspecific_mem_fun1
+// + uspecific_const_mem_fun2
+// + uspecific_mem_fun2
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, _Result (_T::*const _f) (void) const>
+struct uspecific_const_mem_fun: public uunary_function<_Result, _T const*> {
+	typedef uspecific_const_mem_fun<_Result, _T, _f>	Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Container;
+
+	Result		operator () (Container const inst) const
+					{ return (inst->*_f)(); }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, _Result (_T::*const _f) (void)>
+struct uspecific_mem_fun: public uunary_function<_Result, _T*> {
+	typedef uspecific_mem_fun<_Result, _T, _f>	Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Container;
+
+	Result		operator () (Container const inst) const
+					{ return (inst->*_f)(); }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, _Result (_T::*const _f) (_Arg1) const>
+struct uspecific_const_mem_fun1: public ubinary_function<_Result, _T const*, _Arg1> {
+	typedef uspecific_const_mem_fun1<_Result, _T, _Arg1, _f>	Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Container;
+	typedef typename Self::second_argument_type		Argument1;
+	typedef typename urefto<Argument1>::t			Ref1;
+
+	Result		operator () (Container const inst, Ref1 a) const
+					{ return (inst->*_f)(a); }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, _Result (_T::*const _f) (_Arg1)>
+struct uspecific_mem_fun1: public ubinary_function<_Result, _T*, _Arg1> {
+	typedef uspecific_mem_fun1<_Result, _T, _Arg1, _f>	Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Container;
+	typedef typename Self::second_argument_type		Argument1;
+	typedef typename urefto<Argument1>::t			Ref1;
+
+	Result		operator () (Container const inst, Ref1 a) const
+					{ return (inst->*_f)(a); }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2, _Result (_T::*const _f) (_Arg1, _Arg2) const>
+struct uspecific_const_mem_fun2: public uternary_function<_Result, _T const*, _Arg1, _Arg2> {
+	typedef uspecific_const_mem_fun2<_Result, _T, _Arg1, _Arg2, _f>	Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Container;
+	typedef typename Self::second_argument_type		Argument1;
+	typedef typename Self::third_argument_type		Argument2;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename urefto<Argument2>::t			Ref2;
+
+	Result		operator () (Container const inst, Ref1 a, Ref2 b) const
+					{ return (inst->*_f)(a, b); }
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2, _Result (_T::*const _f) (_Arg1, _Arg2)>
+struct uspecific_mem_fun2: public uternary_function<_Result, _T*, _Arg1, _Arg2> {
+	typedef uspecific_mem_fun2<_Result, _T, _Arg1, _Arg2, _f>	Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Container;
+	typedef typename Self::second_argument_type		Argument1;
+	typedef typename Self::third_argument_type		Argument2;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename urefto<Argument2>::t			Ref2;
+
+	Result		operator () (Container const inst, Ref1 a, Ref2 b) const
+					{ return (inst->*_f)(a, b); }
+};
+
+/////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////
+// Binders
+// Binders provided for functions with arity of two (2) or
+// three (3).
+// All binders are constructed by receiving the value to be bound
+// and optionally the operation to which the value is bound.
+// If the operation is not provided, it is default constructed.
+//
+// No binder for functions of arity 0 or 1 is provided. Use
+// unarybinder{} and unarybind() for those cases.
+//
+// Bindings to scalar types and simple references use the
+// same type to store the binding.
+// Bindings to const references do not store the binding
+// as a const reference, but instead create a copy of the
+// binding, through its copy constructor.
+//
+// Example of cool usage:
+//		bool f (int, int, int);
+//		ubind1st(ubind3rd(uptr_fun(&f), 3), 1)(2);
+//
+// + ubinder2_1st
+// + ubinder2_2nd
+// + ubinder3_1st
+// + ubinder3_2nd
+// + ubinder3_3rd
+// + ubind1st(op, val)
+// + ubind2nd(op, val)
+// + ubind3rd(op, val)
+/////////////////////////////////////////////////////////////////
+
+template <typename _Operation, typename _Value = typename _Operation::first_argument_type>
+struct ubinder2_1st: public uunary_function<typename _Operation::result_type,
+											typename _Operation::second_argument_type> {
+private:
+	typedef	_Operation								Operation;
+	typedef ubinder2_1st<Operation>					Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename uref_or_scal<_Value>::t		Value;
+					// WARNING: binding to const-references is VERY dangerous.
+					// It usually implies that temporary objects are being bound,
+					// which will be destroyed after the call of ubind*() is over.
+					// Therefore, const& bindings are prohibited.
+public:
+	typedef typename urefto<Value>::t				ValRef;	// public
+
+	Result		operator () (Ref1 b) const
+					{ return op(typename Operation::first_argument_type(value), b); }
+
+	explicit	ubinder2_1st (ValRef _value, Operation const& _op = Operation()):
+					op(_op), value(_value) { }
+				ubinder2_1st (Self const& other):
+					op(other.op), value(other.value) { }
+protected:
+	Operation	op;
+	Value		value;
+private:
+	// no assignments -- we can't know that Operation or Value will not be reference types.
+	void		operator = (Self const&);
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Operation, typename _Value = typename _Operation::second_argument_type>
+struct ubinder2_2nd: public uunary_function<typename _Operation::result_type,
+											typename _Operation::first_argument_type> {
+private:
+	typedef	_Operation								Operation;
+	typedef ubinder2_2nd<Operation>					Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename uref_or_scal<_Value>::t		Value;
+					// WARNING: binding to const-references is VERY dangerous.
+					// It usually implies that temporary objects are being bound,
+					// which will be destroyed after the call of ubind*() is over.
+					// Therefore, const& bindings are prohibited.
+public:
+	typedef typename urefto<Value>::t				ValRef;	// public
+
+	Result		operator () (Ref1 a) const
+					{ return op(a, typename Operation::second_argument_type(value)); }
+
+	explicit	ubinder2_2nd (ValRef _value, Operation const& _op = Operation()):
+					op(_op), value(_value) { }
+				ubinder2_2nd (Self const& other):
+					op(other.op), value(other.value) { }
+protected:
+	Operation	op;
+	Value		value;
+private:
+	// no assignments -- we can't know that Operation or Value will not be reference types.
+	void		operator = (Self const&);
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Operation, typename _Value = typename _Operation::first_argument_type>
+struct ubinder3_1st: public ubinary_function<	typename _Operation::result_type,
+												typename _Operation::second_argument_type,
+												typename _Operation::third_argument_type> {
+private:
+	typedef	_Operation								Operation;
+	typedef ubinder3_1st<Operation>					Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename Self::second_argument_type		Argument2;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename urefto<Argument2>::t			Ref2;
+	typedef typename uref_or_scal<_Value>::t		Value;	
+					// WARNING: binding to const-references is VERY dangerous.
+					// It usually implies that temporary objects are being bound,
+					// which will be destroyed after the call of ubind*() is over.
+					// Therefore, const& bindings are prohibited.
+public:
+	typedef typename urefto<Value>::t				ValRef;	// public
+
+	Result		operator () (Ref1 b, Ref2 c) const
+					{ return op(typename Operation::first_argument_type(value), b, c); }
+
+	explicit	ubinder3_1st (ValRef _value, Operation const& _op = Operation()):
+					op(_op), value(_value) { }
+				ubinder3_1st (Self const& other):
+					op(other.op), value(other.value) { }
+protected:
+	Operation	op;
+	Value		value;
+private:
+	// no assignments -- we can't know that Operation or Value will not be reference types.
+	void		operator = (Self const&);
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Operation, typename _Value = typename _Operation::second_argument_type>
+struct ubinder3_2nd: public ubinary_function<	typename _Operation::result_type,
+												typename _Operation::first_argument_type,
+												typename _Operation::third_argument_type> {
+private:
+	typedef	_Operation								Operation;
+	typedef ubinder3_2nd<Operation>					Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename Self::second_argument_type		Argument2;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename urefto<Argument2>::t			Ref2;
+	typedef typename uref_or_scal<_Value>::t		Value;
+public:
+	typedef typename urefto<Value>::t				ValRef;
+					// WARNING: binding to const-references is VERY dangerous.
+					// It usually implies that temporary objects are being bound,
+					// which will be destroyed after the call of ubind*() is over.
+					// Therefore, const& bindings are prohibited.
+
+	Result		operator () (Ref1 a, Ref2 c) const
+					{ return op(a, typename Operation::second_argument_type(value), c); }
+
+	explicit	ubinder3_2nd (ValRef _value, Operation const& _op = Operation()):
+					op(_op), value(_value) { }
+				ubinder3_2nd (Self const& other):
+					op(other.op), value(other.value) { }
+protected:
+	Operation	op;
+	Value		value;
+private:
+	// no assignments -- we can't know that Operation or Value will not be reference types.
+	void		operator = (Self const&);
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Operation, typename _Value = typename _Operation::third_argument_type>
+struct ubinder3_3rd: public ubinary_function<	typename _Operation::result_type,
+												typename _Operation::first_argument_type,
+												typename _Operation::second_argument_type> {
+private:
+	typedef	_Operation								Operation;
+	typedef ubinder3_3rd<Operation>					Self;
+	typedef typename Self::result_type				Result;
+	typedef typename Self::first_argument_type		Argument1;
+	typedef typename Self::second_argument_type		Argument2;
+	typedef typename urefto<Argument1>::t			Ref1;
+	typedef typename urefto<Argument2>::t			Ref2;
+	typedef typename uref_or_scal<_Value>::t		Value;
+					// WARNING: binding to const-references is VERY dangerous.
+					// It usually implies that temporary objects are being bound,
+					// which will be destroyed after the call of ubind*() is over.
+					// Therefore, const& bindings are prohibited.
+public:
+	typedef typename urefto<Value>::t				ValRef;
+
+	Result		operator () (Ref1 a, Ref2 b) const
+					{ return op(a, b, typename Operation::third_argument_type(value)); }
+
+	explicit	ubinder3_3rd (ValRef _value, Operation const& _op = Operation()):
+					op(_op), value(_value) { }
+				ubinder3_3rd (Self const& other):
+					op(other.op), value(other.value) { }
+protected:
+	Operation	op;
+	Value		value;
+private:
+	// no assignments -- we can't know that Operation or Value will not be reference types.
+	void		operator = (Self const&);
+};
+
+/////////////////////////////////////////////////////////////////
+// Traits for ubind*().
+// Custom functors should specialise the ubind_traits<Operation>
+// template if need to be bindable.
+// For functors that inherit from the u-functor-supertypes
+// (ubinary_function, etc), there are convencience default
+// traits:
+//		ubind2_traits<Operation>	for binary functors
+//		ubind3_traits<Operation>	for ternary functors.
+
+template <typename _Operation>
+struct ubind3_traits {
+private:
+	typedef	_Operation									Operation;
+public:
+	typedef ubinder3_1st<Operation>						binder1st_type;
+	typedef ubinder3_2nd<Operation>						binder2nd_type;
+	typedef ubinder3_3rd<Operation>						binder3rd_type;
+};
+
+template <typename _Operation>
+struct ubind2_traits {
+private:
+	typedef	_Operation									Operation;
+public:
+	typedef ubinder2_1st<Operation>						binder1st_type;
+	typedef ubinder2_2nd<Operation>						binder2nd_type;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Operation>
+struct ubind_traits {};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Arg1, typename _Arg2, typename _Arg3, typename _Func>
+struct ubind_traits<upointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_Func> >:
+	public ubind3_traits<upointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_Func> >
+	{ };
+
+template <typename _Result, typename _Arg1, typename _Arg2, typename _Func>
+struct ubind_traits<upointer_to_binary_function<_Result,_Arg1,_Arg2,_Func> >:
+	public ubind2_traits<upointer_to_binary_function<_Result,_Arg1,_Arg2,_Func> >
+	{ };
+
+template <typename _Operation, typename _Value>
+struct ubind_traits<ubinder3_1st<_Operation, _Value> >:
+	public ubind2_traits<ubinder3_1st<_Operation, _Value> >
+	{ };
+
+template <typename _Operation, typename _Value>
+struct ubind_traits<ubinder3_2nd<_Operation, _Value> >:
+	public ubind2_traits<ubinder3_2nd<_Operation, _Value> >
+	{ };
+
+template <typename _Operation, typename _Value>
+struct ubind_traits<ubinder3_3rd<_Operation, _Value> >:
+	public ubind2_traits<ubinder3_3rd<_Operation, _Value> >
+	{ };
+
+template <typename _Result, typename _Arg1, typename _Arg2, _Result (*const _f) (_Arg1, _Arg2)>
+struct ubind_traits<uspecific_pointer_to_binary_function<_Result,_Arg1,_Arg2,_f> >:
+	public ubind2_traits<uspecific_pointer_to_binary_function<_Result,_Arg1,_Arg2,_f> >
+	{ };
+
+template <typename _Result, typename _Arg1, typename _Arg2, typename _Arg3, _Result (*const _f) (_Arg1, _Arg2, _Arg3)>
+struct ubind_traits<uspecific_pointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_f> >:
+	public ubind3_traits<uspecific_pointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_f> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1>
+struct ubind_traits<umem_fun1<_Result,_T,_Arg1> >:
+	public ubind2_traits<umem_fun1<_Result,_T,_Arg1> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1>
+struct ubind_traits<uconst_mem_fun1<_Result,_T,_Arg1> >:
+	public ubind2_traits<uconst_mem_fun1<_Result,_T,_Arg1> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2>
+struct ubind_traits<uconst_mem_fun2<_Result,_T,_Arg1,_Arg2> >:
+	public ubind3_traits<uconst_mem_fun2<_Result,_T,_Arg1,_Arg2> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2>
+struct ubind_traits<umem_fun2<_Result,_T,_Arg1,_Arg2> >:
+	public ubind3_traits<umem_fun2<_Result,_T,_Arg1,_Arg2> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2, _Result (_T::*const _f) (_Arg1, _Arg2) const>
+struct ubind_traits<uspecific_const_mem_fun2<_Result,_T,_Arg1,_Arg2,_f> >:
+	public ubind3_traits<uspecific_const_mem_fun2<_Result,_T,_Arg1,_Arg2,_f> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2, _Result (_T::*const _f) (_Arg1, _Arg2)>
+struct ubind_traits<uspecific_mem_fun2<_Result,_T,_Arg1,_Arg2,_f> >:
+	public ubind3_traits<uspecific_mem_fun2<_Result,_T,_Arg1,_Arg2,_f> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1, _Result (_T::*const _f) (_Arg1) const>
+struct ubind_traits<uspecific_const_mem_fun1<_Result,_T,_Arg1,_f> >:
+	public ubind2_traits<uspecific_const_mem_fun1<_Result,_T,_Arg1,_f> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1, _Result (_T::*const _f) (_Arg1)>
+struct ubind_traits<uspecific_mem_fun1<_Result,_T,_Arg1,_f> >:
+	public ubind2_traits<uspecific_mem_fun1<_Result,_T,_Arg1,_f> >
+	{ };
+
+/////////////////////////////////////////////////////////////////
+
+// WARNING: this template version in which the second parameter is an arbitrary type _Value
+// is problematic. Explicit casting of _Value to ubind_traits<_Operation>::binder1st_type::ValRef
+// does not report invalid pointer casts in VS2010 (03-aug-2011).
+// Also, it is not deduced as a volatile-reference type if an argument of such type is passed,
+// but instead the argument is copy-constructed and _Value is deduced as the original type.
+// If it is necessary to use _Value for flexibility, refactor with care for the issues
+// mentioned above.
+
+template <typename _Operation>
+typename ubind_traits<_Operation>::binder1st_type ubind1st (_Operation const& op, typename ubind_traits<_Operation>::binder1st_type::ValRef val) {
+	return typename ubind_traits<_Operation>::binder1st_type(val, op);
+}
+
+template <typename _Operation>
+typename ubind_traits<_Operation>::binder2nd_type ubind2nd (_Operation const& op, typename ubind_traits<_Operation>::binder2nd_type::ValRef val) {
+	return typename ubind_traits<_Operation>::binder2nd_type(val, op);
+}
+
+template <typename _Operation>
+typename ubind_traits<_Operation>::binder3rd_type ubind3rd (_Operation const& op, typename ubind_traits<_Operation>::binder3rd_type::ValRef val) {
+	return typename ubind_traits<_Operation>::binder3rd_type(val, op);
+}
+
+/////////////////////////////////////////////////////////////////
+
 //---------------------------------------------------------------
 
 
