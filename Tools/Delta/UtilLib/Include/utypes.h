@@ -161,6 +161,7 @@ template <typename T> const T*	uaddress_of (const T* x)	{ return x; }
 
 //---------------------------------------------------------------
 
+// FIXME: duplicate functionality of ucalldestructor
 template <typename T> void udestructor_invocation (T* t)
 	{ t->~T(); } 
 
