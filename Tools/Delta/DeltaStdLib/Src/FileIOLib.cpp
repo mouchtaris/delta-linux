@@ -71,7 +71,7 @@ static void CleanUp (void) {
 	std::for_each(
 		DPTR(allFiles)->begin(),
 		DPTR(allFiles)->end(),
-		ufunctor_first< std::pair<FILE*, std::string>, int(*)(FILE*) >(&fclose)
+		utuple_firstfunctoriser< std::pair<FILE*, std::string> >(uptr_fun(&fclose))
 	);
 	udelete(allFiles);
 	DELTALIBFUNC_DESTROY_METHODS_TABLE();

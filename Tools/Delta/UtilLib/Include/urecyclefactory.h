@@ -283,7 +283,7 @@ template <
 					
 					std::for_each(
 						unUsedObjects.begin(), unUsedObjects.end(),
-						utuple_firstfunctoriser< std::pair<TObject*, bool> >(&urecyclefactory::DeleteMem)
+						utuple_firstfunctoriser< std::pair<TObject*, bool> >(uptr_fun(&urecyclefactory::DeleteMem))
 					);
 					unUsedObjects.clear();
 				}
