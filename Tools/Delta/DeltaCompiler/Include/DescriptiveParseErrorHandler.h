@@ -226,8 +226,7 @@ class DescriptiveParseErrorHandler {
 		bool IsAnyExpected (void) const		{ return symRole == role_any_expected_symbol; }
 		bool IsAnyExpectedTemp (void) const	{ return symRole == role_any_expected_temp_symbol; }
 
-		void operator=(const StackItem& i)
-			{ if (this != &i) new (this) StackItem(i); }
+		UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(StackItem)
 
 		StackItem (void) : symCode(0), symRole(role_undefined){}
 		StackItem (grammar_symbol_t	code, symbol_role_t		role) : symCode(code), symRole(role){}

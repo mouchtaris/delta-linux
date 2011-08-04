@@ -161,17 +161,41 @@ template <typename T> const T*	uaddress_of (const T* x)	{ return x; }
 
 //---------------------------------------------------------------
 
-#define	UASSIGN_OPERATOR_RETURN_VOID(_class)		\
-	void operator=(const _class& v) {				\
-			if (this != &v)							\
-				new (this) _class(v);				\
+template <typename T> void udestructor_invocation (T* t)
+	{ t->~T(); } 
+
+template <typename T> void ureset_via_default_ctor (T* t)
+	{ udestructor_invocation(t); new (t) T(); } 
+
+#define	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)				\
+	void operator=(const _class& rvalue) {									\
+		if (this != &rvalue) {												\
+			udestructor_invocation(this);									\
+			new (this) _class(rvalue);										\
+		}																	\
 	}
 
-#define	UASSIGN_OPERATOR_RETURN_THIS(_class)		\
-	const _class& operator=(const _class& v) {		\
-			if (this != &v)							\
-				new (this) _class(v);				\
-			return *this;							\
+#define	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)						\
+	const _class& operator=(const _class& rvalue) {							\
+		if (this != &rvalue) {												\
+			udestructor_invocation(this);									\
+			new (this) _class(rvalue);										\
+		}																	\
+		return *this;														\
+	}
+
+#define	UASSIGN_OPERATOR_RETURN_VOID(_class)								\
+	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)
+
+#define	UASSIGN_OPERATOR_RETURN_THIS(_class)								\
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)
+
+#define	UOVERLOADED_ASSIGN_VIA_CONVERTER_CONSTRUCTOR(_class,_rvalue)		\
+	const _class& operator=(const _rvalue& rvalue) {						\
+		DASSERT((void*) this != (void*) &rvalue);							\
+		udestructor_invocation(this);										\
+		new (this) _class(rvalue);											\
+		return *this;														\
 	}
 
 #define	UATTRIBUTEMETHOD_SCALAR(T,_var,_attr)				\
@@ -441,20 +465,6 @@ template <class T> class ubag {
 		{ DASSERT(false); throw uassign_operator_disabled_exception(); }			\
 	_class (const _class&)															\
 		{ DASSERT(false); throw ucopy_constructor_disabled_excpetion(); }
-
-#define	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)								\
-	const _class& operator=(const _class& rvalue) {									\
-		if (this != &rvalue)														\
-			new (this) _class(rvalue);												\
-		return *this;																\
-	}
-
-#define	UOVERLOADED_ASSIGN_VIA_CONVERTER_CONSTRUCTOR(_class,_rvalue)				\
-	const _class& operator=(const _rvalue& rvalue) {								\
-		DASSERT((void*) this != (void*) &rvalue);									\
-		new (this) _class(rvalue);													\
-		return *this;																\
-	}
 
 //---------------------------------------------------------------
 

@@ -769,8 +769,7 @@ class DVM_CLASS DeltaTable :	public CollectableContainer,
 
 	class const_iterator : public basic_iterator<const_iterator_types> {
 		public:
-		const const_iterator operator=(const DeltaTable::iterator& i)
-			{ return *new (this) const_iterator(i); }
+		UOVERLOADED_ASSIGN_VIA_CONVERTER_CONSTRUCTOR(const_iterator, DeltaTable::iterator)
 		bool operator==(const  DeltaTable::iterator& i) const
 			{ return table == i.table && currBucket == i.currBucket; }
 		bool operator!=(const  DeltaTable::iterator& i) const

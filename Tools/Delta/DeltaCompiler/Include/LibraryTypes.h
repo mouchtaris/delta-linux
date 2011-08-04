@@ -149,13 +149,13 @@ class DeltaLibraryTypeInfo {
 	//***************************
 
 	void			Set (const DeltaLibraryTypeInfo& info)
-						{ this->~DeltaLibraryTypeInfo(); new (this) DeltaLibraryTypeInfo(info); }
+						{ udestructor_invocation(this); new (this) DeltaLibraryTypeInfo(info); }
 	void			Set (DeltaTypeTag builtIn)
-						{ this->~DeltaLibraryTypeInfo(); new (this) DeltaLibraryTypeInfo(builtIn); }
+						{ udestructor_invocation(this); new (this) DeltaLibraryTypeInfo(builtIn); }
 	void			Set (const DeltaLibraryUserDefinedType* userDefined)
-						{ this->~DeltaLibraryTypeInfo(); new (this) DeltaLibraryTypeInfo(userDefined); }
+						{ udestructor_invocation(this); new (this) DeltaLibraryTypeInfo(userDefined); }
 	void			Set (const TypeList& typeList, bool isInclusive)
-						{ this->~DeltaLibraryTypeInfo(); new (this) DeltaLibraryTypeInfo(typeList, isInclusive); }
+						{ udestructor_invocation(this); new (this) DeltaLibraryTypeInfo(typeList, isInclusive); }
 
 	//***************************
 

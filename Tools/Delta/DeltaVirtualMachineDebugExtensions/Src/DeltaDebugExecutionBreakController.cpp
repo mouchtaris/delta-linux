@@ -261,6 +261,7 @@ bool DeltaDebugExecutionBreakController::WeShouldBreakAtLine (util_ui16 line) {
 
 	SetIsBreakFromTraceCommand(false);
 
+	udestructor_invocation(&currBreakPoint);
 	new (&currBreakPoint) DeltaBreakPoint(bpt);
 	return true;
 }

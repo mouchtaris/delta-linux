@@ -56,7 +56,8 @@ class DVM_CLASS DeltaExceptionHandling {
 		DeltaLibraryFunc	func;
 		bool				IsEmpty (void) const				{ return !pc && !func; }
 		operator			bool()								{ return pc || func; }
-		ContextInfo			operator=(const ContextInfo& info)	{ return *new (this) ContextInfo(info); }
+
+		UASSIGN_OPERATOR_RETURN_THIS(ContextInfo)
 
 		ContextInfo (void)										{ memset(this, 0, sizeof(ContextInfo)); }
 		ContextInfo (const ContextInfo& info)					{ memcpy(this, &info, sizeof(ContextInfo)); }

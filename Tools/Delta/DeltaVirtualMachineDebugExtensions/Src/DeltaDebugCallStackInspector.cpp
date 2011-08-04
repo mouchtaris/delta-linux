@@ -251,6 +251,8 @@ void DeltaDebugCallStackInspector::Push (
 	if (util_ui32(++callStackTop) == callStack.size())
 		callStack.resize(2 * callStack.size());
 
+	udestructor_invocation(&callStack[callStackTop]);
+
 	new (&callStack[callStackTop])	Entry(
 										vm, 
 										closure,

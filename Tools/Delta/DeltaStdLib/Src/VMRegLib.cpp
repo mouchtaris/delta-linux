@@ -1030,11 +1030,7 @@ struct LibInfo : public LibInfoBase  {
 								return first;
 						}
 
-	const LibInfo&		operator=(const LibInfo& info) {
-							if (this != &info)
-								this->~LibInfo(); // Destroy always to collect the item.
-							return *new (this) LibInfo(info); 
-						}
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(LibInfo)
 };
 
 /////////////////////////////////////////////////////////////////////////

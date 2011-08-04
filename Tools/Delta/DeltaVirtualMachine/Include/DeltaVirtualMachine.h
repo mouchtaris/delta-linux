@@ -178,8 +178,7 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 		DeltaVirtualMachine*	vm;
 		util_ui32				defLine;
 
-		const CallInformation operator=(const CallInformation& info)
-			{ new (this) CallInformation(info); return *this; }
+		UASSIGN_OPERATOR_RETURN_THIS(CallInformation)
 
 		CallInformation (void) : 
 			tag		(0),
@@ -297,8 +296,8 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 		util_ui32				blockIdStackIndex;	// Stack index of the top block of the call.
 		util_ui32				callLine;			// Line in which call is made.
 
-		const CallTrace	operator=(const CallTrace& trace)
-							{ new (this) CallTrace(trace); return *this; }
+		UASSIGN_OPERATOR_RETURN_THIS(CallTrace)
+
 		bool			MatchesRegisters (DeltaCodeAddress _pc, util_ui32 _top, util_ui32 _topsp) const
 							{ return pc == _pc && top == _top && topsp == _topsp; }
 		void			Set (
@@ -309,10 +308,10 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 							util_ui32				_topsp, 
 							util_ui32				_blockIdStackIndex,
 							util_ui32				_callLine
-						){ new (this) CallTrace(_vm, _func, _pc, _top, _topsp, _blockIdStackIndex, _callLine); }
+						){ udestructor_invocation(this); new (this) CallTrace(_vm, _func, _pc, _top, _topsp, _blockIdStackIndex, _callLine); }
 		
 		void			Reset (void)
-							{ new (this) CallTrace; }
+							{ ureset_via_default_ctor(this); }
 
 		bool			IsValid (void) const
 							{ return vm || vmSerialNo || func || topsp || top; }

@@ -166,8 +166,7 @@ void DeltaCodeGenerator::Reset (void) {
 void DeltaCodeGenerator::CleanUp (void) {
 
 	DPTR(funcTable)->clear();
-	debugInfo.Clear();
-	new (&debugInfo) DeltaDebugProgramInfo();
+	ureset_via_default_ctor(&debugInfo);
 	Reset();
 }
 
@@ -399,6 +398,9 @@ void DeltaCodeGenerator::Generate_CALLOBJBOUNDEDGETMETHOD (DeltaQuad &quad, util
 void DeltaCodeGenerator::ProduceFuncInfo (const DeltaSymbol* func, DeltaStdFuncInfo* info) {
 	
 	// Make std information for functions.
+
+	udestructor_invocation(info);
+
 	new (info) DeltaStdFuncInfo(
 		func->GetFunctionReadableName(),
 		func->IsFunctionExported(),

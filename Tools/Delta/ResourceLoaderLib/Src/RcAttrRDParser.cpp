@@ -212,7 +212,7 @@ bool RcAttrParser::Parse (DeltaTable* t, const char* expr) {
 	resources		= t;
 	unparsedInput	=  "rc.";
 
-	new (&result) Value();	// Reset.
+	ureset_via_default_ctor(&result);
 
 	lexan.Start(expr);
 	bool status = true;

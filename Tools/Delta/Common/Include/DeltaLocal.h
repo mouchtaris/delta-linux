@@ -55,18 +55,16 @@ class DBYTECODE_CLASS DeltaDebugLocal {
 	util_ui32	SizeOf (void) const; // COMP
 	void*		Serialize (void* buffer, util_ui32* size) const; // COMP
 
-	void operator=(const DeltaDebugLocal& l) 
-			{ new (this) DeltaDebugLocal(l); }
+	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(DeltaDebugLocal)
 
 	DeltaDebugLocal (void) : 
-		name(""), 
-		offset(0),
-		line(0) {}
+		offset	(0),
+		line	(0) {}
 
 	DeltaDebugLocal (const char* _name, util_ui16 _offset, util_ui16 _line) :
-		name(DNULLCHECK(_name)),
-		offset(_offset),
-		line(_line){}
+		name	(DNULLCHECK(_name)),
+		offset	(_offset),
+		line	(_line){}
 
 	DeltaDebugLocal (const DeltaDebugLocal& l) 
 		{ DASSERT(l.IsValid()); new (this) DeltaDebugLocal(l.name.c_str(), l.offset, l.line); }

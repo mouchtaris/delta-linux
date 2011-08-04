@@ -50,8 +50,7 @@ class AllocationStat : public udoublylinked {
 						);
 					}
 
-	const AllocationStat& operator=(const AllocationStat& stat)
-			{ new (this) AllocationStat(stat); return *this;  }
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(AllocationStat)
 
 	AllocationStat (void) : 
 		size(0), 

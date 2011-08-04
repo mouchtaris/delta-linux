@@ -175,12 +175,7 @@ class DBYTECODE_CLASS DeltaFunctionReturnTypes {
 	bool 						Read (GenericReader& reader); // VM
 	void						Write (GenericWriter& writer) const; // COMP
 
-	void						operator=(const DeltaFunctionReturnTypes& r) { 
-									if (this != &r) { 
-										Clear(); 
-										new (this) DeltaFunctionReturnTypes(r); 
-									} 
-								}
+	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(DeltaFunctionReturnTypes)
 
 	DeltaFunctionReturnTypes (void){}
 	DeltaFunctionReturnTypes (const DeltaFunctionReturnTypes& r);
@@ -226,7 +221,7 @@ class DBYTECODE_CLASS DeltaStdFuncInfo {
 									{ return hasVarArgs; }
 
 	void 						Set (const DeltaStdFuncInfo& info) 
-									{ new (this) DeltaStdFuncInfo(info); }
+									{ udestructor_invocation(this); new (this) DeltaStdFuncInfo(info); }
 
 	util_ui16					GetSerial (void) const
 									{ return serial; }
@@ -490,7 +485,7 @@ class DBYTECODE_CLASS DeltaDebugProgramInfo {
 										{ return calls; }
 
 	void							SetCalls (const DeltaUnparsedCallsInStmtHolder& _calls)
-										{ new (&calls) DeltaUnparsedCallsInStmtHolder(_calls); }
+										{ udestructor_invocation(this); new (&calls) DeltaUnparsedCallsInStmtHolder(_calls); }
 
 	void							Clear (void);
 									

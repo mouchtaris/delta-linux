@@ -38,11 +38,13 @@ static const char* errorMessages[] = {
 udynamiclibloader::ResultType* udynamiclibloader::result = (ResultType*) 0;
 
 udynamiclibloader::ResultType* udynamiclibloader::New (const std::string& val, bool isCleanUp) {
-	if (result)
+	if (result) {
+		udestructor_invocation(result);
 		return new (result)	ResultType(
 								isCleanUp ? UTIL_DLLFUNC_TRUSTED_SETCLEANUP : UTIL_DLLIMPORT_TRUSTVALUE, 
 								val
 							);
+	}
 	else
 		return result = DNEWCLASS(ResultType, (UTIL_DLLIMPORT_TRUSTVALUE, val));
 }

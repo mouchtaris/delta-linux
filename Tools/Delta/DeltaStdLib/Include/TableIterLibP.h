@@ -149,6 +149,7 @@ template <> struct GET_CONTAINER_TEMPLATE<TableContainerAdapter> {
 			{ resetFun(vm); return (TableContainerAdapter*) 0;}, 
 			argNo
 		);		
+		udestructor_invocation(adapter);
 		return new (adapter) TableContainerAdapter(table);
 	}
 };

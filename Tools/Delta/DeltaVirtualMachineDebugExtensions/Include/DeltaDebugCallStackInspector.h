@@ -37,9 +37,10 @@ class DeltaDebugCallStackInspector {
 		util_ui32						blocksIndex;
 		util_ui16						callLine;
 
-		void	operator=(const Entry& e) { new (this) Entry(e); }
+		UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(Entry)
+
 		bool	IsValid (void) const;
-		void	Reset (void) { new (this) Entry; }
+		void	Reset (void) { ureset_via_default_ctor(this); }
 
 		Entry (
 			DeltaVirtualMachine*			_vm, 

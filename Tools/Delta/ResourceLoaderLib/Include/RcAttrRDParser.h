@@ -73,8 +73,7 @@ class RCLOAD_CLASS RcAttrParser {
 		const std::string		ToString (void) const
 									{ return toString; }
 
-		void operator=(const Value& v) 
-					{ new (this) Value(v); }
+		UASSIGN_OPERATOR_RETURN_VOID(Value)
 
 		Value (void): type(Undef), num(0), str(""), boo(false), tab((DeltaTable*) 0), toString(""){}
 		Value (const Value& v): type(v.type), num(v.num), str(v.str), boo(v.boo), tab(v.tab), toString(v.toString){}

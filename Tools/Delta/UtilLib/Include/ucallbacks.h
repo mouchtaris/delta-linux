@@ -65,8 +65,7 @@ template <class Tfun> class ucallbackwithclosure {
 	R					operator()(C1 a1, C2 a2, C3 a3, C4 a4) const  
 							{ return (*func)(a1, a2, a3, a4, closure); }
 
-	const ucallbackwithclosure&	operator=(const ucallbackwithclosure& cb)
-									{ new (this) ucallbackwithclosure(cb); return *this; }
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(ucallbackwithclosure)
 
 	ucallbackwithclosure (const ucallbackwithclosure& data) : 
 		func(data.func), 

@@ -82,8 +82,13 @@ void uarrdestructor (T*& p) { DDELARR(p); p = (T*) 0; }
 template <typename T, typename Tdestructor> struct udestroyablewrapper {
 	T ptr;
 	typedef Tdestructor destructor_functor_type;
-	const udestroyablewrapper operator=(const udestroyablewrapper& d)
-		{ new (this) udestroyablewrapper(d); }
+	const udestroyablewrapper& operator=(const udestroyablewrapper& d) {
+		if (this != &d && ptr != d.ptr) {
+			udestructor_invocation(this);
+			new (this) udestroyablewrapper(d);
+		}
+		return *this;
+	}
 	udestroyablewrapper (T _ptr) : ptr(DPTR(_ptr)){}
 	udestroyablewrapper (const udestroyablewrapper& d) : ptr(d.ptr){}
 	~udestroyablewrapper(){ Tdestructor()(ptr); }
@@ -210,9 +215,7 @@ template <typename T1, typename T2, typename T3> struct utriple {
 	typedef T2 second_type;
 	typedef T3 third_type;
 
-	void operator=(const utriple& t) 
-		{ new (this) utriple(t); }		// FIXME dangerous: reconstructing members without destructing them.
-										// Probably a better idea to delegate assignment to members.
+	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(utriple)
 
 	utriple (const T1& _first, const T2& _second, const T3& _third) :
 		first(_first),
@@ -239,9 +242,7 @@ template <typename T1, typename T2, typename T3, typename T4> struct uquadruple 
 	typedef T3 third_type;
 	typedef T4 fourth_type;
 
-	void operator=(const uquadruple& t)		
-		{ new (this) uquadruple(t); }	// FIXME dangerous: reconstructing members without destructing them.
-										// Probably a better idea to delegate assignment to members.
+	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(uquadruple)
 
 	uquadruple (const T1& _first, const T2& _second, const T3& _third, const T4 _fourth) :
 		first(_first),
@@ -273,9 +274,7 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5> struc
 	typedef T4 fourth_type;
 	typedef T5 fifth_type;
 
-	void operator=(const uquintuple& t) 
-		{ new (this) uquintuple(t); }	// FIXME dangerous: reconstructing members without destructing them.
-										// Probably a better idea to delegate assignment to members.
+	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(uquintuple)
 
 	uquintuple (const T1& _first, const T2& _second, const T3& _third, const T4 _fourth, const T5 _fifth) :
 		first(_first),

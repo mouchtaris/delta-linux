@@ -62,10 +62,7 @@ class DVMDEBUGCOMMON_CLASS DeltaBreakPoint {
 
 	//***************************
 
-	void		operator=(const DeltaBreakPoint& bpt) {
-					if (this != &bpt)
-						new (this) DeltaBreakPoint(bpt);
-				}
+	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(DeltaBreakPoint)
 
 	bool		operator==(const DeltaBreakPoint& bpt) const 
 					{ return line == bpt.line; }

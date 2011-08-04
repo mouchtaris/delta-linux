@@ -383,12 +383,12 @@ bool InputBuffer::ReadBuffer (void* _buffer, util_ui32 _size) {
 //***************************
 
 void InputBuffer::Set (const OutputBuffer& ob) { 
-	DDELARR((util_ui8*) buffer);
+	udestructor_invocation(this);
 	new (this) InputBuffer(ob);
 }
 
 void InputBuffer::Set (void* _buffer, util_ui32 _size) { 
-	DDELARR((util_ui8*) buffer);
+	udestructor_invocation(this);
 	new (this) InputBuffer(_buffer, _size);
 }
 

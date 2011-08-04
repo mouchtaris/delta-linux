@@ -73,10 +73,7 @@ class RCLOAD_CLASS RcAttrLexAn {
 	const std::string	GetIdent (void) const
 							{ DASSERT(token == Ident); return ident; }
 
-	void				Clear (void) {
-							if (input) DDELARR(input);
-							new (this) RcAttrLexAn;	// Reset.
-						}
+	void				Clear (void) { ureset_via_default_ctor(this); }
 
 	RcAttrLexAn (void) :
 		token(EndOfString),

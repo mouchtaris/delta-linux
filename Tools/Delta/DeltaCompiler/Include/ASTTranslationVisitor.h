@@ -199,8 +199,8 @@ namespace AST {
 		} data;
 		
 		public:
-		void					operator=(const StackValue& v)			
-									{ new (this) StackValue(v); }
+		UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(StackValue)
+
 		bool					operator==(const StackValue& v) const	
 									{ return !memcmp(this, &v, sizeof(StackValue)); }
 		bool					operator!=(const StackValue& v) const	
@@ -221,15 +221,15 @@ namespace AST {
 									{ DASSERT(type == stmt_t); return data.stmt; }
 		
 		DeltaExpr*				operator= (DeltaExpr*		p)	
-									{ new (this) StackValue(p); return p; }
+									{ udestructor_invocation(this); new (this) StackValue(p); return p; }
 		DeltaSymbol*			operator= (DeltaSymbol*		p)	
-									{ new (this) StackValue(p); return p; }
+									{ udestructor_invocation(this); new (this) StackValue(p); return p; }
 		TableElements*			operator= (TableElements*	p)	
-									{ new (this) StackValue(p); return p; }
+									{ udestructor_invocation(this); new (this) StackValue(p); return p; }
 		DeltaQuadAddress		operator= (DeltaQuadAddress	p)	
-									{ new (this) StackValue(p); return p; }
+									{ udestructor_invocation(this); new (this) StackValue(p); return p; }
 		Stmt*					operator= (Stmt*			p)	
-									{ new (this) StackValue(p); return p; }
+									{ udestructor_invocation(this); new (this) StackValue(p); return p; }
 
 		StackValue (DeltaExpr*			p)	: type(expr_t)	{ data.expr		= p; }
 		StackValue (DeltaSymbol*		p)	: type(sym_t)	{ data.sym		= p; }
