@@ -417,7 +417,7 @@ template <typename R, typename T, typename Tfunc> class unarybinder : public std
 
 	public:
 	R operator()(void) const { return f(a); }
-	unarybinder (const Tfunc& _f, const T& _a) : f(_f), a(_a){}
+	unarybinder (const Tfunc& _f, typename uconstref_of<T>::t _a) : f(_f), a(_a){}
 	unarybinder (const unarybinder<R,T,Tfunc>& b) : f(b.f), a(b.a){}
 };
 
@@ -741,7 +741,7 @@ struct upointer_to_void_function: public upointer_to_function<_Func>, public uvo
 	typedef typename Base1::result_type		Result;
 
 	Result		operator () (void) const
-					{ return (*f)(); }
+					{ return (*this->f)(); }
 	explicit	upointer_to_void_function (Func const _f): Base0(_f), Base1() {}
 };
 
@@ -757,7 +757,7 @@ struct upointer_to_unary_function: public upointer_to_function<_Func>, public uu
 	typedef typename urefto<Argument1>::t				Ref1;
 
 	Result		operator () (Ref1 a) const
-					{ return (*f)(a); }
+					{ return (*this->f)(a); }
 	explicit	upointer_to_unary_function (Func const _f): Base0(_f), Base1() {}
 };
 
@@ -775,7 +775,7 @@ struct upointer_to_binary_function: public upointer_to_function<_Func>, public u
 	typedef typename urefto<Argument2>::t				Ref2;
 
 	Result		operator () (Ref1 a, Ref2 b) const
-					{ return (*f)(a, b); }
+					{ return (*this->f)(a, b); }
 	explicit	upointer_to_binary_function (Func const _f): Base0(_f), Base1() {}
 };
 
@@ -795,7 +795,7 @@ struct upointer_to_ternary_function: public upointer_to_function<_Func>, public 
 	typedef typename urefto<Argument3>::t					Ref3;
 
 	Result		operator () (Ref1 a, Ref2 b, Ref3 c) const
-					{ return (*f)(a, b, c); }
+					{ return (*this->f)(a, b, c); }
 	explicit	upointer_to_ternary_function (Func const _f): Base0(_f), Base1() {}
 };
 

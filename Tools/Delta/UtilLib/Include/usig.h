@@ -108,7 +108,7 @@ struct sig<R(*)(A1), TOS, Caller> {
 		return TOS<R>::t2s() + "(" + TOS<A1>::t2s() + ")";
 	}
 	R operator()(const std::string& f, A1 a1) {
-		return Caller(f).invoke<R, A1>(a1);
+		return Caller(f).template invoke<R, A1>(a1);
 	}
 };
 
@@ -118,7 +118,7 @@ struct sig<R(*)(A1, A2), TOS, Caller> {
 		return TOS<R>::t2s() + "(" + TOS<A1>::t2s() + "," + TOS<A2>::t2s() + ")";
 	}
 	R operator()(const std::string& f, A1 a1, A2 a2 ){
-		return Caller(f).invoke<R, A1, A2>(a1, a2);
+		return Caller(f).template invoke<R, A1, A2>(a1, a2);
 	}
 };
 
