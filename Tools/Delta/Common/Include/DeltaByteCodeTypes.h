@@ -485,7 +485,7 @@ class DBYTECODE_CLASS DeltaDebugProgramInfo {
 										{ return calls; }
 
 	void							SetCalls (const DeltaUnparsedCallsInStmtHolder& _calls)
-										{ udestructor_invocation(this); new (&calls) DeltaUnparsedCallsInStmtHolder(_calls); }
+										{ udestructor_invocation(&calls); new (&calls) DeltaUnparsedCallsInStmtHolder(_calls); }
 
 	void							Clear (void);
 									
