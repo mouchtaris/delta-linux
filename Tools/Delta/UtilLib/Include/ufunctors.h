@@ -595,6 +595,7 @@ ubinary_and (const F1& f1, const F2& f2)
 // No binder for functions of arity 0 or 1 is provided. Use
 // unarybinder{} and unarybind() for those cases.
 //
+// + ubinder1_1st
 // + ubinder2_1st
 // + ubinder2_2nd
 // + ubinder3_1st
@@ -1190,6 +1191,7 @@ struct uspecific_mem_fun2: public uternary_function<_Result, _T*, _Arg1, _Arg2> 
 //		bool f (int, int, int);
 //		ubind1st(ubind3rd(uptr_fun(&f), 3), 1)(2);
 //
+// + ubinder1_1st
 // + ubinder2_1st
 // + ubinder2_2nd
 // + ubinder3_1st
@@ -1200,12 +1202,43 @@ struct uspecific_mem_fun2: public uternary_function<_Result, _T*, _Arg1, _Arg2> 
 // + ubind3rd(op, val)
 /////////////////////////////////////////////////////////////////
 
+template <typename _Operation, typename _Value = typename _Operation::argument_type>
+struct ubinder1_1st: public uvoid_function<typename _Operation::result_type> {
+private:
+	typedef	_Operation								Operation;
+	typedef ubinder1_1st<Operation, _Value>			Self;
+	typedef typename Self::result_type				Result;
+	typedef typename uref_or_scal<_Value>::t		Value;
+					// WARNING: binding to const-references is VERY dangerous.
+					// It usually implies that temporary objects are being bound,
+					// which will be destroyed after the call of ubind*() is over.
+					// Therefore, const& bindings are prohibited.
+public:
+	typedef typename urefto<Value>::t				ValRef;	// public
+
+	Result		operator () (void) const
+					{ return op(typename Operation::argument_type(value)); }
+
+	explicit	ubinder1_1st (ValRef _value, Operation const& _op = Operation()):
+					op(_op), value(_value) { }
+				ubinder1_1st (Self const& other):
+					op(other.op), value(other.value) { }
+protected:
+	Operation	op;
+	Value		value;
+private:
+	// no assignments -- we can't know that Operation or Value will not be reference types.
+	void		operator = (Self const&);
+};
+
+/////////////////////////////////////////////////////////////////
+
 template <typename _Operation, typename _Value = typename _Operation::first_argument_type>
 struct ubinder2_1st: public uunary_function<typename _Operation::result_type,
 											typename _Operation::second_argument_type> {
 private:
 	typedef	_Operation								Operation;
-	typedef ubinder2_1st<Operation>					Self;
+	typedef ubinder2_1st<Operation, _Value>			Self;
 	typedef typename Self::result_type				Result;
 	typedef typename Self::first_argument_type		Argument1;
 	typedef typename urefto<Argument1>::t			Ref1;
@@ -1239,7 +1272,7 @@ struct ubinder2_2nd: public uunary_function<typename _Operation::result_type,
 											typename _Operation::first_argument_type> {
 private:
 	typedef	_Operation								Operation;
-	typedef ubinder2_2nd<Operation>					Self;
+	typedef ubinder2_2nd<Operation, _Value>			Self;
 	typedef typename Self::result_type				Result;
 	typedef typename Self::first_argument_type		Argument1;
 	typedef typename urefto<Argument1>::t			Ref1;
@@ -1274,7 +1307,7 @@ struct ubinder3_1st: public ubinary_function<	typename _Operation::result_type,
 												typename _Operation::third_argument_type> {
 private:
 	typedef	_Operation								Operation;
-	typedef ubinder3_1st<Operation>					Self;
+	typedef ubinder3_1st<Operation, _Value>			Self;
 	typedef typename Self::result_type				Result;
 	typedef typename Self::first_argument_type		Argument1;
 	typedef typename Self::second_argument_type		Argument2;
@@ -1311,7 +1344,7 @@ struct ubinder3_2nd: public ubinary_function<	typename _Operation::result_type,
 												typename _Operation::third_argument_type> {
 private:
 	typedef	_Operation								Operation;
-	typedef ubinder3_2nd<Operation>					Self;
+	typedef ubinder3_2nd<Operation, _Value>			Self;
 	typedef typename Self::result_type				Result;
 	typedef typename Self::first_argument_type		Argument1;
 	typedef typename Self::second_argument_type		Argument2;
@@ -1348,7 +1381,7 @@ struct ubinder3_3rd: public ubinary_function<	typename _Operation::result_type,
 												typename _Operation::second_argument_type> {
 private:
 	typedef	_Operation								Operation;
-	typedef ubinder3_3rd<Operation>					Self;
+	typedef ubinder3_3rd<Operation, _Value>			Self;
 	typedef typename Self::result_type				Result;
 	typedef typename Self::first_argument_type		Argument1;
 	typedef typename Self::second_argument_type		Argument2;
@@ -1382,8 +1415,9 @@ private:
 // Custom functors should specialise the ubind_traits<Operation>
 // template if need to be bindable.
 // For functors that inherit from the u-functor-supertypes
-// (ubinary_function, etc), there are convencience default
-// traits:
+// (ubinary_function, etc), there are convencience, default
+// traits, which can be inherited:
+//		ubind1_traits<Operation>	for unary functors
 //		ubind2_traits<Operation>	for binary functors
 //		ubind3_traits<Operation>	for ternary functors.
 
@@ -1406,13 +1440,23 @@ public:
 	typedef ubinder2_2nd<Operation>						binder2nd_type;
 };
 
+template <typename _Operation>
+struct ubind1_traits {
+private:
+	typedef	_Operation									Operation;
+public:
+	typedef ubinder1_1st<Operation>						binder1st_type;
+};
+
 /////////////////////////////////////////////////////////////////
 
 template <typename _Operation>
 struct ubind_traits {};
 
 /////////////////////////////////////////////////////////////////
+// bind_traits for default u-functor classes.
 
+// For pointers to functions:
 template <typename _Result, typename _Arg1, typename _Arg2, typename _Arg3, typename _Func>
 struct ubind_traits<upointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_Func> >:
 	public ubind3_traits<upointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_Func> >
@@ -1423,6 +1467,12 @@ struct ubind_traits<upointer_to_binary_function<_Result,_Arg1,_Arg2,_Func> >:
 	public ubind2_traits<upointer_to_binary_function<_Result,_Arg1,_Arg2,_Func> >
 	{ };
 
+template <typename _Result, typename _Arg1, typename _Func>
+struct ubind_traits<upointer_to_unary_function<_Result,_Arg1,_Func> >:
+	public ubind1_traits<upointer_to_unary_function<_Result,_Arg1,_Func> >
+	{ };
+
+// For binders[3] (binary functors):
 template <typename _Operation, typename _Value>
 struct ubind_traits<ubinder3_1st<_Operation, _Value> >:
 	public ubind2_traits<ubinder3_1st<_Operation, _Value> >
@@ -1438,6 +1488,23 @@ struct ubind_traits<ubinder3_3rd<_Operation, _Value> >:
 	public ubind2_traits<ubinder3_3rd<_Operation, _Value> >
 	{ };
 
+// For binders[2] (unary functors):
+template <typename _Operation, typename _Value>
+struct ubind_traits<ubinder2_1st<_Operation, _Value> >:
+	public ubind1_traits<ubinder2_1st<_Operation, _Value> >
+	{ };
+
+template <typename _Operation, typename _Value>
+struct ubind_traits<ubinder2_2nd<_Operation, _Value> >:
+	public ubind1_traits<ubinder2_2nd<_Operation, _Value> >
+	{ };
+
+// For pointers to specific functions:
+template <typename _Result, typename _Arg1, _Result (*const _f) (_Arg1)>
+struct ubind_traits<uspecific_pointer_to_unary_function<_Result,_Arg1,_f> >:
+	public ubind1_traits<uspecific_pointer_to_unary_function<_Result,_Arg1,_f> >
+	{ };
+
 template <typename _Result, typename _Arg1, typename _Arg2, _Result (*const _f) (_Arg1, _Arg2)>
 struct ubind_traits<uspecific_pointer_to_binary_function<_Result,_Arg1,_Arg2,_f> >:
 	public ubind2_traits<uspecific_pointer_to_binary_function<_Result,_Arg1,_Arg2,_f> >
@@ -1446,6 +1513,17 @@ struct ubind_traits<uspecific_pointer_to_binary_function<_Result,_Arg1,_Arg2,_f>
 template <typename _Result, typename _Arg1, typename _Arg2, typename _Arg3, _Result (*const _f) (_Arg1, _Arg2, _Arg3)>
 struct ubind_traits<uspecific_pointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_f> >:
 	public ubind3_traits<uspecific_pointer_to_ternary_function<_Result,_Arg1,_Arg2,_Arg3,_f> >
+	{ };
+
+// For pointers to member functions:
+template <typename _Result, typename _T>
+struct ubind_traits<uconst_mem_fun<_Result,_T> >:
+	public ubind1_traits<uconst_mem_fun<_Result,_T> >
+	{ };
+
+template <typename _Result, typename _T>
+struct ubind_traits<umem_fun<_Result, _T> >:
+	public ubind1_traits<umem_fun<_Result, _T> >
 	{ };
 
 template <typename _Result, typename _T, typename _Arg1>
@@ -1468,6 +1546,7 @@ struct ubind_traits<umem_fun2<_Result,_T,_Arg1,_Arg2> >:
 	public ubind3_traits<umem_fun2<_Result,_T,_Arg1,_Arg2> >
 	{ };
 
+// For specific pointers to member functions:
 template <typename _Result, typename _T, typename _Arg1, typename _Arg2, _Result (_T::*const _f) (_Arg1, _Arg2) const>
 struct ubind_traits<uspecific_const_mem_fun2<_Result,_T,_Arg1,_Arg2,_f> >:
 	public ubind3_traits<uspecific_const_mem_fun2<_Result,_T,_Arg1,_Arg2,_f> >
@@ -1486,6 +1565,16 @@ struct ubind_traits<uspecific_const_mem_fun1<_Result,_T,_Arg1,_f> >:
 template <typename _Result, typename _T, typename _Arg1, _Result (_T::*const _f) (_Arg1)>
 struct ubind_traits<uspecific_mem_fun1<_Result,_T,_Arg1,_f> >:
 	public ubind2_traits<uspecific_mem_fun1<_Result,_T,_Arg1,_f> >
+	{ };
+
+template <typename _Result, typename _T, _Result (_T::*const _f) (void) const>
+struct ubind_traits<uspecific_const_mem_fun<_Result,_T,_f> >:
+	public ubind1_traits<uspecific_const_mem_fun<_Result,_T,_f> >
+	{ };
+
+template <typename _Result, typename _T, _Result (_T::*const _f) (void) const>
+struct ubind_traits<uspecific_mem_fun<_Result,_T,_f> >:
+	public ubind1_traits<uspecific_mem_fun<_Result,_T,_f> >
 	{ };
 
 /////////////////////////////////////////////////////////////////
