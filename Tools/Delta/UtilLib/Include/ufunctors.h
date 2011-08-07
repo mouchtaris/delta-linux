@@ -71,13 +71,13 @@ template <typename T> struct uptrnullifierfunctor : public std::unary_function<T
 };
 
 template <typename T> 
-void uptrnullifier (T*& p)	{ p = (T*) 0;}
+void uptrnullifier (T*& p)	{ unullify(p);}
 
 template <typename T> 
-void uptrdestructor (T*& p) { DDELETE(p); p = (T*) 0; }		// FIXME: duplicated functionality of udelete()
+void uptrdestructor (T*& p) { udelete(p); }
 
 template <typename T> 
-void uarrdestructor (T*& p) { DDELARR(p); p = (T*) 0; }
+void uarrdestructor (T*& p) { DDELARR(p); unullify(p); }
 
 template <typename T, typename Tdestructor> struct udestroyablewrapper {
 	T ptr;
@@ -398,13 +398,11 @@ struct ufalseconditionalfunctor : public uconditionalfunctor {
 		{ return false; }
 };
 
-template <class T> void ucalldestructor (T* ptr) {
-	ptr->~T();	// Never T::~T(), it ignores late binding.
-}
+template <class T> void ucalldestructor (T* ptr) 
+	{ udestructor_invocation(ptr); }
 
-template <class T> void ucalldestructor (T& val) {
-	ucalldestructor(&val);
-}
+template <class T> void ucalldestructor (T& val) 
+	{ ucalldestructor(&val); }
 
 /////////////////////////////////////////////////////////////////
 // Binder class and function for unary functions.
