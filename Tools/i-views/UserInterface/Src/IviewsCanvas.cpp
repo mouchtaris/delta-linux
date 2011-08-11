@@ -459,6 +459,7 @@ void IviewsCanvas::LoadGraph (const wxString & path) {
 		layoutCalculator.Clear();		
 		PREPARE_FOR_DRAW(true, graphLayers, colourAddOnManager);
 		Refresh();	//Edw to afinw
+		GetOwner()->SetStatusText(wxT("File opened: ") + path);
 	}
 	else  {
 		assert(graphLoader.HasError());
@@ -467,6 +468,7 @@ void IviewsCanvas::LoadGraph (const wxString & path) {
 			_("Error"), 
 			wxICON_ERROR
 		);
+		GetOwner()->SetStatusText(wxT("Failed to open: ") + path);
 	}
 }
 

@@ -14,13 +14,15 @@
 
 namespace iviews {
 
-#define CHAECK_FOR_ERRORES()									\
-	if (graph->TotalNumberOfVertices() != verticesNum)			\
-		SetErrorMessage("With the total number of vertices");	\
-	if (graph->TotalNumbersOfEdges() != edgesNum)				\
-		SetErrorMessage("With the total number of edges");		\
-	if (depth < 0)												\
-		SetErrorMessage("With the depth")
+#define CHAECK_FOR_ERRORS()											\
+	if (!HasError()) {												\
+		if (graph->TotalNumberOfVertices() != verticesNum)			\
+			SetErrorMessage("With the total number of vertices");	\
+		if (graph->TotalNumbersOfEdges() != edgesNum)				\
+			SetErrorMessage("With the total number of edges");		\
+		if (depth < 0)												\
+			SetErrorMessage("With the depth");						\
+	} else
 
 //-----------------------------------------------------------------------
 
@@ -37,11 +39,13 @@ bool XmlToGraph::operator() (const std::string & path){
 
 	ParseRoot(doc.GetRoot());
 
-	for(wxXmlNode * child = doc.GetRoot()->GetChildren(); child; child = child->GetNext())
+	for(wxXmlNode * child = doc.GetRoot()->GetChildren(); 
+		child && !HasError(); 
+		child = child->GetNext())
 		if (child->GetName() == wxT("Vertex")) 
 			ParseVertex(child);
 	
-	CHAECK_FOR_ERRORES();
+	CHAECK_FOR_ERRORS();
 
 	if (HasError()) {
 		delete graph;
@@ -120,16 +124,21 @@ void XmlToGraph::ParseRoot(wxXmlNode * root) {
 		if (properties->GetName() == wxT("edgesNum"))
 			edgesNum = ParseLong(properties->GetValue());
 		
-		else if (properties->GetName() == wxT("verticesNum"))
+		else 
+		if (properties->GetName() == wxT("verticesNum"))
 			verticesNum = ParseLong(properties->GetValue());
 
-		else if (properties->GetName() == wxT("startVertex"))
+		else 
+		if (properties->GetName() == wxT("startVertex"))
 			startVertexId = ParseLong(properties->GetValue());
 
-		else if (properties->GetName() == wxT("depth"))
-			depth = ParseLong(properties->GetValue());
 		else 
-			assert(0);
+		if (properties->GetName() == wxT("depth"))
+			depth = ParseLong(properties->GetValue());
+		else {
+			SetErrorMessage("Unsupported xml file");
+			return;
+		}
 
 		properties = properties->GetNext();
 	}

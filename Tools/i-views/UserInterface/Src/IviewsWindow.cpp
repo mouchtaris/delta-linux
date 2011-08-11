@@ -446,7 +446,6 @@ void IviewsWindow::OnLoadGraph (wxCommandEvent& event) {
 	if (openDialog->ShowModal() == wxID_OK) {
 		wxString currentDocPath = openDialog->GetPath();
 		canvas->LoadGraph(currentDocPath);
-		SetStatusText(wxT("File opened: ") + currentDocPath);
 	}
 }
 
