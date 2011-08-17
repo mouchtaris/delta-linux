@@ -70,6 +70,12 @@ template <class T> struct urectangle {
 	bool in (T xp, T yp) const						{ return upointinsiderect(xp, yp, x, y, w, h); } 
 	bool isvalid (void) const						{ return uvalidrectex(x, y, (T) (x + w - 1), (T) (y + h - 1)); }
 	bool isoverlapping (const urectangle& r) const	{ return urectsoverlapping(x,y,w,h,r.x,r.y,r.w,r.h); }
+	void mergeunion (const urectangle& r, urectangle* at) {
+														at->x = umin(x, r.x);
+														at->y = umin(y, r.y);
+														at->w = umax(x + w, r.x + r.w) - at->x;
+														at->h = umax(y + h, r.y + r.h) - at->y;
+													}
 
 	urectangle (void) : x(0), y(0), w(0), h(0) {}
 	urectangle (T _x, T _y, T _w, T _h) : x(_x), y(_y), w(_w), h(_h) {}
