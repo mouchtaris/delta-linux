@@ -596,6 +596,7 @@ Stmt* Translate_RETURN (DeltaExpr* expr) {
 	
 	if (expr) {
 		DeltaExpr* retVal = DPTR(expr)->AdaptIfBool();
+		DPTR(retVal)->CheckUninitialised();
 		QUADS.Emit(DeltaIC_RETURNVAL, NIL_EXPR, NIL_EXPR, retVal);
 		DPTR(ParseParms::CurrFunction())->IncludeReturnType(DPTR(retVal)->GetTypeInfo());
 	}
