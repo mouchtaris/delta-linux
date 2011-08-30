@@ -91,9 +91,11 @@ template <
 
 	typedef std::map<key_type, object_type*>	Instances;
 	typedef std::map<std::string, object_type*>	Roles;
+	typedef std::map<std::string, key_type>		RoleKeys;
 
 	Instances			insts;
 	Roles				roles;
+	RoleKeys			roleKeys;
 	constructor_type	ctor;
 
 	//******************************
@@ -108,6 +110,12 @@ template <
 							return i != insts.end();
 						}
 	
+	object_type*		New (const key_type& key, object_type* elem) {
+							DASSERT(!Get(key));
+							insts[key] = elem; 
+							return elem;
+						}
+
 	object_type*		New (const key_type& key, const params_type& ctorParms) {
 							DASSERT(!Get(key));
 							return insts[key] = ctor(ctorParms); 
@@ -127,13 +135,19 @@ template <
 	object_type*		SetRole (const std::string& role, const key_type& key) {
 							object_type* inst = Get(key);
 							DASSERT(inst);
+							roleKeys[role] = key;
 							return roles[role] = inst;
 						}
 	void				ResetRole (const std::string& role) 
-							{ roles.erase(role); }
+							{ roles.erase(role); roleKeys.erase(role); }
 	object_type*		GetRole (const std::string& role) const {
 							Roles::const_iterator i = roles.find(role);
 							return i != roles.end() ? i->second : (object_type*) 0;
+						}
+	const key_type&		GetRoleKey (const std::string& role) const {
+							RoleKeys::const_iterator i = roleKeys.find(role);
+							DASSERT(i != roleKeys.end());
+							return  i->second;
 						}
 
 	void				Initialise (void){}
