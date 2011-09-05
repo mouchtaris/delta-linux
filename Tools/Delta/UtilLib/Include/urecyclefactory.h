@@ -87,6 +87,14 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5> struc
 		arg1(p.arg1), arg2(p.arg2), arg3(p.arg3), arg4(p.arg4), arg5(p.arg5){}
 };
 
+template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6> struct uconstructorarguments6 {
+	T1& arg1; T2& arg2; T3& arg3; T4& arg4; T5& arg5; T6& arg6;
+	uconstructorarguments6 (T1& _arg1, T2& _arg2, T3& _arg3, T4& _arg4, T5& _arg5, T6& _arg6): 
+		arg1(_arg1), arg2(_arg2), arg3(_arg3), arg4(_arg4), arg5(_arg5), arg6(_arg6){}
+	uconstructorarguments6 (const uconstructorarguments6& p) : 
+		arg1(p.arg1), arg2(p.arg2), arg3(p.arg3), arg4(p.arg4), arg5(p.arg5), arg6(p.arg6){}
+};
+
 //////////////////////////////////////////////////////////////////////
 
 template <typename T> 
@@ -129,6 +137,13 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 struct uplacementconstructor5 : public urecycleconstructor<T, uconstructorarguments5<T1,T2,T3,T4,T5> > {
 	T*	operator()(void* mem, const uconstructorarguments5<T1,T2,T3,T4,T5>& args) const 
 		{ return new (mem) T(args.arg1, args.arg2, args.arg3, args.arg4, args.arg5); }
+	void Destroy (T* obj) const { obj->~T(); }
+};
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6> 
+struct uplacementconstructor6 : public urecycleconstructor<T, uconstructorarguments6<T1,T2,T3,T4,T5, T6> > {
+	T*	operator()(void* mem, const uconstructorarguments6<T1,T2,T3,T4,T5,T6>& args) const 
+		{ return new (mem) T(args.arg1, args.arg2, args.arg3, args.arg4, args.arg5, args.arg6); }
 	void Destroy (T* obj) const { obj->~T(); }
 };
 

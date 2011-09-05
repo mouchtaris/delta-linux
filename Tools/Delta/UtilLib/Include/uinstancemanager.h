@@ -58,6 +58,12 @@ struct udynamicconstructor5 : public udynamicconstructor<T, uconstructorargument
 		{ return DNEWCLASS(T, (args.arg1, args.arg2, args.arg3, args.arg4, args.arg5)); }
 };
 
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6> 
+struct udynamicconstructor6 : public udynamicconstructor<T, uconstructorarguments6<T1,T2,T3,T4,T5,T6> > {
+	T*	operator()(const uconstructorarguments6<T1,T2,T3,T4,T5,T6>& args) const 
+		{ return DNEWCLASS(T, (args.arg1, args.arg2, args.arg3, args.arg4, args.arg5, args.arg6)); }
+};
+
 ///////////////////////////////////////////////////////////
 
 template <
