@@ -1724,7 +1724,7 @@ DLIB_FUNC_START(window_setcontainingsizer, 2, Nil)
 DLIB_FUNC_START(window_setcursor, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(cursor, Cursor, cursor)
-	window->SetCursor(*cursor);
+	WX_SETBOOL(window->SetCursor(*cursor));
 }
 
 DLIB_FUNC_START(window_setdroptarget, 2, Nil)

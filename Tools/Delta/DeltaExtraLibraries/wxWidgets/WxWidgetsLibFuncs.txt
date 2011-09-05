@@ -7098,7 +7098,7 @@ window_setcaret								(window:window,ct:+{caret,Nil})
 window_setclientsize						(window:window,size:size) (window:window,width:Number,height:Number)
 window_setconstraints						(window:window,layoutconstraints:+{layoutconstraints,Nil})
 window_setcontainingsizer					(window:window,sizer:+{sizer,Nil})
-window_setcursor							(window:window,cursor:cursor)
+window_setcursor							(window:window,cursor:cursor) : Bool
 window_setdroptarget						(window:window,droptarget:droptarget)
 window_seteventhandler						(window:window,evthandler:+{evthandler,Nil})
 window_setextrastyle						(window:window,extraStyle:+{Number,String})
