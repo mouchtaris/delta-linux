@@ -1397,6 +1397,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, Script* initiator) {
 
 	if (m_upToDate) {
 		m_workId = workId;
+		SetIsBeingBuilt();
 		if (initiator)
 			SetBuildInitiator(initiator);
 		SetBuildCompleted(true, false);
