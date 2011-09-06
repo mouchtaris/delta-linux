@@ -169,6 +169,7 @@ void GraphCoordinator::Clean (void){
 		delete mapping;													
 		mapping = static_cast<VertexToDebugInfoMapping *>(0);	
 	}
+	undoRedo.Clean();
 	DeleteGraphLayers();
 }
 //-----------------------------------------------------------------------

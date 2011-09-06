@@ -13,12 +13,13 @@ namespace iviews {
 		UndoRedoHelper() : undoStack(), redoStack() {}	
 		virtual ~UndoRedoHelper(){}
 
+		virtual void			Clean (void);
 		virtual bool			CanUndo (void) const;
 		virtual bool			CanRedo (void) const;
 		virtual void			NewUndoAction (void);
 		virtual UndoRedoData	Redo (void);
 		virtual UndoRedoData	Undo (void);
-
+		
 
 	protected:
 		typedef std::list<UndoRedoData> DataStack;
@@ -27,6 +28,14 @@ namespace iviews {
 		DataStack redoStack;
 
 	};
+
+	//-----------------------------------------------------------------------
+
+	template<class UndoRedoData>
+	void UndoRedoHelper<UndoRedoData>::Clean(void) {
+		undoStack.clear();
+		redoStack.clear();
+	}
 
 	//-----------------------------------------------------------------------
 
