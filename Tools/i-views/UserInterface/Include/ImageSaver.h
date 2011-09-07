@@ -1,3 +1,10 @@
+/**
+ *	ImageSaver.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	November 2010
+ */
+
 #ifndef	IMAGE_SAVER_H
 #define	IMAGE_SAVER_H
 

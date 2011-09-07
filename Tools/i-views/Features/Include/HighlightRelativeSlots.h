@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	HighlightRelativeSlots.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef HIGHLIGHT_RELATIVE_SLOTS_H
 #define	HIGHLIGHT_RELATIVE_SLOTS_H
 

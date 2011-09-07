@@ -1,4 +1,12 @@
-//july 2010
+/**
+ *	LayredGraphRenderer.h
+ *	
+ *	Draw a list of primitives to screen.
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef	LAYRED_GRAPH_RENDERER_H
 #define	LAYRED_GRAPH_RENDERER_H
 

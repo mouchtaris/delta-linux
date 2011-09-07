@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	PathHighlighting.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef	PATH_HIGHLIGHTING_H
 #define	PATH_HIGHLIGHTING_H
 
@@ -13,10 +19,6 @@
 #include "EdgeRenderingInfo.h"
 #include "VertexRenderingInfo.h"
 #include "LayersRenderingInfo.h"
-
-
-//new
-
 
 namespace iviews {
 	

@@ -1,4 +1,11 @@
-//semptember 2010
+/**
+ *	UndoRedoHelper.h
+ *	
+ *	Hellper class to suport undo redo.
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	Semptember 2010
+ */
 
 #ifndef UNDO_REDO_HELPER_H
 #define UNDO_REDO_HELPER_H

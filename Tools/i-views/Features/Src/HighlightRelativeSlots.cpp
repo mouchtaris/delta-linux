@@ -1,3 +1,10 @@
+/**
+ *	HighlightCurrentVertex.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #include "VertexRenderingInfo.h"
 #include "HighlightRelativeSlots.h"
 #include "SetEdgeOriginSlotColour.h"

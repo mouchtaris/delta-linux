@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	Line.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef LINE_H
 #define LINE_H
 

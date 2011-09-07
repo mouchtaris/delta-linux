@@ -1,4 +1,9 @@
-//sempteber 2010
+/**
+ *	AddOn.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Sempteber 2010
+ */
 
 #ifndef	ADD_ON_H
 #define	ADD_ON_H

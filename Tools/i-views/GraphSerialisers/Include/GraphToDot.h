@@ -1,5 +1,5 @@
 /**
- *	GraphCoordinator.h
+ *	GraphToDot.h
  *	
  *	Create a string or write to file a Graph in dot representation
  *

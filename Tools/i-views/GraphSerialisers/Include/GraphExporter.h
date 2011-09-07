@@ -1,3 +1,10 @@
+/**
+ *	GraphExporter.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	January 2011
+ */
+
 #ifndef	GRAPH_EXPORTER_H 
 #define	GRAPH_EXPORTER_H
 

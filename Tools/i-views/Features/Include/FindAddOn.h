@@ -1,3 +1,10 @@
+/**
+ *	FindAddOn.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #ifndef	FIND_ADD_ON_H
 #define	FIND_ADD_ON_H
 

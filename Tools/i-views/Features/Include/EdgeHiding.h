@@ -1,3 +1,10 @@
+/**
+ *	EdgeHiding.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef EDGE_HIDING_H
 #define EDGE_HIDING_H
 

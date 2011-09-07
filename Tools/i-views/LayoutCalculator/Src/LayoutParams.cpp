@@ -1,11 +1,13 @@
+/**
+ *	LayoutParams.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #include "LayoutParams.h"
 
-
 namespace iviews {
-
-
-
-
 
 ////////////////////////////////////////////////
 //	Class BorderDrawingData

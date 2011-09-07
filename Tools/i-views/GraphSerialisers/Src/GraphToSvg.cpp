@@ -1,3 +1,9 @@
+/**
+ *	GraphToSvg.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	January 2011
+ */
 #include <fstream>
 #include <assert.h>
 

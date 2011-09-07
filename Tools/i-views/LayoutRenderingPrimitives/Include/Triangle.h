@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	Triangle.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 

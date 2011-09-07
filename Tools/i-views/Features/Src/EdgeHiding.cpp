@@ -1,3 +1,10 @@
+/**
+ *	EdgeHiding.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #include <assert.h>
 
 #include "EdgeHiding.h"

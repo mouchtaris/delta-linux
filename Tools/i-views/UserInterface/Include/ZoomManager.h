@@ -1,3 +1,10 @@
+/**
+ *	ZoomManager.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
+
 #ifndef ZOOM_MANAGER_H
 #define ZOOM_MANAGER_H
 

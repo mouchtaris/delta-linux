@@ -1,4 +1,10 @@
-//August 2010
+/**
+ *	ContentsTooltip.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	August 2010
+ */
+
 #ifndef CONTENTS_TOOLTIP_H
 #define	CONTENTS_TOOLTIP_H
 

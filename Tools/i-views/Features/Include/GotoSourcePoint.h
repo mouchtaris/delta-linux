@@ -1,5 +1,10 @@
-//july 2010
-//
+/**
+ *	GotoSourcePoint.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef	GOTO_SOURCE_POINT_H
 #define GOTO_SOURCE_POINT_H
 

@@ -1,4 +1,9 @@
-
+/**
+ *	ReferenceDepth.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
 
 #include <wx/sizer.h>
 #include <wx/checkbox.h>

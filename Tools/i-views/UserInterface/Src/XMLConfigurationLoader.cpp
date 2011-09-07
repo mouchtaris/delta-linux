@@ -1,10 +1,14 @@
-#include "XMLConfigurationLoader.h"
+/**
+ *	XMLConfigurationLoader.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
 
 #include <assert.h>
-
 #include <wx/msgdlg.h>
 #include <wx/tokenzr.h>
-
+#include "XMLConfigurationLoader.h"
 
 namespace iviews {
 

@@ -1,4 +1,10 @@
-//sempteber 2010
+/**
+ *	TipTimer.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	Sempteber 2010
+ */
+
 #ifndef TIP_TIMER_H
 #define TIP_TIMER_H
 

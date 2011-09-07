@@ -1,3 +1,10 @@
+/**
+ *	EdgesParameters.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef EDGES_PARAMETERS_H
 #define EDGES_PARAMETERS_H
 

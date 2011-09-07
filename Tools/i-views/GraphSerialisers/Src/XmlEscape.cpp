@@ -1,7 +1,12 @@
+/**
+ *	XmlEscape.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #include "XmlEscape.h"
 #include "StringUtils.h"
-
-
 
 namespace iviews {
 

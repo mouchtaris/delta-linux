@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	GraphicsLayoutPrimitives.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef GRAPHICS_LAYOUT_PRIMITIVES_H
 #define GRAPHICS_LAYOUT_PRIMITIVES_H
 

@@ -1,3 +1,10 @@
+/**
+ *	LayersRenderingInfo.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #include "LayersRenderingInfo.h"
 
 #include <limits>
@@ -11,12 +18,6 @@
 #include "RenderingTypes.h"
 #include "EdgeRenderingInfo.h"
 #include "RenderingInfoAlgorithmsMacros.h"
-
-
-//-----------------------------------------------------------------------
-
-
-
 
 
 namespace iviews {

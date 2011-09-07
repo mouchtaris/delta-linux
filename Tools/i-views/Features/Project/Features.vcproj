@@ -175,14 +175,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Src\LayerFinder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Src\ObjectsGrouping.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\Src\PathHighlighting.cpp"
 				>
 			</File>
@@ -286,10 +278,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\HighlightRelativeSlots.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Include\ObjectsGrouping.h"
 				>
 			</File>
 			<File

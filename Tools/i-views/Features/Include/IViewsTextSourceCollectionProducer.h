@@ -1,3 +1,10 @@
+/**
+ *	IViewsTextSourceCollectionProducer.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #ifndef IVIEWS_TEXT_SOURCE_COLLECTION_PRODUCER_H
 #define IVIEWS_TEXT_SOURCE_COLLECTION_PRODUCER_H
 

@@ -1,3 +1,10 @@
+/**
+ *	TextualFrame.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
+
 #ifndef	TEXTUAL_FRAME_H
 #define	TEXTUAL_FRAME_H
 

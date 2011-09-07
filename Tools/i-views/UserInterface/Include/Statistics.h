@@ -1,3 +1,10 @@
+/**
+ *	Statistics.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
+
 #ifndef	STATISTICS_H
 #define	STATISTICS_H
 

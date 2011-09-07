@@ -1,5 +1,12 @@
-//july 2010
-//Open a window that contains informations about the slot' s contents
+/**
+ *	ViewSlotTextualContents.h
+ *
+ *	Open a window that contains informations about the slot' s contents
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef	VIEW_SLOT_TEXTUAL_CONTENTS_H
 #define	VIEW_SLOT_TEXTUAL_CONTENTS_H
 

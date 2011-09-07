@@ -1,3 +1,10 @@
+/**
+ *	IViewsTextSourceSelectionManager.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #include <assert.h>
 #include "IViewsTextSourceSelectionManager.h"
 

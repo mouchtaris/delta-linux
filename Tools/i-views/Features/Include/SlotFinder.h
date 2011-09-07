@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	SlotFinder.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef	SLOT_FINDER_H
 #define SLOT_FINDER_H
 

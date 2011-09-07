@@ -1,3 +1,10 @@
+/**
+ *	ZoomParameters.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
+
 #ifndef ZOOM_PARAMETERS_H
 #define ZOOM_PARAMETERS_H
 

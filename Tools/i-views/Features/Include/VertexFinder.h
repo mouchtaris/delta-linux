@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	VertexFinder.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef VERTEX_FINDER_H
 #define VERTEX_FINDER_H
 

@@ -1,3 +1,10 @@
+/**
+ *	SlotDebugInfo.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	May 2010
+ */
+
 #include "SlotDebugInfo.h"
 #include <assert.h>
 

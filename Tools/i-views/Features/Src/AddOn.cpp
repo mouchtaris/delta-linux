@@ -1,5 +1,11 @@
-#include "AddOn.h"
+/**
+ *	AddOn.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Sempteber 2010
+ */
 
+#include "AddOn.h"
 
 
 namespace iviews {

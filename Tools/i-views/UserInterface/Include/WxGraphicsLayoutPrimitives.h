@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	WxGraphicsLayoutPrimitives.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef WX_GRAPHICS_LAYOUT_PRIMITIVES_H
 #define WX_GRAPHICS_LAYOUT_PRIMITIVES_H
 

@@ -1,5 +1,9 @@
-//June 2010
-//OK
+/**
+ *	SlotRenderingInfo.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
 
 #ifndef SLOT_RENDERING_INFO_H
 #define SLOT_RENDERING_INFO_H

@@ -1,3 +1,10 @@
+/**
+ *	ColourAddOnData.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Sempteber 2010
+ */
+
 #ifndef	COLOUR_ADDON_DATA_H
 #define COLOUR_ADDON_DATA_H
 

@@ -1,5 +1,11 @@
-#include "Bookmark.h"
+/**
+ *	Bookmark.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Sempteber 2010
+ */
 
+#include "Bookmark.h"
 
 namespace iviews {
 

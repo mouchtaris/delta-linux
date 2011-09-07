@@ -1,3 +1,9 @@
+/**
+ *	InnerEdgesOrderingHeuristic.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
 
 #include <assert.h>
 #include <algorithm>

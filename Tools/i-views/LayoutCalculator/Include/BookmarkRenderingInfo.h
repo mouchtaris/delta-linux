@@ -1,3 +1,10 @@
+/**
+ *	BookmarkRenderingInfo.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef	BOOKMARK_RENDERING_INFO_H
 #define BOOKMARK_RENDERING_INFO_H
 

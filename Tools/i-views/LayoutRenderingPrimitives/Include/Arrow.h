@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	Arrow.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef ARROW_H
 #define ARROW_H
 

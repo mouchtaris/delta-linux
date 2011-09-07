@@ -1,5 +1,9 @@
-
-
+/**
+ *	GraphToXml.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
 
 #include <fstream>
 #include <assert.h>

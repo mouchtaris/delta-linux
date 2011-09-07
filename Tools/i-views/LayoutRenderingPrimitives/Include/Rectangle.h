@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	Rectangle.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 

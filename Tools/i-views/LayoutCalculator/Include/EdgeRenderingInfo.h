@@ -1,6 +1,9 @@
-//June 2010
-/*
-*/
+/**
+ *	EdgeRenderingInfo.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
 
 #ifndef EDGE_RENDERING_INFO_H
 #define EDGE_RENDERING_INFO_H

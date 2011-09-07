@@ -1,3 +1,10 @@
+/**
+ *	HandTool.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	March 2010
+ */
+
 #include <wx/image.h>
 #include <wx/bitmap.h>
 #include <wx/dcclient.h>

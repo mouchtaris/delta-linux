@@ -1,3 +1,10 @@
+/**
+ *	RenderingInfoAlgorithmsMacros.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef	RENDERING_INFO_ALGORITHMS_MACROS_H
 #define	RENDERING_INFO_ALGORITHMS_MACROS_H
 

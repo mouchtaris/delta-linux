@@ -1,3 +1,12 @@
+/**
+ *	VertexToDebugInfoMapping.h
+ *
+ *	Mpas a vertex with debugging info.
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	March 2010
+ */
+
 #ifndef VERTEX_TO_DEBUG_INFO_MAPPING_H
 #define VERTEX_TO_DEBUG_INFO_MAPPING_H
 

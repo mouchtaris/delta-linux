@@ -1,3 +1,10 @@
+/**
+ *	PopupWindowTimer.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
+
 #include "PopupWindowTimer.h"
 
 #include <assert.h>

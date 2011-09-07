@@ -1,5 +1,10 @@
-//July 2010
-//
+/**
+ *	SetEdgeOriginSlotColour.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef COLOUR_SLOT_FROM_ESGE_H
 #define COLOUR_SLOT_FROM_ESGE_H
 

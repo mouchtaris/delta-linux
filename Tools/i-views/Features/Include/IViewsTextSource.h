@@ -1,3 +1,10 @@
+/**
+ *	IViewsTextSource.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #ifndef IVIEWS_TEXT_SOURCE_H
 #define IVIEWS_TEXT_SOURCE_H
 

@@ -1,6 +1,11 @@
+/**
+ *	LayoutParamsValidator.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #include "LayoutParamsValidator.h"
-
-
 
 namespace iviews {
 	

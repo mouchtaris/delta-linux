@@ -1,3 +1,9 @@
+/**
+ *	ImageSaver.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	November 2010
+ */
 
 #include <assert.h>
 

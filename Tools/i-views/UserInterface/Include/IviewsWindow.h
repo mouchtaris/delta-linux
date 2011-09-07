@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	IviewsWindow.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef IVIEWS_WINDOW_H
 #define IVIEWS_WINDOW_H
 

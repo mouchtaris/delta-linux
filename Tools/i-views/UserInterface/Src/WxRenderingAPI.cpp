@@ -1,7 +1,12 @@
+/**
+ *	WxRenderingAPI.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #include "WxRenderingAPI.h"
-
 #include <assert.h>
-
 #include <cmath>
 #include <wx/pen.h>
 #include <wx/colour.h>

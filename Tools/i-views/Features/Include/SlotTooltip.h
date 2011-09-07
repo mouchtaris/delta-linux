@@ -1,4 +1,10 @@
-//September 2010
+/**
+ *	SlotTooltip.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	September 2010
+ */
+
 #ifndef SLOT_TOOLTIP_H
 #define SLOT_TOOLTIP_H
 

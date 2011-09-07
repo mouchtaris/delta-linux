@@ -1,3 +1,10 @@
+/**
+ *	VertexFinder.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #include "Rectangle.h"
 #include "VertexFinder.h"
 #include "RenderingInfoAlgorithmsMacros.h"

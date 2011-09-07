@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	Dimension.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef COMMON_TYPES_H
 #define COMMON_TYPES_H
 

@@ -1,3 +1,10 @@
+/**
+ *	Primitive.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	June 2010
+ */
+
 #include "Primitive.h"
 
 

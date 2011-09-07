@@ -1,6 +1,12 @@
+/**
+ *	Bookmark.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Sempteber 2010
+ */
+
 #ifndef BOOKMARK_H
 #define BOOKMARK_H
-
 
 
 #include <wx/gdicmn.h>

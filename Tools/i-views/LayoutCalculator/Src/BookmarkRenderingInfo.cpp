@@ -1,3 +1,10 @@
+/**
+ *	BookmarkRenderingInfo.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #include <math.h>
 #include "BookmarkRenderingInfo.h"
 

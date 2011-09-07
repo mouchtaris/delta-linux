@@ -1,6 +1,11 @@
+/**
+ *	PopupWindow.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
+
 #include "PopupWindow.h"
-
-
 #include <assert.h>
 #include <wx/dcclient.h>
 #include "GotoSourcePoint.h"

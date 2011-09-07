@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	LayoutCalculator.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef LAYOUT_CALCULATOR_H 
 #define LAYOUT_CALCULATOR_H
 

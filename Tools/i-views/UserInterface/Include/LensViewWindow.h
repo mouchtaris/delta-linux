@@ -1,3 +1,10 @@
+/**
+ *	LensViewWindow.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
+
 #ifndef	LENS_TOOL_H
 #define	LENS_TOOL_H
 

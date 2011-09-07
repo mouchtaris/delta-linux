@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	GraphToSvg.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	January 2011
+ */
+
 #ifndef	GRAPH_TO_SVG_H
 #define	GRAPH_TO_SVG_H
 

@@ -1,4 +1,10 @@
-//August 2010
+/**
+ *	PopupWindow.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
+
 #ifndef POPUP_WINDOW_H
 #define POPUP_WINDOW_H
 

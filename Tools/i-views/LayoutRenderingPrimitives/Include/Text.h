@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	Text.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef TEXT_H
 #define TEXT_H
 

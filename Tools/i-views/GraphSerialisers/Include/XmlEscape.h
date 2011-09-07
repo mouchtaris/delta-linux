@@ -1,3 +1,10 @@
+/**
+ *	XmlEscape.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef	XML_ESCAPE_H	
 #define	XML_ESCAPE_H
 

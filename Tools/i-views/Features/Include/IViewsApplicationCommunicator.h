@@ -1,3 +1,10 @@
+/**
+ *	IViewsApplicationCommunicator.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #ifndef IVIEWS_APPLICATION_COMMUNICATOR_H
 #define IVIEWS_APPLICATION_COMMUNICATOR_H
 

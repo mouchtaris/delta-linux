@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	Primitive.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H
 

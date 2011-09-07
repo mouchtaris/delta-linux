@@ -1,5 +1,9 @@
-//June 2010
-//OK
+/**
+ *	VertexRenderingInfo.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
 
 #ifndef VERTEX_RENDERING_INFO
 #define VERTEX_RENDERING_INFO

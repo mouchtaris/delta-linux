@@ -1,3 +1,10 @@
+/**
+ *	ColourAddOnManager.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Sempteber 2010
+ */
+
 #include "ColourAddOnManager.h"
 
 #include <assert.h>

@@ -1,5 +1,12 @@
-//july 2010
-//copy object's absolute referenfe to clibolrd
+/**
+ *	CopyAbsoluteReferenceOption.h
+ *
+ *	Copy object's absolute referenfe to clibolrd
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef COPY_ABSOLUTE_REFRENCE_OPTION_H
 #define	COPY_ABSOLUTE_REFRENCE_OPTION_H
 

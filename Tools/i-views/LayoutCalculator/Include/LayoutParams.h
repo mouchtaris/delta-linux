@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	LayoutParams.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef LAYOUT_PARAMS_H
 #define LAYOUT_PARAMS_H
 

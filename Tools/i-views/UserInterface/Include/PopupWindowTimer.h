@@ -1,3 +1,10 @@
+/**
+ *	PopupWindowTimer.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
+
 #ifndef POPUP_WINDOW_TIMER_H
 #define POPUP_WINDOW_TIMER_H
 

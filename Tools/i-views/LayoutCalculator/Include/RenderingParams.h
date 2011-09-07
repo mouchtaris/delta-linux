@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	RenderingParams.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef RENDERING_PARMAS_H
 #define RENDERING_PARMAS_H
 

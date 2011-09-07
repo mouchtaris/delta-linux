@@ -1,3 +1,10 @@
+/**
+ *	IViewsApplicationCommunicator.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #include "IViewsApplicationCommunicator.h"
 
 namespace iviews {

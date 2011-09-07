@@ -1,3 +1,10 @@
+/**
+ *	ZoomParameters.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
+
 #ifdef _WIN32
 	// Disable warning messages 4996. Security warning about localtime usage.
 	#pragma warning( disable : 4996)

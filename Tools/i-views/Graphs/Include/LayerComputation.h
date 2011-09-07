@@ -1,3 +1,12 @@
+/**
+ *	LayerComputation.h
+ *
+ *	Create a Graph Layers from a Graph.
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	March 2010
+ */
+
 #ifndef LAYER_COMPUTATION_H
 #define LAYER_COMPUTATION_H
 

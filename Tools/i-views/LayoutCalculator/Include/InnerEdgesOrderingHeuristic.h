@@ -1,3 +1,12 @@
+/**
+ *	InnerEdgesOrderingHeuristic.h
+ *	
+ *	Heuristic to minimize the cross between inner edges
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
+
 #ifndef INNER_EDGES_ORDERING_HEURISTIC_H
 #define	INNER_EDGES_ORDERING_HEURISTIC_H
 

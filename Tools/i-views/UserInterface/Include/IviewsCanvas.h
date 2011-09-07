@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	IviewsCanvas.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef IVIEWS_CANVAS_H
 #define IVIEWS_CANVAS_H
 

@@ -1,4 +1,12 @@
-//july 2010
+/**
+ *	LayredGraphRenderer.h
+ *	
+ *	API to draw primitives like line, Triangle, e.t.c to screen.
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef RENDERING_API_H
 #define RENDERING_API_H
 

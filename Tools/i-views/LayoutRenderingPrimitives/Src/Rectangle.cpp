@@ -2,7 +2,7 @@
  *	Rectangle.cpp
  *
  *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
- *	March 2010
+ *	June 2010
  */
 
 #include "Rectangle.h"

@@ -1,10 +1,14 @@
+/**
+ *	IviewsWindow.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifdef _WIN32
 	// Disable warning messages 4996. Security warning about localtime usage.
 	#pragma warning( disable : 4996)
 #endif
-
-
-
 
 #include <wx/menu.h>
 #include <wx/numdlg.h>

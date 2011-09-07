@@ -1,3 +1,10 @@
+/**
+ *	IViewsFindDialog.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #ifndef IVIEWS_FIND_FIALOG_H
 #define IVIEWS_FIND_FIALOG_H
 

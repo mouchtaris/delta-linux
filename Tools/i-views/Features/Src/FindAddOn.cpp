@@ -1,3 +1,10 @@
+/**
+ *	FindAddOn.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Octomber 2010
+ */
+
 #include <iterator>
 #include "FindAddOn.h"
 

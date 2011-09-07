@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	XMLConfigurationLoader.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef	XML_CONFIGURATION_LOADER_H
 #define	XML_CONFIGURATION_LOADER_H
 

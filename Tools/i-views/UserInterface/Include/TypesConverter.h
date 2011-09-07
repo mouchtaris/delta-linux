@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	TypesConverter.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef	TYPES_CONVERTER_H
 #define	TYPES_CONVERTER_H
 

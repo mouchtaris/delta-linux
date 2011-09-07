@@ -1,3 +1,9 @@
+/*	VertexToDebugInfoMapping.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	March 2010
+ */
+
 #include "VertexToDebugInfoMapping.h"
 
 namespace iviews {

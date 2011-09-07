@@ -1,5 +1,11 @@
-#include "SlotRenderingInfo.h"
+/**
+ *	SlotRenderingInfo.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
 
+#include "SlotRenderingInfo.h"
 
 namespace iviews {
 

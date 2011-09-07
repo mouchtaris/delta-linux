@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	LayersRenderingInfo.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef	LAYERS_RENDERING_INFO 
 #define	LAYERS_RENDERING_INFO
 

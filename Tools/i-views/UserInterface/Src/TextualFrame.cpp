@@ -1,3 +1,10 @@
+/**
+ *	TextualFrame.cpp
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
+
 #include "TextualFrame.h"
 
 namespace iviews {

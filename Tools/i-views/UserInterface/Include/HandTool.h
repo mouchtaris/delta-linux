@@ -1,3 +1,10 @@
+/**
+ *	HandTool.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	December 2010
+ */
+
 #ifndef	HAND_TOOL_H
 #define HAND_TOOL_H
 

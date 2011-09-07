@@ -1,5 +1,12 @@
-//july 2010
-//Highlight the vertex that pointetd from the muse
+/**
+ *	HighlightCurrentVertex.h
+ *
+ *	Highlight the vertex that pointetd from the muse
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	July 2010
+ */
+
 #ifndef	HIGHLIGHT_CURRENT_VERTEX_H
 #define HIGHLIGHT_CURRENT_VERTEX_H
 

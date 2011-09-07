@@ -1,10 +1,14 @@
+/**
+ *	XmlEscape.cpp
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #include "XmlToGraph.h"
-
-
 
 #include <wx/msgdlg.h>
 #include <wx/tokenzr.h>
-
 
 #include <utility>
 #include <fstream>

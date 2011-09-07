@@ -1,3 +1,10 @@
+/**
+ *	ReferenceDepth.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	August 2010
+ */
+
 #ifndef	REFERENCE_DEPTH_H 
 #define REFERENCE_DEPTH_H
 

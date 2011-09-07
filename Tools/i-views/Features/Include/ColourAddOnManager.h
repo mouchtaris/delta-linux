@@ -1,3 +1,10 @@
+/**
+ *	ColourAddOnManager.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr>
+ *	Sempteber 2010
+ */
+
 #ifndef	COLOUR_ADD_ON_MANAGER_H
 #define COLOUR_ADD_ON_MANAGER_H
 

@@ -1,4 +1,10 @@
-//June 2010
+/**
+ *	RenderingTypes.h
+ *
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	June 2010
+ */
+
 #ifndef RENDERING_TYPES_H
 #define RENDERING_TYPES_H
 

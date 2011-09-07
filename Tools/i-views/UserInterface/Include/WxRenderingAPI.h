@@ -1,4 +1,10 @@
-//july 2010
+/**
+ *	WxRenderingAPI.h
+ *	
+ *	Koutsopoulos Nikolaos <koutsop@ics.forth.gr	>
+ *	July 2010
+ */
+
 #ifndef WX_RENDERING_API_H
 #define WX_RENDERING_API_H
 
