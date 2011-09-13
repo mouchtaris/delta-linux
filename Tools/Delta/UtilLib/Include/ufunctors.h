@@ -326,6 +326,62 @@ struct uequal_fourth : public std::binary_function<Ttuple, typename Ttuple::four
 };
 
 /////////////////////////////////////////////////////////////////
+// FUNCTOR ADAPTERS FOR TUPLES.
+// FIXME: exact functionality replicated by ufunctor_first, ufunctor_second, etc...
+//
+template <typename T, typename F> class utuple_firstfunctor : public std::unary_function<T, void> {
+	private:
+	F f;
+
+	public:
+	typename F::result_type operator()(typename uref_of<T>::t t) const { return f(t.first); }
+	typename F::result_type operator()(typename uconstref_of<T>::t t) const { return f(t.first); }
+	utuple_firstfunctor (const F& _f) : f(_f){}
+	utuple_firstfunctor (const utuple_firstfunctor<T,F>& p) : f(p.f){}
+};
+
+template <typename T, typename F>
+const utuple_firstfunctor<T, F> utuple_firstfunctoriser (const F& f) {
+	return utuple_firstfunctor<T, F>(f);
+}
+
+//***********************
+
+template <typename T, typename F> class utuple_secondfunctor : public std::unary_function<T, void> {
+	private:
+	F f;
+
+	public:
+	typename F::result_type operator()(typename uref_of<T>::t t) const { return f(t.second); }
+	typename F::result_type operator()(typename uconstref_of<T>::t t) const { return f(t.second); }
+	utuple_secondfunctor (const F& _f) : f(_f){}
+	utuple_secondfunctor (const utuple_secondfunctor<T,F>& p) : f(p.f){}
+};
+
+template <typename T, typename F>
+const utuple_secondfunctor<T, F> utuple_secondfunctoriser (const F& f) {
+	return utuple_secondfunctor<T, F>(f);
+}
+
+//***********************
+
+template <typename T, typename F> class utuple_thirdfunctor : public std::unary_function<T, void> {
+	private:
+	F f;
+
+	public:
+	typename F::result_type operator()(typename uref_of<T>::t t) const { return f(t.third); }
+	typename F::result_type operator()(typename uconstref_of<T>::t t) const { return f(t.third); }
+	utuple_thirdfunctor (const F& _f) : f(_f){}
+	utuple_thirdfunctor (const utuple_thirdfunctor<T,F>& p) : f(p.f){}
+};
+
+template <typename T, typename F>
+const utuple_thirdfunctor<T, F> utuple_thirdfunctoriser (const F& f) {
+	return utuple_thirdfunctor<T,F>(f);
+}
+
+/////////////////////////////////////////////////////////////////
 // A condition class functor that can be supplied as an argument.
 //
 struct uconditionalfunctor {
