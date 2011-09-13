@@ -29,8 +29,8 @@ template <class RcTraits> class usharedresourceholder {
 	typedef typename RcTraits::type T;
 	std::map<std::string, T*> byKey;
 	
-	typedef std::pair<std::string, util_ui16> entry;
-	std::map<T*, entry> byRc;
+	typedef std::pair<std::string, util_ui16>	entry;
+	std::map<T*, entry>							byRc;
 
 	public:
 	std::map<std::string, T*>& getall (void) { return byKey; }

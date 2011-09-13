@@ -108,10 +108,10 @@ class ufunctor_first : public std::unary_function<Ttuple, void> {
 	Tfun f;
 
 	public:
-	typename Tfun::result_type operator()(typename uref_of<Ttuple>::t t) const {
+	typename usig<Tfun>::result_type operator()(typename uref_of<Ttuple>::t t) const {
 		return f(t.first);
 	}
-	typename Tfun::result_type operator()(typename uconstref_of<Ttuple>::t t) const {
+	typename usig<Tfun>::result_type operator()(typename uconstref_of<Ttuple>::t t) const {
 		return f(t.first);
 	}
 
@@ -125,10 +125,10 @@ class ufunctor_second : public std::unary_function<Ttuple, void> {
 	Tfun f;
 
 	public:
-	typename Tfun::result_type operator()(typename uref_of<Ttuple>::t t) const {
+	typename  usig<Tfun>::result_type operator()(typename uref_of<Ttuple>::t t) const {
 		return f(t.second);
 	}
-	typename Tfun::result_type operator()(typename uconstref_of<Ttuple>::t t) const {
+	typename  usig<Tfun>::result_type operator()(typename uconstref_of<Ttuple>::t t) const {
 		return f(t.second);
 	}
 
@@ -142,10 +142,10 @@ class ufunctor_third : public std::unary_function<Ttuple, void> {
 	Tfun f;
 
 	public:
-	typename Tfun::result_type operator()(typename uref_of<Ttuple>::t t) const {
+	typename  usig<Tfun>::result_type operator()(typename uref_of<Ttuple>::t t) const {
 		return f(t.third);
 	}
-	typename Tfun::result_type operator()(typename uconstref_of<Ttuple>::t t) const {
+	typename  usig<Tfun>::result_type operator()(typename uconstref_of<Ttuple>::t t) const {
 		return f(t.third);
 	}
 
