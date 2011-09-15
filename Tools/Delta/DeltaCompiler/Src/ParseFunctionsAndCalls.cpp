@@ -300,13 +300,22 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 
 			DeltaExpr* methodVar;
 			if (id) {
-				methodVar = Translate_Lvalue(id, DELTA_LOCAL_SCOPEOFFSET); unullify(id);
-				methodVar->ResetVarDeclaration();
+				methodVar = ParseParms::CurrScope().value() == DELTA_GLOBAL_SCOPE ? 
+							Translate_Lvalue(id) : Translate_Lvalue(id, DELTA_LOCAL_SCOPEOFFSET);
+
+				if (!methodVar)
+					return NIL_SYMBOL;
+
+				if (DPTR(methodVar)->GetType() == DeltaExprVar)	
+					if (!DPTR(methodVar)->IsVarDeclaration())		// was earlier defined
+						DELTACOMP_WARNING_ORPHAN_METHOD_OVERWRITES_USER_VAR(id, DPTR(methodVar->sym)->GetLine());
+					else
+						methodVar->ResetVarDeclaration();
+				unullify(id);
 			}
 			else
 				methodVar = DeltaExpr::MakeTempVar();
-			if (!methodVar)
-				return NIL_SYMBOL;
+		
 			DPTR(methodVar)->SetInitialised();
 
 			// 2) open artificially a table ctor and mark it is auto produced, storing

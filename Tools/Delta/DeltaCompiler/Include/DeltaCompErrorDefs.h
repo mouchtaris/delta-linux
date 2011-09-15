@@ -500,7 +500,7 @@
 	DeltaCompWarning(															\
 		"In function '%s' use of '%s' is closure var of outer method '%s'",		\
 		ucstringarg(func), ucstringarg(self), ucstringarg(method)				\
-	);																			\
+	)
 
 #define	DELTACOMP_WARNING_OUTERFUNC_CLOSUREVAR_ACCESS(f1,id,f2,l)				\
 	if (true) {																	\
@@ -514,11 +514,17 @@
 	);																			\
 	} else
 
+#define	DELTACOMP_WARNING_ORPHAN_METHOD_OVERWRITES_USER_VAR(id,line)			\
+	DeltaCompWarning(															\
+		"Orphan method '%s' overwrites user var '%s' (declared at line %u)",	\
+		ucstringarg(id), ucstringarg(id), line									\
+	)
+
 #define	DELTACOMP_WARNING_REDUNDANT_LOCAL_IN_NON_EXPORTABLE_FUNCTION(sym)		\
 	DeltaCompWarning(															\
 		"In '%s' 'local' qualifier is redundant (non exportable anyway)",		\
 		ucstringarg(sym->GetFunctionReadableName())								\
-	);	
+	)
 
 //////////////////////////////////////////////////////
 
