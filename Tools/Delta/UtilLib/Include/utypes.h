@@ -198,6 +198,11 @@ template <typename T> void ureset_via_default_ctor (T* t)
 		return *this;														\
 	}
 
+#define	UCLONE_VIA_COPY_CONSTRUCTOR(_class, _clone)							\
+	_class* _clone (void) const {											\
+		return DNEWCLASS(_class, (*this));									\
+	}
+
 #define	UATTRIBUTEMETHOD_SCALAR(T,_var,_attr)				\
 	void Set##_attr(T _var##New) {_var = _var##New;}		\
 	T Get##_attr(void) const {return _var;}
@@ -260,6 +265,11 @@ void uassignarray (const T (&from)[N],  T (&to)[N]) {
 	for (util_ui32 i = N; i--;)
 		to[i] = from[i];
 }
+
+template <typename T, const unsigned N>  struct uptrarray { 
+	typedef T (*ptr_type)[N]; 
+	typedef T arr_type[N]; 
+};
 
 //*****************************
 

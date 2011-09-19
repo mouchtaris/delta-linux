@@ -38,6 +38,18 @@ void umemcpy(T& dest, const T& src) { memcpy(&dest, &src, sizeof(T)); }
 template <typename T>
 void umemcpy(T* dest, const T* src) { memcpy(dest, src, sizeof(T)); }
 
+template <typename T, const unsigned N>
+typename uptrarray<T,N>::ptr_type ucopyarrayunlessnull (T (*ptr)[N]) {
+	if (!ptr)
+		return NULL;
+	else {
+		uptrarray<T,N>::ptr_type copy;
+		unewarray(copy);
+		umemcpy(copy, ptr);
+		return copy;
+	}
+}
+
 //---------------------------------------------------------------
 
 template <class T> void* POFFS (const void* p, T j) // Byte offset.

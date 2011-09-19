@@ -32,6 +32,8 @@ T* _DNOTNULL (T* p) {
 #include <string.h>
 
 template <typename T> void udeletesubstitute(T* p) { delete p; }
+template <class T, const unsigned N> 
+typename void udeletesubstitute (T (*&p)[N]) { delete[] p; }
 template <typename T> void udelarraysubstitute(T* p) { delete[] p; }
 
 #define	DNEW(a)				_DNOTNULL(new a)
@@ -249,14 +251,20 @@ T*&	_DPTRLVALUE (T*& p) {
 
 #endif	// DDEBUG_USE
 
-template <class T> inline void udelete (T*& p) 
+template <class T> void udelete (T*& p) 
 	{ DASSERT(p); DDELETE((T*) p); unullify(p); }
 
-template <class T> inline void udeleteunlessnull (T*& p) 
+template <class T> void udeleteunlessnull (T*& p) 
 	{ if (p) { DDELETE(p); unullify(p); } }
 
-template <class T> inline T* unew (T*& p) 
+template <class T> T* unew (T*& p) 
 	{ DASSERT(!p); return p = DNEW(T); }
+
+template <class T, const unsigned N>  typename uptrarray<T,N>::ptr_type unewarray (T (*&p)[N]) 
+	{ DASSERT(!p); return p = (uptrarray<T,N>::ptr_type) DNEWARR(T, N); }
+
+template <class T, const unsigned N> void udeletearray (T (*&p)[N])
+	{ DASSERT(p); DDELARR(p); unullify(p); }
 
 //------------------------------------------------------
 
