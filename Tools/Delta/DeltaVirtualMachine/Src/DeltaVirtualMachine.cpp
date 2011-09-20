@@ -16,6 +16,7 @@
 #include "DeltaRuntimeError.h"
 #include "DeltaExceptionHandling.h"
 #include "DeltaClosureHandling.h"
+#include "DeltaObject.h"
 #include "uerrorclass.h"
 #include "ugeometry.h"
 #include "DeltaTableFactory.h"
@@ -216,6 +217,11 @@ void DeltaVirtualMachine::Clear (void) {
 
 	UnreferenceStaticsTable();
 	UndefineAllReferrers();
+
+	if (globalFunctionsTable) {
+		DeltaObject::NativeCodeHelpers::GiveUp(globalFunctionsTable);
+		unullify(globalFunctionsTable); 
+	}
 
 	GlobalGarbageCollection();
 	unullify(selfAsExternId); 
@@ -751,7 +757,7 @@ void DeltaVirtualMachine::GetGlobalFunctionsTable (DeltaValue* funcs) {
 	// We create or recreate the table if not yet created or collected, respectively.
 
 	if (!globalFunctionsTable || !ValidatableHandler::Validate(globalFunctionsTable, globalFunctionsTableSerialNo)) {
-		globalFunctionsTable = DeltaTableFactory::New();
+		globalFunctionsTable = DeltaObject::NativeCodeHelpers::NewObject();
 		globalFunctionsTableSerialNo = DPTR(globalFunctionsTable)->GetSerialNo();
 	}
 
