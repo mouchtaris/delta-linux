@@ -281,6 +281,7 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 	void				ProduceStaticsList (void);
 	void				ClearStaticsTable (void);
 	void				UnreferenceStaticsTable (void);
+	void				UnreferenceFunctionsTable (void);
 	void				UndefineAllReferrers (void);
 	
 	///////////////////////////////////////////////////////////////

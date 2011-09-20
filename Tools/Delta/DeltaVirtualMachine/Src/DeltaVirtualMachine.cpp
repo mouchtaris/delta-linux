@@ -216,12 +216,8 @@ DeltaVirtualMachine::DeltaVirtualMachine (const char* _id, util_ui32 _stackSize)
 void DeltaVirtualMachine::Clear (void) {
 
 	UnreferenceStaticsTable();
+	UnreferenceFunctionsTable();
 	UndefineAllReferrers();
-
-	if (globalFunctionsTable) {
-		DeltaObject::NativeCodeHelpers::GiveUp(globalFunctionsTable);
-		unullify(globalFunctionsTable); 
-	}
 
 	GlobalGarbageCollection();
 	unullify(selfAsExternId); 
@@ -833,10 +829,8 @@ DeltaTable*	DeltaVirtualMachine::GetStaticsTable (void) {
 
 	if (HasDebugInfo()) {
 
-		if (!staticsTable) {
-			staticsTable = DeltaTableFactory::New();
-			DPTR(staticsTable)->IncRefCounter((DeltaValue*) 0);
-		}
+		if (!staticsTable)
+			staticsTable = DeltaObject::NativeCodeHelpers::NewObject();
 
 		for (StaticsList::iterator i = staticsList.begin(); i != staticsList.end(); ++i)
 			staticsTable->Set(
@@ -863,9 +857,16 @@ void DeltaVirtualMachine::UnreferenceStaticsTable (void) {
 	staticsList.clear();
 	if (staticsTable) {
 		DASSERT(HasDebugInfo());
-		DPTR(staticsTable)->DecRefCounter((DeltaValue*) 0);
+		DeltaObject::NativeCodeHelpers::GiveUp(staticsTable);
 		unullify(staticsTable); 
 	}
+}
+
+//////////////////////////////////
+
+void DeltaVirtualMachine::UnreferenceFunctionsTable (void) {
+	DeltaObject::NativeCodeHelpers::GiveUp(globalFunctionsTable);
+	unullify(globalFunctionsTable); 
 }
 
 //////////////////////////////////
