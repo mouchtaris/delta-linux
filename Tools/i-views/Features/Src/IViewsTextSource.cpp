@@ -324,6 +324,28 @@ void IViewsTextSource::AddText (const std::string & text) {
 
 //-----------------------------------------------------------------------
 
+void IViewsTextSource::CalcScrollBarsSteps (
+		geo::Point<coord_t> &elementPos, 
+		int * x_step, 
+		int * y_step
+	){
+	int width = 0, height = 0;
+	int x = elementPos.GetX(), y = elementPos.GetY();
+	owner->GetClientSize(&width, &height);
+	owner->GetScrollPixelsPerUnit(x_step, y_step);
+
+	if (x - (width/2) > 0)
+		x -= (width/2);
+	
+	if (y - (height/2) > 0)
+		y -= height/2;
+	
+	*x_step = (x * scaleFactor) / (!(*x_step) ? 1 : *x_step);
+	*y_step = (y * scaleFactor) / (!(*y_step) ? 1 : *y_step);
+}
+
+//-----------------------------------------------------------------------
+
 void IViewsTextSource::SetScrollBarsToProperPosition (const int slotIndex) {
 	VertexRenderingInfo * v;
 	if (layersRenderingInfo && (v = layersRenderingInfo->GetVertexRenderingInfo(vertex))) {
@@ -341,10 +363,7 @@ void IViewsTextSource::SetScrollBarsToProperPosition (const int slotIndex) {
 		}
 
 		int x_step = 0, y_step = 0;
-		owner->GetScrollPixelsPerUnit(&x_step, &y_step);
-		x_step != 0 ? x_step = (pos.GetX() * scaleFactor) / x_step : x_step = pos.GetX() * scaleFactor;
-		y_step != 0 ? y_step = (pos.GetY() * scaleFactor) / y_step : y_step = pos.GetY() * scaleFactor;
-
+		CalcScrollBarsSteps(pos, &x_step, &y_step);
 		owner->Scroll(x_step, y_step);
 	}
 }

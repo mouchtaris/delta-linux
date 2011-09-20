@@ -105,6 +105,11 @@ private:
 								);
 	void						AddText (const std::string & text);
 	void						SetScrollBarsToProperPosition (const int slotIndex);
+	void						CalcScrollBarsSteps (
+									geo::Point<coord_t> &elementPos, 
+									int * x_step, 
+									int * y_step
+								);
 	
 
 	wxScrolledWindow	* 		owner;
