@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\RenderingInfo">
+      <UniqueIdentifier>{d0ffc28d-e44e-4ec5-92cf-23932ea5fe2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Params">
+      <UniqueIdentifier>{fbee7bab-ff59-425e-b9de-bfa03d415a61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Heuristics">
+      <UniqueIdentifier>{eab8d633-7bb1-408e-94c5-68f7d729ab79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\RenderingInfo">
+      <UniqueIdentifier>{a63cfc5e-39f9-4cee-aed1-5dd910e942ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Params">
+      <UniqueIdentifier>{603f1083-322d-4dd9-80aa-33bd8c114ea8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Heuristics">
+      <UniqueIdentifier>{6bd43b5f-7ad6-4306-9a5e-9a84c68fd9aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\LayoutCalculator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\BookmarkRenderingInfo.cpp">
+      <Filter>Source Files\RenderingInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\EdgeRenderingInfo.cpp">
+      <Filter>Source Files\RenderingInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\EdgesParameters.cpp">
+      <Filter>Source Files\RenderingInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\LayerRenderingInfo.cpp">
+      <Filter>Source Files\RenderingInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\LayersRenderingInfo.cpp">
+      <Filter>Source Files\RenderingInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\SlotRenderingInfo.cpp">
+      <Filter>Source Files\RenderingInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\VertexRenderingInfo.cpp">
+      <Filter>Source Files\RenderingInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\LayoutParams.cpp">
+      <Filter>Source Files\Params</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\LayoutParamsValidator.cpp">
+      <Filter>Source Files\Params</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\RenderingParams.cpp">
+      <Filter>Source Files\Params</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\InnerEdgesOrderingHeuristic.cpp">
+      <Filter>Source Files\Heuristics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\LayoutCalculator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\RenderingInfoAlgorithmsMacros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\BookmarkRenderingInfo.h">
+      <Filter>Header Files\RenderingInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\EdgeRenderingInfo.h">
+      <Filter>Header Files\RenderingInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\EdgesParameters.h">
+      <Filter>Header Files\RenderingInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\LayerRenderingInfo.h">
+      <Filter>Header Files\RenderingInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\LayersRenderingInfo.h">
+      <Filter>Header Files\RenderingInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\SlotRenderingInfo.h">
+      <Filter>Header Files\RenderingInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\VertexRenderingInfo.h">
+      <Filter>Header Files\RenderingInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\GraphicsLayoutPrimitives.h">
+      <Filter>Header Files\Params</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\LayoutParams.h">
+      <Filter>Header Files\Params</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\LayoutParamsValidator.h">
+      <Filter>Header Files\Params</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\RenderingParams.h">
+      <Filter>Header Files\Params</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\InnerEdgesOrderingHeuristic.h">
+      <Filter>Header Files\Heuristics</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Find">
+      <UniqueIdentifier>{a6f0371e-bd1d-403b-90dc-e8a0d3c98a50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AddOn">
+      <UniqueIdentifier>{0fddf45c-016b-4181-b585-86866c5a41d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bookmark">
+      <UniqueIdentifier>{e66c86a4-9199-4e31-b55a-6a51b6045470}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Find">
+      <UniqueIdentifier>{9a4dd590-770d-4a85-9e28-b05e7be4919d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AddOn">
+      <UniqueIdentifier>{a5c63a8c-7ef1-4399-b733-615ed6cab06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Bookmark">
+      <UniqueIdentifier>{cb1472ef-de1c-413e-86f7-3d54cdcebd61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\ContentsTooltip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\CopyAbsoluteReferenceOption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\EdgeHiding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\GotoSourcePoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\HighlightCurrentVertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\HighlightRelativeSlots.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\PathHighlighting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\SetEdgeOriginSlotColour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\SlotFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\SlotTooltip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\VertexFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ViewSlotTextualContents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\FindAddOn.cpp">
+      <Filter>Source Files\Find</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\IViewsApplicationCommunicator.cpp">
+      <Filter>Source Files\Find</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\IViewsFindDialog.cpp">
+      <Filter>Source Files\Find</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\IViewsTextSource.cpp">
+      <Filter>Source Files\Find</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\IViewsTextSourceCollectionProducer.cpp">
+      <Filter>Source Files\Find</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\IViewsTextSourceSelectionManager.cpp">
+      <Filter>Source Files\Find</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\AddOn.cpp">
+      <Filter>Source Files\AddOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ColourAddOnManager.cpp">
+      <Filter>Source Files\AddOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Bookmark.cpp">
+      <Filter>Source Files\Bookmark</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\BookmarkManager.cpp">
+      <Filter>Source Files\Bookmark</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\ContentsTooltip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\CopyAbsoluteReferenceOption.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\EdgeHiding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\GotoSourcePoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\HighlightCurrentVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\HighlightRelativeSlots.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\PathHighlighting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\SetEdgeOriginSlotColour.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\SlotFinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\SlotTooltip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\VertexFinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ViewSlotTextualContents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\FindAddOn.h">
+      <Filter>Header Files\Find</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\IViewsApplicationCommunicator.h">
+      <Filter>Header Files\Find</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\IViewsFindDialog.h">
+      <Filter>Header Files\Find</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\IViewsTextSource.h">
+      <Filter>Header Files\Find</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\IViewsTextSourceCollectionProducer.h">
+      <Filter>Header Files\Find</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\IViewsTextSourceSelectionManager.h">
+      <Filter>Header Files\Find</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\AddOn.h">
+      <Filter>Header Files\AddOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ColourAddOnData.h">
+      <Filter>Header Files\AddOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ColourAddOnManager.h">
+      <Filter>Header Files\AddOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Bookmark.h">
+      <Filter>Header Files\Bookmark</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\BookmarkManager.h">
+      <Filter>Header Files\Bookmark</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
