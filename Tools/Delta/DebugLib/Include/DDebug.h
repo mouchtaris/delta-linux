@@ -254,8 +254,14 @@ T*&	_DPTRLVALUE (T*& p) {
 template <class T> void udelete (T*& p) 
 	{ DASSERT(p); DDELETE((T*) p); unullify(p); }
 
+template <class T> void udeleteasarray (T*& p) 
+	{ DASSERT(p); DDELARR((T*) p); unullify(p); }
+
 template <class T> void udeleteunlessnull (T*& p) 
 	{ if (p) { DDELETE(p); unullify(p); } }
+
+template <class T> void udeleteasarrayunlessnull (T*& p) 
+	{ if (p) { DDELARR((T*) p); unullify(p); } }
 
 template <class T> T* unew (T*& p) 
 	{ DASSERT(!p); return p = DNEW(T); }
@@ -265,6 +271,9 @@ template <class T, const unsigned N>  typename uptrarray<T,N>::ptr_type unewarra
 
 template <class T, const unsigned N> void udeletearray (T (*&p)[N])
 	{ DASSERT(p); DDELARR(p); unullify(p); }
+
+template <class T, const unsigned N> void udeletearrayunlessnull (T (*&p)[N])
+	{ if (p) { DDELARR(p); unullify(p); } }
 
 //------------------------------------------------------
 
