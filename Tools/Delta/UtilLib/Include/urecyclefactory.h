@@ -24,6 +24,8 @@
 #include "uerrorclass.h"
 #include "ufunctors.h"
 
+#define	URECYCLEFACTORY_WIPEOUT_BYTE	((util_ui8) '^')
+
 //-------------------------------------------------------------------
 // TObject:	The original recyclable object class.
 // TParms:	A class carrying all constructor arguments.
@@ -185,7 +187,7 @@ template <
 		{ DDELETE((MemObject*) mem); }
 
 	static void WipeOut (TObject* obj)
-		{ memset((void*) obj, 0, sizeof(TObject)); }
+		{ memset((void*) obj, URECYCLEFACTORY_WIPEOUT_BYTE, sizeof(TObject)); }
 
 	////////////////////////////////////////////////////////////////
 
