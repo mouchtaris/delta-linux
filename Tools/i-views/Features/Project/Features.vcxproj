@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F7A2891E-3AC1-4836-AB32-FD796106D651}</ProjectGuid>
+    <RootNamespace>Features</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Scripts\CommonProperties.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForComponentsUsage.props" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonLibsRelease.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForFindAndReplacesUsage.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Scripts\CommonProperties.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForComponentsUsage.props" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonLibsDebug.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForFindAndReplacesUsage.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\..\lib\debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\..\objs\debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\..\lib\release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\..\objs\release\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\..\..\Utility\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\..\..\Utility\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\ContentsTooltip.cpp" />
+    <ClCompile Include="..\Src\CopyAbsoluteReferenceOption.cpp" />
+    <ClCompile Include="..\Src\EdgeHiding.cpp" />
+    <ClCompile Include="..\Src\GotoSourcePoint.cpp" />
+    <ClCompile Include="..\Src\HighlightCurrentVertex.cpp" />
+    <ClCompile Include="..\Src\HighlightRelativeSlots.cpp" />
+    <ClCompile Include="..\Src\PathHighlighting.cpp" />
+    <ClCompile Include="..\Src\SetEdgeOriginSlotColour.cpp" />
+    <ClCompile Include="..\Src\SlotFinder.cpp" />
+    <ClCompile Include="..\Src\SlotTooltip.cpp" />
+    <ClCompile Include="..\Src\VertexFinder.cpp" />
+    <ClCompile Include="..\Src\ViewSlotTextualContents.cpp" />
+    <ClCompile Include="..\Src\FindAddOn.cpp" />
+    <ClCompile Include="..\Src\IViewsApplicationCommunicator.cpp" />
+    <ClCompile Include="..\Src\IViewsFindDialog.cpp" />
+    <ClCompile Include="..\Src\IViewsTextSource.cpp" />
+    <ClCompile Include="..\Src\IViewsTextSourceCollectionProducer.cpp" />
+    <ClCompile Include="..\Src\IViewsTextSourceSelectionManager.cpp" />
+    <ClCompile Include="..\Src\AddOn.cpp" />
+    <ClCompile Include="..\Src\ColourAddOnManager.cpp" />
+    <ClCompile Include="..\Src\Bookmark.cpp" />
+    <ClCompile Include="..\Src\BookmarkManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\ContentsTooltip.h" />
+    <ClInclude Include="..\Include\CopyAbsoluteReferenceOption.h" />
+    <ClInclude Include="..\Include\EdgeHiding.h" />
+    <ClInclude Include="..\Include\GotoSourcePoint.h" />
+    <ClInclude Include="..\Include\HighlightCurrentVertex.h" />
+    <ClInclude Include="..\Include\HighlightRelativeSlots.h" />
+    <ClInclude Include="..\Include\PathHighlighting.h" />
+    <ClInclude Include="..\Include\SetEdgeOriginSlotColour.h" />
+    <ClInclude Include="..\Include\SlotFinder.h" />
+    <ClInclude Include="..\Include\SlotTooltip.h" />
+    <ClInclude Include="..\Include\VertexFinder.h" />
+    <ClInclude Include="..\Include\ViewSlotTextualContents.h" />
+    <ClInclude Include="..\Include\FindAddOn.h" />
+    <ClInclude Include="..\Include\IViewsApplicationCommunicator.h" />
+    <ClInclude Include="..\Include\IViewsFindDialog.h" />
+    <ClInclude Include="..\Include\IViewsTextSource.h" />
+    <ClInclude Include="..\Include\IViewsTextSourceCollectionProducer.h" />
+    <ClInclude Include="..\Include\IViewsTextSourceSelectionManager.h" />
+    <ClInclude Include="..\Include\AddOn.h" />
+    <ClInclude Include="..\Include\ColourAddOnData.h" />
+    <ClInclude Include="..\Include\ColourAddOnManager.h" />
+    <ClInclude Include="..\Include\Bookmark.h" />
+    <ClInclude Include="..\Include\BookmarkManager.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

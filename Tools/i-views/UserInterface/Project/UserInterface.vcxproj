@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C344F2F3-22B8-4D4B-A7EC-4C30960AA297}</ProjectGuid>
+    <RootNamespace>UserInterface</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonLibsRelease.props" />
+    <Import Project="..\..\Scripts\CommonProperties.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForComponentsUsage.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForFindAndReplacesUsage.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonLibsDebug.props" />
+    <Import Project="..\..\..\..\Scripts\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\Scripts\CommonProperties.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForComponentsUsage.props" />
+    <Import Project="..\..\Scripts\CommonPropertiesForFindAndReplacesUsage.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\..\lib\debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\..\objs\debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\..\lib\release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\..\objs\release\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\..\..\Utility\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\..\..\Utility\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\HandTool.cpp" />
+    <ClCompile Include="..\Src\ImageSaver.cpp" />
+    <ClCompile Include="..\Src\IviewsCanvas.cpp" />
+    <ClCompile Include="..\Src\IviewsWindow.cpp" />
+    <ClCompile Include="..\Src\PopupWindow.cpp" />
+    <ClCompile Include="..\Src\PopupWindowTimer.cpp" />
+    <ClCompile Include="..\Src\ReferenceDepth.cpp" />
+    <ClCompile Include="..\Src\Statistics.cpp" />
+    <ClCompile Include="..\Src\TextualFrame.cpp" />
+    <ClCompile Include="..\Src\TipTimer.cpp" />
+    <ClCompile Include="..\Src\TipWindow.cpp" />
+    <ClCompile Include="..\Src\WxGraphicsLayoutPrimitives.cpp" />
+    <ClCompile Include="..\Src\WxRenderingAPI.cpp" />
+    <ClCompile Include="..\Src\XMLConfigurationLoader.cpp" />
+    <ClCompile Include="..\Src\LensViewCanvas.cpp" />
+    <ClCompile Include="..\Src\LensViewWindow.cpp" />
+    <ClCompile Include="..\Src\ZoomManager.cpp" />
+    <ClCompile Include="..\Src\ZoomParameters.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\HandTool.h" />
+    <ClInclude Include="..\Include\ImageSaver.h" />
+    <ClInclude Include="..\Include\IviewsCanvas.h" />
+    <ClInclude Include="..\Include\IviewsWindow.h" />
+    <ClInclude Include="..\Include\PopupWindow.h" />
+    <ClInclude Include="..\Include\PopupWindowTimer.h" />
+    <ClInclude Include="..\Include\ReferenceDepth.h" />
+    <ClInclude Include="..\Include\Statistics.h" />
+    <ClInclude Include="..\Include\TextualFrame.h" />
+    <ClInclude Include="..\Include\TipTimer.h" />
+    <ClInclude Include="..\Include\TipWindow.h" />
+    <ClInclude Include="..\Include\TypesConverter.h" />
+    <ClInclude Include="..\Include\WxGraphicsLayoutPrimitives.h" />
+    <ClInclude Include="..\Include\WxRenderingAPI.h" />
+    <ClInclude Include="..\Include\XMLConfigurationLoader.h" />
+    <ClInclude Include="..\Include\LensViewCanvas.h" />
+    <ClInclude Include="..\Include\LensViewWindow.h" />
+    <ClInclude Include="..\Include\ZoomManager.h" />
+    <ClInclude Include="..\Include\ZoomParameters.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
