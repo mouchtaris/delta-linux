@@ -44,9 +44,9 @@ typename uptrarray<T,N>::ptr_type ucopyarrayunlessnull (T (*ptr)[N]) {
 	if (!ptr)
 		return NULL;
 	else {
-		uptrarray<T,N>::ptr_type copy;
+		uptrarray<T,N>::ptr_type copy = (uptrarray<T,N>::ptr_type) 0;
 		unewarray(copy);
-		umemcpy(copy, ptr);
+		memcpy(copy, ptr, N * sizeof(T));
 		return copy;
 	}
 }
