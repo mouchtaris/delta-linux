@@ -11,6 +11,7 @@
 #include <string.h>
 #include <memory.h>
 #include "utypes.h"
+#include "DDebug.h"
 
 template <const unsigned> struct upointer2ui {};
 template<> struct upointer2ui<2> { typedef util_ui32 type; };	// Intentionally 32 bits.

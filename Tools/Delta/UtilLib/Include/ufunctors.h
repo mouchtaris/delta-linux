@@ -94,6 +94,17 @@ template <typename T, typename Tdestructor> struct udestroyablewrapper {
 	~udestroyablewrapper(){ Tdestructor()(ptr); }
 };
 
+template <typename T>
+T* ucopyarray (const T* from, util_ui32 n) {
+	if (from) {
+		T* result = DNEWARR(T, n);
+		memcpy(result, from, n * sizeof(T));
+		return result;
+	}
+	else
+		return (T*) 0;
+}
+
 //---------------------------------------------------------------
 // Accepts two types that define a pair, and a functor
 // for the second type, adapting to a functor that accepts

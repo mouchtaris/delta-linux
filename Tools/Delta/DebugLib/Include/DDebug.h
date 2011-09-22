@@ -267,13 +267,13 @@ template <class T> T* unew (T*& p)
 	{ DASSERT(!p); return p = DNEW(T); }
 
 template <class T, const unsigned N>  typename uptrarray<T,N>::ptr_type unewarray (T (*&p)[N]) 
-	{ DASSERT(!p); return p = (uptrarray<T,N>::ptr_type) DNEWARR(T, N); }
+	{ DASSERT(!p); typedef uptrarray<T,N>::arr_type A; return p = (uptrarray<T,N>::ptr_type) DNEW(A); }
 
 template <class T, const unsigned N> void udeletearray (T (*&p)[N])
 	{ DASSERT(p); DDELARR(p); unullify(p); }
 
 template <class T, const unsigned N> void udeletearrayunlessnull (T (*&p)[N])
-	{ if (p) { DDELARR(p); unullify(p); } }
+	{ if (p) { DDELETE(p); unullify(p); } }
 
 //------------------------------------------------------
 
