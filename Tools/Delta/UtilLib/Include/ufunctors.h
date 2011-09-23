@@ -930,6 +930,12 @@ struct uspecific_pointer_to_ternary_function: public uternary_function<_Result, 
 // + umem_fun1
 // + uconst_mem_fun2
 // + umem_fun2
+// + uconst_mem_fun_ref
+// + umem_fun_ref
+// + uconst_mem_fun1_ref
+// + umem_fun1_ref
+// + uconst_mem_fun2_ref
+// + umem_fun2_ref
 // + umemberfunctionpointer(funcptr) -> [const_]mem_fun{*} obj
 /////////////////////////////////////////////////////////////////
 
@@ -1076,6 +1082,152 @@ umem_fun2<_Result, _Container, _Arg1, _Arg2>		umemberfunctionpointer (_Result (_
 template <typename _Result, typename _Container, typename _Arg1, typename _Arg2>
 uconst_mem_fun2<_Result, _Container, _Arg1, _Arg2>	umemberfunctionpointer (_Result (_Container::* const func) (_Arg1, _Arg2) const)
 														{ return uconst_mem_fun2<_Result, _Container, _Arg1, _Arg2>(func); }
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T>
+struct uconst_mem_fun_ref: public uunary_function<_Result, _T const&> {
+public:
+	typedef uconst_mem_fun_ref<_Result, _T>				Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+
+	typedef _Result			(_T::* Func) (void) const;
+
+	explicit				uconst_mem_fun_ref (Func const _f): f(_f) {}
+	Result					operator () (Container inst) const
+								{ return (inst.*f)(); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T>
+struct umem_fun_ref: public uunary_function<_Result, _T&> {
+public:
+	typedef umem_fun_ref<_Result, _T>					Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+
+	typedef _Result			(_T::* Func) (void);
+
+	explicit				umem_fun_ref (Func const _f): f(_f) {}
+	Result					operator () (Container inst) const
+								{ return (inst.*f)(); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1>
+struct uconst_mem_fun1_ref: public ubinary_function<_Result, _T const&, _Arg1> {
+public:
+	typedef uconst_mem_fun1_ref<_Result, _T, _Arg1>		Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+	typedef typename Self::second_argument_type			Argument1;
+	typedef typename urefto<Argument1>::t				Ref1;
+
+	typedef _Result			(_T::* Func) (_Arg1) const;
+
+	explicit				uconst_mem_fun1_ref (Func const _f): f(_f) {}
+	Result					operator () (Container inst, Ref1 a) const
+								{ return (inst.*f)(a); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1>
+struct umem_fun1_ref: public ubinary_function<_Result, _T&, _Arg1> {
+public:
+	typedef umem_fun1_ref<_Result, _T, _Arg1>			Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+	typedef typename Self::second_argument_type			Argument1;
+	typedef typename urefto<Argument1>::t				Ref1;
+
+	typedef _Result			(_T::* Func) (_Arg1);
+
+	explicit				umem_fun1_ref (Func const _f): f(_f) {}
+	Result					operator () (Container inst, Ref1 a) const
+								{ return (inst.*f)(a); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2>
+struct uconst_mem_fun2_ref: public uternary_function<_Result, _T const&, _Arg1, _Arg2> {
+public:
+	typedef uconst_mem_fun2_ref<_Result, _T, _Arg1, _Arg2>	Self;
+	typedef typename Self::first_argument_type				Container;
+	typedef typename Self::result_type						Result;
+	typedef typename Self::second_argument_type				Argument1;
+	typedef typename Self::third_argument_type				Argument2;
+	typedef typename urefto<Argument1>::t					Ref1;
+	typedef typename urefto<Argument2>::t					Ref2;
+
+	typedef _Result			(_T::* Func) (_Arg1, _Arg2) const;
+
+	explicit				uconst_mem_fun2_ref (Func const _f): f(_f) {}
+	Result					operator () (Container inst, Ref1 a, Ref2 b) const
+								{ return (inst.*f)(a, b); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2>
+struct umem_fun2_ref: public uternary_function<_Result, _T&, _Arg1, _Arg2> {
+public:
+	typedef umem_fun2_ref<_Result, _T, _Arg1, _Arg2>	Self;
+	typedef typename Self::first_argument_type			Container;
+	typedef typename Self::result_type					Result;
+	typedef typename Self::second_argument_type			Argument1;
+	typedef typename Self::third_argument_type			Argument2;
+	typedef typename urefto<Argument1>::t				Ref1;
+	typedef typename urefto<Argument2>::t				Ref2;
+
+	typedef _Result			(_T::* Func) (_Arg1, _Arg2);
+
+	explicit				umem_fun2_ref (Func const _f): f(_f) {}
+	Result					operator () (Container inst, Ref1 a, Ref2 b) const
+								{ return (inst.*f)(a, b); }
+protected:
+	Func 					f;
+};
+
+/////////////////////////////////////////////////////////////////
+
+template <typename _Result, typename _Container>
+umem_fun_ref<_Result, _Container>						umemberfunctionpointer_ref (_Result (_Container::* const func) (void))
+															{ return umem_fun_ref<_Result, _Container>(func); }
+
+template <typename _Result, typename _Container>
+uconst_mem_fun_ref<_Result, _Container>					umemberfunctionpointer_ref (_Result (_Container::* const func) (void) const)
+															{ return uconst_mem_fun_ref<_Result, _Container>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1>
+umem_fun1_ref<_Result, _Container, _Arg1>				umemberfunctionpointer_ref (_Result (_Container::* const func) (_Arg1))
+															{ return umem_fun1_ref<_Result, _Container, _Arg1>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1>
+uconst_mem_fun1_ref<_Result, _Container, _Arg1>			umemberfunctionpointer_ref (_Result (_Container::* const func) (_Arg1) const)
+															{ return uconst_mem_fun1_ref<_Result, _Container, _Arg1>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1, typename _Arg2>
+umem_fun2_ref<_Result, _Container, _Arg1, _Arg2>		umemberfunctionpointer_ref (_Result (_Container::* const func) (_Arg1, _Arg2))
+															{ return umem_fun2_ref<_Result, _Container, _Arg1, _Arg2>(func); }
+
+template <typename _Result, typename _Container, typename _Arg1, typename _Arg2>
+uconst_mem_fun2_ref<_Result, _Container, _Arg1, _Arg2>	umemberfunctionpointer_ref (_Result (_Container::* const func) (_Arg1, _Arg2) const)
+															{ return uconst_mem_fun2_ref<_Result, _Container, _Arg1, _Arg2>(func); }
 
 /////////////////////////////////////////////////////////////////
 
