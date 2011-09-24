@@ -53,8 +53,8 @@ template <class RcTraits> class usharedresourceholder {
 		}
 	}
 
-	bool in (T* rc) const
-		{ return byRc.find(rc) != byRc.end(); }
+	bool in (const T* rc) const
+		{ return byRc.find(const_cast<T*>(rc)) != byRc.end(); }
 
 	void ignore (T* rc) {
 		typename std::map<T*, entry>::iterator i = byRc.find(rc);
@@ -72,8 +72,13 @@ template <class RcTraits> class usharedresourceholder {
 		return i != byKey.end() ? i->second : (T*) 0;
 	}
 
-	const std::string& getkey (T* rc) {
-		typename std::map<T*, entry>::iterator i = byRc.find(rc);
+	const T* getrc (const std::string& key) const {
+		typename std::map<std::string, T*>::const_iterator i = byKey.find(key);
+		return i != byKey.end() ? i->second : (const T*) 0;
+	}
+
+	const std::string& getkey (const T* rc) const {
+		typename std::map<T*, entry>::const_iterator i = byRc.find(const_cast<T*>(rc));
 		DASSERT(i != byRc.end() && i->second.second);
 		return i->second.first;
 	}
