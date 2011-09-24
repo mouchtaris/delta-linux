@@ -1,6 +1,8 @@
 // GenericReader.h
 // GameMaker Project.
 // A. Savidis, March 2007.
+// September 2011, added generic reader decoder
+// factory pattern via macros.
 //
 
 #ifndef	GENERICREADER_H
@@ -9,12 +11,57 @@
 #include <stdio.h>
 #include "utypes.h"
 #include "ustrings.h"
+#include "uerrorclass.h"
 #include "uptr.h"
 #include "ubinaryio.h"
 #include "FileReadersDefs.h"
 #include <string>
+#include <map>
 
-//------------------------------------------------------
+///////////////////////////////////////////////////////////
+
+#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PRIVATE_DEF(_superclass)					\
+	typedef _superclass*	(*ConstructorFunc)(GenericReader& reader);						\
+	typedef std::map<std::string, ConstructorFunc>	Constructors;							\
+	static Constructors*	constructors;													\
+	static void				InitialiseConstructors (void);									\
+	static void				CleanUpConstructors (void);										\
+	static void				InstallConstructor (											\
+								const std::string&	classId,								\
+								ConstructorFunc		ctor									\
+							);
+
+//**************************
+	
+#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PUBLIC_DEF(_superclass)					\
+	static _superclass*	 Construct (GenericReader& reader);									\
+	static void			 WriteClassId (GenericWriter& writer, const std::string& classId);
+
+//**************************
+
+#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_IMPL(_superclass)						\
+	_superclass::Constructors* _superclass::constructors = (Constructors*) 0;				\
+	void	_superclass::InitialiseConstructors (void) { unew(constructors); }				\
+	void	_superclass::CleanUpConstructors (void) { udelete(constructors); }				\
+	/* invoke for every distinct subclass upon initialisation */							\
+	void _superclass::InstallConstructor (const std::string& classId, ConstructorFunc ctor)	\
+		{ (*DPTR(constructors))[classId] = ctor; }											\
+	/* requires the ERROR_HANDLER macro for posting primary / domino errors */				\
+	_superclass* _superclass::Construct (GenericReader& reader) {							\
+		std::string				classId;													\
+		Constructors::iterator	i = DPTR(constructors)->end();								\
+		UCHECK_PRIMARY_ERROR(reader.read(classId, false), "class id");						\
+		UCHECK_PRIMARY_ERROR(																\
+			(i = DPTR(constructors)->find(classId)) != DPTR(constructors)->end(),			\
+			uconstructstr("invalid class id '%s'", classId.c_str())							\
+		);																					\
+		return (*i->second)(reader);														\
+		FAIL: return (_superclass*) 0;														\
+	}																						\
+	void _superclass::WriteClassId (GenericWriter& writer, const std::string& classId)		\
+		{ writer.write(classId); }
+
+///////////////////////////////////////////////////////////
 
 class GenericReader {
 	public:
@@ -35,7 +82,7 @@ class GenericReader {
 	virtual ~GenericReader(){}
 };
 
-//------------------------------------------------------
+///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
 
 class TextFileReader : public GenericReader {
@@ -92,7 +139,7 @@ class TextFileReader : public GenericReader {
 	~TextFileReader(){}
 };
 
-//------------------------------------------------------
+///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
 
 class BinFileReader : public GenericReader {
@@ -126,7 +173,7 @@ class BinFileReader : public GenericReader {
 	~BinFileReader(){}
 };
 
-//------------------------------------------------------
+///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
 
 class PortableBinFileReader : public GenericReader {
@@ -168,7 +215,7 @@ class PortableBinFileReader : public GenericReader {
 	~PortableBinFileReader(){}
 };
 
-//------------------------------------------------------
+///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
 
 class PortableBufferReader : public GenericReader {
@@ -216,6 +263,6 @@ class PortableBufferReader : public GenericReader {
 	~PortableBufferReader(){}
 };
 
-//------------------------------------------------------
+///////////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.
