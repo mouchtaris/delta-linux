@@ -104,6 +104,7 @@ WX_FUNC_ARGRANGE_START(spinbutton_construct, 0, 6, Nil)
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 		wxspinbtn = new wxSpinButton(parent, id, pos, size, style, name);
 	}
+	if (wxspinbtn) spinbtn = DNEWCLASS(DeltaWxSpinButton, (wxspinbtn));
 	WX_SETOBJECT(SpinButton, spinbtn)
 }
 
