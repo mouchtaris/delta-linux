@@ -242,6 +242,18 @@ template<> struct uisvoid<void>			{ enum { value = 1 }; };
 template <class T> struct uisnotvoid	{ enum { value = 1 }; };
 template<> struct uisnotvoid<void>		{ enum { value = 0 }; };
 
+//---------------------------------------------------------------
+// Some quite useful templates to make certain that no unexpected
+// type conversions are going around.
+template <typename T1, typename T2>	struct utypeequality		{ static const bool result = false;	};
+template <typename T>				struct utypeequality<T,T>	{ static const bool result = true;	};
+
+template <const bool condition>	struct ucompilecheck;
+template <>						struct ucompilecheck<true> {};
+
+template <typename Tmust, typename T> static inline
+T& utypecheck (T& val)	{ typedef char type_inequality_indicator[sizeof(ucompilecheck<utypeequality<Tmust,T>::result>)]; return val; }
+
 //*****************************
 // A useful template to convert the sizeof void to 0,
 // while for all other types it is the original sizeof.
