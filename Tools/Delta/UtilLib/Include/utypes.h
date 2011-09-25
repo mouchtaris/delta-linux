@@ -221,6 +221,18 @@ template <typename T> void ureset_via_default_ctor (T* t)
 		{_check(_var##New); _var = _var##New; }				\
 	const T& Get##_attr(void) const {return _var;}
 
+#define	UATTRIBUTEMETHOD_SCALAR_INV(T,_var,_attr,_inv)		\
+	void Set##_attr(T _var##New)							\
+		{_var = _var##New; DASSERT(_inv()); }				\
+	T Get##_attr(void) const								\
+		{  DASSERT(_inv()); return _var; }
+
+#define	UATTRIBUTEMETHOD_AGGREGATE_INV(T,_var,_attr,_inv)	\
+	void Set##_attr(const T& _var##New)						\
+		{ _var = _var##New; DASSERT(_inv()); }				\
+	const T& Get##_attr(void) const							\
+		{ DASSERT(_inv()); return _var; }
+
 //---------------------------------------------------------------
 
 // This template converts a constant integer to a distinct type.
