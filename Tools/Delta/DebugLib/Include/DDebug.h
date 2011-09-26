@@ -37,6 +37,9 @@ typename void udeletesubstitute (T (*&p)[N]) { delete[] p; }
 template <typename T> void udelarraysubstitute(T* p) { delete[] p; }
 
 #define	DNEW(a)				_DNOTNULL(new a)
+#define	DNEW_WITH_CONTEXT(a,_file,_line)	\
+							DNEW(a)
+
 #define	DNEWCLASS(C,Args)	DNEW(C Args)
 #define	DNEWARR(t,n)		DNEW(t[n])
 #define	DDELPTR(p)			udeletesubstitute(p)
@@ -201,12 +204,15 @@ template <class T> class _DCONSTRUCTORS {
 // The operators re-defined. DNEW cannot be used for array
 // construction, but it has to be substituted by DNEWARR instead. 
 //
-#define	DNEW(T)	\
-		_DNOTNULL( \
-			( \
-				dcontext(__FILE__, (util_ui16) __LINE__, _DSTR(T)), \
+
+#define	DNEW(T)	DNEW_WITH_CONTEXT(T, __FILE__, __LINE__)
+
+#define	DNEW_WITH_CONTEXT(T,_file,_line)						\
+		_DNOTNULL(												\
+			(													\
+				dcontext(_file, (util_ui16) _line, _DSTR(T)),	\
 				new (_DCONSTRUCTORS< T >::simple(sizeof(T)) ) T \
-			) \
+			)													\
 		)
 
 #define	DNEWCLASS(C,Args)	\
@@ -263,8 +269,10 @@ template <class T> void udeleteunlessnull (T*& p)
 template <class T> void udeleteasarrayunlessnull (T*& p) 
 	{ if (p) { DDELARR((T*) p); unullify(p); } }
 
-template <class T> T* unew (T*& p) 
-	{ DASSERT(!p); return p = DNEW(T); }
+template <class T> T* unew_with_context (T*& p, const char* file, util_ui32 line) 
+	{ DASSERT(!p); return p = DNEW_WITH_CONTEXT(T, file, line); }
+
+#define	unew(p)	unew_with_context(p, __FILE__, __LINE__)
 
 template <class T, const unsigned N>  typename uptrarray<T,N>::ptr_type unewarray (T (*&p)[N]) 
 	{ DASSERT(!p); return p = (typename uptrarray<T,N>::ptr_type) DNEWARR(T, N); }
