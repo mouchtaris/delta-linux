@@ -11,7 +11,6 @@
 #include <string.h>
 #include <memory.h>
 #include "utypes.h"
-#include "DDebug.h"
 
 template <const unsigned> struct upointer2ui {};
 template<> struct upointer2ui<2> { typedef util_ui32 type; };	// Intentionally 32 bits.
@@ -38,18 +37,6 @@ void umemcpy(T& dest, const T& src) { memcpy(&dest, &src, sizeof(T)); }
 
 template <typename T>
 void umemcpy(T* dest, const T* src) { memcpy(dest, src, sizeof(T)); }
-
-template <typename T, const unsigned N>
-typename uptrarray<T,N>::ptr_type ucopyarrayunlessnull (T (*ptr)[N]) {
-	if (!ptr)
-		return NULL;
-	else {
-		uptrarray<T,N>::ptr_type copy = (uptrarray<T,N>::ptr_type) 0;
-		unewarray(copy);
-		memcpy(copy, ptr, N * sizeof(T));
-		return copy;
-	}
-}
 
 //---------------------------------------------------------------
 

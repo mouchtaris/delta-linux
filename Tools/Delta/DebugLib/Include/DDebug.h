@@ -283,6 +283,18 @@ template <class T, const unsigned N> void udeletearray (T (*&p)[N])
 template <class T, const unsigned N> void udeletearrayunlessnull (T (*&p)[N])
 	{ if (p) { DDELARR(((T*) p)); unullify(p); } }
 
+template <typename T, const unsigned N>
+typename uptrarray<T,N>::ptr_type ucopyarrayunlessnull (T (*ptr)[N]) {
+	if (!ptr)
+		return NULL;
+	else {
+		uptrarray<T,N>::ptr_type copy = (uptrarray<T,N>::ptr_type) 0;
+		unewarray(copy);
+		memcpy(copy, ptr, N * sizeof(T));
+		return copy;
+	}
+}
+
 //------------------------------------------------------
 
 #endif	// Do not add stuff beyond this point.
