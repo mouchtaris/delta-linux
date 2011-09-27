@@ -1,5 +1,5 @@
 /**
- *	Signal.h
+ *	ComponentSignal.h
  *
  *	Giannis Georgalis <jgeorgal@ics.forth.gr>
  *	November 2006

@@ -14,7 +14,7 @@
 #include "ComponentRegistrar.h"
 #include "ComponentMemberCallback.h"
 #include "ExportedFunctionSkeleton.h"
-#include "Signal.h"
+#include "ComponentSignal.h"
 
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/mpl/assert.hpp>

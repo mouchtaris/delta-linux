@@ -150,6 +150,7 @@
     <ClCompile Include="..\ComponentLoader\ComponentLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ComponentCaller\ComponentSignal.h" />
     <ClInclude Include="IDECommon.h" />
     <ClInclude Include="IDECore.h" />
     <ClInclude Include="..\CommonComponents\ComponentContainer.h" />
@@ -185,7 +186,6 @@
     <ClInclude Include="..\ComponentCaller\ExportedFunctionSkeleton.h" />
     <ClInclude Include="..\ComponentCaller\ExportedFunctionStub.h" />
     <ClInclude Include="..\ComponentCaller\ExportedFunctionStubCommon.h" />
-    <ClInclude Include="..\ComponentCaller\Signal.h" />
     <ClInclude Include="..\ComponentCaller\Undo.h" />
     <ClInclude Include="..\ComponentDataTypes\ComponentDataTypeConverter.h" />
     <ClInclude Include="..\ComponentDataTypes\ComponentHandle.h" />

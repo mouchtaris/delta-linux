@@ -159,6 +159,10 @@
       <Project>{f9f82253-899e-4862-a03e-da6ee937139b}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\..\ReadersWriters\Project\ReadersWriters.vcxproj">
+      <Project>{9c0f9ac1-ed6c-41c3-8078-ce565e945b75}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\..\SocketLib\Project\SocketLib.vcxproj">
       <Project>{ce9d2174-a1f1-48ee-927e-94ca4a752f4b}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

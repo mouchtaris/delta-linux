@@ -62,13 +62,13 @@ public:
 
 	//******************************************************************
 
-	IOService&	GetIOService (void) { return m_acceptor.io_service(); }
+	IOService&	GetIOService (void) { return m_acceptor.get_io_service(); }
 	uint16		GetPort (void) const { return m_acceptor.local_endpoint().port(); }
 
 private:
 	void accept (void)
 	{
-		LinkPtrType conn(new LinkType(m_acceptor.io_service()));
+		LinkPtrType conn(new LinkType(m_acceptor.get_io_service()));
 		m_acceptor.async_accept(
 			conn->socket(), boost::bind(&TCPCommandServer::acceptHandler, this, _1, conn)
 		);
@@ -157,13 +157,13 @@ public:
 
 	//******************************************************************
 
-	IOService&	GetIOService (void) { return m_acceptor.io_service(); }
+	IOService&	GetIOService (void) { return m_acceptor.get_io_service(); }
 	uint16		GetPort (void) const { return m_acceptor.local_endpoint().port(); }
 
 private:
 	void acceptTCP (void)
 	{
-		LinkTCPPtrType conn(new LinkTCPType(m_acceptor.io_service()));
+		LinkTCPPtrType conn(new LinkTCPType(m_acceptor.get_io_service()));
 		m_acceptor.async_accept(
 			conn->socket(), boost::bind(&HybridCommandServer::acceptTCPHandler, this, _1, conn)
 		);

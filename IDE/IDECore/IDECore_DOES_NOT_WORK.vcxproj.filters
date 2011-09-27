@@ -332,9 +332,6 @@
     <ClInclude Include="..\ComponentCaller\ExportedFunctionStubCommon.h">
       <Filter>Header Files\ComponentCaller</Filter>
     </ClInclude>
-    <ClInclude Include="..\ComponentCaller\Signal.h">
-      <Filter>Header Files\ComponentCaller</Filter>
-    </ClInclude>
     <ClInclude Include="..\ComponentCaller\Undo.h">
       <Filter>Header Files\ComponentCaller</Filter>
     </ClInclude>
@@ -406,6 +403,9 @@
     </ClInclude>
     <ClInclude Include="..\UserCommand\MenuParser.h">
       <Filter>Header Files\UserCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ComponentCaller\ComponentSignal.h">
+      <Filter>Header Files\ComponentCaller</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
