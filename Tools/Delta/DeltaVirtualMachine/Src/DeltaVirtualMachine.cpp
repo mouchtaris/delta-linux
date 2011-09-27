@@ -865,8 +865,10 @@ void DeltaVirtualMachine::UnreferenceStaticsTable (void) {
 //////////////////////////////////
 
 void DeltaVirtualMachine::UnreferenceFunctionsTable (void) {
-	DeltaObject::NativeCodeHelpers::GiveUp(globalFunctionsTable);
-	unullify(globalFunctionsTable); 
+	if (globalFunctionsTable) {
+		DeltaObject::NativeCodeHelpers::GiveUp(globalFunctionsTable);
+		unullify(globalFunctionsTable);
+	}
 }
 
 //////////////////////////////////
