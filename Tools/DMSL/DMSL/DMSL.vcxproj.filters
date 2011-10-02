@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{6732de24-c992-4e35-83be-dd8fc1a7471a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Profile">
+      <UniqueIdentifier>{c30cab88-a0d8-4616-97ce-390731ea72a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DecisionMaker">
+      <UniqueIdentifier>{7c021c0a-f3dd-45ed-8698-dc43e252cc52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\DecisionMaker">
+      <UniqueIdentifier>{58a9ea26-0eda-457d-8296-2e0b84ddd972}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Profile">
+      <UniqueIdentifier>{846d8c72-32cb-4ad2-8a70-5fcbf20d661f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{4c7a1102-2d97-4e10-9dfa-92ca6121ad08}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Utility\Src\util.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Profile\Src\ExprValue.cpp">
+      <Filter>Source Files\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Profile\Src\ManageActions.cpp">
+      <Filter>Source Files\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Profile\Src\Profile.cpp">
+      <Filter>Source Files\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Profile\Src\ProfileBisonParser.cpp">
+      <Filter>Source Files\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Profile\Src\ProfileScanner.cpp">
+      <Filter>Source Files\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\DecisionMaker.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\DecisionMakerBisonParser.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\DecisionMakerScanner.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\Expressions.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\LibfuncExpressions.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\ManageExpressions.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\ManageStatements.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DecisionMaker\Src\Statements.cpp">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Profile\Src\ProfileParser.y">
+      <Filter>Source Files\Profile</Filter>
+    </None>
+    <None Include="..\Profile\Src\ProfileScanner.l">
+      <Filter>Source Files\Profile</Filter>
+    </None>
+    <None Include="..\DecisionMaker\Src\DecisionMakerParser.y">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </None>
+    <None Include="..\DecisionMaker\Src\DecisionMakerScanner.l">
+      <Filter>Source Files\DecisionMaker</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\DecisionMaker\Include\BinaryExpressions.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\DecisionMaker.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\DecisionMakerBisonParser.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\DecisionMakerScanner.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\Expressions.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\LibfuncExpressions.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\ManageExpressions.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\ManageFunctionErrorHandling.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\ManageStatements.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\Statements.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\SymbolTable.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DecisionMaker\Include\UnaryExpressions.h">
+      <Filter>Header Files\DecisionMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Profile\Include\ExprValue.h">
+      <Filter>Header Files\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Profile\Include\ManageActions.h">
+      <Filter>Header Files\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Profile\Include\Profile.h">
+      <Filter>Header Files\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Profile\Include\ProfileBisonParser.h">
+      <Filter>Header Files\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Profile\Include\ProfileScanner.h">
+      <Filter>Header Files\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utility\Include\util.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
