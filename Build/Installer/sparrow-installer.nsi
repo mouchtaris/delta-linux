@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Sparrow"
-!define PRODUCT_VERSION "0.9-rev-3147"
+!define PRODUCT_VERSION "1.0-rev-126"
 !define PRODUCT_WEB_SITE "http://www.ics.forth.gr/hci/files/plang/Delta/Delta.html"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Sparrow.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -223,7 +223,9 @@ Section "Extra Delta Libraries" SEC05
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\ALADIN\ALADIN.dll"
   File /r "..\..\Tools\Delta\Manuals\Examples\ALADIN\ALADINLibFuncs.txt"
 
-  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\release\*.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaCommon\Release\DeltaCorbaCommon.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaClient\Release\DeltaCorbaClient.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaServer\Release\DeltaCorbaServer.dll"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\CorbaLibfuncManual.txt"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\CorbaLibfuncs.txt"
 
@@ -291,7 +293,9 @@ Section "Test Workspaces" SEC06
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\tests\generic\*.bat"
 
   SetOutPath "$INSTDIR\Workspaces\DeltaCORBA\bin"
-  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\release\*.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaCommon\Release\DeltaCorbaCommon.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaClient\Release\DeltaCorbaClient.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaServer\Release\DeltaCorbaServer.dll"
 
   SetOutPath "$INSTDIR\Workspaces\DeltaUIGenerator"
   File /r "..\..\Tools\Delta\DeltaTools\DeltaUIGenerator\*.wsp"
