@@ -12,6 +12,8 @@
 
 #include <math.h>
 
+#include <wx/wx.h>
+#include <wx/busyinfo.h>
 #include <wx/dcbuffer.h>
 #include <wx/font.h>
 #include <wx/event.h>
@@ -63,6 +65,7 @@ namespace iviews {
 
 #define PREPARE_FOR_DRAW(DO_CALCULATION, GRAPH_LAYERS, COLOUR_ADD_ON_MANAGER)						\
 	if (true) {																						\
+		wxBusyInfo wait(wxT("Please wait, graph is being calculated"), this->GetParent());			\
 		if (DO_CALCULATION)																			\
 			renderingInfo = layoutCalculator.Calculate(												\
 								GRAPH_LAYERS,														\
@@ -312,6 +315,7 @@ void IviewsCanvas::OnPaint (wxPaintEvent &WXUNUSED(event)) {
 	if (canDraw) {
 		renderingApi.SetWxDC(&dc);
 		renderer(*layoutCalculator.GetPrimitivesList());
+		
 		if (!handTool.IsActive())
 			DisplayLens();
 	}
