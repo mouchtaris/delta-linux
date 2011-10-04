@@ -13,12 +13,14 @@
 #include "wx/tglbtn.h"
 #include "wx/srchctrl.h"
 //
-std::map<int, wxObjectEventFunction> eventTypeFunctionMap;
-std::map<std::string, std::pair<int, wxObjectEventFunction> > eventTypeStrFunctionMap;
+using namespace std;
+
+map<int, wxObjectEventFunction> eventTypeFunctionMap;
+map<string, pair<int, wxObjectEventFunction> > eventTypeStrFunctionMap;
 void EventTypeFunctionMapInit();
 void EventTypeFunctionMapExit();
 wxObjectEventFunction EventTypeFunctionMapSearch(int eventType);
-std::pair<int, wxObjectEventFunction> *EventTypeFunctionMapSearch(std::string eventType);
+pair<int, wxObjectEventFunction> *EventTypeFunctionMapSearch(string eventType);
 
 ////////////////////////////////////////////////////////////////
 
@@ -124,32 +126,13 @@ DLIB_FUNC_START(evthandler_addpendingevent, 2, Nil)
 	handler->AddPendingEvent(*evt);
 }
 
-WX_FUNC_ARGRANGE_START(evthandler_connect, 3, 4, Nil)
-	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
-	int id = wxID_ANY;
-	if (n > 3) { WX_GETDEFINE_DEFINED(id) }
-	int eventType = 0;
-	wxObjectEventFunction objectEventFunction = (wxObjectEventFunction)0;
-	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
-		eventType = DPTR(vm)->GetActualArg(_argNo++)->ToNumber();
-		objectEventFunction = EventTypeFunctionMapSearch(eventType);
-	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
-		std::string eventStr = DPTR(vm)->GetActualArg(_argNo++)->ToString();
-		std::pair<int, wxObjectEventFunction> *eventData = EventTypeFunctionMapSearch(eventStr);
-		if (eventData) {
-			eventType = eventData->first;
-			objectEventFunction = eventData->second;
-		}
-	} else {
-		DLIB_ERROR_CHECK(
-			true,
-			uconstructstr(
-				"invalid argument passed (%s). Expected string or number!",
-				DPTR(vm)->GetActualArg(_argNo++)->TypeStr()
-			)
-		)
-	}
-	DeltaValue* function = DPTR(vm)->GetActualArg(_argNo++);
+void ConnectHelper(
+	wxEvtHandler *handler, DeltaValue *self,
+	int id, int eventType,
+	wxObjectEventFunction objectEventFunction,
+	DeltaValue* function
+)
+{
 	if (function->IsCallable()) {
 		bool foundEntry = false;
 		wxList *dtable = handler->GetDynamicEventTable();
@@ -166,9 +149,8 @@ WX_FUNC_ARGRANGE_START(evthandler_connect, 3, 4, Nil)
 			}
 		}
 		if (!foundEntry && objectEventFunction) {
-			std::list<DeltaValue> *funclist = new std::list<DeltaValue>();
+			list<DeltaValue> *funclist = new list<DeltaValue>();
 			funclist->push_back(function);
-			DeltaValue *self = DPTR(vm)->GetActualArg(0);
 			eventdata *data = new eventdata(*self, *(funclist));
 			handler->Connect(id, (wxEventType)eventType, objectEventFunction,
 							 (wxObject*)data);
@@ -176,28 +158,59 @@ WX_FUNC_ARGRANGE_START(evthandler_connect, 3, 4, Nil)
 	}
 }
 
-WX_FUNC_ARGRANGE_START(evthandler_disconnect, 1, 4, Nil)
+WX_FUNC_ARGRANGE_START(evthandler_connect, 3, 4, Nil)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	int id = wxID_ANY;
-	int eventType = wxEVT_NULL;
-	DeltaValue* function = (DeltaValue*) 0;
-	if (n == 1) {}
-	else if (n == 2) { WX_GETDEFINE_DEFINED(id) }
-	else if (n == 3) {
-		if (DPTR(vm)->GetActualArg(2)->IsCallable()) {
-			WX_GETDEFINE_DEFINED(eventType)
-			function = DPTR(vm)->GetActualArg(_argNo);
-			++_argNo;
-		} else {
-			WX_GETDEFINE_DEFINED(id)
-			WX_GETDEFINE_DEFINED(eventType)
+	if (n > 3) { WX_GETDEFINE_DEFINED(id) }
+	int eventType = 0;
+	string eventStr;
+	wxObjectEventFunction objectEventFunction = (wxObjectEventFunction)0;
+	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
+		eventType = DPTR(vm)->GetActualArg(_argNo++)->ToNumber();
+		objectEventFunction = EventTypeFunctionMapSearch(eventType);
+	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
+		eventStr = DPTR(vm)->GetActualArg(_argNo++)->ToString();
+		pair<int, wxObjectEventFunction> *eventData = EventTypeFunctionMapSearch(eventStr);
+		if (eventData) {
+			eventType = eventData->first;
+			objectEventFunction = eventData->second;
 		}
 	} else {
-		WX_GETDEFINE_DEFINED(id)
-		WX_GETDEFINE_DEFINED(eventType)
-		function = DPTR(vm)->GetActualArg(_argNo);
-		++_argNo;
+		DLIB_ERROR_CHECK(
+			true,
+			uconstructstr(
+				"invalid argument passed (%s). Expected string or number!",
+				DPTR(vm)->GetActualArg(_argNo++)->TypeStr()
+			)
+		)
 	}
+	DeltaValue* function = DPTR(vm)->GetActualArg(_argNo++);
+	DeltaValue *self = DPTR(vm)->GetActualArg(0);
+
+	if (eventStr == "EVT_SCROLL" || eventStr == "EVT_COMMAND_SCROLL")
+	{	//Special case (wxEVT_SCROLL matches to all wxEVT_SCROLL*)
+		objectEventFunction = wxScrollEventHandler(wxEvtHandlerDerived::ScrollEvtFunction);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_TOP, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_BOTTOM, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_LINEUP, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_LINEDOWN, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_PAGEUP, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_PAGEDOWN, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_THUMBTRACK, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_THUMBRELEASE, objectEventFunction, function);
+		ConnectHelper(handler, self, id, wxEVT_SCROLL_CHANGED, objectEventFunction, function);
+	}
+	else
+		ConnectHelper(handler, self, id, eventType, objectEventFunction, function);
+}
+
+bool DisconnectHelper(
+	wxEvtHandler *handler,
+	int id, int eventType,
+	DeltaValue* function
+)
+{
+	bool retval = false;
 	wxList *dtable = handler->GetDynamicEventTable();
 	if (dtable && function) {
 		wxList::compatibility_iterator node = dtable->GetFirst();
@@ -205,7 +218,7 @@ WX_FUNC_ARGRANGE_START(evthandler_disconnect, 1, 4, Nil)
 			wxDynamicEventTableEntry *entry = (wxDynamicEventTableEntry*) node->GetData();
 			if (entry->m_id == id && entry->m_eventType == eventType) {
 				eventdata *data = (eventdata*) entry->m_callbackUserData;
-				std::list<DeltaValue>::iterator it = data->funcs.begin();
+				list<DeltaValue>::iterator it = data->funcs.begin();
 				while(it != data->funcs.end()) {
 					if (it->Equal(function)) {
 						it = data->funcs.erase(it);
@@ -214,14 +227,63 @@ WX_FUNC_ARGRANGE_START(evthandler_disconnect, 1, 4, Nil)
 					}
 				}
 				if (data->funcs.empty()) {
-					handler->Disconnect(id, (wxEventType)eventType);
+					retval = handler->Disconnect(id, (wxEventType)eventType);
 				}
 			}
 			node = node->GetNext();
 		}
 	} else if (!function) {
-		handler->Disconnect(id, (wxEventType)eventType);
+		retval = handler->Disconnect(id, (wxEventType)eventType);
 	}
+	return retval;
+}
+
+WX_FUNC_ARGRANGE_START(evthandler_disconnect, 1, 4, Nil)
+	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
+	int id = wxID_ANY;
+	int eventType = wxEVT_NULL;
+	string eventStr;
+	DeltaValue* function = (DeltaValue*) 0;
+	if (n == 1) {}
+	else if (n == 2) { WX_GETDEFINE_DEFINED(id) }
+	else if (n == 3) {
+		if (DPTR(vm)->GetActualArg(2)->IsCallable()) {
+			if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String)
+				eventStr = DPTR(vm)->GetActualArg(_argNo)->ToString();
+			WX_GETDEFINE_DEFINED(eventType)
+			function = DPTR(vm)->GetActualArg(_argNo);
+			++_argNo;
+		} else {
+			WX_GETDEFINE_DEFINED(id)
+			if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String)
+				eventStr = DPTR(vm)->GetActualArg(_argNo)->ToString();
+			WX_GETDEFINE_DEFINED(eventType)
+		}
+	} else {
+		WX_GETDEFINE_DEFINED(id)
+		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String)
+			eventStr = DPTR(vm)->GetActualArg(_argNo)->ToString();
+		WX_GETDEFINE_DEFINED(eventType)
+		function = DPTR(vm)->GetActualArg(_argNo);
+		++_argNo;
+	}
+
+	if (eventStr == "EVT_SCROLL" || eventStr == "EVT_COMMAND_SCROLL")
+	{	//Special case (wxEVT_SCROLL matches to all wxEVT_SCROLL*)
+		bool retval;
+		retval =	DisconnectHelper(handler, id, wxEVT_SCROLL_TOP, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_BOTTOM, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_LINEUP, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_LINEDOWN, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_PAGEUP, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_PAGEDOWN, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_THUMBTRACK, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_THUMBRELEASE, function) &&
+					DisconnectHelper(handler, id, wxEVT_SCROLL_CHANGED, function);
+		WX_SETBOOL(retval);
+	}
+	else
+		WX_SETBOOL(DisconnectHelper(handler, id, eventType, function))
 }
 
 DLIB_FUNC_START(evthandler_getevthandlerenabled, 1, Nil)
@@ -255,10 +317,10 @@ DLIB_FUNC_START(evthandler_setevthandlerenabled, 2, Nil)
 
 ////////////////////////////////////////////////////////////////
 #define WX_SET_EVENTFUNCTION(eventType, function)											\
-	eventTypeFunctionMap.insert(std::pair<int, wxObjectEventFunction>(eventType, function));
+	eventTypeFunctionMap.insert(pair<int, wxObjectEventFunction>(eventType, function));
 #define WX_SET_EVENTFUNCTION_STR(eventStr, eventType, function)												\
-	eventTypeStrFunctionMap.insert(std::pair<std::string, std::pair<int, wxObjectEventFunction> >(eventStr,	\
-	std::pair<int, wxObjectEventFunction>(eventType, function)));
+	eventTypeStrFunctionMap.insert(pair<string, pair<int, wxObjectEventFunction> >(eventStr,	\
+	pair<int, wxObjectEventFunction>(eventType, function)));
 
 void EventTypeFunctionMapInit()
 {
@@ -575,24 +637,24 @@ void EventTypeFunctionMapExit()
 
 wxObjectEventFunction EventTypeFunctionMapSearch(int eventType)
 {
-	std::map<int, wxObjectEventFunction>::iterator it;
+	map<int, wxObjectEventFunction>::iterator it;
 	it = eventTypeFunctionMap.find(eventType);
 	if (it != eventTypeFunctionMap.end())
 		return it->second;
 	return (wxObjectEventFunction)0;
 }
 
-std::pair<int, wxObjectEventFunction> *EventTypeFunctionMapSearch(std::string str)
+pair<int, wxObjectEventFunction> *EventTypeFunctionMapSearch(string str)
 {
 	if (str.find("wx") == 0 && str.length() > 0)
 		str = str.substr(2);
-	std::map<std::string, std::pair<int, wxObjectEventFunction> >::iterator it;
+	map<string, pair<int, wxObjectEventFunction> >::iterator it;
 	it = eventTypeStrFunctionMap.find(str);
 	if (it != eventTypeStrFunctionMap.end())
 		return &(it->second);
 	bool found;
 	int eventType = wxWidgets::DefineSearch(str, &found);
 	if (found)
-		return new std::pair<int, wxObjectEventFunction>(eventType, EventTypeFunctionMapSearch(eventType));
+		return new pair<int, wxObjectEventFunction>(eventType, EventTypeFunctionMapSearch(eventType));
 	return NULL;
 }

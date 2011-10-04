@@ -193,5 +193,6 @@
 #include "DeltaWxTimerEvent.h"
 #include "DeltaWxToolbook.h"
 #include "DeltaWxToolbookEvent.h"
+#include "DeltaWxScrollBar.h"
 
 #endif	// Do not add stuff beyond this point.

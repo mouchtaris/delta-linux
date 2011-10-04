@@ -1,5 +1,4 @@
 using wx;
-using xml;
 using #Card;
 using #FreeCellCore;
 
@@ -43,6 +42,7 @@ function identifyCollection(collection, game)
 	} else {
 		assert(false);
 	}
+	return nil;
 }
 
 //Check nothing got corrupted or changed in the input file.
@@ -107,7 +107,7 @@ function getCheckSum(game)
 
 function loadgame(frame)
 {
-	xmlfile = load("xmlfile.xml");
+	xmlfile = xml::load("xmlfile.xml");
 	if (xmlfile == nil) {
 		frame.gamesWon = 0;
 		frame.gamesLost = 0;
@@ -326,7 +326,7 @@ function savegame(frame)
 		t.SaveGame[0].RedoPile[j].Destination[0]["$Attributes"].CollectionNo = i.destination.collectionNo;
 		++j;
 	}
-	store(t, "xmlfile.xml");
+	xml::store(t, "xmlfile.xml");
 }
 
 function cardCollectionGUI_new(collection)
@@ -821,7 +821,7 @@ function onRightDownEvent(frame, ev) {
 function onMotionEvent(frame, ev) {
 	if (ev.leftisdown()) {
 		local logicalX = frame.dc.devicetologicalx(ev.getx());
-		local logicalY = frame.dc.devicetologicaly(ev.gety());
+		local logicalY = frame.dc.devicetologicaly(ev.gety());		
 		std::print("Mouse Dragged to (" + ev.getx() + "," + ev.gety() + ")\n");
 		if (frame.gameGUI.movingPile != nil) {
 			frame.gameGUI.movingPile.cardCollectionRect.setx(logicalX - frame.gameGUI.movingPile.relativeX);

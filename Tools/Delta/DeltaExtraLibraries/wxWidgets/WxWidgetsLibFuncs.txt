@@ -447,6 +447,8 @@ timerevent					: event
 toolbook					: control
 @type
 toolbookevent				: notifyevent
+@type
+scrollbar					: control
 @const
 DLL										"WxWidgets.dll"
 @const
@@ -6323,6 +6325,15 @@ region_union								(region:region,x:Number,y:Number,width:Number,height:Number)
 region_xor									(region:region,x:Number,y:Number,width:Number,height:Number):Bool (region:region,other:region):Bool (region:region,rect:rect):Bool
 region_notequal								(region:region,other:region) : Bool
 #group(wxscroll)
+scrollbar_construct							():scrollbar (parent:+{window,Nil},id:+{Number,String}):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:point):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:point,size:size):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String}):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String},validator:validator):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String},validator:validator,name:String):scrollbar
+scrollbar_destruct							(scrollbar:scrollbar)
+scrollbar_create							(scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String}):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:point):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:point,size:size):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String}):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String},validator:validator):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String},validator:validator,name:String):Bool
+scrollbar_getrange							(scrollbar:scrollbar) : Number
+scrollbar_getpagesize						(scrollbar:scrollbar) : Number
+scrollbar_getthumbposition					(scrollbar:scrollbar) : Number
+scrollbar_getthumbsize						(scrollbar:scrollbar) : Number
+scrollbar_setthumbposition					(scrollbar:scrollbar,viewStart:Number)
+scrollbar_setscrollbar						(scrollbar:scrollbar,position:Number,thumbSize:Number,range:Number,pageSize:Number) (scrollbar:scrollbar,position:Number,thumbSize:Number,range:Number,pageSize:Number,refresh:Bool)
 scrolledwindow_construct					():scrolledwindow (parent:+{window,Nil}):scrolledwindow (parent:+{window,Nil},id:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:point):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:point,size:size):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:point,size:size,style:+{Number,String},name:String):scrolledwindow
 scrolledwindow_destruct						(scrolledwindow:scrolledwindow)
 scrolledwindow_calcscrolledposition			(scrolledwindow:scrolledwindow,pt:point):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void

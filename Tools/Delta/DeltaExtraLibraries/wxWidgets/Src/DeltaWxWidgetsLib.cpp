@@ -221,6 +221,7 @@ DWXWIDGETS_CFUNC void* Install (void) {
 	Install_DeltaWxTimerEvent_Lib(api);
 	Install_DeltaWxToolbook_Lib(api);
 	Install_DeltaWxToolbookEvent_Lib(api);
+	Install_DeltaWxScrollBar_Lib(api);
 	return udynamiclibloader::New("CleanUp", true);	 // Explicitly supply a cleaner.
 }
 
@@ -419,6 +420,7 @@ DWXWIDGETS_CFUNC void* CleanUp (void) {
 	CleanUp_DeltaWxTimerEvent_Lib();
 	CleanUp_DeltaWxToolbook_Lib();
 	CleanUp_DeltaWxToolbookEvent_Lib();
+	CleanUp_DeltaWxScrollBar_Lib();
 
 	DeltaLibraryObjectCreator::DestroyAPI(api);
 	return udynamiclibloader::New("dll cleared");

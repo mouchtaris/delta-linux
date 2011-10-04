@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="WxWidgets"
 	ProjectGUID="{31FB0856-D815-49ED-B474-A6FFF82D9660}"
 	RootNamespace="WxWidgets"
@@ -294,6 +294,10 @@
 				</File>
 				<File
 					RelativePath="..\Src\DeltaWxRadioButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Src\DeltaWxScrollBar.cpp"
 					>
 				</File>
 				<File
@@ -1120,6 +1124,10 @@
 				</File>
 				<File
 					RelativePath="..\Include\DeltaWxRadioButton.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Include\DeltaWxScrollBar.h"
 					>
 				</File>
 				<File

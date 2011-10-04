@@ -1,5 +1,8 @@
 using wx;
+
 dll = std::dllimportdeltalib(wx::DLL);
+
+wxsize = size_construct(-1, -1);
 
 function myFunc(frame, ev) {
 	msgdlg = messagedialog_construct(frame, "Are you sure you want to quit this exceptional program?",
@@ -158,6 +161,11 @@ function onCheckboxClicked(frame, ev)
 	log_onlog("LOG_Status", "Checkbox clicked: " + ev.ischecked(), 0);
 }
 
+function onScrollFunc(scrollbar, ev)
+{	//Change the text under the scrollbar
+	scrollbar.scrollbarPos.setlabel(std::tostring(ev.getposition()));
+}
+
 function create_treebook(frame, ev)
 {
 	frame2 = frame_construct(nil, "ID_ANY", "treebook_test");
@@ -200,9 +208,9 @@ function create_treebook(frame, ev)
 }
 
 function spinup_evtfunction(frame, ev) {
-		m_ev = ev;
-		m_frame = frame;
-		std::print(m_ev + "\n");
+	m_ev = ev;
+	m_frame = frame;
+	std::print(m_ev + "\n");
 }
 
 function oninitfunc() {
@@ -241,6 +249,17 @@ function oninitfunc() {
 //CREATE SIZER
 	sizer = staticboxsizer_construct(staticbox_construct(frame, "ID_ANY", "sample static box sizer"), "VERTICAL");
 	frame.setsizer(sizer);
+	
+//CREATE SCROLLBAR
+	scrollbar = scrollbar_construct(frame, ID_ANY);
+	scrollbar.setscrollbar(25, 50, 100, 5);
+	sizer.add(scrollbar, 0, flags(ALIGN_CENTER, EXPAND));
+	scrollbar.connect(EVT_SCROLL_CHANGED, onScrollFunc);
+	
+	thumbPos = scrollbar.getthumbposition();
+	scrollbarPos = statictext_construct(frame, ID_ANY, std::tostring(thumbPos));
+	sizer.add(scrollbarPos, 0, ALIGN_CENTER);
+	scrollbar.scrollbarPos = scrollbarPos;
 	
 //CREATE BUTTON & ADD IT TO SIZER
 	okButton = button_construct(frame, "ID_OK", "Quit");
