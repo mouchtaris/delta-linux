@@ -215,16 +215,13 @@ void IviewsCanvas::UpdateParams (
 
 	LayoutParamsValidator validator;
 	if (validator.IsLayoutParamsInvalid(oldLayoutParams, lparams)) {
-		if (!validator.NeedsRecalculation()) {
+		if (!validator.NeedsRecalculation()) {	//if not then skip the check of above
 			if (validator.HasDrawLayersRectChanged())
 				layoutCalculator.DrawLayersRectangle(renderingInfo, lparams.layerParams.drawLayersRect);
+			
 			if (validator.HasDrawVertexWithFullContentsChanged())
-				layoutCalculator.ShowVerticesWithFullContents(renderingInfo, lparams.layerParams.drawVertexWithFullContents);
-			if (validator.HasLayersDistanceChanged())
-				layoutCalculator.ChangeLayersDistance(
-					renderingInfo, 
-					lparams.layerParams.layersDistance - oldLayoutParams.layerParams.layersDistance
-				);
+				layoutCalculator.ShowVerticesWithFullContents(renderingInfo, lparams.layerParams.drawVertexWithFullContents);			
+			
 			if (validator.HasLayersAlignmentChanged())
 				layoutCalculator.SetLayersAlignmentTo(renderingInfo, lparams.layerParams.layersAlignment);
 		}
@@ -413,7 +410,7 @@ void IviewsCanvas::Undo (void) {
 	if (graphLayers = graphCoordinator.Undo() ){
 		layoutCalculator.Clear();
 		PREPARE_FOR_DRAW(true, graphLayers, colourAddOnManager.Apply(renderingInfo));		
-		Refresh();	//Edw to afinw
+		Refresh();	
 	}
 	DisableMenuAndTools();
 }
@@ -428,7 +425,7 @@ void IviewsCanvas::Redo (void) {
 
 		if (graphLayers = graphCoordinator.Redo() )
 			{ PREPARE_FOR_DRAW(true, graphLayers, colourAddOnManager.Exclude(renderingInfo)); }
-		Refresh();	//Edw to afine
+		Refresh();	
 	}
 	DisableMenuAndTools();
 }
@@ -469,7 +466,7 @@ void IviewsCanvas::LoadGraph (const wxString & path) {
 											);
 		layoutCalculator.Clear();		
 		PREPARE_FOR_DRAW(true, graphLayers, colourAddOnManager);
-		Refresh();	//Edw to afinw
+		Refresh();	
 		GetOwner()->SetStatusText(wxT("File opened: ") + path);
 	}
 	else  {
@@ -507,7 +504,7 @@ void IviewsCanvas::ApplyZoomOperation (void (ZoomManager::*op)(void)) {
 		(zoomManager.*op)();	
 		findSourceCollectionProducer.SetScaleFactor(zoomManager.GetZoomParams().GetScaleFactor());		
 		Thaw();									
-		Refresh();	//Edw to afinw
+		Refresh();	
 	}
 }
 
@@ -665,7 +662,7 @@ void IviewsCanvas::HideLastVisitedVertexContents (void) {
 	if (lastVisitedVertex)
 		if (layoutCalculator.HideContentsOfVertex(lastVisitedVertex, renderingInfo)) {
 			colourAddOnManager.Exclude(renderingInfo);
-			Refresh();	//Edw to afinw
+			Refresh();	
 		}
 }
 
@@ -674,7 +671,7 @@ void IviewsCanvas::HideLastVisitedVertexContents (void) {
 void IviewsCanvas::CancelAllDisplayAddOns (void) { 
 	if (renderingInfo) {
 		colourAddOnManager.RestoreColours(renderingInfo);
-		Refresh();	//Edw to afinw
+		Refresh();	
 	}
 }
 
@@ -689,7 +686,7 @@ void IviewsCanvas::HighlightAllRelativeSlots (void) {
 				new ColourAddOnData(lastVisitedVertex->GetSourceVertex()), 
 				renderingInfo
 			) )
-		Refresh();	//Edw to afinw
+		Refresh();	
 }
 
 //-----------------------------------------------------------------------
@@ -697,7 +694,7 @@ void IviewsCanvas::HighlightAllRelativeSlots (void) {
 void IviewsCanvas::RestoreRelativeSlotsColours (void) {
 	if (renderingInfo)
 		if (colourAddOnManager.RemoveAll(&relativeSlotsHighlighter, renderingInfo))
-			Refresh();	//Edw to afinw
+			Refresh();	
 }
 
 //-----------------------------------------------------------------------
@@ -706,7 +703,7 @@ void IviewsCanvas::RestorePathColours (void){
 	if (renderingInfo) {
 		colourAddOnManager.RemoveFirst(&currentVertexHighlighter, renderingInfo);
 		colourAddOnManager.RemoveAll(&pathHighlighting, renderingInfo);
-		Refresh();	//Edw to afinw
+		Refresh();	
 	}
 }
 
@@ -731,7 +728,7 @@ void IviewsCanvas::RemoveLastVisitedVertex (void) {
 			Scroll(0, 0);
 			bookmarkManager.CleanUp();
 		}
-		Refresh();	//Edw to afinw
+		Refresh();	
 	}
 	DisableMenuAndTools();
 }
@@ -778,7 +775,7 @@ void IviewsCanvas::HighlightPath (
 			), 
 			renderingInfo
 		);
-		Refresh();	//Edw to afinw
+		Refresh();	
 	}
 }
 

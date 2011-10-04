@@ -65,7 +65,7 @@ LayersRenderingInfo * LayoutCalculator::Calculate (
 	CreateLayers(*layers);
 
 	//Seondly: We set the corect coordinates for each layer
-	SetLayersCoordinates(*layers);	
+	SetLayersCoordinatesTo(lParams->layerParams.layersAlignment, *layers);	
 
 	//Lastly: We create the edges
 	CreateEdges(*layers);
@@ -189,18 +189,6 @@ void LayoutCalculator::UpdateColours (LayersRenderingInfo * layers) {
 
 //-----------------------------------------------------------------------
 
-void LayoutCalculator::ChangeLayersDistance (LayersRenderingInfo * layers, length_t dw) {
-	assert(layers);
-	
-	FOR_ALL_LAYERS(layer, layers->GetLayersRenderingInfo())
-		(*layer)->SetPosition(
-			(*layer)->GetPosition().GetX() + dw,
-			(*layer)->GetPosition().GetY()
-		);	
-}
-
-//-----------------------------------------------------------------------
-
 void LayoutCalculator::ShowVerticesWithFullContents (LayersRenderingInfo * layers, bool show) {
 	FOR_ALL_LAYERS(layer, layers->GetLayersRenderingInfo()) {
 		FOR_ALL_VERTICES (vertex, (*layer)->GetVerticesRenderingInfo())
@@ -214,6 +202,32 @@ void LayoutCalculator::ShowVerticesWithFullContents (LayersRenderingInfo * layer
 //-----------------------------------------------------------------------
 
 void LayoutCalculator::SetLayersAlignmentTo (LayersRenderingInfo * layers, LayerAlignment alignment) {
+	length_t height = lParams->layerParams.distanceFromTopLeftCorner.GetHeight();
+
+	switch(alignment){
+		case LayerLayoutParams::BOTTOM:{
+			Rectangle bb = layers->CalcBoundingBox(lParams->layerParams.layersDistance);
+			FOR_ALL_LAYERS(layer, layers->GetLayersRenderingInfo())
+				(*layer)->SetPosition((*layer)->GetX(), bb.GetHeight() - ((*layer)->GetHeight() + height)  );
+			break;
+		}
+		case LayerLayoutParams::MIDDLE: {
+			LayerRenderingInfo * bigestLayer = GetLayerWithBigestHeight(layers->GetLayersRenderingInfo());
+			
+			FOR_ALL_LAYERS(layer, layers->GetLayersRenderingInfo()) {
+				length_t dHeight = (bigestLayer->GetHeight() - (*layer)->GetHeight()) / 2;
+				(*layer)->SetPosition((*layer)->GetX(), bigestLayer->GetY() + dHeight );
+			}
+			break;
+		}
+		case LayerLayoutParams::TOP: {
+			FOR_ALL_LAYERS(layer, layers->GetLayersRenderingInfo())
+				(*layer)->SetPosition((*layer)->GetX(), height);
+			break;
+		}
+		default: assert(0);
+	};
+	//assert(0);
 }
 
 //-----------------------------------------------------------------------
@@ -531,31 +545,6 @@ Rectangle *	LayoutCalculator::GetProperExpandButton (
 
 /************************** Set Layers Coordinates *******************************/
 
-
-void LayoutCalculator::RecalculateLayersCoordinates (LayersRenderingInfo & layers) {
-	//set all layers to have position 0,0 and after that we set the proper position for each layer
-	FOR_ALL_LAYERS(layer, layers.GetLayersRenderingInfo())	
-		(*layer)->SetPosition(0);
-	SetLayersCoordinates(layers);
-}
-
-//-----------------------------------------------------------------------
-
-void LayoutCalculator::SetLayersCoordinates (LayersRenderingInfo & layers) {
-	switch(lParams->layerParams.layersAlignment){
-		case LayerLayoutParams::BOTTOM:
-			SetLayersCoordinatesTo(LayerLayoutParams::BOTTOM, layers);
-			break;
-		case LayerLayoutParams::MIDDLE:
-			SetLayersCoordinatesTo(LayerLayoutParams::MIDDLE, layers);
-			break;
-		case LayerLayoutParams::TOP: 
-			SetLayersCoordinatesTo(LayerLayoutParams::TOP, layers);
-			break;
-		default: assert(0);
-	};
-}
-
 //-----------------------------------------------------------------------
 
 LayerRenderingInfo * LayoutCalculator::GetLayerWithBigestHeight (const LayerRenderingInfoPtrVec & layersList) {
@@ -580,8 +569,8 @@ LayerRenderingInfo * LayoutCalculator::GetLayerWithBigestHeight (const LayerRend
 
 #define Y_LAYER			bigestY + dHeight
 
-#define D_HEIGHT		alignment == LayerLayoutParams::TOP								\
-						?	LayerLayoutParams::TOP										\
+#define D_HEIGHT		alignment == LayerLayoutParams::TOP							\
+						?	0														\
 						:	(bigest->GetHeight() - (*layer)->GetHeight())/alignment
 
 

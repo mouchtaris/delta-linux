@@ -36,9 +36,9 @@ bool LayoutParamsValidator::IsLayoutParamsInvalid (
 	if (oldParams.vertexParams != newParams.vertexParams)
 		needsRecalculation = true;
 
-	if (!needsRecalculation)
+	if (!needsRecalculation)	//we need recalculation when hapen one of the above
 		needsRecalculation =	
-			oldLayerParams.layersDistance				!= newLayerParams.layersDistance			||		
+			hasLayersDistanceChanged																||		
 			oldLayerParams.verticesDistance				!= newLayerParams.verticesDistance			||
 			oldLayerParams.innerEdgesDistance			!= newLayerParams.innerEdgesDistance		||
 			oldLayerParams.distanceFromLayer			!= newLayerParams.distanceFromLayer			||

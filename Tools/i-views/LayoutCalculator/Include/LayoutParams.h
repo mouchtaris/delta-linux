@@ -37,7 +37,7 @@ namespace iviews {
 	//-----------------------------------------------------------------------
 
 	struct LayerLayoutParams : public BorderDrawingData {
-		enum LayerAlignment {	//It is totally necessary that enum's order to be unchangeable
+		enum LayerAlignment {	//It is totally necessary enum's order to be unchangeable
 			TOP		= 0, 
 			BOTTOM	= 1,
 			MIDDLE	= 2 

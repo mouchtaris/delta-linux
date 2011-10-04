@@ -27,7 +27,9 @@ namespace iviews {
 
 		void		ComputeScaleFactor (void);
 
+		/////////////////////////////////////////////////////////////////////////
 		public:
+
 		void		Initialise (void);
 		void		CleanUp (void);
 

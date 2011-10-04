@@ -53,19 +53,15 @@ public:
 	bool					ShowContentsOfVertex (VertexRenderingInfo* v, LayersRenderingInfo* layers);
 	void					SetCommonBeginingEdges (LayersRenderingInfo * layers, bool enable);
 	void					DrawLayersRectangle (LayersRenderingInfo * layers, bool draw);
-	
-	//TODO
 	void					UpdateColours (LayersRenderingInfo * layers);
-	void					ChangeLayersDistance (LayersRenderingInfo * layers, length_t dw);
 	void					ShowVerticesWithFullContents (LayersRenderingInfo * layers, bool show);
 	void					SetLayersAlignmentTo (LayersRenderingInfo * layers, LayerAlignment alignment);
-
-	
-
 	//return null if vertex has alredy a bookmark
 	Rectangle*				AddBookmark (VertexRenderingInfo * v);
+	
 	//caller is responsible to delete the instance
 	LayersRenderingInfo *	Calculate (graphs::GraphLayers* graphL, VertexToDebugInfoMapping * debugImfo);
+	
 	//caller is responsible to delete the instance
 	VertexRenderingInfo *	CalculateVertexWithFullContents (Vertex* v, VertexToDebugInfoMapping* debugInfo);
 
@@ -113,8 +109,6 @@ private:
 	void 				CreatePrimitiveList (void);		
 	void 				CreateEdges (LayersRenderingInfo & layers);
 	void 				CreateLayers (LayersRenderingInfo & layers);
-	void 				SetLayersCoordinates (LayersRenderingInfo & layers);
-	void 				RecalculateLayersCoordinates (LayersRenderingInfo & layers);
 	void 				AddContentesInVertexRenderingInfo (VertexRenderingInfo & vertex);
 	void				EnableCommonBeginingEdges (LayersRenderingInfo * layers, VertexRenderingInfo * vertex);
 	void				DisableCommonBeginingEdges (LayersRenderingInfo * layers, VertexRenderingInfo * vertex);
