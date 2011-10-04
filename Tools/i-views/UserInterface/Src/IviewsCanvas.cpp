@@ -222,8 +222,11 @@ void IviewsCanvas::UpdateParams (
 			if (validator.HasDrawVertexWithFullContentsChanged())
 				layoutCalculator.ShowVerticesWithFullContents(renderingInfo, lparams.layerParams.drawVertexWithFullContents);			
 			
-			if (validator.HasLayersAlignmentChanged())
+			if (validator.HasLayersAlignmentChanged()) {
 				layoutCalculator.SetLayersAlignmentTo(renderingInfo, lparams.layerParams.layersAlignment);
+				zoomManager.CleanUp();
+				zoomManager.Initialise();
+			}
 		}
 	}
 
