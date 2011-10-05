@@ -24,18 +24,18 @@
 	typedef _superclass*	(*ConstructorFunc)(GenericReader& reader);						\
 	typedef std::map<std::string, ConstructorFunc>	Constructors;							\
 	static Constructors*	constructors;													\
+
+//**************************
+	
+#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PUBLIC_DEF(_superclass)					\
 	static void				InitialiseConstructors (void);									\
 	static void				CleanUpConstructors (void);										\
 	static void				InstallConstructor (											\
 								const std::string&	classId,								\
 								ConstructorFunc		ctor									\
-							);
-
-//**************************
-	
-#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PUBLIC_DEF(_superclass)					\
+							);																\
 	static _superclass*	 Construct (GenericReader& reader);									\
-	static void			 WriteClassId (GenericWriter& writer, const std::string& classId);
+	static void			 WriteClassId (GenericWriter& writer, const std::string& classId);	\
 
 //**************************
 

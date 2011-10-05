@@ -40,7 +40,7 @@ template <class RcTraits> class usharedresourceholder {
 		return byKey.size(); 
 	}
 
-	void add (T* rc, const std::string& key) { 
+	T* add (T* rc, const std::string& key) { 
 		typename std::map<std::string, T*>::iterator i = byKey.find(key);
 		if (i == byKey.end()) {
 			DASSERT(byRc.find(rc) == byRc.end());
@@ -51,6 +51,7 @@ template <class RcTraits> class usharedresourceholder {
 			DASSERT(byRc.find(rc) != byRc.end());
 			++byRc[rc].second;
 		}
+		return rc;
 	}
 
 	bool in (const T* rc) const
@@ -83,9 +84,10 @@ template <class RcTraits> class usharedresourceholder {
 		return i->second.first;
 	}
 
-	void use (T* rc) {
+	T* use (T* rc) {
 		DASSERT(byRc.find(rc) != byRc.end());
 		++byRc[rc].second;
+		return rc;
 	}
 
 	void unuse (T* rc) { 
