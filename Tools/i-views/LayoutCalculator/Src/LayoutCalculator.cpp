@@ -330,6 +330,82 @@ void LayoutCalculator::AddSlotRenderingInfoInOutgoingEdges (VertexRenderingInfo 
 
 //-----------------------------------------------------------------------
 
+void LayoutCalculator::ForAllEdgesCalcHeadPosition (
+		EdgeRenderingInfoPtrList &	edges,
+		const Rectangle*			vertexMainRectangle
+	) {
+	FOR_ALL_EDGES(edge, edges) {
+		CoordTPoint head  = CalcEdgeRenderingInfoHead(
+								(*edge)->GetSourceVertexRenderingInfo()->GetSourceLayer(),
+								(*edge)->GetTargetVertexRenderingInfo()->GetSourceLayer(),
+								vertexMainRectangle
+							);
+		(*edge)->GetArrow()->SetHead(head);
+	}
+}
+
+//-----------------------------------------------------------------------
+
+void LayoutCalculator::ForAllEdgesCalcTailPosition (
+		EdgeRenderingInfoPtrList &	edges,
+		bool						calcExpandButtonRect
+	) {
+	FOR_ALL_EDGES(edge, edges) {
+		Rectangle * expandButtonRect = static_cast<Rectangle *> (0);
+		if (calcExpandButtonRect)
+			expandButtonRect = GetProperExpandButton(
+									(*edge)->GetTargetVertexRenderingInfo()->GetSourceVertex(),
+									(*edge)->GetSourceSlotRenderingInfo()
+								);
+		
+		CoordTPoint tail = CalcEdgeRenderingInfoTail(
+								(*edge)->GetSourceVertexRenderingInfo()->GetSourceLayer(),
+								(*edge)->GetTargetVertexRenderingInfo()->GetSourceLayer(),
+								(*edge)->GetSourceVertexRenderingInfo(),
+								expandButtonRect
+							);
+		(*edge)->GetArrow()->SetTail(tail);
+	}
+}
+
+//-----------------------------------------------------------------------
+
+void LayoutCalculator::UpdateLayerPos (LayerRenderingInfo * layer, bool showVertexContets) {
+	Dimension oldLayerDimension = layer->GetRectangle()->GetDimension();
+	CoordTPoint oldLayerPos		= layer->GetPosition();
+	layer->RecalculateHeightAndUpdateVerticesPosition();
+
+
+	Dimension newLayerDimension = layer->GetRectangle()->GetDimension();
+	CoordTPoint newLayerPos		= layer->GetPosition();
+	length_t dh					= (length_t)std::fabs(
+										newLayerDimension.GetHeight() - oldLayerDimension.GetHeight()
+									);
+	switch(lParams->layerParams.layersAlignment){
+		case LayerLayoutParams::BOTTOM:{
+			newLayerPos.SetY(
+				showVertexContets	? oldLayerPos.GetY() - dh
+									: oldLayerPos.GetY() + dh
+			);
+			layer->SetPosition(newLayerPos);
+			break;
+		}
+		case LayerLayoutParams::MIDDLE:{
+			newLayerPos.SetY(
+				showVertexContets	? oldLayerPos.GetY() - (dh/2)
+									: oldLayerPos.GetY() + (dh/2)
+			);
+			layer->SetPosition(newLayerPos);
+			break;
+		}
+		case LayerLayoutParams::TOP:	
+			break;
+		default: assert(0);
+	};
+}
+
+//-----------------------------------------------------------------------
+
 bool LayoutCalculator::ShowContentsOfVertex (
 		VertexRenderingInfo		 * v,
 		LayersRenderingInfo		 * layers
@@ -349,57 +425,9 @@ bool LayoutCalculator::ShowContentsOfVertex (
 		CreatePrimitiveList();
 	}
 
-	//else {
-	FOR_ALL_EDGES(outEdge, v->GetAllOutgoingEdgesRenderingInfo()) {
-		CoordTPoint tail = CalcEdgeRenderingInfoTail(
-								(*outEdge)->GetSourceVertexRenderingInfo()->GetSourceLayer(),
-								(*outEdge)->GetTargetVertexRenderingInfo()->GetSourceLayer(),
-								(*outEdge)->GetSourceVertexRenderingInfo(),
-								GetProperExpandButton(
-									(*outEdge)->GetTargetVertexRenderingInfo()->GetSourceVertex(),
-									(*outEdge)->GetSourceSlotRenderingInfo()
-								)
-							);
-		(*outEdge)->GetArrow()->SetTail(tail);
-	}
-
-	FOR_ALL_EDGES(inEdge, v->GetAllIncomingEdgesRenderingInfo()) {
-		CoordTPoint head  = CalcEdgeRenderingInfoHead(
-								(*inEdge)->GetSourceVertexRenderingInfo()->GetSourceLayer(),
-								(*inEdge)->GetTargetVertexRenderingInfo()->GetSourceLayer(),
-								v->GetVertexMainRectangle()
-							);
-		(*inEdge)->GetArrow()->SetHead(head);
-	}
-	//}
-
-
-	Dimension oldLayerDimension = layer->GetRectangle()->GetDimension();
-	CoordTPoint oldLayerPos		= layer->GetPosition();
-	layer->RecalculateHeightAndUpdateVerticesPosition();
-
-	switch(lParams->layerParams.layersAlignment){
-		case LayerLayoutParams::BOTTOM:{
-			Dimension newLayerDimension = layer->GetRectangle()->GetDimension();
-			CoordTPoint newLayerPos		= layer->GetPosition();
-			newLayerPos.SetY(oldLayerPos.GetY() - (newLayerDimension.GetHeight() - oldLayerDimension.GetHeight()));
-			layer->SetPosition(newLayerPos);
-			break;
-									   }
-		case LayerLayoutParams::MIDDLE:{
-			Dimension newLayerDimension = layer->GetRectangle()->GetDimension();
-			CoordTPoint newLayerPos		= layer->GetPosition();
-			length_t dh = (length_t)std::fabs(newLayerDimension.GetHeight() - oldLayerDimension.GetHeight());
-			newLayerPos.SetY(oldLayerPos.GetY() - (dh/2));
-			layer->SetPosition(newLayerPos);
-			break;
-									   }
-		case LayerLayoutParams::TOP:	
-			break;
-		default: assert(0);
-	};
-
-
+	ForAllEdgesCalcTailPosition(v->GetAllOutgoingEdgesRenderingInfo(), true);
+	ForAllEdgesCalcHeadPosition(v->GetAllIncomingEdgesRenderingInfo(), v->GetVertexMainRectangle());
+	UpdateLayerPos (layer, true);
 	return true;
 }
 
@@ -413,57 +441,11 @@ bool LayoutCalculator::HideContentsOfVertex (VertexRenderingInfo * v, LayersRend
 
 	if (!v->HasFullContents() && v->HasHiddenContents())
 		return false;
-
 	v->HideContents(true);
-
-	FOR_ALL_EDGES(inEdge, v->GetAllOutgoingEdgesRenderingInfo()) {
-		CoordTPoint tail = CalcEdgeRenderingInfoTail(
-								(*inEdge)->GetSourceVertexRenderingInfo()->GetSourceLayer(),
-								(*inEdge)->GetTargetVertexRenderingInfo()->GetSourceLayer(),
-								(*inEdge)->GetSourceVertexRenderingInfo(),
-								(Rectangle*)0
-							);
-		(*inEdge)->GetArrow()->SetTail(tail);
-
-	}
-
-	FOR_ALL_EDGES(outEdge, v->GetAllIncomingEdgesRenderingInfo()) {
-		CoordTPoint head  = CalcEdgeRenderingInfoHead(
-								(*outEdge)->GetSourceVertexRenderingInfo()->GetSourceLayer(),
-								(*outEdge)->GetTargetVertexRenderingInfo()->GetSourceLayer(),
-								v->GetVertexMainRectangle()
-							);
-		(*outEdge)->GetArrow()->SetHead(head);
-	}
-
-
-
-
-	Dimension oldLayerDimension = layer->GetRectangle()->GetDimension();
-	CoordTPoint oldLayerPos		= layer->GetPosition();
-	layer->RecalculateHeightAndUpdateVerticesPosition();
-	switch(lParams->layerParams.layersAlignment){
-		case LayerLayoutParams::BOTTOM:{
-			Dimension newLayerDimension = layer->GetRectangle()->GetDimension();
-			CoordTPoint newLayerPos		= layer->GetPosition();
-			newLayerPos.SetY(oldLayerPos.GetY() + (oldLayerDimension.GetHeight() - newLayerDimension.GetHeight()));
-			layer->SetPosition(newLayerPos);
-
-			//SetLayersCoordinatesTo(LayerLayoutParams::BOTTOM, layers);
-			break;
-									   }
-		case LayerLayoutParams::MIDDLE:{
-			Dimension newLayerDimension = layer->GetRectangle()->GetDimension();
-			CoordTPoint newLayerPos		= layer->GetPosition();
-			newLayerPos.SetY(oldLayerPos.GetY() + (oldLayerDimension.GetHeight() - newLayerDimension.GetHeight())/2);
-			layer->SetPosition(newLayerPos);
-			break;
-									   }
-		case LayerLayoutParams::TOP:	
-			break;
-		default: assert(0);
-	};
-
+	
+	ForAllEdgesCalcTailPosition(v->GetAllOutgoingEdgesRenderingInfo(), false);
+	ForAllEdgesCalcHeadPosition(v->GetAllIncomingEdgesRenderingInfo(), v->GetVertexMainRectangle());
+	UpdateLayerPos (layer, false);
 	return true;
 }
 
@@ -1326,11 +1308,5 @@ void LayoutCalculator::InitHasLayersInnerEdges(const LayersRenderingInfo & layer
 	for (size_t i = 0; i < hasLayerInnerEdgesVec.size(); ++i)
 		hasLayerInnerEdgesVec[i] = false;
 }
-
-
-
-
-
-
 
 }	//namespace iviews

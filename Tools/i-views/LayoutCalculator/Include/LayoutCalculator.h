@@ -112,6 +112,15 @@ private:
 	void 				AddContentesInVertexRenderingInfo (VertexRenderingInfo & vertex);
 	void				EnableCommonBeginingEdges (LayersRenderingInfo * layers, VertexRenderingInfo * vertex);
 	void				DisableCommonBeginingEdges (LayersRenderingInfo * layers, VertexRenderingInfo * vertex);
+	void				UpdateLayerPos (LayerRenderingInfo * layer, bool b);
+	void				ForAllEdgesCalcHeadPosition (
+							EdgeRenderingInfoPtrList &	edges,
+							const Rectangle*			vertexMainRectangle
+						);
+	void				ForAllEdgesCalcTailPosition (
+							EdgeRenderingInfoPtrList &	edges,
+							bool						calcExpandButtonRect
+						);
 	void				ForAllEdgesSetConditionalySlotRenderingInfo (
 							EdgeRenderingInfoPtrList&	edges,
 							const Vertex*				vertex, 
