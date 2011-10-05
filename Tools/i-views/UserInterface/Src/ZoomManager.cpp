@@ -10,6 +10,7 @@
 	#pragma warning( disable : 4996)
 #endif
 
+#include <assert.h>
 #include <wx/gdicmn.h>
 
 #include "ZoomManager.h"
@@ -19,10 +20,11 @@ namespace iviews {
 
 //-----------------------------------------------------------------------
 
-ZoomManager::ZoomManager(wxScrolledWindow* _canvas) :	
-	zoomParams(_canvas),
-	isInitialised (false)
-	{}
+ZoomManager::ZoomManager(wxScrolledWindow* canvas_, LayerAlignment alignment_) :	
+	zoomParams		(canvas_),
+	isInitialised	(false),
+	layerAlignment	(alignment_){
+}
 
 //-----------------------------------------------------------------------
 
@@ -34,13 +36,26 @@ void ZoomManager::Initialise (void) {
 	zoomParams.Initialise();
 	AdjustScrollSteps(zoomParams.GetInitialVirtualWidth(), zoomParams.GetInitialVirtualHeight());
 
-	int	x_step, y_step;
+	int	x_step, y_step, virtualHeight;
 	GetCanvas()->GetScrollPixelsPerUnit(&x_step, &y_step);
+	virtualHeight = GetCanvas()->GetVirtualSize().GetHeight();
 
-	GetCanvas()->Scroll(
-		0, 
-		(GetCanvas()->GetVirtualSize().GetHeight() / y_step) /  2	// H at origin, V in the middle
-	);
+	switch(GetLayerAlignment()) {
+		case LayerLayoutParams::TOP		: 
+			GetCanvas()->Scroll(0, 0); 
+			break;
+		
+		case LayerLayoutParams::BOTTOM	: 
+			GetCanvas()->Scroll(0, virtualHeight / y_step);
+			break;
+		
+		case LayerLayoutParams::MIDDLE	: 
+			GetCanvas()->Scroll(0, (virtualHeight / y_step) /  2);	// H at origin, V in the middle
+			break;
+		
+		default: assert(0);
+	}
+	
 
 	isInitialised = true;
 }
@@ -128,5 +143,13 @@ void ZoomManager::ApplyCurrentZoom (const wxPoint& focus) {
 }
 
 //-----------------------------------------------------------------------
+
+LayerLayoutParams::LayerAlignment ZoomManager::GetLayerAlignment (void)
+	{ return layerAlignment; }
+
+//-----------------------------------------------------------------------
+
+void ZoomManager::SetLayerAlignment (LayerAlignment newLayerAlignment)
+	{ layerAlignment = newLayerAlignment; }
 
 }	//namespace iviews

@@ -10,6 +10,7 @@
 
 
 #include <wx/scrolwin.h>
+#include "LayoutParams.h"
 #include "ZoomParameters.h"
 
 namespace iviews {
@@ -19,7 +20,9 @@ namespace iviews {
 	class ZoomManager {
 
 		public:
-		ZoomManager (wxScrolledWindow* canvas);
+		typedef LayerLayoutParams::LayerAlignment	LayerAlignment;
+
+		ZoomManager (wxScrolledWindow* canvas, LayerAlignment alignment);
 		~ZoomManager() {}
 		
 		void			Initialise (void);
@@ -30,6 +33,8 @@ namespace iviews {
 		void			ZoomFit (void);
 		void 			ZoomRestore (void);
 		void			MouseMove (const wxPoint & currentPos);
+		LayerAlignment	GetLayerAlignment (void);
+		void			SetLayerAlignment (LayerAlignment newLayerAlignment);
 		
 		ZoomParameters& GetZoomParams (void) 
 							{ return zoomParams; }
@@ -39,10 +44,12 @@ namespace iviews {
 						GetCanvas (void) 
 							{ return zoomParams.GetCanvas(); }
 
+
 		void			AdjustScrollSteps (int newWidth, int newHeight);
 		void			ApplyCurrentZoom (const wxPoint& focus);
 
 		bool			isInitialised;
+		LayerAlignment	layerAlignment;
 		ZoomParameters	zoomParams;
 	};
 

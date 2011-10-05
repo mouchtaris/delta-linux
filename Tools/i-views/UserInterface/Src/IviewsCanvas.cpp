@@ -144,7 +144,7 @@ IviewsCanvas::IviewsCanvas (
 	findSourceCollectionProducer(this, &findAddOn, &colourAddOnManager),
 	bookmarkManager				(this, &layoutCalculator),
 	handTool					(this),
-	zoomManager					(this),
+	zoomManager					(this, layoutParams.layerParams.layersAlignment),
 	rectOflastVisitedVertex		((Rectangle *)0),
 	isExplicitRefresh			(false)
 {
@@ -224,6 +224,7 @@ void IviewsCanvas::UpdateParams (
 			
 			if (validator.HasLayersAlignmentChanged()) {
 				layoutCalculator.SetLayersAlignmentTo(renderingInfo, lparams.layerParams.layersAlignment);
+				zoomManager.SetLayerAlignment(layoutParams.layerParams.layersAlignment);
 				zoomManager.CleanUp();
 				zoomManager.Initialise();
 			}
