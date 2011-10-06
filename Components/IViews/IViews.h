@@ -1,5 +1,16 @@
-#ifndef GRAPH_DEBUG_VISUALZATION_H
-#define GRAPH_DEBUG_VISUALZATION_H
+/*
+ * IViews.h 
+ *
+ *	Interactive Object Graphs for Debuggers 
+ *	with Improved Visualization, Inspection 
+ *	and Configuration Features
+ *
+ * author: Koutsopoulos Nikolaos
+ * mail	 : koutsop@ics.forth.gr	
+ */
+
+#ifndef I_VIEWS_H
+#define I_VIEWS_H
 
 
 ///C++ STD includes
@@ -71,4 +82,4 @@ private:
 }	//namespace ide
 
 
-#endif	//GRAPH_DEBUG_VISUALZATION_H
+#endif	//I_VIEWS_H

@@ -40,10 +40,10 @@ iviews::RenderingParams	IViews::renderingParams;
 //-----------------------------------------------------------------------
 COMPONENT_METADATA(
 	IViews,
-	_("IViews"),
-	_(""),
-	_T("Koutsopoulos Nikolaos <koutsop@ics.forth.gr>"),
-	_T("alpha")
+	_("i-views"),
+	_("Interactive Object Graphs for Debuggers with Improved Visualization, Inspection and Configuration Features"),
+	_("Koutsopoulos Nikolaos <koutsop@ics.forth.gr>"),
+	_("Beta")
 );
 IMPLEMENT_IDE_COMPONENT(IViews);
 
