@@ -108,6 +108,8 @@ void LayoutCalculator::EnableCommonBeginingEdges(LayersRenderingInfo * layers, V
 	}
 }
 
+//-----------------------------------------------------------------------
+
 void LayoutCalculator::DisableCommonBeginingEdges(LayersRenderingInfo * layers, VertexRenderingInfo * vertex) {
 	vertex->SetEdgesCommonStart(false);
 
@@ -227,7 +229,6 @@ void LayoutCalculator::SetLayersAlignmentTo (LayersRenderingInfo * layers, Layer
 		}
 		default: assert(0);
 	};
-	//assert(0);
 }
 
 //-----------------------------------------------------------------------
@@ -300,12 +301,24 @@ void LayoutCalculator::ForAllEdgesSetConditionalySlotRenderingInfo(
 		const Vertex*				vertex, 
 		SlotRenderingInfo*			slot
 	) {
+		
 	FOR_ALL_EDGES (edge, edges)
-		if (!(*edge)->GetSourceSlotRenderingInfo()  && (*edge)->GetTargetVertexRenderingInfo()->GetSourceVertex() == vertex)	{
-			(*edge)->SetSoruceSlotRenderingInfo(slot);											
+		if (!(*edge)->GetSourceSlotRenderingInfo()  && 
+			(*edge)->GetTargetVertexRenderingInfo()->GetSourceVertex() == vertex
+			) {
+			(*edge)->SetSoruceSlotRenderingInfo(slot);	
+			(*edge)->GetArrow()->SetColour(
+				GetEdgeColour(
+					slot->GetSlotDebugInfo(),
+					(*edge)->GetSourceVertexRenderingInfo(),
+					(*edge)->GetTargetVertexRenderingInfo()
+				)
+			);
 			break;
 		}
 }
+
+//-----------------------------------------------------------------------
 
 void LayoutCalculator::AddSlotRenderingInfoInOutgoingEdges (VertexRenderingInfo & v) {
 	Slots slots							= v.GetAllTheSlots();
