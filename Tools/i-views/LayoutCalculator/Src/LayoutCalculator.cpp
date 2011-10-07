@@ -415,6 +415,8 @@ void LayoutCalculator::UpdateLayerPos (LayerRenderingInfo * layer, bool showVert
 			break;
 		default: assert(0);
 	};
+
+	assert (newLayerPos.GetY() >= 0);
 }
 
 //-----------------------------------------------------------------------

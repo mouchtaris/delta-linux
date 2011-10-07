@@ -35,6 +35,7 @@ namespace iviews {
 		void			MouseMove (const wxPoint & currentPos);
 		LayerAlignment	GetLayerAlignment (void);
 		void			SetLayerAlignment (LayerAlignment newLayerAlignment);
+		void			AdjustScrollSteps (void);
 		
 		ZoomParameters& GetZoomParams (void) 
 							{ return zoomParams; }

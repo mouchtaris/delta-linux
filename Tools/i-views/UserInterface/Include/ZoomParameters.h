@@ -45,7 +45,7 @@ namespace iviews {
 						int* virtualW,
 						int* virtualH
 					);
-		
+		void		SetInitialVirtualSize (void);
 		int			GetZoomFactor (void) const;
 		void		SetZoomFactor (const int factor);
 

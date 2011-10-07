@@ -42,7 +42,7 @@ ZoomParameters::ZoomParameters (wxScrolledWindow* _canvas) :
 
 void ZoomParameters::Initialise (void) {
 	if (!isInitialised) {
-		canvas->GetVirtualSize(&initialVirtualWidth, &initialVirtualHeight);
+		SetInitialVirtualSize();
 		zoomFactor			= INITIAL_ZOOM_FACTOR;
 		scaleFactor 		= INITIAL_SCALE_FACTOR;
 		previousScaleFactor = INITIAL_SCALE_FACTOR;
@@ -60,6 +60,8 @@ wxString ZoomParameters::ToString (void) const {
 	return message;
 }
 
+void ZoomParameters::SetInitialVirtualSize (void) 
+	{ canvas->GetVirtualSize(&initialVirtualWidth, &initialVirtualHeight); }
 ////////////////////////////////////////////////////////////////////////
 
 bool ZoomParameters::CanZoomIn (void) const 

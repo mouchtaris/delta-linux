@@ -28,6 +28,16 @@ ZoomManager::ZoomManager(wxScrolledWindow* canvas_, LayerAlignment alignment_) :
 
 //-----------------------------------------------------------------------
 
+void ZoomManager::AdjustScrollSteps (void) {
+	int newViewX, newViewY, newWidth, newHeight;
+	
+	zoomParams.SetInitialVirtualSize();
+	zoomParams.CalculateViewParameters(&newViewX, &newViewY, &newWidth, &newHeight);
+	AdjustScrollSteps(newWidth, newHeight);
+}
+
+//-----------------------------------------------------------------------
+
 void ZoomManager::Initialise (void) {
 
 	if (isInitialised)

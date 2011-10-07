@@ -655,7 +655,10 @@ void IviewsCanvas::ShowLastVisitedVertexContents (void) {
 	if (lastVisitedVertex) {
 		if (layoutCalculator.ShowContentsOfVertex(lastVisitedVertex, renderingInfo) ) { 
 			colourAddOnManager.Exclude(renderingInfo);
-			Refresh();	//Edw den 8imamai ti prepei na kanw
+			Rectangle bb = renderingInfo->CalcBoundingBox(layoutParams.layerParams.layersDistance);
+			SetVirtualSize(bb.GetWidth(), bb.GetHeight());	
+			zoomManager.AdjustScrollSteps();
+			Refresh();
 		}
 	}
 }
