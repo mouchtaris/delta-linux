@@ -73,9 +73,9 @@ template <class RcTraits> class usharedresourceholder {
 		return i != byKey.end() ? i->second : (T*) 0;
 	}
 
-	const T* getrc (const std::string& key) const {
+	T* getrc (const std::string& key) const {
 		typename std::map<std::string, T*>::const_iterator i = byKey.find(key);
-		return i != byKey.end() ? i->second : (const T*) 0;
+		return i != byKey.end() ? i->second : (T*) 0;
 	}
 
 	const std::string& getkey (const T* rc) const {
