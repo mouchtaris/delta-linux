@@ -65,6 +65,16 @@
 
 class GenericReader {
 	public:
+	template <typename T>
+	static T*	ConstructTemplate (GenericReader& reader, T* newInst) {
+					if (DPTR(newInst)->Read(reader))
+						return newInst;
+					else {
+						DDELETE(newInst); 
+						return (T*) 0;
+					}
+				}
+
 	virtual bool eof (void) = 0;
 	virtual bool read (std::string& at, bool quoted) = 0;
 	virtual bool read (util_ui32* b) = 0;
