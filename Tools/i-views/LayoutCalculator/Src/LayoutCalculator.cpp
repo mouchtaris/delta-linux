@@ -394,29 +394,26 @@ void LayoutCalculator::UpdateLayerPos (LayerRenderingInfo * layer, bool showVert
 	length_t dh					= (length_t)std::fabs(
 										newLayerDimension.GetHeight() - oldLayerDimension.GetHeight()
 									);
+
 	switch(lParams->layerParams.layersAlignment){
 		case LayerLayoutParams::BOTTOM:{
 			newLayerPos.SetY(
-				showVertexContets	? oldLayerPos.GetY() - dh
-									: oldLayerPos.GetY() + dh
+				showVertexContets? oldLayerPos.GetY() - dh
+								 : oldLayerPos.GetY() + dh
 			);
 			layer->SetPosition(newLayerPos);
 			break;
 		}
 		case LayerLayoutParams::MIDDLE:{
 			newLayerPos.SetY(
-				showVertexContets	? oldLayerPos.GetY() - (dh/2)
-									: oldLayerPos.GetY() + (dh/2)
+				showVertexContets? oldLayerPos.GetY() - (dh/2)
+								 : oldLayerPos.GetY() + (dh/2)
 			);
 			layer->SetPosition(newLayerPos);
 			break;
 		}
-		case LayerLayoutParams::TOP:	
-			break;
 		default: assert(0);
 	};
-
-	assert (newLayerPos.GetY() >= 0);
 }
 
 //-----------------------------------------------------------------------
@@ -442,7 +439,14 @@ bool LayoutCalculator::ShowContentsOfVertex (
 
 	ForAllEdgesCalcTailPosition(v->GetAllOutgoingEdgesRenderingInfo(), true);
 	ForAllEdgesCalcHeadPosition(v->GetAllIncomingEdgesRenderingInfo(), v->GetVertexMainRectangle());
-	UpdateLayerPos (layer, true);
+	if (lParams->layerParams.layersAlignment != LayerLayoutParams::TOP)
+		UpdateLayerPos (layer, true);
+
+	if (layer->GetY() < lParams->layerParams.distanceFromTopLeftCorner.GetHeight()) {
+		length_t dy = (-layer->GetY()) + lParams->layerParams.distanceFromTopLeftCorner.GetHeight();
+		FOR_ALL_LAYERS (l, layers->GetLayersRenderingInfo())
+			(*l)->SetPosition((*l)->GetX(), (*l)->GetY() + dy);
+	}
 	return true;
 }
 
