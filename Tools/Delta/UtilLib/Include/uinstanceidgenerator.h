@@ -1,7 +1,10 @@
 // uinstanceidgenerator.h
 // Class enabling to generate unique resource keys
 // (usually for named loadable items in an application)
-// supporting auto-naming and copy (clone) naming.
+// supporting three schemes: (i) ids from explicit names; 
+// (ii) automatic ids; and (iii) ids from copied items.
+// All guarantee unique naming based on distinct prefix
+// characters supplied to the class.
 // A. Savidis, October 2011.
 //
 
@@ -48,8 +51,8 @@ class UTILLIB_CLASS uinstanceidgenerator {
 		char				_copiedSeparator,
 		util_ui32			_maxCopies,
 		const std::string&	_invalidId,
-		FindCallback	_f, 
-		void*			_c = (void*) 0
+		FindCallback		_f, 
+		void*				_c = (void*) 0
 	):	autoIdSerial	(0),
 		namedPrefix		(_namedPrefix),
 		autoPrefix		(_autoPrefix),

@@ -1,7 +1,10 @@
-// uinstanceidgenerator.cpp
+// uinstanceidgenerator.h
 // Class enabling to generate unique resource keys
 // (usually for named loadable items in an application)
-// supporting auto-naming and copy (clone) naming.
+// supporting three schemes: (i) ids from explicit names; 
+// (ii) automatic ids; and (iii) ids from copied items.
+// All guarantee unique naming based on distinct prefix
+// characters supplied to the class.
 // A. Savidis, October 2011.
 //
 
