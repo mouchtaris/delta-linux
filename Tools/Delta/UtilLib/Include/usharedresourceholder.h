@@ -25,15 +25,21 @@ template <class T> struct uresource_default_traits {
 
 template <class RcTraits> class usharedresourceholder {
 
+	public:
+	typedef typename RcTraits::type				rc_type;
+	typedef std::map<std::string, rc_type*>		by_key_map;
+
 	private:
-	typedef typename RcTraits::type T;
-	std::map<std::string, T*> byKey;
-	
-	typedef std::pair<std::string, util_ui16>	entry;
-	std::map<T*, entry>							byRc;
+	typedef rc_type								T;
+	typedef std::pair<std::string, util_ui16>	rc_entry;
+	typedef std::map<T*, rc_entry>				by_rc_map;
+
+	by_key_map									byKey;	
+	by_rc_map									byRc;
 
 	public:
-	std::map<std::string, T*>& getall (void) { return byKey; }
+	by_key_map& getall (void) { return byKey; }
+	const by_key_map& getall (void) const { return byKey; }
 
 	util_ui32 total (void) const {
 		DASSERT(byRc.size() == byKey.size()); 
@@ -44,7 +50,7 @@ template <class RcTraits> class usharedresourceholder {
 		typename std::map<std::string, T*>::iterator i = byKey.find(key);
 		if (i == byKey.end()) {
 			DASSERT(byRc.find(rc) == byRc.end());
-			byRc[rc]	= entry(key, 1);
+			byRc[rc]	= rc_entry(key, 1);
 			byKey[key]	= rc;
 		}
 		else {
@@ -58,7 +64,7 @@ template <class RcTraits> class usharedresourceholder {
 		{ return byRc.find(const_cast<T*>(rc)) != byRc.end(); }
 
 	void ignore (T* rc) {
-		typename std::map<T*, entry>::iterator i = byRc.find(rc);
+		typename std::map<T*, rc_entry>::iterator i = byRc.find(rc);
 		DASSERT(i != byRc.end() && i->second.second);
 		
 		typename std::map<std::string, T*>::iterator j = byKey.find(i->second.first);
@@ -79,7 +85,7 @@ template <class RcTraits> class usharedresourceholder {
 	}
 
 	const std::string& getkey (const T* rc) const {
-		typename std::map<T*, entry>::const_iterator i = byRc.find(const_cast<T*>(rc));
+		typename std::map<T*, rc_entry>::const_iterator i = byRc.find(const_cast<T*>(rc));
 		DASSERT(i != byRc.end() && i->second.second);
 		return i->second.first;
 	}
@@ -91,7 +97,7 @@ template <class RcTraits> class usharedresourceholder {
 	}
 
 	void unuse (T* rc) { 
-		typename std::map<T*, entry>::iterator i = byRc.find(rc);
+		typename std::map<T*, rc_entry>::iterator i = byRc.find(rc);
 		DASSERT(i != byRc.end() && i->second.second);
 		
 		typename std::map<std::string, T*>::iterator j = byKey.find(i->second.first);
@@ -109,7 +115,7 @@ template <class RcTraits> class usharedresourceholder {
 			byRc.begin(),
 			byRc.end(),
 			ufunctor_first< 
-				std::pair<T*, entry>, 
+				std::pair<T*, rc_entry>, 
 				typename RcTraits::destroy_function_type
 			>(RcTraits::destroy_function)
 		);

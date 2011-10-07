@@ -236,6 +236,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\UtilLib\Src\uinstanceidgenerator.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\UtilLib\Src\ulatedestructor.cpp"
 					>
 				</File>
@@ -385,6 +389,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\UtilLib\Include\uinstanceholder.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\UtilLib\Include\uinstanceidgenerator.h"
 					>
 				</File>
 				<File
