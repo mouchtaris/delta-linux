@@ -20,45 +20,47 @@
 
 ///////////////////////////////////////////////////////////
 
-#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PRIVATE_DEF(_superclass)					\
-	typedef _superclass*	(*ConstructorFunc)(GenericReader& reader);						\
-	typedef std::map<std::string, ConstructorFunc>	Constructors;							\
-	static Constructors*	constructors;													\
+#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PRIVATE_DEF(_superclass)									\
+	typedef _superclass*	(*ReaderConstructorFunc)(GenericReader& reader);								\
+	typedef std::map<std::string, ReaderConstructorFunc>	ReaderConstructors;								\
+	static ReaderConstructors*	readerConstructors;															\
 
 //**************************
 	
-#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PUBLIC_DEF(_superclass)					\
-	static void				InitialiseConstructors (void);									\
-	static void				CleanUpConstructors (void);										\
-	static void				InstallConstructor (											\
-								const std::string&	classId,								\
-								ConstructorFunc		ctor									\
-							);																\
-	static _superclass*	 Construct (GenericReader& reader);									\
-	static void			 WriteClassId (GenericWriter& writer, const std::string& classId);	\
+#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PUBLIC_DEF(_superclass)									\
+	static void				InitialiseReaderConstructors (void);											\
+	static void				CleanUpReaderConstructors (void);												\
+	static void				InstallReaderConstructor (														\
+								const std::string&		classId,											\
+								ReaderConstructorFunc		ctor											\
+							);																				\
+	static _superclass*	 Construct (GenericReader& reader);													\
+	static void			 WriteClassId (GenericWriter& writer, const std::string& classId);					\
 
 //**************************
 
-#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_IMPL(_superclass)						\
-	_superclass::Constructors* _superclass::constructors = (Constructors*) 0;				\
-	void	_superclass::InitialiseConstructors (void) { unew(constructors); }				\
-	void	_superclass::CleanUpConstructors (void) { udelete(constructors); }				\
-	/* invoke for every distinct subclass upon initialisation */							\
-	void _superclass::InstallConstructor (const std::string& classId, ConstructorFunc ctor)	\
-		{ (*DPTR(constructors))[classId] = ctor; }											\
-	/* requires the ERROR_HANDLER macro for posting primary / domino errors */				\
-	_superclass* _superclass::Construct (GenericReader& reader) {							\
-		std::string				classId;													\
-		Constructors::iterator	i = DPTR(constructors)->end();								\
-		UCHECK_PRIMARY_ERROR(reader.read(classId, false), "class id");						\
-		UCHECK_PRIMARY_ERROR(																\
-			(i = DPTR(constructors)->find(classId)) != DPTR(constructors)->end(),			\
-			uconstructstr("invalid class id '%s'", classId.c_str())							\
-		);																					\
-		return (*i->second)(reader);														\
-		FAIL: return (_superclass*) 0;														\
-	}																						\
-	void _superclass::WriteClassId (GenericWriter& writer, const std::string& classId)		\
+#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_IMPL(_superclass)										\
+	_superclass::ReaderConstructors* _superclass::readerConstructors = (ReaderConstructors*) 0;				\
+	void	_superclass::InitialiseReaderConstructors (void) { unew(readerConstructors); }					\
+	void	_superclass::CleanUpReaderConstructors (void) { udelete(readerConstructors); }					\
+	/* invoke for every distinct subclass upon initialisation */											\
+	void _superclass::InstallReaderConstructor (const std::string& classId, ReaderConstructorFunc ctor)	{	\
+		DASSERT(DPTR(readerConstructors)->find(classId) == DPTR(readerConstructors)->end());				\
+		(*DPTR(readerConstructors))[classId] = ctor;														\
+	}																										\
+	/* requires the ERROR_HANDLER macro for posting primary / domino errors */								\
+	_superclass* _superclass::Construct (GenericReader& reader) {											\
+		std::string				classId;																	\
+		ReaderConstructors::iterator i = DPTR(readerConstructors)->end();									\
+		UCHECK_PRIMARY_ERROR(reader.read(classId, false), "class id");										\
+		UCHECK_PRIMARY_ERROR(																				\
+			(i = DPTR(readerConstructors)->find(classId)) != DPTR(readerConstructors)->end(),				\
+			uconstructstr("invalid class id '%s'", classId.c_str())											\
+		);																									\
+		return (*i->second)(reader);																		\
+		FAIL: return (_superclass*) 0;																		\
+	}																										\
+	void _superclass::WriteClassId (GenericWriter& writer, const std::string& classId)						\
 		{ writer.write(classId); }
 
 ///////////////////////////////////////////////////////////
