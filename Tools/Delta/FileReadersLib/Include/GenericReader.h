@@ -65,6 +65,41 @@
 
 ///////////////////////////////////////////////////////////
 
+#define	GENERIC_READER_COMMON_LOAD_STORE_METHODS_PUBLIC_DEF								\
+	bool	LoadBin (const std::string& path);											\
+	void	StoreBin (const std::string& path) const;									\
+	void	StoreText (const std::string& path) const;
+
+//**************************
+// Require the ERROR_HANDLER macro for posting primary / domino errors.
+
+#define	GENERIC_READER_COMMON_LOAD_STORE_METHODS_IMPL(_class)							\
+	void _class::StoreText (const std::string& path) const {							\
+		if (FILE* fp = fopen(path.c_str(), "wt")) {										\
+			WriteText(fp);																\
+			fclose(fp);																	\
+		}																				\
+	}																					\
+	void _class::StoreBin (const std::string& path) const {								\
+		if (FILE* fp = ubinaryfileopen(path, "w")) {									\
+			Write(PortableBinFileWriter(fp));											\
+			fclose(fp);																	\
+		}																				\
+	}																					\
+	bool _class::LoadBin (const std::string& path) {									\
+		FILE* fp = ubinaryfileopen(path, "r");											\
+		UCHECK_PRIMARY_ERROR(fp, uconstructstr("(failed to open '%s')", path.c_str()));	\
+		UCHECK_DOMINO_ERROR(															\
+			Read(PortableBinFileReader(fp)),											\
+			uconstructstr("(from '%s')", path.c_str())									\
+		);																				\
+		fclose(fp);																		\
+		return true;																	\
+		FAIL: if (fp) fclose(fp); return false;											\
+	}
+
+///////////////////////////////////////////////////////////
+
 class GenericReader {
 	public:
 	template <typename T>
