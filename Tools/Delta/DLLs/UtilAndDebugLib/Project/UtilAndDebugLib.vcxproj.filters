@@ -88,6 +88,9 @@
     <ClCompile Include="..\..\..\UtilLib\Src\uvalidator.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uinstanceidgenerator.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\DebugLib\Include\DAllocationStats.h">
@@ -232,6 +235,9 @@
       <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\UtilLib\Include\uinstancemanager.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uinstanceidgenerator.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
