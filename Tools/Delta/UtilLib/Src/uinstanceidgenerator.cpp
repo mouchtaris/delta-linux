@@ -42,15 +42,15 @@ const std::string uinstanceidgenerator::NewCopiedId (const std::string& _id) con
 				DASSERT(isdigit(*i));
 
 		DASSERT(separatorPos >= 2);											// should have a correct separator
-		id = std::string() + copiedPrefix + id.substr(1, separatorPos - 1);	// drop '<prefi>' and '<separator><i>' suffix
+		id = std::string() + copiedPrefix + id.substr(1, separatorPos - 1);	// drop '<prefix>' and '<separator><i>' suffix
 	}
 
 	std::string suffix;
 	for (util_ui32 i = 0; i < maxCopies; ++i)								// add a unique '<separator><j>' suffix
-		if (!find(suffix = uconstructstr("%c%u", i, copiedPrefix)))
+		if (!find(id + (suffix = uconstructstr("%c%u", copiedSeparator, i))))
 			return id + suffix;
 
-	DASSERT(false);															// to many copies
+	DASSERT(false);															// too many copies
 	return invalidId;														// can't create? invalid id
 }
 
