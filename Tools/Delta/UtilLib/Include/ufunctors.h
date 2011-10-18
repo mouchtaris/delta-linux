@@ -1738,6 +1738,24 @@ struct ubind_traits<uspecific_mem_fun<_Result,_T,_f> >:
 	public ubind1_traits<uspecific_mem_fun<_Result,_T,_f> >
 	{ };
 
+// For member function pointers (ref flavour)
+// NOTE: binding for const references is not allowed eitherway,
+// therefor no specialisations for those mem_fun_ptr types are provided.
+template <typename _Result, typename _T, typename _Arg1, typename _Arg2>
+struct ubind_traits<umem_fun2_ref<_Result, _T, _Arg1, _Arg2> >:
+	public ubind3_traits<umem_fun2_ref<_Result, _T, _Arg1, _Arg2> >
+	{ };
+
+template <typename _Result, typename _T, typename _Arg1>
+struct ubind_traits<umem_fun1_ref<_Result, _T, _Arg1> >:
+	public ubind2_traits<umem_fun1_ref<_Result, _T, _Arg1> >
+	{ };
+
+template <typename _Result, typename _T>
+struct ubind_traits<umem_fun_ref<_Result, _T> >:
+	public ubind1_traits<umem_fun_ref<_Result, _T> >
+	{ };
+
 /////////////////////////////////////////////////////////////////
 
 // WARNING: this template version in which the second parameter is an arbitrary type _Value
