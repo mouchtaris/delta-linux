@@ -30,7 +30,7 @@ const std::string uinstanceidgenerator::NewAutoId (void) const {
 const std::string uinstanceidgenerator::NewCopiedId (const std::string& _id) const {
 	std::string id(_id);
 	if (IsNamedId(id) || IsAutoId(id))
-		id = std::string() + copiedPrefix + id;
+		id = uconstructstr("%c%s%c0", copiedPrefix, _id.c_str(), copiedSeparator);
 	else {
 		DASSERT(IsCopiedId(id));
 
