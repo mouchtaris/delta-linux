@@ -74,6 +74,7 @@ typedef boost::asio::error boost_asio_error_t;
 #define BOOST_SPIRIT_CLASSIC_PARSE									boost::spirit::parse
 #define BOOST_SPIRIT_CLASSIC_NAMESPACE								boost::spirit
 #define BOOST_FILESYSTEM_DIRECTORY_METHOD							directory_string
+#define BOOST_SOCKET_IO_SERVICE										io_service
 
 // and tuple serialisation provided by boost 
 #include <boost/serialization/tuple.hpp>
@@ -150,6 +151,8 @@ namespace portability {
 #define BOOST_SPIRIT_CLASSIC_NAMESPACE			boost::spirit::classic
 //
 #define BOOST_FILESYSTEM_DIRECTORY_METHOD		string
+//
+#define BOOST_SOCKET_IO_SERVICE					get_io_service
 
 // We have to explicitly serialise tuple
 namespace boost {

@@ -8,7 +8,6 @@
 #define NET_NETUTILS_H
 
 #include "Portability.h"
-
 #include "Common.h"
 #include "StringUtils.h"
 #include "Endpoint.h"
@@ -49,7 +48,7 @@ const typename Proto::endpoint resolve (const Endpoint& p, boost::asio::io_servi
 template <class Proto, class ErrorHandler>
 void connect_to (const Endpoint& p, typename Proto::socket& socket, ErrorHandler errHandler)
 {
-	typename Proto::resolver resolver(socket.get_io_service());
+	typename Proto::resolver resolver(socket.BOOST_SOCKET_IO_SERVICE());
 	typename Proto::resolver::query query(util::str2std(p.GetHost()), util::str2std(p.GetPort()));
 	typename Proto::resolver::iterator iter = resolver.resolve(query), end;
 
@@ -78,7 +77,7 @@ bool connect_to (const Endpoint& p, typename Proto::socket& socket)
 template <class Proto, class Handler>
 void async_connect_to (const Endpoint& p, typename Proto::socket& socket, Handler handler)
 {
-	typename Proto::resolver resolver(socket.get_io_service());
+	typename Proto::resolver resolver(socket.BOOST_SOCKET_IO_SERVICE());
 	typename Proto::resolver::query query(util::str2std(p.GetHost()), util::str2std(p.GetPort()));
 	typename Proto::resolver::iterator iter = resolver.resolve(query), end;
 

@@ -10,6 +10,7 @@
 #ifndef NET_COMMANDSERVER_H
 #define NET_COMMANDSERVER_H
 
+#include "Portability.h"
 #include "Common.h"
 #include "CommandDispatcher.h"
 #include "Endpoint.h"
@@ -62,13 +63,13 @@ public:
 
 	//******************************************************************
 
-	IOService&	GetIOService (void) { return m_acceptor.get_io_service(); }
+	IOService&	GetIOService (void) { return m_acceptor.BOOST_SOCKET_IO_SERVICE(); }
 	uint16		GetPort (void) const { return m_acceptor.local_endpoint().port(); }
 
 private:
 	void accept (void)
 	{
-		LinkPtrType conn(new LinkType(m_acceptor.get_io_service()));
+		LinkPtrType conn(new LinkType(m_acceptor.BOOST_SOCKET_IO_SERVICE()));
 		m_acceptor.async_accept(
 			conn->socket(), boost::bind(&TCPCommandServer::acceptHandler, this, _1, conn)
 		);
@@ -157,13 +158,13 @@ public:
 
 	//******************************************************************
 
-	IOService&	GetIOService (void) { return m_acceptor.get_io_service(); }
+	IOService&	GetIOService (void) { return m_acceptor.BOOST_SOCKET_IO_SERVICE(); }
 	uint16		GetPort (void) const { return m_acceptor.local_endpoint().port(); }
 
 private:
 	void acceptTCP (void)
 	{
-		LinkTCPPtrType conn(new LinkTCPType(m_acceptor.get_io_service()));
+		LinkTCPPtrType conn(new LinkTCPType(m_acceptor.BOOST_SOCKET_IO_SERVICE()));
 		m_acceptor.async_accept(
 			conn->socket(), boost::bind(&HybridCommandServer::acceptTCPHandler, this, _1, conn)
 		);
