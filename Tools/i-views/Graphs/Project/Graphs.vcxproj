@@ -101,6 +101,16 @@
     <ClInclude Include="..\Include\Vertex.h" />
     <ClInclude Include="..\Include\VertexToDebugInfoMapping.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Components\DeltaVM\DeltaVM_LocalCopy.vcxproj">
+      <Project>{a3b3f416-986c-4d90-ab38-48d757ee13bc}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DebugInfo\Project\DebugInfo.vcxproj">
+      <Project>{1d9f139c-1f01-400e-8473-64d3ecef376c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

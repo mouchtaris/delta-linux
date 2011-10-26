@@ -132,6 +132,28 @@
     <ClInclude Include="..\Include\Bookmark.h" />
     <ClInclude Include="..\Include\BookmarkManager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\FindReplace\FindAndReplaceUserInterface\FindAndReplaceUserInterface.vcxproj">
+      <Project>{421b89ab-bd44-4ae8-aa33-8cfee93197c1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Geometry\Project\Geometry.vcxproj">
+      <Project>{799f7efe-0656-4d56-b888-96ebbb90bf5c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Graphs\Project\Graphs.vcxproj">
+      <Project>{1c7db508-a0a9-4270-96e4-8197083c3e6a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LayoutCalculator\Project\LayoutCalculator.vcxproj">
+      <Project>{c1b79835-9ef2-4d98-82ab-948772161cb0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LayoutRenderingPrimitives\Project\LayoutRenderingPrimitives.vcxproj">
+      <Project>{1b8b257a-784c-4038-928a-a6e8edb72604}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -92,6 +92,12 @@
     <ClInclude Include="..\Include\Text.h" />
     <ClInclude Include="..\Include\Triangle.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Geometry\Project\Geometry.vcxproj">
+      <Project>{799f7efe-0656-4d56-b888-96ebbb90bf5c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

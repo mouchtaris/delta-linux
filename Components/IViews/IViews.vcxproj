@@ -105,6 +105,10 @@
     <ClInclude Include="IViews.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\UnderGo\ScriptFighter\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
+      <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\..\Base\BaseLibrary\BaseLibrary.vcxproj">
       <Project>{d39911b6-2b65-4a27-bb3d-31f6c45a4b5a}</Project>
     </ProjectReference>
@@ -164,6 +168,10 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Tools\SparrowLib\SparrowLib.vcxproj">
       <Project>{edeb0882-33b3-40d2-8a56-d34797b54e3b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tools\SparrowLib\SparrowLib_LocalCopy.vcxproj">
+      <Project>{edeb0882-33b3-40d2-8a56-d34797b54e3b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

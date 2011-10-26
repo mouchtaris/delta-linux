@@ -97,6 +97,16 @@
     <ClInclude Include="..\Include\XmlEscape.h" />
     <ClInclude Include="..\Include\XmlToGraph.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Graphs\Project\Graphs.vcxproj">
+      <Project>{1c7db508-a0a9-4270-96e4-8197083c3e6a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LayoutCalculator\Project\LayoutCalculator.vcxproj">
+      <Project>{c1b79835-9ef2-4d98-82ab-948772161cb0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
