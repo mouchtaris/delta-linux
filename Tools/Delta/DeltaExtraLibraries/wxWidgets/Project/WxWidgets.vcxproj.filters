@@ -653,6 +653,9 @@
     <ClCompile Include="..\Src\DeltaWxWizardPageSimple.cpp">
       <Filter>Source Files\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxScrollBar.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\DeltaWxWidgets.h">
@@ -1239,6 +1242,9 @@
     </ClInclude>
     <ClInclude Include="..\Include\DeltaWxStdDialogButtonSizer.h">
       <Filter>Header Files\Sizers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxScrollBar.h">
+      <Filter>Header Files\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

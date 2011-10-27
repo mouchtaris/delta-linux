@@ -94,6 +94,10 @@
     <None Include="Deps.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SocketLib\Project\SocketLib.vcxproj">
+      <Project>{ce9d2174-a1f1-48ee-927e-94ca4a752f4b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\..\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
       <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\FileReadersLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DELTA)\DebugLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;READERS_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -66,7 +66,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\FileReadersLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DELTA)\DebugLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;READERS_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
