@@ -114,7 +114,7 @@ template <> struct DeltaArg<util_i32> {
 
 template <> struct DeltaArg<util_ui32> {
 	
-	_DLIB_ARG_MEMBERS_(util_i32)
+	_DLIB_ARG_MEMBERS_(util_ui32)
 	bool operator()(DeltaVirtualMachine* vm, const char* func, util_ui32 n) {
 		_DLIB_GET_NUMBER_(func, n);
 		if (((util_ui32) num) != num) {
