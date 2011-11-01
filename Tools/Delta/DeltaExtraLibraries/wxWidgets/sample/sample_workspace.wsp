@@ -2,7 +2,7 @@
 <Workspace name="sample_workspace" version="alpha">
     <WorkspaceProperties>
         <symbolic>sample_workspace.wsp</symbolic>
-        <startup>wxWidgetsSample.dproj</startup>
+        <startup>FreeCell.dproj</startup>
         <config>0</config>
         <collapsed>0</collapsed>
         <breakpoints>break.dat</breakpoints>

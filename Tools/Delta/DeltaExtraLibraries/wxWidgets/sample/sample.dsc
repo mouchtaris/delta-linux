@@ -217,11 +217,19 @@ function oninitfunc() {
 	frame = frame_construct(nil, "ID_ANY", "test");
 	frame.show(true);
 	size = size_construct(-1,-1);
+	
+	frame.setscrollbar(wx::VERTICAL, 0, 10, 100, true);	//TOSEE why the look and feel of this scrollbar is correct?
+
+	fileopen_bmp = bitmap_construct("fileopen.bmp", "BITMAP_TYPE_BMP");
+	mask = mask_construct(fileopen_bmp, colour_construct(255, 255, 255));
+	fileopen_bmp.setmask(mask);
 
 //CREATE MENUS
 	fileMenu = menu_construct();
 	helpMenu = menu_construct();
-	helpMenu.append("ID_ABOUT", "&Change Background...\tAlt-C", "Change the frame background colour");
+	menuitem = menuitem_construct(helpMenu, ID_ABOUT, "&Change Background...\tAlt-C", "Change the frame background colour");
+	menuitem.setbitmap(fileopen_bmp);
+	helpMenu.append(menuitem);
 	helpMenu.append(0, "Show Modal &Dialog\tAlt-D", "Show an empty modal dialog");
 	fileMenu.append("ID_OPEN", "O&pen\tAlt-O", "Open a file dialog");
 	fileMenu.append(11, "&Run wizard modal...\tCtrl-R");
@@ -239,7 +247,6 @@ function oninitfunc() {
 	
 //CREATE TOOLBAR
 	toolbar = frame.createtoolbar();
-	fileopen_bmp = bitmap_construct("fileopen.bmp", "BITMAP_TYPE_BMP");
 	toolbar.addtool("ID_OPEN", "Open", fileopen_bmp, "Open a file dialog");
 	toolbar.addseparator();
 	quit_bmp = bitmap_construct("quit.bmp", "BITMAP_TYPE_BMP");

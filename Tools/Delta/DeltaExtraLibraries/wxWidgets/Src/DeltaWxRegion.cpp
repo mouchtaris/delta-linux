@@ -131,7 +131,7 @@ WX_FUNC_ARGRANGE_START(region_construct, 0, 4, Nil)
 			int fillStyle = wxODDEVEN_RULE;
 			if (n >= 3) { WX_GETDEFINE_DEFINED(fillStyle) }
 			wxregion = new wxRegion(size, pts, fillStyle);
-			DDELARR(points);
+			DDELARR(pts);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
 			if (DLIB_WXISBASE(Point, serial_no, point, point)) {

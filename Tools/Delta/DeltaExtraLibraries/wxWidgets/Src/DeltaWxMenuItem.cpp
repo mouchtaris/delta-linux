@@ -3,6 +3,7 @@
 #include "DeltaWxMenu.h"
 #include "DeltaWxColour.h"
 #include "DeltaWxFont.h"
+#include "DeltaWxBitmap.h"
 #include "DDebug.h"
 #include "DeltaVirtualMachine.h"
 #include "DeltaTable.h"
@@ -31,6 +32,8 @@ WX_FUNC_DEF(setbackgroundcolour)
 WX_FUNC_DEF(setfont)
 WX_FUNC_DEF(setmarginwidth)
 WX_FUNC_DEF(settextcolour)
+WX_FUNC_DEF(setbitmap)
+WX_FUNC_DEF(setbitmaps)
 #endif //__WXMSW__
 WX_FUNC_DEF(gethelp)
 WX_FUNC_DEF(getid)
@@ -81,6 +84,8 @@ WX_FUNCS_START
 	WX_FUNC(setfont),
 	WX_FUNC(setmarginwidth),
 	WX_FUNC(settextcolour),
+	WX_FUNC(setbitmap),
+	WX_FUNC(setbitmaps),
 #endif //__WXMSW__
 	WX_FUNC(sethelp),
 	WX_FUNC(setmenu),
@@ -352,6 +357,20 @@ DLIB_FUNC_START(menuitem_settextcolour, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	mitem->SetTextColour(*colour);
+}
+
+DLIB_FUNC_START(menuitem_setbitmap, 2, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
+	mitem->SetBitmap(*bmp);
+}
+
+WX_FUNC_ARGRANGE_START(menuitem_setbitmaps, 2, 3, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	DLIB_WXGET_BASE(bitmap, Bitmap, checked)
+	wxBitmap *unchecked = &wxNullBitmap;
+	if (n >= 3) { DLIB_WXGET_BASE(bitmap, Bitmap, _unchecked) unchecked = _unchecked; }
+	mitem->SetBitmaps(*checked, *unchecked);
 }
 #endif //__WXMSW__
 DLIB_FUNC_START(menuitem_sethelp, 2, Nil)

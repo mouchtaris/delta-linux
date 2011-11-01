@@ -93,11 +93,11 @@ class wxAppAdapter  {
 	void				SetAppName(const wxString& name)	{ app->SetAppName(name); }
 	void				SetClassName(const wxString& name)	{ app->SetClassName(name); }
 	void				SetExitOnFrameDelete(bool flag)		{ app->SetExitOnFrameDelete(flag); }
-	 void				SetTopWindow(wxWindow *win)			{ app->SetTopWindow(win); }
-	 void				SetVendorName(const wxString& name)	{ app->SetVendorName(name); }
-	 void				SetUseBestVisual( bool flag, bool forceTrueColour = false )		
+	void				SetTopWindow(wxWindow *win)			{ app->SetTopWindow(win); }
+	void				SetVendorName(const wxString& name)	{ app->SetVendorName(name); }
+	void				SetUseBestVisual( bool flag, bool forceTrueColour = false )		
 							{ app->SetUseBestVisual(flag, forceTrueColour); }
-	 bool				Yield(bool onlyIfNeeded)			{ return app->Yield(onlyIfNeeded); }
+	bool				Yield(bool onlyIfNeeded)			{ return app->Yield(onlyIfNeeded); }
 
 	wxAppAdapter (void) : app (new wxAppDerived(this)), isDelegate(false)
 		{ app->argc = 0,  app->argv = (wxChar**) 0; }
