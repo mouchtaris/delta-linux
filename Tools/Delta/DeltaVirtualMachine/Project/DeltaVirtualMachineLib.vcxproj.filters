@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{5ac997d6-d744-4f75-89dc-1d37de23d66d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Collector">
+      <UniqueIdentifier>{4d78dc1d-9af2-4dd3-bb1d-0e7a29da021f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Types">
+      <UniqueIdentifier>{70ff3e7e-9e53-4d4f-a207-b685bee4aea1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{5248b02f-e546-4b9c-bf52-bdfaa683c02e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Debugger Extensions">
+      <UniqueIdentifier>{7fbe8497-c4e8-4885-b4f4-d368f002e28e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Closures">
+      <UniqueIdentifier>{bf8ba075-0c5b-41c5-ba4e-f01013e9887b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Instructions">
+      <UniqueIdentifier>{782121ad-7b31-4ec5-824f-fd727e400d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Profiler">
+      <UniqueIdentifier>{fa18d216-3c8c-40f6-8a6f-44cbe6215bbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{3da665ec-87f8-4dbb-9f0a-1c1d4b38c596}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Instructions">
+      <UniqueIdentifier>{563faf6a-e2c7-4788-a157-2614d31536be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Collector">
+      <UniqueIdentifier>{7805734d-3775-4769-967b-7913cb939f4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Types">
+      <UniqueIdentifier>{35157a24-6bdf-4c25-83c6-1ea099d63822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Debugger Extensions">
+      <UniqueIdentifier>{28af7a89-d7a0-4030-b759-2df43883ec29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Closures">
+      <UniqueIdentifier>{cabeed80-4d69-4a4a-9c71-76b5383f0773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Profiler">
+      <UniqueIdentifier>{f1aa928d-bbaf-40ee-b4e9-5a4cbbead366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{4506eb32-bde6-48ce-ad68-3996d417bb0e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Src\ContainerDelayedCollector.cpp">
+      <Filter>Source Files\Collector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaCollectableContainer.cpp">
+      <Filter>Source Files\Collector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaExternId.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaExternIdFactory.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaExternIdFieldGetter.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaLibraryFuncArgsBinder.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaObject.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaObjectValidator.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaString.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaTable.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaTableFactory.cpp">
+      <Filter>Source Files\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\CallTracesAndCallInformation.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaArgumentsRecycler.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaAssertExtensions.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaExceptionHandling.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaLibFuncBinder.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaLibFuncOverloading.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaLibraryObjectCreator.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaRuntimeError.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaValue.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaValueValidator.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaVirtualMachine.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaVMRegistry.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\LoadByteCode.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\TranslateOperand.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\VMInit.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaDebugDynamicActivator.cpp">
+      <Filter>Source Files\Debugger Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaClosure.cpp">
+      <Filter>Source Files\Closures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaClosureCreator.cpp">
+      <Filter>Source Files\Closures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaClosureHandling.cpp">
+      <Filter>Source Files\Closures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaClosureVarProxy.cpp">
+      <Filter>Source Files\Closures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Arithmetic.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Assign.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Block.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\BlockIdStacks.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaAssert.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Execute.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ForEach.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Func.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\FuncEnter.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\FuncRet.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Jump.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\OperatorOverloading.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\PushArg.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Table.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\TryTrapThrow.cpp">
+      <Filter>Source Files\Instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaProfiler.cpp">
+      <Filter>Source Files\Profiler</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Include\Delta.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Arithmetic.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ArithmeticP.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Assign.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Block.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\BlockIdStacks.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Execute.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ForEach.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Func.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\FuncEnter.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\FuncRet.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Jump.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\JumpP.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\OperatorOverloading.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\PushArg.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Table.h">
+      <Filter>Header Files\Instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ContainerDelayedCollector.h">
+      <Filter>Header Files\Collector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaCollectableContainer.h">
+      <Filter>Header Files\Collector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaCollectableSimple.h">
+      <Filter>Header Files\Collector</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaCreationInfo.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaExternId.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaExternIdFactory.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaExternIdFieldGetter.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaLibraryFuncArgsBinder.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaObject.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaObjectValidator.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaString.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaTable.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaTableFactory.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaTableP.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaValueTypes.h">
+      <Filter>Header Files\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaDebugDynamicActivator.h">
+      <Filter>Header Files\Debugger Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaDebugExtensionsSuper.h">
+      <Filter>Header Files\Debugger Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaClosure.h">
+      <Filter>Header Files\Closures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaClosureCreator.h">
+      <Filter>Header Files\Closures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaClosureHandling.h">
+      <Filter>Header Files\Closures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaClosureVarProxy.h">
+      <Filter>Header Files\Closures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaProfiler.h">
+      <Filter>Header Files\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaArgumentsRecycler.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaAssertExtensions.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaExceptionHandling.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaLibFuncBinder.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaLibFuncOverloading.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaLibraryObjectCreator.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaRuntimeError.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaValue.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaValueP.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaValueValidator.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaVirtualMachine.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaVirtualMachineP.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaVMRegistry.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\VMInit.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Src\Defines.txt" />
+    <None Include="..\..\Manuals\OperatorOverloading.txt" />
+  </ItemGroup>
+</Project>
