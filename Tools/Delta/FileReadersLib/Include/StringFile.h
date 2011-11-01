@@ -70,7 +70,7 @@ class READERS_CLASS StringFile {
 
 	public:
 
-	virtual bool	sfeof (void) const;								// As in C.
+	virtual bool	sfeof (void) const;							// As in C.
 	virtual void	sfreload (char* buffer, util_ui32 size);	// Use new buffer.
 
 	bool			sfread (sfarg_t type, void* arg);			// Reads a single arg. Returns success status.
