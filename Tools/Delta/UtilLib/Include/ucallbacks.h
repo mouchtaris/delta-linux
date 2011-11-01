@@ -236,7 +236,7 @@ template <class F, class D = ucallbackwithclosure<F> > class ucallbacklist {
 };
 
 /////////////////////////////////////////////////////////////////
-// This class can be used as a base for classes that aim to provided
+// This class can be used as a base for classes that aim to provide
 // change notification. Alternatively it may be used as a field.
 // It is up to the caller to supply the appropriate derived instance.
 
