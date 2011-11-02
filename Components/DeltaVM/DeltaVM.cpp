@@ -477,7 +477,7 @@ namespace ide
 		const std::string curi = util::str2std(uri);
 		const std::string coptions = util::str2std(options);
 		const std::string cdirectory = util::str2std(directory);
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
+		const std::string sparrowDir = IDECore::GetInstallationDir();
 		util::ConsoleHost().Execute(sparrowDir + executable + " \"" + curi + "\"" + coptions, cdirectory);
 		Call<void (const String&), SafeCall>(s_classId, "Output", "Append")(_("Running externally: ") + uri + _T("\n"));
 	}
@@ -505,7 +505,7 @@ namespace ide
 #else 
 		const String debugger = _T("DeltaConsoleDebugger");
 #endif
-		const String sparrowDir	= util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir	= util::std2str(IDECore::GetInstallationDir());
 
 		util_ui32 negotiationPort = DeltaDebugClient::ServerPortNegotiation::Start();
 		if (!negotiationPort) {
@@ -1427,12 +1427,12 @@ namespace ide
 	//-----------------------------------------------------------------------
 
 	EXPORTED_STATIC(DeltaVM, const String, GetConfigScriptDirectory, (void))
-		{ return util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/" + CONFIG_SCRIPTS_DIRECTORY + "/"); }
+		{ return util::std2str(IDECore::GetInstallationDir() + CONFIG_SCRIPTS_DIRECTORY + "/"); }
 
 	//-----------------------------------------------------------------------
 
 	EXPORTED_STATIC(DeltaVM, const String, GetExtensionScriptDirectory, (void))
-		{ return util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/" + EXTENSION_SCRIPTS_DIRECTORY + "/"); }
+		{ return util::std2str(IDECore::GetInstallationDir() + EXTENSION_SCRIPTS_DIRECTORY + "/"); }
 
 	//-----------------------------------------------------------------------
 
@@ -1558,7 +1558,7 @@ namespace ide
 
 	const std::string DeltaVM::GetExtensionAndConfigScriptsReservedByteCodeLoadingPath(void)
 	{
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
+		const std::string sparrowDir = IDECore::GetInstallationDir();
 		return	sparrowDir + "scripts/bin;"					+ 
 				sparrowDir + CONFIG_SCRIPTS_DIRECTORY + ";"	+ 
 				sparrowDir + EXTENSION_SCRIPTS_DIRECTORY;
@@ -1568,8 +1568,7 @@ namespace ide
 
 	const std::string DeltaVM::GetExtensionAndConfigScriptsReservedDllImportPath(void)
 	{
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir());
-		return sparrowDir + "/extension_dlls";
+		return IDECore::GetInstallationDir() + "extension_dlls";
 	}
 
 	//-----------------------------------------------------------------------
@@ -1913,7 +1912,7 @@ namespace ide
 #else 
 		const String executable = _T("DeltaVMDebug");
 #endif
-		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 		assert(func);
 		(*func)(
 			sparrowDir + executable + _T(" ") + util::quotepath(util::normalizepath(binary)) + options,

@@ -39,13 +39,8 @@ namespace ide {
 
 ////////////////////////////////////////////////////////////////////////
 
-const String GetLanguageDescriptionFile(void) {
-	return util::std2str(
-		util::normalizepath(
-			IDECore::GetInstallationDir() + "/EditorLanguages.xml"
-		)
-	);
-}
+const String GetLanguageDescriptionFile(void)
+	{ return util::std2str(IDECore::GetInstallationDir() + "EditorLanguages.xml"); }
 
 ////////////////////////////////////////////////////////////////////////
 

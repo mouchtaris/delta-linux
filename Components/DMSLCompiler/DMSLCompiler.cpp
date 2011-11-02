@@ -74,7 +74,7 @@ namespace ide
 
 	EXPORTED_STATIC(DMSLCompiler, void, Initialize, (void))
 	{
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
+		const std::string sparrowDir = IDECore::GetInstallationDir();
 		dmsl::DecisionMaker::Initialize(sparrowDir + "dmsl.ini");
 	}
 

@@ -119,7 +119,7 @@ namespace ide
 	COMPONENT_SET_PROPERTIES_FUNCTION(Shell, table)
 	{
 		//-- IDE Boot profile
-		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 		table.AddProperty(
 			"init_profile",
 			new conf::StringProperty(
@@ -602,7 +602,7 @@ namespace ide
 	//-----------------------------------------------------------------------
 
 	EXPORTED_FUNCTION(Shell, const String, GetSparrowWorkspaceURI, (void)) 
-		{ return util::std2str(util::normalizepath(IDECore::GetInstallationDir() + "/scripts/Sparrow.wsp")); }
+		{ return util::std2str(IDECore::GetInstallationDir() + "scripts/Sparrow.wsp"); }
 
 	EXPORTED_FUNCTION(Shell, bool, LoadSparrowWorkspaceDialog, (const String& message))
 	{
@@ -1136,7 +1136,7 @@ namespace ide
 		String profileUri = str.substr(0, delim);
 		wxFileName filename(profileUri);
 		if (!filename.IsAbsolute()) {
-			const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+			const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 			profileUri = sparrowDir + profileUri;	// if relative it should always be in the default installation dir
 		}
 		String workspaceUri = str.substr(delim + 1);

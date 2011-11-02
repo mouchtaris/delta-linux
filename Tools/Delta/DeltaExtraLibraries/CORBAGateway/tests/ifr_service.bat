@@ -1,1 +1,1 @@
-"%TAO_ROOT%\bin\IFR_Service.exe" -ORBInitRef NameService=file://ns.ior
+"%TAO_ROOT%\bin\tao_ifr_service.exe" -ORBInitRef NameService=file://ns.ior

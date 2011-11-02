@@ -12,6 +12,7 @@
 #include "UndefineAllWin32Shit.h"
 
 #include <boost/lexical_cast.hpp>
+#include <wx/stdpaths.h>
 #include <stdio.h>
 
 namespace ide {
@@ -61,7 +62,8 @@ void MessageRouterServer::OnInitialize (void)
 	}
 	else
 	{
-		FILE* fp = fopen(SERVER_PORT_INFO_FILE, "wt");
+		const std::string dataDir = util::str2std(wxStandardPaths::Get().GetUserDataDir());
+		FILE* fp = fopen((dataDir + SERVER_PORT_INFO_FILE).c_str(), "wt");
 		fprintf(fp, "Message router server port %u.\n", (uint32) m_server->GetPort());
 		fclose(fp);
 	}

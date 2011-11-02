@@ -69,7 +69,7 @@ namespace ide
 
 	ProfileRoot::ProfileRoot(void)
 	{
-		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 		AddInstanceProperty("path", new conf::StringProperty(_("Directory Path"), sparrowDir + _T("profiles"),
 			_("Directory path of profiles")));
 	}
@@ -120,7 +120,7 @@ namespace ide
 		};
 		///------------------------------------
 
-		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 		String path = conf::get_prop_value<conf::StringProperty>(GetProperty("path"), sparrowDir + _T("profiles"));
 
 		boost::filesystem::path dir_path(util::str2std(path));
@@ -152,7 +152,7 @@ namespace ide
 	EXPORTED_CMD_FUNCTION(ProfileRoot, EditDMSL, _("/{-10}Edit DMSL rules"), MT_NMAIN, "edit_dmsl")
 	{
 		DockableComponent::EnsureVisibility("EditorManager");
-		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 		const String file = sparrowDir + _T("sparrow.dmsl");
 		if (const Handle editor = Call<const Handle (const String&)>(this, "EditorManager", "OpenDocument")(file))
 			Call<void (const Handle&)>(this, editor, "SetAssociatedComponent")(this);
@@ -181,7 +181,7 @@ namespace ide
 		}
 
 		//-- ensure an seperator is appended at the end of the profile path
-		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 		String profiles_dir =
 			conf::get_prop_value<conf::StringProperty>(GetProperty("path"), sparrowDir + _T("profiles"));
 		if (!boost::algorithm::ends_with(profiles_dir, _T("/"))	&&

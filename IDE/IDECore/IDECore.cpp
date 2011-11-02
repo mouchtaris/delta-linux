@@ -33,6 +33,7 @@
 #include "SimpleTimer.h"
 #include "DelayedCaller.h"
 #include "PropertiesFactory.h"
+#include "StringUtils.h"
 
 #include "Call.h"
 #include "ComponentInitializer.h"
@@ -67,7 +68,7 @@ namespace ide
 	bool IDECore::Initialize(const std::string& componentConfiguration, int32 messageRouterServerNegotiationPort)
 	{
 #ifdef WIN32
-		wxRegKey regKey(_T("HKEY_LOCAL_MACHINE\\Software\\Sparrow"));
+		wxRegKey regKey(_T("HKEY_CURRENT_USER\\Software\\Sparrow"));
 		if (regKey.Exists()) {
 			String value;
 			if (!regKey.QueryValue(String(), value) || !wxFileName::DirExists(value))
@@ -77,9 +78,13 @@ namespace ide
 		}
 		else {
 			boost::filesystem::path fullPath(boost::filesystem::current_path());
-			installationDirectory =  (std::string) fullPath.BOOST_FILESYSTEM_DIRECTORY_METHOD();
+			installationDirectory = (std::string) fullPath.BOOST_FILESYSTEM_DIRECTORY_METHOD();
 		}
 #endif
+		installationDirectory = util::normalizepath(installationDirectory);
+		if (installationDirectory.back() != '/')
+			installationDirectory += '/';
+
 		fs::PathManager::Initialize();
 		fs::PathManager::Instance().AppendLocalDirectory(_T("Sparrow"));
 

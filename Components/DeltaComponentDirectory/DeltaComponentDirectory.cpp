@@ -426,8 +426,7 @@ namespace ide
 
 	const std::string DeltaComponentDirectory::GetXDFDirectory(void) const
 	{
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
-		return sparrowDir + "xdf/";
+		return IDECore::GetInstallationDir() + "xdf/";
 	}
 
 	//-----------------------------------------------------------------------

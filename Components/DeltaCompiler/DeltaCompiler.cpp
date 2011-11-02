@@ -185,7 +185,7 @@ namespace ide
 #else 
 		const std::string executable = "DeltaCompiler";
 #endif
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
+		const std::string sparrowDir = IDECore::GetInstallationDir();
 		util::ConsoleHost().Execute(
 			sparrowDir + executable + " \"" + util::str2std(uri) + "\"" + util::str2std(options),
 			util::str2std(directory),
@@ -203,7 +203,7 @@ namespace ide
 #else 
 		const std::string executable = "DeltaCompiler";
 #endif
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
+		const std::string sparrowDir = IDECore::GetInstallationDir();
 		util::ConsoleHost *compiler = new util::ConsoleHost(false);
 		return compiler->Execute(
 			sparrowDir + executable + " \"" + util::str2std(uri) + "\"" + util::str2std(options),

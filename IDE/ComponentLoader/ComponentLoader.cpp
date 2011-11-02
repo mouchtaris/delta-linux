@@ -63,7 +63,7 @@ namespace ide
 			boost::bind(&ComponentLoader::UnloadDynamicLibrary, this, _1)
 		);
 
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
+		const std::string sparrowDir = IDECore::GetInstallationDir();
 		const std::string xdfDirectory(sparrowDir + "xdf/");
 		xml::Document doc;
 		const String configUri = util::std2str(sparrowDir + configFile);
@@ -173,7 +173,7 @@ namespace ide
 		if (root.Name() != _T("extension"))
 			return false;
 
-		const std::string sparrowDir = util::normalizepath(IDECore::GetInstallationDir()) + "/";
+		const std::string sparrowDir = IDECore::GetInstallationDir();
 		//-- Load component entries
 		BOOST_FOREACH(
 			const xml::Node& node,

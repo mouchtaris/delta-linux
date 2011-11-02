@@ -59,7 +59,7 @@ namespace ide
 		if (!dmslC)
 			return;
 
-		const String sparrowDir = util::std2str(util::normalizepath(IDECore::GetInstallationDir()) + "/");
+		const String sparrowDir = util::std2str(IDECore::GetInstallationDir());
 		Call<bool (const String&)>(s_classId, dmslC, "Compile")(sparrowDir + _T("sparrow.dmsl"));
 	}
 

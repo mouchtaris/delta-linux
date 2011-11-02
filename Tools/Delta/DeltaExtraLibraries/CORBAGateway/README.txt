@@ -17,10 +17,15 @@ The native C++ bindings are based on the TAO corba distribution
 	  ACE_ROOT and TAO_ROOT pointing to the corresponding installation dirs.
 	- Build DeltaCorba project from the sources and project files provided.
 
-The are three Microsoft Visual Studio 2005 project files:
+There are 3 Microsoft Visual studio projects provided:
+For Visual Studio 2005
 	- DeltaCorbaCommon/DeltaCorbaCommon.vcproj
 	- DeltaCorbaClient/DeltaCorbaClient.vcproj
 	- DeltaCorbaServer/DeltaCorbaServer.vcproj
+For Visual Studio 2010
+	- DeltaCorbaCommon/DeltaCorbaCommon.vcxproj
+	- DeltaCorbaClient/DeltaCorbaClient.vcxproj
+	- DeltaCorbaServer/DeltaCorbaServer.vcxproj
 
 When built, each of these projects will create a dll containing the 
 corresponding functionality.
@@ -50,6 +55,9 @@ After initializing the basic CORBA services, one may run a test provided:
 	- First run the batch file to register the idl file to the IFR.
 	- Run the server application using Sparrow IDE.
 	- Run the client application using Sparrow IDE.
+
+All batch files assume that the required corba executables (along with the dlls they need)
+are located within %TAO_ROOT%\bin.
 
 *** Contact Information ***
 For any information, comments, bug reports, etc. about DeltaCORBA contact:

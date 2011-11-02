@@ -1,6 +1,27 @@
 #include <tao/AnyTypeCode/Any_Dual_Impl_T.h>
 #include <tao/AnyTypeCode/Any_SystemException.h>
 // Specializations for CORBA::Exception Any operators.
+
+#ifndef ACE_TRY_NEW_ENV
+#define ACE_TRY_NEW_ENV try
+#endif
+
+#ifndef ACE_CATCHANY
+#define ACE_CATCHANY catch (const CORBA::Exception&)
+#endif
+
+#ifndef ACE_TRY_CHECK
+#define ACE_TRY_CHECK
+#endif
+
+#ifndef ACE_ENDTRY
+#define ACE_ENDTRY
+#endif
+
+#ifndef ACE_ENV_ARG_PARAMETER
+#define ACE_ENV_ARG_PARAMETER
+#endif
+
 namespace TAO
 {
   template<>
