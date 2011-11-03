@@ -246,33 +246,33 @@ class uchangenotifier {
 	typedef void			(*Callback)(void* derivedInst, void* closure);
 
 	protected:
-	ucallbacklist<Callback, ucallbackwithclosure<Callback>> callbacks;
-	util_ui32												locked;
-	util_ui32												pending;
+	mutable ucallbacklist<Callback, ucallbackwithclosure<Callback>> callbacks;
+	mutable util_ui32												locked;
+	mutable util_ui32												pending;
 
-	void					NotifyChangedPriv (void* derivedInst) 
+	void					NotifyChangedPriv (void* derivedInst) const
 								{ DASSERT(!locked); callbacks.call(derivedInst); pending = 0; }
-	void					SafeNotifyChangedPriv (void* derivedInst) 
+	void					SafeNotifyChangedPriv (void* derivedInst) const
 								{ DASSERT(!locked); callbacks.safecall(derivedInst); pending = 0; }
 
 	public:
-	void					AddOnChange (Callback f, void* c = (void*) 0) 
+	void					AddOnChange (Callback f, void* c = (void*) 0) const
 								{ callbacks.add(f, c); }
-	void					RemoveOnChange (Callback f, void* c = (void*) 0) 
+	void					RemoveOnChange (Callback f, void* c = (void*) 0) const
 								{ callbacks.remove(f, c); }
-	void					ClearOnChange (void)
+	void					ClearOnChange (void) const
 								{ callbacks.clear(); }
-	void					LockNotifyOnChange (void) 
+	void					LockNotifyOnChange (void) const
 								{ ++locked; }
 
-	void					UnlockNotifyOnChange (void* derivedInst)
+	void					UnlockNotifyOnChange (void* derivedInst) const
 								{ DASSERT(locked); if (!--locked && pending) NotifyChangedPriv(derivedInst); }
-	void					UnlockSafeNotifyOnChange (void* derivedInst)
+	void					UnlockSafeNotifyOnChange (void* derivedInst) const
 								{ DASSERT(locked); if (!--locked && pending) SafeNotifyChangedPriv(derivedInst); }
 
-	void					NotifyChanged (void* derivedInst) 
+	void					NotifyChanged (void* derivedInst) const
 								{ if (!locked) NotifyChangedPriv(derivedInst); else ++pending; }
-	void					SafeNotifyChanged (void* derivedInst) 
+	void					SafeNotifyChanged (void* derivedInst) const
 								{ if (!locked) SafeNotifyChangedPriv(derivedInst); else ++pending; }
 
 	uchangenotifier(void) : locked(0), pending(0) {}
