@@ -125,7 +125,7 @@ public:
 			p.add("input", -1);
 
 			boost::program_options::variables_map vars;
-			boost::program_options::store(boost::program_options::wcommand_line_parser(argc, argv).
+			boost::program_options::store(boost::program_options::basic_command_line_parser<wxChar>(argc, argv).
 				  options(desc).positional(p).run(), vars);
 			boost::program_options::notify(vars);
 

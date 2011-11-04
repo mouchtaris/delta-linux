@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Sparrow"
-!define PRODUCT_VERSION "1.0-rev-154"
+!define PRODUCT_VERSION "1.0-rev-163"
 !define PRODUCT_WEB_SITE "http://www.ics.forth.gr/hci/files/plang/Delta/Delta.html"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Sparrow.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -10,6 +10,7 @@
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
+!include "x64.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -51,8 +52,14 @@ Section "Core" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
 
-  File "..\msvcr100.dll"
-  File "..\msvcp100.dll"
+  ${If} ${RunningX64}
+	File "..\bin\x64\msvcp100.dll"
+	File "..\bin\x64\msvcr100.dll"
+  ${Else}
+    File "..\bin\x86\msvcp100.dll"
+	File "..\bin\x86\msvcr100.dll"
+  ${EndIf}  
+  
   File "..\wxbase28u_vc_custom.dll"
   File "..\wxbase28u_xml_vc_custom.dll"
   File "..\wxmsw28u_adv_vc_custom.dll"
@@ -81,7 +88,6 @@ Section "Core" SEC01
   CreateShortCut "$SMPROGRAMS\Sparrow\Sparrow.lnk" "$INSTDIR\Sparrow.exe"
   CreateShortCut "$DESKTOP\Sparrow.lnk" "$INSTDIR\Sparrow.exe"
 
-  WriteRegStr HKCU "Software\Sparrow\" "" "$INSTDIR"  
   Exec "assoc .wsp=Sparrow.wsp"
   Exec 'ftype Sparrow.wsp="$INSTDIR\Sparrow.exe" "%1" %*'
 SectionEnd

@@ -46,10 +46,6 @@
 #include <wx/app.h>
 #include <wx/frame.h>
 
-#ifdef WIN32
-#include <wx/msw/registry.h>
-#endif
-
 #ifndef NDEBUG
 #ifndef NO_VLD
 #include <vld.h>
@@ -67,21 +63,7 @@ namespace ide
 
 	bool IDECore::Initialize(const std::string& componentConfiguration, int32 messageRouterServerNegotiationPort)
 	{
-#ifdef WIN32
-		wxRegKey regKey(_T("HKEY_CURRENT_USER\\Software\\Sparrow"));
-		if (regKey.Exists()) {
-			String value;
-			if (!regKey.QueryValue(String(), value) || !wxFileName::DirExists(value))
-				return false;
-			else
-				installationDirectory = util::str2std(value);
-		}
-		else {
-			boost::filesystem::path fullPath(boost::filesystem::current_path());
-			installationDirectory = (std::string) fullPath.BOOST_FILESYSTEM_DIRECTORY_METHOD();
-		}
-#endif
-		installationDirectory = util::normalizepath(installationDirectory);
+		installationDirectory = util::str2std(util::normalizepath(wxFileName(wxTheApp->argv[0]).GetPath()));
 		if (installationDirectory.back() != '/')
 			installationDirectory += '/';
 
