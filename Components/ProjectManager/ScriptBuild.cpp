@@ -313,7 +313,7 @@ void Script::MakeAllProperties (void) {
 
 static bool CreateDirectory (const std::string& dir) {
 	if (!boost::filesystem::exists(dir)) {
-		boost::filesystem::create_directory(dir);
+		boost::filesystem::create_directories(dir);
 		return boost::filesystem::exists(dir);
 	}
 	else
