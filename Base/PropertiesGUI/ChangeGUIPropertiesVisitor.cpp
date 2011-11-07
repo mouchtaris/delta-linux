@@ -265,7 +265,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 			}
 	if (!m_changedValue)
 		for (uint i = 0; i < selections.GetCount(); ++i)
-			if (choices[i] != oldSelections[i]) {
+			if (selections[i] != oldSelections[i]) {
 				m_changedValue = true;
 				break;
 			}
