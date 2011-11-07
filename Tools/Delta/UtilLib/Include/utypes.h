@@ -203,6 +203,16 @@ template <typename T> void ureset_via_default_ctor (T* t)
 		return DNEWCLASS(_class, (*this));									\
 	}
 
+#define	UCLONE_VIRTUAL_VIA_COPY_CONSTRUCTOR(_class, _clone)					\
+	virtual _class* _clone (void) const {									\
+		return DNEWCLASS(_class, (*this));									\
+	}
+
+#define	USUBCLASS_RETAINING_DEFAULT_AND_COPY_CONSTUCTOR(_class, _base)		\
+	_class (void){}															\
+	_class (const _class& inst) : _base((const _base&) inst){}				\
+	~_class(){}
+
 #define	UATTRIBUTEMETHOD_SCALAR(T,_var,_attr)				\
 	void Set##_attr(T _var##New) {_var = _var##New;}		\
 	T Get##_attr(void) const {return _var;}

@@ -38,6 +38,13 @@ class UTILLIB_CLASS uerrorclass {
 	public:
 	struct udisengageexception {};
 
+	struct reporter {
+		std::string format;
+		const std::string operator()(const std::string& msg) 
+			{ return uconstructstr(format.c_str(), msg); }
+		reporter (const std::string& _format) : format(_format){}
+	};
+
 	void				postexception (void) { UERRORCLASS_EXCEPTIONIMPL; }
 
 	bool				israised (void) const 
@@ -80,6 +87,43 @@ class UTILLIB_CLASS uerror : public UERRORCLASS_SINGLETON {};
 		else											\
 		{ ERROR_HANDLER(ucstringarg(what), primary); }	\
 	else
+
+//******************************
+
+#define	UCHECK_ERROR_FORMAT_DEFINE(format)						\
+			uerrorclass::reporter _uerror_reporter(format)
+
+#define	UCHECK_PRIMARY_ERROR_REPORT(call, what)					\
+	if (!(call)) {												\
+		uerror::GetSingleton().postprimary(						\
+			"%s", _uerror_reporter(what).c_str()				\
+		); 														\
+		goto FAIL;												\
+	} else
+
+#define	UCHECK_DOMINO_ERROR_REPORT(call, what)					\
+	if (!(call)) {												\
+		uerror::GetSingleton().postdomino(						\
+			"%s", _uerror_reporter(what).c_str()				\
+		); 														\
+		goto FAIL;												\
+	} else
+
+#define	UCHECK_WHATEVER_ERROR_REPORT(call, what)				\
+	if (!(call)) {												\
+		if (uerror::GetSingleton().israised())					\
+		uerror::GetSingleton().postdomino(						\
+			"%s", _uerror_reporter(what).c_str()				\
+		); 														\
+		else													\
+		uerror::GetSingleton().postprimary(						\
+			"%s", _uerror_reporter(what).c_str()				\
+		); 														\
+		goto FAIL;												\
+	}															\
+	else
+
+//******************************
 
 #define	UCHECK_PRIMARY_ERROR_EX(call, what, onerror)	\
 	if (!(call)) { onerror; ERROR_HANDLER(ucstringarg(what), primary); } else
