@@ -815,9 +815,11 @@ bool Script::AreSomeDependenciesCompiled  (void) const
 
 bool Script::IsByteCodeUpToDate (void) const {
 
+	const std::string source = GetSource();
 	const std::string binary = GetProducedByteCodeFileFullPath();
-	return	boost::filesystem::exists(binary) &&
-			boost::filesystem::last_write_time(binary) >= boost::filesystem::last_write_time(GetSource());
+	return	boost::filesystem::exists(source) &&
+			boost::filesystem::exists(binary) &&
+			boost::filesystem::last_write_time(binary) >= boost::filesystem::last_write_time(source);
 }
 
 //********************************
