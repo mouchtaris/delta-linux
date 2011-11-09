@@ -457,11 +457,17 @@ template <class T> class ubag {
 
 	private:
 	std::map<T, bool> bag;
-	struct inserter : public std::binary_function<std::pair<T, bool>, ubag*, void> {
+
+	struct bag_inserter : public std::binary_function<std::pair<T, bool>, ubag*, void> {
 		void operator()(const std::pair<T, bool>& p, ubag* b) const 
 			{ b->insert(p.first); }
 	};
 
+	struct list_inserter : public std::binary_function<T, ubag*, void> {
+		void operator()(const T& p, ubag* b) const 
+			{ b->insert(p); }
+	};
+	
 	public:
 	typedef std::pair<const T, bool> elem_type;
 	typedef typename std::map<T, bool>::iterator		iterator; 
@@ -475,9 +481,16 @@ template <class T> class ubag {
 	void			insert (const ubag& b)		{ std::for_each(
 													b.begin(), 
 													b.end(), 
-													std::bind2nd(inserter(), this)
+													std::bind2nd(bag_inserter(), this)
 												  );								}
-
+	
+	void			insert (const std::list<T>& l)		
+												{ std::for_each(
+													l.begin(), 
+													l.end(), 
+													std::bind2nd(list_inserter(), this)
+												  );								}
+												  
 	void			remove (const T& x)			{ bag.erase(x);						}
 	void			remove (const iterator& i)	{ bag.erase(i);						}
 	void			remove (const_iterator& i) 	{ bag.erase(i);						}
