@@ -11,7 +11,7 @@
 
 using std;
 const nl 					= "\n";
-const cpp					= "K:\\bin\\cpp.exe";
+const cpp					= "cpp.exe";
 const DELTA					= "delta";
 const CPP					= "cpp";
 const DOC					= "doc";

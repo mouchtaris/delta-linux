@@ -82,14 +82,15 @@ END_SEC,	// si_credits
 
 START_SEC("si_download", "Download")
 	
-	TEXT("You can download the installer (Windows executable only) of the Sparrow IDE from "),
+	TEXT("You can download the installer of the Sparrow IDE from "),
 	LINK(
 		"http://www.ics.forth.gr/hci/files/plang/sparrow-setup.exe",
 		"here"
 	),
 
 	TEXT_START
-		". You may also gain the current version of the source code (Visual Studio 2005 Solution),",
+		" (Windows executable only, tested on Windows XP SP2 or greater, Windows Vista, Windows 7).
+		You may also gain the current version of the source code (Visual Studio 2005 and 2010 Solutions),",
 		!emphatic !error " for non-commercial purposes only", ", through our Subversion server, using a 
 		checkout command from a console as follows (please consider that the checkout operation may take
 		a few minutes due to the various binary files included in the distribution, besides the
@@ -109,19 +110,21 @@ START_SEC("si_download", "Download")
 
 #define	bullet !italic !blue !emphatic
 
-		bullet "1)", 	"Install either Visual Studio 2005 (with SP1) or 2010", NL1,
+		bullet "1)", 	"Install either Visual Studio 2005 (with SP1) or 2010 (with SP1)", NL1,
 
-		bullet "2)", 	"If you have Visual Studio 2010:", NL1,
+		bullet "2)", 	"Install the external libraries dependencies by obtaining prebuilt
+		versions or manually building them from source. The libraries required are (we tested
+		only for these, but it should work on other versions too):", NL1,
+		TAB1 "Boost versions 1.34 or 1.45 - 1.47", NL1,
+		TAB1 "wxWidgets versions 2.8.3 or 2.8.11 - 2.8.12", NL1,
 
-		bullet "2.1)", 	"You should get prebuilt versions or manually build 
-		Boost 1.34 or 1.45 and wxWidgets 2.8.3 or 2.8.11 
-		(we tested only for these, but it should work on other versions too).", NL1,
+		bullet "2.1)", 	"If manually building the libraries from source:", NL1,
 
-		bullet "2.2)",	"Copy all dlls (both debug and release mode) at ", !courier "trunk/Build", NL1,
-
-		bullet "2.3)",	"Create DELTAIDEDEPS environmant var with value the full path of a ",
-		!courier "ThirdPartyLibraries", " folder as shown in the image below (you may choose 
-		a different folder name but should adopt the same folder structure).", NL2
+		bullet "2.1.1)","Copy all dlls (both debug and release mode) at ",
+		!courier "trunk/Build", NL1,
+		bullet "2.1.2)","Create ", !courier "DELTAIDEDEPS", " environmant var with value the full
+		path of a", !courier "ThirdPartyLibraries", " folder as shown in the image below (you may
+		choose a different folder name but should adopt the same folder structure).", NL2
 	TEXT_END,
 
 	FIGURE(
@@ -132,34 +135,55 @@ START_SEC("si_download", "Download")
 
 	TEXT_START		
 		CNL2
-		bullet "3)", 	"If you have Visual Studio 2005 (with SP1):", NL1,		
-		bullet "3.1)", 	"You should install the prebuilt external library dependencies 
-		directly from"
+		bullet "2.2)", 		"If using prebuilt libraries:", NL2,
+		bullet "2.2.1)", 	"If you have Visual Studio 2010 (with SP1):", NL1,
+		bullet "2.2.1.1)", 	"Install the prebuilt external library dependencies directly from"
 	TEXT_END,
 
 	LINK(
-		"http://www.ics.forth.gr/hci/files/plang/sparrow-thirdparty-libs.exe",
+		"http://www.ics.forth.gr/hci/files/plang/sparrow-thirdparty-libs-vc10sp1.exe",
 		"here"
 	),
 
 	TEXT_START
+		" (includes Boost 1.47 and wxWidgets 2.8.12)",
 		CNL1
-		bullet "3.2)", 	"When installed, the DELTAIDEDEPS environmant var is automatically set", NL1,
+		bullet "2.2.1.2)", 	"When installed, the ", !courier "DELTAIDEDEPS", " environmant var
+		is automatically set", NL1,
+		bullet "2.2.1.3)", 	"Extract wxwidgets runtime dlls from",
+		!courier "$DELTAIDEDEPS/bin/wx-runtime-dlls-2.8.12-vc10sp1.rar", " at ",
+		!courier "trunk/Build", NL2,
 
-		bullet "3.3)", 	"Extract wxwidgets runtime dlls from ",
-		!courier "trunk/Build/wx-runtime-dlls-2.8.3.rar", " at ", !courier "trunk/Build", NL1,
+		bullet "2.2.2)", 	"If you have Visual Studio 2005 (with SP1):", NL1,
+		bullet "2.2.2.1)", 	"Install the prebuilt external library dependencies directly from"
+	TEXT_END,
 
-		bullet "4)",	"Run ", !courier "trunk/Build/registry.bat", NL1,
+	LINK(
+		"http://www.ics.forth.gr/hci/files/plang/sparrow-thirdparty-libs-vc8sp1.exe",
+		"here"
+	),
 
-		bullet "5)", 	"Open ", !courier "trunk/IDE/IDE.sln", NL1,
+	TEXT_START
+		" (includes Boost 1.34 and wxWidgets 2.8.3)",
+		CNL1
+		bullet "2.2.2.2)", 	"When installed, the ", !courier "DELTAIDEDEPS", " environmant var
+		is automatically set", NL1,
+		bullet "2.2.2.3)", 	"Extract wxwidgets runtime dlls from",
+		!courier "trunk/Build/wx-runtime-dlls-2.8.3.rar", " at ",
+		!courier "trunk/Build", NL2,
 
-		bullet "6)", 	"Unload ", !courier "Tools/Delta/Extra/CORBA", " folder (it requires TAO 
+		bullet "3)", 	"Open ", !courier "trunk/IDE/IDE.sln", NL1,
+
+		bullet "4)", 	"Unload ", !courier "Tools/Delta/Extra/CORBA", " folder (it requires TAO 
 		CORBA source distribution)", NL1,
 
-		bullet "7)", 	"Build all", NL1,
+		bullet "5)", 	"Build all", NL1,
 
-		bullet "8)", 	"To run Sparrow from Visual Studio you should set ", !italic "Application"," 
-		as the startup project"
+		bullet "6)", 	"To run Sparrow from Visual Studio you should set ", !italic "Application"," 
+		as the startup project", NL1,
+
+		bullet "7)", 	"Optionally run ", !courier "trunk/Build/registry.bat",
+		" to associate .wsp files to open with Sparrow"
 		
 	TEXT_END,	
 
@@ -182,10 +206,10 @@ START_SEC("si_download", "Download")
 	TEXT(
 		CNL1
 		"Additionally, within the 'Sparrow/trunk/IDE' directory you will find the
-		'IDE.sln' file, being a Visual Studio 2005 solution file for the entire language 
-		distribution (including the Delta language components and the IDE istelf). Once opened, 
-		it displays the solution hierarchy outlined below, where we spot the path to the
-		Delta language components."
+		'IDE.sln' and 'IDE2010.sln' files, being respectively Visual Studio 2005 and 2010
+		solution files for the entire language distribution (including the Delta language
+		components and the IDE istelf). Once opened, they display the solution hierarchy
+		outlined below, where we spot the path to the Delta language components."
 		NLC1
 	),
 
