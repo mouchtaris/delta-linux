@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\DeltaParser">
+      <UniqueIdentifier>{393ff867-d0fd-42b5-953a-70f76d8b20d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DeltaParser\Bison and Flex">
+      <UniqueIdentifier>{a876acbb-8042-40b4-88a6-f95de21268c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DeltaScintillaStyler">
+      <UniqueIdentifier>{904a8bf9-c30b-4a24-a064-14a08eaf851e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\DeltaParser">
+      <UniqueIdentifier>{bab36ba7-6e02-434f-8190-aef034ab8d07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DeltaScintillaStyler">
+      <UniqueIdentifier>{f8f14859-267b-47a9-918b-4c17a8b93336}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AutoCompletion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GotoDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LanguageModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Namespace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaAST.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaASTDataTypes.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaASTGenericVisitor.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaASTPositionVisitor.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaASTPrinter.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaASTVisitor.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaASTVisualizer.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaLexAnalyzerGen.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaLexer.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaParser.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaParserCommon.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\DeltaParserGen.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaParser\ProgramDescription.cpp">
+      <Filter>Source Files\DeltaParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaScintillaStyler\DeltaASTStyler.cpp">
+      <Filter>Source Files\DeltaScintillaStyler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaScintillaStyler\DeltaASTSymbolFinder.cpp">
+      <Filter>Source Files\DeltaScintillaStyler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DeltaScintillaStyler\DeltaScintillaStyler.cpp">
+      <Filter>Source Files\DeltaScintillaStyler</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AutoCompletion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GotoDefinition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LanguageModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Namespace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaAST.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTAlgorithms.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTDataTypes.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTFwdDecls.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTGenericVisitor.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTPositionVisitor.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTPrinter.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTUtil.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTVisitor.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaASTVisualizer.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaLexer.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaParser.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaParserCommon.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\DeltaParserGen.hpp">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\FlexLexer.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\ProgramDescription.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\RangeList.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaParser\unistd.h">
+      <Filter>Header Files\DeltaParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaScintillaStyler\DeltaASTStyler.h">
+      <Filter>Header Files\DeltaScintillaStyler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaScintillaStyler\DeltaASTSymbolFinder.h">
+      <Filter>Header Files\DeltaScintillaStyler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DeltaScintillaStyler\DeltaScintillaStyler.h">
+      <Filter>Header Files\DeltaScintillaStyler</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\DeltaParser\DeltaLexAnalyzerSpec.l">
+      <Filter>Source Files\DeltaParser\Bison and Flex</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\DeltaParser\DeltaParserSpec.y">
+      <Filter>Source Files\DeltaParser\Bison and Flex</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
