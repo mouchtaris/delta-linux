@@ -9,19 +9,25 @@
 #include "udynamiclibloader.h"
 #include "uinit.h"
 
+static util_ui32 initCounter = 0;
+
 namespace UtilPackage {
 
 	UTILLIB_FUNC void Initialise (void) {
-		ValidatableHandler::SingletonCreate();
-		uerror::SingletonCreate();
-		GlobalLateDestructor::SingletonCreate();
-		udynamiclibloader::SingletonCreate();
+		if (!initCounter++) {
+			ValidatableHandler::SingletonCreate();
+			uerror::SingletonCreate();
+			GlobalLateDestructor::SingletonCreate();
+			udynamiclibloader::SingletonCreate();
+		}
 	}
 
 	UTILLIB_FUNC void CleanUp (void) {
-		ValidatableHandler::SingletonDestroy();
-		uerror::SingletonDestroy();
-		GlobalLateDestructor::SingletonDestroy();
-		udynamiclibloader::SingletonDestroy();
+		if (!--initCounter) {
+			ValidatableHandler::SingletonDestroy();
+			uerror::SingletonDestroy();
+			GlobalLateDestructor::SingletonDestroy();
+			udynamiclibloader::SingletonDestroy();
+		}
 	}
 }
