@@ -278,7 +278,7 @@ void DeltaValueToDebugWatchValueInfo::ConvertTable (const DeltaValue& val, Debug
 			originalNumericKeys.push_back(index.ToNumber()); break;
 
 			case DeltaValue_Bool:		
-			boolKeys.push_back(std::string("[[") + ubool2conststr(index.ToBool()) + "]]"); break;
+			boolKeys.push_back(std::string("[[") + ustrlower(ubool2conststr(index.ToBool())) + "]]"); break;
 
 			case DeltaValue_Table:
 			case DeltaValue_ProgramFunc:
