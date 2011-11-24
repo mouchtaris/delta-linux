@@ -64,7 +64,7 @@ namespace ide
 	bool IDECore::Initialize(const std::string& componentConfiguration, int32 messageRouterServerNegotiationPort)
 	{
 		installationDirectory = util::str2std(util::normalizepath(wxFileName(wxTheApp->argv[0]).GetPath()));
-		if (installationDirectory.back() != '/')
+		if (!installationDirectory.empty() && installationDirectory[installationDirectory.size() - 1] != '/')
 			installationDirectory += '/';
 
 		fs::PathManager::Initialize();
