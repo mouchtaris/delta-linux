@@ -23,6 +23,7 @@
 #include <boost/foreach.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/convenience.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <wx/filename.h>
