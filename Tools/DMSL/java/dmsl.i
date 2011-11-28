@@ -38,6 +38,7 @@ namespace dmsl {
 		bool Evaluate		(const std::string& component, bool force = false);
 		
 		bool SetAttribute	(const std::string& attribute, const std::string& value);
+		bool HasAttribute	(const std::string& attribute) const;
 
 		//***********************************************
 

@@ -71,6 +71,9 @@
     <ClCompile Include="..\DecisionMaker\Src\Statements.cpp">
       <Filter>Source Files\DecisionMaker</Filter>
     </ClCompile>
+    <ClCompile Include="Src\dmsl_java_wrap.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Profile\Src\ProfileParser.y">
@@ -141,5 +144,8 @@
     <ClInclude Include="..\Utility\Include\util.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\java\dmsl.i" />
   </ItemGroup>
 </Project>

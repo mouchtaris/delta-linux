@@ -8,9 +8,6 @@
  *	Giannis Lilis <lilis@ics.forth.gr>
  *	August 2006 (Version 1) - July 2007 (Version 2)
  */
-#if defined(WIN32)
-#include <vld.h>
-#endif
 #include "DecisionMaker.h"
 #include <iostream>
 #include <iterator>

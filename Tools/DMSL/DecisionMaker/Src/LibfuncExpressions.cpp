@@ -42,12 +42,13 @@ namespace dmsl {
 	void HasAttrFunctor::operator()(DecisionMaker *dm, ExprValue& val, ExprValue* result) const {
 		const DecisionMaker::ProfileList& profiles = dm->GetProfileList();
 		assert(!profiles.empty());
-		ExprValue *value = (ExprValue *) 0;
-		//traverse profile list in reverse order (newer to older)
-		for(DecisionMaker::ProfileList::const_reverse_iterator i = profiles.rbegin(); i != profiles.rend(); ++i)
-			if((value = (*i)->GetAttribute(val.GetString())))
+		bool found = false;
+		for(DecisionMaker::ProfileList::const_iterator i = profiles.begin(); i != profiles.end(); ++i)
+			if((*i)->GetAttribute(val.GetString())) {
+				found = true;
 				break;
-		result->SetBool(value ? true : false);
+			}
+		result->SetBool(found);
 	}
 
 	////////////////////////////////////////////////////////

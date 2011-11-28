@@ -237,7 +237,7 @@ namespace dmsl {
 
 	//***********************************************
 
-	bool DecisionMaker::SetAttribute(const std::string& attribute, const std::string& value){
+	bool DecisionMaker::SetAttribute(const std::string& attribute, const std::string& value) {
 		FAIL_ON_NO_CONFIGURATION;
 		Profile *profile = new Profile;
 		bool status = profile->ParseString(attribute + "=" + value);
@@ -254,6 +254,15 @@ namespace dmsl {
 			NotifyAttributeChanged(attribute);	//only one attribute so call this instead of NotifyAllProfileAttributesChanged
 		}
 		return status;
+	}
+
+	//***********************************************
+
+	bool DecisionMaker::HasAttribute(const std::string& attribute) const {
+		for(ProfileList::const_iterator i = profiles.begin(); i != profiles.end(); ++i)
+			if((*i)->GetAttribute(attribute))
+				return true;
+		return false;
 	}
 
 	//***********************************************

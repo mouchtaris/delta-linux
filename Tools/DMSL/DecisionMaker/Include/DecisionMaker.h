@@ -103,6 +103,7 @@ namespace dmsl {
 		DM_DLL_API bool Evaluate		(const std::string& component, bool force = false);
 
 		DM_DLL_API bool SetAttribute	(const std::string& attribute, const std::string& value);
+		DM_DLL_API bool HasAttribute	(const std::string& attribute) const;
 
 		//***********************************************
 

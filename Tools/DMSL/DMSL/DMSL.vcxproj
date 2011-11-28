@@ -102,8 +102,16 @@
     <ClCompile Include="..\DecisionMaker\Src\ManageExpressions.cpp" />
     <ClCompile Include="..\DecisionMaker\Src\ManageStatements.cpp" />
     <ClCompile Include="..\DecisionMaker\Src\Statements.cpp" />
+    <ClCompile Include="Src\dmsl_java_wrap.cxx" />
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="..\java\dmsl.i">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">make.bat</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Src\dmsl_java_wrap.cxx</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">make.bat</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Src\dmsl_java_wrap.cxx</Outputs>
+    </CustomBuild>
     <None Include="..\Profile\Src\ProfileParser.y" />
     <None Include="..\Profile\Src\ProfileScanner.l" />
     <None Include="..\DecisionMaker\Src\DecisionMakerParser.y" />
