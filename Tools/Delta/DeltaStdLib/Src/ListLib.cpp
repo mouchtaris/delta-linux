@@ -309,11 +309,13 @@ static void list_iterator_LibFunc (DeltaVirtualMachine* vm) {
 
 	DeltaListIter_Make(&DPTR(vm)->GetReturnValue());
 
+	// TODO: via common macro also in vector, table
 	void* val = DPTR(vm)->GetReturnValue().ToExternId();
 	CollectableSimple* collectableIter = DNULLCHECK(VGET_INST(CollectableSimple, val, LISTITER_TYPE_STR));
 
 	ListIteratorAdapter* iterAdapter = DNULLCHECK((ListIteratorAdapter*) collectableIter->GetValue());
 	DPTR(iterAdapter)->SetContainer(listAdapter);	
+	iterAdapter->GetIterator() = nativeList.begin();
 }
 
 /////////////////////////////////////////////////////
