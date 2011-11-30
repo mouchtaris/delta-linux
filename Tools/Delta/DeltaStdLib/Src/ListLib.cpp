@@ -308,6 +308,12 @@ static void list_iterator_LibFunc (DeltaVirtualMachine* vm) {
 	GET_LIST(RESET_NIL_RETURNVALUE, 0);
 
 	DeltaListIter_Make(&DPTR(vm)->GetReturnValue());
+
+	void* val = DPTR(vm)->GetReturnValue().ToExternId();
+	CollectableSimple* collectableIter = DNULLCHECK(VGET_INST(CollectableSimple, val, LISTITER_TYPE_STR));
+
+	ListIteratorAdapter* iterAdapter = DNULLCHECK((ListIteratorAdapter*) collectableIter->GetValue());
+	DPTR(iterAdapter)->SetContainer(listAdapter);	
 }
 
 /////////////////////////////////////////////////////
