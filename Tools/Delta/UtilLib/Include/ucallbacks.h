@@ -243,19 +243,26 @@ template <class F, class D = ucallbackwithclosure<F> > class ucallbacklist {
 class uchangenotifier {
 
 	public:
-	typedef void			(*Callback)(void* derivedInst, void* closure);
+	typedef void			(*Callback)(void* context, void* closure);
 
 	protected:
 	mutable ucallbacklist<Callback, ucallbackwithclosure<Callback>> callbacks;
 	mutable util_ui32												locked;
 	mutable util_ui32												pending;
+	void*															context;
+	void*					GetContext (void* _context) const 
+								{ return context? context : _context; }
 
-	void					NotifyChangedPriv (void* derivedInst) const
-								{ DASSERT(!locked); callbacks.call(derivedInst); pending = 0; }
-	void					SafeNotifyChangedPriv (void* derivedInst) const
-								{ DASSERT(!locked); callbacks.safecall(derivedInst); pending = 0; }
+	void					NotifyChangedPriv (void* _context) const
+								{ DASSERT(!locked); callbacks.call(GetContext(_context)); pending = 0; }
+	void					SafeNotifyChangedPriv (void* _context) const
+								{ DASSERT(!locked); callbacks.safecall(GetContext(_context)); pending = 0; }
 
 	public:
+	void					SetContext (void* _context)
+								{ context = _context; }
+	void*					GetContext (void) const 
+								{ return context; }
 	void					AddOnChange (Callback f, void* c = (void*) 0) const
 								{ callbacks.add(f, c); }
 	void					RemoveOnChange (Callback f, void* c = (void*) 0) const
@@ -265,17 +272,17 @@ class uchangenotifier {
 	void					LockNotifyOnChange (void) const
 								{ ++locked; }
 
-	void					UnlockNotifyOnChange (void* derivedInst) const
-								{ DASSERT(locked); if (!--locked && pending) NotifyChangedPriv(derivedInst); }
-	void					UnlockSafeNotifyOnChange (void* derivedInst) const
-								{ DASSERT(locked); if (!--locked && pending) SafeNotifyChangedPriv(derivedInst); }
+	void					UnlockNotifyOnChange (void* context) const
+								{ DASSERT(locked); if (!--locked && pending) NotifyChangedPriv(context); }
+	void					UnlockSafeNotifyOnChange (void* context) const
+								{ DASSERT(locked); if (!--locked && pending) SafeNotifyChangedPriv(context); }
 
-	void					NotifyChanged (void* derivedInst) const
-								{ if (!locked) NotifyChangedPriv(derivedInst); else ++pending; }
-	void					SafeNotifyChanged (void* derivedInst) const
-								{ if (!locked) SafeNotifyChangedPriv(derivedInst); else ++pending; }
+	void					NotifyChanged (void* _context) const
+								{ if (!locked) NotifyChangedPriv(_context); else ++pending; }
+	void					SafeNotifyChanged (void* _context) const
+								{ if (!locked) SafeNotifyChangedPriv(_context); else ++pending; }
 
-	uchangenotifier(void) : locked(0), pending(0) {}
+	uchangenotifier (void) : locked(0), pending(0), context ((void*) 0) {}
 	virtual ~uchangenotifier(){}
 };
 
