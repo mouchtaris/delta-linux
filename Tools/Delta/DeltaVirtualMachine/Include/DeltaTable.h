@@ -794,6 +794,7 @@ class DVM_CLASS DeltaTable :	public CollectableContainer,
 									i->settable(const_cast<DeltaTable*>(this));
 									i->currTableNo	= DELTA_TABLE_TOTAL_HASHTABLES;	
 									unullify(i->currBucket);
+									i->reset_ignore_next_fwd();
 								}
 
 	template <class iterator_traits>

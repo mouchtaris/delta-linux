@@ -55,7 +55,7 @@ class UTILLIB_CLASS usafeiteratorbehavior {
 	void							on_after_set_container (void)		
 										{ add_callbacks(); }
 	void							clear (void) 
-										{ if (get_container()) remove_callbacks(); }
+										{ if (get_container()) remove_callbacks(); reset_ignore_next_fwd(); }
 
 	private:
 	static void on_element_remove (const void* elem, void* self);

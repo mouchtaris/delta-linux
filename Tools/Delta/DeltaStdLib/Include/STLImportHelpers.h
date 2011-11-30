@@ -334,6 +334,8 @@ class ITERATOR_LIBRARY {
 
 		DPTR(iterAdapter)->SetContainer(contAdapter);	
 		DPTR(iterAdapter)->ResetIterationCounter();
+		DPTR(iterAdapter)->AssumeForwarded();
+
 		nativeIter = ITERATOR_BEGIN(nativeCont);
 
 		DPTR(vm)->GetReturnValue().Assign(GET_ITERATOR_VALUE());
@@ -353,6 +355,8 @@ class ITERATOR_LIBRARY {
 
 		DPTR(iterAdapter)->SetContainer(contAdapter);
 		DPTR(iterAdapter)->SetIterationCounter(contAdapter->Size());
+		DPTR(iterAdapter)->AssumeForwarded();
+
 		nativeIter = ITERATOR_END(nativeCont);
 
 		DPTR(vm)->GetReturnValue().Assign(GET_ITERATOR_VALUE());
@@ -371,6 +375,8 @@ class ITERATOR_LIBRARY {
 		GET_CONTAINER(1, FUN_RESET_TRUE_RETURNVALUE);
 		CHECK_ITERATOR_CONTAINER_MISMATCH(RESET_TRUE_RETURNVALUE);
 
+		DPTR(iterAdapter)->AssumeForwarded();
+
 		DPTR(vm)->GetReturnValue().FromBool(
 			nativeIter == ITERATOR_END(nativeCont)
 		);
@@ -388,6 +394,8 @@ class ITERATOR_LIBRARY {
 		GET_ITERATOR(0, FUN_RESET_FALSE_RETURNVALUE);
 		GET_CONTAINER(1, FUN_RESET_FALSE_RETURNVALUE);
 		CHECK_ITERATOR_CONTAINER_MISMATCH(RESET_FALSE_RETURNVALUE);
+
+		DPTR(iterAdapter)->AssumeForwarded();
 
 		DPTR(vm)->GetReturnValue().FromBool(
 			nativeIter == ITERATOR_BEGIN(nativeCont)
@@ -496,6 +504,7 @@ class ITERATOR_LIBRARY {
 		CHECK_INVALID_ITERATOR(RESET_EMPTY);
 		CHECK_BEGIN_ITERATOR(RESET_EMPTY);
 
+		DPTR(iterAdapter)->AssumeForwarded();
 		--nativeIter;
 		DPTR(iterAdapter)->DecIterationCounter();
 
