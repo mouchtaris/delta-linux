@@ -2209,7 +2209,7 @@ namespace ide
 			if (waitingBreakpointValidation) {
 				if (line == newLine) 	// Condition error.
 					CALL_DELAYED(boost::bind(&DeltaVM::MessageConditionError, util::std2str(cond), line));
-				else if (newLine)
+				else if (newLine && !DeltaDebugClientBreakPoints::Get().HasBreakPoint(source, newLine))
 					CommitAddBreakpoint(util::std2str(source), newLine, util::std2str(cond));
 				waitingBreakpointValidation = false;
 			}
