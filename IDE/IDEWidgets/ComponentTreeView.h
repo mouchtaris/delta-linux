@@ -84,6 +84,7 @@ namespace ide
 		ImageList* images;
 		ComponentMenu* popup;
 		Comparator comparator;
+		Handle* root;
 	};
 }
 

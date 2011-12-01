@@ -64,7 +64,7 @@ namespace ide
 
 	ComponentTreeView::ComponentTreeView(wxWindow* parent, wxWindowID id,
 		const wxPoint& pos, const wxSize& size, long style)
-		: wxTreeCtrl(parent, id, pos, size, style), popup(0)
+		: wxTreeCtrl(parent, id, pos, size, style), popup(0), root((Handle*) 0)
 	{
 		//-- Create image list for Tree Control
 		images = new ImageList(16, 16);
@@ -83,31 +83,34 @@ namespace ide
 		if (images->ResolveImageIndex(image))
 			AddImage(image);
 
-		wxTreeItemId pnode = GetNode(parent);
-		wxTreeItemId node  = GetNode(item);
-		if (!pnode && !node)
-			AddRoot(name, images->ResolveImageIndex(image), -1, new ComponentData(item));
-		else if (!node)
-		{
-			AppendItem(pnode, name, images->ResolveImageIndex(image), -1, new ComponentData(item));
-			SortChildren(pnode);
-		}
-		else
+		if (wxTreeItemId node = GetNode(item))
 			return false;
-
-		return true;
+		else {
+			if (wxTreeItemId pnode = GetNode(parent)) {
+				AppendItem(pnode, name, images->ResolveImageIndex(image), -1, new ComponentData(item));
+				SortChildren(pnode);
+			}
+			else {
+				ComponentData* data = new ComponentData(item);
+				AddRoot(name, images->ResolveImageIndex(image), -1, data);
+				root = data;
+			}
+			return true;
+		}
 	}
 
 	//-----------------------------------------------------------------------
 
 	bool ComponentTreeView::RemoveItem(const Handle& item)
 	{
-		wxTreeItemId node = GetNode(item);
-		if (!node)
+		if (wxTreeItemId node = GetNode(item)) {
+			if (static_cast<ComponentData*>(GetItemData(node)) == root)
+				root = (Handle*) 0;
+			Delete(node);
+			return true;
+		}
+		else
 			return false;
-
-		Delete(node);
-		return true;
 	}
 
 	//-----------------------------------------------------------------------
@@ -115,10 +118,7 @@ namespace ide
 	const Handle& ComponentTreeView::GetRoot(void) const
 	{
 		static Handle null;
-
-		if (GetRootItem())
-			return *static_cast<ComponentData*>(GetItemData(GetRootItem()));
-		return null;
+		return root ? *root : null;
 	}
 
 	//-----------------------------------------------------------------------
@@ -126,7 +126,6 @@ namespace ide
 	const Handle& ComponentTreeView::GetComponent(wxTreeItemId item) const
 	{
 		static Handle null;
-
 		if (item)
 			return *(static_cast<ComponentData*>(GetItemData(item)));
 		return null;
@@ -137,12 +136,8 @@ namespace ide
 	const Handle& ComponentTreeView::GetParent(wxTreeItemId item) const
 	{
 		static Handle null;
-
-		if (item)
-			item = GetItemParent(item);
-		if (item)
+		if (item && (item = GetItemParent(item)))
 			return *(static_cast<ComponentData*>(GetItemData(item)));
-
 		return null;
 	}
 
