@@ -23,18 +23,21 @@
 //
 #define	FILE_CONTEXT_SIZE				16
 #define	EXPR_CONTEXT_SIZE				16
-#define	LINE_INFO_SIZE					5	// At most 9999 lines per file.
+#define	LINE_INFO_SIZE					5	// At most 99999 lines per file.
 #define	SIZEINFO_SIZE					9	// At most 999999999 bytes
+#define	CONTEXT_SERIAL_SIZE				7	// 6 digits hex serial, : prefix
+#define	CONTEXT_SERIAL_MAX				0xFFFFFF
 
 #define MAX_SOURCE_LINES 				9999
 #define CONTEXT_CHAR_PADDING			'*'
 #define USERMEM_ALLOC_PAINTING			'!'
 #define	DELAYED_FREE_PAINTING			'7'
 
-#define	CONTEXT_SIZE \
-		FILE_CONTEXT_SIZE + \
-		EXPR_CONTEXT_SIZE + \
-		LINE_INFO_SIZE + \
+#define	CONTEXT_SIZE			\
+		FILE_CONTEXT_SIZE	+	\
+		EXPR_CONTEXT_SIZE	+	\
+		LINE_INFO_SIZE		+	\
+		CONTEXT_SERIAL_SIZE	+	\
 		SIZEINFO_SIZE + 1
 
 #define HEADER_BYTES 		8
@@ -98,37 +101,42 @@ class MemoryCapsule {
 
 	//****************************
 
-	bool			VerifyHeader (void) const;
-	bool			VerifyTrailer (void) const;
+	bool						VerifyHeader (void) const;
+	bool						VerifyTrailer (void) const;
 
-	void*			GetReplicaAddress (void) const	// At the end of the block.
-						{ return POFFS(userAddr, GetSize()) ;}
+	void*						GetReplicaAddress (void) const	// At the end of the block.
+									{ return POFFS(userAddr, GetSize()) ;}
 
-	void			RefreshReplica (void);
-	bool			VerifyReplica (void) const;
+	void						RefreshReplica (void);
+	bool						VerifyReplica (void) const;
 
-	void			DisconnectFromList (void);
-	void			ConnectInList (void);
+	void						DisconnectFromList (void);
+	void						ConnectInList (void);
 
 	////////////////////////////////////////////////////////
 
 	public:
-	static util_ui32		AllocationSize (util_ui32 userSize);
-	static MemoryCapsule*	Construct (const char* file, const char* expr, util_ui16 line, util_ui32 userSize);
-	static void				Initialise (void);
-	static void				CleanUp (void);
+	static util_ui32			AllocationSize (util_ui32 userSize);
+	static MemoryCapsule*		Construct (const char* file, const char* expr, util_ui16 line, util_ui32 userSize);
+	static void					Initialise (void);
+	static void					CleanUp (void);
 
-	void*					GetUserAddr (void) { return userAddr; }
-	util_ui32				GetSize (void) const { return userSize; }
-	const char*				GetContext (void) { return context; }
-	void					Destroy (void);
-	static void				ReportMemoryLeaks (void (*f)(const char*));
+	void*						GetUserAddr (void) { return userAddr; }
+	util_ui32					GetSize (void) const { return userSize; }
+	const char*					GetContext (void) { return context; }
+	void						Destroy (void);
+	static void					ReportMemoryLeaks (void (*f)(const char*));
 
 	//**********************
 
-	static MemoryCapsule*	GetBlock (void* userAddr);
-	void					Validate (void) const;
-
+	static MemoryCapsule*		GetBlock (void* userAddr);
+	void						Validate (void) const;
+	static const std::string	MakeContextString (
+									const char* file, 
+									const char* expr, 
+									util_ui16	line,
+									util_ui32	userSize
+								);
 	MemoryCapsule (
 		const char* file, 
 		const char* expr, 

@@ -163,6 +163,19 @@ void MemoryCapsule::Destroy (void) {
 	this->MemoryCapsule::~MemoryCapsule();
 }
 
+const std::string MemoryCapsule::MakeContextString (
+		const char* file, 
+		const char* expr, 
+		util_ui16	line,
+		util_ui32	userSize
+	) {
+	LISTEDIT_THREAD_SAFE();
+	static char buffer[1024];
+	sprintf(buffer, "%s:%d,%s:%d", file, line, expr, userSize);
+	DASSERT(strlen(buffer) < uarraysize(buffer));
+	return buffer;
+}
+
 /////////////////////////////////////////////////////////////
 
 MemoryCapsule::MemoryCapsule (	
@@ -188,14 +201,7 @@ MemoryCapsule::MemoryCapsule (
 	// where context ends.
 	//
 	memset(context, CONTEXT_CHAR_PADDING, sizeof(context));
-
-	{	// Copy context. Intentionally in a locked block since we have a static buffer.
-		LISTEDIT_THREAD_SAFE();
-		static char buffer[1024];
-		sprintf(buffer, "%s:%d,%s:%d", file, _line, expr, userSize);
-		DASSERT(strlen(buffer) < uarraysize(buffer));
-		ustrnmaxcpy(context, buffer, CONTEXT_SIZE);
-	}
+	ustrnmaxcpy(context, MakeContextString(file, expr, _line, userSize).c_str(), CONTEXT_SIZE);
 
 	// Can we still get the memory capsule from user address?
 	//

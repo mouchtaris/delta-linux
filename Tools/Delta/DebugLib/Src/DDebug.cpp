@@ -15,6 +15,7 @@
 
 #include "usystem.h"
 #include "DMemoryCapsule.h"
+#include <map>
 
 //	#define	DDEBUG_DISMISS
 
@@ -89,11 +90,11 @@ DDEBUG_FUNC util_ui32 dprivatememsize (void* p)
 //-----------------------------------------------------------
 
 // Variables are initialised in the static initialisation safe
-// initializer near the end of th file.
+// initializer near the end of the file.
 //
 static char			file[FILE_CONTEXT_SIZE];
 static util_ui32	line					= 0;
-static char			expr[EXPR_CONTEXT_SIZE];
+static char			expr[EXPR_CONTEXT_SIZE + CONTEXT_SERIAL_SIZE];
 static util_ui32	totalAllocedBytes		= 0;
 static util_ui32	totalFreedBytes			= 0;
 static util_ui32	initCounter				= 0;
@@ -150,6 +151,10 @@ static void dcopytruncate (char* dest, const char* src, util_ui16 maxLen) {
 //////////////////////////////////////
 // Truncate file name and expr, if it is too large.
 //
+
+typedef std::map<std::string, util_ui32> ContextMap;
+static ContextMap* contextMap = (ContextMap*) 0;
+
 DDEBUG_FUNC void dcontext (const char* _file, util_ui16 _line, const char* _expr) {
 
 	// The first entry point is here.
@@ -160,6 +165,7 @@ DDEBUG_FUNC void dcontext (const char* _file, util_ui16 _line, const char* _expr
 		dcopytruncate(expr, _expr, EXPR_CONTEXT_SIZE);
 	else
 		expr[0] = '\0';
+
 }
 
 //////////////////////////////////////
@@ -251,6 +257,20 @@ DDEBUG_FUNC void* dprivatemalloc (size_t size) {
 
 	DASSERT(size <= DDEBUG_MAXALLOCATION_SIZE);
 
+	std::string				context = MemoryCapsule::MakeContextString(dfile(), dexpr(), dline(), (util_ui32) size);
+	ContextMap::iterator	i		= contextMap->find(context);
+	util_ui32				sn		= i == contextMap->end() ? 0 : i->second + 1;
+
+	if (sn == CONTEXT_SERIAL_MAX)
+		sn = 1;
+	if (!sn)
+		(*contextMap)[context] = 1;
+	else
+		i->second = sn;
+
+	sprintf(expr, "%s:%x", std::string(dexpr()).c_str(), sn);
+	assert(strlen(expr) < sizeof(expr));
+
 	DRECORDALLOCSIZE(size);
 	MemoryCapsule* entry = MemoryCapsule::Construct(dfile(), dexpr(), dline(), (util_ui32) size);
 	if (!entry) {
@@ -294,6 +314,7 @@ DDEBUG_FUNC void dinit (dmsgcallback f) {
 		DINITALLOCSTATS();
 
 		MemoryCapsule::Initialise();
+		contextMap = new ContextMap;
 	}
 }
 
@@ -324,6 +345,9 @@ DDEBUG_FUNC void dclose (void) {
 		MemoryCapsule::CleanUp();
 		DSmallAllocatorSuper::CleanUp();
 		DMemoryManager::CleanUp();
+
+		delete contextMap;
+		contextMap = (ContextMap*) 0;
 	}
 } 
 
