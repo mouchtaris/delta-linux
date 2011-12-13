@@ -107,11 +107,11 @@ template <
 	//******************************
 
 	public:
-	bool				In (object_type* inst) const {
+	bool				In (const object_type* inst) const {
 							Instances::const_iterator i = std::find_if(
 															insts.begin(),
 															insts.end(),
-															std::bind2nd(uequal_second<std::pair<key_type, object_type*>>(), inst)
+															std::bind2nd(uequal_second<std::pair<key_type, const object_type*>>(), inst)
 														);
 							return i != insts.end();
 						}
