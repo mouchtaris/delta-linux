@@ -184,7 +184,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UserInterface", "..\Tools\i
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Tools\i-views\Utility\Project\Utility.vcxproj", "{8A801414-2A40-447A-9AE0-5F883C8106D6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IViews", "..\Components\IViews\IViews.vcxproj", "{5853E2FD-44DD-4CD6-B63D-C6B563771F2A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IViews", "..\Components\IViews\IViews_LocalCopy.vcxproj", "{5853E2FD-44DD-4CD6-B63D-C6B563771F2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
