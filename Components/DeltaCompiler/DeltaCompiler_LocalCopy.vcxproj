@@ -18,12 +18,12 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -104,9 +104,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\UnderGo\ScriptFighter\DLLs\BytecodeStructures\Project\BytecodeStructures.vcxproj">
       <Project>{bec371d3-e221-4bac-ba70-3aed5c4f0150}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -123,6 +120,18 @@
       <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\..\Base\BaseLibrary\BaseLibrary.vcxproj">
+      <Project>{d39911b6-2b65-4a27-bb3d-31f6c45a4b5a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IDE\IDECore\IDECore.vcxproj">
+      <Project>{255813b9-3ed9-4017-a65d-7047bc9a5948}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DeltaCompiler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DeltaCompiler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
