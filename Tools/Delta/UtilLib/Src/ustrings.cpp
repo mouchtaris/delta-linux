@@ -156,14 +156,13 @@ UTILLIB_FUNC const std::string ucopymaxwithsuffix (const std::string& s, util_ui
 
 static const char* hex = "0123456789ABCDEF";
 
-UTILLIB_FUNC const std::string 	uint2hexstring (util_ui32 n) {
+UTILLIB_FUNC const std::string uint2hexstring (util_ui32 n) {
 
 	std::string s;
-	char add[2] = { '\0', '\0' };
+
 	while (n) {
-		add[0] = hex[n % 16];
-		s = add + s;
-		n /= 16;
+		s.insert(s.begin(), hex[n & 15]);	// n % 16
+		n >>= 4;							// n /= 16
 	}
 
 	return s.empty() ? "0" : s;
