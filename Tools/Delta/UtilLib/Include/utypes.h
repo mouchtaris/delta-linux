@@ -296,8 +296,11 @@ util_ui32 uarraysize (T (&P)[N]) { return N; }
 
 template <class T, const util_ui32 N>
 void uassignarray (const T (&from)[N],  T (&to)[N]) {
-	for (util_ui32 i = N; i--;)
-		to[i] = from[i];
+	const T*	p_from	= from;
+	T*			p_to	= to;
+	util_ui32	i		= N; 
+	while (i--)
+		*p_to++ = *p_from++;
 }
 
 template <typename T, const unsigned N>  struct uptrarray { 
