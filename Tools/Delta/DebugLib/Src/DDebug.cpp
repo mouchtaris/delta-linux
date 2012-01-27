@@ -150,7 +150,6 @@ static void dcopytruncate (char* dest, const char* src, util_ui16 maxLen) {
 
 //////////////////////////////////////
 // Truncate file name and expr, if it is too large.
-//
 
 typedef std::map<std::string, util_ui32> ContextMap;
 static ContextMap* contextMap = (ContextMap*) 0;
@@ -158,19 +157,17 @@ static ContextMap* contextMap = (ContextMap*) 0;
 DDEBUG_FUNC void dcontext (const char* _file, util_ui16 _line, const char* _expr) {
 
 	// The first entry point is here.
-	//
 	line = _line;
 	dcopytruncate(file, _file, FILE_CONTEXT_SIZE);
 	if (_expr)
 		dcopytruncate(expr, _expr, EXPR_CONTEXT_SIZE);
 	else
 		expr[0] = '\0';
-
 }
 
 //////////////////////////////////////
 // Resets context.
-//
+
 static void dresetcontext (void) {
 	file[0] = expr[0] = '\0';
 	line = 0;
