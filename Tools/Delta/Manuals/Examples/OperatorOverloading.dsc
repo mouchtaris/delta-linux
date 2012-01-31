@@ -8,7 +8,7 @@
 
 using std;
 const nl = "\n";
-
+ 
 ////////////////////////////////////////////////////////////
 // OPERATOR OVERLOADING, sample for '+' overloading through
 // instance methods (analogy to class methods).

@@ -1068,8 +1068,8 @@ void DeltaCodeGenerator::ProduceDebugInfoForCodeLineChunks (void) {
 			}
 			else
 			if (currChunk.funcSerial == funcSerial) {			// Same func serial, update end line.
-				DASSERT(line >= currChunk.end);
-				currChunk.end = line;
+				if (line >= currChunk.end);
+					currChunk.end = line;
 			}
 			else {
 				debugInfo.GetChunks().AppendChunk(currChunk);	// Add existing chunk and initalise a new one.

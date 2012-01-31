@@ -14,7 +14,7 @@ void TreeVisitor::SetHandler (const std::string& nodeTag, Handler f, void* c)
 	{ handlers[nodeTag].set(f,c); }
 
 void TreeVisitor::SetContextDependentHandler (const std::string& parentTag, const std::string& childId, Handler f, void* c)
-	{ contextHandlers[CONTEXT(parentTag, childId)].set(f,c); }
+	{ contextHandlers[CONTEXT(parentTag, childId)].add(f,c); }
 
 void TreeVisitor::SetDefaultHandler (Handler f, void* c) 
 	{ defaultHandler.set(f,c); }
@@ -23,29 +23,34 @@ void TreeVisitor::SetDefaultHandler (Handler f, void* c)
 
 TreeVisitor::State TreeVisitor::Visit (TreeNode* node, const std::string& childId, bool entering) {
 
+	HandlerCallbacks*	context = (HandlerCallbacks*) 0;
+	HandlerCallback*	normal	= (HandlerCallback*) 0;
+
 	Handlers::iterator i = handlers.find(DPTR(node)->GetTag());	// Handling current node.
-
-	if (i != handlers.end()) {
-
-		TreeNode*			parent	= DPTR(node)->GetParent();
-		Handlers::iterator	j		= parent ?	contextHandlers.find(CONTEXT(DPTR(parent)->GetTag(), childId)) : 
-												contextHandlers.end();
-
-		if (j != contextHandlers.end())
-			if (entering) {		// Firstly the specific rule and then the generic rule.
-				j->second(node, childId, entering);
-				i->second(node, childId, entering);
-			}
-			else {				// Firstly the generic rule and then the specific rule.
-				i->second(node, childId, entering);
-				j->second(node, childId, entering);
-			}
-		else
-			i->second(node, childId, entering);
-	}
+	if (i != handlers.end())
+		normal = &i->second;
 	else
 	if (defaultHandler.f())
-		defaultHandler(node, childId, entering);
+		normal = &defaultHandler;
+
+	if (TreeNode* parent = DPTR(node)->GetParent()) {
+		MultiHandlers::iterator	j = contextHandlers.find(CONTEXT(DPTR(parent)->GetTag(), childId));
+		if (j != contextHandlers.end())
+			context = &j->second;
+	}
+
+	if (entering) {									// Firstly the specific rule and then the generic rule
+		if (context)
+			context->call(node, childId, true);
+		if (normal)
+			(*normal)(node, childId, true);
+	}
+	else {											// Firstly the generic and then the specific rule
+		if (normal)
+			(*normal)(node, childId, false);
+		if (context)
+			context->call(node, childId, false);
+	}
 
 	return state;			
 }

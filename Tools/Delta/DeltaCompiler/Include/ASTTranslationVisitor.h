@@ -124,6 +124,7 @@ namespace AST {
 	static void Handle_THROW (AST_VISITOR_ARGS); 
 	static void Handle_ExceptionVar (AST_VISITOR_ARGS); 
 	static void Handle_Exception (AST_VISITOR_ARGS); 
+	static void Handle_ScopedStmt (AST_VISITOR_ARGS); 
 
 	/////////////////////////////////////////////////////////
 	// Translation helpers.

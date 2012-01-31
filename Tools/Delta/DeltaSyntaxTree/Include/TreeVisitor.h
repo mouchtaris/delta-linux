@@ -33,11 +33,13 @@ class SYNTAXTREELIB_CLASS TreeVisitor {
 
 	protected:
 	typedef ucallbackwithclosure<Handler>			HandlerCallback;
+	typedef ucallbacklist<Handler>					HandlerCallbacks;
+	typedef std::map<std::string, HandlerCallbacks>	MultiHandlers;
 	typedef std::map<std::string, HandlerCallback>	Handlers;
 
 	HandlerCallback	defaultHandler;
 	Handlers		handlers;
-	Handlers		contextHandlers;
+	MultiHandlers	contextHandlers;
 	State			state;
 
 	virtual State	Visit (TreeNode* node, const std::string& childId, bool entering);
@@ -64,6 +66,8 @@ class SYNTAXTREELIB_CLASS TreeVisitor {
 						void*				c = (void*) 0
 					);
 
+					// When adding multiple handlers for the same parent tag 
+					// and child id, those are called with the order of registration.
 	void			SetContextDependentHandler (	// Relative to parent tag and child id in parent node.
 						const std::string&	parentTag, 
 						const std::string&	childId, 

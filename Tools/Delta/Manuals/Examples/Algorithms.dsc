@@ -3,7 +3,7 @@
 
 using std;
 const nl = "\n";
-
+ 
 ///////////////////////////////////////////////////
 // Using standard library containers and iterators
 

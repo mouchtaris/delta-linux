@@ -190,6 +190,15 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_C(ForInit,							AST_TAG_FOR,				AST_CHILD_INIT);
 	_C(ForSuffix,						AST_TAG_FOR,				AST_CHILD_SUFFIX);
 	_C(LambdaStmt,						AST_TAG_LAMBDA_FUNCTION,	AST_CHILD_EXPR);
+
+	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRY);
+	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRAP);
+	_C(ScopedStmt,						AST_TAG_FOR,				AST_CHILD_STMT);
+	_C(ScopedStmt,						AST_TAG_FOREACH,			AST_CHILD_STMT);
+	_C(ScopedStmt,						AST_TAG_WHILE,				AST_CHILD_STMT);
+	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_IF);
+	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_ELSE);
+	_C(ScopedStmt,						AST_TAG_IF,					AST_CHILD_STMT);
 }
 
 ///////////////////////////////////////////////////////////
@@ -1523,5 +1532,15 @@ void AST::TranslationVisitor::Handle_Exception (AST_VISITOR_ARGS){
 		yyapply;
 	}
 } 
+
+///////////////////////////////////////////////////////////
+
+void AST::TranslationVisitor::Handle_ScopedStmt (AST_VISITOR_ARGS) {
+	if (node->GetTag() != AST_TAG_EMPTY_STMT && node->GetTag() != AST_TAG_COMPOUND)
+		if (entering)
+			Translate_CompoundBegin();
+		else
+			Translate_CompoundEnd();
+}
 
 ///////////////////////////////////////////////////////////

@@ -118,7 +118,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Release/DeltaCompilerTest.exe</OutputFile>
+      <OutputFile>..\bin\Release/DeltaCompilerTest.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\Release/DeltaCompilerTest.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
