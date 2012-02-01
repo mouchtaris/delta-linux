@@ -25,7 +25,7 @@
 // LVALUES.
 
 static DeltaExpr* Translate_ByteCodeLibraryFunctionLvalue (const std::string& libName, const std::string& funcName, bool* wasLib) {
-	if (DeltaSymbol* lib = DELTASYMBOLS.Lookup(libName))
+	if (DeltaSymbol* lib = DELTASYMBOLS.Lookup(libName, DELTA_GLOBAL_SCOPE))
 		if (DPTR(lib)->IsImportedLibVar()) {
 			*wasLib = true;
 			if (DeltaLibraryNamespace* ns = DELTANAMESPACES.LookupNamespace(libName))
@@ -43,16 +43,16 @@ static DeltaExpr* Translate_ByteCodeLibraryFunctionLvalue (const std::string& li
 
 /////////////////////////////////////////////////////////
 
-#define	TRY_LOOKUP_IN_BYTECODE_LIBRARY(_ns, _id)															\
-	if (true) {																								\
-		bool wasLib = false;																				\
-		if (_ns.size() == 1) {																				\
-			if (DeltaExpr* func = Translate_ByteCodeLibraryFunctionLvalue(_ns.front(), _id, &wasLib))		\
-				return func;																				\
-			else																							\
-			if (wasLib)																						\
-				return NIL_EXPR;																			\
-		}																									\
+#define	TRY_LOOKUP_IN_BYTECODE_LIBRARY(_ns, _id)														\
+	if (true) {																							\
+		bool wasLib = false;																			\
+		if (_ns.size() == 1) {																			\
+			if (DeltaExpr* func = Translate_ByteCodeLibraryFunctionLvalue(_ns.front(), _id, &wasLib))	\
+				return func;																			\
+			else																						\
+			if (wasLib)																					\
+				return NIL_EXPR;																		\
+		}																								\
 	} else
 
 /////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ DeltaExpr* Translate_NamespaceLvalue (const NameList& nsPath, const std::string&
 	DASSERT(!nsPath.empty());
 
 	if (nsPath.front() == DELTA_LIBRARYNAMESPACE_SEPARATOR)
-		if (nsPath.size() == 1) {													// ::ident
+		if (nsPath.size() == 1) {															// ::ident
 			*ns = std::string(DELTA_LIBRARYNAMESPACE_SEPARATOR) + id;
 			return Translate_Lvalue(id.c_str(), ParseParms::CurrScope().value()); 
 		}
@@ -411,7 +411,11 @@ DeltaExpr* Translate_NamespaceLvalueAsLibraryFunctionOrConst (
 			DELTA_LIBRARYNAMESPACE_SEPARATOR						+
 			funcName
 		);
+
+		DASSERT(result);		// fallback means we found the Lvalue
 	}
+	else 
+		DASSERT(!result);		// this path implies no Lvalue is found
 
 	return result;
 }

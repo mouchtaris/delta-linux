@@ -248,6 +248,12 @@
 		ucstringarg(path), ucstringarg(type)									\
 	)
 
+#define	DELTACOMP_ERROR_FIRST_IDENT_NOT_A_NAMESPACE(path, id, type)				\
+	DeltaCompError(																\
+		"Invalid namespace path '%s' (first id '%s' is currently a '%s')",		\
+		ucstringarg(path), ucstringarg(id), ucstringarg(type)					\
+	)
+
 #define	DELTACOMP_ERROR_LIBFUNC_INVALID_NAMESPACE_PATH(path, func)				\
 	DeltaCompError(																\
 		"Invalid namespace path '%s' in getting library function '%s'",			\
