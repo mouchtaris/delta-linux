@@ -526,6 +526,11 @@
 		ucstringarg(sym->GetFunctionReadableName())								\
 	)
 
+#define	DELTACOMP_WARNING_EMPTY_STMT()											\
+	DeltaCompWarning(															\
+		"';' empty statement found, is this the intent?"						\
+	)
+
 //////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

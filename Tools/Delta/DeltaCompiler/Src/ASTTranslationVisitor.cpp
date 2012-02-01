@@ -10,6 +10,7 @@
 #include "GlobalData.h"
 #include "ASTTags.h"
 #include "Unparsable.h"
+#include "DeltaCompErrorDefs.h"
 #include "Unparse.h"
 #include "DeltaSyntax.h"
 #include "ufunctors.h"
@@ -426,6 +427,7 @@ void AST::TranslationVisitor::Handle_EmptyStmt (AST_VISITOR_ARGS){
 		yyrule; 
 		yv = NEW_STMT; 
 		yv.stmt()->SetUnparsed(";");
+		DELTACOMP_WARNING_EMPTY_STMT();
 		yyapply;
 	}
 } 
