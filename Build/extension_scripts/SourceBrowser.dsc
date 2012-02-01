@@ -675,7 +675,7 @@ function GetFuncNameAndArgsFromNode (node, inObjectCtor) {
 			}
 		}
 		else 
-		if (local firstchild.type == "ArgListASTNode")
+		if (firstchild.type == "ArgListASTNode")
 			args = " (" + ::GetNodeText(firstchild) + ")";
 			
 		if ((local secondchild = c[1]) and secondchild.type == "ArgListASTNode")
