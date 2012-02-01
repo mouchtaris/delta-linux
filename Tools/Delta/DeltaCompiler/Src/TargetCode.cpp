@@ -1068,7 +1068,7 @@ void DeltaCodeGenerator::ProduceDebugInfoForCodeLineChunks (void) {
 			}
 			else
 			if (currChunk.funcSerial == funcSerial) {			// Same func serial, update end line.
-				if (line >= currChunk.end);
+				if (line >= currChunk.end)
 					currChunk.end = line;
 			}
 			else {
