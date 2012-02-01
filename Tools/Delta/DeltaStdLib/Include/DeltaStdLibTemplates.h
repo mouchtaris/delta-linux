@@ -101,7 +101,7 @@ template <> struct DeltaArg<util_i32> {
 	_DLIB_ARG_MEMBERS_(util_i32)
 	bool operator()(DeltaVirtualMachine* vm, const char* func, util_ui32 n) {
 		_DLIB_GET_NUMBER_(func, n);
-		if (((util_i32) num) != val) {
+		if (((util_i32) num) != num) {
 			error = uconstructstr("in %s() arg %s (#%d): int expected, real passed!", func, name.c_str(), n);
 			return false;
 		}

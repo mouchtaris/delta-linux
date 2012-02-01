@@ -98,12 +98,12 @@ START_SEC("si_download", "Download")
 		
 		NL2,
 		
-		!courier "svn co https://139.91.186.36/svn/sparrow/trunk --username guest",
+		!courier "svn co https://139.91.186.186/svn/sparrow/trunk --username guest",
 
 		NL2,
 
 		"Alternatively you may use your own ghraphical svn client to checkout from repository",
-		!courier "https://139.91.186.36/svn/sparrow/trunk", " supplying as user name 'guest' and
+		!courier "https://139.91.186.186/svn/sparrow/trunk", " supplying as user name 'guest' and
 		an empty password. When checkout completes, you neeed to carry out the following steps to 
 		build the Sparrow IDE:",
 		NL2,

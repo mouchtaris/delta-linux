@@ -9,7 +9,7 @@
         <libs></libs>
         <icode>0</icode>
         <hostd></hostd>
-        <host>C:/Program Files/Internet Explorer/iexplore.exe</host>
+        <host>../../../../../../../Program Files/Internet Explorer/iexplore.exe</host>
         <deployment>2</deployment>
         <debug>0</debug>
         <collapsed>0</collapsed>
