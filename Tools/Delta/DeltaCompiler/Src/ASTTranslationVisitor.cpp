@@ -176,9 +176,19 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_C(AdaptBoolExpression, AST_TAG_OP_EQ, AST_CHILD_RIGHT);
 	_C(AdaptBoolExpression, AST_TAG_OP_NE, AST_CHILD_RIGHT);
 
+	_C(ElsePrefix,						AST_TAG_IF_ELSE,			AST_CHILD_ELSE);
+
+	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRY);
+	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRAP);
+	_C(ScopedStmt,						AST_TAG_FOR,				AST_CHILD_STMT);
+	_C(ScopedStmt,						AST_TAG_FOREACH,			AST_CHILD_STMT);
+	_C(ScopedStmt,						AST_TAG_WHILE,				AST_CHILD_STMT);
+	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_IF);
+	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_ELSE);
+	_C(ScopedStmt,						AST_TAG_IF,					AST_CHILD_STMT);
+
 	_C(IfCondition,						AST_TAG_IF,					AST_CHILD_COND);
 	_C(IfCondition,						AST_TAG_IF_ELSE,			AST_CHILD_COND);
-	_C(ElsePrefix,						AST_TAG_IF_ELSE,			AST_CHILD_ELSE);
 	_C(WhileCondition,					AST_TAG_WHILE,				AST_CHILD_COND);
 	_C(ForCond,							AST_TAG_FOR,				AST_CHILD_COND);
 	_C(ForeachContainer,				AST_TAG_FOREACH,			AST_CHILD_CONTAINER);
@@ -190,15 +200,6 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_C(ForInit,							AST_TAG_FOR,				AST_CHILD_INIT);
 	_C(ForSuffix,						AST_TAG_FOR,				AST_CHILD_SUFFIX);
 	_C(LambdaStmt,						AST_TAG_LAMBDA_FUNCTION,	AST_CHILD_EXPR);
-
-	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRY);
-	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRAP);
-	_C(ScopedStmt,						AST_TAG_FOR,				AST_CHILD_STMT);
-	_C(ScopedStmt,						AST_TAG_FOREACH,			AST_CHILD_STMT);
-	_C(ScopedStmt,						AST_TAG_WHILE,				AST_CHILD_STMT);
-	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_IF);
-	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_ELSE);
-	_C(ScopedStmt,						AST_TAG_IF,					AST_CHILD_STMT);
 }
 
 ///////////////////////////////////////////////////////////
