@@ -506,6 +506,8 @@ template <class T> class ubag {
 
 	void operator=(const ubag& b) 
 		{ new (this) ubag(b); }
+	bool operator==(const ubag& b) const
+		{ return this == &b || bag == b.bag; }
 
 	ubag (void){}
 	ubag (const T& v1) { insert(v1); }
