@@ -7,8 +7,8 @@
 //
  
 using std;
-using #main;
-spw  = main::Sparrow();
+using #sparrowlib;
+spw  = sparrowlib::sparrow();
   
 const nl 			= "\n";
 assert spw;

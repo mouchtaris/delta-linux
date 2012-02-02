@@ -1,6 +1,6 @@
 using std;
-using #main;
-spw  = main::Sparrow();
+using #sparrowlib;
+spw  = sparrowlib::sparrow();
 
 spw.components.Shell.AddComponent("ProjectManager", 0);
 spw.components.Shell.AddComponent("Output", 4);

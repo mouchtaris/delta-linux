@@ -6,8 +6,8 @@
  */
 
 using std;
-using #main;
-spw  = main::Sparrow();
+using #sparrowlib;
+spw  = sparrowlib::sparrow();
 
 const classId = "LineCounter";
 

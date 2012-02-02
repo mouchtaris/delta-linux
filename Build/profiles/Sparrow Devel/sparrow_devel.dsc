@@ -1,7 +1,7 @@
 using std;
 
-using #main;
-spw  = main::Sparrow();
+using #sparrowlib;
+spw  = sparrowlib::sparrow();
 
 const SHELL_LEFT_TOP		= 0; 
 const SHELL_LEFT_BOTTOM 	= 1; 
