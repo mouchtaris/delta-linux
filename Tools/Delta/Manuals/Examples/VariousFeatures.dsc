@@ -183,7 +183,7 @@ function TableIteratorSuper() {
 
 	t.nativeobject = t;
 	return t;
-};
+}
 
 ////////////////////////////////////////////////////////
 // Augments a table with inherited methods to
@@ -280,7 +280,7 @@ function GeneralTableIterator() {
 	);
 
 	return t;
-};
+}
 
 //------------------------------------------------------
 // VECTOR AND ITS ITERATORS.
@@ -326,11 +326,11 @@ function VectorTableIterator() {
 	);
 
 	return t;
-};
+}
 
 ////////////////////////////////////////////////////////
 
-function Vector() {
+function Vector {
 	
 	// Make instance and add iterator methods.
 	//
