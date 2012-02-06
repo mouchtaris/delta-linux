@@ -504,8 +504,7 @@ template <class T> class ubag {
 	bool			in (const T& x) const		{ return bag.find(x) != bag.end();	}
 	void			clear(void) 				{ bag.clear();						}
 
-	void operator=(const ubag& b) 
-		{ new (this) ubag(b); }
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(ubag)
 	bool operator==(const ubag& b) const
 		{ return this == &b || bag == b.bag; }
 
