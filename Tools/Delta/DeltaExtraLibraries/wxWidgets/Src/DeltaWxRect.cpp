@@ -148,6 +148,18 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Rect, rect, DeltaWxRectInitFunc();, );
 
 ////////////////////////////////////////////////////////////////
 
+#define WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef)					\
+	if (rectRef == rect) {														\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);							\
+	} else {																	\
+		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(*rectRef)));	\
+		WX_SETOBJECT(Rect, retval)												\
+	}
+
+#define WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, func)							\
+	wxRect *rect##Ref = &(rect->func);											\
+	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rect##Ref)
+
 WX_FUNC_ARGRANGE_START(rect_construct, 0, 4, Nil)
 	wxRect *wxrect = (wxRect*) 0;
 	DeltaWxRect *rect = (DeltaWxRect*) 0;
@@ -192,14 +204,9 @@ DLIB_FUNC_START(rect_destruct, 1, Nil)
 WX_FUNC_ARGRANGE_START(rect_centrein, 2, 3, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, r)
-	DeltaWxRect *retval = (DeltaWxRect*) 0;
-	if (n == 2) {
-		retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->CenterIn(*r))));
-	} else {
-		WX_GETDEFINE(dir)
-		retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->CenterIn(*r, dir))));
-	}
-	WX_SETOBJECT(Rect, retval)
+	int dir = wxBOTH;
+	if (n >= 3) { WX_GETDEFINE_DEFINED(dir) }
+	WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, CenterIn(*r, dir))
 }
 
 WX_FUNC_ARGRANGE_START(rect_contains, 2, 3, Nil)
@@ -223,23 +230,23 @@ WX_FUNC_ARGRANGE_START(rect_contains, 2, 3, Nil)
 }
 
 WX_FUNC_ARGRANGE_START(rect_deflate, 2, 3, Nil)
-	DeltaWxRect *retval = (DeltaWxRect*) 0;
 	DLIB_WXGET_BASE(rect, Rect, rect)
+	wxRect *rectRef = (wxRect*) NULL;
 	if (n == 3) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
-		retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Deflate((wxCoord)x, (wxCoord)y))));
+		rectRef = &(rect->Deflate((wxCoord)x, (wxCoord)y));
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(diff)
-			retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Deflate((wxCoord)diff))));
+			rectRef = &(rect->Deflate((wxCoord)diff));
 		} else
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGET_BASE(size, Size, diff)
-			retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Deflate(*diff))));
+			rectRef = &(rect->Deflate(*diff));
 		}
 	}
-	WX_SETOBJECT(Rect, retval)
+	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef);
 }
 
 DLIB_FUNC_START(rect_getbottom, 1, Nil)
@@ -319,30 +326,29 @@ DLIB_FUNC_START(rect_gety, 1, Nil)
 }
 
 WX_FUNC_ARGRANGE_START(rect_inflate, 2, 3, Nil)
-	DeltaWxRect *retval = (DeltaWxRect*) 0;
 	DLIB_WXGET_BASE(rect, Rect, rect)
+	wxRect *rectRef = (wxRect*) NULL;
 	if (n == 3) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
-		retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Inflate((wxCoord)x, (wxCoord)y))));
+		rectRef = &(rect->Inflate((wxCoord)x, (wxCoord)y));
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(diff)
-			retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Inflate((wxCoord)diff))));
+			rectRef = &(rect->Inflate((wxCoord)diff));
 		} else
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGET_BASE(size, Size, diff)
-			retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Inflate(*diff))));
+			rectRef = &(rect->Inflate(*diff));
 		}
 	}
-	WX_SETOBJECT(Rect, retval)
+	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef);
 }
 
 DLIB_FUNC_START(rect_intersect, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, r)
-	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Intersect(*r))));
-	WX_SETOBJECT(Rect, retval)
+	WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, Intersect(*r))
 }
 
 DLIB_FUNC_START(rect_intersects, 2, Nil)
@@ -407,8 +413,7 @@ DLIB_FUNC_START(rect_sety, 2, Nil)
 DLIB_FUNC_START(rect_union, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, r)
-	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect->Union(*r))));
-	WX_SETOBJECT(Rect, retval)
+	WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, Union(*r))
 }
 
 DLIB_FUNC_START(rect_equal, 2, Nil)

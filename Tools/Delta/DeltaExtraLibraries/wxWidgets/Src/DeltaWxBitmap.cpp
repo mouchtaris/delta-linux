@@ -94,6 +94,15 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Bitmap, bitmap);
 
 ////////////////////////////////////////////////////////////////
 
+#define WXBITMAP_AVOID_UNNECESSARY_OBJECTS(bitmap, func)								\
+	wxBitmap *bitmap##Ref = &(bitmap->func);											\
+	if (bitmap##Ref == bitmap) {														\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);									\
+	} else {																			\
+		DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(*bitmap##Ref)));	\
+		WX_SETOBJECT(Bitmap, retval)													\
+	}
+
 WX_FUNC_ARGRANGE_START(bitmap_construct, 0, 3, Nil)
 	wxBitmap *wxbitmap = (wxBitmap*) 0;
 	DeltaWxBitmap *bitmap = (DeltaWxBitmap*) 0;
@@ -207,8 +216,7 @@ DLIB_FUNC_START(bitmap_getwidth, 1, Nil)
 DLIB_FUNC_START(bitmap_getsubbitmap, 2, Nil)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bitmap->GetSubBitmap(*rect))));
-	WX_SETOBJECT(Bitmap, retval)
+	WXBITMAP_AVOID_UNNECESSARY_OBJECTS(bitmap, GetSubBitmap(*rect))
 }
 
 WX_FUNC_ARGRANGE_START(bitmap_loadfile, 2, 3, Nil)

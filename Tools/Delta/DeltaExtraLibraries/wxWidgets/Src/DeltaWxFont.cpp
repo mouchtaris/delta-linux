@@ -145,7 +145,7 @@ WX_FUNC_ARGRANGE_START(font_construct, 0, 7, Nil)
 			std::string str = DPTR(vm)->GetActualArg(_argNo++)->ToString();
 			wxFont _font;
 			if (DeltaWxFontSearch(str, &_font))
-				wxfont = (wxFont*)&_font;
+				wxfont = new wxFont(_font);
 		}
 	} else if (n >= 4) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {

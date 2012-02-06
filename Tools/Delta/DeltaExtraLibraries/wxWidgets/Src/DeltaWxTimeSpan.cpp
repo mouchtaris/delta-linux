@@ -191,6 +191,15 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(TimeSpan, timespan, DeltaWxTimeSpanInitFunc()
 
 ////////////////////////////////////////////////////////////////
 
+#define WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, func)									\
+	wxTimeSpan *timespan##Ref = &(timespan->func);												\
+	if (timespan##Ref == timespan) {															\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
+	} else {																					\
+		DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(*timespan##Ref)));	\
+		WX_SETOBJECT(TimeSpan, retval)															\
+	}
+
 WX_FUNC_ARGRANGE_START(timespan_construct, 0, 4, Nil)
 	wxTimeSpan *wxtimespan = (wxTimeSpan*) 0;
 	DeltaWxTimeSpan *timespan = (DeltaWxTimeSpan*) 0;
@@ -214,15 +223,13 @@ DLIB_FUNC_START(timespan_destruct, 1, Nil)
 
 DLIB_FUNC_START(timespan_abs, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->Abs())));
-	WX_SETOBJECT(TimeSpan, retval)
+	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Abs())
 }
 
 DLIB_FUNC_START(timespan_add, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->Add(*diff))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Add(*diff))
 }
 
 DLIB_FUNC_START(timespan_days, 1, Nil)
@@ -339,20 +346,17 @@ DLIB_FUNC_START(timespan_minute, 0, Nil)
 DLIB_FUNC_START(timespan_multiply, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_GETNUMBER(factor)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->Multiply(factor))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Multiply(factor))
 }
 
 DLIB_FUNC_START(timespan_negate, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->Negate())));
-	WX_SETOBJECT(TimeSpan, retval)
+	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Negate())
 }
 
 DLIB_FUNC_START(timespan_neg, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->Neg())));
-	WX_SETOBJECT(TimeSpan, retval)
+	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Neg())
 }
 
 DLIB_FUNC_START(timespan_milliseconds, 1, Nil)
@@ -380,8 +384,7 @@ DLIB_FUNC_START(timespan_second, 0, Nil)
 DLIB_FUNC_START(timespan_subtract, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->Subtract(*diff))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Subtract(*diff))
 }
 
 DLIB_FUNC_START(timespan_weeks, 1, Nil)

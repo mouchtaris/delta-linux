@@ -140,6 +140,18 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateSpan, datespan, DeltaWxDateSpanInitFunc()
 
 ////////////////////////////////////////////////////////////////
 
+#define WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespanRef)						\
+	if (datespanRef == datespan) {																\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
+	} else {																					\
+		DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(*datespanRef)));	\
+		WX_SETOBJECT(DateSpan, retval)															\
+	}
+
+#define WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, func)									\
+	wxDateSpan *datespan##Ref = &(datespan->func);												\
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespan##Ref)
+
 WX_FUNC_ARGRANGE_START(datespan_construct, 0, 4, Nil)
 	int years = 0, months = 0, weeks = 0, days = 0;
 	if (n >= 1) { WX_GETNUMBER_DEFINED(years) }
@@ -158,8 +170,7 @@ DLIB_FUNC_START(datespan_destruct, 1, Nil)
 DLIB_FUNC_START(datespan_add, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	DLIB_WXGET_BASE(datespan, DateSpan, other)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->Add(*other))));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Add(*other))
 }
 
 DLIB_FUNC_START(datespan_day, 0, Nil)
@@ -212,55 +223,47 @@ DLIB_FUNC_START(datespan_months, 1, Nil)
 DLIB_FUNC_START(datespan_multiply, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(factor)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->Multiply(factor))));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Multiply(factor))
 }
 
 DLIB_FUNC_START(datespan_negate, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->Negate())));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Negate())
 }
 
 DLIB_FUNC_START(datespan_neg, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->Neg())));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Neg())
 }
 
 DLIB_FUNC_START(datespan_setdays, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(days)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->SetDays(days))));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetDays(days))
 }
 
 DLIB_FUNC_START(datespan_setyears, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(years)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->SetYears(years))));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetYears(years))
 }
 
 DLIB_FUNC_START(datespan_setmonths, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(months)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->SetMonths(months))));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetMonths(months))
 }
 
 DLIB_FUNC_START(datespan_setweeks, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(weeks)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->SetWeeks(weeks))));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetWeeks(weeks))
 }
 
 DLIB_FUNC_START(datespan_subtract, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	DLIB_WXGET_BASE(datespan, DateSpan, other)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->Subtract(*other))));
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Subtract(*other))
 }
 
 DLIB_FUNC_START(datespan_week, 0, Nil)
@@ -305,12 +308,12 @@ DLIB_FUNC_START(datespan_assign, 2, Nil)
 
 WX_FUNC_ARGRANGE_START(datespan_minus, 1, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
-	DeltaWxDateSpan *retval = (DeltaWxDateSpan*) 0;
+	wxDateSpan* datespanRef = (wxDateSpan*) NULL;
 	if (n == 1) {
-		retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->operator-())));
+		datespanRef = &(datespan->operator-());
 	} else {
 		DLIB_WXGET_BASE(datespan, DateSpan, other)
-		retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespan->operator-(*other))));
+		datespanRef = &(datespan->operator-(*other));
 	}
-	WX_SETOBJECT(DateSpan, retval)
+	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespanRef)
 }

@@ -114,14 +114,23 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Point, point,
 
 ////////////////////////////////////////////////////////////////
 
+#define WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, func)								\
+	wxPoint *point##Ref = &(point->func);											\
+	if (point##Ref == point) {														\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);								\
+	} else {																		\
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(*point##Ref)));	\
+		WX_SETOBJECT(Point, retval)													\
+	}
+
 WX_FUNC_ARGRANGE_START(point_construct, 0, 2, Nil)
 	wxPoint *wxpoint = (wxPoint*) 0;
 	DeltaWxPoint *point = (DeltaWxPoint*) 0;
 	if (n == 0)
 		wxpoint = new wxPoint();
 	else if (n == 2) {
-		WX_GETNUMBER(x)
-		WX_GETNUMBER(y)
+		WX_GETDEFINE(x)
+		WX_GETDEFINE(y)
 		wxpoint = new wxPoint((int)x, (int)y);
 	} else {
 		std::string str;
@@ -129,7 +138,7 @@ WX_FUNC_ARGRANGE_START(point_construct, 0, 2, Nil)
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String)
 			str = DPTR(vm)->GetActualArg(_argNo++)->ToString();
 		if (DeltaWxPointSearch(str, &pt))
-			wxpoint = (wxPoint*)&pt;
+			wxpoint = new wxPoint(pt);
 	}
 	if (wxpoint) point = DNEWCLASS(DeltaWxPoint, (wxpoint));
 	WX_SETOBJECT(Point, point)
@@ -167,13 +176,11 @@ DLIB_FUNC_START(point_plus, 2, Nil)
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
 		if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
 			wxPoint *point2 = (wxPoint*) point_wr->GetCastToNativeInstance();
-			DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(point->operator+(*point2))));
-			WX_SETOBJECT(Point, retval)
+			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator+(*point2))
 		} else
 		if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
 			wxSize *size = (wxSize*) size_wr->GetCastToNativeInstance();
-			DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(point->operator+(*size))));
-			WX_SETOBJECT(Point, retval)
+			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator+(*size))
 		}
 	}
 }
@@ -184,13 +191,11 @@ DLIB_FUNC_START(point_minus, 2, Nil)
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
 		if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
 			wxPoint *point2 = (wxPoint*) point_wr->GetCastToNativeInstance();
-			DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(point->operator-(*point2))));
-			WX_SETOBJECT(Point, retval)
+			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator-(*point2))
 		} else
 		if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
 			wxSize *size = (wxSize*) size_wr->GetCastToNativeInstance();
-			DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(point->operator-(*size))));
-			WX_SETOBJECT(Point, retval)
+			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator-(*size))
 		}
 	}
 }

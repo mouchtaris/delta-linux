@@ -208,6 +208,15 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Image, image);
 
 ////////////////////////////////////////////////////////////////
 
+#define WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, func)								\
+	wxImage *image##Ref = &(image->func);											\
+	if (image##Ref == image) {														\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);								\
+	} else {																		\
+		DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(*image##Ref)));	\
+		WX_SETOBJECT(Image, retval)													\
+	}
+
 WX_FUNC_ARGRANGE_START(image_construct, 0, 3, Nil)
 	wxImage *wximage = (wxImage*) 0;
 	DeltaWxImage *image = (DeltaWxImage*) 0;
@@ -253,22 +262,19 @@ DLIB_FUNC_START(image_destruct, 1, Nil)
 DLIB_FUNC_START(image_blur, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(blurRadius)
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Blur(blurRadius))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Blur(blurRadius))
 }
 
 DLIB_FUNC_START(image_blurhorizontal, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(blurRadius)
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->BlurHorizontal(blurRadius))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, BlurHorizontal(blurRadius))
 }
 
 DLIB_FUNC_START(image_blurvertical, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(blurRadius)
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->BlurVertical(blurRadius))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, BlurVertical(blurRadius))
 }
 
 WX_FUNC_ARGRANGE_START(image_convertalphatomask, 1, 2, Nil)
@@ -284,8 +290,7 @@ WX_FUNC_ARGRANGE_START(image_converttogreyscale, 1, 4, Nil)
 	if (n >= 2) { WX_GETNUMBER_DEFINED(lr) }
 	if (n >= 3) { WX_GETNUMBER_DEFINED(lg) }
 	if (n >= 4) { WX_GETNUMBER_DEFINED(lb) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->ConvertToGreyscale(lr, lg, lb))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, ConvertToGreyscale(lr, lg, lb))
 }
 
 DLIB_FUNC_START(image_converttomono, 4, Nil)
@@ -293,14 +298,12 @@ DLIB_FUNC_START(image_converttomono, 4, Nil)
 	WX_GETNUMBER(red)
 	WX_GETNUMBER(green)
 	WX_GETNUMBER(blue)
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->ConvertToMono(red, green, blue))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, ConvertToMono(red, green, blue))
 }
 
 DLIB_FUNC_START(image_copy, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Copy())));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Copy())
 }
 
 WX_FUNC_ARGRANGE_START(image_create, 3, 4, Nil)
@@ -402,8 +405,7 @@ DLIB_FUNC_START(image_getred, 3, Nil)
 DLIB_FUNC_START(image_getsubimage, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->GetSubImage(*rect))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, GetSubImage(*rect))
 }
 
 DLIB_FUNC_START(image_getwidth, 1, Nil)
@@ -531,8 +533,7 @@ WX_FUNC_ARGRANGE_START(image_mirror, 1, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	bool horizontally = true;
 	if (n >= 2) { WX_GETBOOL_DEFINED(horizontally) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Mirror(horizontally))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Mirror(horizontally))
 }
 
 DLIB_FUNC_START(image_replace, 7, Nil)
@@ -552,8 +553,7 @@ WX_FUNC_ARGRANGE_START(image_rescale, 3, 4, Nil)
 	WX_GETNUMBER(height)
 	int quality = wxIMAGE_QUALITY_NORMAL;
 	if (n >= 4) { WX_GETDEFINE_DEFINED(quality) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Rescale(width, height, quality))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rescale(width, height, quality))
 }
 
 WX_FUNC_ARGRANGE_START(image_resize, 3, 6, Nil)
@@ -564,8 +564,7 @@ WX_FUNC_ARGRANGE_START(image_resize, 3, 6, Nil)
 	if (n >= 4) { WX_GETNUMBER_DEFINED(r) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(g) }
 	if (n >= 6) { WX_GETNUMBER_DEFINED(b) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Resize(*size, *pos, r, g, b))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Resize(*size, *pos, r, g, b))
 }
 
 WX_FUNC_ARGRANGE_START(image_rotate, 3, 5, Nil)
@@ -575,9 +574,7 @@ WX_FUNC_ARGRANGE_START(image_rotate, 3, 5, Nil)
 	bool interpolating = true;
 	wxPoint offsetAfterRotation;
 	if (n >= 4) { WX_GETBOOL_DEFINED(interpolating) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Rotate(angle,
-		*rotationCentre, interpolating, &offsetAfterRotation))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rotate(angle, *rotationCentre, interpolating, &offsetAfterRotation))
 	if (n >= 5) {
 		DeltaValue offset;
 		WX_GETTABLE(offset_table)
@@ -597,8 +594,7 @@ WX_FUNC_ARGRANGE_START(image_rotate90, 1, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	bool clockwise = true;
 	if (n >= 2) { WX_GETBOOL_DEFINED(clockwise) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Rotate90(clockwise))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rotate90(clockwise))
 }
 
 WX_FUNC_ARGRANGE_START(image_savefile, 2, 3, Nil)
@@ -626,8 +622,7 @@ WX_FUNC_ARGRANGE_START(image_scale, 3, 4, Nil)
 	WX_GETNUMBER(height)
 	int quality = wxIMAGE_QUALITY_NORMAL;
 	if (n >= 4) { WX_GETDEFINE_DEFINED(quality) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Scale(width, height, quality))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Scale(width, height, quality))
 }
 
 WX_FUNC_ARGRANGE_START(image_size, 3, 6, Nil)
@@ -638,8 +633,7 @@ WX_FUNC_ARGRANGE_START(image_size, 3, 6, Nil)
 	if (n >= 4) { WX_GETNUMBER_DEFINED(r) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(g) }
 	if (n >= 6) { WX_GETNUMBER_DEFINED(b) }
-	DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image->Size(*size, *pos, r, g, b))));
-	WX_SETOBJECT(Image, retval)
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Size(*size, *pos, r, g, b))
 }
 
 DLIB_FUNC_START(image_setalpha, 4, Nil)

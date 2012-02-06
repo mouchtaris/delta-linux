@@ -2,7 +2,8 @@ using wx;
 
 dll = std::dllimportdeltalib(wx::DLL);
 
-wxsize = size_construct(-1, -1);
+wxsize = size_construct(wx::DefaultSize);
+wxpoint = point_construct(wx::DefaultPosition);
 
 function myFunc(frame, ev) {
 	msgdlg = messagedialog_construct(frame, "Are you sure you want to quit this exceptional program?",
