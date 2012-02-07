@@ -88,8 +88,8 @@ WX_FUNC_ARGRANGE_START(listbox_construct, 0, 8, Nil)
 		long style = 0;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		wxString name = wxListBoxNameStr;
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) {
 			WX_GETTABLE(choices_table)
 			int num = choices_table->Total();
@@ -124,8 +124,8 @@ WX_FUNC_ARGRANGE_START(listbox_create, 3, 9, Nil)
 	long style = 0;
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	wxString name = wxListBoxNameStr;
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) {
 		WX_GETTABLE(choices_table)
 		int num = choices_table->Total();
@@ -178,7 +178,7 @@ DLIB_FUNC_START(listbox_insertitems, 3, Nil)
 
 DLIB_FUNC_START(listbox_hittest, 2, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
-	DLIB_WXGET_BASE(point, Point, point)
+	DLIB_WXGETPOINT_BASE(point)
 	WX_SETNUMBER(listbox->HitTest(*point))
 }
 

@@ -558,8 +558,8 @@ WX_FUNC_ARGRANGE_START(image_rescale, 3, 4, Nil)
 
 WX_FUNC_ARGRANGE_START(image_resize, 3, 6, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
-	DLIB_WXGET_BASE(size, Size, size)
-	DLIB_WXGET_BASE(point, Point, pos)
+	DLIB_WXGETSIZE_BASE(size)
+	DLIB_WXGETPOINT_BASE(pos)
 	int r = -1, g = -1, b = -1;
 	if (n >= 4) { WX_GETNUMBER_DEFINED(r) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(g) }
@@ -570,7 +570,7 @@ WX_FUNC_ARGRANGE_START(image_resize, 3, 6, Nil)
 WX_FUNC_ARGRANGE_START(image_rotate, 3, 5, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(angle)
-	DLIB_WXGET_BASE(point, Point, rotationCentre)
+	DLIB_WXGETPOINT_BASE(rotationCentre)
 	bool interpolating = true;
 	wxPoint offsetAfterRotation;
 	if (n >= 4) { WX_GETBOOL_DEFINED(interpolating) }
@@ -627,8 +627,8 @@ WX_FUNC_ARGRANGE_START(image_scale, 3, 4, Nil)
 
 WX_FUNC_ARGRANGE_START(image_size, 3, 6, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
-	DLIB_WXGET_BASE(size, Size, size)
-	DLIB_WXGET_BASE(point, Point, pos)
+	DLIB_WXGETSIZE_BASE(size)
+	DLIB_WXGETPOINT_BASE(pos)
 	int r = -1, g = -1, b = -1;
 	if (n >= 4) { WX_GETNUMBER_DEFINED(r) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(g) }

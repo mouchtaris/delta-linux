@@ -76,8 +76,8 @@ WX_FUNC_ARGRANGE_START(checklistbox_construct, 0, 8, Nil)
 		long style = 0;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		wxString name = wxListBoxNameStr;
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) {
 			WX_GETTABLE(choices_table)
 			int num = choices_table->Total();

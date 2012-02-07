@@ -248,8 +248,8 @@ WX_FUNC_ARGRANGE_START(listctrl_construct, 0, 7, Nil)
 		long style = wxLC_ICON;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		wxString name = wxListCtrlNameStr;
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
@@ -298,8 +298,8 @@ WX_FUNC_ARGRANGE_START(listctrl_create, 3, 8, Nil)
 	long style = wxLC_ICON;
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	wxString name = wxListCtrlNameStr;
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
@@ -344,7 +344,7 @@ WX_FUNC_ARGRANGE_START(listctrl_finditem, 3, 4, Nil)
 		if (n >= 4) { WX_GETBOOL_DEFINED(partial) }
 		WX_SETNUMBER(ctrl->FindItem(start, str, partial))
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId && n == 4) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		WX_GETDEFINE(direction)
 		WX_SETNUMBER(ctrl->FindItem(start, *pt, direction))
 	}
@@ -514,7 +514,7 @@ DLIB_FUNC_START(listctrl_getviewrect, 1, Nil)
 
 WX_FUNC_ARGRANGE_START(listctrl_hittest, 3, 4, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
-	DLIB_WXGET_BASE(point, Point, point)
+	DLIB_WXGETPOINT_BASE(point)
 	WX_GETDEFINE(flags)
 	long subItem;
 	WX_SETNUMBER(ctrl->HitTest(*point, flags, &subItem))
@@ -658,7 +658,7 @@ DLIB_FUNC_START(listctrl_setitemcolumnimage, 4, Nil)
 DLIB_FUNC_START(listctrl_setitemposition, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
-	DLIB_WXGET_BASE(point, Point, pos)
+	DLIB_WXGETPOINT_BASE(pos)
 	WX_SETBOOL(ctrl->SetItemPosition(item, *pos))
 }
 

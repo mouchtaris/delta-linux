@@ -125,8 +125,8 @@ WX_FUNC_ARGRANGE_START(dialog_construct, 0, 7, Nil)
 		wxSize size = wxDefaultSize;
 		long style = wxDEFAULT_DIALOG_STYLE;
 		wxString name = wxDialogNameStr;
-		if (n >= 4) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-		if (n >= 5) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+		if (n >= 4) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+		if (n >= 5) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 		wxdialog = new wxDialog(parent, id, title, pos, size, style, name);
@@ -148,8 +148,8 @@ WX_FUNC_ARGRANGE_START(dialog_create, 4, 8, Nil)
 	wxSize size = wxDefaultSize;
 	long style = wxDEFAULT_DIALOG_STYLE;
 	wxString name = wxDialogNameStr;
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-	if (n >= 6) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+	if (n >= 6) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(dialog->Create(parent, id, title, pos, size, style, name))

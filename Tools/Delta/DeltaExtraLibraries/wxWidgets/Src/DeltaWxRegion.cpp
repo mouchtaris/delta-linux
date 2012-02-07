@@ -263,7 +263,7 @@ DLIB_FUNC_START(region_subtract, 2, Nil)
 WX_FUNC_ARGRANGE_START(region_offset, 2, 3, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		WX_SETBOOL(region->Offset(*pt))
 	} else {
 		WX_GETNUMBER(x)

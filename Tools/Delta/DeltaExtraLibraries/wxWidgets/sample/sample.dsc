@@ -215,7 +215,7 @@ function spinup_evtfunction(frame, ev) {
 }
 
 function oninitfunc() {
-	frame = frame_construct(nil, "ID_ANY", "test");
+	frame = frame_construct(nil, "ID_ANY", "test", wx::DefaultPosition, wx::DefaultSize);
 	frame.show(true);
 	size = size_construct(-1,-1);
 	

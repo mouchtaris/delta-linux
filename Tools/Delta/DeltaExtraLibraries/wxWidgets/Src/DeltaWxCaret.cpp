@@ -128,7 +128,7 @@ WX_FUNC_ARGRANGE_START(caret_construct, 0, 3, Nil)
 		wxcaret = new wxCaret();
 	} else if (n == 2) {
 		DLIB_WXGET_BASE(window, Window, window)
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		wxcaret = new wxCaret(window, *size);
 	} else if (n == 3) {
 		DLIB_WXGET_BASE(window, Window, window)
@@ -155,7 +155,7 @@ WX_FUNC_ARGRANGE_START(caret_create, 3, 4, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
 	DLIB_WXGET_BASE(window, Window, window)
 	if (n == 3) {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		WX_SETBOOL(caret->Create(window, *size));
 	} else {
 		WX_GETNUMBER(width)
@@ -204,7 +204,7 @@ DLIB_FUNC_START(caret_isvisible, 1, Nil)
 WX_FUNC_ARGRANGE_START(caret_move, 2, 3, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		caret->Move(*pt);
 	} else {
 		WX_GETNUMBER(x)
@@ -221,7 +221,7 @@ DLIB_FUNC_START(caret_setblinktime, 1, Nil)
 WX_FUNC_ARGRANGE_START(caret_setsize, 2, 3, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
 	if (n == 2) {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		caret->SetSize(*size);
 	} else {
 		WX_GETNUMBER(width)

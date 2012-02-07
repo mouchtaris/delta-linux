@@ -180,8 +180,8 @@ WX_FUNC_ARGRANGE_START(treebook_construct, 0, 6, Nil)
 		wxSize size = wxDefaultSize;
 		long style = wxBK_DEFAULT;
 		wxString name = wxEmptyString;
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 		wxtreebk = new wxTreebook(parent, id, pos, size, style, name);
@@ -249,8 +249,8 @@ WX_FUNC_ARGRANGE_START(treebook_create, 3, 7, Nil)
 	wxSize size = wxDefaultSize;
 	long style = wxBK_DEFAULT;
 	wxString name = wxEmptyString;
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(treebk->Create(parent, id, pos, size, style, name))

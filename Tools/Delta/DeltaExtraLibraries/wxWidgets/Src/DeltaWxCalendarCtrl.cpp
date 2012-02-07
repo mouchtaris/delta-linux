@@ -232,8 +232,8 @@ WX_FUNC_ARGRANGE_START(calendarctrl_construct, 0, 7, Nil)
 		long style = wxCAL_SHOW_HOLIDAYS | wxWANTS_CHARS;
 		wxString name = wxCalendarNameStr;
 		if (n >= 3) { DLIB_WXGET_BASE(datetime, DateTime, _date) date = *_date; }
-		if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 		wxcalctrl = new wxCalendarCtrl(parent, id, date, pos, size, style, name);
@@ -263,8 +263,8 @@ WX_FUNC_ARGRANGE_START(calendarctrl_create, 3, 8, Nil)
 	long style = wxCAL_SHOW_HOLIDAYS | wxWANTS_CHARS;
 	wxString name = wxCalendarNameStr;
 	if (n >= 4) { DLIB_WXGET_BASE(datetime, DateTime, _date) date = *_date; }
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 6) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 6) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(calctrl->Create(parent, id, date, pos, size, style, name))
@@ -388,7 +388,7 @@ DLIB_FUNC_START(calendarctrl_resetattr, 2, Nil)
 
 WX_FUNC_ARGRANGE_START(calendarctrl_hittest, 2, 4, Nil)
 	DLIB_WXGET_BASE(calendarctrl, CalendarCtrl, calctrl)
-	DLIB_WXGET_BASE(point, Point, pos)
+	DLIB_WXGETPOINT_BASE(pos)
 	wxDateTime date;
 	wxDateTime::WeekDay wd;
 	calctrl->HitTest(*pos, &date, &wd);

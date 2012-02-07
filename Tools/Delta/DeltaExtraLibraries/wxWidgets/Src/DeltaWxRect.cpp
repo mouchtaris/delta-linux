@@ -166,7 +166,7 @@ WX_FUNC_ARGRANGE_START(rect_construct, 0, 4, Nil)
 	if (n == 0) {
 		wxrect = new wxRect();
 	} else if (n == 1) {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		wxrect = new wxRect(*size);
 	} else if (n == 4) {
 		WX_GETNUMBER(x)
@@ -242,7 +242,7 @@ WX_FUNC_ARGRANGE_START(rect_deflate, 2, 3, Nil)
 			rectRef = &(rect->Deflate((wxCoord)diff));
 		} else
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-			DLIB_WXGET_BASE(size, Size, diff)
+			DLIB_WXGETSIZE_BASE(diff)
 			rectRef = &(rect->Deflate(*diff));
 		}
 	}
@@ -338,7 +338,7 @@ WX_FUNC_ARGRANGE_START(rect_inflate, 2, 3, Nil)
 			rectRef = &(rect->Inflate((wxCoord)diff));
 		} else
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-			DLIB_WXGET_BASE(size, Size, diff)
+			DLIB_WXGETSIZE_BASE(diff)
 			rectRef = &(rect->Inflate(*diff));
 		}
 	}
@@ -365,7 +365,7 @@ DLIB_FUNC_START(rect_isempty, 1, Nil)
 WX_FUNC_ARGRANGE_START(rect_offset, 2, 3, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		rect->Offset(*pt);
 	} else {
 		WX_GETNUMBER(x)
@@ -382,13 +382,13 @@ DLIB_FUNC_START(rect_setheight, 2, Nil)
 
 DLIB_FUNC_START(rect_setposition, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DLIB_WXGET_BASE(point, Point, point)
+	DLIB_WXGETPOINT_BASE(point)
 	rect->SetPosition(*point);
 }
 
 DLIB_FUNC_START(rect_setsize, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DLIB_WXGET_BASE(size, Size, s)
+	DLIB_WXGETSIZE_BASE(s)
 	rect->SetSize(*s);
 }
 

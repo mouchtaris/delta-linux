@@ -74,8 +74,8 @@ WX_FUNC_ARGRANGE_START(choice_construct, 0, 8, Nil)
 	} else if (n >= 4) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
-		DLIB_WXGET_BASE(point, Point, pos)
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETPOINT_BASE(pos)
+		DLIB_WXGETSIZE_BASE(size)
 		wxArrayString choices;
 		long style = 0;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
@@ -114,8 +114,8 @@ WX_FUNC_ARGRANGE_START(choice_create, 3, 9, Nil)
 	long style = 0;
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	wxString name = wxChoiceNameStr;
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) {
 		WX_GETTABLE(choices_table)
 		int num = choices_table->Total();

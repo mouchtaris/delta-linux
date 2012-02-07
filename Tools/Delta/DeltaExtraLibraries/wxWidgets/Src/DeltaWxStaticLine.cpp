@@ -76,8 +76,8 @@ WX_FUNC_ARGRANGE_START(staticline_construct, 0, 6, Nil)
 		long style = wxLI_HORIZONTAL;
 		wxString name = wxStaticLineNameStr;
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 		wxstatline = new wxStaticLine(parent, id, pos, size, style, name);
@@ -99,8 +99,8 @@ WX_FUNC_ARGRANGE_START(staticline_create, 2, 7, Nil)
 	long style = wxLI_HORIZONTAL;
 	wxString name = wxStaticLineNameStr;
 	if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-	if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(statline->Create(parent, id, pos, size, style, name))

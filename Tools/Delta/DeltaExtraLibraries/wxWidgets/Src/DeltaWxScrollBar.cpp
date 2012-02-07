@@ -85,8 +85,8 @@ WX_FUNC_ARGRANGE_START(scrollbar_construct, 0, 7, Nil)
 		long style = wxSB_HORIZONTAL;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		wxString name = wxScrollBarNameStr;
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
@@ -116,8 +116,8 @@ WX_FUNC_ARGRANGE_START(scrollbar_create, 3, 8, Nil)
 	long style = wxSB_HORIZONTAL;
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	wxString name = wxScrollBarNameStr;
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }

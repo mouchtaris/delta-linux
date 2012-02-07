@@ -91,8 +91,8 @@ WX_FUNC_ARGRANGE_START(filepickerctrl_construct, 0, 10, Nil)
 		if (n >= 3) { WX_GETSTRING_DEFINED(path) }
 		if (n >= 4) { WX_GETSTRING_DEFINED(message) }
 		if (n >= 5) { WX_GETSTRING_DEFINED(wildcard) }
-		if (n >= 6) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 7) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 6) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 7) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 8) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 9) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 10) { WX_GETSTRING_DEFINED(name) }
@@ -128,8 +128,8 @@ WX_FUNC_ARGRANGE_START(filepickerctrl_create, 3, 11, Nil)
 	if (n >= 4) { WX_GETSTRING_DEFINED(path) }
 	if (n >= 5) { WX_GETSTRING_DEFINED(message) }
 	if (n >= 6) { WX_GETSTRING_DEFINED(wildcard) }
-	if (n >= 7) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 8) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 7) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 8) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 9) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 10) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 11) { WX_GETSTRING_DEFINED(name) }

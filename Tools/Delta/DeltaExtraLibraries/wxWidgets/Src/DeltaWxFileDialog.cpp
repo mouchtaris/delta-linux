@@ -162,8 +162,8 @@ WX_FUNC_ARGRANGE_START(filedialog_construct, 1, 9, Nil)
 	if (n >= 4) { WX_GETSTRING_DEFINED(defaultFile) }
 	if (n >= 5) { WX_GETSTRING_DEFINED(wildCard) }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
-	if (n >= 7) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-	if (n >= 8) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+	if (n >= 7) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+	if (n >= 8) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	DeltaWxFileDialog *dialog = DNEWCLASS(DeltaWxFileDialog,
 		(new wxFileDialog(parent, message, defaultDir, defaultFile, wildCard, style, pos, size, name)));

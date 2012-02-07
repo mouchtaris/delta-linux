@@ -171,7 +171,7 @@ WX_FUNC_ARGRANGE_START(size_decby, 2, 3, Nil)
 	DLIB_WXGET_BASE(size, Size, curr_size)
 	if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-			DLIB_WXGET_BASE(size, Size, wxVar);
+			DLIB_WXGETSIZE_BASE(wxVar)
 			curr_size->DecBy(*wxVar);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(d)
@@ -186,7 +186,7 @@ WX_FUNC_ARGRANGE_START(size_decby, 2, 3, Nil)
 
 DLIB_FUNC_START(size_decto, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, curr_size)
-	DLIB_WXGET_BASE(size, Size, wxVar)
+	DLIB_WXGETSIZE_BASE(wxVar)
 	curr_size->DecTo(*wxVar);
 }
 
@@ -209,7 +209,7 @@ WX_FUNC_ARGRANGE_START(size_incby, 2, 3, Nil)
 	DLIB_WXGET_BASE(size, Size, curr_size)
 	if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-			DLIB_WXGET_BASE(size, Size, wxVar)
+			DLIB_WXGETSIZE_BASE(wxVar)
 			curr_size->IncBy(*wxVar);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(d)
@@ -224,7 +224,7 @@ WX_FUNC_ARGRANGE_START(size_incby, 2, 3, Nil)
 
 DLIB_FUNC_START(size_incto, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, curr_size)
-	DLIB_WXGET_BASE(size, Size, wxVar2)
+	DLIB_WXGETSIZE_BASE(wxVar2)
 	curr_size->IncTo(*wxVar2);
 }
 
@@ -244,7 +244,7 @@ DLIB_FUNC_START(size_set, 3, Nil)
 
 DLIB_FUNC_START(size_setdefaults, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
-	DLIB_WXGET_BASE(size, Size, wxVar)
+	DLIB_WXGETSIZE_BASE(wxVar)
 	wxsize->SetDefaults(*wxVar);
 }
 
@@ -262,31 +262,31 @@ DLIB_FUNC_START(size_setheight, 2, Nil)
 
 DLIB_FUNC_START(size_assign, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
-	DLIB_WXGET_BASE(size, Size, size2)
+	DLIB_WXGETSIZE_BASE(size2)
 	size->operator=(*size2);
 }
 
 DLIB_FUNC_START(size_equal, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
-	DLIB_WXGET_BASE(size, Size, size2)
+	DLIB_WXGETSIZE_BASE(size2)
 	WX_SETBOOL(size->operator==(*size2))
 }
 
 DLIB_FUNC_START(size_notequal, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
-	DLIB_WXGET_BASE(size, Size, size2)
+	DLIB_WXGETSIZE_BASE(size2)
 	WX_SETBOOL(size->operator!=(*size2))
 }
 
 DLIB_FUNC_START(size_plus, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
-	DLIB_WXGET_BASE(size, Size, size2)
+	DLIB_WXGETSIZE_BASE(size2)
 	WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, operator+(*size2))
 }
 
 DLIB_FUNC_START(size_minus, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
-	DLIB_WXGET_BASE(size, Size, size2)
+	DLIB_WXGETSIZE_BASE(size2)
 	WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, operator-(*size2))
 }
 

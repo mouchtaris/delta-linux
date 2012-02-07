@@ -209,8 +209,8 @@ WX_FUNC_ARGRANGE_START(toolbar_construct, 0, 6, Nil)
 		wxSize size = wxDefaultSize;
 		long style = wxNO_BORDER | wxTB_HORIZONTAL;
 		wxString name = wxToolBarNameStr;
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 		wxtoolbar = new wxToolBar(parent, id, pos, size, style, name);
@@ -479,7 +479,7 @@ DLIB_FUNC_START(toolbar_removetool, 2, Nil)
 WX_FUNC_ARGRANGE_START(toolbar_setmargins, 2, 3, Nil)
 	DLIB_WXGET_BASE(toolbar, ToolBar, toolbar)
 	if (n == 2) {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		toolbar->wxToolBarBase::SetMargins(*size);
 	} else {
 		WX_GETNUMBER(x)
@@ -490,7 +490,7 @@ WX_FUNC_ARGRANGE_START(toolbar_setmargins, 2, 3, Nil)
 
 DLIB_FUNC_START(toolbar_settoolbitmapsize, 2, Nil)
 	DLIB_WXGET_BASE(toolbar, ToolBar, toolbar)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	toolbar->SetToolBitmapSize(*size);
 }
 

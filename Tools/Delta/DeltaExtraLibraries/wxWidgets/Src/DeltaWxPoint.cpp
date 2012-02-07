@@ -133,12 +133,8 @@ WX_FUNC_ARGRANGE_START(point_construct, 0, 2, Nil)
 		WX_GETDEFINE(y)
 		wxpoint = new wxPoint((int)x, (int)y);
 	} else {
-		std::string str;
-		wxPoint pt;
-		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String)
-			str = DPTR(vm)->GetActualArg(_argNo++)->ToString();
-		if (DeltaWxPointSearch(str, &pt))
-			wxpoint = new wxPoint(pt);
+		DLIB_WXGETPOINT_BASE(pt)
+		wxpoint = new wxPoint(*pt);
 	}
 	if (wxpoint) point = DNEWCLASS(DeltaWxPoint, (wxpoint));
 	WX_SETOBJECT(Point, point)
@@ -202,18 +198,18 @@ DLIB_FUNC_START(point_minus, 2, Nil)
 
 DLIB_FUNC_START(point_equal, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
-	DLIB_WXGET_BASE(point, Point, point2)
+	DLIB_WXGETPOINT_BASE(point2)
 	WX_SETBOOL(point->operator==(*point2))
 }
 
 DLIB_FUNC_START(point_notequal, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
-	DLIB_WXGET_BASE(point, Point, point2)
+	DLIB_WXGETPOINT_BASE(point2)
 	WX_SETBOOL(point->operator!=(*point2))
 }
 
 DLIB_FUNC_START(point_assign, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
-	DLIB_WXGET_BASE(point, Point, point2)
+	DLIB_WXGETPOINT_BASE(point2)
 	point->operator=(*point2);
 }

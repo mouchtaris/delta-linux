@@ -94,8 +94,8 @@ WX_FUNC_ARGRANGE_START(splashscreen_construct, 5, 8, Nil)
 	wxPoint pos = wxDefaultPosition;
 	wxSize size = wxDefaultSize;
 	long style = wxSIMPLE_BORDER|wxFRAME_NO_TASKBAR|wxSTAY_ON_TOP;
-	if (n >= 6) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 7) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 6) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 7) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 8) { WX_GETDEFINE_DEFINED(style) }
 	DeltaWxSplashScreen *splash = DNEWCLASS(DeltaWxSplashScreen,
 		(new wxSplashScreen(*bitmap, splashStyle, milliseconds, parent, id, pos, size, style)));

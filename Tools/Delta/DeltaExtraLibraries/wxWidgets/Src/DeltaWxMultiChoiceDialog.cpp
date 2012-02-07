@@ -97,7 +97,7 @@ WX_FUNC_ARGRANGE_START(multichoicedialog_construct, 0, 6, Nil)
 		long style = wxCHOICEDLG_STYLE;
 		wxPoint pos = wxDefaultPosition;
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
-		if (n >= 6) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
+		if (n >= 6) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
 		wxdialog = new wxMultiChoiceDialog(parent, message, caption, choices, style, pos);
 	}
 	if (wxdialog) dialog = DNEWCLASS(DeltaWxMultiChoiceDialog, (wxdialog));

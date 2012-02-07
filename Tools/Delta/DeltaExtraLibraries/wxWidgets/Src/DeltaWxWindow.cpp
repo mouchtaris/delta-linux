@@ -767,11 +767,11 @@ WX_FUNC_ARGRANGE_START(window_construct, 0, 6, Nil)
 		long style = 0;
 		wxString name = wxPanelNameStr;
 		if (n >= 3) {
-			DLIB_WXGET_BASE(point, Point, point)
+			DLIB_WXGETPOINT_BASE(point)
 			pos = *point;
 		}
 		if (n >= 4) {
-			DLIB_WXGET_BASE(size, Size, sz)
+			DLIB_WXGETSIZE_BASE(sz)
 			size = *sz;
 		}
 		if (n >= 5) {
@@ -808,7 +808,7 @@ DLIB_FUNC_START(window_addchild, 2, Nil)
 
 DLIB_FUNC_START(window_cachebestsize, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	window->CacheBestSize(*size);
 }
 
@@ -1175,7 +1175,7 @@ DLIB_FUNC_START(window_getgrandparent, 1, Nil)
 
 DLIB_FUNC_START(window_gethelptextatpoint, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	DLIB_WXGET_BASE(point, Point, point)
+	DLIB_WXGETPOINT_BASE(point)
 	WX_GETDEFINE(origin)
 	WX_SETSTRING(window->GetHelpTextAtPoint(*point, (wxHelpEvent::Origin)origin))
 }
@@ -1474,7 +1474,7 @@ DLIB_FUNC_START(window_makemodal, 2, Nil)
 WX_FUNC_ARGRANGE_START(window_move, 2, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		window->Move(*pt);
 	} else {
 		WX_GETNUMBER(x)
@@ -1537,7 +1537,7 @@ WX_FUNC_ARGRANGE_START(window_popupmenu, 2, 4, Nil)
 		WX_SETBOOL(window->PopupMenu(menu, x, y))
 	} else {
 		wxPoint pos = wxDefaultPosition;
-		if (n == 3) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
+		if (n == 3) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 		WX_SETBOOL(window->PopupMenu(menu, pos))
 	}
 }
@@ -1686,7 +1686,7 @@ WX_FUNC_ARGRANGE_START(window_setinitialsize, 1, 2, Nil)
 	if (n == 1)
 		window->SetInitialSize();
 	else {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		window->SetInitialSize(*size);
 	}
 }
@@ -1700,7 +1700,7 @@ DLIB_FUNC_START(window_setcaret, 2, Nil)
 WX_FUNC_ARGRANGE_START(window_setclientsize, 2, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	if (n == 2) {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		window->SetClientSize(*size);
 	} else {
 		WX_GETNUMBER(width)
@@ -1787,13 +1787,13 @@ DLIB_FUNC_START(window_setlabel, 2, Nil)
 
 DLIB_FUNC_START(window_setmaxsize, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	window->SetMaxSize(*size);
 }
 
 DLIB_FUNC_START(window_setminsize, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	window->SetMinSize(*size);
 }
 
@@ -1926,7 +1926,7 @@ DLIB_FUNC_START(window_setvalidator, 2, Nil)
 WX_FUNC_ARGRANGE_START(window_setvirtualsize, 2, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	if (n == 2) {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		window->SetVirtualSize(*size);
 	} else {
 		WX_GETNUMBER(width)
@@ -1938,11 +1938,11 @@ WX_FUNC_ARGRANGE_START(window_setvirtualsize, 2, 3, Nil)
 WX_FUNC_ARGRANGE_START(window_setvirtualsizehints, 2, 5, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	if (DPTR(vm)->GetActualArg(1)->Type() == DeltaValue_ExternId) {
-		DLIB_WXGET_BASE(size, Size, minSize)
+		DLIB_WXGETSIZE_BASE(minSize)
 		if (n == 2)
 			window->SetVirtualSizeHints(*minSize);
 		else if (n == 3) {
-			DLIB_WXGET_BASE(size, Size, maxSize)
+			DLIB_WXGETSIZE_BASE(maxSize)
 			window->SetVirtualSizeHints(*minSize, *maxSize);
 		}
 	} else if (DPTR(vm)->GetActualArg(1)->Type() ==DeltaValue_Number) {

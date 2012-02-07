@@ -162,7 +162,7 @@ WX_FUNC_ARGRANGE_START(wx_dirselector, 0, 5, Nil)
 	if (n >= 1) { WX_GETSTRING_DEFINED(message) }
 	if (n >= 2) { WX_GETSTRING_DEFINED(defaultPath) }
 	if (n >= 3) { WX_GETDEFINE_DEFINED(style) }
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, point) pos = *point; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(point) pos = *point; }
 	if (n >= 5) { DLIB_WXGET_BASE(window, Window, win) parent = win; }
 	WX_SETSTRING(::wxDirSelector(message, defaultPath, style, pos, parent))
 }
@@ -250,7 +250,7 @@ WX_FUNC_ARGRANGE_START(wx_getnumberfromuser, 3, 8, Nil)
 	if (n >= 5) { WX_GETNUMBER_DEFINED(min) }
 	if (n >= 6) { WX_GETNUMBER_DEFINED(max) }
 	if (n >= 7) { DLIB_WXGET_BASE(window, Window, _parent) parent = _parent; }
-	if (n >= 8) { DLIB_WXGET_BASE(point, Point, point) pos = *point; }
+	if (n >= 8) { DLIB_WXGETPOINT_BASE(point) pos = *point; }
 	WX_SETNUMBER(::wxGetNumberFromUser(message, prompt, caption, value, min, max, parent, pos))
 }
 
@@ -385,7 +385,7 @@ WX_FUNC_ARGRANGE_START(wx_artprovider_getbitmap, 1, 3, Nil)
 	wxArtClient client = wxART_OTHER;
 	wxSize size = wxDefaultSize;
 	if (n >= 2) { WX_GETSTRING(_client) client = _client; }
-	if (n >= 3) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 3) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (id.Find(_T("wx")) != 0 && id.Length() > 0)
 		id = id.Prepend(_T("wx"));
 	if (client.Find(_T("wx")) != 0 && client.Length() > 0)
@@ -401,7 +401,7 @@ WX_FUNC_ARGRANGE_START(wx_artprovider_geticon, 1, 3, Nil)
 	wxArtClient client = wxART_OTHER;
 	wxSize size = wxDefaultSize;
 	if (n >= 2) { WX_GETSTRING(_client) client = _client; }
-	if (n >= 3) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 3) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (id.Find(_T("wx")) != 0 && id.Length() > 0)
 		id = id.Prepend(_T("wx"));
 	if (client.Find(_T("wx")) != 0 && client.Length() > 0)

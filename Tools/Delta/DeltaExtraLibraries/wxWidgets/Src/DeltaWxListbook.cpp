@@ -188,8 +188,8 @@ WX_FUNC_ARGRANGE_START(listbook_construct, 0, 6, Nil)
 		wxSize size = wxDefaultSize;
 		long style = 0;
 		wxString name = wxEmptyString;
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 		wxlistbk = new wxListbook(parent, id, pos, size, style, name);
@@ -235,7 +235,7 @@ DLIB_FUNC_START(listbook_assignimagelist, 2, Nil)
 
 DLIB_FUNC_START(listbook_calcsizefrompage, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
-	DLIB_WXGET_BASE(size, Size, sizePage)
+	DLIB_WXGETSIZE_BASE(sizePage)
 	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(listbk->CalcSizeFromPage(*sizePage))));
 	WX_SETOBJECT(Size, retval)
 }
@@ -254,8 +254,8 @@ WX_FUNC_ARGRANGE_START(listbook_create, 3, 7, Nil)
 	wxSize size = wxDefaultSize;
 	long style = 0;
 	wxString name = wxEmptyString;
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(listbk->Create(parent, id, pos, size, style, name))
@@ -321,7 +321,7 @@ DLIB_FUNC_START(listbook_getselection, 1, Nil)
 
 WX_FUNC_ARGRANGE_START(listbook_hittest, 2, 3, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
-	DLIB_WXGET_BASE(point, Point, pt)
+	DLIB_WXGETPOINT_BASE(pt)
 	long style;
 	WX_SETNUMBER(listbk->HitTest(*pt, &style))
 	if (n >= 3) {
@@ -356,7 +356,7 @@ DLIB_FUNC_START(listbook_setimagelist, 2, Nil)
 
 DLIB_FUNC_START(listbook_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	listbk->SetPageSize(*size);
 }
 

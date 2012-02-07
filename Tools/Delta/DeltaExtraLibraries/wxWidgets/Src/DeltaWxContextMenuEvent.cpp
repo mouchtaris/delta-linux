@@ -74,7 +74,7 @@ WX_FUNC_ARGRANGE_START(contextmenuevent_construct, 0, 3, Nil)
 	wxPoint pt = wxDefaultPosition;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
-	if (n >= 2) { DLIB_WXGET_BASE(point, Point, point) pt = *point; }
+	if (n >= 3) { DLIB_WXGETPOINT_BASE(point) pt = *point; }
 	DeltaWxContextMenuEvent *evt = DNEWCLASS(DeltaWxContextMenuEvent,
 		(new wxContextMenuEvent(type, winid, pt)));
 	WX_SETOBJECT(ContextMenuEvent, evt)
@@ -92,6 +92,6 @@ DLIB_FUNC_START(contextmenuevent_getposition, 1, Nil)
 
 DLIB_FUNC_START(contextmenuevent_setposition, 2, Nil)
 	DLIB_WXGET_BASE(contextmenuevent, ContextMenuEvent, evt)
-	DLIB_WXGET_BASE(point, Point, point)
+	DLIB_WXGETPOINT_BASE(point)
 	evt->SetPosition(*point);
 }

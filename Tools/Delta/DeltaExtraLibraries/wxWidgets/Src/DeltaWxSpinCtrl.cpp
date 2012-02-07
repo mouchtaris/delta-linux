@@ -87,8 +87,8 @@ WX_FUNC_ARGRANGE_START(spinctrl_construct, 0, 10, Nil)
 		wxString name = _T("wxSpinCtrl");
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
 		if (n >= 3) { WX_GETSTRING_DEFINED(value) }
-		if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { WX_GETNUMBER_DEFINED(min) }
 		if (n >= 8) { WX_GETNUMBER_DEFINED(max) }
@@ -116,8 +116,8 @@ WX_FUNC_ARGRANGE_START(spinctrl_create, 2, 11, Nil)
 	wxString name = _T("wxSpinCtrl");
 	if (n >= 3) { WX_GETDEFINE_DEFINED(id) }
 	if (n >= 4) { WX_GETSTRING_DEFINED(value) }
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 6) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 6) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { WX_GETNUMBER_DEFINED(min) }
 	if (n >= 9) { WX_GETNUMBER_DEFINED(max) }

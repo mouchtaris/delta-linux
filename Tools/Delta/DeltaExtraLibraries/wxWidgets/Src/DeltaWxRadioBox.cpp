@@ -171,8 +171,8 @@ WX_FUNC_ARGRANGE_START(radiobox_construct, 0, 10, Nil)
 		long style = wxRA_HORIZONTAL;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		wxString name = wxRadioBoxNameStr;
-		if (n >= 4) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-		if (n >= 5) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+		if (n >= 4) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+		if (n >= 5) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 		if (n >= 6) {
 			WX_GETTABLE(choices_table)
 			choices_size = choices_table->Total();
@@ -213,8 +213,8 @@ WX_FUNC_ARGRANGE_START(radiobox_create, 4, 11, Nil)
 	long style = wxRA_HORIZONTAL;
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	wxString name = wxRadioBoxNameStr;
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-	if (n >= 6) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+	if (n >= 6) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 	if (n >= 7) {
 		WX_GETTABLE(choices_table)
 		choices_size = choices_table->Total();
@@ -276,7 +276,7 @@ DLIB_FUNC_START(radiobox_getitemtooltip, 2, Nil)
 
 DLIB_FUNC_START(radiobox_getitemfrompoint, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
-	DLIB_WXGET_BASE(point, Point, pt)
+	DLIB_WXGETPOINT_BASE(pt)
 	WX_SETNUMBER(rdbox->GetItemFromPoint(*pt))
 }
 

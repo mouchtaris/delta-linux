@@ -72,8 +72,8 @@ WX_FUNC_ARGRANGE_START(staticbox_construct, 0, 7, Nil)
 		wxSize size = wxDefaultSize;
 		long style = 0;
 		wxString name = wxStaticBoxNameStr;
-		if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 		wxstatbox = new wxStaticBox(parent, id, label, pos, size, style, name);
@@ -102,8 +102,8 @@ WX_FUNC_ARGRANGE_START(staticbox_create, 4, 8, Nil)
 	wxSize size = wxDefaultSize;
 	long style = 0;
 	wxString name = wxStaticBoxNameStr;
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 6) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 6) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(statbox->Create(parent, id, label, pos, size, style, name))

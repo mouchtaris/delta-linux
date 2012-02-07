@@ -120,7 +120,7 @@ WX_FUNC_ARGRANGE_START(singlechoicedialog_construct, 0, 7, Nil)
 			}
 		}
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
-		if (n >= 7) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
+		if (n >= 7) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
 		wxdialog = new wxSingleChoiceDialog(parent, message, caption, choices, clientData, style, pos);
 		if (clientData)
 			DDELARR(clientData);

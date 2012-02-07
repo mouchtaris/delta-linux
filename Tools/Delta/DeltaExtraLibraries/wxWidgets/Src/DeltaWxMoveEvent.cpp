@@ -125,7 +125,7 @@ DLIB_FUNC_START(moveevent_getrect, 1, Nil)
 
 DLIB_FUNC_START(moveevent_setposition, 2, Nil)
 	DLIB_WXGET_BASE(moveevent, MoveEvent, evt)
-	DLIB_WXGET_BASE(point, Point, pt)
+	DLIB_WXGETPOINT_BASE(pt)
 	evt->SetPosition(*pt);
 }
 

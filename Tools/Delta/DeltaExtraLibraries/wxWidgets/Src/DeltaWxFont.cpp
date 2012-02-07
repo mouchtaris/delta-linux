@@ -174,7 +174,7 @@ WX_FUNC_ARGRANGE_START(font_construct, 0, 7, Nil)
 			}
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 #if defined (__WXMSW__)
-			DLIB_WXGET_BASE(size, Size, pixelSize)
+			DLIB_WXGETSIZE_BASE(pixelSize)
 			WX_GETDEFINE(family)
 			WX_GETDEFINE(style)
 			WX_GETDEFINE(weight)

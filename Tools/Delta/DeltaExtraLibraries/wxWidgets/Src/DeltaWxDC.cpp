@@ -479,16 +479,16 @@ WX_FUNC_ARGRANGE_START(dc_blit, 5, 12, Nil)
 		if (n >= 12) { WX_GETDEFINE_DEFINED(ysrcMask) }
 		WX_SETBOOL(dc->Blit(xdest, ydest, width, height, (wxDC*) source, xsrc, ysrc, rop, useMask, xsrcMask, ysrcMask))
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-		DLIB_WXGET_BASE(point, Point, destPt)
-		DLIB_WXGET_BASE(size, Size, sz)
+		DLIB_WXGETPOINT_BASE(destPt)
+		DLIB_WXGETSIZE_BASE(sz)
 		DLIB_WXGET_BASE(dc, DC, source)
-		DLIB_WXGET_BASE(point, Point, srcPt)
+		DLIB_WXGETPOINT_BASE(srcPt)
 		int rop = wxCOPY;
 		bool useMask = false;
 		wxPoint srcPtMask = wxDefaultPosition;
 		if (n >= 6) { WX_GETDEFINE_DEFINED(rop) }
 		if (n >= 7) { WX_GETBOOL_DEFINED(useMask) }
-		if (n >= 8) { DLIB_WXGET_BASE(point, Point, pt) srcPtMask = *pt; }
+		if (n >= 8) { DLIB_WXGETPOINT_BASE(pt) srcPtMask = *pt; }
 		WX_SETBOOL(dc->Blit(*destPt, *sz, (wxDC*) source, *srcPt, rop, useMask, srcPtMask))
 	}
 }
@@ -513,7 +513,7 @@ DLIB_FUNC_START(dc_computescaleandorigin, 1, Nil)
 WX_FUNC_ARGRANGE_START(dc_crosshair, 2, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		dc->CrossHair(*pt);
 	} else if (n == 3) {
 		WX_GETNUMBER(x)
@@ -554,9 +554,9 @@ DLIB_FUNC_START(dc_devicetologicalyrel, 2, Nil)
 WX_FUNC_ARGRANGE_START(dc_drawarc, 4, 7, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 4) {
-		DLIB_WXGET_BASE(point, Point, pt1)
-		DLIB_WXGET_BASE(point, Point, pt2)
-		DLIB_WXGET_BASE(point, Point, centre)
+		DLIB_WXGETPOINT_BASE(pt1)
+		DLIB_WXGETPOINT_BASE(pt2)
+		DLIB_WXGETPOINT_BASE(centre)
 		dc->DrawArc(*pt1, *pt2, *centre);
 	} else if (n == 7) {
 		WX_GETNUMBER(x1)
@@ -573,7 +573,7 @@ WX_FUNC_ARGRANGE_START(dc_drawbitmap, 3, 5, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		bool useMask = false;
 		if (n >= 4) { WX_GETBOOL_DEFINED(useMask) }
 		dc->DrawBitmap(*bmp, *pt, useMask);
@@ -603,7 +603,7 @@ WX_FUNC_ARGRANGE_START(dc_drawcheckmark, 2, 5, Nil)
 WX_FUNC_ARGRANGE_START(dc_drawcircle, 3, 4, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		WX_GETNUMBER(radius)
 		dc->DrawCircle(*pt, radius);
 	} else if (n == 4) {
@@ -620,8 +620,8 @@ WX_FUNC_ARGRANGE_START(dc_drawellipse, 2, 5, Nil)
 		DLIB_WXGET_BASE(rect, Rect, rect)
 		dc->DrawEllipse(*rect);
 	} else if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, pt)
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETPOINT_BASE(pt)
+		DLIB_WXGETSIZE_BASE(size)
 		dc->DrawEllipse(*pt, *size);
 	} else if (n == 4) {
 		WX_GETNUMBER(x)
@@ -635,8 +635,8 @@ WX_FUNC_ARGRANGE_START(dc_drawellipse, 2, 5, Nil)
 WX_FUNC_ARGRANGE_START(dc_drawellipticarc, 5, 7, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 5) {
-		DLIB_WXGET_BASE(point, Point, pt)
-		DLIB_WXGET_BASE(size, Size, sz)
+		DLIB_WXGETPOINT_BASE(pt)
+		DLIB_WXGETSIZE_BASE(sz)
 		WX_GETNUMBER(sa)
 		WX_GETNUMBER(ea)
 		dc->DrawEllipticArc(*pt, *sz, sa, ea);
@@ -660,7 +660,7 @@ WX_FUNC_ARGRANGE_START(dc_drawicon, 3, 4, Nil)
 		dc->DrawIcon(*icon, x, y);
 	} else if (n == 3) {
 		DLIB_WXGET_BASE(icon, Icon, icon)
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		dc->DrawIcon(*icon, *pt);
 	}
 }
@@ -699,8 +699,8 @@ WX_FUNC_ARGRANGE_START(dc_drawlabel, 3, 7, Nil)
 WX_FUNC_ARGRANGE_START(dc_drawline, 3, 5, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, pt1)
-		DLIB_WXGET_BASE(point, Point, pt2)
+		DLIB_WXGETPOINT_BASE(pt1)
+		DLIB_WXGETPOINT_BASE(pt2)
 		dc->DrawLine(*pt1, *pt2);
 	} else if (n == 5) {
 		WX_GETNUMBER(x1)
@@ -795,7 +795,7 @@ WX_FUNC_ARGRANGE_START(dc_drawpolypolygon, 4, 7, Nil)
 WX_FUNC_ARGRANGE_START(dc_drawpoint, 2, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, point)
+		DLIB_WXGETPOINT_BASE(point)
 		dc->DrawPoint(*point);
 	} else {
 		WX_GETNUMBER(x)
@@ -810,8 +810,8 @@ WX_FUNC_ARGRANGE_START(dc_drawrectangle, 2, 5, Nil)
 		DLIB_WXGET_BASE(rect, Rect, rect)
 		dc->DrawRectangle(*rect);
 	} else if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, point)
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETPOINT_BASE(point)
+		DLIB_WXGETSIZE_BASE(size)
 		dc->DrawRectangle(*point, *size);
 	} else if (n == 5) {
 		WX_GETNUMBER(x)
@@ -826,7 +826,7 @@ WX_FUNC_ARGRANGE_START(dc_drawrotatedtext, 4, 5, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETSTRING(text)
 	if (n == 4) {
-		DLIB_WXGET_BASE(point, Point, point)
+		DLIB_WXGETPOINT_BASE(point)
 		WX_GETNUMBER(angle)
 		dc->DrawRotatedText(text, *point, angle);
 	} else if (n == 5) {
@@ -844,8 +844,8 @@ WX_FUNC_ARGRANGE_START(dc_drawroundedrectangle, 3, 6, Nil)
 		WX_GETNUMBER(radius)
 		dc->DrawRoundedRectangle(*rect, radius);
 	} else if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, point)
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETPOINT_BASE(point)
+		DLIB_WXGETSIZE_BASE(size)
 		WX_GETNUMBER(radius)
 		dc->DrawRoundedRectangle(*point, *size, radius);
 	} else if (n == 5) {
@@ -892,7 +892,7 @@ WX_FUNC_ARGRANGE_START(dc_drawtext, 3, 4, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETSTRING(text)
 	if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, point)
+		DLIB_WXGETPOINT_BASE(point)
 		dc->DrawText(text, *point);
 	} else if (n == 4) {
 		WX_GETNUMBER(x)
@@ -914,7 +914,7 @@ DLIB_FUNC_START(dc_endpage, 1, Nil)
 WX_FUNC_ARGRANGE_START(dc_floodfill, 3, 5, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		DLIB_WXGET_BASE(colour, Colour, col)
 		int style = wxFLOOD_SURFACE;
 		if (n >= 4) { WX_GETDEFINE_DEFINED(style) }
@@ -1051,7 +1051,7 @@ DLIB_FUNC_START(dc_getpen, 1, Nil)
 WX_FUNC_ARGRANGE_START(dc_getpixel, 3, 4, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, pt)
+		DLIB_WXGETPOINT_BASE(pt)
 		DLIB_WXGET_BASE(colour, Colour, col)
 		WX_SETBOOL(dc->GetPixel(*pt, col))
 	} else if (n == 4) {
@@ -1160,7 +1160,7 @@ WX_FUNC_ARGRANGE_START(dc_gradientfillconcentric, 4, 5, Nil)
 	if (n == 4) {
 		dc->GradientFillConcentric(*rect, *initialColour, *destColour);
 	} else {
-		DLIB_WXGET_BASE(point, Point, circleCenter)
+		DLIB_WXGETPOINT_BASE(circleCenter)
 		dc->GradientFillConcentric(*rect, *initialColour, *destColour, *circleCenter);
 	}
 }
@@ -1263,8 +1263,8 @@ WX_FUNC_ARGRANGE_START(dc_setclippingregion, 2, 5, Nil)
 		WX_GETNUMBER(height)
 		dc->SetClippingRegion(x, y, width, height);
 	} else if (n == 3) {
-		DLIB_WXGET_BASE(point, Point, pt)
-		DLIB_WXGET_BASE(size, Size, sz)
+		DLIB_WXGETPOINT_BASE(pt)
+		DLIB_WXGETSIZE_BASE(sz)
 		dc->SetClippingRegion(*pt, *sz);
 	} else if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {

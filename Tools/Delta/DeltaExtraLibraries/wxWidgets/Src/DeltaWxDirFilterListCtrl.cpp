@@ -78,8 +78,8 @@ WX_FUNC_ARGRANGE_START(dirfilterlistctrl_construct, 0, 5, Nil)
 		wxSize size = wxDefaultSize;
 		long style = 0;
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		wxdirctrl = new wxDirFilterListCtrl(parent, id, pos, size, style);
 	}
@@ -99,8 +99,8 @@ WX_FUNC_ARGRANGE_START(dirfilterlistctrl_create, 2, 6, Nil)
 	wxSize size = wxDefaultSize;
 	long style = 0;
 	if (n >= 3) { WX_GETDEFINE_DEFINED(id) }
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	WX_SETBOOL(dirctrl->Create(parent, id, pos, size, style))
 }

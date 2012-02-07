@@ -119,8 +119,8 @@ WX_FUNC_ARGRANGE_START(combobox_construct, 0, 9, Nil)
 		long style = 0;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		if (n >= 3) { WX_GETSTRING_DEFINED(value) }
-		if (n >= 4) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-		if (n >= 5) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+		if (n >= 4) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+		if (n >= 5) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 		if (n >= 6) {
 			WX_GETTABLE(choices_table)
 			choices_size = choices_table->Total();
@@ -160,8 +160,8 @@ WX_FUNC_ARGRANGE_START(combobox_create, 3, 10, Nil)
 	long style = 0;
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	if (n >= 4) { WX_GETSTRING_DEFINED(value) }
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-	if (n >= 6) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+	if (n >= 6) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 	if (n >= 7) {
 		WX_GETTABLE(choices_table)
 		choices_size = choices_table->Total();

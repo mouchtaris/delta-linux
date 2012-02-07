@@ -165,8 +165,8 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_construct, 0, 6, Nil)
 		long style = wxScrolledWindowStyle;
 		wxString name = wxPanelNameStr;
 		if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 		wxwin = new wxScrolledWindow(parent, winid, pos, size, style, name);
@@ -183,7 +183,7 @@ DLIB_FUNC_START(scrolledwindow_destruct, 1, Nil)
 WX_FUNC_ARGRANGE_START(scrolledwindow_calcscrolledposition, 2, 5, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, point)
+		DLIB_WXGETPOINT_BASE(point)
 		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (&win->CalcScrolledPosition(*point)));
 		WX_SETOBJECT(Point, retval)
 	} else if (n == 5) {
@@ -201,7 +201,7 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_calcscrolledposition, 2, 5, Nil)
 WX_FUNC_ARGRANGE_START(scrolledwindow_calcunscrolledposition, 2, 5, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	if (n == 2) {
-		DLIB_WXGET_BASE(point, Point, point)
+		DLIB_WXGETPOINT_BASE(point)
 		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(win->CalcUnscrolledPosition(*point))));
 		WX_SETOBJECT(Point, retval)
 	} else if (n == 5) {
@@ -225,8 +225,8 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_create, 2, 7, Nil)
 	long style = wxScrolledWindowStyle;
 	wxString name = wxPanelNameStr;
 	if (n >= 3) { WX_GETDEFINE_DEFINED(winid) }
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(win->Create(parent, winid, pos, size, style, name))

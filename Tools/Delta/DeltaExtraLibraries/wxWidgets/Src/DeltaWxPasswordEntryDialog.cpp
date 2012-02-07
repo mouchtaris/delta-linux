@@ -65,7 +65,7 @@ WX_FUNC_ARGRANGE_START(passwordentrydialog_construct, 2, 6, Nil)
 	if (n >= 3) { WX_GETSTRING_DEFINED(caption) }
 	if (n >= 4) { WX_GETSTRING_DEFINED(value) }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
-	if (n >= 6) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
+	if (n >= 6) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 	DeltaWxPasswordEntryDialog *dialog = DNEWCLASS(DeltaWxPasswordEntryDialog,
 		(new wxPasswordEntryDialog(parent, message, caption, value, style, pos)));
 	WX_SETOBJECT(PasswordEntryDialog, dialog)

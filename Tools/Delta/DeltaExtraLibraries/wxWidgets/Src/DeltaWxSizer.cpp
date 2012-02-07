@@ -586,7 +586,7 @@ DLIB_FUNC_START(sizer_setdimension, 5, Nil)
 WX_FUNC_ARGRANGE_START(sizer_setminsize, 2, 3, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (n == 2) {
-		DLIB_WXGET_BASE(size, Size, size)
+		DLIB_WXGETSIZE_BASE(size)
 		sizer->SetMinSize(*size);
 	} else {
 		WX_GETNUMBER(width)

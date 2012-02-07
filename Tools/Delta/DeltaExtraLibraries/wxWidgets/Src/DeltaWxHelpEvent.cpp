@@ -87,7 +87,7 @@ WX_FUNC_ARGRANGE_START(helpevent_construct, 0, 4, Nil)
 	wxHelpEvent::Origin origin = wxHelpEvent::Origin_Unknown;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
-	if (n >= 3) { DLIB_WXGET_BASE(point, Point, point) pt = *point; }
+	if (n >= 3) { DLIB_WXGETPOINT_BASE(point) pt = *point; }
 	if (n >= 4) { WX_GETDEFINE(_origin) origin = (wxHelpEvent::Origin)_origin; }
 	DeltaWxHelpEvent *evt = DNEWCLASS(DeltaWxHelpEvent, (new wxHelpEvent(type, winid, pt, origin)));
 	WX_SETOBJECT(HelpEvent, evt)
@@ -116,6 +116,6 @@ DLIB_FUNC_START(helpevent_setorigin, 2, Nil)
 
 DLIB_FUNC_START(helpevent_setposition, 1, Nil)
 	DLIB_WXGET_BASE(helpevent, HelpEvent, evt)
-	DLIB_WXGET_BASE(point, Point, point)
+	DLIB_WXGETPOINT_BASE(point)
 	evt->SetPosition(*point);
 }

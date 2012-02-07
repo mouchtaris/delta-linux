@@ -123,7 +123,7 @@ WX_FUNC_ARGRANGE_START(wizard_construct, 0, 6, Nil)
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
 		if (n >= 3) { WX_GETSTRING_DEFINED(title) }
 		if (n >= 4) { DLIB_WXGET_BASE(bitmap, Bitmap, bmp) bitmap = *bmp; }
-		if (n >= 5) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
+		if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		wxwizard = new wxWizard(parent, id, title, bitmap, pos, style);
 	}
@@ -146,7 +146,7 @@ WX_FUNC_ARGRANGE_START(wizard_create, 2, 7, Nil)
 	if (n >= 3) { WX_GETDEFINE_DEFINED(id) }
 	if (n >= 4) { WX_GETSTRING_DEFINED(title) }
 	if (n >= 5) { DLIB_WXGET_BASE(bitmap, Bitmap, bmp) bitmap = *bmp; }
-	if (n >= 6) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
+	if (n >= 6) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	WX_SETBOOL(wizard->Create(parent, id, title, bitmap, pos, style))
 }
@@ -195,7 +195,7 @@ DLIB_FUNC_START(wizard_runwizard, 2, Nil)
 
 DLIB_FUNC_START(wizard_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	wizard->SetPageSize(*size);
 }
 

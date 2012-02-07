@@ -80,7 +80,7 @@ WX_FUNC_ARGRANGE_START(numberentrydialog_construct, 7, 8, Nil)
 	WX_GETNUMBER(min)
 	WX_GETNUMBER(max)
 	wxPoint pos = wxDefaultPosition;
-	if (n >= 8) { DLIB_WXGET_BASE(point, Point, point) pos = *point; }
+	if (n >= 8) { DLIB_WXGETPOINT_BASE(point) pos = *point; }
 	DeltaWxNumberEntryDialog *dialog = DNEWCLASS(DeltaWxNumberEntryDialog,
 		(new wxNumberEntryDialog(parent, message, prompt, caption, value, min, max, pos)));
 	WX_SETOBJECT(NumberEntryDialog, dialog)

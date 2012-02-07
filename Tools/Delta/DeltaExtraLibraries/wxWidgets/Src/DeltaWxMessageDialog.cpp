@@ -66,7 +66,7 @@ WX_FUNC_ARGRANGE_START(messagedialog_construct, 2, 5, Nil)
 	wxPoint pos = wxDefaultPosition;
 	if (n >= 3) { WX_GETSTRING_DEFINED(caption) }
 	if (n >= 4) { WX_GETDEFINE_DEFINED(style) }
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 	DeltaWxMessageDialog *dialog = DNEWCLASS(DeltaWxMessageDialog,
 		(new wxMessageDialog(parent, message, caption, style, pos)));
 	WX_SETOBJECT(MessageDialog, dialog)

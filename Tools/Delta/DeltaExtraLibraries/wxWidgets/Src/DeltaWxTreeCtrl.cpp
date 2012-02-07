@@ -269,8 +269,8 @@ WX_FUNC_ARGRANGE_START(treectrl_construct, 0, 7, Nil)
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		wxString name = wxTreeCtrlNameStr;
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
@@ -356,8 +356,8 @@ WX_FUNC_ARGRANGE_START(treectrl_create, 2, 8, Nil)
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	wxString name = wxTreeCtrlNameStr;
 	if (n >= 3) { WX_GETDEFINE_DEFINED(id) }
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, _pos) pos = *_pos; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, _size) size = *_size; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
@@ -620,7 +620,7 @@ DLIB_FUNC_START(treectrl_getstateimagelist, 1, Nil)
 
 WX_FUNC_ARGRANGE_START(treectrl_hittest, 2, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
-	DLIB_WXGET_BASE(point, Point, point)
+	DLIB_WXGETPOINT_BASE(point)
 	int flags;
 	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->HitTest(*point, flags))));
 	WX_SETOBJECT(TreeItemId, retval)

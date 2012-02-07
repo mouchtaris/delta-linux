@@ -89,6 +89,28 @@
 		)																		\
 	}
 
+#define DLIB_WXGETPOINT_BASE(_var)													\
+	wxPoint *_var;																	\
+	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {				\
+		const std::string _var##_ = DPTR(vm)->GetActualArg(_argNo++)->ToString();	\
+		if (_var##_ == "DefaultPosition" || _var##_ == "wxDefaultPosition")			\
+			_var = new wxPoint(wxDefaultPosition);									\
+	} else {																		\
+		DLIB_WXGET_BASE(point, Point, _var##_)										\
+		_var = _var##_;																\
+	}
+
+#define DLIB_WXGETSIZE_BASE(_var)													\
+	wxSize *_var;																	\
+	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {				\
+		const std::string _var##_ = DPTR(vm)->GetActualArg(_argNo++)->ToString();	\
+		if (_var##_ == "DefaultSize" || _var##_ == "wxDefaultSize")					\
+			_var = new wxSize(wxDefaultSize);										\
+	} else {																		\
+		DLIB_WXGET_BASE(size, Size, _var##_)										\
+		_var = _var##_;																\
+	}
+
 #define DLIB_WXDELETE(_wxclassid, _wxclass, _var)							\
 	DLIB_WXGET(_wxclassid, DeltaWx##_wxclass, _var)							\
 	wx##_wxclass* nativeInst = (wx##_wxclass*)_var->GetNativeInstance();	\

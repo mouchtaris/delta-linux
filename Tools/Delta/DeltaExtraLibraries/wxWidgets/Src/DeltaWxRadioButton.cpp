@@ -78,8 +78,8 @@ WX_FUNC_ARGRANGE_START(radiobutton_construct, 0, 8, Nil)
 		long style = 0;
 		wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 		wxString name = wxRadioButtonNameStr;
-		if (n >= 4) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-		if (n >= 5) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+		if (n >= 4) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+		if (n >= 5) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
@@ -103,8 +103,8 @@ WX_FUNC_ARGRANGE_START(radiobutton_create, 4, 9, Nil)
 	long style = 0;
 	wxValidator *validator = (wxValidator*)&wxDefaultValidator;
 	wxString name = wxRadioButtonNameStr;
-	if (n >= 5) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-	if (n >= 6) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+	if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+	if (n >= 6) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }

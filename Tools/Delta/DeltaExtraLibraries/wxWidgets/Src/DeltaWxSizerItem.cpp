@@ -395,8 +395,8 @@ DLIB_FUNC_START(sizeritem_setborder, 2, Nil)
 
 DLIB_FUNC_START(sizeritem_setdimension, 3, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DLIB_WXGET_BASE(point, Point, pos)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETPOINT_BASE(pos)
+	DLIB_WXGETSIZE_BASE(size)
 	item->SetDimension(*pos, *size);
 }
 
@@ -427,7 +427,7 @@ WX_FUNC_ARGRANGE_START(sizeritem_setratio, 2, 3, Nil)
 		item->SetRatio(width, height);
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-			DLIB_WXGET_BASE(size, Size, size)
+			DLIB_WXGETSIZE_BASE(size)
 			item->SetRatio(*size);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(ratio)
@@ -444,7 +444,7 @@ DLIB_FUNC_START(sizeritem_setsizer, 2, Nil)
 
 DLIB_FUNC_START(sizeritem_setspacer, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	item->SetSpacer(*size);
 }
 

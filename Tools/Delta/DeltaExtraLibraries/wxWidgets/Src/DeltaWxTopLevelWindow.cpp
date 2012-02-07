@@ -244,13 +244,13 @@ DLIB_FUNC_START(toplevelwindow_seticons, 2, Nil)
 
 DLIB_FUNC_START(toplevelwindow_setmaxsize, 2, Nil)
 	DLIB_WXGET_BASE(toplevelwindow, TopLevelWindow, window)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	window->SetMaxSize(*size);
 }
 
 DLIB_FUNC_START(toplevelwindow_setminsize, 2, Nil)
 	DLIB_WXGET_BASE(toplevelwindow, TopLevelWindow, window)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	window->SetMinSize(*size);
 }
 

@@ -87,7 +87,7 @@ WX_FUNC_ARGRANGE_START(iconbundle_geticon, 1, 2, Nil)
 		retval = DNEWCLASS(DeltaWxIcon, (new wxIcon(bundle->GetIcon())));
 	} else if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
-			DLIB_WXGET_BASE(size, Size, size)
+			DLIB_WXGETSIZE_BASE(size)
 			retval = DNEWCLASS(DeltaWxIcon, (new wxIcon(bundle->GetIcon(*size))));
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String ||
 				   DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {

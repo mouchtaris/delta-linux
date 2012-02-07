@@ -189,8 +189,8 @@ WX_FUNC_ARGRANGE_START(splitterwindow_construct, 0, 6, Nil)
 		long style = wxSP_3D;
 		wxString name = wxT("splitter");
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-		if (n >= 3) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-		if (n >= 4) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+		if (n >= 3) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+		if (n >= 4) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 		wxwindow = new wxSplitterWindow(parent, id, pos, size, style, name);
@@ -213,8 +213,8 @@ WX_FUNC_ARGRANGE_START(splitterwindow_create, 2, 6, Nil)
 	long style = wxSP_3D;
 	wxString name = wxT("splitter");
 	if (n >= 3) { WX_GETDEFINE_DEFINED(id) }
-	if (n >= 4) { DLIB_WXGET_BASE(point, Point, pt) pos = *pt; }
-	if (n >= 5) { DLIB_WXGET_BASE(size, Size, sz) size = *sz; }
+	if (n >= 4) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
+	if (n >= 5) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(window->Create(parent, id, pos, size, style, name))

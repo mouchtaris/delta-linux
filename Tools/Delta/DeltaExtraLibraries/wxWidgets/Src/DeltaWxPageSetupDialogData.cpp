@@ -367,25 +367,25 @@ DLIB_FUNC_START(pagesetupdialogdata_setdefaultminmargins, 2, Nil)
 
 DLIB_FUNC_START(pagesetupdialogdata_setmargintopleft, 2, Nil)
 	DLIB_WXGET_BASE(pagesetupdialogdata, PageSetupDialogData, data)
-	DLIB_WXGET_BASE(point, Point, pt)
+	DLIB_WXGETPOINT_BASE(pt)
 	data->SetMarginTopLeft(*pt);
 }
 
 DLIB_FUNC_START(pagesetupdialogdata_setmarginbottomright, 2, Nil)
 	DLIB_WXGET_BASE(pagesetupdialogdata, PageSetupDialogData, data)
-	DLIB_WXGET_BASE(point, Point, pt)
+	DLIB_WXGETPOINT_BASE(pt)
 	data->SetMarginBottomRight(*pt);
 }
 
 DLIB_FUNC_START(pagesetupdialogdata_setminmargintopleft, 2, Nil)
 	DLIB_WXGET_BASE(pagesetupdialogdata, PageSetupDialogData, data)
-	DLIB_WXGET_BASE(point, Point, pt)
+	DLIB_WXGETPOINT_BASE(pt)
 	data->SetMinMarginTopLeft(*pt);
 }
 
 DLIB_FUNC_START(pagesetupdialogdata_setminmarginbottomright, 2, Nil)
 	DLIB_WXGET_BASE(pagesetupdialogdata, PageSetupDialogData, data)
-	DLIB_WXGET_BASE(point, Point, pt)
+	DLIB_WXGETPOINT_BASE(pt)
 	data->SetMinMarginBottomRight(*pt);
 }
 
@@ -397,7 +397,7 @@ DLIB_FUNC_START(pagesetupdialogdata_setpaperid, 2, Nil)
 
 DLIB_FUNC_START(pagesetupdialogdata_setpapersize, 2, Nil)
 	DLIB_WXGET_BASE(pagesetupdialogdata, PageSetupDialogData, data)
-	DLIB_WXGET_BASE(size, Size, size)
+	DLIB_WXGETSIZE_BASE(size)
 	data->SetPaperSize(*size);
 }
 
