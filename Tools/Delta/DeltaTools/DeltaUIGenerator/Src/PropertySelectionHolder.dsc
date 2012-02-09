@@ -171,8 +171,9 @@ function ExtractAllClassIds (prop) {
 //
 
 function GetInstance {
+	static propertySelectionHolder;
 	
-	if (not static propertySelectionHolder) {
+	if (isundefined(propertySelectionHolder)) {
 		propertySelectionHolder = [
 			@PropertySelectionRegister : [],
 			

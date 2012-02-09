@@ -12,8 +12,9 @@ using std;
 //
 
 function GetInstance {
+	static instance;
 	
-	if (not static instance) {
+	if (isundefined(instance)) {
 		instance = [
 			@apis : list_new(),
 			method AddAPI (api)

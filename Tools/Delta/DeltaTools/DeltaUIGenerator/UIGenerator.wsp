@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Workspace name="UIGenerator" version="alpha">
     <WorkspaceProperties>
-        <symbolic>UIGenerator.wsp</symbolic>
-        <startup>Project\UIGenerator.dproj</startup>
-        <config>0</config>
-        <collapsed>0</collapsed>
-        <breakpoints>break.dat</breakpoints>
+        <symbolic>22 serialization::archive 4 0 0 1 0 50 22 serialization::archive 4 0 0 15 UIGenerator.wsp</symbolic>
+        <startup>22 serialization::archive 4 0 0 1 0 60 22 serialization::archive 4 0 0 25 Project\UIGenerator.dproj</startup>
+        <config>22 serialization::archive 4 0 0 1 0 39 22 serialization::archive 4 0 0 5 debug</config>
+        <collapsed>22 serialization::archive 4 0 0 1 0 29 22 serialization::archive 4 0</collapsed>
+        <breakpoints>22 serialization::archive 4 0 0 1 0 43 22 serialization::archive 4 0 0 9 break.dat</breakpoints>
     </WorkspaceProperties>
     <Child type="Project" name="Project\UIGenerator.dproj"/>
 </Workspace>

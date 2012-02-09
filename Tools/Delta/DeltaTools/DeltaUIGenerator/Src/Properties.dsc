@@ -652,9 +652,9 @@ function ArrayProperty (id, userDefClassId, motherProperty, length) {
 			local clone = ArrayProperty(self.GetId(), self.GetUserDefinedClassId(),
 				self.GetMotherProperty().Clone(), self.GetLength());
 			
-			//TODO: There is no SetUserDataFromProperty.
-			//for (local i = 0; i < @propertiesLength; i++)
-			//	clone.properties[i].SetUserDataFromProperty(self.properties[i]);
+			for (local i = 0; i < @propertiesLength; i++) {
+				clone.properties[i].SetUserDataFromProperty(self.properties[i]);
+			}
 			
 			return clone;
 		},

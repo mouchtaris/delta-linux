@@ -29,6 +29,7 @@ assert(Properties);
 
 function PropertyFromUIAPISpecParamGenerator {
 	static generator;
+	
 	if (isundefined(generator))
 		//Add new datatypes here
 		generator = [
@@ -136,7 +137,7 @@ function PropertyFromUIAPISpecParamGenerator {
 		];
 		
 	return generator;
-};
+}
 
 ///////////////////////////////////////////////////////////////
 
@@ -168,7 +169,7 @@ function GeneratePropertiesFromUIAPISpecParamTable (UIAPISpecParamTable) {
 	}
 	
 	return propList;
-};
+}
 
 ///////////////////////////////////////////////////////////////
 
@@ -216,7 +217,7 @@ function GenerateOperationsFromUIAPISpec (specification) {
 	}
 	
 	return opList;
-};
+}
 
 //
 // GenerateNonUIOperationsFromUIAPISpec

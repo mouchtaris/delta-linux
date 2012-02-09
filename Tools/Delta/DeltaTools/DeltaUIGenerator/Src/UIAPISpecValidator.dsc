@@ -22,7 +22,7 @@ const nl = "\n";
 //
 
 function isStdList (l) {
-	if (typeof(l) == "ExternId" and externidtype(l) == "std::list")
+	if (typeof(l) == TYPEOF_EXTERNID and externidtype(l) == "std::list")
 		return true;
 	return false;
 }
@@ -34,7 +34,7 @@ function isStdList (l) {
 
 function ValidateTableIsArray (t) {
 	for (local i = 0; i < tablength(t); i++) {
-		if (typeof(t[i]) == "Nil") {
+		if (typeof(t[i]) == TYPEOF_NIL) {
 			local e = "Table is NOT an array, element at position " + i + " is nil";
 			return e;
 		}
@@ -67,9 +67,9 @@ function ValidateTableHasUniqueNames (t) {
 //
 
 function ValidateName (name) {
-	if ((typeof(name) == "Nil"))
+	if ((typeof(name) == TYPEOF_NIL))
 		return "name is nil";
-	if (typeof(name) != "String")
+	if (typeof(name) != TYPEOF_STRING)
 		return "name is not a String";
 		
 	return true;
@@ -81,9 +81,9 @@ function ValidateName (name) {
 //
 
 function ValidateUserDefClassId (userDefClassId) {
-	if ((typeof(userDefClassId) == "Nil"))
+	if ((typeof(userDefClassId) == TYPEOF_NIL))
 		return "userDefClassId is nil";
-	if (typeof(userDefClassId) != "String")
+	if (typeof(userDefClassId) != TYPEOF_STRING)
 		return "userDefClassId is not a String";
 		
 	return true;
@@ -95,9 +95,9 @@ function ValidateUserDefClassId (userDefClassId) {
 //
 
 function ValidateLength (length) {
-	if ((typeof(length) == "Nil"))
+	if ((typeof(length) == TYPEOF_NIL))
 		return "length is nil";
-	if (typeof(length) != "Number")
+	if (typeof(length) != TYPEOF_NUMBER)
 		return "length is not a Number";
 	if (fractionalpart(length) != 0)
 		return "length is not an integer";
@@ -119,11 +119,11 @@ function ValidateDataFlowType (dataFlowType) {
 		@Out : true
 	];
 	
-	if (typeof(dataFlowType) == "Nil")
+	if (typeof(dataFlowType) == TYPEOF_NIL)
 		return "dataFlowType is nil";
-	if (typeof(dataFlowType) != "String")
+	if (typeof(dataFlowType) != TYPEOF_STRING)
 		return "dataFlowType is not a String";
-	if (typeof(validDataFlowTypes[dataFlowType]) == "Nil")
+	if (typeof(validDataFlowTypes[dataFlowType]) == TYPEOF_NIL)
 		return "Invalid dataFlowType";
 		
 	return true;
@@ -150,30 +150,30 @@ function ValidateTypeInfo (typeInfo) {
 			local errorList = list_new();
 			
 			// Fatal errors
-			if (typeof(typeInfo.members) == "Nil") {
+			if (typeof(typeInfo.members) == TYPEOF_NIL) {
 				errorList.push_back("members is nil");
 				return errorList;
 			}
 			else {
 				e = ValidateTableIsArray(typeInfo.members);
-				if (typeof(e) == "String") {
+				if (typeof(e) == TYPEOF_STRING) {
 					errorList.push_back("In members : " + nl + e);
-					return erroList;
+					return errorList;
 				}
 			}
 			
 			//Non fatal errors
 			e = ValidateUserDefClassId(typeInfo.userDefClassId);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back(e);
 				
 			for (local i = 0; i < tablength(typeInfo.members); i++) {
 				local errorMessage = "";
 				
 				e = ValidateName(typeInfo.members[i].name);
-				if (typeof(e) == "String")
+				if (typeof(e) == TYPEOF_STRING)
 					errorMessage += e + nl;
-				if (typeof(typeInfo.members[i].typeInfo) == "Nil")
+				if (typeof(typeInfo.members[i].typeInfo) == TYPEOF_NIL)
 					errorMessage += "typeInfo is nil" + nl;
 				else {
 					eList = ValidateTypeInfo(typeInfo.members[i].typeInfo);
@@ -192,7 +192,7 @@ function ValidateTypeInfo (typeInfo) {
 					
 			}
 			e = ValidateTableHasUniqueNames(typeInfo.members);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back("In members : " + nl + e);
 			
 			//"In Struct : " + e;
@@ -204,30 +204,30 @@ function ValidateTypeInfo (typeInfo) {
 			local errorList = list_new();
 			
 			// Fatal errors
-			if (typeof(typeInfo.members) == "Nil") {
+			if (typeof(typeInfo.members) == TYPEOF_NIL) {
 				errorList.push_back("members is nil");
 				return errorList;
 			}
 			else {
 				e = ValidateTableIsArray(typeInfo.members);
-				if (typeof(e) == "String") {
+				if (typeof(e) == TYPEOF_STRING) {
 					errorList.push_back("In members : " + nl + e);
-					return erroList;
+					return errorList;
 				}
 			}
 			
 			//Non fatal errors
 			e = ValidateUserDefClassId(typeInfo.userDefClassId);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back(e);
 				
 			for (local i = 0; i < tablength(typeInfo.members); i++) {
 				local errorMessage = "";
 				
 				e = ValidateName(typeInfo.members[i].name);
-				if (typeof(e) == "String")
+				if (typeof(e) == TYPEOF_STRING)
 					errorMessage += e + nl;
-				if (typeof(typeInfo.members[i].typeInfo) == "Nil")
+				if (typeof(typeInfo.members[i].typeInfo) == TYPEOF_NIL)
 					errorMessage += "typeInfo is nil" + nl;
 				else {
 					eList = ValidateTypeInfo(typeInfo.members[i].typeInfo);
@@ -246,7 +246,7 @@ function ValidateTypeInfo (typeInfo) {
 					
 			}
 			e = ValidateTableHasUniqueNames(typeInfo.members);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back("In members : " + nl + e);
 			
 			//"In Union : " + e;
@@ -257,7 +257,7 @@ function ValidateTypeInfo (typeInfo) {
 		method List (typeInfo) {
 			local errorList = list_new();
 			local e = ValidateUserDefClassId(typeInfo.userDefClassId);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back(e);
 					
 			eList =	ValidateTypeInfo(typeInfo.elementTypeInfo);
@@ -277,7 +277,7 @@ function ValidateTypeInfo (typeInfo) {
 		method Vector (typeInfo) {
 			local errorList = list_new();
 			local e = ValidateUserDefClassId(typeInfo.userDefClassId);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back(e);
 					
 			eList =	ValidateTypeInfo(typeInfo.elementTypeInfo);
@@ -299,32 +299,32 @@ function ValidateTypeInfo (typeInfo) {
 			
 			// Fatal errors
 			e = ValidateTableIsArray(typeInfo.members);
-			if (typeof(e) == "String") {
+			if (typeof(e) == TYPEOF_STRING) {
 				errorList.push_back("In members : " + nl + e);
 				return errorList;
 			}
-			if (typeof(typeInfo.members) == "Nil") {
+			if (typeof(typeInfo.members) == TYPEOF_NIL) {
 				errorList.push_back("members is nil");
 				return errorList;
 			}
-			if (typeof(typeInfo.members) != "Object") {
+			if (typeof(typeInfo.members) != TYPEOF_OBJECT) {
 				errorList.push_back("members is not a table");
 				return errorList;
 			}
 			
 			// Non fatal errors
 			e = ValidateUserDefClassId(typeInfo.userDefClassId);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back(e);
 				
 			for (local i = 0; i < tablength(typeInfo.members); i++) {
 				e = ValidateName(typeInfo.members[i].name);
-				if (typeof(e) == "String")
+				if (typeof(e) == TYPEOF_STRING)
 					errorList.push_back("In members [" + i + "] : " + e);
 			}
 			
 			e = ValidateTableHasUniqueNames(typeInfo.members);
-			if (typeof(e) == "String") {
+			if (typeof(e) == TYPEOF_STRING) {
 				errorList.push_back("In members : " + e);
 			}
 
@@ -337,10 +337,10 @@ function ValidateTypeInfo (typeInfo) {
 		method Array (typeInfo) {			
 			local errorList = list_new();
 			local e = ValidateUserDefClassId(typeInfo.userDefClassId);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back(e);
 			local e = ValidateLength(typeInfo.length);
-			if (typeof(e) == "String")
+			if (typeof(e) == TYPEOF_STRING)
 				errorList.push_back(e);
 					
 			eList =	ValidateTypeInfo(typeInfo.elementTypeInfo);
@@ -358,16 +358,16 @@ function ValidateTypeInfo (typeInfo) {
 	];
 	
 	// Fatal errors
-	if ((typeof(typeInfo) == "Nil")) {
+	if ((typeof(typeInfo) == TYPEOF_NIL)) {
 		errorList.push_back("typeInfo is nil");
 		return errorList;
 	}
 
-	if (typeof(typeInfo) != "Object") {
+	if (typeof(typeInfo) != TYPEOF_OBJECT) {
 		errorList.push_back("typeInfo is not a Table");
 		return errorList;
 	}
-	if (typeof(validTypes[typeInfo.type]) == "Nil") {
+	if (typeof(validTypes[typeInfo.type]) == TYPEOF_NIL) {
 		errorList.push_back("typeInfo is of invalid type");
 		return errorList;
 	}
@@ -381,9 +381,9 @@ function ValidateTypeInfo (typeInfo) {
 //
 
 function ValidateMapsTo (mapsTo) {
-	if (typeof(mapsTo) == "Nil")
+	if (typeof(mapsTo) == TYPEOF_NIL)
 		return true;
-	if (typeof(mapsTo) != "String")
+	if (typeof(mapsTo) != TYPEOF_STRING)
 		return "mapsTo is not a String";
 		
 	return true;
@@ -395,9 +395,9 @@ function ValidateMapsTo (mapsTo) {
 //
 
 function ValidateLinkedTo (linkedTo) {
-	if (typeof(linkedTo) == "Nil")
+	if (typeof(linkedTo) == TYPEOF_NIL)
 		return "linkedTo is nil";
-	if (typeof(linkedTo) != "String")
+	if (typeof(linkedTo) != TYPEOF_STRING)
 		return "linkedTo is not a String";
 		
 	return true;
@@ -412,15 +412,15 @@ function ValidateReturnValue (returnValueTable) {
 	local errorMessage = "";
 	
 	// Fatal errors
-	if (typeof(returnValueTable) != "Object")
+	if (typeof(returnValueTable) != TYPEOF_OBJECT)
 		return "returnValue is not a table";
-	if ((typeof(returnValueTable) == "Nil"))
+	if ((typeof(returnValueTable) == TYPEOF_NIL))
 		return "returnValue is nil";
 	
 	// Non Fatal errors
 	if (returnValueTable.typeInfo.type != "Void") {
 		e = ValidateName(returnValueTable.name);
-		if (typeof(e) == "String")
+		if (typeof(e) == TYPEOF_STRING)
 			errorMessage += e + nl;
 		eList = ValidateTypeInfo(returnValueTable.typeInfo);
 		if (isStdList(eList)) {
@@ -449,7 +449,7 @@ function ValidateNonUIReturnValue (returnValueTable) {
 	// Non Fatal errors
 	if (returnValueTable.typeInfo.type != "Void") {
 		e = ValidateMapsTo(returnValueTable.mapsTo);
-		if (typeof(e) == "String")
+		if (typeof(e) == TYPEOF_STRING)
 			errorMessage += e + nl;
 	}
 	
@@ -466,9 +466,9 @@ function ValidateNonUIReturnValue (returnValueTable) {
 function ValidateParameter (p) {
 	local errorMessage = "";	
 	
-	if (typeof(e = ValidateDataFlowType(p.dataFlowType)) == "String")
+	if (typeof(e = ValidateDataFlowType(p.dataFlowType)) == TYPEOF_STRING)
 		errorMessage += e + nl;
-	if (typeof(e = ValidateName(p.name)) == "String")
+	if (typeof(e = ValidateName(p.name)) == TYPEOF_STRING)
 		errorMessage += e + nl;
 	eList = ValidateTypeInfo(p.typeInfo);
 	if (isStdList(eList)) {
@@ -493,7 +493,7 @@ function ValidateNonUIParameter (p) {
 	if (errorMessage == true)
 		errorMessage = "";
 	
-	if (typeof(e = ValidateMapsTo(p.mapsTo)) == "String")
+	if (typeof(e = ValidateMapsTo(p.mapsTo)) == TYPEOF_STRING)
 		errorMessage += e + nl;
 			
 	if (errorMessage != "")
@@ -510,32 +510,32 @@ function ValidateParameters (paramTable) {
 	local errorList = list_new();
 
 	// Fatal errors
-	if ((typeof(paramTable) == "Nil")) {
+	if ((typeof(paramTable) == TYPEOF_NIL)) {
 		errorList.push_back("parameters is nil");
 		return errorList;
 	}
 	
-	if (typeof(paramTable) != "Object") {
+	if (typeof(paramTable) != TYPEOF_OBJECT) {
 		errorList.push_back("parameters is not a table");
 		return errorList;
 	}
 	
 	e = ValidateTableIsArray(paramTable);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorList.push_back("In parameters : " + e);
 		return errorList;
 	}
 	
 	// Non fatal errors
 	for (local i = 0; i < tablength(paramTable); i++) {
-		if (typeof(paramTable[i]) != "Object") {
+		if (typeof(paramTable[i]) != TYPEOF_OBJECT) {
 			errorList.push_back("At parameters [" + 
 			i + 
 			"] : value is not a table");
 			continue;
 		}
 		e = ValidateParameter(paramTable[i]);
-		if (typeof(e) == "String") {
+		if (typeof(e) == TYPEOF_STRING) {
 			errorList.push_back("At parameters [" + 
 			i + 
 			"] with name \"" + 
@@ -545,7 +545,7 @@ function ValidateParameters (paramTable) {
 		}
 	}
 	e = ValidateTableHasUniqueNames(paramTable);
-	if(typeof(e) == "String") {
+	if(typeof(e) == TYPEOF_STRING) {
 		errorList.push_back("In parameters : " + e);
 	}
 	
@@ -570,7 +570,7 @@ function ValidateNonUIParameters (paramTable) {
 	// Non fatal errors
 	for (local i = 0; i < tablength(paramTable); i++) {
 		e = ValidateNonUIParameter(paramTable[i]);
-		if (typeof(e) == "String") {
+		if (typeof(e) == TYPEOF_STRING) {
 			errorList.push_back(
 				"At parameters [" + 
 				i + 
@@ -597,18 +597,18 @@ function ValidateSignature (sigTable) {
 	local errorMessage = "";
 	
 	// Fatal errors
-	if ((typeof(sigTable) == "Nil"))
+	if ((typeof(sigTable) == TYPEOF_NIL))
 		return "signature is nil";
-	if (typeof(sigTable) != "Object")
+	if (typeof(sigTable) != TYPEOF_OBJECT)
 		return "signature is not a table";
 	
 	// Non fatal errors
 	e = ValidateName(sigTable.name);
-	if (typeof(e) == "String")
+	if (typeof(e) == TYPEOF_STRING)
 		errorMessage += e + nl;
 		
 	e = ValidateReturnValue(sigTable.returnValue);
-	if (typeof(e) == "String")
+	if (typeof(e) == TYPEOF_STRING)
 		errorMessage += e + nl;
 		
 	eList = ValidateParameters(sigTable.parameters);
@@ -631,18 +631,18 @@ function ValidateNonUISignature (sigTable) {
 	local errorMessage = "";
 	
 	// Fatal errors
-	if ((typeof(sigTable) == "Nil"))
+	if ((typeof(sigTable) == TYPEOF_NIL))
 		return "signature is nil";
-	if (typeof(sigTable) != "Object")
+	if (typeof(sigTable) != TYPEOF_OBJECT)
 		return "signature is not a table";
 	
 	// Non fatal errors
 	e = ValidateName(sigTable.name);
-	if (typeof(e) == "String")
+	if (typeof(e) == TYPEOF_STRING)
 		errorMessage += e + nl;
 		
 	e = ValidateNonUIReturnValue(sigTable.returnValue);
-	if (typeof(e) == "String")
+	if (typeof(e) == TYPEOF_STRING)
 		errorMessage += e + nl;
 		
 	eList = ValidateNonUIParameters(sigTable.parameters);
@@ -662,9 +662,9 @@ function ValidateNonUISignature (sigTable) {
 //
 
 function ValidateRef (ref) {
-	if ((typeof(ref) == "Nil"))
+	if ((typeof(ref) == TYPEOF_NIL))
 		return "ref is nil";
-	if (typeof(ref) != "ProgramFunc" and typeof(ref) != "LibraryFunc")
+	if (typeof(ref) != TYPEOF_PROGRAMFUNC and typeof(ref) != TYPEOF_LIBRARYFUNC)
 		return "ref is not of type ProgramFunc or LibraryFunc";
 		
 	return true;
@@ -677,14 +677,14 @@ function ValidateRef (ref) {
 
 function ValidateFunc (funcTable) {
 	// Fatal errors
-	if ((typeof(funcTable) == "Nil"))
+	if ((typeof(funcTable) == TYPEOF_NIL))
 		return "func is nil";
-	if (typeof(funcTable) != "Object")
+	if (typeof(funcTable) != TYPEOF_OBJECT)
 		return "func is not a table";
 		
 	// Non fatal erros
 	e = ValidateRef(funcTable.ref);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		return "In func : " + nl + e;
 	}
 	
@@ -700,19 +700,19 @@ function ValidateNonUIFunc (funcTable) {
 	local errorMessage = "";
 	
 	// Fatal errors
-	if ((typeof(funcTable) == "Nil"))
+	if ((typeof(funcTable) == TYPEOF_NIL))
 		return "func is nil";
-	if (typeof(funcTable) != "Object")
+	if (typeof(funcTable) != TYPEOF_OBJECT)
 		return "func is not a table";
 		
 	// Non fatal erros
 	e = ValidateRef(funcTable.ref);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorMessage += e + nl;
 	}
 	
 	e = ValidateLinkedTo(funcTable.linkedTo);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorMessage += e + nl;
 	}
 	
@@ -730,11 +730,11 @@ function ValidateOperation (opTable) {
 	local errorMessage = "";
 	
 	e = ValidateSignature(opTable.signature);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorMessage += e + nl;
 	}
 	e = ValidateFunc(opTable.func);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorMessage += e + nl;
 	}
 	
@@ -753,11 +753,11 @@ function ValidateNonUIOperation (opTable) {
 	local errorMessage = "";
 	
 	e = ValidateNonUISignature(opTable.signature);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorMessage += e + nl;
 	}
 	e = ValidateNonUIFunc(opTable.func);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorMessage += e + nl;
 	}
 	
@@ -795,7 +795,7 @@ function ValidateUIAPISpec (apiSpec) {
 				[ @name : nonUIOperations[i].signature.name ];
 	
 	e = ValidateTableHasUniqueNames(signatureNames);
-	if (typeof(e) == "String") {
+	if (typeof(e) == TYPEOF_STRING) {
 		errorList.push_back(
 			"Error in API Specification :" + nl + e
 		);
@@ -803,7 +803,7 @@ function ValidateUIAPISpec (apiSpec) {
 	
 	for (local i = 0; i < tablength(uiOperations); i++) {
 		e = ValidateOperation(uiOperations[i]);
-		if (typeof(e) == "String") {
+		if (typeof(e) == TYPEOF_STRING) {
 			errorList.push_back(
 				"Error in UI operation " + 
 				i + 
@@ -819,7 +819,7 @@ function ValidateUIAPISpec (apiSpec) {
 	if (nonUIOperations)
 		for (local i = 0; i < tablength(nonUIOperations); i++) {
 			e = ValidateNonUIOperation(nonUIOperations[i]);
-			if (typeof(e) == "String") {
+			if (typeof(e) == TYPEOF_STRING) {
 				errorList.push_back(
 					"Error in non UI operation " + 
 					i + 

@@ -105,10 +105,6 @@
     <ClInclude Include="IViews.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\UnderGo\ScriptFighter\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
-      <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\Base\BaseLibrary\BaseLibrary.vcxproj">
       <Project>{d39911b6-2b65-4a27-bb3d-31f6c45a4b5a}</Project>
     </ProjectReference>

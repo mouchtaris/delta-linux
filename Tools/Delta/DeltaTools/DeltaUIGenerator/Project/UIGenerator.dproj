@@ -13,7 +13,7 @@
         <deployment>0</deployment>
         <debug>1</debug>
         <collapsed>0</collapsed>
-        <bytecode_path></bytecode_path>
+        <bytecode_path>../dbc</bytecode_path>
         <argsd></argsd>
         <args></args>
     </ProjectProperties>
@@ -28,7 +28,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\MicroUIs.dsc">
@@ -42,7 +42,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\Properties.dsc">
@@ -56,7 +56,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertyGenerator.dsc">
@@ -70,7 +70,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertyUIMappingRules.dsc">
@@ -84,7 +84,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\TopLevelUIs.dsc">
@@ -98,7 +98,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIAPIHolder.dsc">
@@ -112,7 +112,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIAPISpec.dsc">
@@ -126,7 +126,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIAPISpecValidator.dsc">
@@ -140,7 +140,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIBuilder.dsc">
@@ -154,7 +154,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertySelectionHolder.dsc">
@@ -168,7 +168,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertySelectionUIs.dsc">
@@ -182,7 +182,7 @@
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path></bytecode_path>
+            <bytecode_path>../dbc</bytecode_path>
         </ScriptProperties>
     </Child>
 </Project>

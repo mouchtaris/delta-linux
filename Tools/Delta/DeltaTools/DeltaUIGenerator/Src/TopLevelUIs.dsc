@@ -72,8 +72,10 @@ function OperationUI (wxparent, opProp) {
 		}
 			
 		local retVal;
-		try { retVal = opProp.GetFunctionReference()(|args|); }
-		trap x { print(x); }
+		try 
+			{ retVal = opProp.GetFunctionReference()(|args|); }
+		trap x 
+			{ print(x); }
 			
 		local retProp = opProp.GetReturnProperty(); 
 		if (typeof(retProp) != "Nil" ) {
