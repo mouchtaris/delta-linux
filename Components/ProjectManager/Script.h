@@ -106,12 +106,14 @@ namespace ide
 		typedef std::pair<Script*, UIntList>		PseudoInitiator;
 		typedef std::list<PseudoInitiator>			PseudoInitiators;
 		typedef std::map<std::string, std::string>	DeploymentDeps;
+		typedef std::map<Script*, bool>				UpToDateMap;
 
 		struct MatchScriptPred : public std::binary_function<PseudoInitiator, const Script*, bool> {
 			bool operator()(const PseudoInitiator& p, const Script* script) const
 				{ return p.first == script; }
 		};
 
+		static UpToDateMap*					s_upToDate;
 		static ScriptPtrList*				s_allScripts;
 		static unsigned						s_buildNesting;
 		ScriptPtrList						m_buildDeps;

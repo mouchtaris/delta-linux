@@ -91,7 +91,8 @@ namespace ide
 	EXPORTED_STATIC(Script, void, Initialize, (void))
 	{
 		extensions.insert(std::make_pair(s_classId, ".dsc"));
-		s_allScripts = new ScriptPtrList;
+		s_allScripts	= new ScriptPtrList;
+		s_upToDate		= new UpToDateMap;
 	}
 
 	//-----------------------------------------------------------------------
@@ -101,6 +102,8 @@ namespace ide
 		extensions.erase(s_classId);
 		delete s_allScripts;
 		s_allScripts = (ScriptPtrList*) 0;
+		delete s_upToDate;
+		s_upToDate = (UpToDateMap*) 0;
 	}
 
 	//-----------------------------------------------------------------------

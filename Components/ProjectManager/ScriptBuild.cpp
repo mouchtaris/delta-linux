@@ -271,6 +271,7 @@ namespace ide {
 
 	boost::mutex			Script::s_mutex;
 	Script::ScriptPtrList*	Script::s_allScripts	= (ScriptPtrList*) 0;
+	Script::UpToDateMap*	Script::s_upToDate		= (UpToDateMap*) 0;
 	unsigned				Script::s_buildNesting	= 0;
 	const Script*			Script::m_cleanStarter	= (Script*) 0;
 
@@ -1241,11 +1242,17 @@ bool Script::IsUpToDateCalculation (void) {
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	DASSERT(!IsBuildInProgressQuery());
 
+	UpToDateMap::iterator i = s_upToDate->find(this);
+	if (i != s_upToDate->end())
+		return i->second;
+
 	SaveSource();
 
-	return	IsUpToDateCalculationWithDependencies(ExtractDependencies())	&&
-			IsByteCodeUpToDate()											&&
-			AreLastBuildPropertiesSameAsCurrent();
+	bool result	=	IsUpToDateCalculationWithDependencies(ExtractDependencies())	&&
+					IsByteCodeUpToDate()											&&
+					AreLastBuildPropertiesSameAsCurrent();
+
+	return (*s_upToDate)[this] = result;
 }
 
 /////////////////////////////////////////////////////////////////////////
