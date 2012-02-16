@@ -6,7 +6,7 @@ using std;
 
 const TEXT = "
 using std;
-function g { throw \"hello\\n\"; } 
+function g { local x=0;\n x();\n throw \"hello\\n\"; } 
 function f(b) { 
 	if (b) 
 		vmcall(vmid(vmthis())+\"v\", \"f\", --b); 

@@ -12,6 +12,7 @@
 #include "DeltaRuntimeError.h"
 #include "utypes.h"
 #include "DeltaVirtualMachine.h"
+#include "DeltaExceptionHandling.h"
 #include "ustrings.h"
 #include "uerrorclass.h"
 
@@ -115,23 +116,28 @@ void DeltaVirtualMachine::Error (const char* format,...) {
 void DeltaVirtualMachine::PrimaryError (const char* format,...) {
 
 	MAKE_ERROR_REPORT();
-	
-	DASSERT(!HasProducedError() && !GetPrimaryFailing() && IsErrorCauseReset());
-	SetAsPrimaryFailing();
 
-	CreateStackTrace(MAX_DISPLAYED_CALLS_ON_ERROR); 
-	std::string stackTrace = std::string("\nStack trace:\n") + GetStackTrace(); 
+	if (!EXCEPTION_HANDLERS->IsPostingUnhandledExceptionError())
+		EXCEPTION_HANDLERS->Throw(this, DeltaValue(report));
+	else {
 	
-	RunTimeError(
-		"Runtime error: VM '%s', source '%s', line %d: %s%s", 
-		Id(),
-		*Source() ? Source() : "none",
-		Line(),
-		report.c_str(),
-		stackTrace.c_str()
-	);
+		DASSERT(!HasProducedError() && !GetPrimaryFailing() && IsErrorCauseReset());
+		SetAsPrimaryFailing();
 
-	InvalidateExecution();
+		CreateStackTrace(MAX_DISPLAYED_CALLS_ON_ERROR); 
+		std::string stackTrace = std::string("\nStack trace:\n") + GetStackTrace(); 
+	
+		RunTimeError(
+			"Runtime error: VM '%s', source '%s', line %d: %s%s", 
+			Id(),
+			*Source() ? Source() : "none",
+			Line(),
+			report.c_str(),
+			stackTrace.c_str()
+		);
+
+		InvalidateExecution();
+	}
 }
 
 ////////////////////////////////////////////

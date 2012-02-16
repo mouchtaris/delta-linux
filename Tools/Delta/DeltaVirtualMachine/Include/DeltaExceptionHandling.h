@@ -78,6 +78,7 @@ class DVM_CLASS DeltaExceptionHandling {
 	DeltaLibraryFunc				currFunc;
 	DeltaValue						exceptionValue;
 	util_ui32						expectedNativeTrapDisableCalls;
+	bool							postingUnhandledExceptionError;
 
 	bool							isUnwinding;
 	bool							shouldUnwind;
@@ -155,6 +156,8 @@ class DVM_CLASS DeltaExceptionHandling {
 	bool				PerformUnwindingTests (DeltaVirtualMachine* vm);
 	bool				IsUnwinding (void) const
 							{ return isUnwinding; }
+	bool				IsPostingUnhandledExceptionError (void) const
+							{ return postingUnhandledExceptionError; }
 
 	/////////////////////////////////////////////////////////////////
 

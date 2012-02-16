@@ -31,7 +31,8 @@ DeltaExceptionHandling::DeltaExceptionHandling (void) :
 	expectedNativeTrapDisableCalls	(0),
 	isUnwinding						(false),
 	shouldUnwind					(false),
-	isUnwindingFromNativeCode		(false) 
+	isUnwindingFromNativeCode		(false),
+	postingUnhandledExceptionError	(false)
 	{}
 
 DeltaExceptionHandling::~DeltaExceptionHandling(){
@@ -59,11 +60,14 @@ void DeltaExceptionHandling::Throw (DeltaVirtualMachine* vm, const DeltaValue& e
 	DASSERT(Invariant()); 
 	DASSERT(!IsUnwinding());
 
-	if (!IsThereAnyTrapBlock())
+	if (!IsThereAnyTrapBlock()) {
+		postingUnhandledExceptionError = true;
 		DPTR(vm)->PrimaryError(
 			"'throw' stmt generates unhandled exception '%s'!",
 			exception.ConvertToStringBySkippingUserCode().c_str()
 		);
+		postingUnhandledExceptionError = false;
+	}
 	else {
 		SetException(exception);
 		SetUnwinding(true);
