@@ -1,0 +1,1 @@
+RF_EXCEPTIONS is used for excpetion handling updates.
