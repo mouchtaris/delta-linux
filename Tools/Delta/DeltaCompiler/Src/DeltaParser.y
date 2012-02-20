@@ -1193,7 +1193,8 @@ ExceptionStmt:	TryHeader Stmt
 				TrapHeader TrapJumpOver ExceptionVar
 					{ Translate_TrapStart($1, $4, $6); }
 				Stmt
-					{	EM(S_TRY); Translate_TrapEnd($5); ; 
+					{	EM(S_TRY); 
+						Translate_TrapEnd($5); 
 						UNPARSABLE_GET(Unparse_TryTrap($2, $8, $6));
 						DELTASYMBOLS.ResetTemp();
 						$$ = Translate_Stmts($2, $8); 
