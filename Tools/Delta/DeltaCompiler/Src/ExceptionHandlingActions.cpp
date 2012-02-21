@@ -17,9 +17,6 @@
 
 DeltaQuadAddress Translate_TRY (void) {
 	QUADS.Emit(DeltaIC_TRAPENABLE, NIL_EXPR, NIL_EXPR, NIL_EXPR);
-#ifdef	RF_EXCEPTIONS
-	QUADS.PushTryStmt(QUADS.CurrQuadNo());
-#endif
 	return QUADS.CurrQuadNo();
 }
 
@@ -36,9 +33,6 @@ DeltaQuadAddress Translate_TRAP (void) {
 
 DeltaQuadAddress Translate_TrapJumpOver (void) {
 	QUADS.Emit(DeltaIC_JUMP, NIL_EXPR, NIL_EXPR, NIL_EXPR);
-#ifdef	RF_EXCEPTIONS
-	QUADS.AddTrapJumpOver(QUADS.CurrQuadNo());
-#endif
 	return QUADS.CurrQuadNo();
 }
 
@@ -70,10 +64,6 @@ void Translate_TrapStart (
 			exceptionVar
 		);
 
-#ifdef	RF_EXCEPTIONS
-		QUADS.AddTrapBlock(QUADS.CurrQuadNo());
-#endif
-
 		// The TRAPENABLE / TRAPDISABLE are set to target to their first TRAP block.
 
 		if (QUADS.GetQuad(enable).GetLabel() == DELTA_NIL_QUAD_LABEL) {
@@ -93,31 +83,8 @@ void Translate_TrapStart (
 
 void Translate_TrapEnd (util_ui32 jumpOver) {
 	// This patch no longer concerns a single block but should concern all blocks.
-#ifndef	RF_EXCEPTIONS
 	QUADS.Patch(jumpOver, QUADS.NextQuadNo());
-#endif
 }
-
-///////////////////////////////////////////////////
-
-#ifdef	RF_EXCEPTIONS
-void Translate_TryStmtEnd (void) {
-
-	// Patch all skip jumps to the end.
-	const std::list<DeltaQuadAddress>& skipQuads = QUADS.GetAllTrapJumpOver();
-	for (std::list<DeltaQuadAddress>::const_iterator i = skipQuads.begin(); i != skipQuads.end(); ++i)
-		QUADS.Patch(*i, QUADS.NextQuadNo());
-
-	// Link all trap blocks together using the TRAP instruction label.
-	const std::list<DeltaQuadAddress>& trapQuads = QUADS.GetAllTrapBlocks();
-	DeltaQuadAddress nextQuad = DELTA_NIL_QUAD_LABEL;
-	for (std::list<DeltaQuadAddress>::const_reverse_iterator i = trapQuads.rbegin(); i != trapQuads.rend(); ++i) {
-		QUADS.GetQuad(*i).SetLabel(nextQuad);
-		nextQuad = *i;
-	}
-	QUADS.PopTryStmt();
-}
-#endif
 
 ///////////////////////////////////////////////////
 
