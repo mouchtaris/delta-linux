@@ -1761,7 +1761,7 @@ struct ubind_traits<umem_fun_ref<_Result, _T> >:
 // WARNING: this template version in which the second parameter is an arbitrary type _Value
 // is problematic. Explicit casting of _Value to ubind_traits<_Operation>::binder1st_type::ValRef
 // does not report invalid pointer casts in VS2010 (03-aug-2011).
-// Also, it is not deduced as a volatile-reference type if an argument of such type is passed,
+// Also, it is not deduced as a mutable-reference type if an argument of such type is passed,
 // but instead the argument is copy-constructed and _Value is deduced as the original type.
 // If it is necessary to use _Value for flexibility, refactor with care for the issues
 // mentioned above.

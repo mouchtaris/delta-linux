@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include "DDebug.h"
 #include "Symbol.h"
@@ -1359,7 +1360,7 @@ bool DeltaCodeGenerator::WriteTextCode (const char* file) {
 
 	FILE* fp = fopen(file, "wt");
 	if (!fp) {
-		DeltaCompMsg(DELTA_COMPILER_FAILED_PREFIX  " to open file '%s' to write target code in text format (%s)", file, strerror(NULL));
+		DeltaCompMsg(DELTA_COMPILER_FAILED_PREFIX  " to open file '%s' to write target code in text format (%s)", file, strerror(errno));
 		return false;
 	}
 

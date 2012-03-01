@@ -41,7 +41,7 @@ class UTILLIB_CLASS uerrorclass {
 	struct reporter {
 		std::string format;
 		const std::string operator()(const std::string& msg) 
-			{ return uconstructstr(format.c_str(), msg); }
+			{ return uconstructstr(format.c_str(), ucstringarg(msg)); }
 		reporter (const std::string& _format) : format(_format){}
 	};
 

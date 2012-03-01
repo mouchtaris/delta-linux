@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 #include "CompilerAPI.h"
 #include "Symbol.h"
@@ -385,7 +387,7 @@ void DeltaCompiler::DumpBinaryCode (const char* file) {
 		DeltaCompMsg(
 			DELTA_COMPILER_FAILED_PREFIX " to open file '%s' to write target code (%s)", 
 			file, 
-			strerror(NULL)
+			strerror(errno)
 		);
 }
 

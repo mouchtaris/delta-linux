@@ -651,7 +651,7 @@ LB_SINGLE								"LB_SINGLE"
 LB_MULTIPLE								"LB_MULTIPLE"
 @const
 LB_EXTENDED								"LB_EXTENDED"
-@const 
+@const
 LB_OWNERDRAW							"LB_OWNERDRAW"
 @const
 LB_NEEDED_SB							"LB_NEEDED_SB"

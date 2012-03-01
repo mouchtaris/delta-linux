@@ -33,7 +33,7 @@ T* _DNOTNULL (T* p) {
 
 template <typename T> void udeletesubstitute(T* p) { delete p; }
 template <class T, const unsigned N> 
-typename void udeletesubstitute (T (*&p)[N]) { delete[] p; }
+void udeletesubstitute (T (*&p)[N]) { delete[] p; }
 template <typename T> void udelarraysubstitute(T* p) { delete[] p; }
 
 #define	DNEW(a)				_DNOTNULL(new a)

@@ -46,7 +46,7 @@ class DeltaDebugExecutionBreakController {
 	///****************************
 	// External components and vars.
 
-	mutable umutex&			linesMutex;
+	umutex&					linesMutex;
 	static void				(*startCallStackMgmt)(void);
 
 	const DeltaDebugContextHandler*	

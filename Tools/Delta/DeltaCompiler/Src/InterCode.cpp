@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #include "DDebug.h"
 #include "Symbol.h"
@@ -397,7 +398,7 @@ void DeltaQuadManager::WriteText (const char* file) {
 		DeltaCompMsg(
 			DELTA_COMPILER_FAILED_PREFIX " to open file '%s' for writing intermediate code (%s).\n", 
 			file, 
-			strerror(NULL)
+			strerror(errno)
 		);
 }
 

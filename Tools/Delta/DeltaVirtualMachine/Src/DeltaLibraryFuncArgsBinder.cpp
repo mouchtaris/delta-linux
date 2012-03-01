@@ -24,7 +24,7 @@ DeltaLibraryFuncArgsBinder::DeltaLibraryFuncArgsBinder (CallerCheckerFunc f) {
 //**************************
 
 DeltaLibraryFuncArgsBinder::DeltaLibraryFuncArgsBinder (const DeltaLibraryFuncArgsBinder& binder) {
-	DeltaLibraryFuncArgsBinder::DeltaLibraryFuncArgsBinder();
+	new(this) DeltaLibraryFuncArgsBinder;
 	callerChecker = binder.callerChecker;
 	const std::list<DeltaValue>& l = *DNULLCHECK(binder.listPtr);
 	for (std::list<DeltaValue>::const_iterator i = l.begin(); i != l.end(); ++i)
