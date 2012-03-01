@@ -70,14 +70,15 @@ WX_FUNC_ARGRANGE_START(palette_construct, 0, 4, Nil)
 	if (n == 0) {
 		wxpalette = new wxPalette();
 	} else if (n == 4) {
-		WX_GETNUMBER(num)
+		WX_GETNUMBER(num_d)
 		WX_GETTABLE(red_table)
 		WX_GETTABLE(green_table)
 		WX_GETTABLE(blue_table)
+		const size_t num = num_d;
 		unsigned char *red = DNEWARR(unsigned char, num);
 		unsigned char *green = DNEWARR(unsigned char, num);
 		unsigned char *blue = DNEWARR(unsigned char, num);
-		for (int i = 0; i < num; ++i) {
+		for (unsigned int i = 0; i < num; ++i) {
 			DeltaValue r_value, g_value, b_value;
 			red_table->Get(DeltaValue((DeltaNumberValueType)i), &r_value);
 			green_table->Get(DeltaValue((DeltaNumberValueType)i), &g_value);
@@ -101,14 +102,15 @@ DLIB_FUNC_START(palette_destruct, 1, Nil)
 
 DLIB_FUNC_START(palette_create, 5, Nil)
 	DLIB_WXGET_BASE(palette, Palette, palette)
-	WX_GETNUMBER(num)
+	WX_GETNUMBER(num_d)
 	WX_GETTABLE(red_table)
 	WX_GETTABLE(green_table)
 	WX_GETTABLE(blue_table)
+	const size_t num = num_d;
 	unsigned char *red = DNEWARR(unsigned char, num);
 	unsigned char *green = DNEWARR(unsigned char, num);
 	unsigned char *blue = DNEWARR(unsigned char, num);
-	for (int i = 0; i < num; ++i) {
+	for (unsigned int i = 0; i < num; ++i) {
 		DeltaValue r_value, g_value, b_value;
 		red_table->Get(DeltaValue((DeltaNumberValueType)i), &r_value);
 		green_table->Get(DeltaValue((DeltaNumberValueType)i), &g_value);

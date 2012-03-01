@@ -24,9 +24,7 @@ WX_FUNC_DEF(getdepth)
 WX_FUNC_DEF(getheight)
 WX_FUNC_DEF(getwidth)
 WX_FUNC_DEF(isok)
-#if defined (__WXMSW__)
 WX_FUNC_DEF(loadfile)
-#endif //__WXMSW__
 WX_FUNC_DEF(setdepth)
 WX_FUNC_DEF(setheight)
 WX_FUNC_DEF(setwidth)
@@ -39,9 +37,7 @@ WX_FUNCS_START
 	WX_FUNC(getheight),
 	WX_FUNC(getwidth),
 	WX_FUNC(isok),
-#if defined (__WXMSW__)
 	WX_FUNC(loadfile),
-#endif //__WXMSW__
 	WX_FUNC(setdepth),
 	WX_FUNC(setheight),
 	WX_FUNC(setwidth)
@@ -130,8 +126,9 @@ DLIB_FUNC_START(icon_isok, 1, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_SETBOOL(icon->IsOk())
 }
-#if defined (__WXMSW__)
+
 WX_FUNC_ARGRANGE_START(icon_loadfile, 2, 5, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_GETSTRING(name)
 	long type = wxBITMAP_TYPE_ICO_RESOURCE;
@@ -140,8 +137,14 @@ WX_FUNC_ARGRANGE_START(icon_loadfile, 2, 5, Nil)
 	if (n >= 4) { WX_GETDEFINE_DEFINED(desiredWidth) }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(desiredHeight) }
 	WX_SETBOOL(icon->LoadFile(name, type, desiredWidth, desiredHeight))
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(icon_setdepth, 2, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_GETNUMBER(depth)

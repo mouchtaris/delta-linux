@@ -144,20 +144,20 @@ void DeltaWxRectInitFunc()
 	DPTR(methods)->Set(DeltaValue("!="), DeltaValue(&rect_notequal_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Rect, rect, DeltaWxRectInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Rect, rect, DeltaWxRectInitFunc();, UEMPTY);
 
 ////////////////////////////////////////////////////////////////
 
 #define WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef)					\
-	if (rectRef == rect) {														\
+	if (&rectRef == rect) {														\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);							\
 	} else {																	\
-		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(*rectRef)));	\
+		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rectRef)));	\
 		WX_SETOBJECT(Rect, retval)												\
 	}
 
 #define WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, func)							\
-	wxRect *rect##Ref = &(rect->func);											\
+	const wxRect& rect##Ref = rect->func;										\
 	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rect##Ref)
 
 WX_FUNC_ARGRANGE_START(rect_construct, 0, 4, Nil)
@@ -231,19 +231,19 @@ WX_FUNC_ARGRANGE_START(rect_contains, 2, 3, Nil)
 
 WX_FUNC_ARGRANGE_START(rect_deflate, 2, 3, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	wxRect *rectRef = (wxRect*) NULL;
+	wxRect rectRef;
 	if (n == 3) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
-		rectRef = &(rect->Deflate((wxCoord)x, (wxCoord)y));
+		rectRef = rect->Deflate((wxCoord)x, (wxCoord)y);
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(diff)
-			rectRef = &(rect->Deflate((wxCoord)diff));
+			rectRef = rect->Deflate((wxCoord)diff);
 		} else
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGETSIZE_BASE(diff)
-			rectRef = &(rect->Deflate(*diff));
+			rectRef = rect->Deflate(*diff);
 		}
 	}
 	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef);
@@ -327,19 +327,19 @@ DLIB_FUNC_START(rect_gety, 1, Nil)
 
 WX_FUNC_ARGRANGE_START(rect_inflate, 2, 3, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	wxRect *rectRef = (wxRect*) NULL;
+	wxRect rectRef;
 	if (n == 3) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
-		rectRef = &(rect->Inflate((wxCoord)x, (wxCoord)y));
+		rectRef = rect->Inflate((wxCoord)x, (wxCoord)y);
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(diff)
-			rectRef = &(rect->Inflate((wxCoord)diff));
+			rectRef = rect->Inflate((wxCoord)diff);
 		} else
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGETSIZE_BASE(diff)
-			rectRef = &(rect->Inflate(*diff));
+			rectRef = rect->Inflate(*diff);
 		}
 	}
 	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef);

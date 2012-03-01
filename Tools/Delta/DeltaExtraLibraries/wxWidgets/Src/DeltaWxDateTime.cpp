@@ -350,16 +350,16 @@ void DeltaWxDateTimeInitFunc()
 	DPTR(methods)->Set(DeltaValue("<="), DeltaValue(&datetime_lessequalthan_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateTime, datetime, DeltaWxDateTimeInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateTime, datetime, DeltaWxDateTimeInitFunc();, UEMPTY);
 
 ////////////////////////////////////////////////////////////////
 
 #define WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, func)									\
-	wxDateTime *datetime##Ref = &(datetime->func);												\
-	if (datetime##Ref == datetime) {															\
+	const wxDateTime& datetime##Ref = datetime->func;											\
+	if (&datetime##Ref == datetime) {															\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
 	} else {																					\
-		DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (new wxDateTime(*datetime##Ref)));	\
+		DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (new wxDateTime(datetime##Ref)));	\
 		WX_SETOBJECT(DateTime, retval)															\
 	}
 

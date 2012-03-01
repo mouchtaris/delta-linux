@@ -97,11 +97,11 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(SizerFlags, sizerflags);
 ////////////////////////////////////////////////////////////////
 
 #define WXSIZERFLAGS_AVOID_UNNECESSARY_OBJECTS(sizerflags, func)										\
-	wxSizerFlags *sizerflags##Ref = &(sizerflags->func);												\
-	if (sizerflags##Ref == sizerflags) {																\
+	const wxSizerFlags& sizerflags##Ref = sizerflags->func;												\
+	if (&sizerflags##Ref == sizerflags) {																\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);													\
 	} else {																							\
-		DeltaWxSizerFlags *retval = DNEWCLASS(DeltaWxSizerFlags, (new wxSizerFlags(*sizerflags##Ref)));	\
+		DeltaWxSizerFlags *retval = DNEWCLASS(DeltaWxSizerFlags, (new wxSizerFlags(sizerflags##Ref)));	\
 		WX_SETOBJECT(SizerFlags, retval)																\
 	}
 

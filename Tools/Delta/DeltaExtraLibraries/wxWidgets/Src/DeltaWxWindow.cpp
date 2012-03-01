@@ -51,9 +51,7 @@ WX_FUNC_DEF(destroy)
 WX_FUNC_DEF(destroychildren)
 WX_FUNC_DEF(disable)
 WX_FUNC_DEF(doupdatewindowui)
-#if defined (__WXMSW__)
 WX_FUNC_DEF(dragacceptfiles)
-#endif //__WXMSW__
 WX_FUNC_DEF(enable)
 WX_FUNC_DEF(findfocus)
 WX_FUNC_DEF(findwindow)
@@ -145,10 +143,8 @@ WX_FUNC_DEF(pusheventhandler)
 WX_FUNC_DEF(raise)
 WX_FUNC_DEF(refresh)
 WX_FUNC_DEF(refreshrect)
-#if defined(__WXMSW__)
 WX_FUNC_DEF(registerhotkey)
 WX_FUNC_DEF(unregisterhotkey)
-#endif //__WXMSW__
 WX_FUNC_DEF(releasemouse)
 WX_FUNC_DEF(removechild)
 WX_FUNC_DEF(removeeventhandler)
@@ -232,9 +228,7 @@ WX_FUNCS_START
 	WX_FUNC(destroychildren),
 	WX_FUNC(disable),
 	WX_FUNC(doupdatewindowui),
-#if defined(__WXMSW__)
 	WX_FUNC(dragacceptfiles),
-#endif //__WXMSW__
 	WX_FUNC(enable),
 	WX_FUNC(findwindow),
 	WX_FUNC(fit),
@@ -320,10 +314,8 @@ WX_FUNCS_START
 	WX_FUNC(raise),
 	WX_FUNC(refresh),
 	WX_FUNC(refreshrect),
-#if defined(__WXMSW__)
 	WX_FUNC(registerhotkey),
 	WX_FUNC(unregisterhotkey),
-#endif //__WXMSW__
 	WX_FUNC(releasemouse),
 	WX_FUNC(removechild),
 	WX_FUNC(removeeventhandler),
@@ -948,13 +940,20 @@ DLIB_FUNC_START(window_doupdatewindowui, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, ev)
 	window->DoUpdateWindowUI(*ev);
 }
-#if defined(__WXMSW__)
+
 DLIB_FUNC_START(window_dragacceptfiles, 2, Nil)
+#if defined(__WXMSW__)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETBOOL(accept)
 	window->DragAcceptFiles(accept);
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 WX_FUNC_ARGRANGE_START(window_enable, 1, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	if (n == 1) {
@@ -1577,22 +1576,36 @@ WX_FUNC_ARGRANGE_START(window_refreshrect, 2, 3, Nil)
 		window->RefreshRect(*rect, eraseBackground);
 	}
 }
-#if defined(__WXMSW__)
+
 DLIB_FUNC_START(window_registerhotkey, 4, Nil)
+#if defined(__WXMSW__)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETNUMBER(hotkeyId)
 	WX_GETDEFINE(modifiers)
 	WX_GETDEFINE(virtualKeyCode)
 	bool retval = window->RegisterHotKey(hotkeyId, modifiers, virtualKeyCode);
 	WX_SETBOOL(retval);
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(window_unregisterhotkey, 2, Nil)
+#if defined(__WXMSW__)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(hotkeyId)
 	WX_SETBOOL(window->UnregisterHotKey(hotkeyId));
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(window_releasemouse, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->ReleaseMouse();

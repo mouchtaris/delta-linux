@@ -1361,7 +1361,7 @@ void wxWidgets::DefineInit()
 	WX_SET_DEFINE(TraceMessages)
 	WX_SET_DEFINE(TraceResAlloc)
 	WX_SET_DEFINE(TraceRefCount)
-#ifdef  __WXMSW__
+#if defined(__WXMSW__)
 	WX_SET_DEFINE(TraceOleCalls)
 #endif
 	WX_SET_DEFINE(LOG_FatalError)

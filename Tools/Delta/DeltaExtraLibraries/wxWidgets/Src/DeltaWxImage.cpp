@@ -209,11 +209,11 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Image, image);
 ////////////////////////////////////////////////////////////////
 
 #define WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, func)								\
-	wxImage *image##Ref = &(image->func);											\
-	if (image##Ref == image) {														\
+	const wxImage& image##Ref = image->func;										\
+	if (&image##Ref == image) {														\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);								\
 	} else {																		\
-		DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(*image##Ref)));	\
+		DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image##Ref)));	\
 		WX_SETOBJECT(Image, retval)													\
 	}
 

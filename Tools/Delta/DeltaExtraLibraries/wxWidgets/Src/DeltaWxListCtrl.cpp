@@ -50,9 +50,7 @@ WX_FUNC_DEF(getitemcount)
 WX_FUNC_DEF(getitemfont)
 WX_FUNC_DEF(getitemposition)
 WX_FUNC_DEF(getitemrect)
-#if defined (__WXMSW__)
 WX_FUNC_DEF(getsubitemrect)
-#endif //__WXMSW__
 WX_FUNC_DEF(getitemspacing)
 WX_FUNC_DEF(getitemstate)
 WX_FUNC_DEF(getitemtext)
@@ -111,9 +109,7 @@ WX_FUNCS_START
 	WX_FUNC(getitemfont),
 	WX_FUNC(getitemposition),
 	WX_FUNC(getitemrect),
-#if defined (__WXMSW__)
 	WX_FUNC(getsubitemrect),
-#endif //__WXMSW__
 	WX_FUNC(getitemspacing),
 	WX_FUNC(getitemstate),
 	WX_FUNC(getitemtext),
@@ -440,8 +436,9 @@ WX_FUNC_ARGRANGE_START(listctrl_getitemrect, 2, 3, Nil)
 		WX_SETOBJECT(Rect, retval)
 	}
 }
-#if defined (__WXMSW__)
+
 WX_FUNC_ARGRANGE_START(listctrl_getsubitemrect, 3, 4, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_GETNUMBER(subItem)
@@ -452,8 +449,14 @@ WX_FUNC_ARGRANGE_START(listctrl_getsubitemrect, 3, 4, Nil)
 		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect)));
 		WX_SETOBJECT(Rect, retval)
 	}
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(listctrl_getitemspacing, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(ctrl->GetItemSpacing())));

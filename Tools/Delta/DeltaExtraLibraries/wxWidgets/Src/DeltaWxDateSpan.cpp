@@ -136,20 +136,20 @@ void DeltaWxDateSpanInitFunc()
 	DPTR(methods)->Set(DeltaValue("="), DeltaValue(&datespan_assign_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateSpan, datespan, DeltaWxDateSpanInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateSpan, datespan, DeltaWxDateSpanInitFunc();, UEMPTY);
 
 ////////////////////////////////////////////////////////////////
 
 #define WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespanRef)						\
-	if (datespanRef == datespan) {																\
+	if (&datespanRef == datespan) {																\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
 	} else {																					\
-		DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(*datespanRef)));	\
+		DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespanRef)));	\
 		WX_SETOBJECT(DateSpan, retval)															\
 	}
 
 #define WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, func)									\
-	wxDateSpan *datespan##Ref = &(datespan->func);												\
+	const wxDateSpan& datespan##Ref = datespan->func;											\
 	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespan##Ref)
 
 WX_FUNC_ARGRANGE_START(datespan_construct, 0, 4, Nil)
@@ -308,12 +308,12 @@ DLIB_FUNC_START(datespan_assign, 2, Nil)
 
 WX_FUNC_ARGRANGE_START(datespan_minus, 1, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
-	wxDateSpan* datespanRef = (wxDateSpan*) NULL;
+	wxDateSpan datespanRef;
 	if (n == 1) {
-		datespanRef = &(datespan->operator-());
+		datespanRef = datespan->operator-();
 	} else {
 		DLIB_WXGET_BASE(datespan, DateSpan, other)
-		datespanRef = &(datespan->operator-(*other));
+		datespanRef = datespan->operator-(*other);
 	}
 	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespanRef)
 }

@@ -66,10 +66,16 @@ WX_FUNC_ARGRANGE_START(acceleratortable_construct, 0, 2, Nil)
 #if defined (__WXMSW__)
 		WX_GETSTRING(resource)
 		wxacceltable = new wxAcceleratorTable(resource);
+#else
+		DLIB_ERROR_CHECK(
+			true,
+			"This function overload is only available on MS Windows implementation of wxWidgets."
+		);
 #endif //__WXMSW__
 	} else if (n == 2) {
-		WX_GETNUMBER(num)
+		WX_GETNUMBER(num_d)
 		WX_GETTABLE(entr)
+		const size_t num = num_d;
 		wxAcceleratorEntry *entries = DNEWARR(wxAcceleratorEntry, num);
 		for (int i = 0; i < (int) num; ++i) {
 			DeltaValue value;

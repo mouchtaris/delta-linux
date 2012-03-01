@@ -23,7 +23,6 @@ WX_FUNC_DEF(construct)
 WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(check)
 WX_FUNC_DEF(enable)
-#if defined (__WXMSW__)
 WX_FUNC_DEF(getbackgroundcolour)
 WX_FUNC_DEF(getfont)
 WX_FUNC_DEF(getmarginwidth)
@@ -34,7 +33,6 @@ WX_FUNC_DEF(setmarginwidth)
 WX_FUNC_DEF(settextcolour)
 WX_FUNC_DEF(setbitmap)
 WX_FUNC_DEF(setbitmaps)
-#endif //__WXMSW__
 WX_FUNC_DEF(gethelp)
 WX_FUNC_DEF(getid)
 WX_FUNC_DEF(getkind)
@@ -60,12 +58,10 @@ WX_FUNCS_START
 	WX_FUNC(destruct),
 	WX_FUNC(check),
 	WX_FUNC(enable),
-#if defined (__WXMSW__)
 	WX_FUNC(getbackgroundcolour),
 	WX_FUNC(getfont),
 	WX_FUNC(getmarginwidth),
 	WX_FUNC(gettextcolour),
-#endif //__WXMSW__
 	WX_FUNC(gethelp),
 	WX_FUNC(getid),
 	WX_FUNC(getkind),
@@ -79,14 +75,12 @@ WX_FUNCS_START
 	WX_FUNC(isenabled),
 	WX_FUNC(isseparator),
 	WX_FUNC(issubmenu),
-#if defined (__WXMSW__)
 	WX_FUNC(setbackgroundcolour),
 	WX_FUNC(setfont),
 	WX_FUNC(setmarginwidth),
 	WX_FUNC(settextcolour),
 	WX_FUNC(setbitmap),
 	WX_FUNC(setbitmaps),
-#endif //__WXMSW__
 	WX_FUNC(sethelp),
 	WX_FUNC(setmenu),
 	WX_FUNC(setsubmenu),
@@ -239,30 +233,58 @@ WX_FUNC_ARGRANGE_START(menuitem_enable, 1, 2, Nil)
 		mitem->Enable(enable);
 	}
 }
-#if defined (__WXMSW__)
+
 DLIB_FUNC_START(menuitem_getbackgroundcolour, 1, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(mitem->GetBackgroundColour())));
 	WX_SETOBJECT(Colour, retval)
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(menuitem_getfont, 1, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(mitem->GetFont())));
 	WX_SETOBJECT(Font, retval)
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(menuitem_getmarginwidth, 1, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETNUMBER(mitem->GetMarginWidth())
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(menuitem_gettextcolour, 1, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(mitem->GetTextColour())));
 	WX_SETOBJECT(Colour, retval)
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(menuitem_gethelp, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETSTRING(mitem->GetHelp())
@@ -334,45 +356,87 @@ DLIB_FUNC_START(menuitem_issubmenu, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETBOOL(mitem->IsSubMenu())
 }
-#if defined (__WXMSW__)
+
 DLIB_FUNC_START(menuitem_setbackgroundcolour, 2, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	mitem->SetBackgroundColour(*colour);
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(menuitem_setfont, 2, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(font, Font, font)
 	mitem->SetFont(*font);
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(menuitem_setmarginwidth, 2, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETNUMBER(width)
 	mitem->SetMarginWidth(width);
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(menuitem_settextcolour, 2, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	mitem->SetTextColour(*colour);
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(menuitem_setbitmap, 2, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 	mitem->SetBitmap(*bmp);
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 WX_FUNC_ARGRANGE_START(menuitem_setbitmaps, 2, 3, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(bitmap, Bitmap, checked)
 	wxBitmap *unchecked = &wxNullBitmap;
 	if (n >= 3) { DLIB_WXGET_BASE(bitmap, Bitmap, _unchecked) unchecked = _unchecked; }
 	mitem->SetBitmaps(*checked, *unchecked);
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(menuitem_sethelp, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETSTRING(helpString)

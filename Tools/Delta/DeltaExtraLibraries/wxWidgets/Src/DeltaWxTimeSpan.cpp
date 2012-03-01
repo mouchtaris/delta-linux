@@ -192,11 +192,11 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(TimeSpan, timespan, DeltaWxTimeSpanInitFunc()
 ////////////////////////////////////////////////////////////////
 
 #define WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, func)									\
-	wxTimeSpan *timespan##Ref = &(timespan->func);												\
-	if (timespan##Ref == timespan) {															\
+	const wxTimeSpan& timespan##Ref = timespan->func;											\
+	if (&timespan##Ref == timespan) {															\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
 	} else {																					\
-		DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(*timespan##Ref)));	\
+		DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan##Ref)));	\
 		WX_SETOBJECT(TimeSpan, retval)															\
 	}
 

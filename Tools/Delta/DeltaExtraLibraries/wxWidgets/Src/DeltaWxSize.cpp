@@ -134,11 +134,11 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Size, size,
 ////////////////////////////////////////////////////////////////
 
 #define WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, func)							\
-	wxSize *size##Ref = &(size->func);											\
-	if (size##Ref == size) {													\
+	const wxSize& size##Ref = size->func;										\
+	if (&size##Ref == size) {													\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);							\
 	} else {																	\
-		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(*size##Ref)));	\
+		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(size##Ref)));	\
 		WX_SETOBJECT(Size, retval)												\
 	}
 

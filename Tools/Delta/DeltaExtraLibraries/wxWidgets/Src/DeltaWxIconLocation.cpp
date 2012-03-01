@@ -93,18 +93,32 @@ DLIB_FUNC_START(iconlocation_getfilename, 1, Nil)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_SETSTRING(iconloc->GetFileName())
 }
-#if defined (__WXMSW__)
+
 DLIB_FUNC_START(iconlocation_getindex, 1, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_SETNUMBER(iconloc->GetIndex())
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
+#endif //__WXMSW__
 }
 
 DLIB_FUNC_START(iconlocation_setindex, 2, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_GETNUMBER(index)
 	iconloc->SetIndex(index);
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(iconlocation_isok, 1, Nil)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_SETBOOL(iconloc->IsOk())

@@ -95,11 +95,11 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Bitmap, bitmap);
 ////////////////////////////////////////////////////////////////
 
 #define WXBITMAP_AVOID_UNNECESSARY_OBJECTS(bitmap, func)								\
-	wxBitmap *bitmap##Ref = &(bitmap->func);											\
-	if (bitmap##Ref == bitmap) {														\
+	const wxBitmap& bitmap##Ref = bitmap->func;											\
+	if (&bitmap##Ref == bitmap) {														\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);									\
 	} else {																			\
-		DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(*bitmap##Ref)));	\
+		DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bitmap##Ref)));	\
 		WX_SETOBJECT(Bitmap, retval)													\
 	}
 
@@ -138,6 +138,11 @@ WX_FUNC_ARGRANGE_START(bitmap_construct, 0, 3, Nil)
 #if defined(__WXMSW__)
 				DLIB_WXGET_BASE(dc, DC, dc)
 				wxbitmap = new wxBitmap(width, height, *dc);
+#else
+				DLIB_ERROR_CHECK(
+					true,
+					"This function overload is only available on MS Windows implementation of wxWidgets."
+				);
 #endif //__WXMSW__
 			} else {
 				int depth = -1;
@@ -176,6 +181,11 @@ WX_FUNC_ARGRANGE_START(bitmap_create, 3, 4, Nil)
 #if defined(__WXMSW__)
 		DLIB_WXGET_BASE(dc, DC, dc)
 		WX_SETBOOL(bitmap->Create(width, height, *dc))
+#else
+		DLIB_ERROR_CHECK(
+			true,
+			"This function overload is only available on MS Windows implementation of wxWidgets."
+		);
 #endif //__WXMSW__
 	} else {
 		int depth = -1;

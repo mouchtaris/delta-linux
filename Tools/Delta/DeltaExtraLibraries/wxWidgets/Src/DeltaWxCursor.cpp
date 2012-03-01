@@ -79,12 +79,19 @@ WX_FUNC_ARGRANGE_START(cursor_construct, 0, 4, Nil)
 		}
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
+#if defined (__WXMSW__)
 			WX_GETSTRING(cursorName)
 			WX_GETDEFINE(type)
 			int hotSpotX = 0, hotSpotY = 0;
 			if (n >= 3) { WX_GETNUMBER_DEFINED(hotSpotX) }
 			if (n >= 4) { WX_GETNUMBER_DEFINED(hotSpotY) }
 			wxcursor = new wxCursor(cursorName, type, hotSpotX, hotSpotY);
+#else
+			DLIB_ERROR_CHECK(
+				true,
+				"This function overload is only available on MS Windows implementation of wxWidgets."
+			);
+#endif //__WXMSW__
 		}
 	}
 	if (wxcursor) cursor = DNEWCLASS(DeltaWxCursor, (wxcursor));

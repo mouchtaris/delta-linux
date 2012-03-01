@@ -370,7 +370,7 @@
 	DPTR(methods)->Set(DeltaValue(wxclassid), DeltaValue(table));
 
 #define DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(wxclass, wxclassid, baseclass)	\
-	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"##wxclassid)					\
+	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"wxclassid)					\
 	DLIB_WX_TOSTRING(wxclass, wxclassid)										\
 	DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)				\
 	DLIB_WX_TOEXTERNID(wxclass)													\
@@ -381,7 +381,7 @@
 	}
 
 #define DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(wxclass, wxclassid)		\
-	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"##wxclassid)					\
+	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"wxclassid)					\
 	DLIB_WX_TOSTRING(wxclass, wxclassid)										\
 	DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)				\
 	DLIB_WX_TOEXTERNID(wxclass)													\

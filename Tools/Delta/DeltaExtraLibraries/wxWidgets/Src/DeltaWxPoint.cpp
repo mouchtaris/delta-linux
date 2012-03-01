@@ -115,11 +115,11 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Point, point,
 ////////////////////////////////////////////////////////////////
 
 #define WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, func)								\
-	wxPoint *point##Ref = &(point->func);											\
-	if (point##Ref == point) {														\
+	const wxPoint &point##Ref = point->func;										\
+	if (&point##Ref == point) {														\
 		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);								\
 	} else {																		\
-		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(*point##Ref)));	\
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(point##Ref)));	\
 		WX_SETOBJECT(Point, retval)													\
 	}
 

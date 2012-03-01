@@ -197,6 +197,11 @@ WX_FUNC_ARGRANGE_START(font_construct, 0, 7, Nil)
 				wxfont = new wxFont(*pixelSize, (wxFontFamily)family,
 					style, (wxFontWeight)weight, underline, faceName, (wxFontEncoding)encoding);
 			}
+#else
+			DLIB_ERROR_CHECK(
+				true,
+				"This function overload is only available on MS Windows implementation of wxWidgets."
+			);
 #endif //__WXMSW__
 		} else {
 			DPTR(vm)->PrimaryError(

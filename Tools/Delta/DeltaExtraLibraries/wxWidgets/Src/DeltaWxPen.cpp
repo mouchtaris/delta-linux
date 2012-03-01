@@ -23,9 +23,7 @@ WX_FUNC_DEF(getcap)
 WX_FUNC_DEF(getcolour)
 WX_FUNC_DEF(getdashes)
 WX_FUNC_DEF(getjoin)
-#if defined(__WXMSW__)
 WX_FUNC_DEF(getstipple)
-#endif //__WXMSW__
 WX_FUNC_DEF(getstyle)
 WX_FUNC_DEF(getwidth)
 WX_FUNC_DEF(isok)
@@ -33,9 +31,7 @@ WX_FUNC_DEF(setcap)
 WX_FUNC_DEF(setcolour)
 WX_FUNC_DEF(setdashes)
 WX_FUNC_DEF(setjoin)
-#if defined(__WXMSW__)
 WX_FUNC_DEF(setstipple)
-#endif //__WXMSW__
 WX_FUNC_DEF(setstyle)
 WX_FUNC_DEF(setwidth)
 WX_FUNC_DEF(equal)
@@ -48,9 +44,7 @@ WX_FUNCS_START
 	WX_FUNC(getcolour),
 	WX_FUNC(getdashes),
 	WX_FUNC(getjoin),
-#if defined(__WXMSW__)
 	WX_FUNC(getstipple),
-#endif //__WXMSW__
 	WX_FUNC(getstyle),
 	WX_FUNC(getwidth),
 	WX_FUNC(isok),
@@ -58,9 +52,7 @@ WX_FUNCS_START
 	WX_FUNC(setcolour),
 	WX_FUNC(setdashes),
 	WX_FUNC(setjoin),
-#if defined(__WXMSW__)
 	WX_FUNC(setstipple),
-#endif //__WXMSW__
 	WX_FUNC(setstyle),
 	WX_FUNC(setwidth),
 	WX_FUNC(equal),
@@ -127,6 +119,11 @@ WX_FUNC_ARGRANGE_START(pen_construct, 0, 3, Nil)
 					WX_GETNUMBER(width)
 					wxpen = new wxPen(*bitmap, width);
 				}
+#else
+				DLIB_ERROR_CHECK(
+					true,
+					"This function overload is only available on MS Windows implementation of wxWidgets."
+				);
 #endif //__WXMSW__
 			}
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String && n == 3) {
@@ -169,13 +166,20 @@ DLIB_FUNC_START(pen_getjoin, 1, Nil)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	WX_SETNUMBER(pen->GetJoin())
 }
-#if defined(__WXMSW__)
+
 DLIB_FUNC_START(pen_getstipple, 1, Nil)
+#if defined(__WXMSW__)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (pen->GetStipple()));
 	WX_SETOBJECT(Bitmap, retval)
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(pen_getstyle, 1, Nil)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	WX_SETNUMBER(pen->GetStyle())
@@ -230,13 +234,20 @@ DLIB_FUNC_START(pen_setjoin, 2, Nil)
 	WX_GETDEFINE(join_style)
 	pen->SetJoin(join_style);
 }
-#if defined(__WXMSW__)
+
 DLIB_FUNC_START(pen_setstipple, 2, Nil)
+#if defined(__WXMSW__)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	pen->SetStipple(*bitmap);
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(pen_setstyle, 2, Nil)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	WX_GETDEFINE(style)

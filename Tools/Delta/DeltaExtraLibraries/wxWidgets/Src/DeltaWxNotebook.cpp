@@ -42,9 +42,7 @@ WX_FUNC_DEF(getselection)
 WX_FUNC_DEF(getthemebackgroundcolour)
 WX_FUNC_DEF(hittest)
 WX_FUNC_DEF(insertpage)
-#if defined (__WXMSW__)
 WX_FUNC_DEF(onselchange)
-#endif //__WXMSW__
 WX_FUNC_DEF(removepage)
 WX_FUNC_DEF(setimagelist)
 WX_FUNC_DEF(setpadding)
@@ -74,9 +72,7 @@ WX_FUNCS_START
 	WX_FUNC(getthemebackgroundcolour),
 	WX_FUNC(hittest),
 	WX_FUNC(insertpage),
-#if defined (__WXMSW__)
 	WX_FUNC(onselchange),
-#endif //__WXMSW__
 	WX_FUNC(removepage),
 	WX_FUNC(setimagelist),
 	WX_FUNC(setpadding),
@@ -348,13 +344,20 @@ WX_FUNC_ARGRANGE_START(notebook_insertpage, 4, 6, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(imageId) }
 	WX_SETBOOL(notebk->InsertPage(index, page, text, select, imageId))
 }
-#if defined (__WXMSW__)
+
 DLIB_FUNC_START(notebook_onselchange, 2, Nil)
+#if defined (__WXMSW__)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	DLIB_WXGET_BASE(notebookevent, NotebookEvent, ev)
 	notebk->OnSelChange(*ev);
-}
+#else
+	DLIB_ERROR_CHECK(
+		true,
+		"This function is only available on MS Windows implementation of wxWidgets."
+	);
 #endif //__WXMSW__
+}
+
 DLIB_FUNC_START(notebook_removepage, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)

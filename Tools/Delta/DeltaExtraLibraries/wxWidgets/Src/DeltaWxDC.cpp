@@ -713,10 +713,11 @@ WX_FUNC_ARGRANGE_START(dc_drawline, 3, 5, Nil)
 
 WX_FUNC_ARGRANGE_START(dc_drawlines, 3, 5, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	WX_GETNUMBER(points_size)
+	WX_GETNUMBER(points_size_d)
 	WX_GETTABLE(points_table)
+	const size_t points_size = points_size_d;
 	wxPoint *points = DNEWARR(wxPoint, points_size);
-	for (int i = 0; i < points_size; ++i) {
+	for (unsigned int i = 0; i < points_size; ++i) {
 		DeltaValue value;
 		points_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 		if (value.Type() == DeltaValue_ExternId) {
@@ -736,10 +737,11 @@ WX_FUNC_ARGRANGE_START(dc_drawlines, 3, 5, Nil)
 
 WX_FUNC_ARGRANGE_START(dc_drawpolygon, 3, 6, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	WX_GETNUMBER(points_size)
+	WX_GETNUMBER(points_size_d)
 	WX_GETTABLE(points_table)
+	const size_t points_size = points_size_d;
 	wxPoint *points = DNEWARR(wxPoint, points_size);
-	for (int i = 0; i < points_size; ++i) {
+	for (unsigned int i = 0; i < points_size; ++i) {
 		DeltaValue value;
 		points_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 		if (value.Type() == DeltaValue_ExternId) {
@@ -861,10 +863,11 @@ WX_FUNC_ARGRANGE_START(dc_drawroundedrectangle, 3, 6, Nil)
 WX_FUNC_ARGRANGE_START(dc_drawspline, 3, 7, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 3) {
-		WX_GETNUMBER(points_size)
+		WX_GETNUMBER(points_size_d)
 		WX_GETTABLE(points_table)
+		const size_t points_size = points_size_d;
 		wxPoint *points = DNEWARR(wxPoint, points_size);
-		for (int i = 0; i < points_size; ++i) {
+		for (unsigned int i = 0; i < points_size; ++i) {
 			DeltaValue value;
 			points_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 			if (value.Type() == DeltaValue_ExternId) {

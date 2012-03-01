@@ -86,7 +86,7 @@ void DeltaWxRegionInitFunc()
 	DPTR(methods)->Set(DeltaValue("!="), DeltaValue(&region_notequal_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Region, region, DeltaWxRegionInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Region, region, DeltaWxRegionInitFunc();, UEMPTY);
 
 ////////////////////////////////////////////////////////////////
 
@@ -114,10 +114,11 @@ WX_FUNC_ARGRANGE_START(region_construct, 0, 4, Nil)
 		}
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
-			WX_GETNUMBER(size)
+			WX_GETNUMBER(size_d)
 			WX_GETTABLE(points)
+			const size_t size = size_d;
 			wxPoint *pts = DNEWARR(wxPoint, size);
-			for (int i = 0; i < size; ++i) {
+			for (unsigned int i = 0; i < size; ++i) {
 				DeltaValue value;
 				points->Get(DeltaValue((DeltaNumberValueType)i), &value);
 				if (value.Type() == DeltaValue_ExternId) {
