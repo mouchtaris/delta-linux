@@ -24,7 +24,7 @@
 #else
 #define	DWXWIDGETS_CLASS
 #define	DWXWIDGETS_FUNC extern
-#define	DWXWIDGETS_CFUNC extern
+#define	DWXWIDGETS_CFUNC extern "C"
 #endif
 
 #endif	// Do not add stuff beyond this point.
