@@ -15,6 +15,7 @@
 #include "DeltaExternIdFactory.h"
 #include "DeltaLibraryFuncArgsBinder.h"
 #include "DeltaStdLibTemplatesUtils.h"
+#include "DeltaStdClassNames.h"
 #include "DeltaString.h"
 #include "ustrings.h"
 

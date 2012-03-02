@@ -246,10 +246,10 @@ class uchangenotifier {
 	typedef void			(*Callback)(void* context, void* closure);
 
 	protected:
-	mutable ucallbacklist<Callback, ucallbackwithclosure<Callback>> callbacks;
-	mutable util_ui32												locked;
-	mutable util_ui32												pending;
-	void*															context;
+	mutable ucallbacklist<Callback, ucallbackwithclosure<Callback> >	callbacks;
+	mutable util_ui32													locked;
+	mutable util_ui32													pending;
+	void*																context;
 	void*					GetContext (void* _context) const 
 								{ return context? context : _context; }
 

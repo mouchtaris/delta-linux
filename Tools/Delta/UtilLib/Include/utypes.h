@@ -328,7 +328,7 @@ template <typename FuncPtrT> static inline FuncPtrT const uvoid2func (void const
 // Also, in macro editions
 #if defined( __GNUG__ )
 #	define UFUNC2VOID(func_ptr_var)						ufunc2void(func_ptr_var)
-#	define UFUNCIN2VOID(func_ptr, void_ptr)				ucastassign(func_ptr, void_ptr)
+#	define UFUNCIN2VOID(func_ptr, void_ptr)				ucastassign(void_ptr, func_ptr)
 #	define UVOID2FUNC(FuncPtrT, void_ptr)				uvoid2func<FuncPtrT>(void_ptr)
 #	define UVOIDIN2FUNC(void_ptr, FuncPtrT, func_ptr)	uvoid2func<FuncPtrT>(void_ptr, func_ptr) // template argument provided explicitly for better type checking
 #else
