@@ -17,7 +17,6 @@
 #ifdef	_UNIX_
 #include <unistd.h>
 #include <pwd.h>
-#include <sys/types.h>
 #endif
 
 //------------------------------------------------------------------
