@@ -569,6 +569,7 @@ template <class OpTraits> struct SetElemTemplate {
 			}
 
 			default:
+				DELTA_ON_UNWINDING_RETURN_TEST(vm, UEMPTY);
 				DPTR(vm)->PrimaryError(
 					"failure in %s over '%s'; not allowed for this type!",
 					OpTraits::OpStr(),
@@ -1097,12 +1098,13 @@ template <class OpTraits> struct GetElemTemplate {
 				break;
 			}
 			default : {	// In this case it is an illegal type used as a container.
+				DELTA_ON_UNWINDING_RETURN_TEST(vm, UEMPTY);
+				content->FromNil();
 				DPTR(vm)->PrimaryError(
 					"failure in %s over '%s'; not allowed for this type!",
 					OpTraits::OpStr(),
 					container->TypeStr()
 				);
-				content->FromNil();
 			}
 		}
 	}

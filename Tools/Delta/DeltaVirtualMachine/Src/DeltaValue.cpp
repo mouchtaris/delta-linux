@@ -1495,8 +1495,7 @@ bool DeltaValue::operator()(PushArguments& argsPusher, DeltaValue* result) {
 
 		DELTA_VALIDATE_VM_SERIALNO(vm, false);
 		DELTA_RETURN_IF_PRODUCEDERROR(vm, false);
-
-		DASSERT(!EXCEPTION_HANDLERS->IsUnwinding() || DPTR(vm)->GetReturnValue().IsUndefined());
+		DELTA_ON_UNWINDING_RETURN_TEST(vm, true);
 
 		if (result)
 			result->AssignOverloadable(DPTR(vm)->GetReturnValue());
