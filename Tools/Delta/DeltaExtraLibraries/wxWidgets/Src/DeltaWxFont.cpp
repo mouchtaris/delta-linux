@@ -11,7 +11,10 @@
 #include "wxWrapperUtilFunctions.h"
 //
 
-std::map<std::string, wxFont> defaultFontMap;
+typedef const wxFont* (* DefaultFontGetter) (void);
+typedef std::map<std::string, DefaultFontGetter> DefaultFontsMap;
+
+static DefaultFontsMap defaultFontMap;
 
 ////////////////////////////////////////////////////////////////
 
@@ -78,6 +81,20 @@ DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Font, "font", Object)
 
 ////////////////////////////////////////////////////////////////
 
+static const wxFont* ItalicFontGetter (void)
+	{ return wxITALIC_FONT; }
+
+static const wxFont* NormalFontGetter (void)
+	{ return wxNORMAL_FONT; }
+
+static const wxFont* SmallFontGetter (void)
+	{ return wxSMALL_FONT; }
+
+static const wxFont* SwissFontGetter (void)
+	{ return wxSWISS_FONT; }
+
+////////////////////////////////////////////////////////////////
+
 static bool GetKeys (void* val, DeltaValue* at) 
 {
 	return DLIB_WXTYPECAST_BASE(Font, val, font) ?
@@ -99,10 +116,10 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 
 void DeltaWxFontInitFunc()
 {
-	defaultFontMap.insert(std::pair<std::string, wxFont> ("ITALIC_FONT", *wxITALIC_FONT));
-	defaultFontMap.insert(std::pair<std::string, wxFont> ("NORMAL_FONT", *wxNORMAL_FONT));
-	defaultFontMap.insert(std::pair<std::string, wxFont> ("SMALL_FONT", *wxSMALL_FONT));
-	defaultFontMap.insert(std::pair<std::string, wxFont> ("SWISS_FONT", *wxSWISS_FONT));
+	defaultFontMap.insert(DefaultFontsMap::value_type ("ITALIC_FONT",	&ItalicFontGetter));
+	defaultFontMap.insert(DefaultFontsMap::value_type ("NORMAL_FONT",	&NormalFontGetter));
+	defaultFontMap.insert(DefaultFontsMap::value_type ("SMALL_FONT",	&SmallFontGetter));
+	defaultFontMap.insert(DefaultFontsMap::value_type ("SWISS_FONT",	&SwissFontGetter));
 	FontUtils::InstallAll(methods);
 	DeltaLibraryFuncArgsBinder* binder = DeltaLibraryFuncArgsBinder::New(&CallerChecker);
 	DPTR(methods)->Set(DeltaValue("=="), DeltaValue(&font_equal_LibFunc, binder));
@@ -118,11 +135,11 @@ bool DeltaWxFontSearch(std::string str, wxFont *font)
 {
 	if (str.find("wx") == 0 && str.length() > 0)
 		str = str.substr(2);
-	std::map<std::string, wxFont>::iterator it;
+	DefaultFontsMap::iterator it;
 	it = defaultFontMap.find(str);
 	if (it == defaultFontMap.end())
 		return false;
-	*font = it->second;
+	*font = *(*it->second)();
 	return true;
 }
 
