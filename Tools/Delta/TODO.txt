@@ -1,1 +1,2 @@
-RF_EXCEPTIONS is used for excpetion handling updates.
+-tabs in some large codegen macros.
+-DASSERT(HasProducedError() _> || IsUnwinding() _<);
