@@ -535,6 +535,7 @@ static util_ui32 instrCounter = 0;
 	old_pc = pc;																					\
 	DELTA_INC_INSTRUCTION_COUNTER();																\
 	DELTA_CORE_EXECUTION_LOOP(sn, passport, _execute, this, throw ExecutionTerminationException());	\
+	if (EXCEPTION_HANDLERS->IsUnwinding()) return;													\
 	/* Error can be propagated from a callee VM. Behaves as if current failed ( */					\
 	/* (necessary to propagate the error). */														\
 	DASSERT(!HasProducedError());																	\

@@ -1480,6 +1480,7 @@ bool DeltaValue::operator()(PushArguments& argsPusher, DeltaValue* result) {
 		}
 
 		DELTA_RETURN_IF_PRODUCEDERROR(vm, false);
+		DELTA_ON_UNWINDING_RETURN_TEST(vm, true);
 
 		if (!argsPusher(DPTR(vm))) {
 			DPTR(vm)->Error(

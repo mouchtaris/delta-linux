@@ -1360,7 +1360,7 @@ void ExternIdCallBoundedGetMethod (DeltaInstruction* instr, DeltaVirtualMachine*
 		GetElemTemplate<traits>::Do(instr, vm, &method, &caller),									\
 		vm																							\
 	);																								\
-	if (EXCEPTION_HANDLERS->IsUnwinding()) return;
+	if (EXCEPTION_HANDLERS->IsUnwinding()) return; else
 
 #define	CALL_METHOD_FINALLY_FAST(traits)															\
 	DELTA_CORE_EXECUTION_LOOP(																		\

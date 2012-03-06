@@ -488,6 +488,7 @@ void DeltaExceptionHandling::Unwind (DeltaVirtualMachine* caller) {
 
 	shouldUnwind				= false;
 	isUnwindingFromNativeCode	= !IsDeltaCodeContext(callStack.front().second);
+	caller						= DELTA_PC_PROGRAM_END_VM(caller);
 
 	while (true) {
 

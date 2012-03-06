@@ -12,24 +12,24 @@
 //---------------------------------------------------------------
 // For operand translation inside instructions only.
 
-#define	DELTA_TRANSLATE_OPERAND(arg, var, temp)										\
-	DeltaValue temp;																\
-	DeltaValue* var = DPTR(vm)->TranslateOperand(instr->arg, &temp);				\
-	if (!var)																		\
-		{ DASSERT(vm->HasProducedError()); return; }								\
+#define	DELTA_TRANSLATE_OPERAND(arg, var, temp)												\
+	DeltaValue temp;																		\
+	DeltaValue* var = DPTR(vm)->TranslateOperand(instr->arg, &temp);						\
+	if (!var)																				\
+		{ DASSERT(vm->HasProducedError() || EXCEPTION_HANDLERS->IsUnwinding()); return; }	\
 	DASSERT(var == &temp || instr->arg.IsStorageType())
 
-#define	DELTA_TRANSLATE_NON_STORAGE_OPERAND(arg, var, temp)							\
-	DeltaValue temp;																\
-	DeltaValue* var = DPTR(vm)->TranslateOperand(instr->arg, &temp);				\
-	if (!var)																		\
-		{ DASSERT(vm->HasProducedError()); return; }								\
+#define	DELTA_TRANSLATE_NON_STORAGE_OPERAND(arg, var, temp)									\
+	DeltaValue temp;																		\
+	DeltaValue* var = DPTR(vm)->TranslateOperand(instr->arg, &temp);						\
+	if (!var)																				\
+		{ DASSERT(vm->HasProducedError() || EXCEPTION_HANDLERS->IsUnwinding()); return; }	\
 	DASSERT(var == &temp)
 
-#define	DELTA_TRANSLATE_STORAGE_OPERAND(arg, var)									\
-	DeltaValue* var = DPTR(vm)->GetStorageObject(instr->arg);						\
-	if (!var)																		\
-		{ DASSERT(vm->HasProducedError()); return; }								\
+#define	DELTA_TRANSLATE_STORAGE_OPERAND(arg, var)											\
+	DeltaValue* var = DPTR(vm)->GetStorageObject(instr->arg);								\
+	if (!var)																				\
+		{ DASSERT(vm->HasProducedError() || EXCEPTION_HANDLERS->IsUnwinding()); return; }	\
 	else DASSERT(DPTR(vm)->ValidateStackValuePtr(var))
 
 ///////////////////////////////////////////////////////
