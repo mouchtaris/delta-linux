@@ -176,7 +176,7 @@
 		m_workId,														\
 		std::string("Skipping script '")		+						\
 		_src									+						\
-		"' (is up-to-date)!"											\
+		"' (is up-to-date)!"												\
 	)
 
 #define	BUILD_MESSAGE_CURRENTLY_BEING_BUILT(_workId, _src)				\
@@ -1194,10 +1194,23 @@ EXPORTED_FUNCTION(Script, unsigned long, Clean, (const UIntList& workId)) {
 
 const StringList Script::ExtractDependencies (void) const {
 	boost::mutex::scoped_lock lock(s_mutex);
-	return	Call<StringList (const String&, const String&)>(const_cast<Script*>(this), "DeltaVM", "ExtractBuildDependencies")(
-				const_cast<Script*>(this)->GetURI(), 
-				 GetByteCodeLoadingPath()
-			);
+	StringList deps = Call<StringList (const String&, const String&)>(const_cast<Script*>(this), "DeltaVM", "ExtractBuildDependencies")(
+		const_cast<Script*>(this)->GetURI(), 
+		GetByteCodeLoadingPath()
+	);
+	DASSERT(deps.size() % 2 == 0);
+	std::set<String> uris;
+	for (StringList::iterator i = deps.begin(); i != deps.end(); /*empty*/)
+		if (uris.find(*i) == uris.end()) {
+			uris.insert(*i);
+			++i;	//skip uri
+			++i;	//skip status
+		}
+		else {
+			i = deps.erase(i);	//erase uri
+			i = deps.erase(i);	//erase status
+		}
+	return deps;
 }
 
 /////////////////////////////////////////////////////////////////////////
