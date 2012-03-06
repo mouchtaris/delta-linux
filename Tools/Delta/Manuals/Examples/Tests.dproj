@@ -4,7 +4,7 @@
         <working_directory>.</working_directory>
         <text>1</text>
         <symbolic>Tests.dproj</symbolic>
-        <startup></startup>
+        <startup>Algorithms.dsc</startup>
         <output_path>.</output_path>
         <libs></libs>
         <icode>0</icode>
