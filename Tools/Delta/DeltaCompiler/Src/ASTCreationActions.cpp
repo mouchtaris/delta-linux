@@ -139,8 +139,12 @@ char* AST::MakeNode_StringWithLateDestruction (char* s)
 AST::Node* AST::MakeNode_Program (AST::NodeList* defs) 
 	{ MAKE_FROM_NODELIST(AST_TAG_PROGRAM, defs); }
 
-AST::NodeList* AST::MakeNode_CodeDefs (AST::NodeList* defs, AST::Node* def) 
-	{ MAKE_ITEMLIST(AST::NodeList, defs, def); }
+AST::NodeList* AST::MakeNode_CodeDefs (AST::NodeList* defs, AST::Node* def) {
+	if (!def) 
+		return defs;
+	else
+		MAKE_ITEMLIST(AST::NodeList, defs, def);
+}
 
 AST::Node* AST::MakeNode_BasicExprStmt (AST::Node* stmt)
 	{ MAKE_WITH_ONE_CHILD(AST_TAG_BASIC_EXPR_STMT, AST_CHILD_STMT, stmt); }

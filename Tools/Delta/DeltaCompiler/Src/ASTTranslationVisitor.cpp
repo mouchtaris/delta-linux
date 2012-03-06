@@ -482,8 +482,10 @@ void AST::TranslationVisitor::Handle_UsingNamespace (AST_VISITOR_ARGS){
 // Using: using  StringConst (value) : IDENT (attr name)
 //
 void AST::TranslationVisitor::Handle_UsingByteCodeLibrary (AST_VISITOR_ARGS){ 
-	if (!entering)
+	if (!entering) {
+		yysetline();
 		Translate_UsingByteCodeLibrary(NAME(node), LINE(node));
+	}
 }	
 
 ///////////////////////////////////////////////////////////
