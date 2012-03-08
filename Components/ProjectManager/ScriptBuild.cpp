@@ -271,7 +271,7 @@ namespace ide {
 
 	boost::mutex			Script::s_mutex;
 	Script::ScriptPtrList*	Script::s_allScripts	= (ScriptPtrList*) 0;
-	Script::UpToDateMap*	Script::s_upToDate		= (UpToDateMap*) 0;
+	Script::UpToDateMap*	Script::s_upToDate		= (UpToDateMap*) 0;		// Used only upon run, not in normal build
 	unsigned				Script::s_buildNesting	= 0;
 	const Script*			Script::m_cleanStarter	= (Script*) 0;
 
@@ -1521,9 +1521,9 @@ void Script::RunImpl (const std::string& func) {
 		Call<void (void), SafeCall>(this, "Output", "Clear")();
 		Call<void (void), SafeCall>(this, "BuildOrder", "Clear")();
 
-		SaveSource();
-		SetRunAutomaticallyAfterBuild(func);
+		s_upToDate->clear();
 
+		SetRunAutomaticallyAfterBuild(func);
 		if (!IsUpToDateCalculation())
 			BuildCtx();
 		else
