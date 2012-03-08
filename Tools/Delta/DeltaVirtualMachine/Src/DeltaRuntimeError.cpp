@@ -117,8 +117,18 @@ void DeltaVirtualMachine::PrimaryError (const char* format,...) {
 
 	MAKE_ERROR_REPORT();
 
-	if (!EXCEPTION_HANDLERS->IsPostingUnhandledExceptionError())
-		EXCEPTION_HANDLERS->Throw(this, DeltaValue(report));
+
+	if (!EXCEPTION_HANDLERS->IsPostingUnhandledExceptionError()) {
+
+		if (errorCode.empty())
+			errorCode = DELTA_GENERAL_RUNTIME_ERROR;
+
+		DeltaValue exception(report);
+		exception.SetTypeTag(errorCode);
+		EXCEPTION_HANDLERS->Throw(this, exception);
+
+		errorCode.clear();
+	}
 	else {
 	
 		DASSERT(!HasProducedError() && !GetPrimaryFailing() && IsErrorCauseReset());

@@ -40,7 +40,7 @@ DeltaValue* DeltaVirtualMachine::GetFormal (util_ui16 offset) {
 	DASSERT(actuals == (stack + topsp + DELTA_SAVED_ENVIRONMENT_SIZE + 1));
 
 	if (GetTotalActualsForCurrFunction() <= offset) {	// No value for formal arg is supplied in the call.
-		PrimaryError(
+		SetErrorCode(DELTA_FORMAL_ARG_WITHOUT_ACTUAL_VALUE_ERROR)->PrimaryError(
 			"in function '%s' while accessing formal '%s' (no actual value was supplied)!",
 			currFunc->GetName().c_str(),
 			currFunc->GetFormalName(offset).c_str()

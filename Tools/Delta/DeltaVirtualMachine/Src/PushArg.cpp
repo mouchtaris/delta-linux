@@ -143,6 +143,7 @@ void DeltaVirtualMachine::PushArgumentVector (const uvector<DeltaValue>& args) {
 
 #define	CHECK_GET_ITEM(key)															\
 	if (!DPTR(table)->BasicGetBySkippingUserCode(index, &content)) {				\
+		SetErrorCode(DELTA_ILL_FORMED_TABLE_IN_DYNAMIC_ARGS_ERROR)->				\
 		PrimaryError("in dynamic arguments |table|, getting '%s'!", key);			\
 		return;																		\
 	} else
@@ -151,6 +152,7 @@ void DeltaVirtualMachine::PushArgumentVector (const uvector<DeltaValue>& args) {
 
 #define	CHECK_ITEM_TYPE(var, key)													\
 	if (content.Type() != DeltaValue_Number) {										\
+		SetErrorCode(DELTA_ILL_FORMED_TABLE_IN_DYNAMIC_ARGS_ERROR)->				\
 		PrimaryError(																\
 			"in dynamic arguments |table| number '%s' field expected (%s found)!",	\
 			key, content.TypeStr()													\
@@ -160,6 +162,7 @@ void DeltaVirtualMachine::PushArgumentVector (const uvector<DeltaValue>& args) {
 		double x = content.ToNumber();												\
 		var = (util_ui32) x;														\
 		if ( x < 0 || ((double) var) != x) {										\
+			SetErrorCode(DELTA_ILL_FORMED_TABLE_IN_DYNAMIC_ARGS_ERROR)->			\
 			PrimaryError(															\
 				"in dynamic arguments |table|, field '%s' not an unsigned number!",	\
 				key, content.TypeStr()												\
@@ -173,6 +176,7 @@ void DeltaVirtualMachine::PushArgumentVector (const uvector<DeltaValue>& args) {
 
 #define	CHECK_TOTAL(var)																\
 	if (var > DELTA_TABLEARGUMENTS_MAXTOTAL ) {											\
+		SetErrorCode(DELTA_ILL_FORMED_TABLE_IN_DYNAMIC_ARGS_ERROR)->					\
 		PrimaryError(																	\
 			"in dynamic arguments |table|, field '%s' (value %u) exceeds bound %u!",	\
 			DELTA_TABLEARGUMENTS_TOTAL, var, DELTA_TABLEARGUMENTS_MAXTOTAL				\
@@ -275,7 +279,8 @@ void DeltaVirtualMachine::PushArgumentTable (DeltaTable* table) {
 		if (DNULLCHECK(DPTR(vm)->GetStdUtilities())->IsVector(val))							\
 			DPTR(vm)->PushArgumentVector(DPTR(vm)->GetStdUtilities()->GetVector(val));		\
 		else {																				\
-			DPTR(vm)->PrimaryError(															\
+			DPTR(vm)->SetErrorCode(DELTA_INVALID_VALUE_IN_DYNAMIC_ARGS_ERROR)->				\
+			PrimaryError(																	\
 				"in dynamic arguments |expr|:"												\
 				"table / object / list / vector expected but '%s' passed",					\
 				val->TypeStr()																\

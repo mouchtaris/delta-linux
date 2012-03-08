@@ -159,7 +159,7 @@ void DeltaVirtualMachine::SetUserFuncClosure (DeltaClosure* closure, const Delta
 	if (!closure == !funcInfo->HasClosureVars()) {	// Closure provision matches function requirements.
 		if (closure && DPTR(closure)->GetTotal() != (util_ui32) funcInfo->GetClosureVarsInfo().size()) {
 			if (DPTR(closure)->GetTotal() < (util_ui32) funcInfo->GetClosureVarsInfo().size()) {	// Less than needed.
-				PrimaryError(
+				SetErrorCode(DELTA_INVALID_SUPPLIED_CLOSURE_ERROR)->PrimaryError(
 					"in calling '%s' supplied closure has only %u vars (while %u vars are required)", 
 					funcInfo->GetName().c_str(),
 					DPTR(closure)->GetTotal(),
@@ -178,7 +178,7 @@ void DeltaVirtualMachine::SetUserFuncClosure (DeltaClosure* closure, const Delta
 	}
 	else	// Closure provision mismatch regarding function requirements.
 	if (!closure)	// No closure when needed.
-		PrimaryError(
+		SetErrorCode(DELTA_NO_SUPPLIED_CLOSURE_ERROR)->PrimaryError(
 			"in calling '%s' no closure supplied (requires one with %u vars)", 
 			funcInfo->GetName().c_str(),
 			funcInfo->GetClosureVarsInfo().size()

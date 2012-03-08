@@ -295,7 +295,7 @@ DeltaVirtualMachine::~DeltaVirtualMachine() {
 
 bool DeltaVirtualMachine::top_minusminus (void) {
 	if (!top)
-		{ PrimaryError("Stack overflow!"); return false; }
+		{ SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!"); return false; }
 	else
 		{ --top; return true; }
 }
@@ -357,7 +357,7 @@ void DeltaVirtualMachine::CallLibraryFunc (const char* name, util_ui16 totalActu
 	if (DeltaLibraryFunc func = DeltaLibFuncBinder::Get(name))
 		CallPreboundLibraryFunc(func, totalActuals);
 	else
-		PrimaryError("Library function '%s' was not found", name);
+		SetErrorCode(DELTA_UNRESOLVED_LIBFUNC_ERROR)->PrimaryError("Library function '%s' was not found", name);
 }
 
 //////////////////////////////////
@@ -396,7 +396,7 @@ void DeltaVirtualMachine::CallPreboundLibraryFunc (DeltaLibraryFunc func, util_u
 		try			
 			{ (*func)(this); } 
 		catch(...)	{ 
-			PrimaryError(
+			SetErrorCode(DELTA_LIBFUNC_NATIVE_EXCEPTION_ERROR)->PrimaryError(
 				"Call to library function '%s' caused a native exception!",
 				DeltaLibFuncBinder::GetNameByAddress(func)
 			); return; 
@@ -883,7 +883,10 @@ void DeltaVirtualMachine::ExtCallGlobalFunc (const char* name) {
 		ExtCallGlobalFuncCommit(i->second->GetAddress(), DELTA_PROGFUNC_STD_ARGUMENTS);
 	}
 	else 
-		PrimaryError("Externally called global function '%s' was not found!", name);
+		SetErrorCode(DELTA_UNRESOLVED_GLOBALFUNC_ERROR)->PrimaryError(
+			"Externally called global function '%s' was not found!", 
+			name
+		);
 }
 
 //////////////////////////////////

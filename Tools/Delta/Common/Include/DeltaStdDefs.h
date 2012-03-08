@@ -123,6 +123,43 @@ struct	DeltaSymbol;
 #define	DELTA_UNDEFINED_TYPESTRING				"Undefined"
 
 //-----------------------------------------------------------
+// Error tags for runtime error exceptions.
+//
+
+#define	DELTA_GENERAL_RUNTIME_ERROR						"DeltaGeneralRuntimeError"
+#define	DELTA_ARITH_OPERATOR_ERROR						"DeltaArithmeticOperatorError"
+#define	DELTA_RELAT_OPERATOR_ERROR						"DeltaRelationalOperatorError"
+#define	DELTA_NOT_CALLABLE_ERROR						"DeltaNotCallableError"
+#define	DELTA_FORMAL_ARG_WITHOUT_ACTUAL_VALUE_ERROR		"DeltaFormalArgWithoutActualValueError"
+#define	DELTA_UNRESOLVED_LIBFUNC_ERROR					"DeltaUnresolvedLibraryFuncError"
+#define	DELTA_LIBFUNC_NATIVE_EXCEPTION_ERROR			"DeltaLibraryFuncNativeExceptionError"
+#define	DELTA_UNRESOLVED_GLOBALFUNC_ERROR				"DeltaUnresolvedGlobalFuncError"
+#define	DELTA_SUICIDAL_VM_ERROR							"DeltaVirtualMachineSelfDestructionError"
+#define	DELTA_ZOMBI_VM_ERROR							"DeltaVirtualMachineCallerDestructionError"
+#define	DELTA_INVALID_SUPPLIED_CLOSURE_ERROR			"DeltaInvalidSuppliedClosureError"
+#define	DELTA_NO_SUPPLIED_CLOSURE_ERROR					"DeltaNoSuppliedClosureError"
+#define	DELTA_FUNCTOR_SLOT_MISSING_ERROR				"DeltaFunctorSlotMissingError"
+#define	DELTA_STACK_OVERFLOW_ERROR						"DeltaStackOverflowError"
+#define	DELTA_FOREACH_MISSING_METHODS_ERROR				"DeltaForeachMissingMethodsError"
+#define	DELTA_FOREACH_INVALID_ITERATOR_ERROR			"DeltaForeachInvalidIteratorError"
+#define	DELTA_FOREACH_INVALID_CONTAINER_ERROR			"DeltaForeachInvalidContainerError"
+#define	DELTA_VM_NOT_RUN_ERROR							"DeltaVirtualMachineNotRunError"
+#define	DELTA_FUNCTOR_OVERLOADING_DISABLED_ERROR		"DeltaFunctorOverloadingDisabledError"
+#define	DELTA_OPERATOR_OVERLOADING_DISABLED_ERROR		"DeltaOperatorOverloadingDisabledError"
+#define	DELTA_FUNCTOR_CYCLIC_REFERENCE_ERROR			"DeltaFunctorCyclicReferenceError"
+#define	DELTA_OPERATOR_OVERLOADING_ERROR				"DeltaOperatorOverloadingError"
+#define	DELTA_OPERATOR_SLOT_NOT_CALLABLE_ERROR			"DeltaOperatorSlotNotCallableError"
+#define	DELTA_ILL_FORMED_TABLE_IN_DYNAMIC_ARGS_ERROR	"DeltaIllFormedTableInDynamicArgsError"
+#define	DELTA_INVALID_VALUE_IN_DYNAMIC_ARGS_ERROR		"DeltaInvalidValueInDynamicArgsError"
+#define	DELTA_EXTERNID_MISSING_USERDATA_ERROR			"DeltaExternIdMissingUserDataError"
+#define	DELTA_SET_METHOD_SELF_INVALID_VALUE_ERROR		"DeltaSetMethodSelfInvalidValueError"
+#define	DELTA_INVALID_METHOD_VALUE_INDEXING				"DeltaInvalidMethodValueIndexingError"
+#define	DELTA_SET_METHOD_SELF_NEEDS_CONST_INDEX_ERROR	"DeltaSetMethodSelfNeedsConstIndexError"
+#define	DELTA_INDEXING_INVALID_VALUE_ERROR				"DeltaIndexingInvalidValueError"
+#define	DELTA_OBJECT_ATTRIBUTE_OPERATION_ERROR			"DeltaObjectAttributeOperationError"
+#define	DELTA_USER_RUNTIME_ERROR						"DeltaUserRuntimeError"
+
+//-----------------------------------------------------------
 // The offsets for the various items saved on the stack, once an activation
 // record has been pushed entirely. Those are needed for the return sequence.
 // The activation record structrue follows:

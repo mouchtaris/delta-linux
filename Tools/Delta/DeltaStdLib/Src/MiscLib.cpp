@@ -16,6 +16,7 @@
 #include "RcLoaderAPI.h"
 #include "RcLoaderErrorMsg.h"
 #include "DeltaStdLib.h"
+#include "DeltaStdDefs.h"
 #include "OperatorOverloading.h"
 #include "ListLib.h"
 #include "ufiles.h"
@@ -37,6 +38,7 @@ static void externidtype_LibFunc (DeltaVirtualMachine* vm);
 static void externiduserdata_LibFunc (DeltaVirtualMachine* vm);
 static void taggedvalue_LibFunc (DeltaVirtualMachine* vm);
 static void getvaluetag_LibFunc (DeltaVirtualMachine* vm);
+static void iserrortag_LibFunc (DeltaVirtualMachine* vm);
 
 static void isoverloadableoperator_LibFunc (DeltaVirtualMachine* vm);
 static void currenttime_LibFunc (DeltaVirtualMachine* vm);
@@ -88,6 +90,7 @@ static DeltaLibraryObjectCreator::FuncEntry funcs[] = {
 
 	{ "taggedvalue",			taggedvalue_LibFunc 			},
 	{ "getvaluetag",			getvaluetag_LibFunc 			},
+	{ "iserrortag",				iserrortag_LibFunc 				},
 
 	{ "isoverloadableoperator", isoverloadableoperator_LibFunc	},
 	{ "currenttime",			currenttime_LibFunc				},
@@ -123,6 +126,45 @@ static DeltaLibraryObjectCreator::FuncEntry funcs[] = {
 	{ "dllunimportdeltalib",	dllunimportdeltalib_LibFunc		},
 	{ "dllimportaddpath",		dllimportaddpath_LibFunc		}
 };
+
+///////////////////////////////////////////////
+
+static const char* errorTags[] = {
+	DELTA_GENERAL_RUNTIME_ERROR,					
+	DELTA_ARITH_OPERATOR_ERROR,					
+	DELTA_RELAT_OPERATOR_ERROR,					
+	DELTA_NOT_CALLABLE_ERROR,					
+	DELTA_FORMAL_ARG_WITHOUT_ACTUAL_VALUE_ERROR,	
+	DELTA_UNRESOLVED_LIBFUNC_ERROR,				
+	DELTA_LIBFUNC_NATIVE_EXCEPTION_ERROR,		
+	DELTA_UNRESOLVED_GLOBALFUNC_ERROR,			
+	DELTA_SUICIDAL_VM_ERROR,						
+	DELTA_ZOMBI_VM_ERROR,
+	DELTA_INVALID_SUPPLIED_CLOSURE_ERROR,
+	DELTA_NO_SUPPLIED_CLOSURE_ERROR,		
+	DELTA_FUNCTOR_SLOT_MISSING_ERROR,
+	DELTA_STACK_OVERFLOW_ERROR,
+	DELTA_FOREACH_MISSING_METHODS_ERROR,
+	DELTA_FOREACH_INVALID_ITERATOR_ERROR,
+	DELTA_FOREACH_INVALID_CONTAINER_ERROR,
+	DELTA_VM_NOT_RUN_ERROR,
+	DELTA_FUNCTOR_OVERLOADING_DISABLED_ERROR,
+	DELTA_FUNCTOR_CYCLIC_REFERENCE_ERROR,
+	DELTA_OPERATOR_OVERLOADING_DISABLED_ERROR,
+	DELTA_OPERATOR_OVERLOADING_ERROR,
+	DELTA_OPERATOR_SLOT_NOT_CALLABLE_ERROR,
+	DELTA_ILL_FORMED_TABLE_IN_DYNAMIC_ARGS_ERROR,
+	DELTA_INVALID_VALUE_IN_DYNAMIC_ARGS_ERROR,
+	DELTA_EXTERNID_MISSING_USERDATA_ERROR,
+	DELTA_SET_METHOD_SELF_INVALID_VALUE_ERROR,
+	DELTA_INVALID_METHOD_VALUE_INDEXING,
+	DELTA_SET_METHOD_SELF_NEEDS_CONST_INDEX_ERROR,
+	DELTA_INDEXING_INVALID_VALUE_ERROR,
+	DELTA_OBJECT_ATTRIBUTE_OPERATION_ERROR,
+	DELTA_USER_RUNTIME_ERROR
+};
+
+#define	TOTAL_ERROR_TAGS uarraysize(errorTags)
 
 ///////////////////////////////////////////////
 
@@ -482,7 +524,7 @@ static void error_LibFunc (DeltaVirtualMachine* vm) {
 
 	DeltaValue* argObj;
 	GET_STRING(msg, CURR_FUNC, RESET_EMPTY, 0);
-	DPTR(vm)->PrimaryError("%s", msg.c_str());
+	DPTR(vm)->SetErrorCode(DELTA_USER_RUNTIME_ERROR)->PrimaryError("%s", msg.c_str());
 }
 
 //------------------------------------------------------------------
@@ -959,6 +1001,19 @@ DLIB_FUNC_END
 DLIB_FUNC_START(getvaluetag, 1, Nil)
 DLIB_ARG(DeltaValue*,	val)
 DLIB_RETVAL_REF.FromString(DLIB_ARGVAL(val)->GetTypeTag());
+DLIB_FUNC_END
+
+////////////////////////////////////////////////////////////////////
+
+DLIB_FUNC_START(iserrortag, 1, Nil)
+DLIB_ARG(const char*, tag)
+DLIB_RETVAL_REF.FromBool(
+	ustrpos(
+		errorTags, 
+		TOTAL_ERROR_TAGS, 
+		DLIB_ARGVAL(tag)
+	) != TOTAL_ERROR_TAGS
+);
 DLIB_FUNC_END
 
 //------------------------------------------------------------------

@@ -90,7 +90,7 @@ bool OperatorOverloading::GetOperatorMember (
 	else
 	if (!(t = caller->GetExternIdUserData())) {
 		if (issueError)
-			DPTR(vm)->PrimaryError(
+			DPTR(vm)->SetErrorCode(DELTA_OPERATOR_OVERLOADING_ERROR)->PrimaryError(
 				"In %s '%s' 0x%x no 'userdata' to get operator slot '%s'!",
 				caller->TypeStr(),
 				caller->GetExternIdTypeString().c_str(),
@@ -102,7 +102,7 @@ bool OperatorOverloading::GetOperatorMember (
 
 	if (!DPTR(t)->IsOverloadingEnabled()) {
 		if (issueError)
-			DPTR(vm)->PrimaryError(
+			DPTR(vm)->SetErrorCode(DELTA_OPERATOR_OVERLOADING_DISABLED_ERROR)->PrimaryError(
 				"In %s 0x%x (trying operator '%s') overloading is disabled!",
 				DPTR(t)->GetExtClassString(),
 				DPTR(t)->GetSerialNo(),
@@ -113,7 +113,7 @@ bool OperatorOverloading::GetOperatorMember (
 	else
 	if (!DPTR(t)->Get(index, func) || func->Type() == DeltaValue_Nil) {
 		if (issueError)
-			DPTR(vm)->PrimaryError(
+			DPTR(vm)->SetErrorCode(DELTA_OPERATOR_OVERLOADING_ERROR)->PrimaryError(
 				"In %s 0x%x operator slot '%s' was not found!",
 				DPTR(t)->GetExtClassString(),
 				DPTR(t)->GetSerialNo(),
@@ -152,7 +152,7 @@ bool OperatorOverloading::CallOperatorFunction (
 		return !DPTR(vm)->HasProducedError();
 	}
 	else {
-		DPTR(vm)->PrimaryError(
+		DPTR(vm)->SetErrorCode(DELTA_OPERATOR_SLOT_NOT_CALLABLE_ERROR)->PrimaryError(
 			"Operator value of type '%s' is not callable!", 
 			func.TypeStr()
 		);
@@ -428,7 +428,7 @@ DeltaArithOpType OperatorOverloading::GetArithmeticOp (const char* opStr) {
 				return Relational_OverloadedButRequestedRetry;								\
 			else																			\
 			if (type != DeltaValue_Bool) {													\
-				DPTR(vm)->PrimaryError(														\
+				DPTR(vm)->SetErrorCode(DELTA_OPERATOR_OVERLOADING_ERROR)->PrimaryError(		\
 					"Overloaded operator '%s' returned '%s' value (boolean expected)!",		\
 					op, DPTR(vm)->GetReturnValue().TypeStr()								\
 				);																			\

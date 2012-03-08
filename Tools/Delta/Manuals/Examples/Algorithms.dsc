@@ -172,10 +172,3 @@ it = remove("d", it, end_it);		//Deletes first occurance of 'd' in [it,end_it)
 it = remove("j", strIterable, end_it, external_erase);	//Instead of method erase, calls function external_erase
 std::remove_all("v",strIterable);
 print(strIterable, "\n");
-
-try {
-	(function { @lambda(); })();
-} 
-trap e {
-	print(e);
-}

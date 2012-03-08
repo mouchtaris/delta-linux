@@ -236,7 +236,8 @@ inline bool IsSelfIndex (DeltaValue& index)
 #define	GET_EXTERNID_USERDATA(_func_name, _index_to_string)								\
 		DeltaTable* userData = container->GetExternIdUserData();						\
 		if (!userData) {																\
-			DPTR(vm)->PrimaryError(														\
+			DPTR(vm)->SetErrorCode(DELTA_EXTERNID_MISSING_USERDATA_ERROR)->				\
+			PrimaryError(																\
 				"failure in %s over externid '%s' with index '%s' (no userdata)!",		\
 				_func_name,																\
 				container->GetExternIdTypeString().c_str(),								\
@@ -372,7 +373,8 @@ void ExternIdBoundedSetConstNumberContentNotVarCached (DeltaInstruction* instr, 
 			if (DeltaTable* userData = content->GetExternIdUserData())						\
 				container->ChangeMethodFuncSelf(userData);									\
 			else {																			\
-				DPTR(vm)->PrimaryError(														\
+				DPTR(vm)->SetErrorCode(DELTA_EXTERNID_MISSING_USERDATA_ERROR)->				\
+				PrimaryError(																\
 					"setting new 'self' on method with externid '%s' (has no userdata)!",	\
 					container->GetExternIdTypeString().c_str()								\
 				);																			\
@@ -380,7 +382,8 @@ void ExternIdBoundedSetConstNumberContentNotVarCached (DeltaInstruction* instr, 
 			}																				\
 			break;																			\
 		default: {																			\
-			DPTR(vm)->PrimaryError(															\
+			DPTR(vm)->SetErrorCode(DELTA_SET_METHOD_SELF_INVALID_VALUE_ERROR)->				\
+			PrimaryError(																	\
 				"setting new 'self' on method with '%s' instead of object!",				\
 				content->TypeStr()															\
 			);																				\
@@ -390,7 +393,8 @@ void ExternIdBoundedSetConstNumberContentNotVarCached (DeltaInstruction* instr, 
 
 #define	METHOD_CHECK_SELF_INDEX(_index, _opid)												\
 		if (!IsSelfIndex(*_index)) {														\
-			DPTR(vm)->PrimaryError(															\
+			DPTR(vm)->SetErrorCode(DELTA_INVALID_METHOD_VALUE_INDEXING)->					\
+			PrimaryError(																	\
 				"failure in %s over '%s' with index '%s' (can index only 'self')!",			\
 				_opid,																		\
 				container->TypeStr(),														\
@@ -520,8 +524,8 @@ template <class OpTraits> struct SetElemTemplate {
 				METHOD_CHECK_SELF_INDEX(index, OpTraits::OpStr());
 
 				if (instr->result.IsTempVar() && instr->DELTA_SET_OPERAND_INDEX.GetType() != DeltaOperand_ConstString)	
-					DPTR(vm)->PrimaryError(		// Not using a compile-time string const?
-						"setting 'self' on '%s' via non-const string index possible only on vars!",
+					DPTR(vm)->SetErrorCode(DELTA_SET_METHOD_SELF_NEEDS_CONST_INDEX_ERROR)->PrimaryError( // Not using a compile-time string const?
+						"setting 'self' on '%s' via non-const string index possible only using vars!",
 						container->TypeStr()
 					);
 				else {
@@ -570,7 +574,7 @@ template <class OpTraits> struct SetElemTemplate {
 
 			default:
 				DELTA_ON_UNWINDING_RETURN_TEST(vm, UEMPTY);
-				DPTR(vm)->PrimaryError(
+				DPTR(vm)->SetErrorCode(DELTA_INDEXING_INVALID_VALUE_ERROR)->PrimaryError(
 					"failure in %s over '%s'; not allowed for this type!",
 					OpTraits::OpStr(),
 					container->TypeStr()
@@ -1181,7 +1185,7 @@ void Execute_OBJNEWATTR (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 	DELTA_TRANSLATE_OPERAND(DELTA_OBJNEWATTR_OPERAND_GETTER, getter, temp2);
 	
 	if (!DPTR(obj)->NewAttribute((char*) instr->DELTA_OBJNEWATTR_OPERAND_NAME.GetValue(), *setter, *getter)) {
-		DPTR(vm)->PrimaryError(
+		DPTR(vm)->SetErrorCode(DELTA_OBJECT_ATTRIBUTE_OPERATION_ERROR)->PrimaryError(
 			"in %s new attribute '%s' failed!", 
 			obj->GetExtClassString(),
 			(const char*) instr->DELTA_OBJNEWATTR_OPERAND_NAME.GetValue()

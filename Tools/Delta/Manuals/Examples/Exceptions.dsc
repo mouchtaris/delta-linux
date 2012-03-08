@@ -1,6 +1,7 @@
 // Exception handling, reflection (compiling code at runtime), 
-// cross-vm invocations and debugging of dynamic code.
-// AS, 2009.
+// cross-vm invocations and debugging of dynamic code,
+// and trapping runtime errors.
+// AS, 2012.
 
 using std;
 
@@ -45,5 +46,50 @@ trap e 	{ print(e); }
 
 try 	t2 += 5; 
 trap e 	{ print(e); }
+
+//////////////////////////////////////////////////////
+// Example showing how to track-down runtime errors as exceptions
+// by emulating mutliple trap blocks on tagged errors with a dispatcher
+// inside the trap block.
+
+try { 
+	local f;
+	f();
+}
+trap e {
+	local h = [
+		{	std::DELTA_ARITH_OPERATOR_ERROR,
+			std::DELTA_RELAT_OPERATOR_ERROR
+			: function { print("<Arithmetic / Relational>", e, nl); }
+		},
+		{	std::DELTA_NOT_CALLABLE_ERROR
+			: function { print("<Call>", e, nl); }
+		}
+	][std::getvaluetag(e)];
+
+	if (not h)
+		throw(e);	// rethrow or could be default logic
+	else
+		h();
+}
+
+//////////////////////////////////////////////////////
+// Example showing how to distinguish if a trapped exception is 
+// a std runtime error or a normal excpetion.
+
+try
+	(function(b) {
+		if (b)
+			std::error("User [foo] runtime error");
+		else
+			throw "Client [bar] exception";
+	})(true);
+	
+trap e
+	print(
+		(std::iserrortag(std::getvaluetag(e)) ? "<Error>" : "<Exception>"),
+		"(", e, ")", 
+		nl
+	);
 
 //////////////////////////////////////////////////////

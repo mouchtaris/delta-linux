@@ -61,7 +61,7 @@ Value		taggedvalue(val, String)			Returns a value with a tag, also passed on ass
 												(put empty string to remove tag).
 String		getvaluetag(val)					Returns the type tag of a value (default is empty string).
 
-Bool		isoverloadableoperator(val)			Should be used with dot overloading to identify 
+bool		isoverloadableoperator(val)			Should be used with dot overloading to identify 
 												when an opertator is requested.
 bool		equal(x,y)							Equality test, ignoring operator overloading 
 												(useful among objects / externids).
@@ -69,7 +69,7 @@ Number		currenttime()
 String		getenvironmentvar (String(id))		Returns value of an environment var (Nil if not found)
 			error(String)						Causes an error at the calling VM
 String		tostring(Value)						Conversion to string, respects overloading
-
+bool		iserrortag(String(tag))				return if tag is a standard runtime error tag
 
 GLOBAL OPERATOR OVERLOADING(op)********************
 

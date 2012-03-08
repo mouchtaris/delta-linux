@@ -29,7 +29,7 @@
 
 #define	IF_CALLEE_NOT_RUN_CHECK_ELSE(_callee_vm)							\
 	if (DPTR(_callee_vm)->HasNotRunYet())									\
-		DPTR(vm)->PrimaryError(												\
+		DPTR(vm)->SetErrorCode(DELTA_VM_NOT_RUN_ERROR)->PrimaryError(		\
 			"vm '%s' (src '%s') not yet run (mandatory after loading)!",	\
 			DPTR(_callee_vm)->Id(),											\
 			DPTR(_callee_vm)->Source()										\
@@ -204,7 +204,7 @@ void DELTAVALUE_OPERATION Callfunc_ExternId (CALLFUNC_ARGS) {
 			);
 	}
 	else
-		DPTR(vm)->PrimaryError(
+		DPTR(vm)->SetErrorCode(DELTA_EXTERNID_MISSING_USERDATA_ERROR)->PrimaryError(
 			"illegal call of %s '%s' as a function (no userdata)!",
 			func->TypeStr(),
 			DPTR(func->GetExternId())->GetTypeStr().c_str()
@@ -225,7 +225,7 @@ void DELTAVALUE_OPERATION Callfunc_Table (DeltaTable* table, DeltaVirtualMachine
 	DASSERT(table);
 
 	if (!DPTR(table)->IsOverloadingEnabled())
-		DPTR(vm)->PrimaryError(
+		DPTR(vm)->SetErrorCode(DELTA_FUNCTOR_OVERLOADING_DISABLED_ERROR)->PrimaryError(
 			"in calling %s as function overloading is disabled!", 
 			table->GetExtClassString()
 		);
@@ -236,12 +236,13 @@ void DELTAVALUE_OPERATION Callfunc_Table (DeltaTable* table, DeltaVirtualMachine
 		DeltaVirtualMachine::ArgumentsPreserver preserver(vm);
 		DeltaValue functor;
 
-		if (DPTR(table)->GetFunctor(&functor)) {
-			if (EXCEPTION_HANDLERS->IsUnwinding())
-				return;
-			else
+		bool succeeded = DPTR(table)->GetFunctor(&functor) ;
+		if (EXCEPTION_HANDLERS->IsUnwinding())
+			return;
+
+		if (succeeded) {
 			if (calledFunctor == table)
-				DPTR(vm)->PrimaryError(
+				DPTR(vm)->SetErrorCode(DELTA_FUNCTOR_CYCLIC_REFERENCE_ERROR)->PrimaryError(
 					"in calling %s as function detected endless recursion!", 
 					table->GetExtClassString()
 				);
@@ -253,7 +254,7 @@ void DELTAVALUE_OPERATION Callfunc_Table (DeltaTable* table, DeltaVirtualMachine
 			unullify(calledFunctor);
 		}
 		else
-			DPTR(vm)->PrimaryError(
+			DPTR(vm)->SetErrorCode(DELTA_FUNCTOR_SLOT_MISSING_ERROR)->PrimaryError(
 				"in calling %s as function, no '()' functor member!",
 				table->GetExtClassString()
 			);
@@ -263,7 +264,7 @@ void DELTAVALUE_OPERATION Callfunc_Table (DeltaTable* table, DeltaVirtualMachine
 //************************
 
 void DELTAVALUE_OPERATION Callfunc_Error (CALLFUNC_ARGS) {
-	DPTR(vm)->PrimaryError(
+	DPTR(vm)->SetErrorCode(DELTA_NOT_CALLABLE_ERROR)->PrimaryError(
 		"illegal value of type '%s' called as a function!",
 		func->TypeStr()
 	);
@@ -300,7 +301,10 @@ void Execute_CALLEXTFUNC (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 				DPTR(vm)->CallPreboundLibraryFunc(func, vm->GetTotalActualArgs());
 			}
 			 else 
-				DPTR(vm)->PrimaryError("Library function '%s' was not found", name);
+				DPTR(vm)->SetErrorCode(DELTA_UNRESOLVED_LIBFUNC_ERROR)->PrimaryError(
+					"Library function '%s' was not found", 
+					name
+				);
 			break;
 		}
 

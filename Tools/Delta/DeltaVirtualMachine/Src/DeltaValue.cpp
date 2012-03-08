@@ -1450,16 +1450,32 @@ bool DeltaValue::operator()(PushArguments& argsPusher, DeltaValue* result) {
 	DASSERT(!EXCEPTION_HANDLERS->IsUnwinding());	// Cannot ignore execption handling in library functions!
 
 	if (type == DeltaValue_Table) {
+
+		DeltaTable* table = val.tableObj;
 		DeltaValue functor;
-		if (!DPTR(val.tableObj)->GetFunctor(&functor) || functor.Type() == DeltaValue_Nil) {
-			DPTR(DeltaVirtualMachine::GetCallingVM())->PrimaryError(
-				"calling %s as a function while missing '()' functor member!",
-				DPTR(val.tableObj)->GetExtClassString()
+
+		if (!DPTR(table)->IsOverloadingEnabled()) {
+			DPTR(DeltaVirtualMachine::GetCallingVM())->SetErrorCode(DELTA_FUNCTOR_OVERLOADING_DISABLED_ERROR)->PrimaryError(
+				"in calling %s as function overloading is disabled!", 
+				DPTR(table)->GetExtClassString()
 			);
 			return false;
 		} 
-		else
-			return functor(argsPusher, result);		// Recursive call to bind as function.
+		else {
+			bool succeeded = DPTR(table)->GetFunctor(&functor);
+			if (EXCEPTION_HANDLERS->IsUnwinding())
+				return true;
+
+			if (!succeeded || functor.Type() == DeltaValue_Nil) {
+				DPTR(DeltaVirtualMachine::GetCallingVM())->SetErrorCode(DELTA_FUNCTOR_SLOT_MISSING_ERROR)->PrimaryError(
+					"calling %s as a function while missing '()' functor member!",
+					DPTR(table)->GetExtClassString()
+				);
+				return false;
+			} 
+			else
+				return functor(argsPusher, result);		// Recursive call to bind as function.
+		}
 	}
 	else {
 		DeltaVirtualMachine* vm;
@@ -1472,7 +1488,7 @@ bool DeltaValue::operator()(PushArguments& argsPusher, DeltaValue* result) {
 		if (type == DeltaValue_LibraryFunc)
 			vm = DeltaVirtualMachine::GetCallingVM();
 		else {
-			DPTR(DeltaVirtualMachine::GetCallingVM())->PrimaryError(
+			DPTR(DeltaVirtualMachine::GetCallingVM())->SetErrorCode(DELTA_NOT_CALLABLE_ERROR)->PrimaryError(
 				"value of type '%s' called as a function!",
 				TypeStr()
 			);

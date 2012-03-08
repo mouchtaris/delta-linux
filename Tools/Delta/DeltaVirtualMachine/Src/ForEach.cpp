@@ -63,7 +63,7 @@ static bool InvokeObjectMethod (
 	}
 
 	if (f.IsNil()) {
-		DPTR(vm)->PrimaryError(
+		DPTR(vm)->SetErrorCode(DELTA_FOREACH_MISSING_METHODS_ERROR)->PrimaryError(
 			"in 'foreach %s' could not find '%s' in '%s' 0x%x!",
 			category,
 			method,
@@ -222,7 +222,7 @@ static void ForeachSetIteratorAtBegin (DeltaVirtualMachine*	vm, DeltaValue* iter
 			ForeachSetAtBeginOnIteratorExternId(vm, iter, cont); 
 			return;
 		default: 
-			DPTR(vm)->PrimaryError(
+			DPTR(vm)->SetErrorCode(DELTA_FOREACH_INVALID_ITERATOR_ERROR)->PrimaryError(
 				"in 'foreach' invalid iterator type '%s' in '%s'!", 
 				iter->TypeStr(),
 				DELTA_FOREACH_SETBEGIN
@@ -291,7 +291,7 @@ void Execute_FOREACHBEGIN (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 				iter
 			);	return;
 		default:
-			DPTR(vm)->PrimaryError(
+			DPTR(vm)->SetErrorCode(DELTA_FOREACH_INVALID_CONTAINER_ERROR)->PrimaryError(
 				 "invalid container type '%s' in 'foreach'!", 
 				 cont->TypeStr()
 			);	return;
@@ -347,7 +347,7 @@ void Execute_FOREACHCHECKEND (DeltaInstruction* instr, DeltaVirtualMachine* vm) 
 				{ DELTA_INSTRUCTIONS_TAKE_THE_JUMP(); }
 		}
 		else
-			DPTR(vm)->PrimaryError(
+			DPTR(vm)->SetErrorCode(DELTA_FOREACH_INVALID_ITERATOR_ERROR)->PrimaryError(
 				 "invalid return type '%s' of iterator '%s' in 'foreach'!", 
 				 atEnd.TypeStr(),
 				 DELTA_FOREACH_CHECKEND

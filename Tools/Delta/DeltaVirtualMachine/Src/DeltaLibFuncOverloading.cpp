@@ -55,7 +55,7 @@ void DeltaLibFuncOverloading::Dispatch (
 	}
 
 	if (!func)
-		vm->PrimaryError(
+		vm->SetErrorCode(DELTA_UNRESOLVED_LIBFUNC_ERROR)->PrimaryError(
 			"in call to overloaded %s(), no match for signature '%s'!",
 			funcName,
 			sig.c_str()

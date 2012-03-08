@@ -106,14 +106,14 @@ class ArithmeticInstructionErrorHandler : public DeltaArithmeticErrorHandler {
 
 	public:
 	virtual void OnDivisionByZero (DeltaNumberValueType number) const
-		{ DASSERT(vm); DPTR(vm)->PrimaryError("Division of %f with 0", number); }
+		{ DASSERT(vm); DPTR(vm)->SetErrorCode(DELTA_ARITH_OPERATOR_ERROR)->PrimaryError("Division of %f with 0", number); }
 
 	virtual void OnModuloByZero (DeltaNumberValueType number) const
-		{ DASSERT(vm); DPTR(vm)->PrimaryError("Modulo of %f with 0", number); }
+		{ DASSERT(vm); DPTR(vm)->SetErrorCode(DELTA_ARITH_OPERATOR_ERROR)->PrimaryError("Modulo of %f with 0", number); }
 
 	virtual void OnInvalidOperation (const char* type1, const char* op, const char* type2) const {
 		DASSERT(vm); 
-		DPTR(vm)->PrimaryError(
+		DPTR(vm)->SetErrorCode(DELTA_ARITH_OPERATOR_ERROR)->PrimaryError(
 			"Arithmetic %s %s %s instruction not allowed",
 			type1,
 			op,

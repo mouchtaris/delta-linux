@@ -584,6 +584,7 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 						primaryFailing;					// The primary failing vm posting an error.
 	bool				executionError;					// An error locally in this vm.
 	ErrorCause			errorCause;						// Error cause for current vm (if error).
+	std::string			errorCode;						// Optional error code set with primary errors.
 
 	//**************************
 
@@ -841,7 +842,9 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 	// Error reporting and management. Callbacks have a single registration scheme,
 	// so when setting a callback you should check if there is another, that you should
 	// also manually invoke.
-
+	DeltaVirtualMachine*
+						SetErrorCode (const std::string& _errorCode)
+							{ errorCode = _errorCode; return this; }
 	void				PrimaryError (const char* format,...);			// It must be called for the first reporting of an error.
 	void				PossiblePrimaryError (const char* format,...);	// Posts primary if no primary was set before.
 	void				Error (const char* format,...);					// It is called when the error is caused by an already existing error.

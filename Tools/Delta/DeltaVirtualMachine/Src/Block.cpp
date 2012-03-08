@@ -95,7 +95,7 @@ bool DeltaVirtualMachine::DoEnterBlock (util_ui16 totalLocals) {
 		return true;
 	else
 	if (top <= totalLocals)
-		{ PrimaryError("Stack overflow in entering block!"); return false; }
+		{ SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow in entering block!"); return false; }
 	else {
 		DASSERT(AreNewBlockLocalsUndefined(totalLocals));
 		top -= totalLocals;

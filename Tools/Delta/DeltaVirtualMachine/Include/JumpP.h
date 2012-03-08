@@ -67,7 +67,7 @@ class RelationalInstructionErrorHandler : public DeltaRelationalErrorHandler {
 
 	virtual void OnInvalidOperation (const char* type1, const char* op, const char* type2) const {
 		DASSERT(vm);
-		DPTR(vm)->PrimaryError(
+		DPTR(vm)->SetErrorCode(DELTA_RELAT_OPERATOR_ERROR)->PrimaryError(
 			"Relational %s %s %s not allowed",
 			type1,
 			op,

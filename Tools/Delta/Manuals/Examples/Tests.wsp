@@ -2,7 +2,7 @@
 <Workspace name="Tests" version="alpha">
     <WorkspaceProperties>
         <symbolic>Tests.wsp</symbolic>
-        <startup>Tests.dproj</startup>
+        <startup>C\UsingTest.dproj</startup>
         <config>0</config>
         <collapsed>0</collapsed>
         <breakpoints>break.dat</breakpoints>

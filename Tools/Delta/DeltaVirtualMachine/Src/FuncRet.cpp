@@ -9,6 +9,7 @@
 #include "DDebug.h"
 #include "DeltaByteCodeTypes.h"
 #include "DeltaVirtualMachine.h"
+#include "DeltaExceptionHandling.h"
 #include "DeltaValue.h"
 #include "DeltaString.h"
 #include "FuncRet.h"
