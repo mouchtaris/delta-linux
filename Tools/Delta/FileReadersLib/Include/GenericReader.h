@@ -14,6 +14,7 @@
 #include "uerrorclass.h"
 #include "uptr.h"
 #include "ubinaryio.h"
+#include "ufiles.h"
 #include "FileReadersDefs.h"
 #include <string>
 #include <map>
