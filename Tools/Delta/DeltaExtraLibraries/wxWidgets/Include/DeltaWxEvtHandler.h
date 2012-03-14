@@ -58,6 +58,7 @@
 #include "DeltaWxEraseEvent.h"
 #include "DeltaWxTimerEvent.h"
 #include "DeltaWxToolbookEvent.h"
+#include "DeltaWxPaintEvent.h"
 //
 #include "DeltaWxObject.h"
 
@@ -146,6 +147,7 @@ public:
 	WX_EVTFUNCTION(Erase)
 	WX_EVTFUNCTION(Timer)
 	WX_EVTFUNCTION(Toolbook)
+	WX_EVTFUNCTION(Paint)
 
 	wxEvtHandlerDerived() : wxEvtHandler() { }
 };

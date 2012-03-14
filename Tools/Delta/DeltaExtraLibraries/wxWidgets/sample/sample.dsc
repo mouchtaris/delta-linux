@@ -1,9 +1,10 @@
 using wx;
 
-dll = std::dllimportdeltalib(wx::DLL);
+dll = std::dllimportdeltalib("..\\lib\\release\\" + wx::DLL);
 
 wxsize = size_construct(wx::DefaultSize);
 wxpoint = point_construct(wx::DefaultPosition);
+app = app_construct();
 
 function myFunc(frame, ev) {
 	msgdlg = messagedialog_construct(frame, "Are you sure you want to quit this exceptional program?",
@@ -120,6 +121,16 @@ function oncreate_wizard(frame, ev)
 
 function change_fontdialog(frame, ev)
 {
+	/*local font = font_construct(18, FONTFAMILY_DEFAULT, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL);
+	local bitmap = bitmap_construct(100, 100);
+	local dc = memorydc_construct(bitmap);
+	dc.setbackground(brush_construct(colour_construct(255, 255, 255)));
+	dc.setbrush(brush_construct(colour_construct(0, 0, 0)));
+	dc.clear();
+	dc.setfont(font);
+	dc.drawtext("abcdefg", 0, 0);
+	bitmap.savefile("fonttest.bmp", BITMAP_TYPE_BMP);
+	*/
 	fontdlg = fontdialog_construct(frame);
 	if (fontdlg.showmodal() == flags("ID_OK")) {
 		fontdata = fontdlg.getfontdata();
@@ -211,11 +222,11 @@ function create_treebook(frame, ev)
 function spinup_evtfunction(frame, ev) {
 	m_ev = ev;
 	m_frame = frame;
-	std::print(m_ev + "\n");
+	std::print(m_ev, "\n");
 }
 
 function oninitfunc() {
-	frame = frame_construct(nil, "ID_ANY", "test", wx::DefaultPosition, wx::DefaultSize);
+	frame = frame_construct(nil, "ID_ANY", "test");
 	frame.show(true);
 	size = size_construct(-1,-1);
 	
@@ -356,7 +367,6 @@ function oninitfunc() {
 	frame.refresh();
 	frame.centre();
 }
-app = app_construct();
 
 app_oninitadd(app, oninitfunc);
 app_start(app);

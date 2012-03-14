@@ -656,6 +656,9 @@
     <ClCompile Include="..\Src\DeltaWxScrollBar.cpp">
       <Filter>Source Files\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxPaintEvent.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\DeltaWxWidgets.h">
@@ -1245,6 +1248,9 @@
     </ClInclude>
     <ClInclude Include="..\Include\DeltaWxScrollBar.h">
       <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxPaintEvent.h">
+      <Filter>Header Files\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

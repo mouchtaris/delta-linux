@@ -194,5 +194,6 @@
 #include "DeltaWxToolbook.h"
 #include "DeltaWxToolbookEvent.h"
 #include "DeltaWxScrollBar.h"
+#include "DeltaWxPaintEvent.h"
 
 #endif	// Do not add stuff beyond this point.

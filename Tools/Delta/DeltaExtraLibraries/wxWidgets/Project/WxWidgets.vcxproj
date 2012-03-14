@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Src\DeltaWxPaintEvent.cpp" />
     <ClCompile Include="..\Src\DeltaWxScrollBar.cpp" />
     <ClCompile Include="..\Src\DeltaWxWidgetsLib.cpp" />
     <ClCompile Include="..\Src\wxWrapperUtilFunctions.cpp" />
@@ -284,6 +285,7 @@
     <ClCompile Include="..\Src\DeltaWxWizardPageSimple.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\DeltaWxPaintEvent.h" />
     <ClInclude Include="..\Include\DeltaWxScrollBar.h" />
     <ClInclude Include="..\Include\DeltaWxWidgets.h" />
     <ClInclude Include="..\Include\DeltaWxWidgetsLib.h" />

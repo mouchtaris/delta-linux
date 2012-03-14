@@ -449,6 +449,8 @@ toolbook					: control
 toolbookevent				: notifyevent
 @type
 scrollbar					: control
+@type
+paintevent					: event
 @const
 DLL										"WxWidgets.dll"
 @const
@@ -6137,6 +6139,8 @@ pagesetupdialogdata_setprintdata			(pagesetupdialogdata:pagesetupdialogdata,prin
 #group(wxdc)
 paintdc_construct							():paintdc (window:+{window,Nil}):paintdc
 paintdc_destruct							(paintdc:paintdc)
+paintevent_construct						():paintevent (id:+{Number,String}):paintevent
+paintevent_destruct							(paintevent:paintevent)
 #group(wxpal)
 palette_construct							():palette (num:Number,red:Object,green:Object,blue:Object):palette
 palette_destruct							(palette:palette)

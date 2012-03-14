@@ -544,6 +544,8 @@ void EventTypeFunctionMapInit()
 	WX_SET_EVENTFUNCTION(wxEVT_COMMAND_TOOLBOOK_PAGE_CHANGED, wxToolbookEventHandler(wxEvtHandlerDerived::ToolbookEvtFunction))
 	WX_SET_EVENTFUNCTION(wxEVT_COMMAND_TOOLBOOK_PAGE_CHANGING, wxToolbookEventHandler(wxEvtHandlerDerived::ToolbookEvtFunction))
 
+	WX_SET_EVENTFUNCTION(wxEVT_PAINT, wxPaintEventHandler(wxEvtHandlerDerived::PaintEvtFunction))
+
 ////////////////////////////////////////////////////////////////
 	WX_SET_EVENTFUNCTION_STR("EVT_CLOSE", wxEVT_CLOSE_WINDOW, wxCloseEventHandler(wxEvtHandlerDerived::CloseEvtFunction))
 	WX_SET_EVENTFUNCTION_STR("EVT_WINDOW_CREATE", wxEVT_CREATE, wxWindowCreateEventHandler(wxEvtHandlerDerived::WindowCreateEvtFunction))
