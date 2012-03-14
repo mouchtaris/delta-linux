@@ -74,6 +74,9 @@ class UTILLIB_CLASS uerror : public UERRORCLASS_SINGLETON {};
 #define UERROR_GETREPORT	uerror::GetSingleton().getreport
 #define UERROR_CLEAR		uerror::GetSingleton().clear
 
+// Use when error reporting is needed in header impl files;
+// requires ERROR_HANDLER macro in context.
+
 #define	UCHECK_PRIMARY_ERROR(call, what)				\
 	if (!(call)) { ERROR_HANDLER(ucstringarg(what), primary); } else
 
@@ -89,9 +92,10 @@ class UTILLIB_CLASS uerror : public UERRORCLASS_SINGLETON {};
 	else
 
 //******************************
+// Use when error reporting is needed in header files.
 
 #define	UCHECK_ERROR_FORMAT_DEFINE(format)						\
-			uerrorclass::reporter _uerror_reporter(format)
+		uerrorclass::reporter _uerror_reporter(format)
 
 #define	UCHECK_PRIMARY_ERROR_REPORT(call, what)					\
 	if (!(call)) {												\

@@ -38,7 +38,7 @@
 	static _class*	GetSingletonPtr (void);											\
 
 #define	USINGLETON_INLINE_ACCESS_HELPER(_class)										\
-	inline	_class& _class##Get (void) { return _class::GetSingleton(); }
+	inline	_class& _class##Get (void) { return (_class&) _class::GetSingleton(); }
 
 #define	USINGLETON_APISTYLE_IMPL_GETTER(_class)										\
 	_class & _class::GetSingleton (void)											\
