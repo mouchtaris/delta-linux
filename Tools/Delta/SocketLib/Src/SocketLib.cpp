@@ -43,19 +43,40 @@ extern "C"{
 
 #include "SocketLib.h"
 #include "DDebug.h"
+#include "ustrings.h"
 
 //---------------------------------------------------------
 
-//	#define	SOCKET_DEBUG
+#define	SOCKET_DEBUG
 //	#define	VERBOSE
+
+#define	LOGNAME	"socketlog.txt"
+
+static void LOGMSG (const char* format, ...) {
+
+#ifdef	 SOCKET_DEBUG
+	va_list args;
+	va_start(args, format);
+
+	std::string result;
+	uvsprintf(result, format, args);
+	va_end(args);
+
+	FILE* fp = fopen(LOGNAME,"at");
+	fputs(result.c_str(), fp);
+	fclose(fp);
+#endif
+}
+
+//---------------------------------------------------------
 
 extern char**		_argv;
 extern int			_argc;
-FILE*		SocketLink::logFile;
-umutex		SocketLink::bufferumutex;
-umutex		SocketLink::connectumutex;
-umutex		SocketLink::acceptumutex;
-char		SocketLink::buffer[SOCKETLIB_SOCKET_BUFFER_SIZE];
+FILE*				SocketLink::logFile;
+umutex				SocketLink::bufferumutex;
+umutex				SocketLink::connectumutex;
+umutex				SocketLink::acceptumutex;
+util_ui8			SocketLink::buffer[SOCKETLIB_SOCKET_BUFFER_SIZE];
 
 //---------------------------------------------------------
 
@@ -74,7 +95,7 @@ SocketLink::SocketLink (const char* host, util_ui32 port, SOCKET _sockId) {
 	assert(strlen(host) < SOCKETLIB_HOST_NAME_LEN);
 	strcpy(myHost, host);
 	myPort		= port;
-	isBlocking	= true;	// Default socket behaviour.
+	isBlocking	= false;
 }
 
 ///////////////////////////////////////////////////////////
@@ -140,10 +161,8 @@ bool SocketLink::SetOptions (const char* func) {
 	int opt = 1;
 	if (setsockopt(sockId, SOL_SOCKET, SO_REUSEADDR, (char*) &opt, sizeof(opt)) IS_CALL_ERROR) {
 
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::%s(): setsockopt() failed", func);
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::%s(): setsockopt() failed", func);
+
 		SOCKET_CLOSE(sockId);
 		sockId = INVALID_SOCKET;
 
@@ -165,10 +184,7 @@ bool SocketLink::SetRecvSendBufferSize (const char* func) {
 
 	if (setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, (char*) &opt, sizeof(opt)) IS_CALL_ERROR) {
 
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::%s(): setsockopt() send size failed", func);
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::%s(): setsockopt() send size failed", func);
 		SOCKET_CLOSE(sockId);
 		sockId = INVALID_SOCKET;
 		return false;
@@ -180,10 +196,8 @@ bool SocketLink::SetRecvSendBufferSize (const char* func) {
 
 	if (setsockopt(sockId, SOL_SOCKET, SO_RCVBUF, (char*) &opt, sizeof(opt)) IS_CALL_ERROR) {
 
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::%s(): setsockopt() recv size failed", func);
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::%s(): setsockopt() recv size failed", func);
+
 		SOCKET_CLOSE(sockId);
 		sockId = INVALID_SOCKET;
 		return false;
@@ -205,13 +219,8 @@ void SocketLink::EstablishAsServer (util_ui32 portNum) {
 	struct protoent* proto = getprotobyname(TCP);
 
 	if (!proto) {
-
 		sockId = INVALID_SOCKET;
-
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::EstablishAsServer(): getprotobyname(TCP) failed.\n");
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::EstablishAsServer(): getprotobyname(TCP) failed.\n");
 		return;
 	}
 
@@ -220,11 +229,7 @@ void SocketLink::EstablishAsServer (util_ui32 portNum) {
 	sockId = socket(AF_INET, SOCK_STREAM, proto->p_proto);
 
 	if (BAD_SOCKET(sockId)) {
-
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::EstablishAsServer(): socket() failed.\n");
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::EstablishAsServer(): socket() failed.\n");
 		return;
 	}
 
@@ -245,10 +250,8 @@ void SocketLink::EstablishAsServer (util_ui32 portNum) {
 
 	if (bind(sockId, (struct sockaddr*) &sockAddr, sizeof(sockAddr)) IS_CALL_ERROR) { 
 
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::EstablishAsServer(): bind() failed.\n");
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::EstablishAsServer(): bind() failed.\n");
+
 		SOCKET_CLOSE(sockId);
 		sockId = INVALID_SOCKET;
 		return;
@@ -274,18 +277,14 @@ void SocketLink::EstablishAsClient (void) {
 	SHUTDOWN_SIGNAL(SIGPIPE); // prevent broken pipe to exit application.
 
 	// Make new socket.
-	//
 	sockId = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (BAD_SOCKET(sockId)) {
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::EstablishAsClient(): socket() failed");
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::EstablishAsClient(): socket() failed");
 		return;
 	}
 
-	SetIsBlocking(false);	// Default is non-blocking.
+	SetIsBlocking(false);
 
 	if (!SetOptions("EstablishAsClient"))
 		return;
@@ -342,10 +341,8 @@ void SocketLink::ConnectWithServer (const char* serverHost, util_ui32 serverPort
 
 	if (!hp) {
 
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::ConnectWithServer: gethostbyname('%s') failed.\n", serverHost);
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::ConnectWithServer: gethostbyname('%s') failed.\n", serverHost);
+
 		SOCKET_CLOSE(sockId);
 		sockId = INVALID_SOCKET;
 		return;
@@ -356,8 +353,9 @@ void SocketLink::ConnectWithServer (const char* serverHost, util_ui32 serverPort
 	sockAddr.sin_port	= htons((unsigned short) serverPort);
 
 	// Now start connection request rounds.
-	// This should be done in blocking mode.
-	//
+	// This should be done in temporary blocking mode.
+
+	assert(!isBlocking);
 	bool oldIsBlocking = isBlocking;
 	SetIsBlocking(true);
 
@@ -367,13 +365,13 @@ void SocketLink::ConnectWithServer (const char* serverHost, util_ui32 serverPort
 
 			memcpy((void*) &sockAddr.sin_addr, hp->h_addr_list[addrNo], hp->h_length);
 
-			if (
-				connect(sockId, (struct sockaddr*) &sockAddr, sizeof(sockAddr)) IS_CALL_ERROR ||
-				!ConnectionOk() 
-				) {
+			if (connect(sockId, (struct sockaddr*) &sockAddr, sizeof(sockAddr)) IS_CALL_ERROR || !ConnectionOk() ) {
 
 				SOCKET_CLOSE(sockId);	// Close this socket.
+
 				EstablishAsClient();	// Re-open new socket to test.
+				assert(!isBlocking);	// Should be set as non-blocking here
+
 				SetIsBlocking(true);
 				continue;
 			}
@@ -381,7 +379,7 @@ void SocketLink::ConnectWithServer (const char* serverHost, util_ui32 serverPort
 
 				// Connection successfully established. Restore
 				// previous blocking mode.
-				//
+
 				myPort = serverPort;
 				SetIsBlocking(oldIsBlocking);
 
@@ -389,16 +387,10 @@ void SocketLink::ConnectWithServer (const char* serverHost, util_ui32 serverPort
 				struct sockaddr_in peerName;
 				SOCKLEN_T nameLen = sizeof(peerName);
 
-				if (getpeername(sockId, (struct sockaddr*) &peerName, &nameLen) IS_CALL_ERROR) {
-
-					LOGMSG "SocketLink::ConnectWithServer: getpeername() failed.\n");
-					LOGADD;
-				}
-				else {
-					LOGMSG "SocketLink::ConnectWithServer: Connected with '%s'.\n", 
-							inet_ntoa(peerName.sin_addr));
-					LOGADD;
-				}
+				if (getpeername(sockId, (struct sockaddr*) &peerName, &nameLen) IS_CALL_ERROR)
+					LOGMSG("SocketLink::ConnectWithServer: getpeername() failed.\n");
+				else 
+					LOGMSG("SocketLink::ConnectWithServer: Connected with '%s'.\n", inet_ntoa(peerName.sin_addr));
 #endif
 				assert(SocketValid() && ConnectionOk() );
 				return;
@@ -412,16 +404,12 @@ void SocketLink::ConnectWithServer (const char* serverHost, util_ui32 serverPort
 
 	// Else, post an error message and disable socket.
 	//
-#ifdef	SOCKET_DEBUG
-	LOGMSG "SocketLink::ConnectWithServer: connect() failed.\n");
-	LOGADD;
-#endif
+	LOGMSG("SocketLink::ConnectWithServer: connect() failed.\n");
 
 	SOCKET_CLOSE(sockId);
 	sockId = INVALID_SOCKET;
-	isBlocking = true;	// Back to the default.
+	isBlocking = false;
 }
-
 
 //---------------------------------------------------------
 // After accepting client, a new socket link is created,
@@ -432,23 +420,16 @@ SocketLink*	SocketLink::AcceptClient (bool blockingWait) {
 
 	LOCK_BLOCK(acceptumutex);
 
+	assert(!isBlocking);
 	bool oldIsBlocking = isBlocking;
 	SetIsBlocking(blockingWait);
 
 	SOCKET connSock = accept(sockId, NULL, NULL);
-
 	SetIsBlocking(oldIsBlocking);
 
 	if (BAD_SOCKET(connSock)) {
-
-		if (blockingWait) {
-
-#ifdef	SOCKET_DEBUG
-			LOGMSG "SocketLink::AcceptClient(): blocking accept() failed.\n");
-			LOGADD;
-#endif
-		}
-
+		if (blockingWait)
+			LOGMSG("SocketLink::AcceptClient(): blocking accept() failed.\n");
 		return (SocketLink*) 0;
 	}
 
@@ -456,19 +437,14 @@ SocketLink*	SocketLink::AcceptClient (bool blockingWait) {
 	struct sockaddr_in peerName;
 	SOCKLEN_T nameLen = sizeof(peerName);
 
-	if (getpeername(connSock, (struct sockaddr*) &peerName, &nameLen) IS_CALL_ERROR) {
-		LOGMSG "SocketLink::AcceptClient: getpeername() failed.\n");
-		LOGADD;
-	}
-	else {
-		LOGMSG "SocketLink::AcceptClient: Connected with '%s'.\n", 
-					inet_ntoa(peerName.sin_addr));
-		LOGADD;
-	}
+	if (getpeername(connSock, (struct sockaddr*) &peerName, &nameLen) IS_CALL_ERROR)
+		LOGMSG("SocketLink::AcceptClient: getpeername() failed.\n");
+	else
+		LOGMSG("SocketLink::AcceptClient: Connected with '%s'.\n", inet_ntoa(peerName.sin_addr));
 #endif
 
 	// The client socket created is non-blocking.
-	//
+
 	SocketLink* newLink = DNEWCLASS(SocketLink, (GetHost(), GetPort(), connSock));
 	newLink->SetIsBlocking(false);
 
@@ -482,42 +458,29 @@ SocketLink*	SocketLink::AcceptClient (bool blockingWait) {
 //
 void SocketLink::SetIsBlocking (bool _isBlocking) {
 
-	if (isBlocking==_isBlocking)
+	if (BAD_SOCKET(sockId))
 		return;
 
-	if (BAD_SOCKET(sockId))
+	if (isBlocking == _isBlocking)
 		return;
 
 	isBlocking = _isBlocking;
 
 #ifdef	_WIN32_
 	unsigned long opt = isBlocking ? 0 : 1;
-	if (ioctlsocket(sockId, FIONBIO, &opt)==SOCKET_ERROR) {
-#ifdef	SOCKET_DEBUG
-			LOGMSG "ioctlsocket failed.\n");
-			LOGADD;
-#endif
-	}
+	if (ioctlsocket(sockId, FIONBIO, &opt)==SOCKET_ERROR)
+		LOGMSG("ioctlsocket failed.\n");
 #endif
 
 #ifdef	_UNIX_
 	int opt = isBlocking ? 0 : 1;
-	if (ioctl(sockId, FIONBIO, &opt)==-1) {
+	if (ioctl(sockId, FIONBIO, &opt)==-1)
 		if (!isBlocking) {
-			if (fcntl(sockId, F_SETFL, O_NONBLOCK)==-1) {
-#ifdef	SOCKET_DEBUG
-			LOGMSG "Both ioctl and fcntl failed to make non-blocking.\n");
-			LOGADD;
-#endif
-			}
+			if (fcntl(sockId, F_SETFL, O_NONBLOCK)==-1)
+			LOGMSG("Both ioctl and fcntl failed to make non-blocking.\n");
 		}
-		else {
-#ifdef	SOCKET_DEBUG
-			LOGMSG "ioctl failed to make blocking.\n");
-			LOGADD;
-#endif
-		}
-	}
+		else
+			LOGMSG("ioctl failed to make blocking.\n");
 #endif
 }
 
@@ -555,7 +518,11 @@ void SocketLink::ReceiveDataLocally (void) {
 
 	// We need to protect the buffer with a mutex,
 	// to avoid overwritting by multiple processes.
-	//
+	// Also the socket to avoid changing blocking
+	// mode with concurrent send / recv
+
+	LOCK_BLOCK(sendrecvmutex); {
+
 	LOCK_BLOCK(bufferumutex);
 
 	fd_set set;
@@ -568,17 +535,15 @@ void SocketLink::ReceiveDataLocally (void) {
 
 	if (select(sockId + 1, &set, NULL, NULL, &tv) IS_CALL_ERROR) {
 
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::ReceiveDataLocally: select() failed.\n");
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::ReceiveDataLocally: select() failed.\n");
+
 		SOCKET_CLOSE(sockId);	// Socket is closed now.
 		sockId = INVALID_SOCKET;
 		return;
 	}
 
 	int size;
-	if ((size = recv(sockId, buffer, SOCKETLIB_SOCKET_BUFFER_SIZE, 0)) IS_CALL_ERROR) {
+	if ((size = recv(sockId, (char*) buffer, SOCKETLIB_SOCKET_BUFFER_SIZE, 0)) IS_CALL_ERROR) {
 
 #ifdef	_WIN32_
 		int error = WSAGetLastError();
@@ -601,14 +566,12 @@ void SocketLink::ReceiveDataLocally (void) {
 		return;
 	}
 
-#ifdef	SOCKET_DEBUG
-	LOGMSG "Data received, size %d.\n", size);
-	LOGADD;
-#endif
+	LOGMSG("Data received, size %d.\n", size);
 
-	void* data = DNEWARR(char, size);
+	void* data = DNEWARR(util_ui8, size);
 	memcpy(data, buffer, size);
 	incoming.push_back(Packet(data, size));
+	}
 }
 
 //---------------------------------------------------------
@@ -643,10 +606,13 @@ void SocketLink::SendData (void* data, util_ui32 size) {
 	if (BAD_SOCKET(sockId))
 		return;
 
-#define	RETURN \
-	{ SetIsBlocking(oldIsBlocking); return; }
+	LOCK_BLOCK(sendrecvmutex);
 
-	bool oldIsBlocking =  isBlocking;
+#define	RETURN \
+	if (true) { SetIsBlocking(oldIsBlocking); return; } else
+
+	assert(!isBlocking);
+	bool oldIsBlocking = isBlocking;
 	SetIsBlocking(true);
 
 	fd_set set;
@@ -659,10 +625,8 @@ void SocketLink::SendData (void* data, util_ui32 size) {
 
 	if (select(sockId + 1, NULL, &set, NULL, &tv) IS_CALL_ERROR) {
 
-#ifdef	SOCKET_DEBUG
-		LOGMSG "SocketLink::SendData: select() failed.\n");
-		LOGADD;
-#endif
+		LOGMSG("SocketLink::SendData: select() failed.\n");
+
 		SOCKET_CLOSE(sockId);	// Socket is closed now.
 		sockId = INVALID_SOCKET;
 		return;
@@ -672,41 +636,34 @@ void SocketLink::SendData (void* data, util_ui32 size) {
 	// and then retry (three tries at most). If this still fails,
 	// it means we have a communication break down.
 	//
-	util_ui32	tries = 1;
+	util_ui32 tries = 1;
 
-	while (1) {
-		util_ui32 dataSent = send(sockId, (char*) data, size,0);
+	while (true) {
+
+		util_ui32 dataSent = send(sockId, (char*) data, size, 0);
 
 		if (dataSent IS_CALL_ERROR) {
 
-#ifdef	SOCKET_DEBUG
-			LOGMSG "SocketLink::data: send() failed. Try %d.\n", tries);
-			LOGADD;
-#endif
-			if (tries==SOCKETLIB_MAX_SEND_TRIES)
-				RETURN
-			++tries;
+			LOGMSG("SocketLink::data: send() failed. Try %d.\n", tries);
+
+			if (tries++ == SOCKETLIB_MAX_SEND_TRIES)
+				RETURN;
+
 			SLEEP(SOCKETLIB_FAILSEND_WAIT);
 			continue;
 		}
 		else
 		if (dataSent < size) {
 
-#ifdef	SOCKET_DEBUG
-			LOGMSG "SocketLink::data: send(): less data sent.\n");
-			LOGADD;
-#endif
+			LOGMSG("SocketLink::data: send(): less data sent.\n");
+
 			// Continue by trying to sent remaining data.
-			//
 			size -= dataSent;
 			PINC(data, dataSent);
 		}
 		else	{		// Ok, all sent.
-#ifdef	SOCKET_DEBUG
-		LOGMSG "Data sent, size %d.\n", dataSent);
-		LOGADD;
-#endif
-			RETURN
+			LOGMSG("Data sent, size %d.\n", dataSent);
+			RETURN;
 		}
 	}
 
@@ -729,8 +686,8 @@ void SocketLink::RecvData (void** putData, util_ui32* size) {
 		incoming.pop_front();
 	}
 	else {
-		*size = 0;
-		*putData = (void*) 0;
+		*size		= 0;
+		*putData	= (void*) 0;
 	}
 }
 
@@ -752,6 +709,7 @@ void SocketLink::ClearData (void* data) {
 		DDELARR((char*) data);
 }
 //---------------------------------------------------------
+
 static bool initialized = false;
 
 bool SocketLink::IsInitialised (void)
@@ -759,7 +717,7 @@ bool SocketLink::IsInitialised (void)
 
 void SocketLink::Initialise (void) {
 
-	DASSERT(!IsInitialised());
+	assert(!IsInitialised());
 	initialized = true;
 
 #ifdef	_WIN32_

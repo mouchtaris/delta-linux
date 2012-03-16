@@ -28,10 +28,11 @@ class UTILLIB_CLASS umutex {
 	public:
 	class  FunctionLocker {
 		private:
-		umutex& mutex;
+		umutex* mutex;
 		public:
-		FunctionLocker (umutex& _mutex) : mutex(_mutex){ mutex.WaitToLock(); }
-		~FunctionLocker() { mutex.UnLock(); }
+		FunctionLocker (umutex* _mutex) : mutex(_mutex){ if (mutex) mutex->WaitToLock(); }
+		FunctionLocker (umutex& _mutex) : mutex(&_mutex){ mutex->WaitToLock(); }
+		~FunctionLocker() { if (mutex) mutex->UnLock(); }
 	};
 
 	static bool Locker (umutex& _mutex)	
@@ -62,8 +63,11 @@ class UTILLIB_CLASS umutex {
 	~umutex();
 };
 
+#define	LOCK_BLOCK_OPT(mutexPtr) \
+		umutex::FunctionLocker _temp(mutexPtr);
+
 #define	LOCK_BLOCK(mutex) \
-			umutex::FunctionLocker _temp(mutex);
+		umutex::FunctionLocker _temp(mutex);
 
 #define	LOCK_EXPR_OBJECT(expr, mutex) \
 		(umutex::Locker(mutex), umutex::UnlockedCopiedRef((expr), mutex))

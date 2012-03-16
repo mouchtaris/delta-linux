@@ -1,7 +1,7 @@
 // SocketLib.h
-// Socket library for building the I-GET basic communication
-// layer. Addresses both UNIX and Windows system, original version January 1996.
-// A. Savidis, deployed as it is from I-GET UIMS, January 2000.
+// Non-blocking socket library.
+// A. Savidis, original version 1996, major updat, January 2000,
+// support for concurrent send / recv March 2012.
 //
 
 #ifndef	SOCKETLIB_H
@@ -77,26 +77,6 @@
 #endif
 
 //---------------------------------------------------------
-// Macros for logging facilities.
-//
-#define	LOGMSG									\
-	logFile = fopen(LOGNAME,"at");				\
-    fprintf(logFile,
-
-#define	LOGADD	fclose(logFile);
-#define	LOGNAME	"socketlog.txt"
-
-#ifdef IF_WINDOZE_SUPPORT_THIS
-#define LOGMSG(...) do {						\
-		logFile = fopen(LOGNAME, "at");			\
-		assert (logFile);						\
-		fprintf(logFile, __VA_ARGS__);			\
-		fclose(logFile);						\
-	}											\
-	while (0)
-#endif /* IF_WINDOZE_SUPPORT_THIS */
-
-//---------------------------------------------------------
 // A higher-level abstraction on sockets, supporting
 // data transfer, recv interrogation and local data
 // storage.
@@ -104,28 +84,29 @@
 class SOCKETLIB_CLASS SocketLink {
 
 	private:
-	static FILE*		logFile;
-	static umutex		bufferumutex;
-	static umutex		connectumutex;
-	static umutex		acceptumutex;
+	static FILE*			logFile;
+	static umutex			bufferumutex;
+	static umutex			connectumutex;
+	static umutex			acceptumutex;
+	umutex					sendrecvmutex;
 
 	///////////////////////////////////////////////////////////
 
 	typedef	std::pair<void*, util_ui32>	Packet;
 	typedef	std::list<Packet>			PacketList;
 
-	PacketList		incoming;
-	bool			isBlocking;
-	static char		buffer[SOCKETLIB_SOCKET_BUFFER_SIZE];
+	PacketList				incoming;
+	bool					isBlocking;
+	static util_ui8			buffer[SOCKETLIB_SOCKET_BUFFER_SIZE];
 
-	SOCKET			sockId;
-	char			myHost[SOCKETLIB_HOST_NAME_LEN];
-	util_ui32		myPort;	
+	SOCKET					sockId;
+	char					myHost[SOCKETLIB_HOST_NAME_LEN];
+	util_ui32				myPort;	
 
-	void			SetIsBlocking (bool isBlocking);
-	void			ReceiveDataLocally (void);
-	bool			SetOptions (const char* func);
-	bool			SetRecvSendBufferSize (const char* func);
+	void					SetIsBlocking (bool isBlocking);
+	void					ReceiveDataLocally (void);
+	bool					SetOptions (const char* func);
+	bool					SetRecvSendBufferSize (const char* func);
 
 	SocketLink (const char* host, util_ui32 port, SOCKET _sockId);
 
@@ -142,7 +123,7 @@ class SOCKETLIB_CLASS SocketLink {
 	void					EstablishAsServer (util_ui32 portNum = 0);
 	void					EstablishAsClient (void);
 
-	SocketLink*				AcceptClient (bool blocking = true);
+	SocketLink*				AcceptClient (bool blockingWaiting = true);	// always creates non-blocking clients 
 	void					ConnectWithServer (const char* serverHost, util_ui32 serverPort);
 	bool					SocketValid (void) const
 								{ return !BAD_SOCKET(sockId); }
