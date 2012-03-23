@@ -451,6 +451,8 @@ toolbookevent				: notifyevent
 scrollbar					: control
 @type
 paintevent					: event
+@type
+bufferedpaintdc				: buffereddc
 @const
 DLL										"WxWidgets.dll"
 @const
@@ -4712,6 +4714,8 @@ brush_notequal								(br:brush,otherBrush:brush) : Bool
 buffereddc_construct						():buffereddc (dc:dc):buffereddc (dc:dc,b:bitmap):buffereddc (dc:dc,b:bitmap,style:+{Number,String}):buffereddc (dc:dc,size:size):buffereddc (dc:dc,size:size,style:+{Number,String}):buffereddc
 buffereddc_destruct							(buffereddc:buffereddc)
 buffereddc_init								(buffereddc:buffereddc,dc:dc) (buffereddc:buffereddc,dc:dc,b:bitmap) (buffereddc:buffereddc,dc:dc,b:bitmap,style:+{Number,String}) (buffereddc:buffereddc,dc:dc,size:size) (buffereddc:buffereddc,dc:dc,size:size,style:+{Number,String})
+bufferedpaintdc_construct					(window:window):bufferedpaintdc (window:window,buffer:bitmap):bufferedpaintdc (window:window,buffer:bitmap,style:+{Number,String}):bufferedpaintdc (window:window,style:+{Number,String}):bufferedpaintdc
+bufferedpaintdc_destruct					(bufferedpaintdc:bufferedpaintdc)
 #group(wxbutton)
 button_construct							():button (parent:+{window,Nil},id:+{Number,String}):button (parent:+{window,Nil},id:+{Number,String},label:String):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):button
 button_destruct								(b:button)
@@ -6361,8 +6365,8 @@ scrollbar_setthumbposition					(scrollbar:scrollbar,viewStart:Number)
 scrollbar_setscrollbar						(scrollbar:scrollbar,position:Number,thumbSize:Number,range:Number,pageSize:Number) (scrollbar:scrollbar,position:Number,thumbSize:Number,range:Number,pageSize:Number,refresh:Bool)
 scrolledwindow_construct					():scrolledwindow (parent:+{window,Nil}):scrolledwindow (parent:+{window,Nil},id:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):scrolledwindow
 scrolledwindow_destruct						(scrolledwindow:scrolledwindow)
-scrolledwindow_calcscrolledposition			(scrolledwindow:scrolledwindow,pt:+{point,String}):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void
-scrolledwindow_calcunscrolledposition		(scrolledwindow:scrolledwindow,pt:+{point,String}):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void
+scrolledwindow_calcscrolledposition			(scrolledwindow:scrolledwindow,pt:+{point,String}):point (scrolledwindow:scrolledwindow,x:Number,y:Number):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void
+scrolledwindow_calcunscrolledposition		(scrolledwindow:scrolledwindow,pt:+{point,String}):point (scrolledwindow:scrolledwindow,x:Number,y:Number):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void
 scrolledwindow_create						(scrolledwindow:scrolledwindow,parent:+{window,Nil}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 scrolledwindow_enablescrolling				(scrolledwindow:scrolledwindow,xScrolling:Bool,yScrolling:Bool)
 scrolledwindow_getscrollpixelsperunit		(scrolledwindow:scrolledwindow,xUnit:Object,yUnit:Object)

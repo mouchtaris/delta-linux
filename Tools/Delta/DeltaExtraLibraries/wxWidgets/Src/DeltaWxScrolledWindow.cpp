@@ -188,6 +188,13 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_calcscrolledposition, 2, 5, Nil)
 		win->CalcScrolledPosition(point->x, point->y, &newPoint->x, &newPoint->y);
 		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (newPoint));
 		WX_SETOBJECT(Point, retval)
+	} else if (n == 3) {
+		WX_GETNUMBER(x)
+		WX_GETNUMBER(y)
+		int xx, yy;
+		win->CalcScrolledPosition(x, y, &xx, &yy);
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(xx, yy)));
+		WX_SETOBJECT(Point, retval)
 	} else if (n == 5) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
@@ -205,6 +212,13 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_calcunscrolledposition, 2, 5, Nil)
 	if (n == 2) {
 		DLIB_WXGETPOINT_BASE(point)
 		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(win->CalcUnscrolledPosition(*point))));
+		WX_SETOBJECT(Point, retval)
+	} else if (n == 3) {
+		WX_GETNUMBER(x)
+		WX_GETNUMBER(y)
+		int xx, yy;
+		win->CalcUnscrolledPosition(x, y, &xx, &yy);
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(xx, yy)));
 		WX_SETOBJECT(Point, retval)
 	} else if (n == 5) {
 		WX_GETNUMBER(x)

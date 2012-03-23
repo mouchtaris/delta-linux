@@ -659,6 +659,9 @@
     <ClCompile Include="..\Src\DeltaWxPaintEvent.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxBufferedPaintDC.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\DeltaWxWidgets.h">
@@ -1251,6 +1254,9 @@
     </ClInclude>
     <ClInclude Include="..\Include\DeltaWxPaintEvent.h">
       <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxBufferedPaintDC.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
