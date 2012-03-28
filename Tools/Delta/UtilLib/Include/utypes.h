@@ -472,7 +472,8 @@ template <class T> class ubag {
 	};
 	
 	public:
-	typedef std::pair<const T, bool> elem_type;
+	typedef std::pair<const T, bool>					elem_type;
+	typedef T											value_type;
 	typedef typename std::map<T, bool>::iterator		iterator; 
 	typedef typename std::map<T, bool>::const_iterator	const_iterator; 
 	const iterator	begin (void)				{ return bag.begin();				}
