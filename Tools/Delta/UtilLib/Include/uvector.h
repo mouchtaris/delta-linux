@@ -211,11 +211,14 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 	uvector (const uvector& v)  {
 		DASSERT(v.invariant()); 
 		if (v.size()) {
+			left = right = 0;
 			data = DNEWARR(T*, total = v.size());
 			for (util_ui32 i = 0; i < total; ++i)
 				data[right++] = DNEWCLASS(T, (*DPTR(v.data[i])));
+			DASSERT(invariant());
 		}
-		DASSERT(invariant()); 	
+		else
+			new (this) uvector();
 	}
 	uvector (void) : data((T**) 0), total(0), left(0), right(0) { DASSERT(invariant()); }
 	~uvector() { clear(); }
