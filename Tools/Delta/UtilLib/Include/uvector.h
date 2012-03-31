@@ -126,6 +126,8 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 
 	/////////////////////////////////////////////////////////////////
 
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(uvector)
+
 	const iterator	begin (void) const 
 						{ DASSERT(invariant()); return iterator(this, 0); }
 	const iterator	begin (void)
@@ -176,17 +178,6 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 						udelete(data[left++]);
 					}
 
-	void			operator=(const uvector& v) {
-						DASSERT(invariant()); 
-						clear();
-						if (v.size()) {
-							data = DNEWARR(T*, total = v.size());
-							for (util_ui32 i = 0; i < total; ++i)
-								data[right++] = DNEWCLASS(T, (*DPTR(v.data[i])));
-						}
-						DASSERT(invariant()); 
-					}
-
 	void			resize (util_ui32 newSize) {		// Only expansion is supported.
 						
 						DASSERT(invariant()); 
@@ -217,6 +208,15 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 						DASSERT(invariant()); 
 					}
 
+	uvector (const uvector& v)  {
+		DASSERT(v.invariant()); 
+		if (v.size()) {
+			data = DNEWARR(T*, total = v.size());
+			for (util_ui32 i = 0; i < total; ++i)
+				data[right++] = DNEWCLASS(T, (*DPTR(v.data[i])));
+		}
+		DASSERT(invariant()); 	
+	}
 	uvector (void) : data((T**) 0), total(0), left(0), right(0) { DASSERT(invariant()); }
 	~uvector() { clear(); }
 };
