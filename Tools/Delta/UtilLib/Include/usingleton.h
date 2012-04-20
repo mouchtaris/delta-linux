@@ -108,12 +108,15 @@ template <typename T> class usingleton : public T {
 		static T&	Get (void);					\
 	};
 
-#define	UGLOBALINSTANCE_CLASS_IMPL(_class, T)											\
-		void	_class::Create (void)		{ unew(inst); }								\
-		void	_class::Destroy (void)		{ udelete(inst); }							\
+#define	UGLOBALINSTANCE_CLASS_IMPL_EX(_class, T, _oncreate, _ondestroy)					\
+		void	_class::Create (void)		{ unew(inst); _oncreate }					\
+		void	_class::Destroy (void)		{ _ondestroy udelete(inst);  }				\
 		T*		_class::GetPtr (void)		{ return inst; }							\
 		T&		_class::Get (void)			{ DASSERT(inst); return *DPTR(inst); }		\
 		T*		_class::inst = (T*) 0;
+
+#define	UGLOBALINSTANCE_CLASS_IMPL(_class, T)											\
+		UGLOBALINSTANCE_CLASS_IMPL_EX(_class, T, UEMPTY, UEMPTY)
 
 /////////////////////////////////////////////////////////////////
 //	Use as follows:
