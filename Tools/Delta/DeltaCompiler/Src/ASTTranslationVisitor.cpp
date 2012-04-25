@@ -603,6 +603,7 @@ void AST::TranslationVisitor::Handle_ExpressionANDOR( AST_VISITOR_ARGS){
 	if (!entering) {
 		{
 		yyrule(1);
+		DNPTR(left)->CheckUninitialised();
 		DNPTR(left)->AdaptToBool();
 		yv = left;
 		yyapply;

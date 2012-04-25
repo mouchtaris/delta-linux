@@ -27,9 +27,8 @@ DeltaExpr* Translate_ExprORExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExp
 	if (!TypeCheck_UseAsBoolean(e1) || !TypeCheck_UseAsBoolean(e2))
 		return NIL_EXPR;
 
-	DPTR(e1)->CheckUninitialised();
+	DASSERT(DPTR(e1)->type  == DeltaExprLogical || DPTR(e1)->type  == DeltaExprBoolean);
 	DPTR(e2)->CheckUninitialised();
-
 	DPTR(e2)->PreEvaluateIfConstBool();
 
 	QUADS.Backpatch(DPTR(e1)->falseList, Mquad);
@@ -63,7 +62,7 @@ DeltaExpr* Translate_ExprANDExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaEx
 	if (!TypeCheck_UseAsBoolean(e1) || !TypeCheck_UseAsBoolean(e2))
 		return NIL_EXPR;
 
-	DPTR(e1)->CheckUninitialised();
+	DASSERT(DPTR(e1)->type  == DeltaExprLogical || DPTR(e1)->type  == DeltaExprBoolean);
 	DPTR(e2)->CheckUninitialised();
 	DPTR(e2)->PreEvaluateIfConstBool();
 
