@@ -640,6 +640,7 @@ typedef util_ui8 DeltaOperandType;
 #define	DELTA_TRAP_OPERAND_BLOCKID				arg1
 #define	DELTA_THROW_OPERAND_EXCEPTION			result
 #define	DELTA_JUMP_OPERAND_EXIT_BLOCKS_TOTAL	arg1
+#define	DELTA_JUMP_OPERAND_TRAP_DISABLE_TOTAL	arg2
 #define	DELTA_JUMP_TRUEFALSE_TEST_ARG			arg1
 
 //-----------------------------------------------------------

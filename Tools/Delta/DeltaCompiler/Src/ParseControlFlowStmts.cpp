@@ -142,14 +142,16 @@ void Translate_IfElseStmt (
 
 ///////////////////////////////////////////////////////////////////
 
-static void BackpatchLoop (Stmt* stmt, DeltaQuadAddress contQuad, DeltaQuadAddress breakQuad) {
+static void BackpatchLoop (Stmt* stmt, DeltaQuadAddress contQuad, DeltaQuadAddress breakQuad, DeltaQuadAddress stmtBegin) {
 
 	if (stmt) {
 
 		QUADS.BackpatchBlockExitsDown(DPTR(stmt)->contList, contQuad);
+		QUADS.BackpatchExplicitTrapDisables(DPTR(stmt)->contList, stmtBegin);
 		QUADS.Backpatch(DPTR(stmt)->contList, contQuad);
 
 		QUADS.BackpatchBlockExitsDown(DPTR(stmt)->breakList, breakQuad);
+		QUADS.BackpatchExplicitTrapDisables(DPTR(stmt)->breakList, stmtBegin);
 		QUADS.Backpatch(stmt->breakList, breakQuad);
 
 		DDELETE(stmt);
@@ -164,7 +166,7 @@ void Translate_WhilePrefix (void)
 Stmt* Translate_WhileStmt (
 		DeltaExpr*			cond, 
 		DeltaQuadAddress	M1quad,	// Before while condition.
-		DeltaQuadAddress	M2quad,	// Before while stmt.
+		DeltaQuadAddress	M2quad,	// Before while stmt (while stmt start)
 		Stmt*				stmt,
 		util_ui32			stmtLine
 	) {
@@ -187,7 +189,7 @@ Stmt* Translate_WhileStmt (
 		QUADS.Emit(DeltaIC_JUMP, NIL_EXPR, NIL_EXPR, NIL_EXPR, M1quad);	// Loop iteration jump.
 		QUADS.Backpatch(cond->falseList, QUADS.NextQuadNo());
 
-		BackpatchLoop(stmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo());
+		BackpatchLoop(stmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo(), M2quad);
 	}
 
 	ParseParms::ExitingLoop(condValue);
@@ -242,7 +244,7 @@ Stmt*	Translate_ForStmt (
 		QUADS.Emit(DeltaIC_JUMP, NIL_EXPR, NIL_EXPR, NIL_EXPR, M2quad);	// Loop closure jump.
 		QUADS.Backpatch(cond->falseList, QUADS.NextQuadNo());
 
-		BackpatchLoop(stmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo());
+		BackpatchLoop(stmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo(), M3quad);
 	}
 
 	ParseParms::ExitingLoop(condValue);
@@ -289,14 +291,15 @@ Stmt* Translate_ForeachPrefix (DeltaExpr* foreachVar, DeltaExpr* foreachIndex, D
 Stmt* Translate_ForeachStmt (
 		Stmt*				foreachPrefix, 
 		Stmt*				foreachStmt, 
-		DeltaQuadAddress	Mquad
+		DeltaQuadAddress	Mquad	//	first quad of stmt
 	) {
 
 	if (!foreachPrefix || !foreachStmt)
 		return NIL_STMT;
 
+	DeltaQuadAddress stmtStart = Mquad;
 	do
-		--Mquad;
+		--Mquad;					// the foreach condition is actually check iterator end
 	while (QUADS.GetQuad(Mquad).opcode != DeltaIC_FOREACHCHECKEND);
 
 	QUADS.Emit(DeltaIC_FOREACHFWD, (DeltaExpr*) foreachPrefix->userData, NIL_EXPR, NIL_EXPR);
@@ -304,7 +307,7 @@ Stmt* Translate_ForeachStmt (
 
 	QUADS.Patch(Mquad, QUADS.NextQuadNo());
 
-	BackpatchLoop(foreachStmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo());
+	BackpatchLoop(foreachStmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo(), stmtStart);
 	QUADS.Emit(DeltaIC_FOREACHEND, DNULLCHECK((DeltaExpr*) foreachPrefix->userData), NIL_EXPR, NIL_EXPR);
 
 	ParseParms::ExitingLoop(); 

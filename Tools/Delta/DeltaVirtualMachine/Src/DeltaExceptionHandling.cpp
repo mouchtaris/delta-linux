@@ -241,6 +241,15 @@ void DeltaExceptionHandling::TrapEnable (DeltaCodeAddress addr) {	// TRAPENABLE
 }
 		
 //////////////////////////////////////////////////////////////
+// Necessary in break / continue which can skip the trap disable
+// instruction.
+
+void DeltaExceptionHandling::DoMultipleTrapDisable (util_ui16 n) {
+	while (n--)
+		TrapDisable(DPTR(currList)->back());
+}
+
+//////////////////////////////////////////////////////////////
 
 void DeltaExceptionHandling::TrapDisable (DeltaCodeAddress addr) {	// TRAPDISABLE
 

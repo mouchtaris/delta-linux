@@ -70,94 +70,95 @@ class DVM_CLASS DeltaExceptionHandling {
 	typedef std::list<CallContext>								CallStack;
 	typedef std::list<TrapBlockList*>							TrapBlockStack;
 
-	TrapBlockStack					trapBlockStack;			// Trap block lists aligned to the call stack.
-	CallStack						callStack;				// The call stack of respective VM's.
-	TrapBlockList*					currList;				// The trap blocks of the function at the top of the stack.
-	DeltaVirtualMachine*			currVM;
-	Context							currContext;
-	DeltaLibraryFunc				currFunc;
-	DeltaValue						exceptionValue;
-	util_ui32						expectedNativeTrapDisableCalls;
-	bool							postingUnhandledExceptionError;
+	TrapBlockStack			trapBlockStack;			// Trap block lists aligned to the call stack.
+	CallStack				callStack;				// The call stack of respective VM's.
+	TrapBlockList*			currList;				// The trap blocks of the function at the top of the stack.
+	DeltaVirtualMachine*	currVM;
+	Context					currContext;
+	DeltaLibraryFunc		currFunc;
+	DeltaValue				exceptionValue;
+	util_ui32				expectedNativeTrapDisableCalls;
+	bool					postingUnhandledExceptionError;
 
-	bool							isUnwinding;
-	bool							shouldUnwind;
-	bool							isUnwindingFromNativeCode;
+	bool					isUnwinding;
+	bool					shouldUnwind;
+	bool					isUnwindingFromNativeCode;
 
-						// Empty => !currList, !currList => Empty, !Empty => Top == currList
-	bool				Invariant (void) const {
-							return	(!trapBlockStack.empty() || !currList) && 
-									(currList || trapBlockStack.empty())   &&
-									(!trapBlockStack.empty()  || callStack.empty()) &&
-									(trapBlockStack.empty() || currList == trapBlockStack.front());
-						}
+							// Empty => !currList, !currList => Empty, !Empty => Top == currList
+	bool					Invariant (void) const {
+								return	(!trapBlockStack.empty() || !currList) && 
+										(currList || trapBlockStack.empty())   &&
+										(!trapBlockStack.empty()  || callStack.empty()) &&
+										(trapBlockStack.empty() || currList == trapBlockStack.front());
+							}
 	
-	bool				IsValidCallContext (const CallContext& c) const;
+	bool					IsValidCallContext (const CallContext& c) const;
 
-	bool				IsNativeTryBlockContext (Context context) const
-							{ return context == InNativeCode; }
-	bool				IsLibraryFunctionContext (Context context) const
-							{ return context == InLibraryFunction; }
-	bool				IsDeltaCodeContext (Context context) const
-							{ return context == InDeltaFunction || context == InDeltaGlobalCode; }
+	bool					IsNativeTryBlockContext (Context context) const
+								{ return context == InNativeCode; }
+	bool					IsLibraryFunctionContext (Context context) const
+								{ return context == InLibraryFunction; }
+	bool					IsDeltaCodeContext (Context context) const
+								{ return context == InDeltaFunction || context == InDeltaGlobalCode; }
 
-	void				SetUnwinding (bool val) 
-							{ isUnwinding = val; }
-	bool				ShouldUnwind (void) const
-							{ return shouldUnwind; }
-	void				SwitchShouldUnwind (void)
-							{ shouldUnwind = !shouldUnwind; }
-	void				Unwind (DeltaVirtualMachine* caller);
-	bool				UnwindDeltaFunction (void);		// Returns true to continue the unwinding loop.
-	bool				UnwindLibraryFunction (void);	// Returns true to continue the unwinding loop.
-	bool				UnwindGlobalCode (void);		// Returns true to continue the unwinding loop.
-	bool				UnwindNativeCode (void);		// Returns true to continue the unwinding loop.
+	void					SetUnwinding (bool val) 
+								{ isUnwinding = val; }
+	bool					ShouldUnwind (void) const
+								{ return shouldUnwind; }
+	void					SwitchShouldUnwind (void)
+								{ shouldUnwind = !shouldUnwind; }
+	void					Unwind (DeltaVirtualMachine* caller);
+	bool					UnwindDeltaFunction (void);		// Returns true to continue the unwinding loop.
+	bool					UnwindLibraryFunction (void);	// Returns true to continue the unwinding loop.
+	bool					UnwindGlobalCode (void);		// Returns true to continue the unwinding loop.
+	bool					UnwindNativeCode (void);		// Returns true to continue the unwinding loop.
 
-	void				SetException (const DeltaValue& e);
-	bool				IsThereAnyTrapBlock (void) const;
-	bool				HasTrapBlockAtThisCall (void) const;
-	void				Trap (void);
+	void					SetException (const DeltaValue& e);
+	bool					IsThereAnyTrapBlock (void) const;
+	bool					HasTrapBlockAtThisCall (void) const;
+	void					Trap (void);
 
 	/////////////////////////////////////////////////////////////////
 
 	public:
-	void				PushFunc (DeltaVirtualMachine* vm, Context context);
-	void				PushFunc (DeltaVirtualMachine* vm, Context context, util_ui32 pc);
-	void				PushFunc (DeltaVirtualMachine* vm, Context context, DeltaLibraryFunc func);
-	void				PopFunc (void);	
-	bool				Empty (void) const 
-							{ DASSERT(Invariant()); return trapBlockStack.empty(); }
+	void					PushFunc (DeltaVirtualMachine* vm, Context context);
+	void					PushFunc (DeltaVirtualMachine* vm, Context context, util_ui32 pc);
+	void					PushFunc (DeltaVirtualMachine* vm, Context context, DeltaLibraryFunc func);
+	void					PopFunc (void);	
+	bool					Empty (void) const 
+								{ DASSERT(Invariant()); return trapBlockStack.empty(); }
 
-	void				PopCallsAffectedByError (DeltaVirtualMachine* vm);
-	void				RemoveAllCalls (DeltaVirtualMachine* vm);
-	void				SetUnwindingCheckers (void) const;
+	void					PopCallsAffectedByError (DeltaVirtualMachine* vm);
+	void					RemoveAllCalls (DeltaVirtualMachine* vm);
+	void					SetUnwindingCheckers (void) const;
 				
 	/////////////////////////////////////////////////////////////////
 
-	void				TrapEnable (DeltaCodeAddress addr);
-	void				TrapDisable (DeltaCodeAddress addr);
-	void				Trap (DeltaVirtualMachine* vm, DeltaValue* lvalue, util_ui16 trapBlockId);
-	void				Throw (DeltaVirtualMachine* vm, const DeltaValue& exception);
-	bool				NativeTrap (DeltaValue* lvalue);		// Always returns true
-	void				NativeTrapDisable (void);				// When no native exception is caught.
-	bool				NativeTry (void);						// Always returns true
-	void				NativeThrow (const std::string& from, util_ui32 line, const DeltaValue& exception);
+	void					TrapEnable (DeltaCodeAddress addr);
+	void					TrapDisable (DeltaCodeAddress addr);
+	void					DoMultipleTrapDisable (util_ui16 n);
+	void					Trap (DeltaVirtualMachine* vm, DeltaValue* lvalue, util_ui16 trapBlockId);
+	void					Throw (DeltaVirtualMachine* vm, const DeltaValue& exception);
+	bool					NativeTrap (DeltaValue* lvalue);		// Always returns true
+	void					NativeTrapDisable (void);				// When no native exception is caught.
+	bool					NativeTry (void);						// Always returns true
+	void					NativeThrow (const std::string& from, util_ui32 line, const DeltaValue& exception);
 
 	/////////////////////////////////////////////////////////////////
 
-	DeltaValue&			GetException (void) 
-							{ DASSERT(Invariant()); return exceptionValue; }
+	DeltaValue&				GetException (void) 
+								{ DASSERT(Invariant()); return exceptionValue; }
 
-	void				ResetException (void) 
-							{ DASSERT(Invariant()); exceptionValue.Undefine(); }
+	void					ResetException (void) 
+								{ DASSERT(Invariant()); exceptionValue.Undefine(); }
 
 	//******************************
 
-	bool				PerformUnwindingTests (DeltaVirtualMachine* vm);
-	bool				IsUnwinding (void) const
-							{ return isUnwinding; }
-	bool				IsPostingUnhandledExceptionError (void) const
-							{ return postingUnhandledExceptionError; }
+	bool					PerformUnwindingTests (DeltaVirtualMachine* vm);
+	bool					IsUnwinding (void) const
+								{ return isUnwinding; }
+	bool					IsPostingUnhandledExceptionError (void) const
+								{ return postingUnhandledExceptionError; }
 
 	/////////////////////////////////////////////////////////////////
 

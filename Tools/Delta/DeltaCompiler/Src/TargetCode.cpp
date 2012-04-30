@@ -538,11 +538,15 @@ void DeltaCodeGenerator::Generate_JUMP (DeltaQuad &quad, util_ui32 quadNo) {
 		CODEGENERATOR.AddUnfinishedJump(CODEGENERATOR.CurrInstructionNo() + 1);
 	}
 
-	DASSERT(quad.arg1 == NIL_EXPR && quad.arg2 == NIL_EXPR);
+	DASSERT(quad.arg1 == NIL_EXPR || quad.arg1->GetType() == DeltaExprNumber);
+	DASSERT(quad.arg2 == NIL_EXPR);
 	DASSERT(quad.result == NIL_EXPR || quad.result->GetType() == DeltaExprNumber);
 
-	if (quad.result) // Block exit information at 'arg1' of the instruction.
-		CODEGENERATOR.MakeInternal(quad.result, &instr.arg1);
+	if (quad.result)	// Block exit information at 'arg1' of the instruction.
+		CODEGENERATOR.MakeInternal(quad.result, &instr.DELTA_JUMP_OPERAND_EXIT_BLOCKS_TOTAL);
+
+	if (quad.arg1)		// Trap disable information at 'arg2' of the instruction.
+		CODEGENERATOR.MakeInternal(quad.arg1, &instr.DELTA_JUMP_OPERAND_TRAP_DISABLE_TOTAL);
 
 	CODEGENERATOR.Emit(&instr);
 	QUADS.SetQuadTargetLabel(quadNo, CODEGENERATOR.CurrInstructionNo());

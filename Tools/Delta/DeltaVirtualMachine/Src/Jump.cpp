@@ -95,10 +95,17 @@ bool DELTAVALUE_OPERATION name (RELATIONAL_FUNC_ARGS) {									\
 /////////////////////////////////////////////////////////////////////
 
 void Execute_JUMP (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
+
 	DELTA_INSTRUCTIONS_TAKE_THE_JUMP();	
+
 	if (instr->DELTA_JUMP_OPERAND_EXIT_BLOCKS_TOTAL.GetType() != DeltaOperand_NotUsed) {
 		DASSERT(instr->DELTA_JUMP_OPERAND_EXIT_BLOCKS_TOTAL.IsInternal());
 		DPTR(vm)->DoExitMultipleBlocks((util_ui16) instr->DELTA_JUMP_OPERAND_EXIT_BLOCKS_TOTAL.GetValue());
+	}
+
+	if (instr->DELTA_JUMP_OPERAND_TRAP_DISABLE_TOTAL.GetType() != DeltaOperand_NotUsed) {
+		DASSERT(instr->DELTA_JUMP_OPERAND_TRAP_DISABLE_TOTAL.IsInternal());
+		EXCEPTION_HANDLERS->DoMultipleTrapDisable((util_ui16) instr->DELTA_JUMP_OPERAND_TRAP_DISABLE_TOTAL.GetValue());
 	}
 }
 

@@ -337,6 +337,10 @@ class DeltaQuadManager {
 	void				Patch (DeltaQuadAddress quad, DeltaQuadAddress label);
 
 	//**************************
+	void				BackpatchExplicitTrapDisables (
+							DeltaQuadAddress	qlist,
+							DeltaQuadAddress	loopStmtBegin
+						);
 
 	void				BackpatchBlockExits (
 							DeltaQuadAddress	qlist, 

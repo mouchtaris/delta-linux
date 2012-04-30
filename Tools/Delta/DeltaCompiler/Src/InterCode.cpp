@@ -341,6 +341,38 @@ void DeltaQuadManager::BackpatchBlockExitsDown (
 }
 
 //***************************
+// Will compute for a list of break and continue stmts
+// the opened try stmts which have to be disabled manually
+// through explicit trap disable instructions.
+
+void DeltaQuadManager::BackpatchExplicitTrapDisables (
+		DeltaQuadAddress	qlist,
+		DeltaQuadAddress	loopStmtBegin
+	) {
+
+	DASSERT(qlist != loopStmtBegin);
+
+	while (qlist != DELTA_NIL_QUAD_LABEL) {
+	
+		DASSERT(quads[qlist].opcode == DeltaIC_JUMP);
+
+		util_i32 tryOpenedCounter = 0;
+
+		for (util_ui32 quadNo = qlist; quadNo != loopStmtBegin; --quadNo)	// always to the loop start (above)
+			if (quads[quadNo].opcode == DeltaIC_TRAPDISABLE)				// definitely a closed try
+				--tryOpenedCounter;
+			else
+			if (quads[quadNo].opcode == DeltaIC_TRAPENABLE)					// possible opened try
+				++tryOpenedCounter;
+
+		DASSERT(tryOpenedCounter >= 0);
+		if (tryOpenedCounter > 0)
+			quads[qlist].arg1 = DeltaExpr::Make(tryOpenedCounter);			// store in operand the trap disable calls needed
+		qlist = quads[qlist].label;
+	}
+}
+
+//***************************
 // Expressions 'x;' 'local x;' 'static x;' do not
 // generate a quad. Hence, in this case quadNo will be
 // currQuad + 1, that is Total(). Also, the JUMP preceeding
