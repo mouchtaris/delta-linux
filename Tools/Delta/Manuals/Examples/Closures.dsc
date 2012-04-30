@@ -84,7 +84,7 @@ t.f()();
 
 //////////////////////////////////
 // Sharing of closure vars among different
-// function values takebn within the same call.
+// function values taken within the same call.
 
 function shared (x,y,z, t) {
 	return [
