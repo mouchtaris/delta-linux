@@ -230,8 +230,11 @@ template <class F, class D = ucallbackwithclosure<F> > class ucallbacklist {
 	void	clear (void) 
 				{ callbacks.clear(); ptrs.clear(); }
 
-	ucallbacklist(void) {}
-
+	ucallbacklist (void) {}
+	ucallbacklist (const ucallbacklist& l) {
+		for (typename std::list<D>::const_iterator i = l.callbacks.begin(); i != l.callbacks.end(); ++i)
+			add(*i);
+	}
 	~ucallbacklist() { clear(); }
 };
 
@@ -259,6 +262,8 @@ class uchangenotifier {
 								{ DASSERT(!locked); callbacks.safecall(GetContext(_context)); pending = 0; }
 
 	public:
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(uchangenotifier)
+
 	void					SetContext (void* _context)
 								{ context = _context; }
 	void*					GetContext (void) const 
@@ -282,6 +287,7 @@ class uchangenotifier {
 	void					SafeNotifyChanged (void* _context) const
 								{ if (!locked) SafeNotifyChangedPriv(_context); else ++pending; }
 
+	uchangenotifier (const uchangenotifier& n) : locked(0), pending(0), context ((void*) 0) {}	// no state is actually copied!
 	uchangenotifier (void) : locked(0), pending(0), context ((void*) 0) {}
 	virtual ~uchangenotifier(){}
 };
