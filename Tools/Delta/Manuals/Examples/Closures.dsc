@@ -137,3 +137,16 @@ fv = (function(x, y) {
 fv()()();
 
 //////////////////////////////////
+
+function q (a, b) {
+	function g(x,y) {
+		print(a,b); 
+		function h() { print(a); }
+		return h;
+	}
+   return g;
+}
+q(1,2)(3,4)();	// 121
+print("\n");
+
+//////////////////////////////////
