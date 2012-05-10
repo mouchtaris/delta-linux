@@ -35,7 +35,7 @@ extern bool	TypeCheck_TableIndex (DeltaExpr* index);
 extern bool	TypeCheck_UseAsBoolean (DeltaExpr* expr);
 extern bool	TypeCheck_InRelational (DeltaExpr* expr, bool onlyEquality);
 extern bool	TypeCheck_InRelational (DeltaExpr* e1, DeltaExpr* e2, DeltaICOpcode relOp);
-extern bool	TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode relOp, const char* opStr);
+extern bool	TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode relOp, const char* opStr, bool alwaysError = true);
 extern bool TypeCheck_Assign (DeltaExpr* lvalue);
 extern bool TypeCheck_ForeachContainer (DeltaExpr* container);
 

@@ -131,7 +131,32 @@ DeltaExpr*	Translate_RelationalExpr (
 	if (DPTR(e1)->IsInvariantValue() && DPTR(e2)->IsInvariantValue()) {
 		
 		bool resultValue;
-		
+
+		// bool check has first priority since everything is bool convertible
+		if (DPTR(e1)->type == DeltaExprBoolean || DPTR(e2)->type == DeltaExprBoolean) {
+
+			DASSERT(e1->IsComputableBoolean() && e2->IsComputableBoolean());
+
+			if (relOp == DeltaIC_JEQ)
+				resultValue = (DPTR(e1)->ToBool() == DPTR(e2)->ToBool());
+			else
+			if (relOp == DeltaIC_JNE)
+				resultValue = (DPTR(e1)->ToBool() != DPTR(e2)->ToBool());
+			else
+				DASSERT(false);
+		}
+		else	// nil check is next priority since it has a unified rule
+		if (DPTR(e1)->type == DeltaExprNil || DPTR(e2)->type == DeltaExprNil) {
+			// nil equals only its self and differs with everything else.
+			if (relOp == DeltaIC_JEQ)
+				resultValue = (DPTR(e1)->type == DPTR(e2)->type);
+			else
+			if (relOp == DeltaIC_JNE)
+				resultValue = (DPTR(e1)->type != DPTR(e2)->type);
+			else
+				DASSERT(false);
+		}
+		else
 		if (DPTR(e1)->type == DeltaExprString || DPTR(e2)->type == DeltaExprString) {
 			
 			if (e1->type == DeltaExprString && e2->type == DeltaExprString) {
@@ -158,47 +183,29 @@ DeltaExpr*	Translate_RelationalExpr (
 		else
 		if (DPTR(e1)->type == DeltaExprNumber || DPTR(e2)->type == DeltaExprNumber) {
 
-			DASSERT(e1->type == DeltaExprNumber && e2->type==DeltaExprNumber);
+			if (e1->type == DeltaExprNumber && e2->type==DeltaExprNumber) {
 
-			DeltaNumberValueType a = DPTR(e1)->numConst;
-			DeltaNumberValueType b = DPTR(e2)->numConst;
+				DeltaNumberValueType a = DPTR(e1)->numConst;
+				DeltaNumberValueType b = DPTR(e2)->numConst;
 
-			switch (relOp) {
+				switch (relOp) {
 
-				case DeltaIC_JGT : resultValue = a > b;		break;
-				case DeltaIC_JGE : resultValue = a >= b;	break;
-				case DeltaIC_JLT : resultValue = a < b;		break;
-				case DeltaIC_JLE : resultValue = a <= b;	break;
-				case DeltaIC_JEQ : resultValue = a == b;	break;
-				case DeltaIC_JNE : resultValue = a != b;	break;
+					case DeltaIC_JGT : resultValue = a > b;		break;
+					case DeltaIC_JGE : resultValue = a >= b;	break;
+					case DeltaIC_JLT : resultValue = a < b;		break;
+					case DeltaIC_JLE : resultValue = a <= b;	break;
+					case DeltaIC_JEQ : resultValue = a == b;	break;
+					case DeltaIC_JNE : resultValue = a != b;	break;
 
-				default: DASSERT(false);
+					default: DASSERT(false);
+				}
+			}
+			else {
+				DASSERT(relOp == DeltaIC_JEQ || relOp == DeltaIC_JNE);
+				resultValue = false;
 			}
 		}
-		else	// Nil equals only its self and differs with everything else.
-		if (DPTR(e1)->type == DeltaExprNil || DPTR(e2)->type == DeltaExprNil) {
-			if (relOp == DeltaIC_JEQ)
-				resultValue = (DPTR(e1)->type == DPTR(e2)->type);
-			else
-			if (relOp == DeltaIC_JNE)
-				resultValue = (DPTR(e1)->type != DPTR(e2)->type);
-			else
-				DASSERT(false);
-		}
-		else
-		if (DPTR(e1)->type == DeltaExprBoolean || DPTR(e2)->type == DeltaExprBoolean) {
-
-			DASSERT(e1->IsComputableBoolean() && e2->IsComputableBoolean());
-
-			if (relOp == DeltaIC_JEQ)
-				resultValue = (DPTR(e1)->ToBool() == DPTR(e2)->ToBool());
-			else
-			if (relOp == DeltaIC_JNE)
-				resultValue = (DPTR(e1)->ToBool() != DPTR(e2)->ToBool());
-			else
-				DASSERT(false);
-		}
-		else
+		else	
 		if (DPTR(e1)->type == DeltaExprProgramFunction	|| 
 			DPTR(e2)->type == DeltaExprProgramFunction	||
 			DPTR(e1)->type == DeltaExprLibraryFunction	|| 

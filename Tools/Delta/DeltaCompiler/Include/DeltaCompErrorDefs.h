@@ -154,6 +154,12 @@
 		op, ucstringarg(DPTR(e)->GetTypeString())								\
 	)
 
+#define	DELTACOMP_WARNING_ARITHMETIC(op, e)										\
+	DeltaCompWarning(															\
+		"Arithmetic operator %s on '%s'; is this the intent?",					\
+		op, ucstringarg(DPTR(e)->GetTypeString())								\
+	)
+
 #define	DELTACOMP_ERROR_ASSIGNMENT(e)											\
 	DeltaCompError("Trying to assign to '%s'", DPTR(e)->GetTypeString())
 
@@ -376,7 +382,7 @@
 
 #define	DELTACOMP_WARNING_SELF_INDEX(table, index)								\
 	DeltaCompWarning(															\
-		"in '%s.%s' the use of '%s' as a string index is intentional?",			\
+		"in '%s.%s' the use of '%s' as a string index; is this the intent?",	\
 		ucropstr(table->GetUnparsed(), 16).c_str(),								\
 		ucstringarg(index),														\
 		ucstringarg(DELTA_SELF_POINTER_ID)										\

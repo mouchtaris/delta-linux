@@ -415,7 +415,7 @@ static bool orderingAllowance[TOTAL_EXPR_TYPES] = {
 
 bool TypeCheck_InRelational (DeltaExpr* expr, bool onlyEquality) {
 	if (onlyEquality)
-		return	DPTR(expr)->GetType() != DeltaExprTableConstruction;
+		return true;
 	else {
 		DASSERT(uarraysize(orderingAllowance) == TOTAL_EXPR_TYPES);
 		return orderingAllowance[ (util_ui8) DPTR(expr)->GetType() ];
@@ -457,7 +457,7 @@ static bool arihtmeticAllowance[TOTAL_EXPR_TYPES] = {
 /*	Call */		true
 };
 
-bool TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode arithOp, const char* opStr) {
+bool TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode arithOp, const char* opStr, bool alwaysError) {
 	
 	if (arihtmeticAllowance[(util_ui8) DPTR(expr)->GetType()])
 		return true;
@@ -469,7 +469,10 @@ bool TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode arithOp, const char*
 		if (arithOp == DeltaIC_ADD || arithOp == DeltaIC_SUB || arithOp == DeltaIC_MUL)
 			return true;
 	
-	DELTACOMP_ERROR_ARITHMETIC(opStr, expr);
+	if (alwaysError)
+		DELTACOMP_ERROR_ARITHMETIC(opStr, expr);
+	else
+		DELTACOMP_WARNING_ARITHMETIC(opStr, expr);
 	return false;
 }
 

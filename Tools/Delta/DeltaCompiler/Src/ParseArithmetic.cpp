@@ -43,9 +43,18 @@ DeltaExpr*	Translate_ArithmeticExpression (
 
 	DeltaExpr* result = NIL_EXPR;
 
-	if (!TypeCheck_InArithmetic(e1, op, opStr) || !TypeCheck_InArithmetic(e2, op, opStr))
-		return result;
-	else	// Try static computation os string op string or num op num.
+	// Due to overloading all arith operators should be generally allowed when vars or
+	// table ctors are met.
+	bool warning =	DPTR(e1)->GetType() == DeltaExprVar					|| 
+					DPTR(e2)->GetType() == DeltaExprVar					||
+					DPTR(e1)->GetType() == DeltaExprTableConstruction	|| 
+					DPTR(e2)->GetType() == DeltaExprTableConstruction;
+
+	if (!TypeCheck_InArithmetic(e1, op, opStr, !warning) || !TypeCheck_InArithmetic(e2, op, opStr, !warning))
+		if (!warning)
+			return result;
+
+	// Try static computation os string op string or num op num.
 	if (DPTR(e1)->type == DeltaExprNumber && DPTR(e2)->type == DeltaExprNumber) {
 		
 		DeltaNumberValueType resultValue;
