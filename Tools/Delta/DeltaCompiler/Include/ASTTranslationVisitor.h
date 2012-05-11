@@ -108,6 +108,7 @@ namespace AST {
 	static void Handle_TableIndices (AST_VISITOR_ARGS); 
 	static void Handle_IndexedValues (AST_VISITOR_ARGS); 
 	static void Handle_NewAttribute (AST_VISITOR_ARGS); 
+	static void Handle_AttributeMethod (AST_VISITOR_ARGS); 
 	static void Handle_Condition (AST_VISITOR_ARGS); 
 	static void Handle_IfStmt (AST_VISITOR_ARGS); 
 	static void Handle_IfElseStmt (AST_VISITOR_ARGS); 

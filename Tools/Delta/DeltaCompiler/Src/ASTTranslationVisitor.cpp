@@ -153,54 +153,57 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_H(Exception,						AST_TAG_TRYTRAP);
 
 	// Context dependent handlers.
-	_C(AdaptBoolExpression, AST_TAG_OP_ADD, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_SUB, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MUL, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_DIV, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MOD, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GT, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LT, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GE, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LE, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_EQ, AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_NE, AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_ADD,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_SUB,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MUL,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_DIV,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MOD,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GT,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LT,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GE,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LE,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_EQ,					AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_NE,					AST_CHILD_LEFT);
 
-	_C(AdaptBoolExpression, AST_TAG_OP_ADD, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_SUB, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MUL, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_DIV, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MOD, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GT, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LT, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GE, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LE, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_EQ, AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_NE, AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_ADD,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_SUB,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MUL,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_DIV,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MOD,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GT,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LT,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GE,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LE,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_EQ,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_NE,					AST_CHILD_RIGHT);
 
-	_C(ElsePrefix,						AST_TAG_IF_ELSE,			AST_CHILD_ELSE);
+	_C(ElsePrefix,			AST_TAG_IF_ELSE,				AST_CHILD_ELSE);
 
-	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRY);
-	_C(ScopedStmt,						AST_TAG_TRYTRAP,			AST_CHILD_TRAP);
-	_C(ScopedStmt,						AST_TAG_FOR,				AST_CHILD_STMT);
-	_C(ScopedStmt,						AST_TAG_FOREACH,			AST_CHILD_STMT);
-	_C(ScopedStmt,						AST_TAG_WHILE,				AST_CHILD_STMT);
-	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_IF);
-	_C(ScopedStmt,						AST_TAG_IF_ELSE,			AST_CHILD_ELSE);
-	_C(ScopedStmt,						AST_TAG_IF,					AST_CHILD_STMT);
+	_C(ScopedStmt,			AST_TAG_TRYTRAP,				AST_CHILD_TRY);
+	_C(ScopedStmt,			AST_TAG_TRYTRAP,				AST_CHILD_TRAP);
+	_C(ScopedStmt,			AST_TAG_FOR,					AST_CHILD_STMT);
+	_C(ScopedStmt,			AST_TAG_FOREACH,				AST_CHILD_STMT);
+	_C(ScopedStmt,			AST_TAG_WHILE,					AST_CHILD_STMT);
+	_C(ScopedStmt,			AST_TAG_IF_ELSE,				AST_CHILD_IF);
+	_C(ScopedStmt,			AST_TAG_IF_ELSE,				AST_CHILD_ELSE);
+	_C(ScopedStmt,			AST_TAG_IF,						AST_CHILD_STMT);
 
-	_C(IfCondition,						AST_TAG_IF,					AST_CHILD_COND);
-	_C(IfCondition,						AST_TAG_IF_ELSE,			AST_CHILD_COND);
-	_C(WhileCondition,					AST_TAG_WHILE,				AST_CHILD_COND);
-	_C(ForCond,							AST_TAG_FOR,				AST_CHILD_COND);
-	_C(ForeachContainer,				AST_TAG_FOREACH,			AST_CHILD_CONTAINER);
-	_C(ExpressionANDOR,					AST_TAG_AND,				AST_CHILD_LEFT);
-	_C(ExpressionANDOR,					AST_TAG_OR,					AST_CHILD_LEFT);
-	_C(TernaryCondition,				AST_TAG_TERNARY,			AST_CHILD_COND);
-	_C(TernaryLeftExpr,					AST_TAG_TERNARY,			AST_CHILD_LEFT);
-	_C(TernaryRightExpr,				AST_TAG_TERNARY,			AST_CHILD_RIGHT);
-	_C(ForInit,							AST_TAG_FOR,				AST_CHILD_INIT);
-	_C(ForSuffix,						AST_TAG_FOR,				AST_CHILD_SUFFIX);
-	_C(LambdaStmt,						AST_TAG_LAMBDA_FUNCTION,	AST_CHILD_EXPR);
+	_C(IfCondition,			AST_TAG_IF,						AST_CHILD_COND);
+	_C(IfCondition,			AST_TAG_IF_ELSE,				AST_CHILD_COND);
+	_C(WhileCondition,		AST_TAG_WHILE,					AST_CHILD_COND);
+	_C(ForCond,				AST_TAG_FOR,					AST_CHILD_COND);
+	_C(ForeachContainer,	AST_TAG_FOREACH,				AST_CHILD_CONTAINER);
+	_C(ExpressionANDOR,		AST_TAG_AND,					AST_CHILD_LEFT);
+	_C(ExpressionANDOR,		AST_TAG_OR,						AST_CHILD_LEFT);
+	_C(TernaryCondition,	AST_TAG_TERNARY,				AST_CHILD_COND);
+	_C(TernaryLeftExpr,		AST_TAG_TERNARY,				AST_CHILD_LEFT);
+	_C(TernaryRightExpr,	AST_TAG_TERNARY,				AST_CHILD_RIGHT);
+	_C(ForInit,				AST_TAG_FOR,					AST_CHILD_INIT);
+	_C(ForSuffix,			AST_TAG_FOR,					AST_CHILD_SUFFIX);
+	_C(LambdaStmt,			AST_TAG_LAMBDA_FUNCTION,		AST_CHILD_EXPR);
+
+	_C(AttributeMethod,		AST_TAG_TABLE_NEW_ATTRIBUTE,	AST_CHILD_SET);
+	_C(AttributeMethod,		AST_TAG_TABLE_NEW_ATTRIBUTE,	AST_CHILD_GET);
 }
 
 ///////////////////////////////////////////////////////////
@@ -1236,6 +1239,18 @@ void AST::TranslationVisitor::Handle_NewAttribute (AST_VISITOR_ARGS){
 		yyapply;
 	}
 } 
+
+///////////////////////////////////////////////////////////
+
+void AST::TranslationVisitor::Handle_AttributeMethod (AST_VISITOR_ARGS) {
+	if (entering)
+		M();
+	else {
+		yyrule(2);
+		yv = Translate_AttributeMethod(yy[2].expr(), yy[1].quadNo(), LINE(node));
+		yyapply;
+	}
+}
 
 ///////////////////////////////////////////////////////////
 

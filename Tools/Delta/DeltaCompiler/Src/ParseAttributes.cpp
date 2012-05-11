@@ -21,6 +21,7 @@ DeltaExpr* Translate_AttributeMethod (
 		util_ui32			lastLine
 	) {
 	NULL_EXPR_CHECK(f);
+	DPTR(f)->CheckUninitialised();
 	f = DPTR(f)->AdaptIfBool();	// May fail type checking, but needed for completeness.
 	if (!TypeCheck_FunctionCall(f))
 		return NIL_EXPR;

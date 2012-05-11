@@ -41,6 +41,9 @@ DeltaExpr*	Translate_ArithmeticExpression (
 
 	NULL_EXPR_PAIR_CHECK(e1, e2);
 
+	DPTR(e1)->CheckUninitialised();
+	DPTR(e2)->CheckUninitialised();
+
 	DeltaExpr* result = NIL_EXPR;
 
 	// Due to overloading all arith operators should be generally allowed when vars or
