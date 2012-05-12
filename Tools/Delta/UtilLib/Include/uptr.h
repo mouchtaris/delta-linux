@@ -29,6 +29,9 @@ bool uptrinside (const T* p, const T* left, const T* right) {	// [left, right], 
 template <typename T> 
 void uzeromemory (T* p) { memset(p, 0, sizeof(T)); }
 
+inline void uzeromemory (void* p, util_ui32 n) 
+	{ memset(p, 0, n); }
+
 template <class T, const util_ui32 N>
 void uzeroarray (T (&P)[N]) { memset(&P, 0, sizeof(P)); }
 
