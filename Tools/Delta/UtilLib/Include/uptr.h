@@ -48,6 +48,10 @@ T* ucopybuffer (const T* buffer, util_ui32 n) {
 		return result;
 }
 
+template <typename T>
+T* ucopybufferunlessnull (const T* buffer, util_ui32 n) 
+	{ return buffer ? ucopybuffer(buffer, n) : (T*) 0; }
+
 //---------------------------------------------------------------
 
 template <class T> void* POFFS (const void* p, T j) // Byte offset.
