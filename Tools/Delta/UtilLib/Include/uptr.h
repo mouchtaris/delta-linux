@@ -38,6 +38,13 @@ void umemcpy(T& dest, const T& src) { memcpy(&dest, &src, sizeof(T)); }
 template <typename T>
 void umemcpy(T* dest, const T* src) { memcpy(dest, src, sizeof(T)); }
 
+template <typename T>
+T* ucopybuffer (const T* buffer, util_ui32 n) {
+		T* result = DNEWARR(T, n);
+		memcpy(result, buffer, n * sizeof(T));
+		return result;
+}
+
 //---------------------------------------------------------------
 
 template <class T> void* POFFS (const void* p, T j) // Byte offset.
