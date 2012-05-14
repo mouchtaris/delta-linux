@@ -295,6 +295,17 @@ typename uptrarray<T,N>::ptr_type ucopyarrayunlessnull (T (*ptr)[N]) {
 	}
 }
 
+template <typename T>
+T* ucopybuffer (const T* buffer, util_ui32 n) {
+		T* result = DNEWARR(T, n);
+		memcpy(result, buffer, n * sizeof(T));
+		return result;
+}
+
+template <typename T>
+T* ucopybufferunlessnull (const T* buffer, util_ui32 n) 
+	{ return buffer ? ucopybuffer(buffer, n) : (T*) 0; }
+
 //------------------------------------------------------
 
 #endif	// Do not add stuff beyond this point.
