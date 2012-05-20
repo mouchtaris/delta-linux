@@ -43,6 +43,11 @@ static void DeltaSyntax_yyerror (const char* unused)
 #define	DYNAMIC_STRING(s) \
 	MakeNode_StringWithLateDestruction(ucopystr(s))
 
+#define	MAKE_FUNCTION_EXPR(_p, _pp)				\
+	if (true) {									\
+		PE(S_FUNC_(GetFuncClass(_p)));			\
+		_pp = MakeNode_FunctionExpression(_p);	\
+	} else
 %}
 
 %union {
@@ -60,7 +65,7 @@ static void DeltaSyntax_yyerror (const char* unused)
 %type	<node>			Primary FunctionCall TableConstructor Term TableContentDot TableContentBracket
 %type	<node>			FunctionCallObject FunctionAndTableObject  ActualArgument BasicExprStmt
 %type	<node>			TableContentBoundedDot TableContentBoundedBracket TableObject BasicNonExprStmt
-%type	<node>			FunctionName Function IndexedValues TableElement UnindexedValue
+%type	<node>			FunctionName Function IndexedValues TableElement UnindexedValue ReturnValue
 %type	<node>			ArithmeticExpression AssignExpression BooleanExpression RelationalExpression
 %type	<node>			Condition ForCondition DottedIdent  IndexContent IndexExpression 
 %type	<node>			TernaryExpression TernaryCondition TernarySelection1 TernarySelection2
@@ -292,10 +297,15 @@ AssertStmt:					{ SM(S_STMT); PE(S_ASSRT);	}
 ReturnPrefix:			RETURN 
 							{ SM(S_RET); }	
 						;
+ReturnValue:				Expression
+								{ $$ = $1; }
+						|	Function
+								{ MAKE_FUNCTION_EXPR($1, $$); }
+						;
 
 ReturnStmt:					ReturnPrefix
 								{ PE2(T_RET, S_EXPR); } 
-							Expression Semi
+							ReturnValue Semi
 								{ EM(S_RET); $$ = MakeNode_Return($3); }
 						|	ReturnPrefix Semi
 								{ EM(S_RET); $$ = MakeNode_Return(); }
@@ -659,7 +669,7 @@ ActualArgument:					{ PE(S_EXPR); }
 						|	TRIPLE_DOT	
 								{ PE(T_TDOT); $$ = MakeNode_TRIPLE_DOT(); }
 						|	Function
-								{ $$ = MakeNode_FunctionExpression($1); }
+								{ MAKE_FUNCTION_EXPR($1, $$); }
 						;
 				
 /*FUNCTION CALL EXPRESSION***/
@@ -822,7 +832,7 @@ UnindexedValue:				Expression
 						;
 						
 FunctionElement:			Function
-								{ PE(S_FUNC_(GetFuncClass($1))); $$ = MakeNode_FunctionExpression($1); }
+								{ MAKE_FUNCTION_EXPR($1, $$); }
 						;
 
 PE_elem:				{ OE(T_TABLE_ELEM); }						
@@ -899,7 +909,7 @@ ContentList:				ExpressionList ',' LN ContentExpression
 						;
 
 ContentExpression:			Expression		{ $$ = $1; }
-						|	Function		{ PE(S_FUNC_(GetFuncClass($1))); $$ = MakeNode_FunctionExpression($1); }
+						|	Function		{ MAKE_FUNCTION_EXPR($1, $$); }
 						;
 					
 /**************************************************************************/
