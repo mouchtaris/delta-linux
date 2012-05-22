@@ -526,6 +526,7 @@ ForeachStmt:	FOREACH '(' Lvalue ForeachOpt Expression ')' Stmt {
 
 ReturnStmt	:	RETURN Expression ';'	{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @3, $2, $1); }
 			|	RETURN ';'				{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, 0, $1); }
+			|	RETURN Function			{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, $2, $1); }	
 			;
 
 ThrowStmt	:	THROW Expression ';' { $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @3, $2, $1); }
