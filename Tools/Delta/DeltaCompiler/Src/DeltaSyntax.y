@@ -297,16 +297,16 @@ AssertStmt:					{ SM(S_STMT); PE(S_ASSRT);	}
 ReturnPrefix:			RETURN 
 							{ SM(S_RET); }	
 						;
-ReturnValue:				Expression
-								{ $$ = $1; }
+ReturnValue:				Expression Semi
+								{ $$ = MakeNode_Return($1); }
 						|	Function
-								{ MAKE_FUNCTION_EXPR($1, $$); }
+								{ MAKE_FUNCTION_EXPR($1, $$); $$ = MakeNode_Return($$); }
 						;
 
 ReturnStmt:					ReturnPrefix
 								{ PE2(T_RET, S_EXPR); } 
-							ReturnValue Semi
-								{ EM(S_RET); $$ = MakeNode_Return($3); }
+							ReturnValue
+								{ EM(S_RET); $$ = $3; }
 						|	ReturnPrefix Semi
 								{ EM(S_RET); $$ = MakeNode_Return(); }
 						;

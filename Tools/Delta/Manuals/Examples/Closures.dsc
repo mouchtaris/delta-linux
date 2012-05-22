@@ -14,7 +14,7 @@ f();	// Prints 10
 /////////////////////////////////
 // Simple functors.
 function const_maker (x) {
-	return function { return x; };
+	return function { return x; }
 }
 
 c_hw = const_maker("hello, world");
@@ -64,7 +64,7 @@ f();
 // Resursive function with closure.
 
 f = (lambda(n) {
-		(function{ if (n) { print(n--), @lambda(); } })
+		(function { if (n) { print(n--), @lambda(); } })
 	})(10);
 f();
 
@@ -141,8 +141,8 @@ fv()()();
 function q (a, b) {
 	return function (x,y) {
 		print(a,b); 
-		return function { print(a); };
-	};
+		return function { print(a); }
+	}
 }
 
 q(1,2)(3,4)();	// 121
