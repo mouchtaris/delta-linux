@@ -137,28 +137,28 @@ template <class F, class D = ucallbackwithclosure<F> > class ucallbacklist {
 		C1& a1;
 		void operator()(const D& f) { f(a1); } 
 		caller1 (C1& _a1) : a1(_a1){}
-		caller1 (caller1& c) : a1(c.a1){}
+		caller1 (const caller1& c) : a1(const_cast<caller1&>(c).a1){}
 	};
 
 	template <class C1, class C2> struct caller2 : public caller1<C1> { 
 		C2& a2;
 		void operator()(const D& f) { f(caller1<C1>::a1, a2); } 
 		caller2 (C1& _a1, C2& _a2) : caller1<C1>(_a1), a2(_a2){}
-		caller2 (caller2& c) : caller1<C1>(c), a2(c.a2){}
+		caller2 (const caller2& c) : caller1<C1>(c), a2(const_cast<caller2&>(c).a2){}
 	};
 
 	template <class C1, class C2, class C3> struct caller3 : public caller2<C1, C2> { 
 		C3& a3;
 		void operator()(const D& f) { f(caller1<C1>::a1,  caller2<C1, C2>::a2, a3); } 
 		caller3 (C1& _a1, C2& _a2, C3& _a3) : caller2<C1, C2>(_a1, _a2), a3(_a3){}
-		caller3 (caller3& c) : caller2<C1,C2>(c), a3(c.a3){}
+		caller3 (const caller3& c) : caller2<C1,C2>(c), a3(const_cast<caller3&>(c).a3){}
 	};
 
 	template <class C1, class C2, class C3, class C4> struct caller4 : public caller3<C1, C2, C3> { 
 		C4& a4;
 		void operator()(const D& f) { f(caller1<C1>::a1,  caller2<C1, C2>::a2, caller3<C1, C2, C3>::a3, a4); } 
 		caller4 (C1& _a1, C2& _a2, C3& _a3, C4& _a4) : caller3<C1, C2, C3>(_a1, _a2, _a3), a4(_a4){}
-		caller4 (caller4& c) : caller3<C1,C2,C3>(c), a4(c.a4){}
+		caller4 (const caller4& c) : caller3<C1,C2,C3>(c), a4(const_cast<caller4&>(c).a4){}
 	};
 
 	// We allow a callback call to remove its entry from the list (but only this).
