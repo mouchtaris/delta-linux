@@ -82,7 +82,7 @@
 	}																					\
 	void _prefix StoreBin (const std::string& path) const {								\
 		if (FILE* fp = ubinaryfileopen(path, "w")) {									\
-			Write(PortableBinFileWriter(fp));											\
+			Write(utempobj(PortableBinFileWriter(fp)));									\
 			fclose(fp);																	\
 		}																				\
 	}																					\
@@ -96,7 +96,7 @@
 		FILE* fp = ubinaryfileopen(path, "r");											\
 		UCHECK_PRIMARY_ERROR(fp, uconstructstr("(failed to open '%s')", path.c_str()));	\
 		UCHECK_DOMINO_ERROR(															\
-			Read(PortableBinFileReader(fp)),											\
+			Read(utempobj(PortableBinFileReader(fp))),									\
 			uconstructstr("(from '%s')", path.c_str())									\
 		);																				\
 		fclose(fp);																		\

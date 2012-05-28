@@ -28,13 +28,13 @@ T* _DNOTNULL (T* p) {
 
 #if	!defined(DDEBUG_USE)
 
-#include <malloc.h>
+#include <alloc.h>
 #include <string.h>
 
-template <typename T> void udeletesubstitute(T* p) { delete p; }
+template <typename T> void udeletesubstitute(T*& p) { delete p; }
 template <class T, const unsigned N> 
 void udeletesubstitute (T (*&p)[N]) { delete[] p; }
-template <typename T> void udelarraysubstitute(T* p) { delete[] p; }
+template <typename T> void udelarraysubstitute(T*& p) { delete[] p; }
 
 #define	DNEW(a)				_DNOTNULL(new a)
 #define	DNEW_WITH_CONTEXT(a,_file,_line)	\
@@ -51,8 +51,9 @@ template <typename T> void udelarraysubstitute(T* p) { delete[] p; }
 #define	DNPTR(ptr)			(ptr)
 #define	DASSERTPTR(ptr)		
 #define	DNULLCHECK(ptr)		(ptr)
-#define	DFRIENDDESTRUCTOR()														\
-			template <typename _T> friend void ::udeletesubstitute(_T* p);		\
+#define	DFRIENDDESTRUCTOR()																				\
+			template <typename _T> friend void ::udeletesubstitute(_T* p);								\
+			template <typename _T, const unsigned _N> friend void ::udeletesubstitute(_T (*&p) [_N]);	\
 			template <typename _T> friend void ::udelarraysubstitute(_T* p);
 #define	dseterrorcallback(c)
 #define	dsetassertfunc(f)
@@ -107,7 +108,9 @@ DDEBUG_FUNC	uvoidvoid_f         dgetassertcleaner (void);
 // friendliness.
 //
 #define	DFRIENDDESTRUCTOR() \
-	friend class DDEBUG_CLASS _DDESTRUCTORS;
+	friend class DDEBUG_CLASS _DDESTRUCTORS;	\
+	template <typename _T> friend  void DDEBUG_CLASS _DDESTRUCTORS::simple (_T* inst);	\
+	template <typename _T> friend  void DDEBUG_CLASS _DDESTRUCTORS::array (_T* arr);
 
 ////////////////////////////////////////////////////////
 
