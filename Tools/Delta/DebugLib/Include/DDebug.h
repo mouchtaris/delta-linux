@@ -28,19 +28,23 @@ T* _DNOTNULL (T* p) {
 
 #if	!defined(DDEBUG_USE)
 
+#ifdef	_MAC_
 #include <alloc.h>
+#else
+#include <malloc.h>
+#endif
 #include <string.h>
 
 struct ddestructors {
-
-template <typename T>
-	static void udeletesubstitute(T* p) { delete p; }
-
+	template <typename T>
+	static void udeletesubstitute(T* p) 
+		{ delete p; }
 	template <class T, const unsigned N> 
-	static void udeletesubstitute (T (*&p)[N]) { delete[] p; }
-
+	static void udeletesubstitute (T (*&p)[N]) 
+		{ delete[] p; }
 	template <typename T> 
-	static void udelarraysubstitute(T* p) { delete[] p; }
+	static void udelarraysubstitute(T* p) 
+		{ delete[] p; }
 };
 
 #define	DNEW(a)				_DNOTNULL(new a)
@@ -58,11 +62,10 @@ template <typename T>
 #define	DNPTR(ptr)			(ptr)
 #define	DASSERTPTR(ptr)		
 #define	DNULLCHECK(ptr)		(ptr)
-#define	DFRIENDDESTRUCTOR()																				\
-			friend class ddestructors;																	\
-			template <typename _T> friend void ddestructors::udeletesubstitute(_T* p);								\
-			template <typename _T, const unsigned _N> friend void ddestructors::udeletesubstitute(_T (*&p) [_N]);	\
-			template <typename _T> friend void ddestructors::udelarraysubstitute(_T* p);
+#define	DFRIENDDESTRUCTOR()																\
+			friend struct ddestructors;													\
+			template <typename _T> friend void ddestructors::udeletesubstitute(_T* p);
+
 #define	dseterrorcallback(c)
 #define	dsetassertfunc(f)
 #define	dsetassertcleaner(f)
@@ -117,8 +120,8 @@ DDEBUG_FUNC	uvoidvoid_f         dgetassertcleaner (void);
 //
 #define	DFRIENDDESTRUCTOR() \
 	friend class DDEBUG_CLASS _DDESTRUCTORS;	\
-	template <typename _T> friend  void DDEBUG_CLASS _DDESTRUCTORS::simple (_T* inst);	\
-	template <typename _T> friend  void DDEBUG_CLASS _DDESTRUCTORS::array (_T* arr);
+	template <typename _T> friend  void typename DDEBUG_CLASS _DDESTRUCTORS::simple (_T* inst);	\
+	template <typename _T> friend  void typename DDEBUG_CLASS _DDESTRUCTORS::array (_T* arr);
 
 ////////////////////////////////////////////////////////
 

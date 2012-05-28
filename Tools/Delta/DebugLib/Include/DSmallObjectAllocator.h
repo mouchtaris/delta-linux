@@ -11,7 +11,12 @@
 #ifndef	DSMALLOBJECTALLOCATOR_H
 #define	DSMALLOBJECTALLOCATOR_H
 
+#ifdef	_MAC_
 #include <alloc.h>
+#else
+#include <malloc.h>
+#endif
+
 #include "utypes.h"
 #include "uptr.h"
 #include "DMemoryManager.h"

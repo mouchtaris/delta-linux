@@ -7,7 +7,12 @@
 //
 //
 
+#ifdef	_MAC_
 #include <alloc.h>
+#else
+#include <malloc.h>
+#endif
+
 #include "utypes.h"
 #include "uptr.h"
 #include "uarraydoublelist.h"
