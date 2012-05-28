@@ -119,9 +119,9 @@ DDEBUG_FUNC	uvoidvoid_f         dgetassertcleaner (void);
 // friendliness.
 //
 #define	DFRIENDDESTRUCTOR() \
-	friend class DDEBUG_CLASS _DDESTRUCTORS;	\
-	template <typename _T> friend  void typename DDEBUG_CLASS _DDESTRUCTORS::simple (_T* inst);	\
-	template <typename _T> friend  void typename DDEBUG_CLASS _DDESTRUCTORS::array (_T* arr);
+	friend class DDEBUG_CLASS ::_DDESTRUCTORS;	\
+	template <typename _T> friend  void DDEBUG_CLASS ::_DDESTRUCTORS::simple (_T* inst);	\
+	template <typename _T> friend  void DDEBUG_CLASS ::_DDESTRUCTORS::array (_T* arr);
 
 ////////////////////////////////////////////////////////
 
