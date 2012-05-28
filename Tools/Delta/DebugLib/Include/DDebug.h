@@ -31,10 +31,17 @@ T* _DNOTNULL (T* p) {
 #include <alloc.h>
 #include <string.h>
 
-template <typename T> void udeletesubstitute(T*& p) { delete p; }
-template <class T, const unsigned N> 
-void udeletesubstitute (T (*&p)[N]) { delete[] p; }
-template <typename T> void udelarraysubstitute(T*& p) { delete[] p; }
+struct ddestructors {
+
+template <typename T>
+	static void udeletesubstitute(T* p) { delete p; }
+
+	template <class T, const unsigned N> 
+	static void udeletesubstitute (T (*&p)[N]) { delete[] p; }
+
+	template <typename T> 
+	static void udelarraysubstitute(T* p) { delete[] p; }
+};
 
 #define	DNEW(a)				_DNOTNULL(new a)
 #define	DNEW_WITH_CONTEXT(a,_file,_line)	\
@@ -42,9 +49,9 @@ template <typename T> void udelarraysubstitute(T*& p) { delete[] p; }
 
 #define	DNEWCLASS(C,Args)	DNEW(C Args)
 #define	DNEWARR(t,n)		DNEW(t[n])
-#define	DDELPTR(p)			udeletesubstitute(p)
-#define	DDELARR(p)			udelarraysubstitute(p)
-#define	DDELETE(p)			udeletesubstitute(p)
+#define	DDELPTR(p)			ddestructors::udeletesubstitute(p)
+#define	DDELARR(p)			ddestructors::udelarraysubstitute(p)
+#define	DDELETE(p)			ddestructors::udeletesubstitute(p)
 #define	DPTR(ptr)			(ptr)
 #define	DSIZE(ptr,n)
 #define	DPTRLVALUE(ptr)		(ptr)
@@ -52,9 +59,10 @@ template <typename T> void udelarraysubstitute(T*& p) { delete[] p; }
 #define	DASSERTPTR(ptr)		
 #define	DNULLCHECK(ptr)		(ptr)
 #define	DFRIENDDESTRUCTOR()																				\
-			template <typename _T> friend void ::udeletesubstitute(_T* p);								\
-			template <typename _T, const unsigned _N> friend void ::udeletesubstitute(_T (*&p) [_N]);	\
-			template <typename _T> friend void ::udelarraysubstitute(_T* p);
+			friend class ddestructors;																	\
+			template <typename _T> friend void ddestructors::udeletesubstitute(_T* p);								\
+			template <typename _T, const unsigned _N> friend void ddestructors::udeletesubstitute(_T (*&p) [_N]);	\
+			template <typename _T> friend void ddestructors::udelarraysubstitute(_T* p);
 #define	dseterrorcallback(c)
 #define	dsetassertfunc(f)
 #define	dsetassertcleaner(f)
