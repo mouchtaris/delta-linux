@@ -116,7 +116,7 @@
 			uconstructstr("(failed to open '%s')", path.c_str())						\
 		);																				\
 		UCHECK_DOMINO_ERROR_REPORT(														\
-			Read(PortableBinFileReader(fp)),											\
+			Read(utempobj(PortableBinFileReader(fp))),									\
 			uconstructstr("(from '%s')", path.c_str())									\
 		);																				\
 		fclose(fp);																		\
