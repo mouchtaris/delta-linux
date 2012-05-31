@@ -108,10 +108,10 @@ template <
 
 	public:
 	bool				In (const object_type* inst) const {
-							Instances::const_iterator i = std::find_if(
+							typename Instances::const_iterator i = std::find_if(
 															insts.begin(),
 															insts.end(),
-															std::bind2nd(uequal_second<std::pair<key_type, const object_type*>>(), inst)
+															std::bind2nd(uequal_second<std::pair<key_type, const object_type*> >(), inst)
 														);
 							return i != insts.end();
 						}
@@ -128,13 +128,13 @@ template <
 						}
 
 	void				Delete (const key_type& key) {
-							Instances::iterator i = insts.find(key);
+							typename Instances::iterator i = insts.find(key);
 							DASSERT(i != insts.end());
 							DDELETE(i->second);
 							insts.erase(i);
 						}
 	object_type*		Get (const key_type& key) const {
-							Instances::const_iterator i = insts.find(key);
+							typename Instances::const_iterator i = insts.find(key);
 							return i != insts.end() ? i->second : (object_type*) 0;
 						}
 
@@ -147,11 +147,11 @@ template <
 	void				ResetRole (const std::string& role) 
 							{ roles.erase(role); roleKeys.erase(role); }
 	object_type*		GetRole (const std::string& role) const {
-							Roles::const_iterator i = roles.find(role);
+							typename Roles::const_iterator i = roles.find(role);
 							return i != roles.end() ? i->second : (object_type*) 0;
 						}
 	const key_type&		GetRoleKey (const std::string& role) const {
-							RoleKeys::const_iterator i = roleKeys.find(role);
+							typename RoleKeys::const_iterator i = roleKeys.find(role);
 							DASSERT(i != roleKeys.end());
 							return  i->second;
 						}
@@ -161,7 +161,7 @@ template <
 							std::for_each(
 								insts.begin(),
 								insts.end(),
-								udestroy_second<std::pair<key_type, object_type*>>()
+								udestroy_second<std::pair<key_type, object_type*> >()
 							);
 							insts.clear();
 							roles.clear();
