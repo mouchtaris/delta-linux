@@ -62,6 +62,7 @@ UTILLIB_FUNC bool					ucreatablefilename (const char* path);
 UTILLIB_FUNC const std::string		ufileprefix (const char* fname);
 UTILLIB_FUNC const std::string		ufileext (const char* fname);
 UTILLIB_FUNC util_ui32				ufilesize (const char* path);	// Calculates file size (too slow).
+UTILLIB_FUNC time_t					ufilechangetime (const std::string& path);
 UTILLIB_FUNC bool					ustorebinaryfile (const char* path, void* buffer, util_ui32 size);
 UTILLIB_FUNC void*					uloadbinaryfile (const char* path, util_ui32* size);	// Loads a file into memory. Delete via VPDEL().
 UTILLIB_FUNC bool					uloadtextfile (const std::string& path, std::string* at);

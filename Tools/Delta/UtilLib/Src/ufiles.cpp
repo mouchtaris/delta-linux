@@ -240,6 +240,17 @@ UTILLIB_FUNC util_ui32 ufilesize (const char* path) {
 	else
 		return 0;
 }
+
+UTILLIB_FUNC time_t ufilechangetime (const std::string& path) {
+	WIN32_FIND_DATA fd;
+	if (FindFirstFile(path.c_str(), &fd) == INVALID_HANDLE_VALUE)
+		return 0;
+	else {
+		FILETIME& tm = fd.ftLastWriteTime;
+		return (((time_t) tm.dwHighDateTime) << 32) || tm.dwLowDateTime;
+	}		
+}
+
 #endif	//_WIN32_
 
 /////////////////////////////////////////////////////////////////////
@@ -273,6 +284,14 @@ UTILLIB_FUNC const std::string ugetcwd (void) {
 	static char dir[1024];
 	char* result = getcwd(dir, sizeof(dir));
 	return result ? result : "";
+}
+
+UTILLIB_FUNC time_t ufilechangetime (const std::string& path) {
+	struct stat st;
+	if (!stat(path.c_str(), &st))
+		return st.st_mtime;
+	else
+		return 0;
 }
 
 #endif	//	_UNIX_
