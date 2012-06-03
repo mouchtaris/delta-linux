@@ -586,43 +586,51 @@ UTILLIB_FUNC bool ureadquotedstring (
 
 /////////////////////////////////////////////////////////////////
 
-class FILETextReader : public SequentialTextFileReader {
+char SequentialTextFILEReader::getnext (void) { 
+	if (useLookAhead) {
+		useLookAhead = false;
+		return lookAheadChar;
+	}
+	else
+		return fgetc(fp);
+}
 
-	private:
-	FILE*	fp;
-	bool	useLookAhead;
-	char	lookAheadChar;
+void SequentialTextFILEReader::skipspaces (void) {
+	useLookAhead = true;
+	lookAheadChar = uskipspaces(fp);
+}
 
-	public:
+bool SequentialTextFILEReader::iseof (void) const {
+	if (useLookAhead)
+		return lookAheadChar == EOF;	// If EOF character was read.
+	else
+		return !!feof(fp);
+}
 
-	char	getnext (void) { 
-				if (useLookAhead) {
-					useLookAhead = false;
-					return lookAheadChar;
-				}
-				else
-					return fgetc(fp);
-			}
+SequentialTextFILEReader::SequentialTextFILEReader (FILE* _fp) : 
+	fp(_fp),
+	useLookAhead(false),
+	lookAheadChar('0') 
+	{}
 
-	void	skipspaces (void) {
-				useLookAhead = true;
-				lookAheadChar = uskipspaces(fp);
-			}
+SequentialTextFILEReader::~SequentialTextFILEReader()
+	{}
 
-	bool	iseof (void) const {
-				if (useLookAhead)
-					return lookAheadChar == EOF;	// If EOF character was read.
-				else
-					return !!feof(fp);
-			}
+/////////////////////////////////////////////////////////////////
 
-	FILETextReader (FILE* _fp) : 
-		fp(_fp),
-		useLookAhead(false),
-		lookAheadChar('0') {}
+char SequentialStringReader::getnext (void) 
+	{ return i == s.end() ? EOF : *i++; }
 
-	~FILETextReader(){}
-};
+void SequentialStringReader::skipspaces (void) {
+	while (i != s.end() && isspace(*i))
+		++i;
+}
+
+bool SequentialStringReader::iseof (void) const 
+	{ return i == s.end(); }
+
+SequentialStringReader::SequentialStringReader (const std::string& _s) :  s(_s), i(s.begin()){}
+SequentialStringReader::~SequentialStringReader(){}
 
 //****************************
 
@@ -643,7 +651,7 @@ class StringSizeLimitation : public uconditionalfunctor {
 UTILLIB_FUNC char* ureadstring (FILE* fp, char* buffer, util_ui16 n) {
 	
 	std::string	result;
-	if (!ureadstring(utempobj(FILETextReader(fp)), result, utempobj(StringSizeLimitation(n))))
+	if (!ureadstring(utempobj(SequentialTextFILEReader(fp)), result, utempobj(StringSizeLimitation(n))))
 		return (char*) 0;
 	else
 		return strcpy(buffer, result.c_str());
@@ -653,17 +661,17 @@ UTILLIB_FUNC char* ureadstring (FILE* fp, char* buffer, util_ui16 n) {
 
 UTILLIB_FUNC char* ureadquotedstring (FILE* fp, char* buffer, util_ui16 n) {
 	std::string result;
-	if (!ureadquotedstring(utempobj(FILETextReader(fp)), result))
+	if (!ureadquotedstring(utempobj(SequentialTextFILEReader(fp)), result))
 		return (char*) 0;
 	else
 		return ustrnmaxcpy(buffer, result.c_str(), n);
 }
 
 UTILLIB_FUNC bool ureadquotedstring (FILE* fp, std::string& s) 
-	{ return ureadquotedstring(utempobj(FILETextReader(fp)), s); }
+	{ return ureadquotedstring(utempobj(SequentialTextFILEReader(fp)), s); }
 
 UTILLIB_FUNC bool ureadstring (FILE* fp, std::string& s) 
-	{ return ureadstring(utempobj(FILETextReader(fp)), s); }
+	{ return ureadstring(utempobj(SequentialTextFILEReader(fp)), s); }
 
 //------------------------------------------------------------------
 

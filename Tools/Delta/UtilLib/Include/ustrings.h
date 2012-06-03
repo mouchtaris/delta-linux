@@ -55,12 +55,48 @@ struct ustorestrfunctor : public std::binary_function<FILE*, std::string, void> 
 // An sbtraction of the facilities offered by a basic utility library
 // to read from a sequential text file.
 //
-struct UTILLIB_CLASS SequentialTextFileReader {
+class UTILLIB_CLASS SequentialTextFileReader {
+	public:
 	virtual char	getnext (void) = 0;
 	virtual void	skipspaces (void) = 0;
 	virtual bool	iseof (void) const = 0;
 	SequentialTextFileReader (void){}
 	virtual ~SequentialTextFileReader(){}
+};
+
+//****************************
+
+class UTILLIB_CLASS SequentialTextFILEReader : public SequentialTextFileReader {
+
+	private:
+	FILE*			fp;
+	bool			useLookAhead;
+	char			lookAheadChar;
+
+	public:
+	virtual char	getnext (void);
+	virtual void	skipspaces (void);
+	virtual bool	iseof (void) const;
+
+	SequentialTextFILEReader (FILE* _fp);
+	virtual ~SequentialTextFILEReader();
+};
+
+//****************************
+
+class UTILLIB_CLASS SequentialStringReader : public SequentialTextFileReader {
+
+	private:
+	std::string				s;
+	std::string::iterator	i;
+
+	public:
+	virtual char	getnext (void);
+	virtual void	skipspaces (void);
+	virtual bool	iseof (void) const;
+
+	SequentialStringReader (const std::string& _s);
+	virtual ~SequentialStringReader();
 };
 
 //****************************
