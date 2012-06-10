@@ -415,12 +415,14 @@ UTILLIB_FUNC util_ui16 ustrpos (const char** arr, util_ui16 n, const char* s) {
 
 //------------------------------------------------------------------
 
-UTILLIB_FUNC char uskipspaces (FILE* fp) {
+UTILLIB_FUNC char uskipspaces (FILE* fp, util_ui32* lines) {
 
 	char c;
 
 	do {
 		c = fgetc(fp);
+		if (lines && c == '\n')
+			++*lines;
 	} while (isspace(c) && c != EOF);
 
 	return c;
@@ -595,9 +597,9 @@ char SequentialTextFILEReader::getnext (void) {
 		return fgetc(fp);
 }
 
-void SequentialTextFILEReader::skipspaces (void) {
+void SequentialTextFILEReader::skipspaces (util_ui32* lines) {
 	useLookAhead = true;
-	lookAheadChar = uskipspaces(fp);
+	lookAheadChar = uskipspaces(fp, lines);
 }
 
 bool SequentialTextFILEReader::iseof (void) const {
@@ -621,9 +623,12 @@ SequentialTextFILEReader::~SequentialTextFILEReader()
 char SequentialStringReader::getnext (void) 
 	{ return i == s.end() ? EOF : *i++; }
 
-void SequentialStringReader::skipspaces (void) {
-	while (i != s.end() && isspace(*i))
+void SequentialStringReader::skipspaces (util_ui32* lines) {
+	while (i != s.end() && isspace(*i)) {
+		if (lines && *i == '\n')
+			++*lines;
 		++i;
+	}
 }
 
 bool SequentialStringReader::iseof (void) const 

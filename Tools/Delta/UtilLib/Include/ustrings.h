@@ -58,7 +58,7 @@ struct ustorestrfunctor : public std::binary_function<FILE*, std::string, void> 
 class UTILLIB_CLASS SequentialTextFileReader {
 	public:
 	virtual char	getnext (void) = 0;
-	virtual void	skipspaces (void) = 0;
+	virtual void	skipspaces (util_ui32* lines = (util_ui32*) 0) = 0;
 	virtual bool	iseof (void) const = 0;
 	SequentialTextFileReader (void){}
 	virtual ~SequentialTextFileReader(){}
@@ -75,7 +75,7 @@ class UTILLIB_CLASS SequentialTextFILEReader : public SequentialTextFileReader {
 
 	public:
 	virtual char	getnext (void);
-	virtual void	skipspaces (void);
+	virtual void	skipspaces (util_ui32* lines = (util_ui32*) 0);
 	virtual bool	iseof (void) const;
 
 	SequentialTextFILEReader (FILE* _fp);
@@ -92,7 +92,7 @@ class UTILLIB_CLASS SequentialStringReader : public SequentialTextFileReader {
 
 	public:
 	virtual char	getnext (void);
-	virtual void	skipspaces (void);
+	virtual void	skipspaces (util_ui32* lines = (util_ui32*) 0);
 	virtual bool	iseof (void) const;
 
 	SequentialStringReader (const std::string& _s);
@@ -146,7 +146,7 @@ UTILLIB_FUNC char*				ureadquotedstring (FILE* fp, char* buffer, util_ui16 maxLe
 UTILLIB_FUNC bool				ureadquotedstring (FILE* fp, std::string& s);
 UTILLIB_FUNC char*				ureadstring (FILE* fp, char* buffer, util_ui16 maxLen);
 UTILLIB_FUNC bool				ureadstring (FILE* fp, std::string& s);
-UTILLIB_FUNC char				uskipspaces (FILE* fp);
+UTILLIB_FUNC char				uskipspaces (FILE* fp, util_ui32* lines = (util_ui32*) 0);
 UTILLIB_FUNC void				utabstops (char* s, util_ui16 total);
 UTILLIB_FUNC const std::string	utabstops (util_ui16 total);
 UTILLIB_FUNC const std::string	uconstructstr (const char* format,...);
