@@ -147,6 +147,15 @@ template <typename T> class upoint {
 };
 
 /////////////////////////////////////////////////////////////////
+
+inline bool uispower2 (util_ui32 num) {
+	for (util_ui32 i = 1; i <= num; i <<= 1)
+		if ((num & ~i) == 0)
+			return true;
+	return false;
+}
+
+/////////////////////////////////////////////////////////////////
 // umin (requires same types), umin1 (different types, but returns first
 // type), and umin2 (same as umin1, for second type).
 //
