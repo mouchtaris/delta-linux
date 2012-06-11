@@ -82,7 +82,7 @@ class READERS_CLASS StringFile {
 	util_ui32		sfcharsleft (void) const;					// How many characters left to EOF.
 	util_ui32		sfsize (void) const;						// Size of string file.
 
-	void			sfskipspaces (void);
+	void			sfskipspaces (util_ui32* lines = (util_ui32*) 0);
 	util_ui32		sfcurrline (void) const;					// Current line.
 	util_ui32		sfcurrcol (void) const;						// Current column.
 

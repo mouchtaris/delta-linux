@@ -46,14 +46,17 @@ void StringFile::sfnextchar (void) {
 //------------------------------------------------------
 // Skips spaces until non-space or end of string met.
 //
-void StringFile::sfskipspaces (void) {
+void StringFile::sfskipspaces (util_ui32* lines) {
 
 	if (!currPtr)
 		return;
 
 	while (!sfeof() && isspace(*currPtr)) {
-		if (*currPtr == '\n')			// Check new line.
+		if (*currPtr == '\n') {			// Check new line.
 			++line, col = 0;			// Since it will be increased.
+			if (lines)
+				++*lines;
+		}
 		else
 		if (*currPtr == '\t')			// Check for tab space.
 			col += COIN_TAB_SIZE;
@@ -280,11 +283,11 @@ class StringFILETextReader : public SequentialTextFileReader {
 	private:
 	StringFile*	sf;
 	char		lastCharRead;
+	
 	public:
-
-	char	getnext (void)		{ return sf->sfgetc(); }
-	void	skipspaces (void)	{ sf->sfskipspaces(); }
-	bool	iseof (void) const	{ return sf->sfeof(); }
+	char	getnext (void)					{ return sf->sfgetc(); }
+	void	skipspaces (util_ui32* lines)	{ sf->sfskipspaces(); }
+	bool	iseof (void) const				{ return sf->sfeof(); }
 
 	StringFILETextReader (StringFile* _sf) : sf(_sf), lastCharRead('0') {}
 	~StringFILETextReader (){}
