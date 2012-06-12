@@ -28,7 +28,8 @@
 #ifdef	_UNIX_
 
 UTILLIB_FUNC unsigned long ugettime (void) 
-	{ return time((time_t*) 0) * 1000; }
+//	{ return time((time_t*) 0) * 1000; }
+	{ return clock() / (CLOCKS_PER_SEC / 1000); }
 
 static void defaultmodalmessage (const std::string& title, const std::string& msg) {
 	fprintf(stderr, "%s: %s\n", title.c_str(), msg.c_str());

@@ -11,7 +11,7 @@
 #include "utypes.h"
 #include <string>
 
-//	#define	DDEBUG_STRIP_OFF_ASSERT
+	#define	DDEBUG_STRIP_OFF_ASSERT
 
 //------------------------------------------------------
 
