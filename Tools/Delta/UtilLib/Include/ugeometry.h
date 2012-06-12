@@ -155,6 +155,13 @@ inline bool uispower2 (util_ui32 num) {
 	return false;
 }
 
+inline util_ui32 ugetmaxpower2 (util_ui32 num) {	// strips off everything but the largest 2 power in num
+	util_ui32 result = 1;
+	while (num >>= 1)
+		result <<= 1;
+	return result;
+}
+
 /////////////////////////////////////////////////////////////////
 // umin (requires same types), umin1 (different types, but returns first
 // type), and umin2 (same as umin1, for second type).
