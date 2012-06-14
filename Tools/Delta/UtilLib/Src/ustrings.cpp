@@ -610,9 +610,9 @@ bool SequentialTextFILEReader::iseof (void) const {
 }
 
 SequentialTextFILEReader::SequentialTextFILEReader (FILE* _fp) : 
-	fp(_fp),
-	useLookAhead(false),
-	lookAheadChar('0') 
+	fp				(_fp),
+	useLookAhead	(false),
+	lookAheadChar	('\0') 
 	{}
 
 SequentialTextFILEReader::~SequentialTextFILEReader()
