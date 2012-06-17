@@ -50,6 +50,81 @@
 #define	uvalidrectex(x1, y1, x2, y2)	((x1) < (x2) && (y1) < (y2))
 
 /////////////////////////////////////////////////////////////////
+// umin (requires same types), umin1 (different types, but returns first
+// type), and umin2 (same as umin1, for second type).
+//
+template <class T>
+T umin (T x, T y) {
+	return x < y ? x : y;
+}
+
+template <class T1, class T2>
+util_i32 udiff (T1 x, T2 y) {
+	return ((util_i32)x) -((util_i32) y);
+}
+
+template <class T1, class T2>
+T1 umin1 (T1 x, T2 y) {
+	if (x < y)
+		return x;
+	else
+		return (T1) y;
+}
+
+template <class T1, class T2>
+T2 umin2 (T1 x, T2 y) {
+	if (x < y)
+		return (T2) x;
+	else
+		return y;
+}
+
+template <class T>
+void uminupdate (const T& val, T& minVal) {
+    
+	if (val < minVal)
+		minVal = val;
+}
+
+template <class T>
+void umaxupdate (const T& val, T& maxVal) {
+    
+	if (val > maxVal)
+		maxVal = val;
+}
+
+template <class T>
+void uminmaxupdate (const T& val, T& minVal, T& maxVal) {
+    
+	uminupdate(val, minVal);
+	umaxupdate(val, maxVal);
+}
+
+/////////////////////////////////////////////////////////////////
+// Same as umin set of functions.
+//
+template <class T>
+T umax (T x, T y) {
+	return x > y ? x : y;
+}
+
+template <class T1, class T2>
+T1 umax1 (T1 x, T2 y) {
+	if (x > y)
+		return x;
+	else
+		return (T1) y;
+}
+
+template <class T1, class T2>
+T2 umax2 (T1 x, T2 y) {
+	if (x > y)
+		return (T2) x;
+	else
+		return y;
+}
+
+/////////////////////////////////////////////////////////////////
 // A very simple rectangle template class.
 
 template <class T> struct urectangleex;
@@ -163,87 +238,12 @@ inline util_ui32 ugetmaxpower2 (util_ui32 num) {	// strips off everything but th
 }
 
 /////////////////////////////////////////////////////////////////
-// umin (requires same types), umin1 (different types, but returns first
-// type), and umin2 (same as umin1, for second type).
-//
-template <class T>
-T umin (T x, T y) {
-	return x < y ? x : y;
-}
-
-template <class T1, class T2>
-util_i32 udiff (T1 x, T2 y) {
-	return ((util_i32)x) -((util_i32) y);
-}
-
-template <class T1, class T2>
-T1 umin1 (T1 x, T2 y) {
-	if (x < y)
-		return x;
-	else
-		return (T1) y;
-}
-
-template <class T1, class T2>
-T2 umin2 (T1 x, T2 y) {
-	if (x < y)
-		return (T2) x;
-	else
-		return y;
-}
-
-template <class T>
-void uminupdate (const T& val, T& minVal) {
-
-	if (val < minVal)
-		minVal = val;
-}
-
-template <class T>
-void umaxupdate (const T& val, T& maxVal) {
-
-	if (val > maxVal)
-		maxVal = val;
-}
-
-template <class T>
-void uminmaxupdate (const T& val, T& minVal, T& maxVal) {
-
-	uminupdate(val, minVal);
-	umaxupdate(val, maxVal);
-}
-
-/////////////////////////////////////////////////////////////////
 
 inline double ufractionalpart (double val)
 	{ return modf(val, &val); }
 
 inline double uintegerpart (double val)
 	{ return val - ufractionalpart(val); }
-
-/////////////////////////////////////////////////////////////////
-// Same as umin set of functions.
-//
-template <class T>
-T umax (T x, T y) {
-	return x > y ? x : y;
-}
-
-template <class T1, class T2>
-T1 umax1 (T1 x, T2 y) {
-	if (x > y)
-		return x;
-	else
-		return (T1) y;
-}
-
-template <class T1, class T2>
-T2 umax2 (T1 x, T2 y) {
-	if (x > y)
-		return (T2) x;
-	else
-		return y;
-}
 
 /////////////////////////////////////////////////////////////////
 

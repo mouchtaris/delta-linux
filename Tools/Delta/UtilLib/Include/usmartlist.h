@@ -117,7 +117,7 @@ template <class T,  class TCmp = ucmpdefaultfunc<T> > class usmartlist {
 			curr (_curr), 
 			doNotAdvance (false) {
 				if (myList)
-					myList.additerator(this);
+					myList->additerator(this);
 			}
 
 		/////////////////////////////////////////////////////////////////

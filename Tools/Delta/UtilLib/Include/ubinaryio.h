@@ -34,6 +34,8 @@ namespace ubinaryio {
 	///////////////////////////////////////////////////////////////////
 	// BUFFER I/O
 
+    UTILLIB_FUNC void* WriteByte (void* b, util_ui8 byte, util_ui32 n = 1);
+
 	template <typename T>
 	void* WriteInteger (void* b, T val) {	// Write from lsb->msb
 		for (util_ui32 i = sizeof(T); i; --i, val >>= 8)
@@ -66,7 +68,6 @@ namespace ubinaryio {
 		return POFFS(b, sizeof(T));
 	}
 
-	UTILLIB_FUNC void* WriteByte (void* b, util_ui8 byte, util_ui32 n = 1);
 	UTILLIB_FUNC void* WriteBool (void* b, util_ui32* n, bool val);
 	UTILLIB_FUNC void* WriteBool (void* b, bool val);
 	UTILLIB_FUNC void* WriteDouble (void* b, util_ui32* n, double val);	// |precision 1 byte|rest of bytes|
