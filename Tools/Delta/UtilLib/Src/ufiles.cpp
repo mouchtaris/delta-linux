@@ -247,7 +247,7 @@ UTILLIB_FUNC time_t ufilechangetime (const std::string& path) {
 		return 0;
 	else {
 		FILETIME& tm = fd.ftLastWriteTime;
-		return (((time_t) tm.dwHighDateTime) << 32) || tm.dwLowDateTime;
+		return (((time_t) tm.dwHighDateTime) << 32) | tm.dwLowDateTime;
 	}		
 }
 
