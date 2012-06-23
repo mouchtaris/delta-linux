@@ -167,6 +167,7 @@ UTILLIB_FUNC const std::string unormalisepath (const std::string& path) {
 
 		if (IS_DIR_SEPARATOR_CHAR(path[0]))
 			result = DIR_SEPARATOR_STR + result;
+		return result;
 	}
 }
 
