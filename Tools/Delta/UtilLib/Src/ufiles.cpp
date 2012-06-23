@@ -363,20 +363,41 @@ UTILLIB_FUNC bool uloadtextfile (const std::string& path, std::string* at) {
 ///////////////////////////////////////////////////////////////
 
 UTILLIB_FUNC const std::string ufileext (const char* fname) {
-	const char* dot = strrchr(fname, '.');
-	return !dot ? "" : dot + 1;
+	
+	if (!*fname)
+		return fname;
+
+	util_ui32	len = strlen(fname);
+	const char* end = fname + len - 1;
+
+	while (fname != end && *end != '.')
+		--end;
+
+	if (fname == end)
+		return "";
+	else
+		return end + 1;
 }
 
 UTILLIB_FUNC const std::string ufileprefix (const char* fname) {
-	
-	std::string s = "";
-	char add[2] = { '!', '\0' } ;
 
-	while (*fname && *fname != '.') {
-		add[0] = *fname++;
-		s.append(add);
+	if (!*fname)
+		return fname;
+	
+	util_ui32	len = strlen(fname);
+	const char* end = fname + len - 1;
+
+	while (fname != end && *end != '.')
+		--end;
+
+	if (fname == end)
+		return fname;
+	else {
+		std::string s;
+		while (fname != end)
+			s += *fname++;
+		return s;
 	}
-	return s;
 }
 
 ///////////////////////////////////////////////////////////////
