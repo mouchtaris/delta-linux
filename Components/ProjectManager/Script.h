@@ -107,6 +107,7 @@ namespace ide
 		typedef std::list<PseudoInitiator>			PseudoInitiators;
 		typedef std::map<std::string, std::string>	DeploymentDeps;
 		typedef std::map<Script*, bool>				UpToDateMap;
+		typedef std::map<Script*, bool>				VisitMap;
 
 		struct MatchScriptPred : public std::binary_function<PseudoInitiator, const Script*, bool> {
 			bool operator()(const PseudoInitiator& p, const Script* script) const
@@ -114,6 +115,7 @@ namespace ide
 		};
 
 		static UpToDateMap*					s_upToDate;
+		static VisitMap*					s_visitMap;
 		static ScriptPtrList*				s_allScripts;
 		static unsigned						s_buildNesting;
 		ScriptPtrList						m_buildDeps;
@@ -167,6 +169,7 @@ namespace ide
 												{ return m_isCleaned; }
 
 		bool								DependsOn (const Script* script) const;
+		static bool							DependsOnRecursion (const Script* from, const Script* to);
 		bool								HasAnyCyclicDependencies (const ScriptPtrList& toBuild, ScriptPtrList* putCyclicHere);
 		const std::string					ProcuceCyclicDependencyPathString (const Script* target, const Script* start) const;
 
