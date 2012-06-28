@@ -663,7 +663,7 @@ bool Script::ResolveDependencies (
 		bool				outputErrors
 	) {
 
-	DASSERT(deps.size() % 2 == 0);
+	DASSERT(deps.size() % 2 == 0 && outDeps == &m_buildDeps);
 	bool dependencyErrors = false;
 
 	for (StringList::const_iterator i = deps.begin(); i != deps.end(); ++i) {
@@ -690,12 +690,13 @@ bool Script::ResolveDependencies (
 				}
 				else
 					outDeps->push_back(newDep = producers.front());
+				DASSERT(newDep == m_buildDeps.back());
 
 				if (newDep == this)
 					BUILD_ERROR_CYCLIC_SELF_DEPENDENCY(GetSource());
 				else
 				if (newDep->DependsOn(this)) {	// Cyclic dependency!
-					std::string path = ProcuceCyclicDependencyPathString(m_buildDeps.back(), this);
+					std::string path = ProcuceCyclicDependencyPathString(newDep, this);
 					BUILD_ERROR_CYCLIC_INDIRECT_DEPENDENCY(GetSource(), newDep->GetSource(), path);
 				}
 			}
