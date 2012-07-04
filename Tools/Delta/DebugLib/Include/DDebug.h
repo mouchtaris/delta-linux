@@ -207,7 +207,7 @@ template <class T> class _DCONSTRUCTORS {
 		if (alloc && alloc->HasMemory())
 			return alloc->Allocate(n);
 	#endif
-
+		DASSERT(n == sizeof(T));
 		void* mem = dprivatemalloc(DDEBUG_USERSIZE_BYTES + n);	// Need those extra bytes.
 		*((util_ui32*) mem) = 0;								// We put 0 to indicate simple 'new'.
 		return POFFS(mem, DDEBUG_USERSIZE_BYTES);				// But we return 'mem' after those bytes.
