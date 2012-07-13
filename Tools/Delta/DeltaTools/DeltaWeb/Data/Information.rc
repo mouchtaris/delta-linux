@@ -179,7 +179,9 @@ START_SEC("si_download", "Download")
 		" to generate a ", !courier "DELTA", " environment variable and properly associate
 		Sparrow configuration files", NL1,
 
-		bullet "4)", 	"Open ", !courier "trunk/IDE/IDE.sln", NL1,
+		bullet "4)", 	"Open the Visual Studio solution from ", !courier "trunk/IDE/", NL1,
+		bullet "4.1)", 	"For Visual Studio 2005 open ", !courier "IDE.sln", NL1,
+		bullet "4.2)", 	"For Visual Studio 2010 open ", !courier "IDE2010.sln", NL1,
 
 		bullet "5)", 	"Unload ", !courier "Tools/Delta/Extra/CORBA",
 		" folder (it requires TAO CORBA source distribution)", NL1,
