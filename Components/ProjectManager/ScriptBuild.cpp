@@ -678,6 +678,25 @@ void Script::TerminateAllLaunchedCompilers (void) {
 
 /////////////////////////////////////////////////////////////////////////
 
+EXPORTED_FUNCTION(Script, const ScriptDependencies, GetDependencies, (void)) {
+	
+	ScriptPtrList outDeps;
+	StdStringList externalDeps;
+	bool ok = ResolveDependencies(ExtractDependencies(), &outDeps, &externalDeps, false);
+
+	HandleList scripts;
+	StringList external;
+
+	BOOST_FOREACH(Script* script, outDeps)
+		scripts.push_back(script);
+	BOOST_FOREACH(const std::string str, externalDeps)
+		external.push_back(util::std2str(str));
+
+	return ScriptDependencies(ok, scripts, external);
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 bool Script::ResolveDependencies (
 		const StringList&	deps,
 		ScriptPtrList*		outDeps,

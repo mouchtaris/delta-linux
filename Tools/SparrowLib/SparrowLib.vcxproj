@@ -58,7 +58,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\Delta\Common\Include;..\Delta\DeltaVirtualMachine\Include;..\Delta\UtilLib\Include;..\Delta\DebugLib\Include;..\Delta\DeltaStdLib\Include;..\Delta\FileReadersLib\Include;..\..\Components\DeltaVM\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Delta\Common\Include;..\Delta\DeltaVirtualMachine\Include;..\Delta\UtilLib\Include;..\Delta\DebugLib\Include;..\Delta\DeltaStdLib\Include;..\Delta\FileReadersLib\Include;..\..\Components\DeltaVM;..\..\Components\ProjectManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;SPARROWLIB_EXPORTS;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -74,7 +74,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\Delta\Common\Include;..\Delta\DeltaVirtualMachine\Include;..\Delta\UtilLib\Include;..\Delta\DebugLib\Include;..\Delta\DeltaStdLib\Include;..\Delta\FileReadersLib\Include;..\..\Components\DeltaVM\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Delta\Common\Include;..\Delta\DeltaVirtualMachine\Include;..\Delta\UtilLib\Include;..\Delta\DebugLib\Include;..\Delta\DeltaStdLib\Include;..\Delta\FileReadersLib\Include;..\..\Components\DeltaVM;..\..\Components\ProjectManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;SPARROWLIB_EXPORTS;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>

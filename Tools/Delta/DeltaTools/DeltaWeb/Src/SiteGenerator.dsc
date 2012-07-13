@@ -666,7 +666,7 @@ function ExtractTextContent (content) {
 				val.text = ExtendSpecialHTMLCharacters(content);		// Extend special HTML characters
 		}
 		else
-		if (ts != std::TYPEOF_OBJECT) 
+		if (ts != std::TYPEOF_OBJECT and ts != std::TYPEOF_TABLE) 
 			throw "Unexpected text content type " + ts;
 		else
 		if ((local n = tablength(local ti = tabindices(content))) != 1)	// Styled text is singleton.

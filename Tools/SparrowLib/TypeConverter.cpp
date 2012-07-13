@@ -15,6 +15,7 @@
 
 #include "BinaryBuffer.h"
 #include "DeltaVMFuncReturnTypes.h"
+#include "ProjectManagerFuncReturnTypes.h"
 
 namespace ide
 {
@@ -48,6 +49,7 @@ namespace ide
 		INITIALIZE_ENCODER_TYPE(tableEncoding, UserCommandDesc);
 		INITIALIZE_ENCODER_TYPE(tableEncoding, StringBoolPair);
 		INITIALIZE_ENCODER_TYPE(tableEncoding, ObjectGraphData);
+		INITIALIZE_ENCODER_TYPE(tableEncoding, ScriptDependencies);
 		INITIALIZE_ENCODER_TYPE(tableEncoding, wxFont);
 		INITIALIZE_ENCODER_TYPE(tableEncoding, wxColour);
 
@@ -81,6 +83,7 @@ namespace ide
 		INITIALIZE_DECODER_TYPE(UserCommandDesc);
 		INITIALIZE_DECODER_TYPE(StringBoolPair);
 		INITIALIZE_DECODER_TYPE(ObjectGraphData);
+		INITIALIZE_DECODER_TYPE(ScriptDependencies);
 		INITIALIZE_DECODER_TYPE(wxFont);
 		INITIALIZE_DECODER_TYPE(wxColour);
 

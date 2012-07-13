@@ -309,7 +309,7 @@ Section "Test Workspaces" SEC06
 
   CreateDirectory "$PROFILE\Sparrow\Properties"
   SetOutPath "$PROFILE\Sparrow\Properties"
-  File "..\Workspaces\Shell_Config.xml"
+  File ".\Config\Shell_Config.xml"
 
   StrCpy $3 "22 serialization::archive 4 0 0 1 0" ; String serialization prefix
 

@@ -112,6 +112,7 @@
     <ClInclude Include="Project.h" />
     <ClInclude Include="ProjectManager.h" />
     <ClInclude Include="ProjectManagerCommon.h" />
+    <ClInclude Include="ProjectManagerFuncReturnTypes.h" />
     <ClInclude Include="Script.h" />
     <ClInclude Include="TreeItemDataObject.h" />
     <ClInclude Include="TreeItemDropTarget.h" />

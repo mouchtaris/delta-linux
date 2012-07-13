@@ -17,7 +17,7 @@
 #include "Component.h"
 #include "ComponentBuilder.h"
 #include "ComponentHandle.h"
-
+#include "ProjectManagerFuncReturnTypes.h"
 #include "TextFile.h"
 
 #include <boost/thread/mutex.hpp>
@@ -76,6 +76,8 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION(void, OnWorkCompleted, (const std::string& caller, const Handle& root, const String& task));
 
 		DECLARE_EXPORTED_FUNCTION(const HandleList, FindScriptsOfUsedByteCodeFile, (const String& fileName));
+
+		DECLARE_EXPORTED_FUNCTION(const ScriptDependencies, GetDependencies, (void));
 
 	protected:
 		///--- protected API

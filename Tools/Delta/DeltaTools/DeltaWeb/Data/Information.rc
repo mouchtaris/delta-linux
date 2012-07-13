@@ -122,8 +122,11 @@ START_SEC("si_download", "Download")
 
 		bullet "2.1.1)","Copy all dlls (both debug and release mode) at ",
 		!courier "trunk/Build", NL1,
-		bullet "2.1.2)","Create ", !courier "DELTAIDEDEPS", " environmant var with value the full
+		bullet "2.1.2)","Create ", !courier "DELTAIDEDEPS", " environmant variable with value the full
 		path of a", !courier "ThirdPartyLibraries", " folder as shown in the image below (you may
+		choose a different folder name but should adopt the same folder structure).", NL1,
+		bullet "2.1.3)","Create ", !courier "WXWIN28", " environmant variable with value the full
+		path of the", !courier "ThirdPartyLibraries\wxwidgets", " folder as shown in the image below (you may
 		choose a different folder name but should adopt the same folder structure).", NL2
 	TEXT_END,
 
@@ -148,8 +151,8 @@ START_SEC("si_download", "Download")
 	TEXT_START
 		" (includes Boost 1.47 and wxWidgets 2.8.12)",
 		CNL1
-		bullet "2.2.1.2)", 	"When installed, the ", !courier "DELTAIDEDEPS", " environmant var
-		is automatically set", NL1,
+		bullet "2.2.1.2)", 	"When installed, the ", !courier "DELTAIDEDEPS", " and ",
+		!courier "WXWIN28", " environmant variables are automatically set", NL1,
 		bullet "2.2.1.3)", 	"Extract wxwidgets runtime dlls from",
 		!courier "$DELTAIDEDEPS/bin/wx-runtime-dlls-2.8.12-vc10sp1.rar", " at ",
 		!courier "trunk/Build", NL2,
@@ -166,24 +169,37 @@ START_SEC("si_download", "Download")
 	TEXT_START
 		" (includes Boost 1.34 and wxWidgets 2.8.3)",
 		CNL1
-		bullet "2.2.2.2)", 	"When installed, the ", !courier "DELTAIDEDEPS", " environmant var
-		is automatically set", NL1,
+		bullet "2.2.2.2)", 	"When installed, the ", !courier "DELTAIDEDEPS", " and ",
+		!courier "WXWIN28", " environmant variables are automatically set", NL1,
 		bullet "2.2.2.3)", 	"Extract wxwidgets runtime dlls from",
 		!courier "trunk/Build/wx-runtime-dlls-2.8.3.rar", " at ",
 		!courier "trunk/Build", NL2,
 
-		bullet "3)", 	"Open ", !courier "trunk/IDE/IDE.sln", NL1,
+		bullet "3)", 	"Run (as administrator) ", !courier "trunk/Build/Installer/install.bat",
+		" to generate a ", !courier "DELTA", " environment variable and properly associate
+		Sparrow configuration files", NL1,
 
-		bullet "4)", 	"Unload ", !courier "Tools/Delta/Extra/CORBA", " folder (it requires TAO 
-		CORBA source distribution)", NL1,
+		bullet "4)", 	"Open ", !courier "trunk/IDE/IDE.sln", NL1,
 
-		bullet "5)", 	"Build all", NL1,
+		bullet "5)", 	"Unload ", !courier "Tools/Delta/Extra/CORBA",
+		" folder (it requires TAO CORBA source distribution)", NL1,
 
-		bullet "6)", 	"To run Sparrow from Visual Studio you should set ", !italic "Application"," 
-		as the startup project", NL1,
+		bullet "6)", 	"Build all", NL1,
 
-		bullet "7)", 	"Optionally run ", !courier "trunk/Build/registry.bat",
-		" to associate .wsp files to open with Sparrow"
+		bullet "7)", 	"To run Sparrow from Visual Studio you should set ", !italic "Application",
+		" as the startup project", NL1,
+
+		bullet "8)", 	"Optionally run ", !courier "trunk/Build/registry.bat",
+		" to associate .wsp files to open with Sparrow", NL2,
+
+		bullet "9)", 	"Bootstrapping process:", NL1,
+		bullet "9.1)", 	"Run Sparrow and discard any error messages encountered", NL1,
+		bullet "9.2)", 	"The last message will ask to open the Sparrow workspace to resolve errors. Select Yes.", NL1,
+		bullet "9.3)", 	"Build the newly opened workspace", NL1,
+		bullet "9.4)", 	"From the ", !italic "Adaptations", " component, right-click on the 
+		desired profile (e.g. Sparrow Devel) and ", !italic "Select", " it to apply changes", NL1,
+		bullet "9.5)", 	"Sparrow should now be up and running"
+
 		
 	TEXT_END,	
 

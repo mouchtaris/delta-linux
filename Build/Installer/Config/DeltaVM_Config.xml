@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PropertyTable>
+    <vm>
+        <libdefs>
+            <value2>
+                <path>../Tools/Delta/DeltaExtraLibraries/XMLParser/XMLParserLibFuncs.txt</path>
+                <name>xml</name>
+            </value2>
+            <value1>
+                <path>../Tools/Delta/DeltaExtraLibraries/wxWidgets/WxWidgetsLibFuncs.txt</path>
+                <name>wx</name>
+            </value1>
+            <value0>
+                <path>./scripts/SparrowLibFuncs.txt</path>
+                <name>spw</name>
+            </value0>
+        </libdefs>
+    </vm>
+    <debugger>
+        <tostring_maxlength>64</tostring_maxlength>
+        <receive_variables>1</receive_variables>
+        <object_graph>
+            <expandProgramFuncs>0</expandProgramFuncs>
+            <expandMethodFuncs>0</expandMethodFuncs>
+            <expandLibraryFuncs>0</expandLibraryFuncs>
+            <expandFuncVMs>0</expandFuncVMs>
+        </object_graph>
+        <break_on_thrown_exception>0</break_on_thrown_exception>
+    </debugger>
+</PropertyTable>

@@ -339,8 +339,12 @@ namespace ide
 			const conf::AggregateListProperty::AggregatePropertyList& l = 
 				conf::safe_prop_cast<const conf::AggregateListProperty>(property)->GetPropertyList();
 			BOOST_FOREACH(const conf::AggregateProperty* p, l)
-				if (conf::get_prop_value<conf::StringProperty>(p->GetProperty("name"), String()) == lib)
-					return conf::get_prop_value<conf::FileProperty>(p->GetProperty("path"), String());
+				if (conf::get_prop_value<conf::StringProperty>(p->GetProperty("name"), String()) == lib) {
+					String path = conf::get_prop_value<conf::FileProperty>(p->GetProperty("path"), String());
+					if (!path.empty())
+						path = MakeAbsolutePath(path, util::std2str(IDECore::GetInstallationDir()));
+					return path;
+				}
 		}
 		return String();
 	}
