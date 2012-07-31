@@ -488,13 +488,18 @@ DeltaExpr* Translate_SELF (void) {
 		return DeltaExpr::MakeInternalVar(DELTA_SELF_POINTER_ID);
 	else
 	if (ParseParms::InFunction()						&& 
-		ParseParms::CurrFunction()->GetMyFunction()		&&
-		ParseParms::CurrFunction()->GetMyFunction()->IsMethod()) {
+		ParseParms::CurrFunction()->GetMyFunction()) {
 
 			DeltaSymbol* sym = DELTASYMBOLS.Lookup(DELTA_SELF_POINTER_ID);
-			DASSERT(sym);	// Always visible since built-in formal arg of outer method.
+			if (!sym) {
+				DASSERT(!ParseParms::CurrFunction()->GetMyFunction()->IsMethod());
+				DELTACOMP_ERROR_USING_SELF_OUTSIDE_METHODS();
+				return NIL_EXPR	;
+			}
 
-			if (!DPTR(sym)->IsClosureVarAccess()) {	// First time met (not yet a closure var)?
+			// Either first time met (not yet a closure var) or not a closure var of the
+			// current function.
+			if (!DPTR(sym)->IsClosureVarAccess() || !ParseParms::CurrFunction()->GetClosureVar(DELTA_SELF_POINTER_ID)) {
 				DELTACOMP_WARNING_SELF_IS_CLOSUREVAR_ACCESS(
 					ParseParms::CurrFunction()->GetFunctionReadableName(),
 					DELTA_SELF_POINTER_ID,

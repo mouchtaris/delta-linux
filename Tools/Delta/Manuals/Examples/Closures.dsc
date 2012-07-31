@@ -149,3 +149,17 @@ q(1,2)(3,4)();	// 121
 print("\n");
 
 //////////////////////////////////
+
+t = [
+	@x : 10,
+	method f {
+		return	function g {
+					self.x;
+					return	function h {
+								return self.x + 20;
+							}
+				}
+	}
+];
+
+std::print(t.f()()());
