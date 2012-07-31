@@ -507,7 +507,7 @@ template <class T> class ubag {
 
 	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(ubag)
 	bool operator==(const ubag& b) const
-		{ return this == &b || bag == b.bag; }
+		{ return this == &b || (bag.size() == b.bag.size() && bag == b.bag); }
 
 	ubag (void){}
 	ubag (const T& v1) { insert(v1); }

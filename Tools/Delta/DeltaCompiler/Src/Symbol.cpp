@@ -96,7 +96,7 @@ void DeltaSymbol::FuncAccess::RecordInnerUse (DeltaExpr* funcExpr, DeltaSymbol* 
 void DeltaSymbol::FuncAccess::CreateFunctionVar (void) {
 	DASSERT(!funcVar);
 	DASSERT(ParseParms::CurrScope().value() == func->GetScope());	// We should be at the same scope as the function.
-	funcVar = DELTASYMBOLS.NewSymbol(uconstructstr("$%s", func->GetName().c_str()), true);
+	funcVar = DELTASYMBOLS.NewSymbol(uconstructstr("%s$%s", DELTA_HIDDEN_SYMBOL_ID_PREFIX, func->GetName().c_str()), true);
 }
 
 /////////////////////////////////////////////////////////////////////
