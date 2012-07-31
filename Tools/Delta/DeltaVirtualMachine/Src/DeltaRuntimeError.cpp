@@ -134,13 +134,8 @@ void DeltaVirtualMachine::PrimaryError (const char* format,...) {
 		DASSERT(!HasProducedError() && !GetPrimaryFailing() && IsErrorCauseReset());
 		SetAsPrimaryFailing();
 
-		std::string stackTrace = std::string("\nStack trace:\n");
-		if (GetTotalCalls()) {
-			CreateStackTrace(MAX_DISPLAYED_CALLS_ON_ERROR);
-			stackTrace += GetStackTrace();
-		}
-		else
-			stackTrace += "no active calls";
+		CreateStackTrace(MAX_DISPLAYED_CALLS_ON_ERROR);
+		std::string stackTrace = std::string("\nStack trace:\n") + GetStackTrace();
 	
 		RunTimeError(
 			"Runtime error: VM '%s', source '%s', line %d: %s%s", 

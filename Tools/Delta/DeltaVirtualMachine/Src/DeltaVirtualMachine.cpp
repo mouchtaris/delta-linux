@@ -877,16 +877,12 @@ void DeltaVirtualMachine::UnreferenceFunctionsTable (void) {
 void DeltaVirtualMachine::ExtCallGlobalFunc (const char* name) {
 
 	DASSERT(!HasProducedError());
-	FuncByNameMap::iterator i = funcByName.find(name);	
-	if (i != funcByName.end()) {
-		PushUserArgumentsAndArgumentsVector();
-		ExtCallGlobalFuncCommit(i->second->GetAddress(), DELTA_PROGFUNC_STD_ARGUMENTS);
-	}
-	else 
-		SetErrorCode(DELTA_UNRESOLVED_GLOBALFUNC_ERROR)->PrimaryError(
-			"Externally called global function '%s' was not found!", 
-			name
-		);
+
+	FuncByNameMap::iterator i = funcByName.find(name);
+	DASSERT(i != funcByName.end());
+
+	PushUserArgumentsAndArgumentsVector();
+	ExtCallGlobalFuncCommit(i->second->GetAddress(), DELTA_PROGFUNC_STD_ARGUMENTS);
 }
 
 //////////////////////////////////
