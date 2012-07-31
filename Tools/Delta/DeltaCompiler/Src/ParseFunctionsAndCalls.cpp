@@ -475,6 +475,14 @@ static void Translate_HandleAllInnerUses (DeltaSymbol* func) {
 	else
 		DASSERT(funcAccess);
 
+	// If a function has a closure, then we need to ensure that any inner
+	// function that is accessing it, before we know it has a closure, will still
+	// view a function carrying correctly a closure. To do this,
+	// we declare a hidden var at the same scope as the function, just before it,
+	// that is assigned at runtime the function value (which, due to the way translate
+	// operand works, will always provide the closure to the function). Then, we
+	// substitute every inner access to the function to refer to this var.
+
 	if (DPTR(func)->HasClosure() && !DPTR(funcAccess)->GetInnerUses().empty()) {
 		
 		typedef DeltaSymbol::FuncAccess::UseInfoList UseInfoList;
