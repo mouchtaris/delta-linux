@@ -160,6 +160,11 @@ template <typename T> T*		uaddress_of (T* x)			{ return x; }
 template <typename T> const T*	uaddress_of (const T* x)	{ return x; }
 
 //---------------------------------------------------------------
+
+template <typename T>			struct utempref				{ T& ref; utempref(const T& val) : ref(const_cast<T&>(val)){} };
+template <typename T>			struct utempref<T*>			{ T* ref; utempref(T* val) : ref(val){} };
+
+//---------------------------------------------------------------
 // Never T::~T(), it ignores late binding.
 template <typename T> void udestructor_invocation (T* t)
 	{ t->~T(); } 
