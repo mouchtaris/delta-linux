@@ -95,7 +95,7 @@ SocketLink::SocketLink (const char* host, util_ui32 port, SOCKET _sockId) {
 	assert(strlen(host) < SOCKETLIB_HOST_NAME_LEN);
 	strcpy(myHost, host);
 	myPort		= port;
-	isBlocking	= false;
+	isBlocking	= true;
 }
 
 ///////////////////////////////////////////////////////////
@@ -214,6 +214,8 @@ bool SocketLink::SetRecvSendBufferSize (const char* func) {
 //
 void SocketLink::EstablishAsServer (util_ui32 portNum) {
 
+	assert(isBlocking);
+
 	SHUTDOWN_SIGNAL(SIGPIPE);
 
 	struct protoent* proto = getprotobyname(TCP);
@@ -267,6 +269,8 @@ void SocketLink::EstablishAsServer (util_ui32 portNum) {
 	// Now listen for clients.
 	//
 	listen(sockId, SOCKETLIB_MAX_LISTEN_QUEUE);
+
+	SetIsBlocking(false);
 }
 
 //---------------------------------------------------------
