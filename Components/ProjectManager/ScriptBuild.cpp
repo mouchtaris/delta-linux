@@ -704,7 +704,7 @@ bool Script::ResolveDependencies (
 		bool				outputErrors
 	) {
 
-	DASSERT(deps.size() % 2 == 0 && outDeps == &m_buildDeps);
+	DASSERT(deps.size() % 2 == 0 && (outDeps == &m_buildDeps || !outputErrors));
 	bool dependencyErrors = false;
 
 	for (StringList::const_iterator i = deps.begin(); i != deps.end(); ++i) {
