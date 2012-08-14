@@ -476,11 +476,22 @@ template <class T> class ubag {
 			{ b->insert(p); }
 	};
 	
+	struct bag_remover : public std::binary_function<std::pair<T, bool>, ubag*, void> {
+		void operator()(const std::pair<T, bool>& p, ubag* b) const 
+			{ b->remove(p.first); }
+	};
+
+	struct list_remover : public std::binary_function<T, ubag*, void> {
+		void operator()(const T& p, ubag* b) const 
+			{ b->remove(p); }
+	};
+
 	public:
 	typedef std::pair<const T, bool>					elem_type;
 	typedef T											value_type;
 	typedef typename std::map<T, bool>::iterator		iterator; 
 	typedef typename std::map<T, bool>::const_iterator	const_iterator; 
+
 	const iterator	begin (void)				{ return bag.begin();				}
 	const iterator	end (void)					{ return bag.end();					}
 	const_iterator	begin (void) const			{ return bag.begin();				}
@@ -500,6 +511,18 @@ template <class T> class ubag {
 													std::bind2nd(list_inserter(), this)
 												  );								}
 												  
+	void			remove (const ubag& b)		{ std::for_each(
+													b.begin(), 
+													b.end(), 
+													std::bind2nd(bag_remover(), this)
+												  );								}
+	
+	void			remove (const std::list<T>& l)		
+												{ std::for_each(
+													l.begin(), 
+													l.end(), 
+													std::bind2nd(list_remover(), this)
+												  );								}
 	void			remove (const T& x)			{ bag.erase(x);						}
 	void			remove (const iterator& i)	{ bag.erase(i);						}
 	void			remove (const_iterator& i) 	{ bag.erase(i);						}
