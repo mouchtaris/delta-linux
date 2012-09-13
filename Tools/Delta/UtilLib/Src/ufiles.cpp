@@ -379,6 +379,11 @@ UTILLIB_FUNC const std::string ufileext (const char* fname) {
 		return end + 1;
 }
 
+UTILLIB_FUNC const std::string ufileext (const std::string& fname)
+		{ return ufileext(fname.c_str()); }
+
+///////////////////////////////////////////////////////////////
+
 UTILLIB_FUNC const std::string ufileprefix (const char* fname) {
 
 	if (!*fname)
@@ -399,5 +404,8 @@ UTILLIB_FUNC const std::string ufileprefix (const char* fname) {
 		return s;
 	}
 }
+
+UTILLIB_FUNC const std::string ufileprefix (const std::string& fname)
+	{ return ufileprefix(fname.c_str()); }
 
 ///////////////////////////////////////////////////////////////

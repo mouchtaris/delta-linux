@@ -60,7 +60,9 @@ UTILLIB_FUNC const std::string		ucreatepathstring (const std::list<std::string>&
 UTILLIB_FUNC const std::string		unormalisepath (const std::string& path);
 UTILLIB_FUNC bool					ucreatablefilename (const char* path);
 UTILLIB_FUNC const std::string		ufileprefix (const char* fname);
+UTILLIB_FUNC const std::string		ufileprefix (const std::string& fname);
 UTILLIB_FUNC const std::string		ufileext (const char* fname);
+UTILLIB_FUNC const std::string		ufileext (const std::string& fname);
 UTILLIB_FUNC util_ui32				ufilesize (const char* path);	// Calculates file size (too slow).
 UTILLIB_FUNC time_t					ufilechangetime (const std::string& path);
 UTILLIB_FUNC bool					ustorebinaryfile (const char* path, void* buffer, util_ui32 size);

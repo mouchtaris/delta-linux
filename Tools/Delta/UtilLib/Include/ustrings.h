@@ -130,6 +130,8 @@ UTILLIB_FUNC bool				ureadquotedstring (
 
 UTILLIB_FUNC bool				ustrprefix (const char* prefix, const char* s);
 UTILLIB_FUNC bool				ustrprefix (const std::string& prefix, const std::string& s);
+UTILLIB_FUNC bool				ustrsuffix (const char* suffix, const char* s, bool pureSuffix = true);
+UTILLIB_FUNC bool				ustrsuffix (const std::string& suffix, const std::string& s, bool pureSuffix = true);
 UTILLIB_FUNC char*				ustrnmaxcpy (char* dest, const char* src, util_ui16 maxLen);
 UTILLIB_FUNC void				ustrnmaxcpy (std::string& dest, const char* src, util_ui16 maxLen);
 UTILLIB_FUNC char*				umaxstrcat (char* dest, const char* src, util_ui16 maxLen);

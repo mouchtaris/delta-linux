@@ -335,16 +335,39 @@ UTILLIB_FUNC char* ustrreverse (char* src) {
 // Returns true if 'prefix' is a prefix of s.
 //
 UTILLIB_FUNC bool ustrprefix (const char* prefix, const char* s) {
-
+	
 	while (*s && *prefix && *s == *prefix)
 		++s, ++prefix;
-
+	
 	return !*prefix;
 }
 
-
 UTILLIB_FUNC bool ustrprefix (const std::string& prefix, const std::string& s) 
 	{ return ustrprefix(prefix.c_str(), s.c_str()); }
+
+//------------------------------------------------------------------
+
+UTILLIB_FUNC bool ustrsuffix (const char* suffix, const char* s, bool pureSuffix) {
+
+	util_ui32	suffixLen	= strlen(suffix);
+	util_ui32	sLen		= strlen(s);
+
+	if (sLen < suffixLen || (pureSuffix && sLen == suffixLen))
+		return false;
+	
+	const char* sPart = s + (sLen - suffixLen); 
+
+	while (suffixLen--) {
+		DASSERT(*sPart && *suffix);
+		if (*sPart++ != *suffix++)
+			return false;
+	}
+
+	return true;
+}
+
+UTILLIB_FUNC bool ustrsuffix (const std::string& suffix, const std::string& s, bool pureSuffix)
+	{ return ustrsuffix(suffix.c_str(), s.c_str(), pureSuffix); }
 
 //------------------------------------------------------------------
 
