@@ -58,7 +58,7 @@ bool DeltaDebugLinesWithCodeHolder::IsLeadingInstructionOfLine (DeltaCodeAddress
 // At least one instruction block starts with the line.
 //
 bool DeltaDebugLinesWithCodeHolder::IsLineWithCode (util_ui16 line) const
-	{ return GetLineWithCode(line) != linesWithCode.end(); }
+	{ return lineNumbers.in(line); }
 
 ///////////////////////////////////////////////////////////////////
 
