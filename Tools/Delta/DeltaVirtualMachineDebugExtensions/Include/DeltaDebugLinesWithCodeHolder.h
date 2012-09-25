@@ -61,11 +61,12 @@ class DeltaDebugLinesWithCodeHolder {
 		~Line(){}
 	};
 
-	util_ui16	codeSize;
-	util_ui32*	instructionLeadingLines;
+	util_ui16				codeSize;
+	util_ui32*				instructionLeadingLines;
 
 	typedef std::list<Line>	LineList;
-	LineList linesWithCode;
+	LineList				linesWithCode;
+	ubag<util_ui16>			lineNumbers;
 
 	const std::list<DeltaCodeAddress>	
 							GetLeadingInstructionAddresses (util_ui16 line) const;

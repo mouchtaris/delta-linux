@@ -31,6 +31,7 @@ void DeltaDebugLinesWithCodeHolder::AddLineWithCode (util_ui16 line, DeltaCodeAd
 	linesWithCode.push_back(			// A new block of instructions for this line.
 		Line(line, pc)
 	);
+	lineNumbers.insert(line);
 	instructionLeadingLines[pc] = line;	// This instruction leads the block starting from this line.
 }
 

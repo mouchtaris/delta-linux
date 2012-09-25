@@ -6,7 +6,7 @@
         <symbolic>Project/UIGenerator.dproj</symbolic>
         <startup>..\Src\UIBuilder.dsc</startup>
         <output_path>../dbc</output_path>
-        <libs>corba;wx;Corba;WxWidgets</libs>
+        <libs>wx;Corba;WxWidgets;corba</libs>
         <icode>0</icode>
         <hostd></hostd>
         <host></host>
@@ -23,7 +23,7 @@
             <text>0</text>
             <symbolic>Src/CORBAMetadataUIAPISpecConverter.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -37,7 +37,7 @@
             <text>0</text>
             <symbolic>Src/MicroUIs.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -51,7 +51,7 @@
             <text>0</text>
             <symbolic>Src/Properties.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -65,7 +65,7 @@
             <text>0</text>
             <symbolic>Src/PropertyGenerator.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -79,7 +79,7 @@
             <text>0</text>
             <symbolic>Src/PropertyUIMappingRules.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -93,7 +93,7 @@
             <text>0</text>
             <symbolic>Src/TopLevelUIs.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -107,7 +107,7 @@
             <text>0</text>
             <symbolic>Src/UIAPIHolder.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -121,7 +121,7 @@
             <text>0</text>
             <symbolic>Src/UIAPISpec.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -135,7 +135,7 @@
             <text>0</text>
             <symbolic>Src/UIAPISpecValidator.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -149,7 +149,7 @@
             <text>0</text>
             <symbolic>Src/UIBuilder.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -163,7 +163,7 @@
             <text>0</text>
             <symbolic>Src/PropertySelectionHolder.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -177,7 +177,7 @@
             <text>0</text>
             <symbolic>Src/PropertySelectionUIs.dsc</symbolic>
             <output_path>../dbc</output_path>
-            <libs>corba;wx;Corba;WxWidgets</libs>
+            <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
             <deployment>0</deployment>
             <debug>1</debug>
