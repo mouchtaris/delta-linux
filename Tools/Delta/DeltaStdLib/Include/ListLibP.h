@@ -50,12 +50,12 @@ struct ITERATOR_ACCESS_TRAITS< std::list<DeltaValue>::iterator > {
 
 /////////////////////////////////////////////////////
 
-class DVM_CLASS ListIteratorAdapter : public IteratorAdapter<
+class DVM_CLASS ListIteratorAdapter :	public IteratorAdapter<
 											ListCollectableContainer,
 											std::list<DeltaValue>,
 											STL_ITERATOR_TYPE_TRAITS< std::list<DeltaValue> >
 										>,
-							public usafeiteratorbehavior {
+										public usafeiteratorbehavior {
 	DELTA_SAFE_ITERATOR_ADAPTER_IMPLEMENTATION(
 		ListIteratorAdapter,
 		ListCollectableContainer
