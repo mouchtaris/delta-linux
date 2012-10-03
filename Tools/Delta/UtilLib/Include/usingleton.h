@@ -118,6 +118,9 @@ template <typename T> class usingleton : public T {
 #define	UGLOBALINSTANCE_CLASS_IMPL(_class, T)											\
 		UGLOBALINSTANCE_CLASS_IMPL_EX(_class, T, UEMPTY, UEMPTY)
 
+#define	UGLOBALINSTANCE_INLINE_ACCESS_HELPER(_class)									\
+	inline	_class& _class##Get (void) { return (_class&) _class##Instance::Get(); }
+
 /////////////////////////////////////////////////////////////////
 //	Use as follows:
 //	Let MyClass be the class for which you need a global instance MyClassInst.
