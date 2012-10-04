@@ -137,7 +137,7 @@ template <class T> struct urectangle {
 	void operator=(const urectangleex<T>& r)		{ new (this) urectangle(r); }
 	bool operator==(const urectangle& r) const		{ return x==r.x && y==r.y && w==r.w && h==r.h; }
 	bool operator==(const urectangleex<T>& r) const	{ return x==r.x1 && y==r.y1 && w==(r.x2-r.x1+1) && h==(r.y2-r.y1+1); }
-
+	void mul (T xf, T yf)							{ x *= xf; y *= yf; w *= xf; h *= yf; }
 	bool isleftto (T xp) const						{ return x + w <= xp; }
 	bool isrightto (T xp) const						{ return x > xp; }
 	bool isupto (T yp) const						{ return y + h <= yp; }
@@ -172,7 +172,7 @@ template <class T> struct urectangleex {
 	void operator=(const urectangle<T>& r)				{ new (this) urectangleex(r); }
 	bool operator==(const urectangleex& r) const		{ return x1==r.x1 && y1==r.y1 && x2==r.x2 && y2==r.y2; }
 	bool operator==(const urectangle<T>& r) const		{ return r.x==x1 && r.y==y1 && r.w==(x2-x1+1) && r.h==(y2-y1+1); }
-
+	void mul (T xf, T yf)								{ x1 *= xf; y1 *= yf; x2 *= xf; y2 *= yf; }
 	bool isleftto (T x) const							{ return x2 < x; }
 	bool isrightto (T x) const							{ return x1 > x; }
 	bool isupto (T y) const								{ return y2 < y; }
@@ -330,11 +330,11 @@ void ucliprect(
 //*****************************
 
 template <class T> void ucliprect (
-		urectangle<T>& r,
-		T	wx,
-		T	wy,
-		T	ww,
-		T	wh
+		urectangle<T>&	r,
+		T				wx,
+		T				wy,
+		T				ww,
+		T				wh
 	) {
 	r.w = umin(wx + ww, r.x + r.w) - (r.x = umax(wx, r.x));
 	r.h = umin(wy + wh, r.y + r.h) - (r.y = umax(wy, r.y));
@@ -343,17 +343,41 @@ template <class T> void ucliprect (
 //*****************************
 
 template <class T> void ucliprect (
-		urectangleex<T>& r,
-		T	wx,
-		T	wy,
-		T	ww,
-		T	wh
+		urectangle<T>&			r,
+		const urectangle<T>&	area
+	) {
+	r.w = umin(area.x + area.w, r.x + r.w) - (r.x = umax(area.x, r.x));
+	r.h = umin(area.y + area.h, r.y + r.h) - (r.y = umax(area.y, r.y));
+}
+
+//*****************************
+
+template <class T> void ucliprect (
+		urectangleex<T>&	r,
+		T					wx,
+		T					wy,
+		T					ww,
+		T					wh
 	) {
 	r.x1 = umax(wx, r.x1);
 	r.x2 = umin(wx + ww - 1, r.x2);
 	r.y1 = umax(wy, r.y1);
 	r.y2 = umin(wy + wh - 1, r.y2);
 }
+
+//*****************************
+
+template <class T> void ucliprect (
+		urectangleex<T>&		r,
+		const urectangleex<T>&	area
+	) {
+	r.x1 = umax(area.x1, r.x1);
+	r.x2 = umin(area.x2, r.x2);
+	r.y1 = umax(area.y1, r.y1);
+	r.y2 = umin(area.y2, r.y2);
+}
+
+//*****************************
 
 template <typename T>	
 const T& utrim (T* val, const T& left, const T& right) {
