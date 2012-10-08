@@ -14,7 +14,9 @@
 //---------------------------------------------------------------
 // Quickly decides if (x,y) (x+w-1, y+h-1) is outside
 // (wx, wy) (wx+ww-1, wy+wh-1); i.e. the windows do
-// not overlap to each other. 
+// not overlap to each other. The win versions assume y
+// increases towards bottom, the geometric assume y decreases
+// towards bottom
 //
 #define urectoutsidewin(x, y, w, h, wx, wy, ww, wh)				\
 	(	(x)			>	((wx)+(ww)-1)	|| 						\
@@ -22,8 +24,17 @@
 		(y)			>	((wy)+(wh)-1)	|| 						\
 		((y)+(h)-1)	<	(wy)	)
 
+#define urectoutsidegeometric(x, y, w, h, wx, wy, ww, wh)		\
+	(	(x)			>	((wx)+(ww)-1)	|| 						\
+		((x)+(w)-1)	<	(wx)			|| 						\
+		(y)			<	((wy)-(wh)+1)	|| 						\
+		((y)-(h)+1)	>	(wy)	)
+
 #define	urectsoverlapping(x, y, w, h, wx, wy, ww, wh)			\
 	!urectoutsidewin(x, y, w, h, wx, wy, ww, wh)
+
+#define	urectsoverlappinggeometric(x, y, w, h, wx, wy, ww, wh)	\
+	!urectoutsidegeometric(x, y, w, h, wx, wy, ww, wh)
 
 // Same version with rectangle coordinates.
 
@@ -31,10 +42,19 @@
 	(	(x1)	>	(wx2)	||									\
 		(x2)	<	(wx1)	||									\
 		(y1)	>	(wy2)	||									\
-		(y1)	<	(wy1)	)
+		(y2)	<	(wy1)	)
 
 #define	urectsoverlappingex(x1, y1, x2, y2, wx1, wy1, wx2, wy2) \
 	!urectoutsidewinex(x1, y1, x2, y2, wx1, wy1, wx2, wy2)
+
+#define urectoutsidegeometricex(x1, y1, x2, y2, wx1, wy1, wx2, wy2)	\
+	(	(x1)	>	(wx2)	||									\
+		(x2)	<	(wx1)	||									\
+		(y1)	<	(wy2)	||									\
+		(y2)	>	(wy1)	)
+
+#define	urectsoverlappinggeometricex(x1, y1, x2, y2, wx1, wy1, wx2, wy2) \
+	!urectoutsidegeometricex(x1, y1, x2, y2, wx1, wy1, wx2, wy2)
 
 /////////////////////////////////////////////////////////////////
 
@@ -133,18 +153,19 @@ template <class T> struct urectangle {
 
 	T x, y, w, h;
 
-	void operator=(const urectangle& r)				{ if (this != &r) new (this) urectangle(r); }
-	void operator=(const urectangleex<T>& r)		{ new (this) urectangle(r); }
-	bool operator==(const urectangle& r) const		{ return x==r.x && y==r.y && w==r.w && h==r.h; }
-	bool operator==(const urectangleex<T>& r) const	{ return x==r.x1 && y==r.y1 && w==(r.x2-r.x1+1) && h==(r.y2-r.y1+1); }
-	void mul (T xf, T yf)							{ x *= xf; y *= yf; w *= xf; h *= yf; }
-	bool isleftto (T xp) const						{ return x + w <= xp; }
-	bool isrightto (T xp) const						{ return x > xp; }
-	bool isupto (T yp) const						{ return y + h <= yp; }
-	bool isdownto (T yp) const						{ return y > yp; }
-	bool in (T xp, T yp) const						{ return upointinsiderect(xp, yp, x, y, w, h); } 
-	bool isvalid (void) const						{ return uvalidrectex(x, y, (T) (x + w - 1), (T) (y + h - 1)); }
-	bool isoverlapping (const urectangle& r) const	{ return urectsoverlapping(x,y,w,h,r.x,r.y,r.w,r.h); }
+	void operator=(const urectangle& r)						{ if (this != &r) new (this) urectangle(r); }
+	void operator=(const urectangleex<T>& r)				{ new (this) urectangle(r); }
+	bool operator==(const urectangle& r) const				{ return x==r.x && y==r.y && w==r.w && h==r.h; }
+	bool operator==(const urectangleex<T>& r) const			{ return x==r.x1 && y==r.y1 && w==(r.x2-r.x1+1) && h==(r.y2-r.y1+1); }
+	void mul (T xf, T yf)									{ x *= xf; y *= yf; w *= xf; h *= yf; }
+	bool isleftto (T xp) const								{ return x + w <= xp; }
+	bool isrightto (T xp) const								{ return x > xp; }
+	bool isupto (T yp) const								{ return y + h <= yp; }
+	bool isdownto (T yp) const								{ return y > yp; }
+	bool in (T xp, T yp) const								{ return upointinsiderect(xp, yp, x, y, w, h); } 
+	bool isvalid (void) const								{ return uvalidrectex(x, y, (T) (x + w - 1), (T) (y + h - 1)); }
+	bool isoverlapping (const urectangle& r) const			{ return urectsoverlapping(x,y,w,h,r.x,r.y,r.w,r.h); }
+	bool isoverlappinggeometric (const urectangle& r) const	{ return urectsoverlappinggeometric(x,y,w,h,r.x,r.y,r.w,r.h); }
 	void mergeunion (const urectangle& r, urectangle* at) const {
 														at->x = umin(x, r.x);
 														at->y = umin(y, r.y);
@@ -168,18 +189,19 @@ template <class T> struct urectangleex {
 
 	T x1, y1, x2, y2;
 
-	void operator=(const urectangleex& r)				{ if (this != &r) new (this) urectangleex(r); }
-	void operator=(const urectangle<T>& r)				{ new (this) urectangleex(r); }
-	bool operator==(const urectangleex& r) const		{ return x1==r.x1 && y1==r.y1 && x2==r.x2 && y2==r.y2; }
-	bool operator==(const urectangle<T>& r) const		{ return r.x==x1 && r.y==y1 && r.w==(x2-x1+1) && r.h==(y2-y1+1); }
-	void mul (T xf, T yf)								{ x1 *= xf; y1 *= yf; x2 *= xf; y2 *= yf; }
-	bool isleftto (T x) const							{ return x2 < x; }
-	bool isrightto (T x) const							{ return x1 > x; }
-	bool isupto (T y) const								{ return y2 < y; }
-	bool isdownto (T y) const							{ return y1 > y; }
-	bool in (T x, T y) const							{ return upointinsiderectex(x, y, x1, y1, x2, y2); }
-	bool isvalid (void) const							{ return uvalidrectex(x1, y1, x2, y2); }
-	bool isoverlapping (const urectangleex& r) const	{ return urectsoverlappingex(x1, y1, x2, y2, r.x1, r.y1, r.x2, r.y2); }
+	void operator=(const urectangleex& r)						{ if (this != &r) new (this) urectangleex(r); }
+	void operator=(const urectangle<T>& r)						{ new (this) urectangleex(r); }
+	bool operator==(const urectangleex& r) const				{ return x1==r.x1 && y1==r.y1 && x2==r.x2 && y2==r.y2; }
+	bool operator==(const urectangle<T>& r) const				{ return r.x==x1 && r.y==y1 && r.w==(x2-x1+1) && r.h==(y2-y1+1); }
+	void mul (T xf, T yf)										{ x1 *= xf; y1 *= yf; x2 *= xf; y2 *= yf; }
+	bool isleftto (T x) const									{ return x2 < x; }
+	bool isrightto (T x) const									{ return x1 > x; }
+	bool isupto (T y) const										{ return y2 < y; }
+	bool isdownto (T y) const									{ return y1 > y; }
+	bool in (T x, T y) const									{ return upointinsiderectex(x, y, x1, y1, x2, y2); }
+	bool isvalid (void) const									{ return uvalidrectex(x1, y1, x2, y2); }
+	bool isoverlapping (const urectangleex& r) const			{ return urectsoverlappingex(x1, y1, x2, y2, r.x1, r.y1, r.x2, r.y2); }
+	bool isoverlappinggeometric (const urectangleex& r) const	{ return urectsoverlappinggeometricex(x1, y1, x2, y2, r.x1, r.y1, r.x2, r.y2); }
 
 	urectangleex (void) : x1(0), y1(0), x2(0), y2(0) {}
 	urectangleex (T _x1, T _y1, T _x2, T _y2) : x1(_x1), y1(_y1), x2(_x2), y2(_y2) {}
