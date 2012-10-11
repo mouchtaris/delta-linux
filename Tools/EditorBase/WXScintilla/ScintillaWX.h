@@ -112,6 +112,7 @@ public:
     virtual void SetHorizontalScrollPos();
     virtual bool ModifyScrollBars(int nMax, int nPage);
     virtual void Copy();
+	virtual void CopyAsRTF();
     virtual void Paste();
     virtual void CopyToClipboard(const SelectionText &selectedText);
 

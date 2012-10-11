@@ -39,6 +39,12 @@
     <Filter Include="Header Files\wxScintilla">
       <UniqueIdentifier>{5f268bf5-f7be-4606-80c0-79ced4ac9171}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Export">
+      <UniqueIdentifier>{ec1145a0-09f9-4ced-8297-bd8b2930f657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Export">
+      <UniqueIdentifier>{9e4ca42e-c992-4875-ae38-75ad0721244a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorBaseLibrary.cpp">
@@ -323,6 +329,18 @@
     <ClCompile Include="..\EditorInterfaces\LanguageModuleIface.cpp">
       <Filter>Source Files\EditorInterfaces</Filter>
     </ClCompile>
+    <ClCompile Include="..\WXScintilla\export\RTFExporter.cpp">
+      <Filter>Source Files\Export</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WXScintilla\export\TXTExporter.cpp">
+      <Filter>Source Files\Export</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WXScintilla\export\Exporter.cpp">
+      <Filter>Source Files\Export</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WXScintilla\export\HTMLExporter.cpp">
+      <Filter>Source Files\Export</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorBaseLibrary.h">
@@ -378,6 +396,21 @@
     </ClInclude>
     <ClInclude Include="..\WXScintilla\wxscintilla.h">
       <Filter>Header Files\wxScintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WXScintilla\export\TXTExporter.h">
+      <Filter>Header Files\Export</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WXScintilla\export\Exporter.h">
+      <Filter>Header Files\Export</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WXScintilla\export\ExportStructs.h">
+      <Filter>Header Files\Export</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WXScintilla\export\HTMLExporter.h">
+      <Filter>Header Files\Export</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WXScintilla\export\RTFExporter.h">
+      <Filter>Header Files\Export</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

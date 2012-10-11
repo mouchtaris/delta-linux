@@ -486,13 +486,26 @@ void ScintillaWX::CancelModes() {
 
 
 void ScintillaWX::Copy() {
+#if 1
+	CopyAsRTF();
+#else
     if (currentPos != anchor) {
         SelectionText st;
         CopySelectionRange(&st);
         CopyToClipboard(st);
     }
+#endif
 }
 
+#include "export/Exporter.h"
+
+void ScintillaWX::CopyAsRTF() {
+	if (currentPos != anchor) {
+		SelectionText st;
+        CopySelectionRange(&st);
+		Exporter(sci).doClipboardAll(st);
+	}
+}
 
 void ScintillaWX::Paste() {
     pdoc->BeginUndoAction();
@@ -508,7 +521,7 @@ void ScintillaWX::Paste() {
 
     if (wxTheClipboard->Open()) {
         wxTheClipboard->UsePrimarySelection(false);
-        wxCustomDataObject selData(wxDF_PRIVATE);
+        wxCustomDataObject selData(CF_RECT_TEXT);
         bool gotRectData = wxTheClipboard->GetData(selData);
 
         if (gotRectData && selData.GetSize()>1) {
