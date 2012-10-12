@@ -166,9 +166,9 @@ namespace dmsl {
 
 		ExprValue (void) : type(ValueTypeError) { content.errorVal = (std::string *) 0;}
 		
-		ExprValue (int val)		{ SetNumber(val);	}
-		ExprValue (double val)	{ SetNumber(val);	}
-		ExprValue (bool val)	{ SetBool(val);		}
+		ExprValue (int val)					: type(ValueTypeInt)		{ content.intVal = val; }
+		ExprValue (double val)				: type(ValueTypeReal)		{ content.realVal = val; }
+		ExprValue (bool val)				: type(ValueTypeBool)		{ content.boolVal = val; }
 		ExprValue (const char *val)			: type(ValueTypeString)		{ content.strVal = new std::string(val); }
 		ExprValue (const std::string& val)	: type(ValueTypeString)		{ content.strVal = new std::string(val.c_str()); }
 		ExprValue (Range* val)				: type(ValueTypeRange)		{ content.rangeVal	= val; }
