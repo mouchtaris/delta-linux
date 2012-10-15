@@ -36,8 +36,3 @@ try d.foo(); trap e { print(e, "\n"); }
 libs::unimport(o1);
 libs::unimport(os1);
 libs::unimport(os2);
-
-(function {
-	method f {}
-	print(f); 
-})();

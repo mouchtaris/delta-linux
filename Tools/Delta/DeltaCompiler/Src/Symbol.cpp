@@ -91,7 +91,7 @@ void DeltaSymbol::FuncAccess::RecordInnerUse (DeltaExpr* funcExpr, DeltaSymbol* 
 	);
 }
 
-	//**************************
+//**************************
 
 void DeltaSymbol::FuncAccess::CreateFunctionVar (void) {
 	DASSERT(!funcVar);
