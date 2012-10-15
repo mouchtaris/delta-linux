@@ -21,6 +21,8 @@
 #include "FunctionValueReturnChecker.h"
 #include "DeltaCompErrorDefs.h"
 #include "ParseParms.h"
+#include "CompilerAPI.h"
+#include "Optimizer.h"
 
 #define	RETVAL_EXPR					DPTR(DeltaExpr::GetReturnValue())
 #define	DELTA_ISUNDEFINED_LIBFUNC	"std::isundefined"
@@ -263,10 +265,13 @@ static void Translate_HandleAssignFunctionVar (DeltaSymbol* func) {
 		DPTR(funcVarExpr)->sym	= DPTR(DPTR(func)->funcAccess)->GetFunctionVar();
 		DPTR(funcVarExpr)->SetInitialised();
 
+		if (!DeltaCompiler::GetProductionMode())						// Except when we are in debug mode.
+			OPTIMIZER.ExcludeFromTempElimination(QUADS.CurrQuadNo());	// To ensure optimization will not strip it off.
+		else
+			QUADS.GetQuad(QUADS.CurrQuadNo()).MarkAsDropped();			// Else we drop it directly
 		QUADS.Emit(DeltaIC_ASSIGN, funcExpr, NIL_EXPR, funcVarExpr);
 
 		DPTR(DPTR(func)->funcAccess)->SetAssignQuadNo(QUADS.CurrQuadNo());
-		QUADS.GetQuad(QUADS.CurrQuadNo()).MarkAsDropped();
 	}
 }
 
