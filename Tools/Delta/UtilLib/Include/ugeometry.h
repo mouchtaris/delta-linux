@@ -158,6 +158,7 @@ template <class T> struct urectangle {
 	bool operator==(const urectangle& r) const				{ return x==r.x && y==r.y && w==r.w && h==r.h; }
 	bool operator==(const urectangleex<T>& r) const			{ return x==r.x1 && y==r.y1 && w==(r.x2-r.x1+1) && h==(r.y2-r.y1+1); }
 	void mul (T xf, T yf)									{ x *= xf; y *= yf; w *= xf; h *= yf; }
+	void add (T xf, T yf)									{ x += xf; y += yf; w += xf; h += yf; }
 	bool isleftto (T xp) const								{ return x + w <= xp; }
 	bool isrightto (T xp) const								{ return x > xp; }
 	bool isupto (T yp) const								{ return y + h <= yp; }
@@ -194,6 +195,7 @@ template <class T> struct urectangleex {
 	bool operator==(const urectangleex& r) const				{ return x1==r.x1 && y1==r.y1 && x2==r.x2 && y2==r.y2; }
 	bool operator==(const urectangle<T>& r) const				{ return r.x==x1 && r.y==y1 && r.w==(x2-x1+1) && r.h==(y2-y1+1); }
 	void mul (T xf, T yf)										{ x1 *= xf; y1 *= yf; x2 *= xf; y2 *= yf; }
+	void add (T xf, T yf)										{ x1 += xf; y1 += yf; x2 += xf; y2 += yf; }
 	bool isleftto (T x) const									{ return x2 < x; }
 	bool isrightto (T x) const									{ return x1 > x; }
 	bool isupto (T y) const										{ return y2 < y; }
