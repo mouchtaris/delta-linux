@@ -58,7 +58,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\..\UnderGo\ScriptFighter\Common\Include;..\..\..\..\UnderGo\ScriptFighter\DeltaVirtualMachine\Include;..\..\..\..\UnderGo\ScriptFighter\UtilLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugBreakPointHolder\include;..\..\..\..\UnderGo\ScriptFighter\DeltaStdLib\Include;..\..\..\..\UnderGo\ScriptFighter\FileReadersLib\Include;\Developments\Sparrow\trunk\Components\DeltaVM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\UnderGo\ScriptFighter\Common\Include;..\..\..\..\UnderGo\ScriptFighter\DeltaVirtualMachine\Include;..\..\..\..\UnderGo\ScriptFighter\UtilLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugBreakPointHolder\include;..\..\..\..\UnderGo\ScriptFighter\DeltaStdLib\Include;..\..\..\..\UnderGo\ScriptFighter\FileReadersLib\Include;\Developments\Sparrow\trunk\Components\DeltaVM;\Developments\Sparrow\trunk\Components\ProjectManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;SPARROWLIB_EXPORTS;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -74,7 +74,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\UnderGo\ScriptFighter\Common\Include;..\..\..\..\UnderGo\ScriptFighter\DeltaVirtualMachine\Include;..\..\..\..\UnderGo\ScriptFighter\UtilLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugBreakPointHolder\include;..\..\..\..\UnderGo\ScriptFighter\DeltaStdLib\Include;..\..\..\..\UnderGo\ScriptFighter\FileReadersLib\Include;\Developments\Sparrow\trunk\Components\DeltaVM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\UnderGo\ScriptFighter\Common\Include;..\..\..\..\UnderGo\ScriptFighter\DeltaVirtualMachine\Include;..\..\..\..\UnderGo\ScriptFighter\UtilLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugLib\Include;..\..\..\..\UnderGo\ScriptFighter\DebugBreakPointHolder\include;..\..\..\..\UnderGo\ScriptFighter\DeltaStdLib\Include;..\..\..\..\UnderGo\ScriptFighter\FileReadersLib\Include;\Developments\Sparrow\trunk\Components\DeltaVM;\Developments\Sparrow\trunk\Components\ProjectManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;SPARROWLIB_EXPORTS;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>

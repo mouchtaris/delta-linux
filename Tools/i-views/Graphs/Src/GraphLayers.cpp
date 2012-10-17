@@ -148,9 +148,9 @@ long GraphLayers::GetDistanceOfVerticesInLayer (
 	long dist1 = (long)std::distance(table[l].begin(), pos1);
 	long dist2 = (long)std::distance(table[l].begin(), pos2);
 	long dist = dist2 - dist1;
-	return (dist < 0? dist * -1 : dist)-1;	//convert distance to posetive number
-											//becase we do not know witch vertex is first
-											//-1: distance 
+
+	return dist <= 0 ? -dist : dist - 1;	// convert distance to positive number
+											// because we do not know which vertex is first
 }
 
 //-----------------------------------------------------------------------
