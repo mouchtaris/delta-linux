@@ -43,6 +43,7 @@ class DeltaCodeGenerator {
 	DeltaConstantArraysWriter			constArrays;	// Arrays of constant values.
 	DeltaDebugProgramInfo				debugInfo;
 	std::map<util_ui32, GenerateFunc>	generateFuncs;
+	util_ui32							currLine;
 
 	//-------------------------------------------------------------------
 

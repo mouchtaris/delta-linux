@@ -701,6 +701,13 @@ void DeltaCodeGenerator::Emit (DeltaInstruction* instr) {
 	//
 	if (!instr->line && currInstr)
 		instr->line = code[currInstr].line;
+#else
+	// In case of function calls we need to make sure that getreval that is executed
+	// after returning to function has a line number, including the instruction
+	// that follows it since getretval may be optimized out.
+
+	if (!instr->line && currInstr && code[currInstr].GetOpCode() == DeltaVM_GETRETVAL)
+		instr->line	= code[currInstr].line = currLine;
 #endif
 
 	// Max line numbers are automatically set to 0.
@@ -709,6 +716,9 @@ void DeltaCodeGenerator::Emit (DeltaInstruction* instr) {
 	//
 	if (instr->line == DELTA_LINE_NOT_VISIBLE)
 		instr->line = 0;
+
+	if (instr->line)
+		currLine = instr->line;
 
 	if (!codeEmitted)
 		codeEmitted = true;
@@ -928,6 +938,7 @@ void DeltaCodeGenerator::GenerateCode (void) {
 
 	util_ui32 quadNo;
 	util_ui32 droppedLine = 0;
+	currLine = 0;
 
 	for (quadNo = DELTA_START_QUAD; QUADS.Iterate(&quad); ++quadNo) {
 

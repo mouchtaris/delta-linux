@@ -158,10 +158,6 @@
       <Project>{bddbb729-52f6-4732-8a9f-82d7f2759586}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\DebugWatchValueInfo\Project\DebugWatchValueInfo.vcxproj">
-      <Project>{6efc82bf-5b45-4275-b13a-5b3a1de55abc}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\DeltaCompiler\Project\DeltaCompilerLib.vcxproj">
       <Project>{d738ba1d-5bdf-49ca-b234-777adc23bcc3}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
