@@ -1,7 +1,6 @@
 #include "Exporter.h"
 #include "HTMLExporter.h"
 #include "RTFExporter.h"
-#include "TXTExporter.h"
 
 class RangeToFormat;
 #include "../Scintilla/Include/Platform.h"
@@ -24,9 +23,9 @@ class RangeToFormat;
 #include "../scintilla/src/Document.h"
 #include "../scintilla/src/Editor.h"
 
-static void err(const TCHAR * msg) {
-	MessageBox(GetActiveWindow(), msg, TEXT("Error"), MB_OK);
-}
+#include <wx/textbuf.h>
+
+static void err(const TCHAR * msg) { MessageBox(GetActiveWindow(), msg, TEXT("Error"), MB_OK); }
 
 static void initScintillaData(CurrentScintillaData * csd) {
 	csd->styles = new StyleData[NRSTYLES];
@@ -44,88 +43,7 @@ Exporter::Exporter(wxScintilla* scintilla) : _clipboardId(0) {
 	mainCSD.hScintilla = scintilla;
 }
 
-Exporter::~Exporter(void) {
-	deinitScintillaData(&mainCSD);
-}
-
-//Menu command functions
-void Exporter::doExportRTF(TCHAR* filename) {
-	fillScintillaData(&mainCSD, 0 , -1);
-	lstrcat(filename, TEXT(".rtf"));
-	if (saveFile(filename, MAX_PATH, TEXT("RTF file (*.rtf)\0*.rtf\0All files (*.*)\0*.*\0"))) {
-		//FILE * output = fopen(filename, "wb");
-		HANDLE hFileOut = CreateFile(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		if (!hFileOut) {
-			return;
-		}
-		exportRTF(false, hFileOut);
-		//fclose(output);
-		CloseHandle(hFileOut);
-	}
-}
-
-void Exporter::doExportHTML(TCHAR* filename) {
-	fillScintillaData(&mainCSD, 0 , -1);
-	lstrcat(filename, TEXT(".html"));
-	if (saveFile(filename, MAX_PATH, TEXT("HTML file (*.html)\0*.html\0All files (*.*)\0*.*\0"))) {
-		//FILE * output = fopen(filename, "wb");
-		HANDLE hFileOut = CreateFile(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		if (!hFileOut) {
-			return;
-		}
-		exportHTML(false, hFileOut);
-		//fclose(output);
-		CloseHandle(hFileOut);
-	}
-}
-
-void Exporter::doClipboardRTF() {
-	fillScintillaData(&mainCSD, 0, 0);
-
-	BOOL result = OpenClipboard(GetActiveWindow());
-	if (result == FALSE) {
-		err(TEXT("Unable to open clipboard"));
-		return;
-	}
-
-	result = EmptyClipboard();
-	if (result == FALSE) {
-		err(TEXT("Unable to empty clipboard"));
-		return;
-	}
-
-	exportRTF(true, NULL);
-
-	result = CloseClipboard();
-	if (result == FALSE) {
-		err(TEXT("Unable to close clipboard"));
-		return;
-	}
-}
-
-void Exporter::doClipboardHTML() {
-	fillScintillaData(&mainCSD, 0, 0);
-	
-	BOOL result = OpenClipboard(GetActiveWindow());
-	if (result == FALSE) {
-		err(TEXT("Unable to open clipboard"));
-		return;
-	}
-
-	result = EmptyClipboard();
-	if (result == FALSE) {
-		err(TEXT("Unable to empty clipboard"));
-		return;
-	}
-
-	exportHTML(true, NULL);
-
-	result = CloseClipboard();
-	if (result == FALSE) {
-		err(TEXT("Unable to close clipboard"));
-		return;
-	}
-}
+Exporter::~Exporter(void) { deinitScintillaData(&mainCSD); }
 
 void Exporter::doClipboardAll(const SelectionText& st) {
 	fillScintillaData(&mainCSD, 0, 0);
@@ -142,9 +60,9 @@ void Exporter::doClipboardAll(const SelectionText& st) {
 		return;
 	}
 
-	exportRTF(true, NULL);
-	exportHTML(true, NULL);
-	exportTXT(true, NULL);	//also put plaintext on clipboard
+	exportCustom(RTFExporter());
+	exportCustom(HTMLExporter());
+	exportTXT(st);
 	exportRectTXT(st);
 
 	result = CloseClipboard();
@@ -154,20 +72,51 @@ void Exporter::doClipboardAll(const SelectionText& st) {
 	}
 }
 
-// Private funcs
-
-BOOL Exporter::saveFile(TCHAR * filebuffer, int buffersize, const TCHAR * filters) {
-	OPENFILENAME ofi;
-	ZeroMemory(&ofi,sizeof(OPENFILENAME));
-	ofi.lStructSize = sizeof(OPENFILENAME);
-	ofi.hwndOwner = GetActiveWindow();
-	ofi.lpstrFilter = filters;
-	ofi.nFilterIndex = 1;
-	ofi.lpstrFile = filebuffer;
-	ofi.nMaxFile = buffersize;
-	ofi.Flags = OFN_CREATEPROMPT|OFN_EXPLORER|OFN_OVERWRITEPROMPT;
-	return GetSaveFileName(&ofi);
+//Export handlers
+void Exporter::exportCustom(const Exporter& exporter) {
+	ExportData ed;
+	ed.csd = &mainCSD;
+	exporter.exportData(&ed);
+	if (ed.hBuffer) {
+		HANDLE clipHandle = SetClipboardData(exporter.getClipboardID(), ed.hBuffer);
+		if (!clipHandle) {
+			GlobalFree(ed.hBuffer);
+			err(TEXT("Failed setting clipboard data"));
+		}
+	}
 }
+
+void Exporter::exportTXT(const SelectionText& st) {
+	wxString text = wxTextBuffer::Translate (sci2wx(st.s, st.len-1));
+	HGLOBAL hTXTBuffer = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, (text.size() + 1) * sizeof(wxChar));
+	wxChar* buffer = (wxChar *)GlobalLock(hTXTBuffer);
+	wxStrcpy(buffer, text.c_str());
+	GlobalUnlock(hTXTBuffer);
+#ifdef UNICODE
+#define CF_MY_TEXT	CF_UNICODETEXT
+#else
+#define CF_MY_TEXT	CF_UNICODETEXT
+#endif
+	if (!SetClipboardData(CF_MY_TEXT, buffer)) {
+		GlobalFree(buffer);
+		err(TEXT("Failed setting clipboard data"));
+	}
+}
+
+void Exporter::exportRectTXT(const SelectionText& st) {
+	HGLOBAL hTXTBuffer = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, st.len+1);
+	char * buffer = (char *)GlobalLock(hTXTBuffer);
+	buffer[0] = (st.rectangular)? (char)1 : (char)0;
+    memcpy (buffer+1, st.s, st.len);
+	GlobalUnlock(hTXTBuffer);
+
+	if (!SetClipboardData(RegisterClipboardFormat(CF_RECT_TEXT), buffer)) {
+		GlobalFree(buffer);
+		err(TEXT("Failed setting clipboard data"));
+	}
+}
+
+// Private funcs
 
 void Exporter::fillScintillaData(CurrentScintillaData * csd, int start, int end) {
 	bool doColourise = true;
@@ -305,110 +254,4 @@ void Exporter::fillScintillaData(CurrentScintillaData * csd, int start, int end)
 
 	//We now have the amount of twips per space in the default font
 	csd->twipsPerSpace = twips;
-}
-
-//Export handlers
-void Exporter::exportHTML(bool isClipboard, HANDLE exportFile) {
-
-	HTMLExporter htmlexp;
-	ExportData ed;
-
-	ed.isClipboard = isClipboard;
-	ed.csd = &mainCSD;
-
-	htmlexp.exportData(&ed);
-
-	if (!ed.hBuffer)
-		return;
-
-	if (!isClipboard) {
-		char * buffer = (char *)GlobalLock(ed.hBuffer);
-		//if (fwrite(buffer, 1, ed.bufferSize, exportFile) != ed.bufferSize) {
-		DWORD result = 0;
-		if (WriteFile(exportFile, buffer, ed.bufferSize, &result, NULL) != TRUE) {
-			err(TEXT("Error writing data to file"));
-		}
-		GlobalUnlock(ed.hBuffer);
-		GlobalFree(ed.hBuffer);
-	} else {
-		HANDLE clipHandle = SetClipboardData(htmlexp.getClipboardID(), ed.hBuffer);
-		if (!clipHandle) {
-			GlobalFree(ed.hBuffer);
-			err(TEXT("Failed setting clipboard data"));
-		}
-	}
-}
-
-void Exporter::exportRTF(bool isClipboard, HANDLE exportFile) {
-
-	RTFExporter rtfexp;
-	ExportData ed;
-
-	ed.isClipboard = isClipboard;
-	ed.csd = &mainCSD;
-
-	rtfexp.exportData(&ed);
-
-	if (!ed.hBuffer)
-		return;
-
-	if (!isClipboard) {
-		char * buffer = (char *)GlobalLock(ed.hBuffer);
-		//if (fwrite(buffer, 1, ed.bufferSize, exportFile) != ed.bufferSize) {
-		DWORD result = 0;
-		if (WriteFile(exportFile, buffer, ed.bufferSize, &result, NULL) != TRUE) {
-			err(TEXT("Error writing data to file"));
-		}
-		GlobalUnlock(ed.hBuffer);
-		GlobalFree(ed.hBuffer);
-	} else {
-		HANDLE clipHandle = SetClipboardData(rtfexp.getClipboardID(), ed.hBuffer);
-		if (!clipHandle) {
-			GlobalFree(ed.hBuffer);
-			err(TEXT("Failed setting clipboard data"));
-		}
-	}
-}
-
-void Exporter::exportTXT(bool isClipboard, HANDLE exportFile) {
-	TXTExporter txtexp;
-	ExportData ed;
-
-	ed.isClipboard = isClipboard;
-	ed.csd = &mainCSD;
-
-	txtexp.exportData(&ed);
-
-	if (!ed.hBuffer)
-		return;
-
-	if (!isClipboard) {
-		char * buffer = (char *)GlobalLock(ed.hBuffer);
-		//if (fwrite(buffer, 1, ed.bufferSize, exportFile) != ed.bufferSize) {
-		DWORD result = 0;
-		if (WriteFile(exportFile, buffer, ed.bufferSize, &result, NULL) != TRUE) {
-			err(TEXT("Error writing data to file"));
-		}
-		GlobalUnlock(ed.hBuffer);
-		GlobalFree(ed.hBuffer);
-	} else {
-		HANDLE clipHandle = SetClipboardData(txtexp.getClipboardID(), ed.hBuffer);
-		if (!clipHandle) {
-			GlobalFree(ed.hBuffer);
-			err(TEXT("Failed setting clipboard data"));
-		}
-	}
-}
-
-void Exporter::exportRectTXT(const SelectionText& st) {
-	HGLOBAL hTXTBuffer = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, st.len+1);
-	char * buffer = (char *)GlobalLock(hTXTBuffer);
-	buffer[0] = (st.rectangular)? (char)1 : (char)0;
-    memcpy (buffer+1, st.s, st.len);
-	GlobalUnlock(hTXTBuffer);
-
-	if (!SetClipboardData(RegisterClipboardFormat(CF_RECT_TEXT), buffer)) {
-		GlobalFree(buffer);
-		err(TEXT("Failed setting clipboard data"));
-	}
 }

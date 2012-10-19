@@ -100,7 +100,6 @@
     <ClCompile Include="..\WXScintilla\export\Exporter.cpp" />
     <ClCompile Include="..\WXScintilla\export\HTMLExporter.cpp" />
     <ClCompile Include="..\WXScintilla\export\RTFExporter.cpp" />
-    <ClCompile Include="..\WXScintilla\export\TXTExporter.cpp" />
     <ClCompile Include="EditorBaseLibrary.cpp" />
     <ClCompile Include="..\WXScintilla\scintilla\src\AutoComplete.cxx" />
     <ClCompile Include="..\WXScintilla\scintilla\src\CallTip.cxx" />
@@ -201,7 +200,6 @@
     <ClInclude Include="..\WXScintilla\export\ExportStructs.h" />
     <ClInclude Include="..\WXScintilla\export\HTMLExporter.h" />
     <ClInclude Include="..\WXScintilla\export\RTFExporter.h" />
-    <ClInclude Include="..\WXScintilla\export\TXTExporter.h" />
     <ClInclude Include="EditorBaseLibrary.h" />
     <ClInclude Include="..\EditorInterfaces\LanguageModuleIface.h" />
     <ClInclude Include="..\EditorMain\EditorModuleLoader.h" />

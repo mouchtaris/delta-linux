@@ -43,7 +43,6 @@ struct CurrentScintillaData {
 };
 
 struct ExportData {
-	bool isClipboard;
 	CurrentScintillaData * csd;
 	HGLOBAL hBuffer;
 	unsigned long bufferSize;

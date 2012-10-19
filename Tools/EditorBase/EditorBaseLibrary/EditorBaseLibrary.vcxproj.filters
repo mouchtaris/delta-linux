@@ -332,9 +332,6 @@
     <ClCompile Include="..\WXScintilla\export\RTFExporter.cpp">
       <Filter>Source Files\Export</Filter>
     </ClCompile>
-    <ClCompile Include="..\WXScintilla\export\TXTExporter.cpp">
-      <Filter>Source Files\Export</Filter>
-    </ClCompile>
     <ClCompile Include="..\WXScintilla\export\Exporter.cpp">
       <Filter>Source Files\Export</Filter>
     </ClCompile>
@@ -396,9 +393,6 @@
     </ClInclude>
     <ClInclude Include="..\WXScintilla\wxscintilla.h">
       <Filter>Header Files\wxScintilla</Filter>
-    </ClInclude>
-    <ClInclude Include="..\WXScintilla\export\TXTExporter.h">
-      <Filter>Header Files\Export</Filter>
     </ClInclude>
     <ClInclude Include="..\WXScintilla\export\Exporter.h">
       <Filter>Header Files\Export</Filter>

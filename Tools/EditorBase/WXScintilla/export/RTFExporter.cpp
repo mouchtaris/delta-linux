@@ -11,10 +11,9 @@ RTFExporter::RTFExporter(void) {
 	}
 }
 
-RTFExporter::~RTFExporter(void) {
-}
+RTFExporter::~RTFExporter(void) {}
 
-bool RTFExporter::exportData(ExportData * ed) {
+bool RTFExporter::exportData(ExportData * ed) const {
 	//estimate buffer size needed
 	char * buffer = ed->csd->dataBuffer;
 	bool isUnicode = (ed->csd->currentCodePage == SC_CP_UTF8);
@@ -229,6 +228,4 @@ bool RTFExporter::exportData(ExportData * ed) {
 	return true;
 }
 
-TCHAR * RTFExporter::getClipboardType() {
-	return CF_RTF;
-}
+TCHAR * RTFExporter::getClipboardType() const{ return CF_RTF; }

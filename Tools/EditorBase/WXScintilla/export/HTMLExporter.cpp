@@ -11,15 +11,14 @@ HTMLExporter::HTMLExporter(void) {
 	}
 }
 
-HTMLExporter::~HTMLExporter(void) {
-}
+HTMLExporter::~HTMLExporter(void) {}
 
-bool HTMLExporter::exportData(ExportData * ed) {
+bool HTMLExporter::exportData(ExportData * ed) const {
 
 	//estimate buffer size needed
 	char * buffer = ed->csd->dataBuffer;
 	int totalBytesNeeded = 1;	//zero terminator
-	bool addHeader = ed->isClipboard;	//true if putting data on clipboard
+	bool addHeader = true;	//true if putting data on clipboard
 	
 	totalBytesNeeded += EXPORT_SIZE_HTML_STATIC + EXPORT_SIZE_HTML_STYLE * (ed->csd->nrUsedStyles-1) + ed->csd->totalFontStringLength + EXPORT_SIZE_HTML_SWITCH * ed->csd->nrStyleSwitches;
 	if (addHeader)
@@ -266,6 +265,4 @@ bool HTMLExporter::exportData(ExportData * ed) {
 	return true;
 }
 
-TCHAR * HTMLExporter::getClipboardType() {
-	return CF_HTML;
-}
+TCHAR * HTMLExporter::getClipboardType() const { return CF_HTML; }
