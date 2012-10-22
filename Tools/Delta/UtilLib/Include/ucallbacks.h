@@ -238,6 +238,12 @@ template <class F, class D = ucallbackwithclosure<F> > class ucallbacklist {
 	~ucallbacklist() { clear(); }
 };
 
+#define	UCALLBACKLIST_ADD_REMOVE_IMPL(_name,_list,_type)				\
+	void	AddOn##_name(_type f, void* c = (void*) 0) const			\
+				{ _list.add(f, c); }									\
+	void	RemoveOn##_name (_type f, void* c = (void*) 0) const		\
+				{ _list.remove(f, c); }
+
 /////////////////////////////////////////////////////////////////
 // This class can be used as a base for classes that aim to provide
 // change notification. Alternatively it may be used as a field.
