@@ -126,6 +126,52 @@ template <typename T> class usingleton : public T {
 //	Let MyClass be the class for which you need a global instance MyClassInst.
 //	.h		UGLOBALINSTANCE_CLASS_DEF(MyClassInst, MyClass)
 //	.cpp	UGLOBALINSTANCE_CLASS_IMPL(MyClassInst, MyClass)
+
+/////////////////////////////////////////////////////////////////
+// A singleton to register constructors of the same produce instance type (normally a superclass).
+// Registration and runtime resolution is done with a unique class id.
+
+#define	UCONSTRUCTOR_REGISTRY_SINGLETON_DEF(																		\
+	_class,				/* of signleton */																			\
+	_inst_class,		/* of produced insts */																		\
+	_ctor_args,			/* of the ctor function signature */ 														\
+	_new_args,			/* in New() method */																		\
+	_args_pass,			/* from New() method args to register ctor function */										\
+	_resolve_class_id	/* expression to resolve class id, normally from New() method args */ 						\
+	)																												\
+class _class {																										\
+	DFRIENDDESTRUCTOR()																								\
+	public:																											\
+	typedef _inst_class*	(*Constructor)(_ctor_args);																\
+	private:																										\
+	USINGLETON_APISTYLE_DECLARE_PRIVATEINSTANCE(_class)																\
+	typedef std::map<std::string, Constructor>	Constructors;														\
+	Constructors			ctors;																					\
+	_class (void){}																									\
+	public:																											\
+	USINGLETON_APISTYLE_DECLARE_PUBLICSTDMETHODS																	\
+	USINGLETON_APISTYLE_DECLARE_GETTER(_class)																		\
+	void				Initialise (void)																			\
+							{ DASSERT(ctors.empty()); }																\
+	void				CleanUp (void)																				\
+							{ ctors.clear(); }																		\
+	void				Install (Constructor ctor, const std::string& classId) {									\
+							DASSERT(ctors.find(classId) == ctors.end());											\
+							ctors[classId] = ctor;																	\
+						}																							\
+	_inst_class*		New (_new_args) const {																		\
+							Constructors::const_iterator i = ctors.find(_resolve_class_id);							\
+							DASSERT(i != ctors.end());																\
+							return DNULLCHECK((*i->second)(_args_pass));											\
+						}																							\
+};																													\
+USINGLETON_INLINE_ACCESS_HELPER(_class)
+
+#define	UCONSTRUCTOR_REGISTRY_SINGLETON_IMPL(_class)																\
+USINGLETON_APISTYLE_DEFINE_PRIVATEINSTANCE(_class)																	\
+USINGLETON_APISTYLE_IMPL_PUBLICSTDMETHODS(_class)																	\
+USINGLETON_APISTYLE_IMPL_GETTER(_class)
+
 //---------------------------------------------------------------
 
 #endif	// Do not add stuff beyond this point.
