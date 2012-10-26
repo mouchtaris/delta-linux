@@ -10,45 +10,45 @@ GLOBAL METHOD NON-EXPORTED 'method_clear'(self,arguments), ADDR 177, FORMALS 2, 
 GLOBAL METHOD NON-EXPORTED 'method_fpscalculation'(self,arguments), ADDR 209, FORMALS 2, SERIAL 2.
 GLOBAL FUNCTION EXPORTED 'xy'(arguments,x,y), ADDR 240, FORMALS 3, SERIAL 3.
 RETURN TYPES:Object.
-GLOBAL METHOD NON-EXPORTED 'method_reset'(self,arguments), ADDR 555, FORMALS 2, SERIAL 4.
-GLOBAL METHOD NON-EXPORTED 'method_start'(self,arguments), ADDR 571, FORMALS 2, SERIAL 5.
-GLOBAL METHOD NON-EXPORTED 'method_pauseresume'(self,arguments), ADDR 658, FORMALS 2, SERIAL 6.
-GLOBAL METHOD NON-EXPORTED 'method_makeitems'(self,arguments,n,bonus,type), ADDR 669, FORMALS 5, SERIAL 7.
-GLOBAL METHOD NON-EXPORTED 'method_drawitems'(self,arguments), ADDR 733, FORMALS 2, SERIAL 8.
-GLOBAL METHOD NON-EXPORTED 'method_setgameover'(self,arguments,won), ADDR 798, FORMALS 3, SERIAL 9.
-GLOBAL METHOD NON-EXPORTED 'method_accelerate'(self,arguments), ADDR 811, FORMALS 2, SERIAL 10.
-GLOBAL METHOD NON-EXPORTED 'method_automove'(self,arguments), ADDR 819, FORMALS 2, SERIAL 11.
-GLOBAL METHOD NON-EXPORTED 'method_incscore'(self,arguments,d), ADDR 850, FORMALS 3, SERIAL 12.
-GLOBAL METHOD NON-EXPORTED 'method_check_bonus_item_eaten'(self,arguments,x,y), ADDR 866, FORMALS 4, SERIAL 13.
-GLOBAL METHOD NON-EXPORTED 'method_all_bonus_items_eaten'(self,arguments), ADDR 905, FORMALS 2, SERIAL 14.
-GLOBAL METHOD NON-EXPORTED 'method_move'(self,arguments,dir,auto), ADDR 916, FORMALS 4, SERIAL 15.
-GLOBAL METHOD NON-EXPORTED 'method_drawtile'(self,arguments,tile,x,y), ADDR 1007, FORMALS 5, SERIAL 16.
-GLOBAL METHOD NON-EXPORTED 'method_drawscore'(self,arguments), ADDR 1070, FORMALS 2, SERIAL 17.
-GLOBAL METHOD NON-EXPORTED 'method_drawtext'(self,arguments,text,x,y,align), ADDR 1110, FORMALS 6, SERIAL 18.
-GLOBAL METHOD NON-EXPORTED 'method_message'(self,arguments,msg), ADDR 1122, FORMALS 3, SERIAL 19.
-GLOBAL METHOD NON-EXPORTED 'method_new_bonus_message'(self,arguments,bonus,x,y), ADDR 1138, FORMALS 5, SERIAL 20.
-GLOBAL METHOD NON-EXPORTED 'method_clear_bonus'(self,arguments), ADDR 1160, FORMALS 2, SERIAL 21.
-GLOBAL METHOD NON-EXPORTED 'method_display_bonus_messages'(self,arguments), ADDR 1166, FORMALS 2, SERIAL 22.
-GLOBAL METHOD NON-EXPORTED 'method_display'(self,arguments,at), ADDR 1237, FORMALS 3, SERIAL 23.
-GLOBAL METHOD NON-EXPORTED 'method_initialise'(self,arguments), ADDR 1407, FORMALS 2, SERIAL 24.
-GLOBAL METHOD NON-EXPORTED 'method_istimetopoll'(self,arguments), ADDR 1479, FORMALS 2, SERIAL 25.
-GLOBAL METHOD NON-EXPORTED 'method_poll'(self,arguments), ADDR 1497, FORMALS 2, SERIAL 26.
-GLOBAL METHOD NON-EXPORTED 'method_cleanup'(self,arguments), ADDR 1507, FORMALS 2, SERIAL 27.
-GLOBAL FUNCTION EXPORTED 'init_gfx'(arguments), ADDR 1514, FORMALS 1, SERIAL 28.
+GLOBAL METHOD NON-EXPORTED 'method_reset'(self,arguments), ADDR 556, FORMALS 2, SERIAL 4.
+GLOBAL METHOD NON-EXPORTED 'method_start'(self,arguments), ADDR 572, FORMALS 2, SERIAL 5.
+GLOBAL METHOD NON-EXPORTED 'method_pauseresume'(self,arguments), ADDR 659, FORMALS 2, SERIAL 6.
+GLOBAL METHOD NON-EXPORTED 'method_makeitems'(self,arguments,n,bonus,type), ADDR 670, FORMALS 5, SERIAL 7.
+GLOBAL METHOD NON-EXPORTED 'method_drawitems'(self,arguments), ADDR 734, FORMALS 2, SERIAL 8.
+GLOBAL METHOD NON-EXPORTED 'method_setgameover'(self,arguments,won), ADDR 799, FORMALS 3, SERIAL 9.
+GLOBAL METHOD NON-EXPORTED 'method_accelerate'(self,arguments), ADDR 812, FORMALS 2, SERIAL 10.
+GLOBAL METHOD NON-EXPORTED 'method_automove'(self,arguments), ADDR 820, FORMALS 2, SERIAL 11.
+GLOBAL METHOD NON-EXPORTED 'method_incscore'(self,arguments,d), ADDR 851, FORMALS 3, SERIAL 12.
+GLOBAL METHOD NON-EXPORTED 'method_check_bonus_item_eaten'(self,arguments,x,y), ADDR 867, FORMALS 4, SERIAL 13.
+GLOBAL METHOD NON-EXPORTED 'method_all_bonus_items_eaten'(self,arguments), ADDR 906, FORMALS 2, SERIAL 14.
+GLOBAL METHOD NON-EXPORTED 'method_move'(self,arguments,dir,auto), ADDR 917, FORMALS 4, SERIAL 15.
+GLOBAL METHOD NON-EXPORTED 'method_drawtile'(self,arguments,tile,x,y), ADDR 1008, FORMALS 5, SERIAL 16.
+GLOBAL METHOD NON-EXPORTED 'method_drawscore'(self,arguments), ADDR 1071, FORMALS 2, SERIAL 17.
+GLOBAL METHOD NON-EXPORTED 'method_drawtext'(self,arguments,text,x,y,align), ADDR 1111, FORMALS 6, SERIAL 18.
+GLOBAL METHOD NON-EXPORTED 'method_message'(self,arguments,msg), ADDR 1123, FORMALS 3, SERIAL 19.
+GLOBAL METHOD NON-EXPORTED 'method_new_bonus_message'(self,arguments,bonus,x,y), ADDR 1139, FORMALS 5, SERIAL 20.
+GLOBAL METHOD NON-EXPORTED 'method_clear_bonus'(self,arguments), ADDR 1161, FORMALS 2, SERIAL 21.
+GLOBAL METHOD NON-EXPORTED 'method_display_bonus_messages'(self,arguments), ADDR 1167, FORMALS 2, SERIAL 22.
+GLOBAL METHOD NON-EXPORTED 'method_display'(self,arguments,at), ADDR 1238, FORMALS 3, SERIAL 23.
+GLOBAL METHOD NON-EXPORTED 'method_initialise'(self,arguments), ADDR 1408, FORMALS 2, SERIAL 24.
+GLOBAL METHOD NON-EXPORTED 'method_istimetopoll'(self,arguments), ADDR 1480, FORMALS 2, SERIAL 25.
+GLOBAL METHOD NON-EXPORTED 'method_poll'(self,arguments), ADDR 1498, FORMALS 2, SERIAL 26.
+GLOBAL METHOD NON-EXPORTED 'method_cleanup'(self,arguments), ADDR 1508, FORMALS 2, SERIAL 27.
+GLOBAL FUNCTION EXPORTED 'init_gfx'(arguments), ADDR 1515, FORMALS 1, SERIAL 28.
 RETURN TYPES:Bool.
-GLOBAL FUNCTION EXPORTED 'close_gfx'(arguments), ADDR 1574, FORMALS 1, SERIAL 29.
+GLOBAL FUNCTION EXPORTED 'close_gfx'(arguments), ADDR 1576, FORMALS 1, SERIAL 29.
 RETURN TYPES:Void.
-GLOBAL FUNCTION EXPORTED 'main_loop'(arguments), ADDR 1588, FORMALS 1, SERIAL 30.
+GLOBAL FUNCTION EXPORTED 'main_loop'(arguments), ADDR 1591, FORMALS 1, SERIAL 30.
 RETURN TYPES:Void.
-NON-GLOBAL FUNCTION NON-EXPORTED 'Display'(arguments), ADDR 1598, FORMALS 1, SERIAL 31.
-NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f27'(arguments), ADDR 1644, FORMALS 1, SERIAL 32.
-NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f28'(arguments), ADDR 1649, FORMALS 1, SERIAL 33.
-NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f29'(arguments), ADDR 1656, FORMALS 1, SERIAL 34.
-NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f30'(arguments), ADDR 1663, FORMALS 1, SERIAL 35.
-NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f31'(arguments), ADDR 1670, FORMALS 1, SERIAL 36.
-NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f32'(arguments), ADDR 1677, FORMALS 1, SERIAL 37.
-NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f33'(arguments), ADDR 1683, FORMALS 1, SERIAL 38.
-NON-GLOBAL METHOD NON-EXPORTED '@operator()'(self,arguments,l), ADDR 1689, FORMALS 3, SERIAL 39.
+NON-GLOBAL FUNCTION NON-EXPORTED 'Display'(arguments), ADDR 1601, FORMALS 1, SERIAL 31.
+NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f27'(arguments), ADDR 1648, FORMALS 1, SERIAL 32.
+NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f28'(arguments), ADDR 1653, FORMALS 1, SERIAL 33.
+NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f29'(arguments), ADDR 1660, FORMALS 1, SERIAL 34.
+NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f30'(arguments), ADDR 1667, FORMALS 1, SERIAL 35.
+NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f31'(arguments), ADDR 1674, FORMALS 1, SERIAL 36.
+NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f32'(arguments), ADDR 1681, FORMALS 1, SERIAL 37.
+NON-GLOBAL FUNCTION NON-EXPORTED 'anonymous_f33'(arguments), ADDR 1687, FORMALS 1, SERIAL 38.
+NON-GLOBAL METHOD NON-EXPORTED '@operator()'(self,arguments,l), ADDR 1693, FORMALS 3, SERIAL 39.
 
 ***CONSTANTS***
 STRING CONSTANTS:
@@ -351,7 +351,7 @@ NUMERIC "21.000000".
 	LOCAL consts, OFFSET 8, LINE 70.
 	LOCAL _t2, OFFSET 9, LINE 71.
 	LOCAL Data, OFFSET 10, LINE 80.
-	LOCAL $xy, OFFSET 11, LINE 124.
+	LOCAL __xy, OFFSET 11, LINE 124.
 	LOCAL tails, OFFSET 12, LINE 126.
 	LOCAL _t3, OFFSET 13, LINE 126.
 	LOCAL _t4, OFFSET 14, LINE 126.
@@ -389,9 +389,9 @@ NUMERIC "21.000000".
 	LOCAL __KBD_COMMANDS_TUPLE_SIZE, OFFSET 46, LINE 420.
 	LOCAL __JOY_COMMANDS_TUPLE_SIZE, OFFSET 47, LINE 421.
 	LOCAL input, OFFSET 48, LINE 423.
-	LOCAL $init_gfx, OFFSET 49, LINE 485.
-	LOCAL $close_gfx, OFFSET 50, LINE 510.
-	LOCAL $main_loop, OFFSET 51, LINE 522.
+	LOCAL __init_gfx, OFFSET 49, LINE 485.
+	LOCAL __close_gfx, OFFSET 50, LINE 510.
+	LOCAL __main_loop, OFFSET 51, LINE 522.
 	BLOCKID 1, #LOCALS 6.
 	LOCAL _t2, OFFSET 52, LINE 25.
 	LOCAL _t3, OFFSET 53, LINE 29.
@@ -482,7 +482,7 @@ FUNC(xy), FULLPATH(xy::), AT 240, SCOPE 0, OWNER(0).
 	FORMAL[2]->y.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 124.
-FUNC(method_reset), FULLPATH(method_reset::), AT 555, SCOPE 0, OWNER(0).
+FUNC(method_reset), FULLPATH(method_reset::), AT 556, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 7.
@@ -493,7 +493,7 @@ FUNC(method_reset), FULLPATH(method_reset::), AT 555, SCOPE 0, OWNER(0).
 	LOCAL _t3, OFFSET 4, LINE 176.
 	LOCAL _t4, OFFSET 5, LINE 176.
 	LOCAL _t5, OFFSET 6, LINE 176.
-FUNC(method_start), FULLPATH(method_start::), AT 571, SCOPE 0, OWNER(0).
+FUNC(method_start), FULLPATH(method_start::), AT 572, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 4.
@@ -510,13 +510,13 @@ FUNC(method_start), FULLPATH(method_start::), AT 571, SCOPE 0, OWNER(0).
 	LOCAL _t4, OFFSET 5, LINE 197.
 	LOCAL _t5, OFFSET 6, LINE 197.
 	LOCAL _t6, OFFSET 7, LINE 197.
-FUNC(method_pauseresume), FULLPATH(method_pauseresume::), AT 658, SCOPE 0, OWNER(0).
+FUNC(method_pauseresume), FULLPATH(method_pauseresume::), AT 659, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 2.
 	LOCAL _t0, OFFSET 0, LINE 205.
 	LOCAL _t1, OFFSET 1, LINE 205.
-FUNC(method_makeitems), FULLPATH(method_makeitems::), AT 669, SCOPE 0, OWNER(0).
+FUNC(method_makeitems), FULLPATH(method_makeitems::), AT 670, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->n.
@@ -553,7 +553,7 @@ FUNC(method_makeitems), FULLPATH(method_makeitems::), AT 669, SCOPE 0, OWNER(0).
 	LOCAL _t6, OFFSET 22, LINE 217.
 	LOCAL _t7, OFFSET 23, LINE 219.
 	LOCAL _t8, OFFSET 24, LINE 220.
-FUNC(method_drawitems), FULLPATH(method_drawitems::), AT 733, SCOPE 0, OWNER(0).
+FUNC(method_drawitems), FULLPATH(method_drawitems::), AT 734, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 10.
@@ -592,7 +592,7 @@ FUNC(method_drawitems), FULLPATH(method_drawitems::), AT 733, SCOPE 0, OWNER(0).
 	LOCAL _t19, OFFSET 26, LINE 236.
 	LOCAL _t20, OFFSET 27, LINE 237.
 	LOCAL _t21, OFFSET 28, LINE 238.
-FUNC(method_setgameover), FULLPATH(method_setgameover::), AT 798, SCOPE 0, OWNER(0).
+FUNC(method_setgameover), FULLPATH(method_setgameover::), AT 799, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->won.
@@ -600,14 +600,14 @@ FUNC(method_setgameover), FULLPATH(method_setgameover::), AT 798, SCOPE 0, OWNER
 	LOCAL _t0, OFFSET 0, LINE 242.
 	BLOCKID 1, #LOCALS 1.
 	LOCAL _t1, OFFSET 1, LINE 242.
-FUNC(method_accelerate), FULLPATH(method_accelerate::), AT 811, SCOPE 0, OWNER(0).
+FUNC(method_accelerate), FULLPATH(method_accelerate::), AT 812, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 3.
 	LOCAL _t0, OFFSET 0, LINE 245.
 	LOCAL _t1, OFFSET 1, LINE 245.
 	LOCAL _t2, OFFSET 2, LINE 245.
-FUNC(method_automove), FULLPATH(method_automove::), AT 819, SCOPE 0, OWNER(0).
+FUNC(method_automove), FULLPATH(method_automove::), AT 820, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 3.
@@ -624,7 +624,7 @@ FUNC(method_automove), FULLPATH(method_automove::), AT 819, SCOPE 0, OWNER(0).
 	LOCAL _t7, OFFSET 8, LINE 250.
 	LOCAL _t0, OFFSET 9, LINE 250.
 	LOCAL _t1, OFFSET 10, LINE 250.
-FUNC(method_incscore), FULLPATH(method_incscore::), AT 850, SCOPE 0, OWNER(0).
+FUNC(method_incscore), FULLPATH(method_incscore::), AT 851, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->d.
@@ -635,7 +635,7 @@ FUNC(method_incscore), FULLPATH(method_incscore::), AT 850, SCOPE 0, OWNER(0).
 	BLOCKID 1, #LOCALS 2.
 	LOCAL _t3, OFFSET 3, LINE 255.
 	LOCAL _t4, OFFSET 4, LINE 255.
-FUNC(method_check_bonus_item_eaten), FULLPATH(method_check_bonus_item_eaten::), AT 866, SCOPE 0, OWNER(0).
+FUNC(method_check_bonus_item_eaten), FULLPATH(method_check_bonus_item_eaten::), AT 867, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->x.
@@ -660,13 +660,13 @@ FUNC(method_check_bonus_item_eaten), FULLPATH(method_check_bonus_item_eaten::), 
 	LOCAL _t1, OFFSET 15, LINE 264.
 	LOCAL _t2, OFFSET 16, LINE 264.
 	LOCAL _t3, OFFSET 17, LINE 264.
-FUNC(method_all_bonus_items_eaten), FULLPATH(method_all_bonus_items_eaten::), AT 905, SCOPE 0, OWNER(0).
+FUNC(method_all_bonus_items_eaten), FULLPATH(method_all_bonus_items_eaten::), AT 906, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 2.
 	LOCAL _t0, OFFSET 0, LINE 269.
 	LOCAL _t1, OFFSET 1, LINE 269.
-FUNC(method_move), FULLPATH(method_move::), AT 916, SCOPE 0, OWNER(0).
+FUNC(method_move), FULLPATH(method_move::), AT 917, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->dir.
@@ -695,7 +695,7 @@ FUNC(method_move), FULLPATH(method_move::), AT 916, SCOPE 0, OWNER(0).
 	LOCAL _t6, OFFSET 10, LINE 297.
 	BLOCKID 5, #LOCALS 1.
 	LOCAL _t1, OFFSET 10, LINE 300.
-FUNC(method_drawtile), FULLPATH(method_drawtile::), AT 1007, SCOPE 0, OWNER(0).
+FUNC(method_drawtile), FULLPATH(method_drawtile::), AT 1008, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->tile.
@@ -725,7 +725,7 @@ FUNC(method_drawtile), FULLPATH(method_drawtile::), AT 1007, SCOPE 0, OWNER(0).
 	LOCAL _t6, OFFSET 12, LINE 320.
 	LOCAL _t7, OFFSET 13, LINE 320.
 	LOCAL _t8, OFFSET 14, LINE 320.
-FUNC(method_drawscore), FULLPATH(method_drawscore::), AT 1070, SCOPE 0, OWNER(0).
+FUNC(method_drawscore), FULLPATH(method_drawscore::), AT 1071, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 4.
@@ -740,7 +740,7 @@ FUNC(method_drawscore), FULLPATH(method_drawscore::), AT 1070, SCOPE 0, OWNER(0)
 	LOCAL _t5, OFFSET 7, LINE 325.
 	LOCAL _t0, OFFSET 8, LINE 327.
 	LOCAL _t1, OFFSET 9, LINE 327.
-FUNC(method_drawtext), FULLPATH(method_drawtext::), AT 1110, SCOPE 0, OWNER(0).
+FUNC(method_drawtext), FULLPATH(method_drawtext::), AT 1111, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->text.
@@ -755,7 +755,7 @@ FUNC(method_drawtext), FULLPATH(method_drawtext::), AT 1110, SCOPE 0, OWNER(0).
 	LOCAL _t4, OFFSET 4, LINE 337.
 	LOCAL _t5, OFFSET 5, LINE 337.
 	LOCAL _t6, OFFSET 6, LINE 337.
-FUNC(method_message), FULLPATH(method_message::), AT 1122, SCOPE 0, OWNER(0).
+FUNC(method_message), FULLPATH(method_message::), AT 1123, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->msg.
@@ -766,7 +766,7 @@ FUNC(method_message), FULLPATH(method_message::), AT 1122, SCOPE 0, OWNER(0).
 	LOCAL _t3, OFFSET 3, LINE 342.
 	LOCAL _t4, OFFSET 4, LINE 342.
 	LOCAL _t5, OFFSET 5, LINE 344.
-FUNC(method_new_bonus_message), FULLPATH(method_new_bonus_message::), AT 1138, SCOPE 0, OWNER(0).
+FUNC(method_new_bonus_message), FULLPATH(method_new_bonus_message::), AT 1139, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->bonus.
@@ -779,12 +779,12 @@ FUNC(method_new_bonus_message), FULLPATH(method_new_bonus_message::), AT 1138, S
 	LOCAL _t3, OFFSET 3, LINE 351.
 	LOCAL _t4, OFFSET 4, LINE 352.
 	LOCAL _t5, OFFSET 5, LINE 353.
-FUNC(method_clear_bonus), FULLPATH(method_clear_bonus::), AT 1160, SCOPE 0, OWNER(0).
+FUNC(method_clear_bonus), FULLPATH(method_clear_bonus::), AT 1161, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 359.
-FUNC(method_display_bonus_messages), FULLPATH(method_display_bonus_messages::), AT 1166, SCOPE 0, OWNER(0).
+FUNC(method_display_bonus_messages), FULLPATH(method_display_bonus_messages::), AT 1167, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 8.
@@ -815,7 +815,7 @@ FUNC(method_display_bonus_messages), FULLPATH(method_display_bonus_messages::), 
 	LOCAL _t7, OFFSET 14, LINE 369.
 	BLOCKID 5, #LOCALS 1.
 	LOCAL _t8, OFFSET 11, LINE 371.
-FUNC(method_display), FULLPATH(method_display::), AT 1237, SCOPE 0, OWNER(0).
+FUNC(method_display), FULLPATH(method_display::), AT 1238, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->at.
@@ -858,7 +858,7 @@ FUNC(method_display), FULLPATH(method_display::), AT 1237, SCOPE 0, OWNER(0).
 	BLOCKID 6, #LOCALS 2.
 	LOCAL _t6, OFFSET 12, LINE 402.
 	LOCAL _t7, OFFSET 13, LINE 402.
-FUNC(method_initialise), FULLPATH(method_initialise::), AT 1407, SCOPE 0, OWNER(0).
+FUNC(method_initialise), FULLPATH(method_initialise::), AT 1408, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 10.
@@ -884,7 +884,7 @@ FUNC(method_initialise), FULLPATH(method_initialise::), AT 1407, SCOPE 0, OWNER(
 	LOCAL _t1, OFFSET 12, LINE 461.
 	LOCAL _t2, OFFSET 13, LINE 461.
 	LOCAL _t3, OFFSET 14, LINE 463.
-FUNC(method_istimetopoll), FULLPATH(method_istimetopoll::), AT 1479, SCOPE 0, OWNER(0).
+FUNC(method_istimetopoll), FULLPATH(method_istimetopoll::), AT 1480, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 5.
@@ -895,17 +895,17 @@ FUNC(method_istimetopoll), FULLPATH(method_istimetopoll::), AT 1479, SCOPE 0, OW
 	LOCAL _t3, OFFSET 4, LINE 470.
 	BLOCKID 1, #LOCALS 1.
 	LOCAL _t4, OFFSET 5, LINE 471.
-FUNC(method_poll), FULLPATH(method_poll::), AT 1497, SCOPE 0, OWNER(0).
+FUNC(method_poll), FULLPATH(method_poll::), AT 1498, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 476.
-FUNC(method_cleanup), FULLPATH(method_cleanup::), AT 1507, SCOPE 0, OWNER(0).
+FUNC(method_cleanup), FULLPATH(method_cleanup::), AT 1508, SCOPE 0, OWNER(0).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 480.
-FUNC(init_gfx), FULLPATH(init_gfx::), AT 1514, SCOPE 0, OWNER(0).
+FUNC(init_gfx), FULLPATH(init_gfx::), AT 1515, SCOPE 0, OWNER(0).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 5.
 	LOCAL _t0, OFFSET 0, LINE 487.
@@ -917,17 +917,17 @@ FUNC(init_gfx), FULLPATH(init_gfx::), AT 1514, SCOPE 0, OWNER(0).
 	BLOCKID 2, #LOCALS 0.
 	BLOCKID 3, #LOCALS 1.
 	LOCAL _t1, OFFSET 5, LINE 500.
-FUNC(close_gfx), FULLPATH(close_gfx::), AT 1574, SCOPE 0, OWNER(0).
+FUNC(close_gfx), FULLPATH(close_gfx::), AT 1576, SCOPE 0, OWNER(0).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 511.
 	BLOCKID 1, #LOCALS 1.
 	LOCAL _t1, OFFSET 1, LINE 512.
-FUNC(main_loop), FULLPATH(main_loop::), AT 1588, SCOPE 0, OWNER(0).
+FUNC(main_loop), FULLPATH(main_loop::), AT 1591, SCOPE 0, OWNER(0).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 4.
 	LOCAL _t0, OFFSET 0, LINE 524.
-	LOCAL $Display, OFFSET 1, LINE 527.
+	LOCAL __Display, OFFSET 1, LINE 527.
 	LOCAL actions, OFFSET 2, LINE 561.
 	LOCAL _t1, OFFSET 3, LINE 576.
 	BLOCKID 1, #LOCALS 1.
@@ -936,41 +936,41 @@ FUNC(main_loop), FULLPATH(main_loop::), AT 1588, SCOPE 0, OWNER(0).
 	LOCAL _t1, OFFSET 4, LINE 582.
 	LOCAL _t0, OFFSET 5, LINE 583.
 	BLOCKID 3, #LOCALS 0.
-FUNC(Display), FULLPATH(main_loop::Display::), AT 1598, SCOPE 1, OWNER(1588).
+FUNC(Display), FULLPATH(main_loop::Display::), AT 1601, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 4.
 	LOCAL _t0, OFFSET 0, LINE 529.
 	LOCAL _t1, OFFSET 1, LINE 529.
 	LOCAL _t2, OFFSET 2, LINE 534.
 	LOCAL _t3, OFFSET 3, LINE 535.
-FUNC(anonymous_f27), FULLPATH(main_loop::anonymous_f27::), AT 1644, SCOPE 1, OWNER(1588).
+FUNC(anonymous_f27), FULLPATH(main_loop::anonymous_f27::), AT 1648, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 0.
-FUNC(anonymous_f28), FULLPATH(main_loop::anonymous_f28::), AT 1649, SCOPE 1, OWNER(1588).
+FUNC(anonymous_f28), FULLPATH(main_loop::anonymous_f28::), AT 1653, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 563.
-FUNC(anonymous_f29), FULLPATH(main_loop::anonymous_f29::), AT 1656, SCOPE 1, OWNER(1588).
+FUNC(anonymous_f29), FULLPATH(main_loop::anonymous_f29::), AT 1660, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 564.
-FUNC(anonymous_f30), FULLPATH(main_loop::anonymous_f30::), AT 1663, SCOPE 1, OWNER(1588).
+FUNC(anonymous_f30), FULLPATH(main_loop::anonymous_f30::), AT 1667, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 565.
-FUNC(anonymous_f31), FULLPATH(main_loop::anonymous_f31::), AT 1670, SCOPE 1, OWNER(1588).
+FUNC(anonymous_f31), FULLPATH(main_loop::anonymous_f31::), AT 1674, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 566.
-FUNC(anonymous_f32), FULLPATH(main_loop::anonymous_f32::), AT 1677, SCOPE 1, OWNER(1588).
+FUNC(anonymous_f32), FULLPATH(main_loop::anonymous_f32::), AT 1681, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 567.
-FUNC(anonymous_f33), FULLPATH(main_loop::anonymous_f33::), AT 1683, SCOPE 1, OWNER(1588).
+FUNC(anonymous_f33), FULLPATH(main_loop::anonymous_f33::), AT 1687, SCOPE 1, OWNER(1591).
 	FORMAL[0]->arguments.
 	BLOCKID 0, #LOCALS 1.
 	LOCAL _t0, OFFSET 0, LINE 568.
-FUNC(@operator()), FULLPATH(main_loop::@operator()::), AT 1689, SCOPE 1, OWNER(1588).
+FUNC(@operator()), FULLPATH(main_loop::@operator()::), AT 1693, SCOPE 1, OWNER(1591).
 	FORMAL[0]->self.
 	FORMAL[1]->arguments.
 	FORMAL[2]->l.
@@ -991,96 +991,96 @@ FUNC(@operator()), FULLPATH(main_loop::@operator()::), AT 1689, SCOPE 1, OWNER(1
 	drawable_width(@tiles), ADDR 158.
 	drawable_height(@tiles), ADDR 164.
 4 CALLS FOR STMT AT LINE 126.
-	xy(0, 0), ADDR 248.
-	xy(1, 0), ADDR 252.
-	xy(2, 0), ADDR 256.
-	xy(3, 0), ADDR 260.
+	xy(0, 0), ADDR 249.
+	xy(1, 0), ADDR 253.
+	xy(2, 0), ADDR 257.
+	xy(3, 0), ADDR 261.
 4 CALLS FOR STMT AT LINE 127.
-	xy(0, 1), ADDR 267.
-	xy(1, 1), ADDR 271.
-	xy(2, 1), ADDR 275.
-	xy(3, 1), ADDR 279.
+	xy(0, 1), ADDR 268.
+	xy(1, 1), ADDR 272.
+	xy(2, 1), ADDR 276.
+	xy(3, 1), ADDR 280.
 6 CALLS FOR STMT AT LINE 129.
-	xy(2, 2), ADDR 286.
-	xy(3, 2), ADDR 291.
-	xy(0, 2), ADDR 296.
-	xy(1, 2), ADDR 301.
-	xy(4, 2), ADDR 306.
-	xy(5, 2), ADDR 311.
+	xy(2, 2), ADDR 287.
+	xy(3, 2), ADDR 292.
+	xy(0, 2), ADDR 297.
+	xy(1, 2), ADDR 302.
+	xy(4, 2), ADDR 307.
+	xy(5, 2), ADDR 312.
 3 CALLS FOR STMT AT LINE 226.
-	listiter_new(), ADDR 734.
-	listiter_new(), ADDR 737.
-	(local i = listiter_new()).setbegin(local bag = @items.bag), ADDR 745.
+	listiter_new(), ADDR 735.
+	listiter_new(), ADDR 738.
+	(local i = listiter_new()).setbegin(local bag = @items.bag), ADDR 746.
 3 CALLS FOR STMT AT LINE 229.
-	j.assign(i), ADDR 761.
-	i.fwd(), ADDR 763.
-	bag.erase(j), ADDR 764.
+	j.assign(i), ADDR 762.
+	i.fwd(), ADDR 764.
+	bag.erase(j), ADDR 765.
 2 CALLS FOR STMT AT LINE 231.
-	drawable_maskedblit(Data.back_buffer, Data.tiles, item.type.x * consts.TILE_W, item.type.y * consts.TILE_H, consts.TERRAIN_X1 + item.x, consts.TERRAIN_Y1 + item.y, consts.TILE_W, consts.TILE_H), ADDR 787.
-	i.fwd(), ADDR 791.
+	drawable_maskedblit(Data.back_buffer, Data.tiles, item.type.x * consts.TILE_W, item.type.y * consts.TILE_H, consts.TERRAIN_X1 + item.x, consts.TERRAIN_Y1 + item.y, consts.TILE_W, consts.TILE_H), ADDR 788.
+	i.fwd(), ADDR 792.
 2 CALLS FOR STMT AT LINE 337.
-	font_getdefault(), ADDR 1112.
-	drawable_textdraw(Data.back_buffer, font_getdefault(), x, y, text, align, Data.textcolor), ADDR 1115.
+	font_getdefault(), ADDR 1113.
+	drawable_textdraw(Data.back_buffer, font_getdefault(), x, y, text, align, Data.textcolor), ADDR 1116.
 2 CALLS FOR STMT AT LINE 348.
-	currenttime(), ADDR 1150.
-	@bonus_sprites.push_back([@x : consts.TERRAIN_X1 + x, @y : consts.TERRAIN_Y1 + y, @text : "++" + bonus + "++", @t : currenttime() + BONUS_EXPIRE]), ADDR 1155.
+	currenttime(), ADDR 1151.
+	@bonus_sprites.push_back([@x : consts.TERRAIN_X1 + x, @y : consts.TERRAIN_Y1 + y, @text : "++" + bonus + "++", @t : currenttime() + BONUS_EXPIRE]), ADDR 1156.
 3 CALLS FOR STMT AT LINE 366.
-	listiter_new(), ADDR 1196.
-	(local i = listiter_new()).setbegin(@bonus_sprites), ADDR 1201.
-	listiter_new(), ADDR 1203.
+	listiter_new(), ADDR 1197.
+	(local i = listiter_new()).setbegin(@bonus_sprites), ADDR 1202.
+	listiter_new(), ADDR 1204.
 2 CALLS FOR STMT AT LINE 368.
-	i.getval(), ADDR 1213.
-	currenttime(), ADDR 1216.
+	i.getval(), ADDR 1214.
+	currenttime(), ADDR 1217.
 3 CALLS FOR STMT AT LINE 369.
-	j.assign(i), ADDR 1221.
-	i.fwd(), ADDR 1223.
-	@bonus_sprites.erase(j), ADDR 1225.
+	j.assign(i), ADDR 1222.
+	i.fwd(), ADDR 1224.
+	@bonus_sprites.erase(j), ADDR 1226.
 2 CALLS FOR STMT AT LINE 529.
-	drawable_black(), ADDR 1600.
-	drawable_cleartocolor(Data.back_buffer, drawable_black()), ADDR 1602.
+	drawable_black(), ADDR 1603.
+	drawable_cleartocolor(Data.back_buffer, drawable_black()), ADDR 1605.
 3 CALLS FOR STMT AT LINE 530.
-	drawable_width(Data.bg), ADDR 1607.
-	drawable_height(Data.bg), ADDR 1611.
-	drawable_blit(Data.back_buffer, Data.bg, 0, 0, 0, 0, drawable_width(Data.bg), drawable_height(Data.bg)), ADDR 1614.
+	drawable_width(Data.bg), ADDR 1610.
+	drawable_height(Data.bg), ADDR 1614.
+	drawable_blit(Data.back_buffer, Data.bg, 0, 0, 0, 0, drawable_width(Data.bg), drawable_height(Data.bg)), ADDR 1617.
 3 CALLS FOR STMT AT LINE 540.
-	font_getdefault(), ADDR 1622.
-	drawable_white(), ADDR 1626.
-	drawable_textdraw(Data.back_buffer, font_getdefault(), 0, 0, "FPS:" + Data.fps, "left", drawable_white()), ADDR 1628.
+	font_getdefault(), ADDR 1625.
+	drawable_white(), ADDR 1629.
+	drawable_textdraw(Data.back_buffer, font_getdefault(), 0, 0, "FPS:" + Data.fps, "left", drawable_white()), ADDR 1631.
 3 CALLS FOR STMT AT LINE 583.
-	input.istimetopoll(), ADDR 1715.
-	input.poll(), ADDR 1719.
-	actions(input.poll()), ADDR 1721.
+	input.istimetopoll(), ADDR 1719.
+	input.poll(), ADDR 1723.
+	actions(input.poll()), ADDR 1725.
 
 ***PROGRAM CODE***
 0(0): PROGRAMBEGIN _ _ _
 1(0): BLOCKENTER 52 TRUE 0
 2(10): PUSHARG 'ALADIN.dll' _ _
-3(10): CALLEXTFUNC _ _ std::dllimportdeltalib
+3(0): CALLEXTFUNC _ _ std::dllimportdeltalib
 4(10): GETRETVAL _ _ global(2)
 5(10): ASSIGN global(2) _ global(1)
 6(11): ASSERT 'aladin_dll' _ global(1)
 7(12): PUSHARG 'ShowConsole' global(1) _
-8(12): CALLEXTFUNC _ _ std::dllinvoke
+8(0): CALLEXTFUNC _ _ std::dllinvoke
 9(14): ASSIGN '\nRemake of the snake classic game. Uses the\nALADIN direct access library, while being\nimplemented in the Delta language.\nJuly, 2008 original version.\n' _ global(4)
 10(24): PUSHARG 'Config.txt' _ _
-11(24): CALLEXTFUNC _ _ std::rcload
+11(0): CALLEXTFUNC _ _ std::rcload
 12(24): GETRETVAL _ _ global(2)
 13(24): ASSIGN global(2) _ global(5)
-14(24): ASSIGNTEMPVAR global(2) _ global(3)
-15(24): JFALSETEST global(3) _ label(17)
-16(24): JUMP _ _ label(69)
-17(24): BLOCKENTER 6 FALSE 1
+14(0): ASSIGNTEMPVAR global(2) _ global(3)
+15(0): JFALSETEST global(3) _ label(17)
+16(0): JUMP _ _ label(69)
+17(0): BLOCKENTER 6 FALSE 1
 18(25): OBJNEW _ _ global(52)
 19(29): OBJNEW _ _ global(53)
 20(27): OBJNEWSET 'overlayed' 'mode' _
 21(29): OBJNEWSET 'detect' 'depth' _
-22(29): OBJDONE _ _ _
-23(29): OBJNEWSET global(53) 'gfx' _
+22(0): OBJDONE _ _ _
+23(0): OBJNEWSET global(53) 'gfx' _
 24(33): OBJNEW _ _ global(54)
 25(31): OBJNEWSET 'SnakeBg.bmp' 'bg' _
 26(33): OBJNEWSET 'SnakeTiles.bmp' 'tiles' _
-27(33): OBJDONE _ _ _
-28(33): OBJNEWSET global(54) 'Data' _
+27(0): OBJDONE _ _ _
+28(0): OBJNEWSET global(54) 'Data' _
 29(65): OBJNEW _ _ global(55)
 30(35): OBJNEWSET 27 'TILE_W' _
 31(36): OBJNEWSET 32 'TILE_H' _
@@ -1113,1687 +1113,1692 @@ FUNC(@operator()), FULLPATH(main_loop::@operator()::), AT 1689, SCOPE 1, OWNER(1
 58(62): OBJNEWSET 255 0 _
 59(62): OBJNEWSET 255 1 _
 60(62): OBJNEWSET 0 2 _
-61(62): OBJDONE _ _ _
-62(62): OBJNEWSET global(56) 'TEXT_COLOR' _
+61(0): OBJDONE _ _ _
+62(0): OBJNEWSET global(56) 'TEXT_COLOR' _
 63(64): OBJNEWSET 50 'INPUT_PACE' _
-64(64): OBJDONE _ _ _
-65(64): OBJNEWSET global(55) 'consts' _
-66(64): OBJDONE _ _ _
-67(64): ASSIGN global(52) _ global(5)
-68(64): BLOCKEXIT 6 FALSE 1
+64(0): OBJDONE _ _ _
+65(0): OBJNEWSET global(55) 'consts' _
+66(0): OBJDONE _ _ _
+67(0): ASSIGN global(52) _ global(5)
+68(0): BLOCKEXIT 6 FALSE 1
 69(67): ASSIGN '800x600' _ global(6)
 70(68): ASSIGN 3000 _ global(7)
 71(70): OBJGET global(5) 'consts' global(8)
 72(71): OBJGET global(8) 'TILE_W' global(2)
-73(71): OBJGET global(8) 'TILES_NHORIZ' global(3)
-74(71): MUL global(2) global(3) global(2)
-75(71): OBJSET global(2) 'TILES_BMPW' global(8)
+73(0): OBJGET global(8) 'TILES_NHORIZ' global(3)
+74(0): MUL global(2) global(3) global(2)
+75(0): OBJSET global(2) 'TILES_BMPW' global(8)
 76(72): OBJGET global(8) 'TILE_H' global(2)
-77(72): OBJGET global(8) 'TILES_NVERT' global(3)
-78(72): MUL global(2) global(3) global(2)
-79(72): OBJSET global(2) 'TILES_BMPH' global(8)
+77(0): OBJGET global(8) 'TILES_NVERT' global(3)
+78(0): MUL global(2) global(3) global(2)
+79(0): OBJSET global(2) 'TILES_BMPH' global(8)
 80(73): OBJGET global(8) 'TERRAIN_W' global(2)
-81(73): OBJGET global(8) 'TILE_W' global(3)
-82(73): DIV global(2) global(3) global(2)
-83(73): OBJSET global(2) 'TSIZE_HORIZ' global(8)
+81(0): OBJGET global(8) 'TILE_W' global(3)
+82(0): DIV global(2) global(3) global(2)
+83(0): OBJSET global(2) 'TSIZE_HORIZ' global(8)
 84(74): OBJGET global(8) 'TERRAIN_H' global(2)
-85(74): OBJGET global(8) 'TILE_H' global(3)
-86(74): DIV global(2) global(3) global(2)
-87(74): OBJSET global(2) 'TSIZE_VERT' global(8)
+85(0): OBJGET global(8) 'TILE_H' global(3)
+86(0): DIV global(2) global(3) global(2)
+87(0): OBJSET global(2) 'TSIZE_VERT' global(8)
 88(75): OBJGET global(8) 'TERRAIN_X1' global(2)
-89(75): OBJGET global(8) 'TERRAIN_W' global(3)
-90(75): ADD global(2) global(3) global(2)
-91(75): SUB global(2) 1 global(2)
-92(75): OBJSET global(2) 'TERRAIN_X2' global(8)
+89(0): OBJGET global(8) 'TERRAIN_W' global(3)
+90(0): ADD global(2) global(3) global(2)
+91(0): SUB global(2) 1 global(2)
+92(0): OBJSET global(2) 'TERRAIN_X2' global(8)
 93(76): OBJGET global(8) 'TERRAIN_Y1' global(2)
-94(76): OBJGET global(8) 'TERRAIN_H' global(3)
-95(76): ADD global(2) global(3) global(2)
-96(76): SUB global(2) 1 global(2)
-97(76): OBJSET global(2) 'TERRAIN_Y2' global(8)
+94(0): OBJGET global(8) 'TERRAIN_H' global(3)
+95(0): ADD global(2) global(3) global(2)
+96(0): SUB global(2) 1 global(2)
+97(0): OBJSET global(2) 'TERRAIN_Y2' global(8)
 98(80): OBJNEW _ _ global(2)
-99(80): JUMP _ _ label(175)
+99(0): JUMP _ _ label(175)
 100(0): FUNCENTER method(100) 7 0
 101(82): OBJGETATTR formal(0) 'sw' local(0)
-102(82): OBJGETATTR formal(0) 'sh' local(1)
-103(82): PUSHARG FALSE local(1) local(0)
-104(82): CALLEXTFUNC _ _ aladin::bitmap_construct
+102(0): OBJGETATTR formal(0) 'sh' local(1)
+103(0): PUSHARG FALSE local(1) local(0)
+104(0): CALLEXTFUNC _ _ aladin::bitmap_construct
 105(82): GETRETVAL _ _ local(1)
 106(82): OBJSETATTR local(1) 'back_buffer' formal(0)
 107(83): OBJGET global(5) 'Data' local(0)
-108(83): OBJGET local(0) 'bg' local(1)
-109(83): PUSHARG FALSE local(1) _
-110(83): CALLEXTFUNC _ _ aladin::bitmap_load
+108(0): OBJGET local(0) 'bg' local(1)
+109(0): PUSHARG FALSE local(1) _
+110(0): CALLEXTFUNC _ _ aladin::bitmap_load
 111(83): GETRETVAL _ _ local(1)
 112(83): OBJSETATTR local(1) 'bg' formal(0)
-113(83): OBJGETATTR formal(0) 'bg' local(2)
-114(83): JFALSETEST local(2) _ label(116)
-115(83): JUMP _ _ label(119)
-116(83): BLOCKENTER 0 FALSE 1
+113(0): OBJGETATTR formal(0) 'bg' local(2)
+114(0): JFALSETEST local(2) _ label(116)
+115(0): JUMP _ _ label(119)
+116(0): BLOCKENTER 0 FALSE 1
 117(84): RETURNVAL _ _ FALSE
-118(84): BLOCKEXIT 0 FALSE 1
+118(0): BLOCKEXIT 0 FALSE 1
 119(85): OBJGETATTR formal(0) 'bg' local(0)
-120(85): PUSHARG local(0) _ _
-121(85): CALLEXTFUNC _ _ aladin::drawable_width
+120(0): PUSHARG local(0) _ _
+121(0): CALLEXTFUNC _ _ aladin::drawable_width
 122(85): GETRETVAL _ _ local(0)
 123(85): OBJGETATTR formal(0) 'sw' local(1)
-124(85): JNE local(0) local(1) label(132)
-125(85): OBJGETATTR formal(0) 'bg' local(2)
-126(85): PUSHARG local(2) _ _
-127(85): CALLEXTFUNC _ _ aladin::drawable_height
+124(0): JNE local(0) local(1) label(132)
+125(0): OBJGETATTR formal(0) 'bg' local(2)
+126(0): PUSHARG local(2) _ _
+127(0): CALLEXTFUNC _ _ aladin::drawable_height
 128(85): GETRETVAL _ _ local(2)
 129(85): OBJGETATTR formal(0) 'sh' local(3)
-130(85): JNE local(2) local(3) label(132)
-131(85): JUMP _ _ label(135)
-132(85): BLOCKENTER 0 FALSE 2
+130(0): JNE local(2) local(3) label(132)
+131(0): JUMP _ _ label(135)
+132(0): BLOCKENTER 0 FALSE 2
 133(86): RETURNVAL _ _ FALSE
-134(86): BLOCKEXIT 0 FALSE 2
+134(0): BLOCKEXIT 0 FALSE 2
 135(88): OBJGET global(8) 'TEXT_COLOR' local(0)
-136(88): OBJGET local(0) 0 local(1)
-137(88): OBJGET global(8) 'TEXT_COLOR' local(2)
-138(88): OBJGET local(2) 1 local(3)
-139(88): OBJGET global(8) 'TEXT_COLOR' local(4)
-140(88): OBJGET local(4) 2 local(5)
-141(88): PUSHARG local(5) local(3) local(1)
-142(88): CALLEXTFUNC _ _ aladin::drawable_makecolor
+136(0): OBJGET local(0) 0 local(1)
+137(0): OBJGET global(8) 'TEXT_COLOR' local(2)
+138(0): OBJGET local(2) 1 local(3)
+139(0): OBJGET global(8) 'TEXT_COLOR' local(4)
+140(0): OBJGET local(4) 2 local(5)
+141(0): PUSHARG local(5) local(3) local(1)
+142(0): CALLEXTFUNC _ _ aladin::drawable_makecolor
 143(88): GETRETVAL _ _ local(5)
 144(88): OBJSETATTR local(5) 'textcolor' formal(0)
 145(91): OBJGET global(5) 'Data' local(0)
-146(91): OBJGET local(0) 'tiles' local(1)
-147(91): PUSHARG FALSE local(1) _
-148(91): CALLEXTFUNC _ _ aladin::bitmap_load
+146(0): OBJGET local(0) 'tiles' local(1)
+147(0): PUSHARG FALSE local(1) _
+148(0): CALLEXTFUNC _ _ aladin::bitmap_load
 149(91): GETRETVAL _ _ local(1)
 150(91): OBJSETATTR local(1) 'tiles' formal(0)
-151(91): OBJGETATTR formal(0) 'tiles' local(2)
-152(91): JFALSETEST local(2) _ label(154)
-153(91): JUMP _ _ label(157)
-154(91): BLOCKENTER 0 FALSE 3
+151(0): OBJGETATTR formal(0) 'tiles' local(2)
+152(0): JFALSETEST local(2) _ label(154)
+153(0): JUMP _ _ label(157)
+154(0): BLOCKENTER 0 FALSE 3
 155(92): RETURNVAL _ _ FALSE
-156(92): BLOCKEXIT 0 FALSE 3
+156(0): BLOCKEXIT 0 FALSE 3
 157(93): OBJGETATTR formal(0) 'tiles' local(0)
-158(93): PUSHARG local(0) _ _
-159(93): CALLEXTFUNC _ _ aladin::drawable_width
+158(0): PUSHARG local(0) _ _
+159(0): CALLEXTFUNC _ _ aladin::drawable_width
 160(93): GETRETVAL _ _ local(0)
 161(93): OBJGET global(8) 'TILES_BMPW' local(1)
-162(93): JNE local(0) local(1) label(170)
-163(93): OBJGETATTR formal(0) 'tiles' local(2)
-164(93): PUSHARG local(2) _ _
-165(93): CALLEXTFUNC _ _ aladin::drawable_height
+162(0): JNE local(0) local(1) label(170)
+163(0): OBJGETATTR formal(0) 'tiles' local(2)
+164(0): PUSHARG local(2) _ _
+165(0): CALLEXTFUNC _ _ aladin::drawable_height
 166(93): GETRETVAL _ _ local(2)
 167(93): OBJGET global(8) 'TILES_BMPH' local(3)
-168(93): JNE local(2) local(3) label(170)
-169(93): JUMP _ _ label(173)
-170(93): BLOCKENTER 0 FALSE 4
+168(0): JNE local(2) local(3) label(170)
+169(0): JUMP _ _ label(173)
+170(0): BLOCKENTER 0 FALSE 4
 171(94): RETURNVAL _ _ FALSE
-172(94): BLOCKEXIT 0 FALSE 4
+172(0): BLOCKEXIT 0 FALSE 4
 173(95): RETURNVAL _ _ TRUE
 174(0): FUNCRET method(100) 7 0
 175(96): OBJNEWSET method(100) 'create' _
-176(96): JUMP _ _ label(205)
+176(0): JUMP _ _ label(205)
 177(0): FUNCENTER method(177) 1 0
 178(99): OBJGETATTR formal(0) 'bg' local(0)
-179(99): JTRUETEST local(0) _ label(181)
-180(99): JUMP _ _ label(186)
-181(99): BLOCKENTER 1 FALSE 1
+179(0): JTRUETEST local(0) _ label(181)
+180(0): JUMP _ _ label(186)
+181(0): BLOCKENTER 1 FALSE 1
 182(99): OBJGETATTR formal(0) 'bg' local(1)
-183(99): PUSHARG local(1) _ _
-184(99): CALLEXTFUNC _ _ aladin::bitmap_destroy
-185(99): BLOCKEXIT 1 FALSE 1
+183(0): PUSHARG local(1) _ _
+184(0): CALLEXTFUNC _ _ aladin::bitmap_destroy
+185(0): BLOCKEXIT 1 FALSE 1
 186(100): OBJGETATTR formal(0) 'tiles' local(0)
-187(100): JTRUETEST local(0) _ label(189)
-188(100): JUMP _ _ label(194)
-189(100): BLOCKENTER 1 FALSE 2
+187(0): JTRUETEST local(0) _ label(189)
+188(0): JUMP _ _ label(194)
+189(0): BLOCKENTER 1 FALSE 2
 190(100): OBJGETATTR formal(0) 'tiles' local(1)
-191(100): PUSHARG local(1) _ _
-192(100): CALLEXTFUNC _ _ aladin::bitmap_destroy
-193(100): BLOCKEXIT 1 FALSE 2
+191(0): PUSHARG local(1) _ _
+192(0): CALLEXTFUNC _ _ aladin::bitmap_destroy
+193(0): BLOCKEXIT 1 FALSE 2
 194(101): OBJGETATTR formal(0) 'back_buffer' local(0)
-195(101): JTRUETEST local(0) _ label(197)
-196(101): JUMP _ _ label(202)
-197(101): BLOCKENTER 1 FALSE 3
+195(0): JTRUETEST local(0) _ label(197)
+196(0): JUMP _ _ label(202)
+197(0): BLOCKENTER 1 FALSE 3
 198(101): OBJGETATTR formal(0) 'back_buffer' local(1)
-199(101): PUSHARG local(1) _ _
-200(101): CALLEXTFUNC _ _ aladin::bitmap_destroy
-201(101): BLOCKEXIT 1 FALSE 3
+199(0): PUSHARG local(1) _ _
+200(0): CALLEXTFUNC _ _ aladin::bitmap_destroy
+201(0): BLOCKEXIT 1 FALSE 3
 202(102): CALLEXTFUNC _ _ bitmapmanager_cleanup
 203(103): CALLEXTFUNC _ _ fontmanager_cleanup
 204(0): FUNCRET method(177) 1 0
 205(104): OBJNEWSET method(177) 'clear' _
-206(104): OBJNEWSET 0 'lps' _
-207(104): OBJNEWSET 0 'fps' _
-208(104): JUMP _ _ label(236)
+206(0): OBJNEWSET 0 'lps' _
+207(0): OBJNEWSET 0 'fps' _
+208(0): JUMP _ _ label(236)
 209(0): FUNCENTER method(209) 3 0
 210(109): CALLEXTFUNC _ _ std::currenttime
 211(109): GETRETVAL _ _ local(1)
 212(109): ASSIGN local(1) _ local(0)
 213(110): OBJGETATTR formal(0) 'ts' local(1)
-214(110): JFALSETEST local(1) _ label(216)
-215(110): JUMP _ _ label(220)
-216(110): BLOCKENTER 1 FALSE 1
+214(0): JFALSETEST local(1) _ label(216)
+215(0): JUMP _ _ label(220)
+216(0): BLOCKENTER 1 FALSE 1
 217(111): OBJSETATTR local(0) 'ts' formal(0)
-218(111): BLOCKEXIT 1 FALSE 1
-219(111): JUMP _ _ label(235)
-220(111): BLOCKENTER 2 FALSE 2
+218(0): BLOCKEXIT 1 FALSE 1
+219(0): JUMP _ _ label(235)
+220(0): BLOCKENTER 2 FALSE 2
 221(113): OBJGETATTR formal(0) 'lps' local(3)
-222(113): ADD local(3) 1 local(3)
-223(113): OBJSET local(3) 'lps' formal(0)
+222(0): ADD local(3) 1 local(3)
+223(0): OBJSET local(3) 'lps' formal(0)
 224(114): OBJGETATTR formal(0) 'ts' local(4)
-225(114): SUB local(0) local(4) local(4)
-226(114): JGE local(4) 1000 label(228)
-227(114): JUMP _ _ label(234)
-228(114): BLOCKENTER 4 FALSE 3
+225(0): SUB local(0) local(4) local(4)
+226(0): JGE local(4) 1000 label(228)
+227(0): JUMP _ _ label(234)
+228(0): BLOCKENTER 4 FALSE 3
 229(115): OBJGETATTR formal(0) 'lps' local(5)
-230(115): OBJSETATTR local(5) 'fps' formal(0)
+230(0): OBJSETATTR local(5) 'fps' formal(0)
 231(115): OBJSETATTR 0 'lps' formal(0)
 232(115): OBJSETATTR local(0) 'ts' formal(0)
-233(115): BLOCKEXIT 4 FALSE 3
-234(115): BLOCKEXIT 2 FALSE 2
+233(0): BLOCKEXIT 4 FALSE 3
+234(0): BLOCKEXIT 2 FALSE 2
 235(0): FUNCRET method(209) 3 0
 236(117): OBJNEWSET method(209) 'fpscalculation' _
-237(117): OBJDONE _ _ _
-238(117): ASSIGN global(2) _ global(10)
-239(117): JUMP _ _ label(247)
+237(0): OBJDONE _ _ _
+238(0): ASSIGN global(2) _ global(10)
+239(0): JUMP _ _ label(247)
 240(0): FUNCENTER func(240) 1 0
 241(124): OBJNEW _ _ local(0)
-242(124): OBJNEWSET formal(1) 'x' _
-243(124): OBJNEWSET formal(2) 'y' _
-244(124): OBJDONE _ _ _
-245(124): RETURNVAL _ _ local(0)
+242(0): OBJNEWSET formal(1) 'x' _
+243(0): OBJNEWSET formal(2) 'y' _
+244(0): OBJDONE _ _ _
+245(0): RETURNVAL _ _ local(0)
 246(0): FUNCRET func(240) 1 0
-247(126): OBJNEW _ _ global(2)
-248(126): PUSHARG 0 0 _
-249(126): CALLPROGRAMFUNC _ _ func(240)
-250(126): GETRETVAL _ _ global(3)
-251(126): OBJNEWSET global(3) 'R' _
-252(126): PUSHARG 0 1 _
-253(126): CALLPROGRAMFUNC _ _ func(240)
-254(126): GETRETVAL _ _ global(9)
-255(126): OBJNEWSET global(9) 'T' _
-256(126): PUSHARG 0 2 _
-257(126): CALLPROGRAMFUNC _ _ func(240)
-258(126): GETRETVAL _ _ global(13)
-259(126): OBJNEWSET global(13) 'L' _
-260(126): PUSHARG 0 3 _
-261(126): CALLPROGRAMFUNC _ _ func(240)
-262(126): GETRETVAL _ _ global(14)
-263(126): OBJNEWSET global(14) 'B' _
-264(126): OBJDONE _ _ _
-265(126): ASSIGN global(2) _ global(12)
-266(127): OBJNEW _ _ global(2)
-267(127): PUSHARG 1 0 _
-268(127): CALLPROGRAMFUNC _ _ func(240)
-269(127): GETRETVAL _ _ global(3)
-270(127): OBJNEWSET global(3) 'R' _
-271(127): PUSHARG 1 1 _
-272(127): CALLPROGRAMFUNC _ _ func(240)
-273(127): GETRETVAL _ _ global(9)
-274(127): OBJNEWSET global(9) 'T' _
-275(127): PUSHARG 1 2 _
-276(127): CALLPROGRAMFUNC _ _ func(240)
-277(127): GETRETVAL _ _ global(13)
-278(127): OBJNEWSET global(13) 'L' _
-279(127): PUSHARG 1 3 _
-280(127): CALLPROGRAMFUNC _ _ func(240)
-281(127): GETRETVAL _ _ global(14)
-282(127): OBJNEWSET global(14) 'B' _
-283(127): OBJDONE _ _ _
-284(127): ASSIGN global(2) _ global(16)
-285(129): OBJNEW _ _ global(2)
-286(129): PUSHARG 2 2 _
-287(129): CALLPROGRAMFUNC _ _ func(240)
-288(129): GETRETVAL _ _ global(3)
-289(129): OBJNEWSET global(3) 'LT' _
-290(129): OBJNEWSET global(3) 'BR' _
-291(129): PUSHARG 2 3 _
-292(129): CALLPROGRAMFUNC _ _ func(240)
-293(129): GETRETVAL _ _ global(9)
-294(129): OBJNEWSET global(9) 'LB' _
-295(129): OBJNEWSET global(9) 'TR' _
-296(129): PUSHARG 2 0 _
-297(129): CALLPROGRAMFUNC _ _ func(240)
-298(129): GETRETVAL _ _ global(13)
-299(129): OBJNEWSET global(13) 'BL' _
-300(129): OBJNEWSET global(13) 'RT' _
-301(129): PUSHARG 2 1 _
-302(129): CALLPROGRAMFUNC _ _ func(240)
-303(129): GETRETVAL _ _ global(14)
-304(129): OBJNEWSET global(14) 'TL' _
-305(129): OBJNEWSET global(14) 'RB' _
-306(129): PUSHARG 2 4 _
-307(129): CALLPROGRAMFUNC _ _ func(240)
-308(129): GETRETVAL _ _ global(15)
-309(129): OBJNEWSET global(15) 'RL' _
-310(129): OBJNEWSET global(15) 'LR' _
-311(129): PUSHARG 2 5 _
-312(129): CALLPROGRAMFUNC _ _ func(240)
-313(129): GETRETVAL _ _ global(18)
-314(129): OBJNEWSET global(18) 'TB' _
-315(129): OBJNEWSET global(18) 'BT' _
-316(129): OBJDONE _ _ _
-317(129): ASSIGN global(2) _ global(17)
-318(135): OBJNEW _ _ global(2)
-319(136): OBJNEW _ _ global(3)
-320(136): OBJNEWSET 1 0 _
-321(136): OBJNEWSET 0 1 _
-322(136): OBJDONE _ _ _
-323(136): OBJNEWSET global(3) 'LT' _
-324(136): OBJNEW _ _ global(9)
-325(136): OBJNEWSET 0 0 _
-326(136): OBJNEWSET 1 1 _
-327(136): OBJDONE _ _ _
-328(136): OBJNEWSET global(9) 'TL' _
-329(136): OBJNEW _ _ global(13)
-330(136): OBJNEWSET 0 0 _
-331(136): OBJNEWSET -1 1 _
-332(136): OBJDONE _ _ _
-333(136): OBJNEWSET global(13) 'BR' _
-334(136): OBJNEW _ _ global(14)
-335(136): OBJNEWSET -1 0 _
-336(136): OBJNEWSET 0 1 _
-337(136): OBJDONE _ _ _
-338(136): OBJNEWSET global(14) 'RB' _
-339(137): OBJNEW _ _ global(15)
-340(137): OBJNEWSET 1 0 _
-341(137): OBJNEWSET 0 1 _
-342(137): OBJDONE _ _ _
-343(137): OBJNEWSET global(15) 'LB' _
-344(137): OBJNEW _ _ global(18)
-345(137): OBJNEWSET 0 0 _
-346(137): OBJNEWSET -1 1 _
-347(137): OBJDONE _ _ _
-348(137): OBJNEWSET global(18) 'BL' _
-349(137): OBJNEW _ _ global(19)
-350(137): OBJNEWSET 0 0 _
-351(137): OBJNEWSET 1 1 _
-352(137): OBJDONE _ _ _
-353(137): OBJNEWSET global(19) 'TR' _
-354(137): OBJNEW _ _ global(21)
-355(137): OBJNEWSET -1 0 _
-356(137): OBJNEWSET 0 1 _
-357(137): OBJDONE _ _ _
-358(137): OBJNEWSET global(21) 'RT' _
-359(139): OBJNEW _ _ global(22)
-360(139): OBJNEWSET -1 0 _
-361(139): OBJNEWSET 0 1 _
-362(139): OBJDONE _ _ _
-363(139): OBJNEWSET global(22) 'LR' _
-364(139): OBJNEW _ _ global(23)
-365(139): OBJNEWSET 1 0 _
-366(139): OBJNEWSET 0 1 _
-367(139): OBJDONE _ _ _
-368(139): OBJNEWSET global(23) 'RL' _
-369(140): OBJNEW _ _ global(24)
-370(140): OBJNEWSET 0 0 _
-371(140): OBJNEWSET -1 1 _
-372(140): OBJDONE _ _ _
-373(140): OBJNEWSET global(24) 'TB' _
-374(140): OBJNEW _ _ global(25)
-375(140): OBJNEWSET 0 0 _
-376(140): OBJNEWSET 1 1 _
-377(140): OBJDONE _ _ _
-378(140): OBJNEWSET global(25) 'BT' _
-379(142): OBJNEW _ _ global(26)
-380(142): OBJNEWSET 1 0 _
-381(142): OBJNEWSET 0 1 _
-382(142): OBJDONE _ _ _
-383(142): OBJNEWSET global(26) 'L' _
-384(142): OBJNEW _ _ global(27)
-385(142): OBJNEWSET -1 0 _
-386(142): OBJNEWSET 0 1 _
-387(142): OBJDONE _ _ _
-388(142): OBJNEWSET global(27) 'R' _
-389(142): OBJNEW _ _ global(28)
-390(142): OBJNEWSET 0 0 _
-391(142): OBJNEWSET 1 1 _
-392(142): OBJDONE _ _ _
-393(142): OBJNEWSET global(28) 'T' _
-394(143): OBJNEW _ _ global(29)
-395(142): OBJNEWSET 0 0 _
-396(142): OBJNEWSET -1 1 _
-397(142): OBJDONE _ _ _
-398(142): OBJNEWSET global(29) 'B' _
-399(142): OBJDONE _ _ _
-400(142): ASSIGN global(2) _ global(20)
-401(146): OBJNEW _ _ global(2)
-402(147): OBJNEW _ _ global(3)
-403(147): OBJNEW _ _ global(9)
-404(147): OBJNEWSET 'LT' 0 _
-405(147): OBJNEWSET 'T' 1 _
-406(147): OBJNEWSET 0 2 _
-407(147): OBJNEWSET -1 3 _
-408(147): OBJDONE _ _ _
-409(147): OBJNEWSET global(9) 'T' _
-410(147): OBJNEW _ _ global(13)
-411(147): OBJNEWSET 'LB' 0 _
-412(147): OBJNEWSET 'B' 1 _
-413(147): OBJNEWSET 0 2 _
-414(147): OBJNEWSET 1 3 _
-415(147): OBJDONE _ _ _
-416(147): OBJNEWSET global(13) 'B' _
-417(147): OBJNEW _ _ global(14)
-418(147): OBJNEWSET 'RL' 0 _
-419(147): OBJNEWSET 'L' 1 _
-420(147): OBJNEWSET -1 2 _
-421(147): OBJNEWSET 0 3 _
-422(147): OBJDONE _ _ _
-423(147): OBJNEWSET global(14) 'L' _
-424(147): OBJDONE _ _ _
-425(147): OBJNEWSET global(3) 'L' _
-426(148): OBJNEW _ _ global(15)
-427(148): OBJNEW _ _ global(18)
-428(148): OBJNEWSET 'RT' 0 _
-429(148): OBJNEWSET 'T' 1 _
-430(148): OBJNEWSET 0 2 _
-431(148): OBJNEWSET -1 3 _
-432(148): OBJDONE _ _ _
-433(148): OBJNEWSET global(18) 'T' _
-434(148): OBJNEW _ _ global(19)
-435(148): OBJNEWSET 'RB' 0 _
-436(148): OBJNEWSET 'B' 1 _
-437(148): OBJNEWSET 0 2 _
-438(148): OBJNEWSET 1 3 _
-439(148): OBJDONE _ _ _
-440(148): OBJNEWSET global(19) 'B' _
-441(148): OBJNEW _ _ global(21)
-442(148): OBJNEWSET 'LR' 0 _
-443(148): OBJNEWSET 'R' 1 _
-444(148): OBJNEWSET 1 2 _
-445(148): OBJNEWSET 0 3 _
-446(148): OBJDONE _ _ _
-447(148): OBJNEWSET global(21) 'R' _
-448(148): OBJDONE _ _ _
-449(148): OBJNEWSET global(15) 'R' _
-450(149): OBJNEW _ _ global(22)
-451(149): OBJNEW _ _ global(23)
-452(149): OBJNEWSET 'TL' 0 _
-453(149): OBJNEWSET 'L' 1 _
-454(149): OBJNEWSET -1 2 _
-455(149): OBJNEWSET 0 3 _
-456(149): OBJDONE _ _ _
-457(149): OBJNEWSET global(23) 'L' _
-458(149): OBJNEW _ _ global(24)
-459(149): OBJNEWSET 'TR' 0 _
-460(149): OBJNEWSET 'R' 1 _
-461(149): OBJNEWSET 1 2 _
-462(149): OBJNEWSET 0 3 _
-463(149): OBJDONE _ _ _
-464(149): OBJNEWSET global(24) 'R' _
-465(149): OBJNEW _ _ global(25)
-466(149): OBJNEWSET 'BT' 0 _
-467(149): OBJNEWSET 'T' 1 _
-468(149): OBJNEWSET 0 2 _
-469(149): OBJNEWSET -1 3 _
-470(149): OBJDONE _ _ _
-471(149): OBJNEWSET global(25) 'T' _
-472(149): OBJDONE _ _ _
-473(149): OBJNEWSET global(22) 'T' _
-474(151): OBJNEW _ _ global(26)
-475(150): OBJNEW _ _ global(27)
-476(150): OBJNEWSET 'BL' 0 _
-477(150): OBJNEWSET 'L' 1 _
-478(150): OBJNEWSET -1 2 _
-479(150): OBJNEWSET 0 3 _
-480(150): OBJDONE _ _ _
-481(150): OBJNEWSET global(27) 'L' _
-482(150): OBJNEW _ _ global(28)
-483(150): OBJNEWSET 'BR' 0 _
-484(150): OBJNEWSET 'R' 1 _
-485(150): OBJNEWSET 1 2 _
-486(150): OBJNEWSET 0 3 _
-487(150): OBJDONE _ _ _
-488(150): OBJNEWSET global(28) 'R' _
-489(150): OBJNEW _ _ global(29)
-490(150): OBJNEWSET 'TB' 0 _
-491(150): OBJNEWSET 'B' 1 _
-492(150): OBJNEWSET 0 2 _
-493(150): OBJNEWSET 1 3 _
-494(150): OBJDONE _ _ _
-495(150): OBJNEWSET global(29) 'B' _
-496(150): OBJDONE _ _ _
-497(150): OBJNEWSET global(26) 'B' _
-498(150): OBJDONE _ _ _
-499(150): ASSIGN global(2) _ global(31)
-500(153): OBJNEW _ _ global(2)
-501(154): OBJNEW _ _ global(3)
-502(154): OBJNEWSET 'T' 'BT' _
-503(154): OBJNEWSET 'L' 'TL' _
-504(154): OBJNEWSET 'R' 'TR' _
-505(154): OBJDONE _ _ _
-506(154): OBJNEWSET global(3) 'T' _
-507(155): OBJNEW _ _ global(9)
-508(155): OBJNEWSET 'B' 'TB' _
-509(155): OBJNEWSET 'L' 'BL' _
-510(155): OBJNEWSET 'R' 'BR' _
-511(155): OBJDONE _ _ _
-512(155): OBJNEWSET global(9) 'B' _
-513(156): OBJNEW _ _ global(13)
-514(156): OBJNEWSET 'L' 'RL' _
-515(156): OBJNEWSET 'T' 'LT' _
-516(156): OBJNEWSET 'B' 'LB' _
-517(156): OBJDONE _ _ _
-518(156): OBJNEWSET global(13) 'L' _
-519(158): OBJNEW _ _ global(14)
-520(157): OBJNEWSET 'R' 'LR' _
-521(157): OBJNEWSET 'T' 'RT' _
-522(157): OBJNEWSET 'B' 'RB' _
-523(157): OBJDONE _ _ _
-524(157): OBJNEWSET global(14) 'R' _
-525(157): OBJDONE _ _ _
-526(157): ASSIGN global(2) _ global(32)
-527(160): OBJNEW _ _ global(2)
-528(160): OBJNEWSET 'R' 'L' _
-529(160): OBJNEWSET 'L' 'R' _
-530(160): OBJNEWSET 'B' 'T' _
-531(160): OBJNEWSET 'T' 'B' _
-532(160): OBJDONE _ _ _
-533(160): ASSIGN global(2) _ global(33)
-534(162): PUSHARG 3 0 _
-535(162): CALLPROGRAMFUNC _ _ func(240)
-536(162): GETRETVAL _ _ global(2)
-537(162): ASSIGN global(2) _ global(34)
-538(163): PUSHARG 3 1 _
-539(163): CALLPROGRAMFUNC _ _ func(240)
-540(163): GETRETVAL _ _ global(2)
-541(163): ASSIGN global(2) _ global(35)
-542(167): OBJNEW _ _ global(2)
-543(168): OBJNEWSET FALSE 'initialised' _
-544(169): OBJNEWSET 0 'highscore' _
-545(170): OBJNEWSET FALSE 'has_won' _
-546(171): OBJGET global(8) 'TSIZE_VERT' global(3)
-547(171): OBJGET global(8) 'TSIZE_HORIZ' global(9)
-548(171): MUL global(3) global(9) global(3)
-549(171): OBJNEWSET global(3) 'grid_total' _
-550(172): CALLEXTFUNC _ _ std::list_new
-551(172): GETRETVAL _ _ global(13)
-552(172): OBJNEWSET global(13) 'bonus_sprites' _
-553(173): OBJNEWSET '\nRemake of the snake classic game. Uses the\nALADIN direct access library, while being\nimplemented in the Delta language.\nJuly, 2008 original version.\n' 'version' _
-554(173): JUMP _ _ label(569)
-555(0): FUNCENTER method(555) 7 0
-556(176): OBJSETATTR 0 'score' formal(0)
-557(176): OBJGET global(5) 'Data' local(2)
-558(176): OBJGET local(2) 'stage' local(1)
-559(176): ASSIGNTEMPVAR local(1) _ local(3)
-560(176): ASSIGNTEMPVAR local(3) _ local(4)
-561(176): JTRUETEST local(4) _ label(563)
-562(176): JUMP _ _ label(564)
-563(176): JUMP _ _ label(566)
-564(176): ASSIGNTEMPVAR 1 _ local(5)
-565(176): JUMP _ _ label(567)
-566(176): ASSIGNTEMPVAR local(1) _ local(5)
-567(176): OBJSETATTR local(5) 'stage' formal(0)
-568(0): FUNCRET method(555) 7 0
-569(176): OBJNEWSET method(555) 'reset' _
-570(176): JUMP _ _ label(656)
-571(0): FUNCENTER method(571) 4 0
-572(179): OBJSETATTR 'T' 'dir' formal(0)
-573(179): OBJGETATTR formal(0) 'dir' local(0)
-574(179): OBJSETATTR local(0) 'tail' formal(0)
-575(179): OBJGETATTR formal(0) 'tail' local(1)
-576(179): OBJSETATTR local(1) 'head' formal(0)
-577(180): PUSHARG 'BT' _ _
-578(180): CALLEXTFUNC _ _ std::list_new
-579(180): GETRETVAL _ _ local(0)
-580(180): OBJSETATTR local(0) 'body' formal(0)
-581(181): OBJSETATTR FALSE 'paused' formal(0)
-582(181): OBJGETATTR formal(0) 'paused' local(0)
-583(181): OBJSETATTR local(0) 'gameover' formal(0)
-584(182): OBJSETATTR TRUE 'initialised' formal(0)
-585(183): OBJGET global(8) 'START_COL' local(0)
-586(183): OBJGET global(8) 'TILE_W' local(1)
-587(183): MUL local(0) local(1) local(0)
-588(183): OBJSETATTR local(0) 'x' formal(0)
-589(184): OBJGET global(8) 'START_ROW' local(0)
-590(184): OBJGET global(8) 'TILE_H' local(1)
-591(184): MUL local(0) local(1) local(0)
-592(184): OBJSETATTR local(0) 'y' formal(0)
-593(185): CALLEXTFUNC _ _ std::currenttime
-594(185): GETRETVAL _ _ local(0)
-595(185): OBJSETATTR local(0) 'ts' formal(0)
-596(186): OBJGET global(8) 'AUTOMOVE_TIME' local(0)
-597(186): OBJSETATTR local(0) 'time' formal(0)
-598(188): OBJGETATTR formal(0) 'has_won' local(0)
-599(188): JFALSETEST local(0) _ label(601)
-600(188): JUMP _ _ label(606)
-601(188): BLOCKENTER 1 FALSE 1
-602(189): OBJGETATTR formal(0) 'reset' local(4)
-603(189): CALLFUNC _ _ local(4)
-604(189): BLOCKEXIT 1 FALSE 1
-605(189): JUMP _ _ label(611)
-606(189): BLOCKENTER 1 FALSE 2
-607(191): OBJGETATTR formal(0) 'stage' local(4)
-608(191): ADD local(4) 1 local(4)
-609(191): OBJSET local(4) 'stage' formal(0)
-610(191): BLOCKEXIT 1 FALSE 2
-611(193): OBJGET global(8) 'NUM_APPLES' local(0)
-612(193): OBJGETATTR formal(0) 'stage' local(1)
-613(193): SUB local(1) 1 local(1)
-614(193): OBJGET global(8) 'INC_APPLES' local(2)
-615(193): MUL local(1) local(2) local(1)
-616(193): ADD local(0) local(1) local(0)
-617(193): OBJSETATTR local(0) 'num_apples' formal(0)
-618(194): OBJGET global(8) 'NUM_FLIES' local(0)
-619(194): OBJGETATTR formal(0) 'stage' local(1)
-620(194): SUB local(1) 1 local(1)
-621(194): OBJGET global(8) 'INC_FLIES' local(2)
-622(194): MUL local(1) local(2) local(1)
-623(194): ADD local(0) local(1) local(0)
-624(194): OBJSETATTR local(0) 'num_flies' formal(0)
-625(196): OBJGETATTR formal(0) 'num_apples' local(0)
-626(196): OBJGETATTR formal(0) 'num_flies' local(1)
-627(196): ADD local(0) local(1) local(0)
-628(196): OBJGETATTR formal(0) 'grid_total' local(2)
-629(196): JGT local(0) local(2) label(631)
-630(196): JUMP _ _ label(637)
-631(196): BLOCKENTER 4 FALSE 3
-632(197): OBJGET global(8) 'NUM_FLIES' local(4)
-633(197): OBJSETATTR local(4) 'num_flies' formal(0)
-634(197): OBJGET global(8) 'NUM_APPLES' local(6)
-635(197): OBJSETATTR local(6) 'num_apples' formal(0)
-636(197): BLOCKEXIT 4 FALSE 3
-637(199): OBJNEW _ _ local(0)
-638(199): CALLEXTFUNC _ _ std::list_new
-639(199): GETRETVAL _ _ local(1)
-640(199): OBJNEWSET local(1) 'bag' _
-641(199): OBJNEWEMPTY _ _ local(2)
-642(199): OBJNEWSET local(2) 'grid' _
-643(199): OBJDONE _ _ _
-644(199): OBJSETATTR local(0) 'items' formal(0)
-645(200): OBJGETATTR formal(0) 'num_flies' local(0)
-646(200): OBJGET global(8) 'BONUS_FLY' local(1)
-647(200): OBJGETATTR formal(0) 'makeitems' local(3)
-648(200): PUSHARG global(35) local(1) local(0)
-649(200): CALLFUNC _ _ local(3)
-650(201): OBJGETATTR formal(0) 'num_apples' local(0)
-651(201): OBJGET global(8) 'BONUS_APPLE' local(1)
-652(201): OBJGETATTR formal(0) 'makeitems' local(3)
-653(201): PUSHARG global(34) local(1) local(0)
-654(201): CALLFUNC _ _ local(3)
-655(0): FUNCRET method(571) 4 0
-656(202): OBJNEWSET method(571) 'start' _
-657(202): JUMP _ _ label(667)
-658(0): FUNCENTER method(658) 2 0
-659(205): OBJGETATTR formal(0) 'paused' local(0)
-660(205): JFALSETEST local(0) _ label(662)
-661(205): JUMP _ _ label(664)
-662(205): ASSIGNTEMPVAR TRUE _ local(0)
-663(205): JUMP _ _ label(665)
-664(205): ASSIGNTEMPVAR FALSE _ local(0)
-665(205): OBJSETATTR local(0) 'paused' formal(0)
-666(0): FUNCRET method(658) 2 0
-667(205): OBJNEWSET method(658) 'pauseresume' _
-668(205): JUMP _ _ label(731)
-669(0): FUNCENTER method(669) 11 0
-670(208): ASSIGN 0 _ local(0)
-671(208): OBJGETATTR formal(0) 'items' local(3)
-672(208): OBJGET local(3) 'grid' local(2)
-673(208): OBJGETATTR formal(0) 'items' local(7)
-674(208): OBJGET local(7) 'bag' local(6)
-675(208): JLT local(0) formal(2) label(679)
-676(208): JUMP _ _ label(727)
-677(208): ADD local(0) 1 local(0)
-678(208): JUMP _ _ label(675)
-679(208): BLOCKENTER 9 FALSE 1
-680(209): OBJGET global(8) 'TSIZE_VERT' local(12)
-681(209): SUB local(12) 2 local(12)
-682(209): PUSHARG local(12) _ _
-683(209): CALLEXTFUNC _ _ std::random
-684(209): GETRETVAL _ _ local(12)
-685(209): ADD local(12) 1 local(11)
-686(209): ASSIGNTEMPVAR local(11) _ local(12)
-687(209): ASSIGNTEMPVAR local(12) _ local(13)
-688(209): OBJGET local(2) local(13) local(14)
-689(209): JFALSETEST local(14) _ label(691)
-690(209): JUMP _ _ label(695)
-691(209): BLOCKENTER 2 FALSE 2
-692(210): OBJNEWEMPTY _ _ local(20)
-693(210): OBJSET local(20) local(11) local(2)
-694(210): BLOCKEXIT 2 FALSE 2
-695(211): OBJGET local(2) local(11) local(15)
-696(211): OBJGET global(8) 'TSIZE_HORIZ' local(17)
-697(211): SUB local(17) 2 local(17)
-698(211): PUSHARG local(17) _ _
-699(211): CALLEXTFUNC _ _ std::random
-700(211): GETRETVAL _ _ local(17)
-701(211): ADD local(17) 1 local(16)
-702(211): ASSIGNTEMPVAR local(16) _ local(17)
-703(211): ASSIGNTEMPVAR local(17) _ local(18)
-704(211): OBJGET local(15) local(18) local(19)
-705(211): JFALSETEST local(19) _ label(707)
-706(211): JUMP _ _ label(725)
-707(211): BLOCKENTER 5 FALSE 3
-708(212): OBJGET local(2) local(11) local(20)
-709(212): OBJNEW _ _ local(21)
-710(214): OBJNEWSET formal(4) 'type' _
-711(215): OBJNEWSET formal(3) 'bonus' _
-712(216): OBJNEWSET TRUE 'visible' _
-713(217): OBJGET global(8) 'TILE_W' local(22)
-714(217): MUL local(16) local(22) local(22)
-715(217): OBJNEWSET local(22) 'x' _
-716(219): OBJGET global(8) 'TILE_H' local(23)
-717(219): MUL local(11) local(23) local(23)
-718(219): OBJNEWSET local(23) 'y' _
-719(219): OBJDONE _ _ _
-720(219): OBJSET local(21) local(16) local(20)
-721(219): OBJGET local(20) local(16) local(24)
-722(219): PUSHARG local(24) _ _
-723(219): CALLOBJGETMETHOD local(6) 'push_back' _
-724(219): BLOCKEXIT 5 FALSE 3
-725(219): BLOCKEXIT 9 FALSE 1
-726(219): JUMP _ _ label(677)
-727(222): CALLOBJGETMETHOD local(6) 'total' _
-728(222): GETRETVAL _ _ local(1)
-729(222): OBJSETATTR local(1) 'total_bonus_items' formal(0)
-730(0): FUNCRET method(669) 11 0
-731(223): OBJNEWSET method(669) 'makeitems' _
-732(223): JUMP _ _ label(796)
-733(0): FUNCENTER method(733) 10 0
-734(226): CALLEXTFUNC _ _ std::listiter_new
-735(226): GETRETVAL _ _ local(1)
-736(226): ASSIGN local(1) _ local(0)
-737(226): CALLEXTFUNC _ _ std::listiter_new
-738(226): GETRETVAL _ _ local(4)
-739(226): ASSIGN local(4) _ local(3)
-740(226): ASSIGNTEMPVAR local(4) _ local(5)
-741(226): OBJGETATTR formal(0) 'items' local(7)
-742(226): OBJGET local(7) 'bag' local(6)
-743(226): ASSIGNTEMPVAR local(6) _ local(8)
-744(226): ASSIGNTEMPVAR local(8) _ local(9)
-745(226): PUSHARG local(9) _ _
-746(226): CALLOBJGETMETHOD local(5) 'setbegin' _
-747(227): PUSHARG local(6) _ _
-748(227): CALLOBJGETMETHOD local(3) 'checkend' _
-749(227): GETRETVAL _ _ local(1)
-750(227): JFALSETEST local(1) _ label(752)
-751(227): JUMP _ _ label(795)
-752(227): BLOCKENTER 4 FALSE 1
-753(227): CALLOBJGETMETHOD local(3) 'getval' _
-754(227): GETRETVAL _ _ local(11)
-755(227): ASSIGN local(11) _ local(10)
-756(227): ASSIGNTEMPVAR local(11) _ local(12)
-757(227): OBJGET local(12) 'visible' local(13)
-758(227): JFALSETEST local(13) _ label(760)
-759(227): JUMP _ _ label(768)
-760(227): BLOCKENTER 3 FALSE 2
-761(229): PUSHARG local(3) _ _
-762(229): CALLOBJGETMETHOD local(0) 'assign' _
-763(229): CALLOBJGETMETHOD local(3) 'fwd' _
-764(229): PUSHARG local(0) _ _
-765(229): CALLOBJGETMETHOD local(6) 'erase' _
-766(229): BLOCKEXIT 3 FALSE 2
-767(229): JUMP _ _ label(793)
-768(229): BLOCKENTER 15 FALSE 3
-769(231): OBJGET global(10) 'back_buffer' local(14)
-770(231): OBJGET global(10) 'tiles' local(15)
-771(231): OBJGET local(10) 'type' local(16)
-772(231): OBJGET local(16) 'x' local(17)
-773(231): OBJGET global(8) 'TILE_W' local(18)
-774(231): MUL local(17) local(18) local(17)
-775(231): OBJGET local(10) 'type' local(19)
-776(231): OBJGET local(19) 'y' local(20)
-777(231): OBJGET global(8) 'TILE_H' local(21)
-778(231): MUL local(20) local(21) local(20)
-779(231): OBJGET global(8) 'TERRAIN_X1' local(22)
-780(231): OBJGET local(10) 'x' local(23)
-781(231): ADD local(22) local(23) local(22)
-782(231): OBJGET global(8) 'TERRAIN_Y1' local(24)
-783(231): OBJGET local(10) 'y' local(25)
-784(231): ADD local(24) local(25) local(24)
-785(231): OBJGET global(8) 'TILE_W' local(26)
-786(231): OBJGET global(8) 'TILE_H' local(27)
-787(231): PUSHARG local(27) local(26) local(24)
-788(231): PUSHARG local(22) local(20) local(17)
-789(231): PUSHARG local(15) local(14) _
-790(231): CALLEXTFUNC _ _ aladin::drawable_maskedblit
-791(237): CALLOBJGETMETHOD local(3) 'fwd' _
-792(237): BLOCKEXIT 15 FALSE 3
-793(237): BLOCKEXIT 4 FALSE 1
-794(237): JUMP _ _ label(747)
-795(0): FUNCRET method(733) 10 0
-796(239): OBJNEWSET method(733) 'drawitems' _
-797(239): JUMP _ _ label(809)
-798(0): FUNCENTER method(798) 1 0
-799(242): OBJSETATTR TRUE 'gameover' formal(0)
-800(242): OBJSETATTR formal(2) 'has_won' formal(0)
-801(242): OBJGETATTR formal(0) 'has_won' local(0)
-802(242): JFALSETEST local(0) _ label(804)
-803(242): JUMP _ _ label(808)
-804(242): BLOCKENTER 1 FALSE 1
-805(242): OBJGETATTR formal(0) 'clear_bonus' local(1)
-806(242): CALLFUNC _ _ local(1)
-807(242): BLOCKEXIT 1 FALSE 1
-808(0): FUNCRET method(798) 1 0
-809(242): OBJNEWSET method(798) 'setgameover' _
-810(242): JUMP _ _ label(817)
-811(0): FUNCENTER method(811) 3 0
-812(245): OBJGET global(8) 'AUTOMOVE_DEC' local(0)
-813(245): OBJGETATTR formal(0) 'time' local(2)
-814(245): SUB local(2) local(0) local(1)
-815(245): OBJSET local(1) 'time' formal(0)
-816(0): FUNCRET method(811) 3 0
-817(245): OBJNEWSET method(811) 'accelerate' _
-818(245): JUMP _ _ label(848)
-819(0): FUNCENTER method(819) 3 0
-820(248): OBJGETATTR formal(0) 'paused' local(0)
-821(248): JFALSETEST local(0) _ label(823)
-822(248): JUMP _ _ label(847)
-823(248): OBJGETATTR formal(0) 'initialised' local(1)
-824(248): JTRUETEST local(1) _ label(826)
-825(248): JUMP _ _ label(847)
-826(248): OBJGETATTR formal(0) 'gameover' local(2)
-827(248): JFALSETEST local(2) _ label(829)
-828(248): JUMP _ _ label(847)
-829(248): BLOCKENTER 5 FALSE 1
-830(249): CALLEXTFUNC _ _ std::currenttime
-831(249): GETRETVAL _ _ local(4)
-832(249): ASSIGN local(4) _ local(3)
-833(249): ASSIGNTEMPVAR local(4) _ local(5)
-834(249): OBJGETATTR formal(0) 'ts' local(6)
-835(249): SUB local(5) local(6) local(5)
-836(249): OBJGETATTR formal(0) 'time' local(7)
-837(249): JGE local(5) local(7) label(839)
-838(249): JUMP _ _ label(846)
-839(249): BLOCKENTER 3 FALSE 2
-840(250): OBJSETATTR local(3) 'ts' formal(0)
-841(250): OBJGETATTR formal(0) 'dir' local(9)
-842(250): OBJGETATTR formal(0) 'move' local(10)
-843(250): PUSHARG TRUE local(9) _
-844(250): CALLFUNC _ _ local(10)
-845(250): BLOCKEXIT 3 FALSE 2
-846(250): BLOCKEXIT 5 FALSE 1
-847(0): FUNCRET method(819) 3 0
-848(251): OBJNEWSET method(819) 'automove' _
-849(251): JUMP _ _ label(864)
-850(0): FUNCENTER method(850) 3 0
-851(254): OBJGETATTR formal(0) 'score' local(1)
-852(254): ADD local(1) formal(2) local(0)
-853(254): OBJSET local(0) 'score' formal(0)
-854(254): OBJGETATTR formal(0) 'highscore' local(2)
-855(254): JGT local(0) local(2) label(857)
-856(254): JUMP _ _ label(861)
-857(254): BLOCKENTER 2 FALSE 1
-858(255): OBJGETATTR formal(0) 'score' local(3)
-859(255): OBJSETATTR local(3) 'highscore' formal(0)
-860(255): BLOCKEXIT 2 FALSE 1
-861(256): OBJGETATTR formal(0) 'accelerate' local(0)
-862(256): CALLFUNC _ _ local(0)
-863(0): FUNCRET method(850) 3 0
-864(257): OBJNEWSET method(850) 'incscore' _
-865(257): JUMP _ _ label(903)
-866(0): FUNCENTER method(866) 12 0
-867(260): OBJGET global(8) 'TILE_H' local(1)
-868(260): DIV formal(3) local(1) local(0)
-869(261): OBJGET global(8) 'TILE_W' local(1)
-870(261): DIV formal(2) local(1) local(3)
-871(262): OBJGETATTR formal(0) 'items' local(1)
-872(262): OBJGET local(1) 'grid' local(2)
-873(262): OBJGET local(2) local(0) local(4)
-874(262): JTRUETEST local(4) _ label(876)
-875(262): JUMP _ _ label(902)
-876(262): OBJGETATTR formal(0) 'items' local(6)
-877(262): OBJGET local(6) 'grid' local(7)
-878(262): OBJGET local(7) local(0) local(8)
-879(262): OBJGET local(8) local(3) local(5)
-880(262): ASSIGNTEMPVAR local(5) _ local(9)
-881(262): ASSIGNTEMPVAR local(9) _ local(10)
-882(262): JTRUETEST local(10) _ label(884)
-883(262): JUMP _ _ label(902)
-884(262): OBJGET local(5) 'visible' local(11)
-885(262): JTRUETEST local(11) _ label(887)
-886(262): JUMP _ _ label(902)
-887(262): BLOCKENTER 6 FALSE 1
-888(263): OBJGET local(5) 'bonus' local(12)
-889(263): OBJGETATTR formal(0) 'incscore' local(13)
-890(263): PUSHARG local(12) _ _
-891(263): CALLFUNC _ _ local(13)
-892(263): OBJSETATTR TRUE 'expand' formal(0)
-893(263): OBJSET FALSE 'visible' local(5)
-894(263): OBJGETATTR formal(0) 'total_bonus_items' local(14)
-895(263): SUB local(14) 1 local(14)
-896(263): OBJSET local(14) 'total_bonus_items' formal(0)
-897(264): OBJGET local(5) 'bonus' local(14)
-898(264): OBJGETATTR formal(0) 'new_bonus_message' local(17)
-899(264): PUSHARG formal(3) formal(2) local(14)
-900(264): CALLFUNC _ _ local(17)
-901(264): BLOCKEXIT 6 FALSE 1
-902(0): FUNCRET method(866) 12 0
-903(266): OBJNEWSET method(866) 'check_bonus_item_eaten' _
-904(266): JUMP _ _ label(914)
-905(0): FUNCENTER method(905) 2 0
-906(269): OBJGETATTR formal(0) 'total_bonus_items' local(0)
-907(269): JEQ local(0) 0 label(909)
-908(269): JUMP _ _ label(911)
-909(269): ASSIGNTEMPVAR TRUE _ local(1)
-910(269): JUMP _ _ label(912)
-911(269): ASSIGNTEMPVAR FALSE _ local(1)
-912(269): RETURNVAL _ _ local(1)
-913(0): FUNCRET method(905) 2 0
-914(269): OBJNEWSET method(905) 'all_bonus_items_eaten' _
-915(269): JUMP _ _ label(1005)
-916(0): FUNCENTER method(916) 10 0
-917(272): OBJGETATTR formal(0) 'paused' local(0)
-918(272): JTRUETEST local(0) _ label(931)
-919(272): OBJGETATTR formal(0) 'initialised' local(1)
-920(272): JFALSETEST local(1) _ label(931)
-921(272): OBJGETATTR formal(0) 'gameover' local(2)
-922(272): JTRUETEST local(2) _ label(931)
-923(272): OBJGETATTR formal(0) 'dir' local(3)
-924(272): OBJGET global(33) local(3) local(4)
-925(272): JEQ local(4) formal(2) label(931)
-926(272): JFALSETEST formal(3) _ label(928)
-927(272): JUMP _ _ label(934)
-928(272): OBJGETATTR formal(0) 'dir' local(6)
-929(272): JEQ local(6) formal(2) label(931)
-930(272): JUMP _ _ label(934)
-931(272): BLOCKENTER 0 FALSE 1
-932(277): RETURN _ _ _
-933(277): BLOCKEXIT 0 FALSE 1
-934(279): OBJGETATTR formal(0) 'dir' local(0)
-935(279): OBJGET global(31) local(0) local(1)
-936(279): OBJGET local(1) formal(2) local(7)
-937(280): OBJGETATTR formal(0) 'x' local(0)
-938(280): OBJGET local(7) 2 local(1)
-939(280): OBJGET global(8) 'TILE_W' local(2)
-940(280): MUL local(1) local(2) local(1)
-941(280): ADD local(0) local(1) local(8)
-942(281): OBJGETATTR formal(0) 'y' local(0)
-943(281): OBJGET local(7) 3 local(1)
-944(281): OBJGET global(8) 'TILE_H' local(2)
-945(281): MUL local(1) local(2) local(1)
-946(281): ADD local(0) local(1) local(9)
-947(283): JLT local(8) 0 label(958)
-948(283): JLT local(9) 0 label(958)
-949(283): OBJGET global(8) 'TERRAIN_W' local(0)
-950(283): OBJGET global(8) 'TILE_W' local(1)
-951(283): ADD local(8) local(1) local(1)
-952(283): JLT local(0) local(1) label(958)
-953(283): OBJGET global(8) 'TERRAIN_H' local(2)
-954(283): OBJGET global(8) 'TILE_H' local(3)
-955(283): ADD local(9) local(3) local(3)
-956(283): JLT local(2) local(3) label(958)
-957(283): JUMP _ _ label(964)
-958(283): BLOCKENTER 1 FALSE 2
-959(284): OBJGETATTR formal(0) 'setgameover' local(10)
-960(284): PUSHARG FALSE _ _
-961(284): CALLFUNC _ _ local(10)
-962(284): RETURN _ _ _
-963(284): BLOCKEXIT 1 FALSE 2
-964(286): OBJGETATTR formal(0) 'check_bonus_item_eaten' local(2)
-965(286): PUSHARG local(9) local(8) _
-966(286): CALLFUNC _ _ local(2)
-967(288): OBJGETATTR formal(0) 'body' local(0)
-968(288): OBJGET local(7) 0 local(1)
-969(288): PUSHARG local(1) _ _
-970(288): CALLOBJGETMETHOD local(0) 'push_front' _
-971(289): OBJSETATTR formal(2) 'dir' formal(0)
-972(290): OBJGET local(7) 1 local(0)
-973(290): OBJSETATTR local(0) 'head' formal(0)
-974(291): OBJSETATTR local(8) 'x' formal(0)
-975(292): OBJSETATTR local(9) 'y' formal(0)
-976(294): OBJGETATTR formal(0) 'expand' local(0)
-977(294): JFALSETEST local(0) _ label(979)
-978(294): JUMP _ _ label(989)
-979(294): BLOCKENTER 5 FALSE 3
-980(295): OBJGETATTR formal(0) 'tail' local(10)
-981(295): OBJGET global(32) local(10) local(11)
-982(295): OBJGETATTR formal(0) 'body' local(12)
-983(295): CALLOBJGETMETHOD local(12) 'pop_back' _
-984(295): GETRETVAL _ _ local(12)
-985(295): OBJGET local(11) local(12) local(13)
-986(295): OBJSETATTR local(13) 'tail' formal(0)
-987(295): BLOCKEXIT 5 FALSE 3
-988(295): JUMP _ _ label(992)
-989(295): BLOCKENTER 1 FALSE 4
-990(297): OBJSETATTR FALSE 'expand' formal(0)
-991(297): BLOCKEXIT 1 FALSE 4
-992(299): OBJGETATTR formal(0) 'all_bonus_items_eaten' local(0)
-993(299): CALLFUNC _ _ local(0)
-994(299): GETRETVAL _ _ local(0)
-995(299): JTRUETEST local(0) _ label(997)
-996(299): JUMP _ _ label(1002)
-997(299): BLOCKENTER 1 FALSE 5
-998(300): OBJGETATTR formal(0) 'setgameover' local(10)
-999(300): PUSHARG TRUE _ _
-1000(300): CALLFUNC _ _ local(10)
-1001(300): BLOCKEXIT 1 FALSE 5
-1002(302): OBJGETATTR formal(0) 'tail' local(0)
-1003(302): ASSERT '@tail' _ local(0)
-1004(0): FUNCRET method(916) 10 0
-1005(303): OBJNEWSET method(916) 'move' _
-1006(303): JUMP _ _ label(1068)
-1007(0): FUNCENTER method(1007) 12 0
-1008(306): OBJGET global(10) 'back_buffer' local(0)
-1009(306): OBJGET global(10) 'tiles' local(1)
-1010(306): OBJGET formal(2) 'x' local(2)
-1011(306): OBJGET global(8) 'TILE_W' local(3)
-1012(306): MUL local(2) local(3) local(2)
-1013(306): OBJGET formal(2) 'y' local(4)
-1014(306): OBJGET global(8) 'TILE_H' local(5)
-1015(306): MUL local(4) local(5) local(4)
-1016(306): OBJGET global(8) 'TERRAIN_X1' local(6)
-1017(306): ADD local(6) formal(3) local(6)
-1018(306): OBJGET global(8) 'TERRAIN_Y1' local(7)
-1019(306): ADD local(7) formal(4) local(7)
-1020(306): OBJGET global(8) 'TILE_W' local(8)
-1021(306): OBJGET global(8) 'TILE_H' local(9)
-1022(306): PUSHARG local(9) local(8) local(7)
-1023(306): PUSHARG local(6) local(4) local(2)
-1024(306): PUSHARG local(1) local(0) _
-1025(306): CALLEXTFUNC _ _ aladin::drawable_maskedblit
-1026(313): OBJGETATTR formal(0) 'gameover' local(0)
-1027(313): JTRUETEST local(0) _ label(1031)
-1028(313): OBJGETATTR formal(0) 'paused' local(1)
-1029(313): JTRUETEST local(1) _ label(1031)
-1030(313): JUMP _ _ label(1034)
-1031(313): BLOCKENTER 0 FALSE 1
-1032(314): RETURN _ _ _
-1033(314): BLOCKEXIT 0 FALSE 1
-1034(315): OBJGETATTR formal(0) 'rows' local(0)
-1035(315): OBJGET global(8) 'TILE_H' local(1)
-1036(315): DIV formal(4) local(1) local(10)
-1037(315): ASSIGNTEMPVAR local(10) _ local(1)
-1038(315): ASSIGNTEMPVAR local(1) _ local(2)
-1039(315): OBJGET local(0) local(2) local(3)
-1040(315): JFALSETEST local(3) _ label(1042)
-1041(315): JUMP _ _ label(1047)
-1042(315): BLOCKENTER 3 FALSE 2
-1043(316): OBJGETATTR formal(0) 'rows' local(12)
-1044(316): OBJNEWEMPTY _ _ local(13)
-1045(316): OBJSET local(13) local(10) local(12)
-1046(316): BLOCKEXIT 3 FALSE 2
-1047(317): OBJGETATTR formal(0) 'rows' local(0)
-1048(317): OBJGET local(0) local(10) local(1)
-1049(317): OBJGET global(8) 'TILE_W' local(2)
-1050(317): DIV formal(3) local(2) local(11)
-1051(317): ASSIGNTEMPVAR local(11) _ local(2)
-1052(317): ASSIGNTEMPVAR local(2) _ local(3)
-1053(317): OBJGET local(1) local(3) local(4)
-1054(317): JTRUETEST local(4) _ label(1056)
-1055(317): JUMP _ _ label(1062)
-1056(317): BLOCKENTER 1 FALSE 3
-1057(318): OBJGETATTR formal(0) 'setgameover' local(12)
-1058(318): PUSHARG FALSE _ _
-1059(318): CALLFUNC _ _ local(12)
-1060(318): BLOCKEXIT 1 FALSE 3
-1061(318): JUMP _ _ label(1067)
-1062(318): BLOCKENTER 3 FALSE 4
-1063(320): OBJGETATTR formal(0) 'rows' local(12)
-1064(320): OBJGET local(12) local(10) local(13)
-1065(320): OBJSET TRUE local(11) local(13)
-1066(320): BLOCKEXIT 3 FALSE 4
-1067(0): FUNCRET method(1007) 12 0
-1068(321): OBJNEWSET method(1007) 'drawtile' _
-1069(321): JUMP _ _ label(1108)
-1070(0): FUNCENTER method(1070) 4 0
-1071(324): OBJGETATTR formal(0) 'initialised' local(0)
-1072(324): JTRUETEST local(0) _ label(1074)
-1073(324): JUMP _ _ label(1099)
-1074(324): OBJGETATTR formal(0) 'gameover' local(1)
-1075(324): JFALSETEST local(1) _ label(1077)
-1076(324): JUMP _ _ label(1099)
-1077(324): BLOCKENTER 6 FALSE 1
-1078(325): OBJGETATTR formal(0) 'score' local(4)
-1079(325): ADD local(4) 'Pts' local(4)
-1080(325): OBJGET global(8) 'SCORE_X' local(5)
-1081(325): OBJGET global(8) 'SCORE_Y' local(6)
-1082(325): OBJGETATTR formal(0) 'drawtext' local(7)
-1083(325): PUSHARG 'left' local(6) local(5)
-1084(325): PUSHARG local(4) _ _
-1085(325): CALLFUNC _ _ local(7)
-1086(326): OBJGETATTR formal(0) 'stage' local(8)
-1087(326): ADD '#' local(8) local(8)
-1088(326): ADD local(8) ', ' local(8)
-1089(326): OBJGETATTR formal(0) 'total_bonus_items' local(9)
-1090(326): ADD local(8) local(9) local(8)
-1091(326): ADD local(8) ' items' local(8)
-1092(326): OBJGET global(8) 'STAGE_X' local(4)
-1093(326): OBJGET global(8) 'STAGE_Y' local(5)
-1094(326): OBJGETATTR formal(0) 'drawtext' local(6)
-1095(326): PUSHARG 'left' local(5) local(4)
-1096(326): PUSHARG local(8) _ _
-1097(326): CALLFUNC _ _ local(6)
-1098(326): BLOCKEXIT 6 FALSE 1
-1099(333): OBJGETATTR formal(0) 'highscore' local(0)
-1100(333): ADD local(0) 'Pts' local(0)
-1101(333): OBJGET global(8) 'HIGH_SCORE_X' local(1)
-1102(333): OBJGET global(8) 'HIGH_SCORE_Y' local(2)
-1103(333): OBJGETATTR formal(0) 'drawtext' local(3)
-1104(333): PUSHARG 'left' local(2) local(1)
-1105(333): PUSHARG local(0) _ _
-1106(333): CALLFUNC _ _ local(3)
-1107(0): FUNCRET method(1070) 4 0
-1108(334): OBJNEWSET method(1070) 'drawscore' _
-1109(334): JUMP _ _ label(1120)
-1110(0): FUNCENTER method(1110) 7 0
-1111(337): OBJGET global(10) 'back_buffer' local(0)
-1112(337): CALLEXTFUNC _ _ aladin::font_getdefault
-1113(337): GETRETVAL _ _ local(1)
-1114(337): OBJGET global(10) 'textcolor' local(6)
-1115(337): PUSHARG local(6) formal(5) formal(2)
-1116(337): PUSHARG formal(4) formal(3) local(1)
-1117(337): PUSHARG local(0) _ _
-1118(337): CALLEXTFUNC _ _ aladin::drawable_textdraw
-1119(0): FUNCRET method(1110) 7 0
-1120(337): OBJNEWSET method(1110) 'drawtext' _
-1121(337): JUMP _ _ label(1136)
-1122(0): FUNCENTER method(1122) 6 0
-1123(340): OBJGET global(8) 'TERRAIN_X1' local(1)
-1124(340): OBJGET global(8) 'TERRAIN_W' local(2)
-1125(340): DIV local(2) 2 local(2)
-1126(340): ADD local(1) local(2) local(1)
-1127(340): OBJGET global(8) 'TERRAIN_Y1' local(3)
-1128(340): OBJGET global(8) 'TERRAIN_H' local(4)
-1129(340): DIV local(4) 2 local(4)
-1130(340): ADD local(3) local(4) local(3)
-1131(340): OBJGETATTR formal(0) 'drawtext' local(5)
-1132(340): PUSHARG 'centre' local(3) local(1)
-1133(340): PUSHARG formal(2) _ _
-1134(340): CALLFUNC _ _ local(5)
-1135(0): FUNCRET method(1122) 6 0
-1136(345): OBJNEWSET method(1122) 'message' _
-1137(345): JUMP _ _ label(1158)
-1138(0): FUNCENTER method(1138) 6 0
-1139(348): OBJGETATTR formal(0) 'bonus_sprites' local(0)
-1140(348): OBJNEW _ _ local(1)
-1141(350): OBJGET global(8) 'TERRAIN_X1' local(2)
-1142(350): ADD local(2) formal(3) local(2)
-1143(350): OBJNEWSET local(2) 'x' _
-1144(351): OBJGET global(8) 'TERRAIN_Y1' local(3)
-1145(351): ADD local(3) formal(4) local(3)
-1146(351): OBJNEWSET local(3) 'y' _
-1147(352): ADD '++' formal(2) local(4)
-1148(352): ADD local(4) '++' local(4)
-1149(352): OBJNEWSET local(4) 'text' _
-1150(354): CALLEXTFUNC _ _ std::currenttime
-1151(354): GETRETVAL _ _ local(5)
-1152(354): ADD local(5) 3000 local(5)
-1153(354): OBJNEWSET local(5) 't' _
-1154(354): OBJDONE _ _ _
-1155(354): PUSHARG local(1) _ _
-1156(354): CALLOBJGETMETHOD local(0) 'push_back' _
-1157(0): FUNCRET method(1138) 6 0
-1158(356): OBJNEWSET method(1138) 'new_bonus_message' _
-1159(356): JUMP _ _ label(1164)
-1160(0): FUNCENTER method(1160) 1 0
-1161(359): OBJGETATTR formal(0) 'bonus_sprites' local(0)
-1162(359): CALLOBJGETMETHOD local(0) 'clear' _
-1163(0): FUNCRET method(1160) 1 0
-1164(359): OBJNEWSET method(1160) 'clear_bonus' _
-1165(359): JUMP _ _ label(1235)
-1166(0): FUNCENTER method(1166) 8 0
-1167(362): OBJGETATTR formal(0) 'bonus_sprites' local(0)
-1168(362): CALLOBJGETMETHOD local(0) 'total' _
-1169(362): GETRETVAL _ _ local(0)
-1170(362): JFALSETEST local(0) _ label(1172)
-1171(362): JUMP _ _ label(1175)
-1172(362): BLOCKENTER 0 FALSE 1
-1173(363): RETURN _ _ _
-1174(363): BLOCKEXIT 0 FALSE 1
-1175(364): OBJGETATTR formal(0) 'bonus_sprites' local(0)
-1176(364): FOREACHBEGIN local(0) _ local(2)
-1177(364): FOREACHCHECKEND local(0) local(2) label(1195)
-1178(364): FOREACHGETVAL local(2) _ local(1)
-1179(364): BLOCKENTER 6 FALSE 2
-1180(365): OBJGET local(1) 'text' local(8)
-1181(365): OBJGET local(1) 'x' local(10)
-1182(365): ASSIGNTEMPVAR local(10) _ local(9)
-1183(365): ADD local(10) 1 local(10)
-1184(365): OBJSET local(10) 'x' local(1)
-1185(365): OBJGET local(1) 'y' local(12)
-1186(365): ASSIGNTEMPVAR local(12) _ local(11)
-1187(365): ADD local(12) 1 local(12)
-1188(365): OBJSET local(12) 'y' local(1)
-1189(365): OBJGETATTR formal(0) 'drawtext' local(13)
-1190(365): PUSHARG 'centre' local(11) local(9)
-1191(365): PUSHARG local(8) _ _
-1192(365): CALLFUNC _ _ local(13)
-1193(365): BLOCKEXIT 6 FALSE 2
-1194(365): FOREACHFWD local(2) _ label(1177)
-1195(365): FOREACHEND local(2) _ _
-1196(366): CALLEXTFUNC _ _ std::listiter_new
-1197(366): GETRETVAL _ _ local(0)
-1198(366): ASSIGN local(0) _ local(5)
-1199(366): ASSIGNTEMPVAR local(0) _ local(2)
-1200(366): OBJGETATTR formal(0) 'bonus_sprites' local(3)
-1201(366): PUSHARG local(3) _ _
-1202(366): CALLOBJGETMETHOD local(2) 'setbegin' _
-1203(366): CALLEXTFUNC _ _ std::listiter_new
-1204(366): GETRETVAL _ _ local(4)
-1205(366): ASSIGN local(4) _ local(6)
-1206(367): OBJGETATTR formal(0) 'bonus_sprites' local(0)
-1207(367): PUSHARG local(0) _ _
-1208(367): CALLOBJGETMETHOD local(5) 'checkend' _
-1209(367): GETRETVAL _ _ local(0)
-1210(367): JFALSETEST local(0) _ label(1212)
-1211(367): JUMP _ _ label(1234)
-1212(367): BLOCKENTER 3 FALSE 3
-1213(367): CALLOBJGETMETHOD local(5) 'getval' _
-1214(367): GETRETVAL _ _ local(8)
-1215(367): OBJGET local(8) 't' local(9)
-1216(367): CALLEXTFUNC _ _ std::currenttime
-1217(367): GETRETVAL _ _ local(10)
-1218(367): JLE local(9) local(10) label(1220)
-1219(367): JUMP _ _ label(1229)
-1220(367): BLOCKENTER 4 FALSE 4
-1221(369): PUSHARG local(5) _ _
-1222(369): CALLOBJGETMETHOD local(6) 'assign' _
-1223(369): CALLOBJGETMETHOD local(5) 'fwd' _
-1224(369): OBJGETATTR formal(0) 'bonus_sprites' local(13)
-1225(369): PUSHARG local(6) _ _
-1226(369): CALLOBJGETMETHOD local(13) 'erase' _
-1227(369): BLOCKEXIT 4 FALSE 4
-1228(369): JUMP _ _ label(1232)
-1229(369): BLOCKENTER 1 FALSE 5
-1230(371): CALLOBJGETMETHOD local(5) 'fwd' _
-1231(371): BLOCKEXIT 1 FALSE 5
-1232(371): BLOCKEXIT 3 FALSE 3
-1233(371): JUMP _ _ label(1206)
-1234(0): FUNCRET method(1166) 8 0
-1235(372): OBJNEWSET method(1166) 'display_bonus_messages' _
-1236(372): JUMP _ _ label(1341)
-1237(0): FUNCENTER method(1237) 11 0
-1238(375): OBJGETATTR formal(0) 'drawscore' local(0)
-1239(375): CALLFUNC _ _ local(0)
-1240(376): OBJGETATTR formal(0) 'initialised' local(0)
-1241(376): JFALSETEST local(0) _ label(1243)
-1242(376): JUMP _ _ label(1250)
-1243(376): BLOCKENTER 2 FALSE 1
-1244(377): OBJGET global(8) 'TERRAIN_MENU' local(11)
-1245(377): OBJGETATTR formal(0) 'message' local(12)
-1246(377): PUSHARG local(11) _ _
-1247(377): CALLFUNC _ _ local(12)
-1248(377): RETURN _ _ _
-1249(377): BLOCKEXIT 2 FALSE 1
-1250(379): OBJGETATTR formal(0) 'drawitems' local(0)
-1251(379): CALLFUNC _ _ local(0)
-1252(380): OBJGETATTR formal(0) 'gameover' local(0)
-1253(380): JFALSETEST local(0) _ label(1255)
-1254(380): JUMP _ _ label(1261)
-1255(380): BLOCKENTER 3 FALSE 2
-1256(381): OBJNEWEMPTY _ _ local(11)
-1257(381): OBJSETATTR local(11) 'rows' formal(0)
-1258(381): OBJNEWEMPTY _ _ local(13)
-1259(381): OBJSETATTR local(13) 'columns' formal(0)
-1260(381): BLOCKEXIT 3 FALSE 2
-1261(383): OBJGETATTR formal(0) 'head' local(0)
-1262(383): OBJGET global(16) local(0) local(1)
-1263(383): OBJGETATTR formal(0) 'x' local(2)
-1264(383): ASSIGNTEMPVAR local(2) _ local(3)
-1265(383): ASSIGNTEMPVAR local(3) _ local(4)
-1266(383): OBJGETATTR formal(0) 'y' local(5)
-1267(383): ASSIGNTEMPVAR local(5) _ local(6)
-1268(383): ASSIGNTEMPVAR local(6) _ local(7)
-1269(383): OBJGETATTR formal(0) 'drawtile' local(8)
-1270(383): PUSHARG local(7) local(4) local(1)
-1271(383): CALLFUNC _ _ local(8)
-1272(385): OBJGETATTR formal(0) 'head' local(0)
-1273(385): OBJGET global(20) local(0) local(9)
-1274(386): OBJGET local(9) 0 local(0)
-1275(386): OBJGET global(8) 'TILE_W' local(1)
-1276(386): MUL local(0) local(1) local(0)
-1277(386): ADD local(2) local(0) local(2)
-1278(387): OBJGET local(9) 1 local(0)
-1279(387): OBJGET global(8) 'TILE_H' local(1)
-1280(387): MUL local(0) local(1) local(0)
-1281(387): ADD local(5) local(0) local(5)
-1282(389): OBJGETATTR formal(0) 'body' local(0)
-1283(389): FOREACHBEGIN local(0) _ local(1)
-1284(389): FOREACHCHECKEND local(0) local(1) label(1302)
-1285(389): FOREACHGETVAL local(1) _ local(10)
-1286(389): BLOCKENTER 9 FALSE 3
-1287(390): OBJGET global(17) local(10) local(11)
-1288(390): OBJGETATTR formal(0) 'drawtile' local(14)
-1289(390): PUSHARG local(5) local(2) local(11)
-1290(390): CALLFUNC _ _ local(14)
-1291(391): OBJGET global(20) local(10) local(15)
-1292(392): OBJGET local(15) 0 local(16)
-1293(392): OBJGET global(8) 'TILE_W' local(17)
-1294(392): MUL local(16) local(17) local(16)
-1295(392): ADD local(2) local(16) local(2)
-1296(392): OBJGET local(15) 1 local(18)
-1297(392): OBJGET global(8) 'TILE_H' local(19)
-1298(392): MUL local(18) local(19) local(18)
-1299(392): ADD local(5) local(18) local(5)
-1300(392): BLOCKEXIT 9 FALSE 3
-1301(392): FOREACHFWD local(1) _ label(1284)
-1302(392): FOREACHEND local(1) _ _
-1303(395): OBJGETATTR formal(0) 'tail' local(0)
-1304(395): OBJGET global(12) local(0) local(1)
-1305(395): OBJGETATTR formal(0) 'drawtile' local(6)
-1306(395): PUSHARG local(5) local(2) local(1)
-1307(395): CALLFUNC _ _ local(6)
-1308(396): OBJGETATTR formal(0) 'display_bonus_messages' local(0)
-1309(396): CALLFUNC _ _ local(0)
-1310(398): OBJGETATTR formal(0) 'gameover' local(0)
-1311(398): JTRUETEST local(0) _ label(1313)
-1312(398): JUMP _ _ label(1329)
-1313(398): BLOCKENTER 4 FALSE 4
-1314(399): OBJGETATTR formal(0) 'has_won' local(11)
-1315(399): JTRUETEST local(11) _ label(1317)
-1316(399): JUMP _ _ label(1320)
-1317(399): OBJGET global(8) 'STAGE_MENU' local(12)
-1318(399): ADD 'You Won!' local(12) local(12)
-1319(399): JUMP _ _ label(1324)
-1320(399): OBJGET global(8) 'TERRAIN_MENU' local(13)
-1321(399): ADD 'Game Over' local(13) local(13)
-1322(399): ASSIGNTEMPVAR local(13) _ local(12)
-1323(399): JUMP _ _ label(1324)
-1324(399): OBJGETATTR formal(0) 'message' local(14)
-1325(399): PUSHARG local(12) _ _
-1326(399): CALLFUNC _ _ local(14)
-1327(399): BLOCKEXIT 4 FALSE 4
-1328(399): JUMP _ _ label(1340)
-1329(399): BLOCKENTER 1 FALSE 5
-1330(401): OBJGETATTR formal(0) 'paused' local(11)
-1331(401): JTRUETEST local(11) _ label(1333)
-1332(401): JUMP _ _ label(1339)
-1333(401): BLOCKENTER 2 FALSE 6
-1334(402): OBJGET global(8) 'RESUME_MESSAGE' local(12)
-1335(402): OBJGETATTR formal(0) 'message' local(13)
-1336(402): PUSHARG local(12) _ _
-1337(402): CALLFUNC _ _ local(13)
-1338(402): BLOCKEXIT 2 FALSE 6
-1339(402): BLOCKEXIT 1 FALSE 5
-1340(0): FUNCRET method(1237) 11 0
-1341(403): OBJNEWSET method(1237) 'display' _
-1342(403): OBJDONE _ _ _
-1343(403): ASSIGN global(2) _ global(36)
-1344(410): ASSIGN 0 _ global(37)
-1345(411): ASSIGN 1 _ global(38)
-1346(412): ASSIGN 2 _ global(39)
-1347(413): ASSIGN 3 _ global(40)
-1348(414): ASSIGN 4 _ global(41)
-1349(415): ASSIGN 5 _ global(42)
-1350(416): ASSIGN 6 _ global(43)
-1351(418): ASSIGN 7 _ global(44)
-1352(419): ASSIGN 4 _ global(45)
-1353(420): ASSIGN 3 _ global(46)
-1354(421): ASSIGN 5 _ global(47)
-1355(423): OBJNEW _ _ global(2)
-1356(442): OBJNEW _ _ global(3)
-1357(434): OBJNEW _ _ global(9)
-1358(427): OBJNEWSET 0 0 _
-1359(427): OBJNEWSET 'KEY_LEFT' 1 _
-1360(427): OBJNEWSET 'Move left' 2 _
-1361(428): OBJNEWSET 1 3 _
-1362(428): OBJNEWSET 'KEY_RIGHT' 4 _
-1363(428): OBJNEWSET 'Move right' 5 _
-1364(429): OBJNEWSET 2 6 _
-1365(429): OBJNEWSET 'KEY_UP' 7 _
-1366(429): OBJNEWSET 'Move up' 8 _
-1367(430): OBJNEWSET 3 9 _
-1368(430): OBJNEWSET 'KEY_DOWN' 10 _
-1369(430): OBJNEWSET 'Move down' 11 _
-1370(431): OBJNEWSET 4 12 _
-1371(431): OBJNEWSET 'KEY_F1' 13 _
-1372(431): OBJNEWSET 'New game' 14 _
-1373(432): OBJNEWSET 5 15 _
-1374(432): OBJNEWSET 'KEY_SPACE' 16 _
-1375(432): OBJNEWSET 'Pause / resume' 17 _
-1376(433): OBJNEWSET 6 18 _
-1377(433): OBJNEWSET 'KEY_ESC' 19 _
-1378(434): OBJNEWSET 'Exit' 20 _
-1379(434): OBJDONE _ _ _
-1380(434): OBJNEWSET global(9) 'kbd' _
-1381(442): OBJNEW _ _ global(13)
-1382(437): OBJNEWSET 0 0 _
-1383(437): OBJNEWSET 'left' 1 _
-1384(437): OBJNEWSET 'centre' 2 _
-1385(437): OBJNEWSET 'centre' 3 _
-1386(437): OBJNEWSET 'Move left' 4 _
-1387(438): OBJNEWSET 1 5 _
-1388(438): OBJNEWSET 'right' 6 _
-1389(438): OBJNEWSET 'centre' 7 _
-1390(438): OBJNEWSET 'centre' 8 _
-1391(438): OBJNEWSET 'Move right' 9 _
-1392(439): OBJNEWSET 2 10 _
-1393(439): OBJNEWSET 'centre' 11 _
-1394(439): OBJNEWSET 'front' 12 _
-1395(439): OBJNEWSET 'centre' 13 _
-1396(439): OBJNEWSET 'Move up' 14 _
-1397(440): OBJNEWSET 3 15 _
-1398(440): OBJNEWSET 'centre' 16 _
-1399(440): OBJNEWSET 'back' 17 _
-1400(440): OBJNEWSET 'centre' 18 _
-1401(441): OBJNEWSET 'Move down' 19 _
-1402(441): OBJDONE _ _ _
-1403(441): OBJNEWSET global(13) 'joy' _
-1404(441): OBJDONE _ _ _
-1405(441): OBJNEWSET global(3) 'map' _
-1406(441): JUMP _ _ label(1476)
-1407(0): FUNCENTER method(1407) 10 0
-1408(445): CALLEXTFUNC _ _ ipon_initialise
-1409(446): OBJSETATTR 0 'channel' formal(0)
-1410(446): OBJGETATTR formal(0) 'channel' local(0)
-1411(446): PUSHARG 'Input control' local(0) _
-1412(446): CALLEXTFUNC _ _ ipon_newchannel
-1413(448): CALLEXTFUNC _ _ kbdbinding_new
-1414(448): GETRETVAL _ _ local(0)
-1415(448): ASSIGN local(0) _ local(1)
-1416(449): ASSIGN 21 _ local(3)
-1417(450): ASSIGN 0 _ local(4)
-1418(450): OBJGETATTR formal(0) 'map' local(2)
-1419(450): OBJGET local(2) 'kbd' local(5)
-1420(450): JLT local(4) 21 label(1424)
-1421(450): JUMP _ _ label(1441)
-1422(450): ADD local(4) 3 local(4)
-1423(450): JUMP _ _ label(1420)
-1424(450): BLOCKENTER 5 FALSE 1
-1425(451): PUSHARG local(1) _ _
-1426(451): CALLEXTFUNC _ _ kbdbinding_reset
-1427(452): ADD local(4) 1 local(12)
-1428(452): OBJGET local(5) local(12) local(13)
-1429(452): PUSHARG local(13) local(1) _
-1430(452): CALLEXTFUNC _ _ kbdbinding_addkey
-1431(453): OBJGETATTR formal(0) 'channel' local(11)
-1432(453): OBJGET local(5) local(4) local(12)
-1433(453): ADD local(4) 3 local(13)
-1434(453): SUB local(13) 1 local(13)
-1435(453): OBJGET local(5) local(13) local(14)
-1436(453): PUSHARG local(1) local(14) local(12)
-1437(453): PUSHARG local(11) _ _
-1438(453): CALLEXTFUNC _ _ ipon_setkbdcommand
-1439(453): BLOCKEXIT 5 FALSE 1
-1440(453): JUMP _ _ label(1422)
-1441(456): CALLEXTFUNC _ _ joybinding_new
-1442(456): GETRETVAL _ _ local(0)
-1443(456): ASSIGN local(0) _ local(1)
-1444(457): ASSIGN 20 _ local(8)
-1445(458): ASSIGN 0 _ local(4)
-1446(458): OBJGETATTR formal(0) 'map' local(2)
-1447(458): OBJGET local(2) 'joy' local(9)
-1448(458): JLT local(4) 20 label(1452)
-1449(458): JUMP _ _ label(1475)
-1450(458): ADD local(4) 5 local(4)
-1451(458): JUMP _ _ label(1448)
-1452(458): BLOCKENTER 5 FALSE 2
-1453(459): PUSHARG local(1) _ _
-1454(459): CALLEXTFUNC _ _ joybinding_reset
-1455(460): PUSHARG 0 local(1) _
-1456(460): CALLEXTFUNC _ _ joybinding_setjoynum
-1457(461): ADD local(4) 1 local(12)
-1458(461): OBJGET local(9) local(12) local(13)
-1459(461): PUSHARG local(13) local(1) _
-1460(461): CALLEXTFUNC _ _ joybinding_setxdir
-1461(462): ADD local(4) 3 local(12)
-1462(462): OBJGET local(9) local(12) local(13)
-1463(462): PUSHARG local(13) local(1) _
-1464(462): CALLEXTFUNC _ _ joybinding_setzdir
-1465(463): OBJGETATTR formal(0) 'channel' local(11)
-1466(463): OBJGET local(9) local(4) local(12)
-1467(463): ADD local(4) 5 local(13)
-1468(463): SUB local(13) 1 local(13)
-1469(463): OBJGET local(9) local(13) local(14)
-1470(463): PUSHARG local(1) local(14) local(12)
-1471(463): PUSHARG local(11) _ _
-1472(463): CALLEXTFUNC _ _ ipon_setjoycommand
-1473(463): BLOCKEXIT 5 FALSE 2
-1474(463): JUMP _ _ label(1450)
-1475(0): FUNCRET method(1407) 10 0
-1476(465): OBJNEWSET method(1407) 'initialise' _
-1477(467): OBJNEWSET 0 'ts' _
-1478(467): JUMP _ _ label(1495)
-1479(0): FUNCENTER method(1479) 5 0
-1480(470): CALLEXTFUNC _ _ std::currenttime
-1481(470): GETRETVAL _ _ local(1)
-1482(470): ASSIGN local(1) _ local(0)
-1483(470): ASSIGNTEMPVAR local(1) _ local(2)
-1484(470): OBJGETATTR formal(0) 'ts' local(3)
-1485(470): SUB local(2) local(3) local(2)
-1486(470): OBJGET global(8) 'INPUT_PACE' local(4)
-1487(470): JGE local(2) local(4) label(1489)
-1488(470): JUMP _ _ label(1493)
-1489(470): BLOCKENTER 1 FALSE 1
-1490(471): OBJSETATTR local(0) 'ts' formal(0)
-1491(471): RETURNVAL _ _ TRUE
-1492(471): BLOCKEXIT 1 FALSE 1
-1493(472): RETURNVAL _ _ FALSE
-1494(0): FUNCRET method(1479) 5 0
-1495(473): OBJNEWSET method(1479) 'istimetopoll' _
-1496(473): JUMP _ _ label(1505)
-1497(0): FUNCENTER method(1497) 1 0
-1498(476): CALLEXTFUNC _ _ ipon_processinput
-1499(477): OBJGETATTR formal(0) 'channel' local(0)
-1500(477): PUSHARG local(0) _ _
-1501(477): CALLEXTFUNC _ _ ipon_gettriggeredcommands
-1502(477): GETRETVAL _ _ local(0)
-1503(477): RETURNVAL _ _ local(0)
-1504(0): FUNCRET method(1497) 1 0
-1505(478): OBJNEWSET method(1497) 'poll' _
-1506(478): JUMP _ _ label(1510)
-1507(0): FUNCENTER method(1507) 1 0
-1508(480): CALLEXTFUNC _ _ ipon_cleanup
-1509(0): FUNCRET method(1507) 1 0
-1510(480): OBJNEWSET method(1507) 'cleanup' _
-1511(480): OBJDONE _ _ _
-1512(480): ASSIGN global(2) _ global(48)
-1513(480): JUMP _ _ label(1573)
-1514(0): FUNCENTER func(1514) 5 0
-1515(487): OBJGET global(5) 'gfx' local(0)
-1516(487): OBJGET local(0) 'mode' local(1)
-1517(487): OBJGET global(5) 'gfx' local(2)
-1518(487): OBJGET local(2) 'depth' local(3)
-1519(487): PUSHARG local(3) '800x600' local(1)
-1520(487): CALLEXTFUNC _ _ aladin::initialise
-1521(487): GETRETVAL _ _ local(3)
-1522(487): JFALSETEST local(3) _ label(1524)
-1523(487): JUMP _ _ label(1527)
-1524(487): BLOCKENTER 0 FALSE 1
-1525(488): RETURNVAL _ _ FALSE
-1526(488): BLOCKEXIT 0 FALSE 1
-1527(489): OBJGET global(5) 'gfx' local(0)
-1528(489): OBJGET local(0) 'mode' local(1)
-1529(489): JEQ local(1) 'fullscreen' label(1531)
-1530(489): JUMP _ _ label(1532)
-1531(489): JUMP _ _ label(1534)
-1532(489): ASSIGNTEMPVAR 'doublebuffering' _ local(2)
-1533(489): JUMP _ _ label(1535)
-1534(489): ASSIGNTEMPVAR 'pageflipping' _ local(2)
-1535(489): ASSIGN local(2) _ local(4)
-1536(490): PUSHARG local(2) _ _
-1537(490): CALLEXTFUNC _ _ aladin::screen_instantiate
-1538(490): GETRETVAL _ _ local(0)
-1539(490): JFALSETEST local(0) _ label(1541)
-1540(490): JUMP _ _ label(1544)
-1541(490): BLOCKENTER 0 FALSE 2
-1542(491): RETURNVAL _ _ FALSE
-1543(491): BLOCKEXIT 0 FALSE 2
-1544(493): CALLEXTFUNC _ _ aladin::screen_get
-1545(493): GETRETVAL _ _ local(0)
-1546(493): OBJSET local(0) 'screen' global(10)
-1547(494): OBJGET global(10) 'screen' local(0)
-1548(494): PUSHARG local(0) _ _
-1549(494): CALLEXTFUNC _ _ aladin::drawable_width
-1550(494): GETRETVAL _ _ local(0)
-1551(494): OBJSET local(0) 'sw' global(10)
-1552(495): OBJGET global(10) 'screen' local(0)
-1553(495): PUSHARG local(0) _ _
-1554(495): CALLEXTFUNC _ _ aladin::drawable_height
-1555(495): GETRETVAL _ _ local(0)
-1556(495): OBJSET local(0) 'sh' global(10)
-1557(497): CALLEXTFUNC _ _ aladin::kbd_install
-1558(498): CALLEXTFUNC _ _ aladin::joystick_install
-1559(499): CALLEXTFUNC _ _ aladin::joystick_gettotal
-1560(499): GETRETVAL _ _ local(0)
-1561(499): JTRUETEST local(0) _ label(1563)
-1562(499): JUMP _ _ label(1567)
-1563(499): BLOCKENTER 1 FALSE 3
-1564(500): PUSHARG 100 0 _
-1565(500): CALLEXTFUNC _ _ aladin::joystick_setanaloguemovethreshold
-1566(500): BLOCKEXIT 1 FALSE 3
-1567(501): CALLEXTFUNC _ _ aladin::mouse_install
-1568(502): CALLEXTFUNC _ _ aladin::mouse_setdefaultcursor
-1569(503): CALLOBJGETMETHOD global(48) 'initialise' _
-1570(504): CALLEXTFUNC _ _ rcmap_initialise
-1571(505): RETURNVAL _ _ TRUE
-1572(0): FUNCRET func(1514) 5 0
-1573(0): JUMP _ _ label(1587)
-1574(0): FUNCENTER func(1574) 1 0
-1575(511): OBJGET global(10) 'screen' local(0)
-1576(511): JTRUETEST local(0) _ label(1578)
-1577(511): JUMP _ _ label(1581)
-1578(511): BLOCKENTER 1 FALSE 1
-1579(512): CALLEXTFUNC _ _ aladin::screen_destroy
-1580(512): BLOCKEXIT 1 FALSE 1
-1581(513): CALLEXTFUNC _ _ aladin::kbd_uninstall
-1582(514): CALLEXTFUNC _ _ aladin::mouse_uninstall
-1583(515): CALLOBJGETMETHOD global(48) 'cleanup' _
-1584(516): CALLEXTFUNC _ _ rcmap_cleanup
-1585(517): CALLEXTFUNC _ _ aladin::cleanup
-1586(0): FUNCRET func(1574) 1 0
-1587(0): JUMP _ _ label(1735)
-1588(0): FUNCENTER func(1588) 4 0
-1589(524): CALLOBJGETMETHOD global(10) 'create' _
-1590(524): GETRETVAL _ _ local(0)
-1591(524): JFALSETEST local(0) _ label(1593)
-1592(524): JUMP _ _ label(1597)
-1593(524): BLOCKENTER 1 FALSE 1
-1594(525): CALLOBJGETMETHOD global(10) 'clear' _
-1595(525): RETURN _ _ _
-1596(525): BLOCKEXIT 1 FALSE 1
-1597(525): JUMP _ _ label(1642)
-1598(0): FUNCENTER func(1598) 4 0
-1599(529): OBJGET global(10) 'back_buffer' local(0)
-1600(529): CALLEXTFUNC _ _ aladin::drawable_black
-1601(529): GETRETVAL _ _ local(1)
-1602(529): PUSHARG local(1) local(0) _
-1603(529): CALLEXTFUNC _ _ aladin::drawable_cleartocolor
-1604(530): OBJGET global(10) 'back_buffer' local(0)
-1605(530): OBJGET global(10) 'bg' local(1)
-1606(530): OBJGET global(10) 'bg' local(2)
-1607(530): PUSHARG local(2) _ _
-1608(530): CALLEXTFUNC _ _ aladin::drawable_width
-1609(530): GETRETVAL _ _ local(2)
-1610(530): OBJGET global(10) 'bg' local(3)
-1611(530): PUSHARG local(3) _ _
-1612(530): CALLEXTFUNC _ _ aladin::drawable_height
-1613(530): GETRETVAL _ _ local(3)
-1614(530): PUSHARG local(3) local(2) 0
-1615(530): PUSHARG 0 0 0
-1616(530): PUSHARG local(1) local(0) _
-1617(530): CALLEXTFUNC _ _ aladin::drawable_blit
-1618(538): OBJGET global(10) 'back_buffer' local(0)
-1619(538): PUSHARG local(0) _ _
-1620(538): CALLOBJGETMETHOD global(36) 'display' _
-1621(540): OBJGET global(10) 'back_buffer' local(0)
-1622(540): CALLEXTFUNC _ _ aladin::font_getdefault
-1623(540): GETRETVAL _ _ local(1)
-1624(540): OBJGET global(10) 'fps' local(2)
-1625(540): ADD 'FPS:' local(2) local(2)
-1626(540): CALLEXTFUNC _ _ aladin::drawable_white
-1627(540): GETRETVAL _ _ local(3)
-1628(540): PUSHARG local(3) 'left' local(2)
-1629(540): PUSHARG 0 0 local(1)
-1630(540): PUSHARG local(0) _ _
-1631(540): CALLEXTFUNC _ _ aladin::drawable_textdraw
-1632(550): OBJGET global(10) 'screen' local(0)
-1633(550): OBJGET global(10) 'back_buffer' local(1)
-1634(550): OBJGET global(10) 'sw' local(2)
-1635(550): OBJGET global(10) 'sh' local(3)
-1636(550): PUSHARG local(3) local(2) 0
-1637(550): PUSHARG 0 0 0
-1638(550): PUSHARG local(1) local(0) _
-1639(550): CALLEXTFUNC _ _ aladin::drawable_blit
-1640(556): CALLEXTFUNC _ _ aladin::screen_flip
-1641(0): FUNCRET func(1598) 4 0
-1642(561): OBJNEW _ _ local(0)
-1643(561): JUMP _ _ label(1647)
-1644(0): FUNCENTER func(1644) 0 0
-1645(562): RETURNVAL _ _ FALSE
-1646(0): FUNCRET func(1644) 0 0
-1647(0): OBJNEWSET func(1644) 6 _
-1648(0): JUMP _ _ label(1654)
-1649(0): FUNCENTER func(1649) 1 0
-1650(563): PUSHARG FALSE 'L' _
-1651(563): CALLOBJGETMETHOD global(36) 'move' _
-1652(563): RETURNVAL _ _ TRUE
-1653(0): FUNCRET func(1649) 1 0
-1654(0): OBJNEWSET func(1649) 0 _
-1655(0): JUMP _ _ label(1661)
-1656(0): FUNCENTER func(1656) 1 0
-1657(564): PUSHARG FALSE 'R' _
-1658(564): CALLOBJGETMETHOD global(36) 'move' _
-1659(564): RETURNVAL _ _ TRUE
-1660(0): FUNCRET func(1656) 1 0
-1661(0): OBJNEWSET func(1656) 1 _
-1662(0): JUMP _ _ label(1668)
-1663(0): FUNCENTER func(1663) 1 0
-1664(565): PUSHARG FALSE 'T' _
-1665(565): CALLOBJGETMETHOD global(36) 'move' _
-1666(565): RETURNVAL _ _ TRUE
-1667(0): FUNCRET func(1663) 1 0
-1668(0): OBJNEWSET func(1663) 2 _
-1669(0): JUMP _ _ label(1675)
-1670(0): FUNCENTER func(1670) 1 0
-1671(566): PUSHARG FALSE 'B' _
-1672(566): CALLOBJGETMETHOD global(36) 'move' _
-1673(566): RETURNVAL _ _ TRUE
-1674(0): FUNCRET func(1670) 1 0
-1675(0): OBJNEWSET func(1670) 3 _
-1676(0): JUMP _ _ label(1681)
-1677(0): FUNCENTER func(1677) 1 0
-1678(567): CALLOBJGETMETHOD global(36) 'pauseresume' _
-1679(567): RETURNVAL _ _ TRUE
-1680(0): FUNCRET func(1677) 1 0
-1681(0): OBJNEWSET func(1677) 5 _
-1682(0): JUMP _ _ label(1687)
-1683(0): FUNCENTER func(1683) 1 0
-1684(568): CALLOBJGETMETHOD global(36) 'start' _
-1685(568): RETURNVAL _ _ TRUE
-1686(0): FUNCRET func(1683) 1 0
-1687(0): OBJNEWSET func(1683) 4 _
-1688(0): JUMP _ _ label(1706)
-1689(0): FUNCENTER method(1689) 4 0
-1690(571): FOREACHBEGIN formal(2) _ local(1)
-1691(571): FOREACHCHECKEND formal(2) local(1) label(1703)
-1692(571): FOREACHGETVAL local(1) _ local(0)
-1693(571): BLOCKENTER 1 FALSE 1
-1694(572): CALLOBJGETMETHOD formal(0) local(0) _
-1695(572): GETRETVAL _ _ local(4)
-1696(572): JFALSETEST local(4) _ label(1698)
-1697(572): JUMP _ _ label(1701)
-1698(572): BLOCKENTER 0 FALSE 2
-1699(573): RETURNVAL _ _ FALSE
-1700(573): BLOCKEXIT 0 FALSE 2
-1701(573): BLOCKEXIT 1 FALSE 1
-1702(573): FOREACHFWD local(1) _ label(1691)
-1703(573): FOREACHEND local(1) _ _
-1704(574): RETURNVAL _ _ TRUE
-1705(0): FUNCRET method(1689) 4 0
-1706(575): OBJNEWSET method(1689) '()' _
-1707(575): OBJDONE _ _ _
-1708(575): ASSIGN local(0) _ local(2)
-1709(581): CALLEXTFUNC _ _ aladin::iswindowcloserequested
-1710(581): GETRETVAL _ _ local(0)
-1711(581): JFALSETEST local(0) _ label(1713)
-1712(581): JUMP _ _ label(1733)
-1713(581): BLOCKENTER 2 FALSE 2
-1714(582): CALLPROGRAMFUNC _ _ func(1598)
-1715(583): CALLOBJGETMETHOD global(48) 'istimetopoll' _
-1716(583): GETRETVAL _ _ local(5)
-1717(583): JTRUETEST local(5) _ label(1719)
-1718(583): JUMP _ _ label(1729)
-1719(583): CALLOBJGETMETHOD global(48) 'poll' _
-1720(583): GETRETVAL _ _ local(4)
-1721(583): PUSHARG local(4) _ _
-1722(583): CALLFUNC _ _ local(2)
-1723(583): GETRETVAL _ _ local(4)
-1724(583): JFALSETEST local(4) _ label(1726)
-1725(583): JUMP _ _ label(1729)
-1726(583): BLOCKENTER 0 FALSE 3
-1727(584): JUMP 2 _ label(1733)
-1728(584): BLOCKEXIT 0 FALSE 3
-1729(585): CALLOBJGETMETHOD global(36) 'automove' _
-1730(586): CALLOBJGETMETHOD global(10) 'fpscalculation' _
-1731(586): BLOCKEXIT 2 FALSE 2
-1732(586): JUMP _ _ label(1709)
-1733(589): CALLOBJGETMETHOD global(10) 'clear' _
-1734(0): FUNCRET func(1588) 4 0
-1735(594): CALLPROGRAMFUNC _ _ func(1514)
-1736(594): GETRETVAL _ _ global(2)
-1737(594): JTRUETEST global(2) _ label(1739)
-1738(594): JUMP _ _ label(1743)
-1739(594): BLOCKENTER 2 FALSE 2
-1740(595): CALLPROGRAMFUNC _ _ func(1588)
-1741(595): CALLPROGRAMFUNC _ _ func(1574)
-1742(595): BLOCKEXIT 2 FALSE 2
-1743(595): BLOCKEXIT 52 TRUE 0
-1744(595): PROGRAMEND _ _ _
+247(0): ASSIGN func(240) _ global(11)
+248(126): OBJNEW _ _ global(2)
+249(126): PUSHARG 0 0 _
+250(0): CALLPROGRAMFUNC _ _ func(240)
+251(126): GETRETVAL _ _ global(3)
+252(126): OBJNEWSET global(3) 'R' _
+253(126): PUSHARG 0 1 _
+254(0): CALLPROGRAMFUNC _ _ func(240)
+255(126): GETRETVAL _ _ global(9)
+256(126): OBJNEWSET global(9) 'T' _
+257(126): PUSHARG 0 2 _
+258(0): CALLPROGRAMFUNC _ _ func(240)
+259(126): GETRETVAL _ _ global(13)
+260(126): OBJNEWSET global(13) 'L' _
+261(126): PUSHARG 0 3 _
+262(0): CALLPROGRAMFUNC _ _ func(240)
+263(126): GETRETVAL _ _ global(14)
+264(126): OBJNEWSET global(14) 'B' _
+265(0): OBJDONE _ _ _
+266(0): ASSIGN global(2) _ global(12)
+267(127): OBJNEW _ _ global(2)
+268(127): PUSHARG 1 0 _
+269(0): CALLPROGRAMFUNC _ _ func(240)
+270(127): GETRETVAL _ _ global(3)
+271(127): OBJNEWSET global(3) 'R' _
+272(127): PUSHARG 1 1 _
+273(0): CALLPROGRAMFUNC _ _ func(240)
+274(127): GETRETVAL _ _ global(9)
+275(127): OBJNEWSET global(9) 'T' _
+276(127): PUSHARG 1 2 _
+277(0): CALLPROGRAMFUNC _ _ func(240)
+278(127): GETRETVAL _ _ global(13)
+279(127): OBJNEWSET global(13) 'L' _
+280(127): PUSHARG 1 3 _
+281(0): CALLPROGRAMFUNC _ _ func(240)
+282(127): GETRETVAL _ _ global(14)
+283(127): OBJNEWSET global(14) 'B' _
+284(0): OBJDONE _ _ _
+285(0): ASSIGN global(2) _ global(16)
+286(129): OBJNEW _ _ global(2)
+287(0): PUSHARG 2 2 _
+288(0): CALLPROGRAMFUNC _ _ func(240)
+289(129): GETRETVAL _ _ global(3)
+290(129): OBJNEWSET global(3) 'LT' _
+291(0): OBJNEWSET global(3) 'BR' _
+292(0): PUSHARG 2 3 _
+293(0): CALLPROGRAMFUNC _ _ func(240)
+294(129): GETRETVAL _ _ global(9)
+295(129): OBJNEWSET global(9) 'LB' _
+296(0): OBJNEWSET global(9) 'TR' _
+297(0): PUSHARG 2 0 _
+298(0): CALLPROGRAMFUNC _ _ func(240)
+299(129): GETRETVAL _ _ global(13)
+300(129): OBJNEWSET global(13) 'BL' _
+301(0): OBJNEWSET global(13) 'RT' _
+302(0): PUSHARG 2 1 _
+303(0): CALLPROGRAMFUNC _ _ func(240)
+304(129): GETRETVAL _ _ global(14)
+305(129): OBJNEWSET global(14) 'TL' _
+306(0): OBJNEWSET global(14) 'RB' _
+307(0): PUSHARG 2 4 _
+308(0): CALLPROGRAMFUNC _ _ func(240)
+309(129): GETRETVAL _ _ global(15)
+310(129): OBJNEWSET global(15) 'RL' _
+311(0): OBJNEWSET global(15) 'LR' _
+312(0): PUSHARG 2 5 _
+313(0): CALLPROGRAMFUNC _ _ func(240)
+314(129): GETRETVAL _ _ global(18)
+315(129): OBJNEWSET global(18) 'TB' _
+316(0): OBJNEWSET global(18) 'BT' _
+317(0): OBJDONE _ _ _
+318(0): ASSIGN global(2) _ global(17)
+319(135): OBJNEW _ _ global(2)
+320(136): OBJNEW _ _ global(3)
+321(136): OBJNEWSET 1 0 _
+322(136): OBJNEWSET 0 1 _
+323(0): OBJDONE _ _ _
+324(0): OBJNEWSET global(3) 'LT' _
+325(136): OBJNEW _ _ global(9)
+326(136): OBJNEWSET 0 0 _
+327(136): OBJNEWSET 1 1 _
+328(0): OBJDONE _ _ _
+329(0): OBJNEWSET global(9) 'TL' _
+330(136): OBJNEW _ _ global(13)
+331(136): OBJNEWSET 0 0 _
+332(136): OBJNEWSET -1 1 _
+333(0): OBJDONE _ _ _
+334(0): OBJNEWSET global(13) 'BR' _
+335(136): OBJNEW _ _ global(14)
+336(136): OBJNEWSET -1 0 _
+337(136): OBJNEWSET 0 1 _
+338(0): OBJDONE _ _ _
+339(0): OBJNEWSET global(14) 'RB' _
+340(137): OBJNEW _ _ global(15)
+341(137): OBJNEWSET 1 0 _
+342(137): OBJNEWSET 0 1 _
+343(0): OBJDONE _ _ _
+344(0): OBJNEWSET global(15) 'LB' _
+345(137): OBJNEW _ _ global(18)
+346(137): OBJNEWSET 0 0 _
+347(137): OBJNEWSET -1 1 _
+348(0): OBJDONE _ _ _
+349(0): OBJNEWSET global(18) 'BL' _
+350(137): OBJNEW _ _ global(19)
+351(137): OBJNEWSET 0 0 _
+352(137): OBJNEWSET 1 1 _
+353(0): OBJDONE _ _ _
+354(0): OBJNEWSET global(19) 'TR' _
+355(137): OBJNEW _ _ global(21)
+356(137): OBJNEWSET -1 0 _
+357(137): OBJNEWSET 0 1 _
+358(0): OBJDONE _ _ _
+359(0): OBJNEWSET global(21) 'RT' _
+360(139): OBJNEW _ _ global(22)
+361(139): OBJNEWSET -1 0 _
+362(139): OBJNEWSET 0 1 _
+363(0): OBJDONE _ _ _
+364(0): OBJNEWSET global(22) 'LR' _
+365(139): OBJNEW _ _ global(23)
+366(139): OBJNEWSET 1 0 _
+367(139): OBJNEWSET 0 1 _
+368(0): OBJDONE _ _ _
+369(0): OBJNEWSET global(23) 'RL' _
+370(140): OBJNEW _ _ global(24)
+371(140): OBJNEWSET 0 0 _
+372(140): OBJNEWSET -1 1 _
+373(0): OBJDONE _ _ _
+374(0): OBJNEWSET global(24) 'TB' _
+375(140): OBJNEW _ _ global(25)
+376(140): OBJNEWSET 0 0 _
+377(140): OBJNEWSET 1 1 _
+378(0): OBJDONE _ _ _
+379(0): OBJNEWSET global(25) 'BT' _
+380(142): OBJNEW _ _ global(26)
+381(142): OBJNEWSET 1 0 _
+382(142): OBJNEWSET 0 1 _
+383(0): OBJDONE _ _ _
+384(0): OBJNEWSET global(26) 'L' _
+385(142): OBJNEW _ _ global(27)
+386(142): OBJNEWSET -1 0 _
+387(142): OBJNEWSET 0 1 _
+388(0): OBJDONE _ _ _
+389(0): OBJNEWSET global(27) 'R' _
+390(142): OBJNEW _ _ global(28)
+391(142): OBJNEWSET 0 0 _
+392(142): OBJNEWSET 1 1 _
+393(0): OBJDONE _ _ _
+394(0): OBJNEWSET global(28) 'T' _
+395(143): OBJNEW _ _ global(29)
+396(142): OBJNEWSET 0 0 _
+397(142): OBJNEWSET -1 1 _
+398(0): OBJDONE _ _ _
+399(0): OBJNEWSET global(29) 'B' _
+400(0): OBJDONE _ _ _
+401(0): ASSIGN global(2) _ global(20)
+402(146): OBJNEW _ _ global(2)
+403(147): OBJNEW _ _ global(3)
+404(147): OBJNEW _ _ global(9)
+405(147): OBJNEWSET 'LT' 0 _
+406(147): OBJNEWSET 'T' 1 _
+407(147): OBJNEWSET 0 2 _
+408(147): OBJNEWSET -1 3 _
+409(0): OBJDONE _ _ _
+410(0): OBJNEWSET global(9) 'T' _
+411(147): OBJNEW _ _ global(13)
+412(147): OBJNEWSET 'LB' 0 _
+413(147): OBJNEWSET 'B' 1 _
+414(147): OBJNEWSET 0 2 _
+415(147): OBJNEWSET 1 3 _
+416(0): OBJDONE _ _ _
+417(0): OBJNEWSET global(13) 'B' _
+418(147): OBJNEW _ _ global(14)
+419(147): OBJNEWSET 'RL' 0 _
+420(147): OBJNEWSET 'L' 1 _
+421(147): OBJNEWSET -1 2 _
+422(147): OBJNEWSET 0 3 _
+423(0): OBJDONE _ _ _
+424(0): OBJNEWSET global(14) 'L' _
+425(0): OBJDONE _ _ _
+426(0): OBJNEWSET global(3) 'L' _
+427(148): OBJNEW _ _ global(15)
+428(148): OBJNEW _ _ global(18)
+429(148): OBJNEWSET 'RT' 0 _
+430(148): OBJNEWSET 'T' 1 _
+431(148): OBJNEWSET 0 2 _
+432(148): OBJNEWSET -1 3 _
+433(0): OBJDONE _ _ _
+434(0): OBJNEWSET global(18) 'T' _
+435(148): OBJNEW _ _ global(19)
+436(148): OBJNEWSET 'RB' 0 _
+437(148): OBJNEWSET 'B' 1 _
+438(148): OBJNEWSET 0 2 _
+439(148): OBJNEWSET 1 3 _
+440(0): OBJDONE _ _ _
+441(0): OBJNEWSET global(19) 'B' _
+442(148): OBJNEW _ _ global(21)
+443(148): OBJNEWSET 'LR' 0 _
+444(148): OBJNEWSET 'R' 1 _
+445(148): OBJNEWSET 1 2 _
+446(148): OBJNEWSET 0 3 _
+447(0): OBJDONE _ _ _
+448(0): OBJNEWSET global(21) 'R' _
+449(0): OBJDONE _ _ _
+450(0): OBJNEWSET global(15) 'R' _
+451(149): OBJNEW _ _ global(22)
+452(149): OBJNEW _ _ global(23)
+453(149): OBJNEWSET 'TL' 0 _
+454(149): OBJNEWSET 'L' 1 _
+455(149): OBJNEWSET -1 2 _
+456(149): OBJNEWSET 0 3 _
+457(0): OBJDONE _ _ _
+458(0): OBJNEWSET global(23) 'L' _
+459(149): OBJNEW _ _ global(24)
+460(149): OBJNEWSET 'TR' 0 _
+461(149): OBJNEWSET 'R' 1 _
+462(149): OBJNEWSET 1 2 _
+463(149): OBJNEWSET 0 3 _
+464(0): OBJDONE _ _ _
+465(0): OBJNEWSET global(24) 'R' _
+466(149): OBJNEW _ _ global(25)
+467(149): OBJNEWSET 'BT' 0 _
+468(149): OBJNEWSET 'T' 1 _
+469(149): OBJNEWSET 0 2 _
+470(149): OBJNEWSET -1 3 _
+471(0): OBJDONE _ _ _
+472(0): OBJNEWSET global(25) 'T' _
+473(0): OBJDONE _ _ _
+474(0): OBJNEWSET global(22) 'T' _
+475(151): OBJNEW _ _ global(26)
+476(150): OBJNEW _ _ global(27)
+477(150): OBJNEWSET 'BL' 0 _
+478(150): OBJNEWSET 'L' 1 _
+479(150): OBJNEWSET -1 2 _
+480(150): OBJNEWSET 0 3 _
+481(0): OBJDONE _ _ _
+482(0): OBJNEWSET global(27) 'L' _
+483(150): OBJNEW _ _ global(28)
+484(150): OBJNEWSET 'BR' 0 _
+485(150): OBJNEWSET 'R' 1 _
+486(150): OBJNEWSET 1 2 _
+487(150): OBJNEWSET 0 3 _
+488(0): OBJDONE _ _ _
+489(0): OBJNEWSET global(28) 'R' _
+490(150): OBJNEW _ _ global(29)
+491(150): OBJNEWSET 'TB' 0 _
+492(150): OBJNEWSET 'B' 1 _
+493(150): OBJNEWSET 0 2 _
+494(150): OBJNEWSET 1 3 _
+495(0): OBJDONE _ _ _
+496(0): OBJNEWSET global(29) 'B' _
+497(0): OBJDONE _ _ _
+498(0): OBJNEWSET global(26) 'B' _
+499(0): OBJDONE _ _ _
+500(0): ASSIGN global(2) _ global(31)
+501(153): OBJNEW _ _ global(2)
+502(154): OBJNEW _ _ global(3)
+503(154): OBJNEWSET 'T' 'BT' _
+504(154): OBJNEWSET 'L' 'TL' _
+505(154): OBJNEWSET 'R' 'TR' _
+506(0): OBJDONE _ _ _
+507(0): OBJNEWSET global(3) 'T' _
+508(155): OBJNEW _ _ global(9)
+509(155): OBJNEWSET 'B' 'TB' _
+510(155): OBJNEWSET 'L' 'BL' _
+511(155): OBJNEWSET 'R' 'BR' _
+512(0): OBJDONE _ _ _
+513(0): OBJNEWSET global(9) 'B' _
+514(156): OBJNEW _ _ global(13)
+515(156): OBJNEWSET 'L' 'RL' _
+516(156): OBJNEWSET 'T' 'LT' _
+517(156): OBJNEWSET 'B' 'LB' _
+518(0): OBJDONE _ _ _
+519(0): OBJNEWSET global(13) 'L' _
+520(158): OBJNEW _ _ global(14)
+521(157): OBJNEWSET 'R' 'LR' _
+522(157): OBJNEWSET 'T' 'RT' _
+523(157): OBJNEWSET 'B' 'RB' _
+524(0): OBJDONE _ _ _
+525(0): OBJNEWSET global(14) 'R' _
+526(0): OBJDONE _ _ _
+527(0): ASSIGN global(2) _ global(32)
+528(160): OBJNEW _ _ global(2)
+529(160): OBJNEWSET 'R' 'L' _
+530(160): OBJNEWSET 'L' 'R' _
+531(160): OBJNEWSET 'B' 'T' _
+532(160): OBJNEWSET 'T' 'B' _
+533(0): OBJDONE _ _ _
+534(0): ASSIGN global(2) _ global(33)
+535(162): PUSHARG 3 0 _
+536(0): CALLPROGRAMFUNC _ _ func(240)
+537(162): GETRETVAL _ _ global(2)
+538(162): ASSIGN global(2) _ global(34)
+539(163): PUSHARG 3 1 _
+540(0): CALLPROGRAMFUNC _ _ func(240)
+541(163): GETRETVAL _ _ global(2)
+542(163): ASSIGN global(2) _ global(35)
+543(167): OBJNEW _ _ global(2)
+544(168): OBJNEWSET FALSE 'initialised' _
+545(169): OBJNEWSET 0 'highscore' _
+546(170): OBJNEWSET FALSE 'has_won' _
+547(171): OBJGET global(8) 'TSIZE_VERT' global(3)
+548(0): OBJGET global(8) 'TSIZE_HORIZ' global(9)
+549(0): MUL global(3) global(9) global(3)
+550(0): OBJNEWSET global(3) 'grid_total' _
+551(172): CALLEXTFUNC _ _ std::list_new
+552(172): GETRETVAL _ _ global(13)
+553(172): OBJNEWSET global(13) 'bonus_sprites' _
+554(173): OBJNEWSET '\nRemake of the snake classic game. Uses the\nALADIN direct access library, while being\nimplemented in the Delta language.\nJuly, 2008 original version.\n' 'version' _
+555(0): JUMP _ _ label(570)
+556(0): FUNCENTER method(556) 7 0
+557(176): OBJSETATTR 0 'score' formal(0)
+558(176): OBJGET global(5) 'Data' local(2)
+559(0): OBJGET local(2) 'stage' local(1)
+560(0): ASSIGNTEMPVAR local(1) _ local(3)
+561(0): ASSIGNTEMPVAR local(3) _ local(4)
+562(0): JTRUETEST local(4) _ label(564)
+563(0): JUMP _ _ label(565)
+564(0): JUMP _ _ label(567)
+565(0): ASSIGNTEMPVAR 1 _ local(5)
+566(0): JUMP _ _ label(568)
+567(0): ASSIGNTEMPVAR local(1) _ local(5)
+568(0): OBJSETATTR local(5) 'stage' formal(0)
+569(0): FUNCRET method(556) 7 0
+570(176): OBJNEWSET method(556) 'reset' _
+571(0): JUMP _ _ label(657)
+572(0): FUNCENTER method(572) 4 0
+573(179): OBJSETATTR 'T' 'dir' formal(0)
+574(0): OBJGETATTR formal(0) 'dir' local(0)
+575(0): OBJSETATTR local(0) 'tail' formal(0)
+576(0): OBJGETATTR formal(0) 'tail' local(1)
+577(0): OBJSETATTR local(1) 'head' formal(0)
+578(180): PUSHARG 'BT' _ _
+579(0): CALLEXTFUNC _ _ std::list_new
+580(180): GETRETVAL _ _ local(0)
+581(180): OBJSETATTR local(0) 'body' formal(0)
+582(181): OBJSETATTR FALSE 'paused' formal(0)
+583(0): OBJGETATTR formal(0) 'paused' local(0)
+584(0): OBJSETATTR local(0) 'gameover' formal(0)
+585(182): OBJSETATTR TRUE 'initialised' formal(0)
+586(183): OBJGET global(8) 'START_COL' local(0)
+587(0): OBJGET global(8) 'TILE_W' local(1)
+588(0): MUL local(0) local(1) local(0)
+589(0): OBJSETATTR local(0) 'x' formal(0)
+590(184): OBJGET global(8) 'START_ROW' local(0)
+591(0): OBJGET global(8) 'TILE_H' local(1)
+592(0): MUL local(0) local(1) local(0)
+593(0): OBJSETATTR local(0) 'y' formal(0)
+594(185): CALLEXTFUNC _ _ std::currenttime
+595(185): GETRETVAL _ _ local(0)
+596(185): OBJSETATTR local(0) 'ts' formal(0)
+597(186): OBJGET global(8) 'AUTOMOVE_TIME' local(0)
+598(0): OBJSETATTR local(0) 'time' formal(0)
+599(188): OBJGETATTR formal(0) 'has_won' local(0)
+600(0): JFALSETEST local(0) _ label(602)
+601(0): JUMP _ _ label(607)
+602(0): BLOCKENTER 1 FALSE 1
+603(189): OBJGETATTR formal(0) 'reset' local(4)
+604(0): CALLFUNC _ _ local(4)
+605(0): BLOCKEXIT 1 FALSE 1
+606(0): JUMP _ _ label(612)
+607(0): BLOCKENTER 1 FALSE 2
+608(191): OBJGETATTR formal(0) 'stage' local(4)
+609(0): ADD local(4) 1 local(4)
+610(0): OBJSET local(4) 'stage' formal(0)
+611(0): BLOCKEXIT 1 FALSE 2
+612(193): OBJGET global(8) 'NUM_APPLES' local(0)
+613(0): OBJGETATTR formal(0) 'stage' local(1)
+614(0): SUB local(1) 1 local(1)
+615(0): OBJGET global(8) 'INC_APPLES' local(2)
+616(0): MUL local(1) local(2) local(1)
+617(0): ADD local(0) local(1) local(0)
+618(0): OBJSETATTR local(0) 'num_apples' formal(0)
+619(194): OBJGET global(8) 'NUM_FLIES' local(0)
+620(0): OBJGETATTR formal(0) 'stage' local(1)
+621(0): SUB local(1) 1 local(1)
+622(0): OBJGET global(8) 'INC_FLIES' local(2)
+623(0): MUL local(1) local(2) local(1)
+624(0): ADD local(0) local(1) local(0)
+625(0): OBJSETATTR local(0) 'num_flies' formal(0)
+626(196): OBJGETATTR formal(0) 'num_apples' local(0)
+627(0): OBJGETATTR formal(0) 'num_flies' local(1)
+628(0): ADD local(0) local(1) local(0)
+629(0): OBJGETATTR formal(0) 'grid_total' local(2)
+630(0): JGT local(0) local(2) label(632)
+631(0): JUMP _ _ label(638)
+632(0): BLOCKENTER 4 FALSE 3
+633(197): OBJGET global(8) 'NUM_FLIES' local(4)
+634(0): OBJSETATTR local(4) 'num_flies' formal(0)
+635(197): OBJGET global(8) 'NUM_APPLES' local(6)
+636(0): OBJSETATTR local(6) 'num_apples' formal(0)
+637(0): BLOCKEXIT 4 FALSE 3
+638(199): OBJNEW _ _ local(0)
+639(199): CALLEXTFUNC _ _ std::list_new
+640(199): GETRETVAL _ _ local(1)
+641(199): OBJNEWSET local(1) 'bag' _
+642(199): OBJNEWEMPTY _ _ local(2)
+643(0): OBJNEWSET local(2) 'grid' _
+644(0): OBJDONE _ _ _
+645(0): OBJSETATTR local(0) 'items' formal(0)
+646(200): OBJGETATTR formal(0) 'num_flies' local(0)
+647(0): OBJGET global(8) 'BONUS_FLY' local(1)
+648(0): OBJGETATTR formal(0) 'makeitems' local(3)
+649(0): PUSHARG global(35) local(1) local(0)
+650(0): CALLFUNC _ _ local(3)
+651(201): OBJGETATTR formal(0) 'num_apples' local(0)
+652(0): OBJGET global(8) 'BONUS_APPLE' local(1)
+653(0): OBJGETATTR formal(0) 'makeitems' local(3)
+654(0): PUSHARG global(34) local(1) local(0)
+655(0): CALLFUNC _ _ local(3)
+656(0): FUNCRET method(572) 4 0
+657(202): OBJNEWSET method(572) 'start' _
+658(0): JUMP _ _ label(668)
+659(0): FUNCENTER method(659) 2 0
+660(205): OBJGETATTR formal(0) 'paused' local(0)
+661(0): JFALSETEST local(0) _ label(663)
+662(0): JUMP _ _ label(665)
+663(0): ASSIGNTEMPVAR TRUE _ local(0)
+664(0): JUMP _ _ label(666)
+665(0): ASSIGNTEMPVAR FALSE _ local(0)
+666(0): OBJSETATTR local(0) 'paused' formal(0)
+667(0): FUNCRET method(659) 2 0
+668(205): OBJNEWSET method(659) 'pauseresume' _
+669(0): JUMP _ _ label(732)
+670(0): FUNCENTER method(670) 11 0
+671(208): ASSIGN 0 _ local(0)
+672(0): OBJGETATTR formal(0) 'items' local(3)
+673(0): OBJGET local(3) 'grid' local(2)
+674(0): OBJGETATTR formal(0) 'items' local(7)
+675(0): OBJGET local(7) 'bag' local(6)
+676(208): JLT local(0) formal(2) label(680)
+677(0): JUMP _ _ label(728)
+678(208): ADD local(0) 1 local(0)
+679(0): JUMP _ _ label(676)
+680(0): BLOCKENTER 9 FALSE 1
+681(209): OBJGET global(8) 'TSIZE_VERT' local(12)
+682(0): SUB local(12) 2 local(12)
+683(0): PUSHARG local(12) _ _
+684(0): CALLEXTFUNC _ _ std::random
+685(209): GETRETVAL _ _ local(12)
+686(209): ADD local(12) 1 local(11)
+687(0): ASSIGNTEMPVAR local(11) _ local(12)
+688(0): ASSIGNTEMPVAR local(12) _ local(13)
+689(0): OBJGET local(2) local(13) local(14)
+690(0): JFALSETEST local(14) _ label(692)
+691(0): JUMP _ _ label(696)
+692(0): BLOCKENTER 2 FALSE 2
+693(210): OBJNEWEMPTY _ _ local(20)
+694(0): OBJSET local(20) local(11) local(2)
+695(0): BLOCKEXIT 2 FALSE 2
+696(211): OBJGET local(2) local(11) local(15)
+697(0): OBJGET global(8) 'TSIZE_HORIZ' local(17)
+698(0): SUB local(17) 2 local(17)
+699(0): PUSHARG local(17) _ _
+700(0): CALLEXTFUNC _ _ std::random
+701(211): GETRETVAL _ _ local(17)
+702(211): ADD local(17) 1 local(16)
+703(0): ASSIGNTEMPVAR local(16) _ local(17)
+704(0): ASSIGNTEMPVAR local(17) _ local(18)
+705(0): OBJGET local(15) local(18) local(19)
+706(0): JFALSETEST local(19) _ label(708)
+707(0): JUMP _ _ label(726)
+708(0): BLOCKENTER 5 FALSE 3
+709(212): OBJGET local(2) local(11) local(20)
+710(0): OBJNEW _ _ local(21)
+711(214): OBJNEWSET formal(4) 'type' _
+712(215): OBJNEWSET formal(3) 'bonus' _
+713(216): OBJNEWSET TRUE 'visible' _
+714(217): OBJGET global(8) 'TILE_W' local(22)
+715(0): MUL local(16) local(22) local(22)
+716(0): OBJNEWSET local(22) 'x' _
+717(219): OBJGET global(8) 'TILE_H' local(23)
+718(0): MUL local(11) local(23) local(23)
+719(0): OBJNEWSET local(23) 'y' _
+720(0): OBJDONE _ _ _
+721(0): OBJSET local(21) local(16) local(20)
+722(0): OBJGET local(20) local(16) local(24)
+723(0): PUSHARG local(24) _ _
+724(0): CALLOBJGETMETHOD local(6) 'push_back' _
+725(0): BLOCKEXIT 5 FALSE 3
+726(0): BLOCKEXIT 9 FALSE 1
+727(0): JUMP _ _ label(678)
+728(222): CALLOBJGETMETHOD local(6) 'total' _
+729(222): GETRETVAL _ _ local(1)
+730(222): OBJSETATTR local(1) 'total_bonus_items' formal(0)
+731(0): FUNCRET method(670) 11 0
+732(223): OBJNEWSET method(670) 'makeitems' _
+733(0): JUMP _ _ label(797)
+734(0): FUNCENTER method(734) 10 0
+735(226): CALLEXTFUNC _ _ std::listiter_new
+736(226): GETRETVAL _ _ local(1)
+737(226): ASSIGN local(1) _ local(0)
+738(226): CALLEXTFUNC _ _ std::listiter_new
+739(226): GETRETVAL _ _ local(4)
+740(226): ASSIGN local(4) _ local(3)
+741(0): ASSIGNTEMPVAR local(4) _ local(5)
+742(0): OBJGETATTR formal(0) 'items' local(7)
+743(0): OBJGET local(7) 'bag' local(6)
+744(0): ASSIGNTEMPVAR local(6) _ local(8)
+745(0): ASSIGNTEMPVAR local(8) _ local(9)
+746(0): PUSHARG local(9) _ _
+747(0): CALLOBJGETMETHOD local(5) 'setbegin' _
+748(227): PUSHARG local(6) _ _
+749(0): CALLOBJGETMETHOD local(3) 'checkend' _
+750(227): GETRETVAL _ _ local(1)
+751(227): JFALSETEST local(1) _ label(753)
+752(0): JUMP _ _ label(796)
+753(227): BLOCKENTER 4 FALSE 1
+754(227): CALLOBJGETMETHOD local(3) 'getval' _
+755(227): GETRETVAL _ _ local(11)
+756(227): ASSIGN local(11) _ local(10)
+757(0): ASSIGNTEMPVAR local(11) _ local(12)
+758(0): OBJGET local(12) 'visible' local(13)
+759(0): JFALSETEST local(13) _ label(761)
+760(0): JUMP _ _ label(769)
+761(0): BLOCKENTER 3 FALSE 2
+762(229): PUSHARG local(3) _ _
+763(0): CALLOBJGETMETHOD local(0) 'assign' _
+764(229): CALLOBJGETMETHOD local(3) 'fwd' _
+765(229): PUSHARG local(0) _ _
+766(0): CALLOBJGETMETHOD local(6) 'erase' _
+767(0): BLOCKEXIT 3 FALSE 2
+768(0): JUMP _ _ label(794)
+769(0): BLOCKENTER 15 FALSE 3
+770(231): OBJGET global(10) 'back_buffer' local(14)
+771(0): OBJGET global(10) 'tiles' local(15)
+772(0): OBJGET local(10) 'type' local(16)
+773(0): OBJGET local(16) 'x' local(17)
+774(0): OBJGET global(8) 'TILE_W' local(18)
+775(0): MUL local(17) local(18) local(17)
+776(0): OBJGET local(10) 'type' local(19)
+777(0): OBJGET local(19) 'y' local(20)
+778(0): OBJGET global(8) 'TILE_H' local(21)
+779(0): MUL local(20) local(21) local(20)
+780(0): OBJGET global(8) 'TERRAIN_X1' local(22)
+781(0): OBJGET local(10) 'x' local(23)
+782(0): ADD local(22) local(23) local(22)
+783(0): OBJGET global(8) 'TERRAIN_Y1' local(24)
+784(0): OBJGET local(10) 'y' local(25)
+785(0): ADD local(24) local(25) local(24)
+786(0): OBJGET global(8) 'TILE_W' local(26)
+787(0): OBJGET global(8) 'TILE_H' local(27)
+788(0): PUSHARG local(27) local(26) local(24)
+789(0): PUSHARG local(22) local(20) local(17)
+790(0): PUSHARG local(15) local(14) _
+791(0): CALLEXTFUNC _ _ aladin::drawable_maskedblit
+792(237): CALLOBJGETMETHOD local(3) 'fwd' _
+793(0): BLOCKEXIT 15 FALSE 3
+794(0): BLOCKEXIT 4 FALSE 1
+795(0): JUMP _ _ label(748)
+796(0): FUNCRET method(734) 10 0
+797(239): OBJNEWSET method(734) 'drawitems' _
+798(0): JUMP _ _ label(810)
+799(0): FUNCENTER method(799) 1 0
+800(242): OBJSETATTR TRUE 'gameover' formal(0)
+801(242): OBJSETATTR formal(2) 'has_won' formal(0)
+802(0): OBJGETATTR formal(0) 'has_won' local(0)
+803(0): JFALSETEST local(0) _ label(805)
+804(0): JUMP _ _ label(809)
+805(0): BLOCKENTER 1 FALSE 1
+806(242): OBJGETATTR formal(0) 'clear_bonus' local(1)
+807(0): CALLFUNC _ _ local(1)
+808(0): BLOCKEXIT 1 FALSE 1
+809(0): FUNCRET method(799) 1 0
+810(242): OBJNEWSET method(799) 'setgameover' _
+811(0): JUMP _ _ label(818)
+812(0): FUNCENTER method(812) 3 0
+813(245): OBJGET global(8) 'AUTOMOVE_DEC' local(0)
+814(0): OBJGETATTR formal(0) 'time' local(2)
+815(0): SUB local(2) local(0) local(1)
+816(0): OBJSET local(1) 'time' formal(0)
+817(0): FUNCRET method(812) 3 0
+818(245): OBJNEWSET method(812) 'accelerate' _
+819(0): JUMP _ _ label(849)
+820(0): FUNCENTER method(820) 3 0
+821(248): OBJGETATTR formal(0) 'paused' local(0)
+822(0): JFALSETEST local(0) _ label(824)
+823(0): JUMP _ _ label(848)
+824(0): OBJGETATTR formal(0) 'initialised' local(1)
+825(0): JTRUETEST local(1) _ label(827)
+826(0): JUMP _ _ label(848)
+827(0): OBJGETATTR formal(0) 'gameover' local(2)
+828(0): JFALSETEST local(2) _ label(830)
+829(0): JUMP _ _ label(848)
+830(0): BLOCKENTER 5 FALSE 1
+831(249): CALLEXTFUNC _ _ std::currenttime
+832(249): GETRETVAL _ _ local(4)
+833(249): ASSIGN local(4) _ local(3)
+834(0): ASSIGNTEMPVAR local(4) _ local(5)
+835(0): OBJGETATTR formal(0) 'ts' local(6)
+836(0): SUB local(5) local(6) local(5)
+837(0): OBJGETATTR formal(0) 'time' local(7)
+838(0): JGE local(5) local(7) label(840)
+839(0): JUMP _ _ label(847)
+840(0): BLOCKENTER 3 FALSE 2
+841(250): OBJSETATTR local(3) 'ts' formal(0)
+842(250): OBJGETATTR formal(0) 'dir' local(9)
+843(0): OBJGETATTR formal(0) 'move' local(10)
+844(0): PUSHARG TRUE local(9) _
+845(0): CALLFUNC _ _ local(10)
+846(0): BLOCKEXIT 3 FALSE 2
+847(0): BLOCKEXIT 5 FALSE 1
+848(0): FUNCRET method(820) 3 0
+849(251): OBJNEWSET method(820) 'automove' _
+850(0): JUMP _ _ label(865)
+851(0): FUNCENTER method(851) 3 0
+852(254): OBJGETATTR formal(0) 'score' local(1)
+853(0): ADD local(1) formal(2) local(0)
+854(0): OBJSET local(0) 'score' formal(0)
+855(0): OBJGETATTR formal(0) 'highscore' local(2)
+856(0): JGT local(0) local(2) label(858)
+857(0): JUMP _ _ label(862)
+858(0): BLOCKENTER 2 FALSE 1
+859(255): OBJGETATTR formal(0) 'score' local(3)
+860(0): OBJSETATTR local(3) 'highscore' formal(0)
+861(0): BLOCKEXIT 2 FALSE 1
+862(256): OBJGETATTR formal(0) 'accelerate' local(0)
+863(0): CALLFUNC _ _ local(0)
+864(0): FUNCRET method(851) 3 0
+865(257): OBJNEWSET method(851) 'incscore' _
+866(0): JUMP _ _ label(904)
+867(0): FUNCENTER method(867) 12 0
+868(260): OBJGET global(8) 'TILE_H' local(1)
+869(0): DIV formal(3) local(1) local(0)
+870(261): OBJGET global(8) 'TILE_W' local(1)
+871(0): DIV formal(2) local(1) local(3)
+872(262): OBJGETATTR formal(0) 'items' local(1)
+873(0): OBJGET local(1) 'grid' local(2)
+874(0): OBJGET local(2) local(0) local(4)
+875(0): JTRUETEST local(4) _ label(877)
+876(0): JUMP _ _ label(903)
+877(0): OBJGETATTR formal(0) 'items' local(6)
+878(0): OBJGET local(6) 'grid' local(7)
+879(0): OBJGET local(7) local(0) local(8)
+880(0): OBJGET local(8) local(3) local(5)
+881(0): ASSIGNTEMPVAR local(5) _ local(9)
+882(0): ASSIGNTEMPVAR local(9) _ local(10)
+883(0): JTRUETEST local(10) _ label(885)
+884(0): JUMP _ _ label(903)
+885(0): OBJGET local(5) 'visible' local(11)
+886(0): JTRUETEST local(11) _ label(888)
+887(0): JUMP _ _ label(903)
+888(0): BLOCKENTER 6 FALSE 1
+889(263): OBJGET local(5) 'bonus' local(12)
+890(0): OBJGETATTR formal(0) 'incscore' local(13)
+891(0): PUSHARG local(12) _ _
+892(0): CALLFUNC _ _ local(13)
+893(263): OBJSETATTR TRUE 'expand' formal(0)
+894(263): OBJSET FALSE 'visible' local(5)
+895(263): OBJGETATTR formal(0) 'total_bonus_items' local(14)
+896(0): SUB local(14) 1 local(14)
+897(0): OBJSET local(14) 'total_bonus_items' formal(0)
+898(264): OBJGET local(5) 'bonus' local(14)
+899(0): OBJGETATTR formal(0) 'new_bonus_message' local(17)
+900(0): PUSHARG formal(3) formal(2) local(14)
+901(0): CALLFUNC _ _ local(17)
+902(0): BLOCKEXIT 6 FALSE 1
+903(0): FUNCRET method(867) 12 0
+904(266): OBJNEWSET method(867) 'check_bonus_item_eaten' _
+905(0): JUMP _ _ label(915)
+906(0): FUNCENTER method(906) 2 0
+907(269): OBJGETATTR formal(0) 'total_bonus_items' local(0)
+908(0): JEQ local(0) 0 label(910)
+909(0): JUMP _ _ label(912)
+910(0): ASSIGNTEMPVAR TRUE _ local(1)
+911(0): JUMP _ _ label(913)
+912(0): ASSIGNTEMPVAR FALSE _ local(1)
+913(0): RETURNVAL _ _ local(1)
+914(0): FUNCRET method(906) 2 0
+915(269): OBJNEWSET method(906) 'all_bonus_items_eaten' _
+916(0): JUMP _ _ label(1006)
+917(0): FUNCENTER method(917) 10 0
+918(272): OBJGETATTR formal(0) 'paused' local(0)
+919(0): JTRUETEST local(0) _ label(932)
+920(0): OBJGETATTR formal(0) 'initialised' local(1)
+921(0): JFALSETEST local(1) _ label(932)
+922(0): OBJGETATTR formal(0) 'gameover' local(2)
+923(0): JTRUETEST local(2) _ label(932)
+924(0): OBJGETATTR formal(0) 'dir' local(3)
+925(0): OBJGET global(33) local(3) local(4)
+926(0): JEQ local(4) formal(2) label(932)
+927(0): JFALSETEST formal(3) _ label(929)
+928(0): JUMP _ _ label(935)
+929(0): OBJGETATTR formal(0) 'dir' local(6)
+930(0): JEQ local(6) formal(2) label(932)
+931(0): JUMP _ _ label(935)
+932(0): BLOCKENTER 0 FALSE 1
+933(277): RETURN _ _ _
+934(0): BLOCKEXIT 0 FALSE 1
+935(279): OBJGETATTR formal(0) 'dir' local(0)
+936(0): OBJGET global(31) local(0) local(1)
+937(0): OBJGET local(1) formal(2) local(7)
+938(280): OBJGETATTR formal(0) 'x' local(0)
+939(0): OBJGET local(7) 2 local(1)
+940(0): OBJGET global(8) 'TILE_W' local(2)
+941(0): MUL local(1) local(2) local(1)
+942(0): ADD local(0) local(1) local(8)
+943(281): OBJGETATTR formal(0) 'y' local(0)
+944(0): OBJGET local(7) 3 local(1)
+945(0): OBJGET global(8) 'TILE_H' local(2)
+946(0): MUL local(1) local(2) local(1)
+947(0): ADD local(0) local(1) local(9)
+948(283): JLT local(8) 0 label(959)
+949(0): JLT local(9) 0 label(959)
+950(0): OBJGET global(8) 'TERRAIN_W' local(0)
+951(0): OBJGET global(8) 'TILE_W' local(1)
+952(0): ADD local(8) local(1) local(1)
+953(0): JLT local(0) local(1) label(959)
+954(0): OBJGET global(8) 'TERRAIN_H' local(2)
+955(0): OBJGET global(8) 'TILE_H' local(3)
+956(0): ADD local(9) local(3) local(3)
+957(0): JLT local(2) local(3) label(959)
+958(0): JUMP _ _ label(965)
+959(0): BLOCKENTER 1 FALSE 2
+960(284): OBJGETATTR formal(0) 'setgameover' local(10)
+961(0): PUSHARG FALSE _ _
+962(0): CALLFUNC _ _ local(10)
+963(284): RETURN _ _ _
+964(0): BLOCKEXIT 1 FALSE 2
+965(286): OBJGETATTR formal(0) 'check_bonus_item_eaten' local(2)
+966(0): PUSHARG local(9) local(8) _
+967(0): CALLFUNC _ _ local(2)
+968(288): OBJGETATTR formal(0) 'body' local(0)
+969(0): OBJGET local(7) 0 local(1)
+970(0): PUSHARG local(1) _ _
+971(0): CALLOBJGETMETHOD local(0) 'push_front' _
+972(289): OBJSETATTR formal(2) 'dir' formal(0)
+973(290): OBJGET local(7) 1 local(0)
+974(0): OBJSETATTR local(0) 'head' formal(0)
+975(291): OBJSETATTR local(8) 'x' formal(0)
+976(292): OBJSETATTR local(9) 'y' formal(0)
+977(294): OBJGETATTR formal(0) 'expand' local(0)
+978(0): JFALSETEST local(0) _ label(980)
+979(0): JUMP _ _ label(990)
+980(0): BLOCKENTER 5 FALSE 3
+981(295): OBJGETATTR formal(0) 'tail' local(10)
+982(0): OBJGET global(32) local(10) local(11)
+983(0): OBJGETATTR formal(0) 'body' local(12)
+984(0): CALLOBJGETMETHOD local(12) 'pop_back' _
+985(295): GETRETVAL _ _ local(12)
+986(295): OBJGET local(11) local(12) local(13)
+987(0): OBJSETATTR local(13) 'tail' formal(0)
+988(0): BLOCKEXIT 5 FALSE 3
+989(0): JUMP _ _ label(993)
+990(0): BLOCKENTER 1 FALSE 4
+991(297): OBJSETATTR FALSE 'expand' formal(0)
+992(0): BLOCKEXIT 1 FALSE 4
+993(299): OBJGETATTR formal(0) 'all_bonus_items_eaten' local(0)
+994(0): CALLFUNC _ _ local(0)
+995(299): GETRETVAL _ _ local(0)
+996(299): JTRUETEST local(0) _ label(998)
+997(0): JUMP _ _ label(1003)
+998(0): BLOCKENTER 1 FALSE 5
+999(300): OBJGETATTR formal(0) 'setgameover' local(10)
+1000(0): PUSHARG TRUE _ _
+1001(0): CALLFUNC _ _ local(10)
+1002(0): BLOCKEXIT 1 FALSE 5
+1003(302): OBJGETATTR formal(0) 'tail' local(0)
+1004(0): ASSERT '@tail' _ local(0)
+1005(0): FUNCRET method(917) 10 0
+1006(303): OBJNEWSET method(917) 'move' _
+1007(0): JUMP _ _ label(1069)
+1008(0): FUNCENTER method(1008) 12 0
+1009(306): OBJGET global(10) 'back_buffer' local(0)
+1010(0): OBJGET global(10) 'tiles' local(1)
+1011(0): OBJGET formal(2) 'x' local(2)
+1012(0): OBJGET global(8) 'TILE_W' local(3)
+1013(0): MUL local(2) local(3) local(2)
+1014(0): OBJGET formal(2) 'y' local(4)
+1015(0): OBJGET global(8) 'TILE_H' local(5)
+1016(0): MUL local(4) local(5) local(4)
+1017(0): OBJGET global(8) 'TERRAIN_X1' local(6)
+1018(0): ADD local(6) formal(3) local(6)
+1019(0): OBJGET global(8) 'TERRAIN_Y1' local(7)
+1020(0): ADD local(7) formal(4) local(7)
+1021(0): OBJGET global(8) 'TILE_W' local(8)
+1022(0): OBJGET global(8) 'TILE_H' local(9)
+1023(0): PUSHARG local(9) local(8) local(7)
+1024(0): PUSHARG local(6) local(4) local(2)
+1025(0): PUSHARG local(1) local(0) _
+1026(0): CALLEXTFUNC _ _ aladin::drawable_maskedblit
+1027(313): OBJGETATTR formal(0) 'gameover' local(0)
+1028(0): JTRUETEST local(0) _ label(1032)
+1029(0): OBJGETATTR formal(0) 'paused' local(1)
+1030(0): JTRUETEST local(1) _ label(1032)
+1031(0): JUMP _ _ label(1035)
+1032(0): BLOCKENTER 0 FALSE 1
+1033(314): RETURN _ _ _
+1034(0): BLOCKEXIT 0 FALSE 1
+1035(315): OBJGETATTR formal(0) 'rows' local(0)
+1036(0): OBJGET global(8) 'TILE_H' local(1)
+1037(0): DIV formal(4) local(1) local(10)
+1038(0): ASSIGNTEMPVAR local(10) _ local(1)
+1039(0): ASSIGNTEMPVAR local(1) _ local(2)
+1040(0): OBJGET local(0) local(2) local(3)
+1041(0): JFALSETEST local(3) _ label(1043)
+1042(0): JUMP _ _ label(1048)
+1043(0): BLOCKENTER 3 FALSE 2
+1044(316): OBJGETATTR formal(0) 'rows' local(12)
+1045(0): OBJNEWEMPTY _ _ local(13)
+1046(0): OBJSET local(13) local(10) local(12)
+1047(0): BLOCKEXIT 3 FALSE 2
+1048(317): OBJGETATTR formal(0) 'rows' local(0)
+1049(0): OBJGET local(0) local(10) local(1)
+1050(0): OBJGET global(8) 'TILE_W' local(2)
+1051(0): DIV formal(3) local(2) local(11)
+1052(0): ASSIGNTEMPVAR local(11) _ local(2)
+1053(0): ASSIGNTEMPVAR local(2) _ local(3)
+1054(0): OBJGET local(1) local(3) local(4)
+1055(0): JTRUETEST local(4) _ label(1057)
+1056(0): JUMP _ _ label(1063)
+1057(0): BLOCKENTER 1 FALSE 3
+1058(318): OBJGETATTR formal(0) 'setgameover' local(12)
+1059(0): PUSHARG FALSE _ _
+1060(0): CALLFUNC _ _ local(12)
+1061(0): BLOCKEXIT 1 FALSE 3
+1062(0): JUMP _ _ label(1068)
+1063(0): BLOCKENTER 3 FALSE 4
+1064(320): OBJGETATTR formal(0) 'rows' local(12)
+1065(0): OBJGET local(12) local(10) local(13)
+1066(0): OBJSET TRUE local(11) local(13)
+1067(0): BLOCKEXIT 3 FALSE 4
+1068(0): FUNCRET method(1008) 12 0
+1069(321): OBJNEWSET method(1008) 'drawtile' _
+1070(0): JUMP _ _ label(1109)
+1071(0): FUNCENTER method(1071) 4 0
+1072(324): OBJGETATTR formal(0) 'initialised' local(0)
+1073(0): JTRUETEST local(0) _ label(1075)
+1074(0): JUMP _ _ label(1100)
+1075(0): OBJGETATTR formal(0) 'gameover' local(1)
+1076(0): JFALSETEST local(1) _ label(1078)
+1077(0): JUMP _ _ label(1100)
+1078(0): BLOCKENTER 6 FALSE 1
+1079(325): OBJGETATTR formal(0) 'score' local(4)
+1080(0): ADD local(4) 'Pts' local(4)
+1081(0): OBJGET global(8) 'SCORE_X' local(5)
+1082(0): OBJGET global(8) 'SCORE_Y' local(6)
+1083(0): OBJGETATTR formal(0) 'drawtext' local(7)
+1084(0): PUSHARG 'left' local(6) local(5)
+1085(0): PUSHARG local(4) _ _
+1086(0): CALLFUNC _ _ local(7)
+1087(326): OBJGETATTR formal(0) 'stage' local(8)
+1088(0): ADD '#' local(8) local(8)
+1089(0): ADD local(8) ', ' local(8)
+1090(0): OBJGETATTR formal(0) 'total_bonus_items' local(9)
+1091(0): ADD local(8) local(9) local(8)
+1092(0): ADD local(8) ' items' local(8)
+1093(0): OBJGET global(8) 'STAGE_X' local(4)
+1094(0): OBJGET global(8) 'STAGE_Y' local(5)
+1095(0): OBJGETATTR formal(0) 'drawtext' local(6)
+1096(0): PUSHARG 'left' local(5) local(4)
+1097(0): PUSHARG local(8) _ _
+1098(0): CALLFUNC _ _ local(6)
+1099(0): BLOCKEXIT 6 FALSE 1
+1100(333): OBJGETATTR formal(0) 'highscore' local(0)
+1101(0): ADD local(0) 'Pts' local(0)
+1102(0): OBJGET global(8) 'HIGH_SCORE_X' local(1)
+1103(0): OBJGET global(8) 'HIGH_SCORE_Y' local(2)
+1104(0): OBJGETATTR formal(0) 'drawtext' local(3)
+1105(0): PUSHARG 'left' local(2) local(1)
+1106(0): PUSHARG local(0) _ _
+1107(0): CALLFUNC _ _ local(3)
+1108(0): FUNCRET method(1071) 4 0
+1109(334): OBJNEWSET method(1071) 'drawscore' _
+1110(0): JUMP _ _ label(1121)
+1111(0): FUNCENTER method(1111) 7 0
+1112(337): OBJGET global(10) 'back_buffer' local(0)
+1113(0): CALLEXTFUNC _ _ aladin::font_getdefault
+1114(337): GETRETVAL _ _ local(1)
+1115(337): OBJGET global(10) 'textcolor' local(6)
+1116(0): PUSHARG local(6) formal(5) formal(2)
+1117(0): PUSHARG formal(4) formal(3) local(1)
+1118(0): PUSHARG local(0) _ _
+1119(0): CALLEXTFUNC _ _ aladin::drawable_textdraw
+1120(0): FUNCRET method(1111) 7 0
+1121(337): OBJNEWSET method(1111) 'drawtext' _
+1122(0): JUMP _ _ label(1137)
+1123(0): FUNCENTER method(1123) 6 0
+1124(340): OBJGET global(8) 'TERRAIN_X1' local(1)
+1125(0): OBJGET global(8) 'TERRAIN_W' local(2)
+1126(0): DIV local(2) 2 local(2)
+1127(0): ADD local(1) local(2) local(1)
+1128(0): OBJGET global(8) 'TERRAIN_Y1' local(3)
+1129(0): OBJGET global(8) 'TERRAIN_H' local(4)
+1130(0): DIV local(4) 2 local(4)
+1131(0): ADD local(3) local(4) local(3)
+1132(0): OBJGETATTR formal(0) 'drawtext' local(5)
+1133(0): PUSHARG 'centre' local(3) local(1)
+1134(0): PUSHARG formal(2) _ _
+1135(0): CALLFUNC _ _ local(5)
+1136(0): FUNCRET method(1123) 6 0
+1137(345): OBJNEWSET method(1123) 'message' _
+1138(0): JUMP _ _ label(1159)
+1139(0): FUNCENTER method(1139) 6 0
+1140(348): OBJGETATTR formal(0) 'bonus_sprites' local(0)
+1141(0): OBJNEW _ _ local(1)
+1142(350): OBJGET global(8) 'TERRAIN_X1' local(2)
+1143(0): ADD local(2) formal(3) local(2)
+1144(0): OBJNEWSET local(2) 'x' _
+1145(351): OBJGET global(8) 'TERRAIN_Y1' local(3)
+1146(0): ADD local(3) formal(4) local(3)
+1147(0): OBJNEWSET local(3) 'y' _
+1148(352): ADD '++' formal(2) local(4)
+1149(0): ADD local(4) '++' local(4)
+1150(0): OBJNEWSET local(4) 'text' _
+1151(354): CALLEXTFUNC _ _ std::currenttime
+1152(354): GETRETVAL _ _ local(5)
+1153(354): ADD local(5) 3000 local(5)
+1154(0): OBJNEWSET local(5) 't' _
+1155(0): OBJDONE _ _ _
+1156(0): PUSHARG local(1) _ _
+1157(0): CALLOBJGETMETHOD local(0) 'push_back' _
+1158(0): FUNCRET method(1139) 6 0
+1159(356): OBJNEWSET method(1139) 'new_bonus_message' _
+1160(0): JUMP _ _ label(1165)
+1161(0): FUNCENTER method(1161) 1 0
+1162(359): OBJGETATTR formal(0) 'bonus_sprites' local(0)
+1163(0): CALLOBJGETMETHOD local(0) 'clear' _
+1164(0): FUNCRET method(1161) 1 0
+1165(359): OBJNEWSET method(1161) 'clear_bonus' _
+1166(0): JUMP _ _ label(1236)
+1167(0): FUNCENTER method(1167) 8 0
+1168(362): OBJGETATTR formal(0) 'bonus_sprites' local(0)
+1169(0): CALLOBJGETMETHOD local(0) 'total' _
+1170(362): GETRETVAL _ _ local(0)
+1171(362): JFALSETEST local(0) _ label(1173)
+1172(0): JUMP _ _ label(1176)
+1173(0): BLOCKENTER 0 FALSE 1
+1174(363): RETURN _ _ _
+1175(0): BLOCKEXIT 0 FALSE 1
+1176(364): OBJGETATTR formal(0) 'bonus_sprites' local(0)
+1177(0): FOREACHBEGIN local(0) _ local(2)
+1178(0): FOREACHCHECKEND local(0) local(2) label(1196)
+1179(0): FOREACHGETVAL local(2) _ local(1)
+1180(364): BLOCKENTER 6 FALSE 2
+1181(365): OBJGET local(1) 'text' local(8)
+1182(0): OBJGET local(1) 'x' local(10)
+1183(0): ASSIGNTEMPVAR local(10) _ local(9)
+1184(0): ADD local(10) 1 local(10)
+1185(0): OBJSET local(10) 'x' local(1)
+1186(0): OBJGET local(1) 'y' local(12)
+1187(0): ASSIGNTEMPVAR local(12) _ local(11)
+1188(0): ADD local(12) 1 local(12)
+1189(0): OBJSET local(12) 'y' local(1)
+1190(0): OBJGETATTR formal(0) 'drawtext' local(13)
+1191(0): PUSHARG 'centre' local(11) local(9)
+1192(0): PUSHARG local(8) _ _
+1193(0): CALLFUNC _ _ local(13)
+1194(0): BLOCKEXIT 6 FALSE 2
+1195(0): FOREACHFWD local(2) _ label(1178)
+1196(0): FOREACHEND local(2) _ _
+1197(366): CALLEXTFUNC _ _ std::listiter_new
+1198(366): GETRETVAL _ _ local(0)
+1199(366): ASSIGN local(0) _ local(5)
+1200(0): ASSIGNTEMPVAR local(0) _ local(2)
+1201(0): OBJGETATTR formal(0) 'bonus_sprites' local(3)
+1202(0): PUSHARG local(3) _ _
+1203(0): CALLOBJGETMETHOD local(2) 'setbegin' _
+1204(366): CALLEXTFUNC _ _ std::listiter_new
+1205(366): GETRETVAL _ _ local(4)
+1206(366): ASSIGN local(4) _ local(6)
+1207(367): OBJGETATTR formal(0) 'bonus_sprites' local(0)
+1208(0): PUSHARG local(0) _ _
+1209(0): CALLOBJGETMETHOD local(5) 'checkend' _
+1210(367): GETRETVAL _ _ local(0)
+1211(367): JFALSETEST local(0) _ label(1213)
+1212(0): JUMP _ _ label(1235)
+1213(367): BLOCKENTER 3 FALSE 3
+1214(367): CALLOBJGETMETHOD local(5) 'getval' _
+1215(367): GETRETVAL _ _ local(8)
+1216(367): OBJGET local(8) 't' local(9)
+1217(0): CALLEXTFUNC _ _ std::currenttime
+1218(367): GETRETVAL _ _ local(10)
+1219(367): JLE local(9) local(10) label(1221)
+1220(0): JUMP _ _ label(1230)
+1221(0): BLOCKENTER 4 FALSE 4
+1222(369): PUSHARG local(5) _ _
+1223(0): CALLOBJGETMETHOD local(6) 'assign' _
+1224(369): CALLOBJGETMETHOD local(5) 'fwd' _
+1225(369): OBJGETATTR formal(0) 'bonus_sprites' local(13)
+1226(0): PUSHARG local(6) _ _
+1227(0): CALLOBJGETMETHOD local(13) 'erase' _
+1228(0): BLOCKEXIT 4 FALSE 4
+1229(0): JUMP _ _ label(1233)
+1230(0): BLOCKENTER 1 FALSE 5
+1231(371): CALLOBJGETMETHOD local(5) 'fwd' _
+1232(0): BLOCKEXIT 1 FALSE 5
+1233(0): BLOCKEXIT 3 FALSE 3
+1234(0): JUMP _ _ label(1207)
+1235(0): FUNCRET method(1167) 8 0
+1236(372): OBJNEWSET method(1167) 'display_bonus_messages' _
+1237(0): JUMP _ _ label(1342)
+1238(0): FUNCENTER method(1238) 11 0
+1239(375): OBJGETATTR formal(0) 'drawscore' local(0)
+1240(0): CALLFUNC _ _ local(0)
+1241(376): OBJGETATTR formal(0) 'initialised' local(0)
+1242(0): JFALSETEST local(0) _ label(1244)
+1243(0): JUMP _ _ label(1251)
+1244(0): BLOCKENTER 2 FALSE 1
+1245(377): OBJGET global(8) 'TERRAIN_MENU' local(11)
+1246(0): OBJGETATTR formal(0) 'message' local(12)
+1247(0): PUSHARG local(11) _ _
+1248(0): CALLFUNC _ _ local(12)
+1249(377): RETURN _ _ _
+1250(0): BLOCKEXIT 2 FALSE 1
+1251(379): OBJGETATTR formal(0) 'drawitems' local(0)
+1252(0): CALLFUNC _ _ local(0)
+1253(380): OBJGETATTR formal(0) 'gameover' local(0)
+1254(0): JFALSETEST local(0) _ label(1256)
+1255(0): JUMP _ _ label(1262)
+1256(0): BLOCKENTER 3 FALSE 2
+1257(381): OBJNEWEMPTY _ _ local(11)
+1258(0): OBJSETATTR local(11) 'rows' formal(0)
+1259(381): OBJNEWEMPTY _ _ local(13)
+1260(0): OBJSETATTR local(13) 'columns' formal(0)
+1261(0): BLOCKEXIT 3 FALSE 2
+1262(383): OBJGETATTR formal(0) 'head' local(0)
+1263(0): OBJGET global(16) local(0) local(1)
+1264(0): OBJGETATTR formal(0) 'x' local(2)
+1265(0): ASSIGNTEMPVAR local(2) _ local(3)
+1266(0): ASSIGNTEMPVAR local(3) _ local(4)
+1267(0): OBJGETATTR formal(0) 'y' local(5)
+1268(0): ASSIGNTEMPVAR local(5) _ local(6)
+1269(0): ASSIGNTEMPVAR local(6) _ local(7)
+1270(0): OBJGETATTR formal(0) 'drawtile' local(8)
+1271(0): PUSHARG local(7) local(4) local(1)
+1272(0): CALLFUNC _ _ local(8)
+1273(385): OBJGETATTR formal(0) 'head' local(0)
+1274(0): OBJGET global(20) local(0) local(9)
+1275(386): OBJGET local(9) 0 local(0)
+1276(0): OBJGET global(8) 'TILE_W' local(1)
+1277(0): MUL local(0) local(1) local(0)
+1278(0): ADD local(2) local(0) local(2)
+1279(387): OBJGET local(9) 1 local(0)
+1280(0): OBJGET global(8) 'TILE_H' local(1)
+1281(0): MUL local(0) local(1) local(0)
+1282(0): ADD local(5) local(0) local(5)
+1283(389): OBJGETATTR formal(0) 'body' local(0)
+1284(0): FOREACHBEGIN local(0) _ local(1)
+1285(0): FOREACHCHECKEND local(0) local(1) label(1303)
+1286(0): FOREACHGETVAL local(1) _ local(10)
+1287(389): BLOCKENTER 9 FALSE 3
+1288(390): OBJGET global(17) local(10) local(11)
+1289(0): OBJGETATTR formal(0) 'drawtile' local(14)
+1290(0): PUSHARG local(5) local(2) local(11)
+1291(0): CALLFUNC _ _ local(14)
+1292(391): OBJGET global(20) local(10) local(15)
+1293(392): OBJGET local(15) 0 local(16)
+1294(0): OBJGET global(8) 'TILE_W' local(17)
+1295(0): MUL local(16) local(17) local(16)
+1296(0): ADD local(2) local(16) local(2)
+1297(392): OBJGET local(15) 1 local(18)
+1298(0): OBJGET global(8) 'TILE_H' local(19)
+1299(0): MUL local(18) local(19) local(18)
+1300(0): ADD local(5) local(18) local(5)
+1301(0): BLOCKEXIT 9 FALSE 3
+1302(0): FOREACHFWD local(1) _ label(1285)
+1303(0): FOREACHEND local(1) _ _
+1304(395): OBJGETATTR formal(0) 'tail' local(0)
+1305(0): OBJGET global(12) local(0) local(1)
+1306(0): OBJGETATTR formal(0) 'drawtile' local(6)
+1307(0): PUSHARG local(5) local(2) local(1)
+1308(0): CALLFUNC _ _ local(6)
+1309(396): OBJGETATTR formal(0) 'display_bonus_messages' local(0)
+1310(0): CALLFUNC _ _ local(0)
+1311(398): OBJGETATTR formal(0) 'gameover' local(0)
+1312(0): JTRUETEST local(0) _ label(1314)
+1313(0): JUMP _ _ label(1330)
+1314(0): BLOCKENTER 4 FALSE 4
+1315(399): OBJGETATTR formal(0) 'has_won' local(11)
+1316(0): JTRUETEST local(11) _ label(1318)
+1317(0): JUMP _ _ label(1321)
+1318(0): OBJGET global(8) 'STAGE_MENU' local(12)
+1319(0): ADD 'You Won!' local(12) local(12)
+1320(0): JUMP _ _ label(1325)
+1321(0): OBJGET global(8) 'TERRAIN_MENU' local(13)
+1322(0): ADD 'Game Over' local(13) local(13)
+1323(0): ASSIGNTEMPVAR local(13) _ local(12)
+1324(0): JUMP _ _ label(1325)
+1325(0): OBJGETATTR formal(0) 'message' local(14)
+1326(0): PUSHARG local(12) _ _
+1327(0): CALLFUNC _ _ local(14)
+1328(0): BLOCKEXIT 4 FALSE 4
+1329(0): JUMP _ _ label(1341)
+1330(0): BLOCKENTER 1 FALSE 5
+1331(401): OBJGETATTR formal(0) 'paused' local(11)
+1332(0): JTRUETEST local(11) _ label(1334)
+1333(0): JUMP _ _ label(1340)
+1334(0): BLOCKENTER 2 FALSE 6
+1335(402): OBJGET global(8) 'RESUME_MESSAGE' local(12)
+1336(0): OBJGETATTR formal(0) 'message' local(13)
+1337(0): PUSHARG local(12) _ _
+1338(0): CALLFUNC _ _ local(13)
+1339(0): BLOCKEXIT 2 FALSE 6
+1340(0): BLOCKEXIT 1 FALSE 5
+1341(0): FUNCRET method(1238) 11 0
+1342(403): OBJNEWSET method(1238) 'display' _
+1343(0): OBJDONE _ _ _
+1344(0): ASSIGN global(2) _ global(36)
+1345(410): ASSIGN 0 _ global(37)
+1346(411): ASSIGN 1 _ global(38)
+1347(412): ASSIGN 2 _ global(39)
+1348(413): ASSIGN 3 _ global(40)
+1349(414): ASSIGN 4 _ global(41)
+1350(415): ASSIGN 5 _ global(42)
+1351(416): ASSIGN 6 _ global(43)
+1352(418): ASSIGN 7 _ global(44)
+1353(419): ASSIGN 4 _ global(45)
+1354(420): ASSIGN 3 _ global(46)
+1355(421): ASSIGN 5 _ global(47)
+1356(423): OBJNEW _ _ global(2)
+1357(442): OBJNEW _ _ global(3)
+1358(434): OBJNEW _ _ global(9)
+1359(427): OBJNEWSET 0 0 _
+1360(427): OBJNEWSET 'KEY_LEFT' 1 _
+1361(427): OBJNEWSET 'Move left' 2 _
+1362(428): OBJNEWSET 1 3 _
+1363(428): OBJNEWSET 'KEY_RIGHT' 4 _
+1364(428): OBJNEWSET 'Move right' 5 _
+1365(429): OBJNEWSET 2 6 _
+1366(429): OBJNEWSET 'KEY_UP' 7 _
+1367(429): OBJNEWSET 'Move up' 8 _
+1368(430): OBJNEWSET 3 9 _
+1369(430): OBJNEWSET 'KEY_DOWN' 10 _
+1370(430): OBJNEWSET 'Move down' 11 _
+1371(431): OBJNEWSET 4 12 _
+1372(431): OBJNEWSET 'KEY_F1' 13 _
+1373(431): OBJNEWSET 'New game' 14 _
+1374(432): OBJNEWSET 5 15 _
+1375(432): OBJNEWSET 'KEY_SPACE' 16 _
+1376(432): OBJNEWSET 'Pause / resume' 17 _
+1377(433): OBJNEWSET 6 18 _
+1378(433): OBJNEWSET 'KEY_ESC' 19 _
+1379(434): OBJNEWSET 'Exit' 20 _
+1380(0): OBJDONE _ _ _
+1381(0): OBJNEWSET global(9) 'kbd' _
+1382(442): OBJNEW _ _ global(13)
+1383(437): OBJNEWSET 0 0 _
+1384(437): OBJNEWSET 'left' 1 _
+1385(437): OBJNEWSET 'centre' 2 _
+1386(437): OBJNEWSET 'centre' 3 _
+1387(437): OBJNEWSET 'Move left' 4 _
+1388(438): OBJNEWSET 1 5 _
+1389(438): OBJNEWSET 'right' 6 _
+1390(438): OBJNEWSET 'centre' 7 _
+1391(438): OBJNEWSET 'centre' 8 _
+1392(438): OBJNEWSET 'Move right' 9 _
+1393(439): OBJNEWSET 2 10 _
+1394(439): OBJNEWSET 'centre' 11 _
+1395(439): OBJNEWSET 'front' 12 _
+1396(439): OBJNEWSET 'centre' 13 _
+1397(439): OBJNEWSET 'Move up' 14 _
+1398(440): OBJNEWSET 3 15 _
+1399(440): OBJNEWSET 'centre' 16 _
+1400(440): OBJNEWSET 'back' 17 _
+1401(440): OBJNEWSET 'centre' 18 _
+1402(441): OBJNEWSET 'Move down' 19 _
+1403(0): OBJDONE _ _ _
+1404(0): OBJNEWSET global(13) 'joy' _
+1405(0): OBJDONE _ _ _
+1406(0): OBJNEWSET global(3) 'map' _
+1407(0): JUMP _ _ label(1477)
+1408(0): FUNCENTER method(1408) 10 0
+1409(445): CALLEXTFUNC _ _ ipon_initialise
+1410(446): OBJSETATTR 0 'channel' formal(0)
+1411(0): OBJGETATTR formal(0) 'channel' local(0)
+1412(0): PUSHARG 'Input control' local(0) _
+1413(0): CALLEXTFUNC _ _ ipon_newchannel
+1414(448): CALLEXTFUNC _ _ kbdbinding_new
+1415(448): GETRETVAL _ _ local(0)
+1416(448): ASSIGN local(0) _ local(1)
+1417(449): ASSIGN 21 _ local(3)
+1418(450): ASSIGN 0 _ local(4)
+1419(0): OBJGETATTR formal(0) 'map' local(2)
+1420(0): OBJGET local(2) 'kbd' local(5)
+1421(450): JLT local(4) 21 label(1425)
+1422(0): JUMP _ _ label(1442)
+1423(450): ADD local(4) 3 local(4)
+1424(0): JUMP _ _ label(1421)
+1425(0): BLOCKENTER 5 FALSE 1
+1426(451): PUSHARG local(1) _ _
+1427(0): CALLEXTFUNC _ _ kbdbinding_reset
+1428(452): ADD local(4) 1 local(12)
+1429(0): OBJGET local(5) local(12) local(13)
+1430(0): PUSHARG local(13) local(1) _
+1431(0): CALLEXTFUNC _ _ kbdbinding_addkey
+1432(453): OBJGETATTR formal(0) 'channel' local(11)
+1433(0): OBJGET local(5) local(4) local(12)
+1434(0): ADD local(4) 3 local(13)
+1435(0): SUB local(13) 1 local(13)
+1436(0): OBJGET local(5) local(13) local(14)
+1437(0): PUSHARG local(1) local(14) local(12)
+1438(0): PUSHARG local(11) _ _
+1439(0): CALLEXTFUNC _ _ ipon_setkbdcommand
+1440(0): BLOCKEXIT 5 FALSE 1
+1441(0): JUMP _ _ label(1423)
+1442(456): CALLEXTFUNC _ _ joybinding_new
+1443(456): GETRETVAL _ _ local(0)
+1444(456): ASSIGN local(0) _ local(1)
+1445(457): ASSIGN 20 _ local(8)
+1446(458): ASSIGN 0 _ local(4)
+1447(0): OBJGETATTR formal(0) 'map' local(2)
+1448(0): OBJGET local(2) 'joy' local(9)
+1449(458): JLT local(4) 20 label(1453)
+1450(0): JUMP _ _ label(1476)
+1451(458): ADD local(4) 5 local(4)
+1452(0): JUMP _ _ label(1449)
+1453(0): BLOCKENTER 5 FALSE 2
+1454(459): PUSHARG local(1) _ _
+1455(0): CALLEXTFUNC _ _ joybinding_reset
+1456(460): PUSHARG 0 local(1) _
+1457(0): CALLEXTFUNC _ _ joybinding_setjoynum
+1458(461): ADD local(4) 1 local(12)
+1459(0): OBJGET local(9) local(12) local(13)
+1460(0): PUSHARG local(13) local(1) _
+1461(0): CALLEXTFUNC _ _ joybinding_setxdir
+1462(462): ADD local(4) 3 local(12)
+1463(0): OBJGET local(9) local(12) local(13)
+1464(0): PUSHARG local(13) local(1) _
+1465(0): CALLEXTFUNC _ _ joybinding_setzdir
+1466(463): OBJGETATTR formal(0) 'channel' local(11)
+1467(0): OBJGET local(9) local(4) local(12)
+1468(0): ADD local(4) 5 local(13)
+1469(0): SUB local(13) 1 local(13)
+1470(0): OBJGET local(9) local(13) local(14)
+1471(0): PUSHARG local(1) local(14) local(12)
+1472(0): PUSHARG local(11) _ _
+1473(0): CALLEXTFUNC _ _ ipon_setjoycommand
+1474(0): BLOCKEXIT 5 FALSE 2
+1475(0): JUMP _ _ label(1451)
+1476(0): FUNCRET method(1408) 10 0
+1477(465): OBJNEWSET method(1408) 'initialise' _
+1478(467): OBJNEWSET 0 'ts' _
+1479(0): JUMP _ _ label(1496)
+1480(0): FUNCENTER method(1480) 5 0
+1481(470): CALLEXTFUNC _ _ std::currenttime
+1482(470): GETRETVAL _ _ local(1)
+1483(470): ASSIGN local(1) _ local(0)
+1484(0): ASSIGNTEMPVAR local(1) _ local(2)
+1485(0): OBJGETATTR formal(0) 'ts' local(3)
+1486(0): SUB local(2) local(3) local(2)
+1487(0): OBJGET global(8) 'INPUT_PACE' local(4)
+1488(0): JGE local(2) local(4) label(1490)
+1489(0): JUMP _ _ label(1494)
+1490(0): BLOCKENTER 1 FALSE 1
+1491(471): OBJSETATTR local(0) 'ts' formal(0)
+1492(471): RETURNVAL _ _ TRUE
+1493(0): BLOCKEXIT 1 FALSE 1
+1494(472): RETURNVAL _ _ FALSE
+1495(0): FUNCRET method(1480) 5 0
+1496(473): OBJNEWSET method(1480) 'istimetopoll' _
+1497(0): JUMP _ _ label(1506)
+1498(0): FUNCENTER method(1498) 1 0
+1499(476): CALLEXTFUNC _ _ ipon_processinput
+1500(477): OBJGETATTR formal(0) 'channel' local(0)
+1501(0): PUSHARG local(0) _ _
+1502(0): CALLEXTFUNC _ _ ipon_gettriggeredcommands
+1503(477): GETRETVAL _ _ local(0)
+1504(477): RETURNVAL _ _ local(0)
+1505(0): FUNCRET method(1498) 1 0
+1506(478): OBJNEWSET method(1498) 'poll' _
+1507(0): JUMP _ _ label(1511)
+1508(0): FUNCENTER method(1508) 1 0
+1509(480): CALLEXTFUNC _ _ ipon_cleanup
+1510(0): FUNCRET method(1508) 1 0
+1511(480): OBJNEWSET method(1508) 'cleanup' _
+1512(0): OBJDONE _ _ _
+1513(0): ASSIGN global(2) _ global(48)
+1514(0): JUMP _ _ label(1574)
+1515(0): FUNCENTER func(1515) 5 0
+1516(487): OBJGET global(5) 'gfx' local(0)
+1517(0): OBJGET local(0) 'mode' local(1)
+1518(0): OBJGET global(5) 'gfx' local(2)
+1519(0): OBJGET local(2) 'depth' local(3)
+1520(0): PUSHARG local(3) '800x600' local(1)
+1521(0): CALLEXTFUNC _ _ aladin::initialise
+1522(487): GETRETVAL _ _ local(3)
+1523(487): JFALSETEST local(3) _ label(1525)
+1524(0): JUMP _ _ label(1528)
+1525(0): BLOCKENTER 0 FALSE 1
+1526(488): RETURNVAL _ _ FALSE
+1527(0): BLOCKEXIT 0 FALSE 1
+1528(489): OBJGET global(5) 'gfx' local(0)
+1529(0): OBJGET local(0) 'mode' local(1)
+1530(0): JEQ local(1) 'fullscreen' label(1532)
+1531(0): JUMP _ _ label(1533)
+1532(0): JUMP _ _ label(1535)
+1533(0): ASSIGNTEMPVAR 'doublebuffering' _ local(2)
+1534(0): JUMP _ _ label(1536)
+1535(0): ASSIGNTEMPVAR 'pageflipping' _ local(2)
+1536(0): ASSIGN local(2) _ local(4)
+1537(490): PUSHARG local(2) _ _
+1538(0): CALLEXTFUNC _ _ aladin::screen_instantiate
+1539(490): GETRETVAL _ _ local(0)
+1540(490): JFALSETEST local(0) _ label(1542)
+1541(0): JUMP _ _ label(1545)
+1542(0): BLOCKENTER 0 FALSE 2
+1543(491): RETURNVAL _ _ FALSE
+1544(0): BLOCKEXIT 0 FALSE 2
+1545(493): CALLEXTFUNC _ _ aladin::screen_get
+1546(493): GETRETVAL _ _ local(0)
+1547(493): OBJSET local(0) 'screen' global(10)
+1548(494): OBJGET global(10) 'screen' local(0)
+1549(0): PUSHARG local(0) _ _
+1550(0): CALLEXTFUNC _ _ aladin::drawable_width
+1551(494): GETRETVAL _ _ local(0)
+1552(494): OBJSET local(0) 'sw' global(10)
+1553(495): OBJGET global(10) 'screen' local(0)
+1554(0): PUSHARG local(0) _ _
+1555(0): CALLEXTFUNC _ _ aladin::drawable_height
+1556(495): GETRETVAL _ _ local(0)
+1557(495): OBJSET local(0) 'sh' global(10)
+1558(497): CALLEXTFUNC _ _ aladin::kbd_install
+1559(498): CALLEXTFUNC _ _ aladin::joystick_install
+1560(499): CALLEXTFUNC _ _ aladin::joystick_gettotal
+1561(499): GETRETVAL _ _ local(0)
+1562(499): JTRUETEST local(0) _ label(1564)
+1563(0): JUMP _ _ label(1568)
+1564(0): BLOCKENTER 1 FALSE 3
+1565(500): PUSHARG 100 0 _
+1566(0): CALLEXTFUNC _ _ aladin::joystick_setanaloguemovethreshold
+1567(0): BLOCKEXIT 1 FALSE 3
+1568(501): CALLEXTFUNC _ _ aladin::mouse_install
+1569(502): CALLEXTFUNC _ _ aladin::mouse_setdefaultcursor
+1570(503): CALLOBJGETMETHOD global(48) 'initialise' _
+1571(504): CALLEXTFUNC _ _ rcmap_initialise
+1572(505): RETURNVAL _ _ TRUE
+1573(0): FUNCRET func(1515) 5 0
+1574(0): ASSIGN func(1515) _ global(49)
+1575(0): JUMP _ _ label(1589)
+1576(0): FUNCENTER func(1576) 1 0
+1577(511): OBJGET global(10) 'screen' local(0)
+1578(0): JTRUETEST local(0) _ label(1580)
+1579(0): JUMP _ _ label(1583)
+1580(0): BLOCKENTER 1 FALSE 1
+1581(512): CALLEXTFUNC _ _ aladin::screen_destroy
+1582(0): BLOCKEXIT 1 FALSE 1
+1583(513): CALLEXTFUNC _ _ aladin::kbd_uninstall
+1584(514): CALLEXTFUNC _ _ aladin::mouse_uninstall
+1585(515): CALLOBJGETMETHOD global(48) 'cleanup' _
+1586(516): CALLEXTFUNC _ _ rcmap_cleanup
+1587(517): CALLEXTFUNC _ _ aladin::cleanup
+1588(0): FUNCRET func(1576) 1 0
+1589(0): ASSIGN func(1576) _ global(50)
+1590(0): JUMP _ _ label(1739)
+1591(0): FUNCENTER func(1591) 4 0
+1592(524): CALLOBJGETMETHOD global(10) 'create' _
+1593(524): GETRETVAL _ _ local(0)
+1594(524): JFALSETEST local(0) _ label(1596)
+1595(0): JUMP _ _ label(1600)
+1596(0): BLOCKENTER 1 FALSE 1
+1597(525): CALLOBJGETMETHOD global(10) 'clear' _
+1598(525): RETURN _ _ _
+1599(0): BLOCKEXIT 1 FALSE 1
+1600(0): JUMP _ _ label(1645)
+1601(0): FUNCENTER func(1601) 4 0
+1602(529): OBJGET global(10) 'back_buffer' local(0)
+1603(0): CALLEXTFUNC _ _ aladin::drawable_black
+1604(529): GETRETVAL _ _ local(1)
+1605(529): PUSHARG local(1) local(0) _
+1606(0): CALLEXTFUNC _ _ aladin::drawable_cleartocolor
+1607(530): OBJGET global(10) 'back_buffer' local(0)
+1608(0): OBJGET global(10) 'bg' local(1)
+1609(0): OBJGET global(10) 'bg' local(2)
+1610(0): PUSHARG local(2) _ _
+1611(0): CALLEXTFUNC _ _ aladin::drawable_width
+1612(530): GETRETVAL _ _ local(2)
+1613(530): OBJGET global(10) 'bg' local(3)
+1614(0): PUSHARG local(3) _ _
+1615(0): CALLEXTFUNC _ _ aladin::drawable_height
+1616(530): GETRETVAL _ _ local(3)
+1617(530): PUSHARG local(3) local(2) 0
+1618(0): PUSHARG 0 0 0
+1619(0): PUSHARG local(1) local(0) _
+1620(0): CALLEXTFUNC _ _ aladin::drawable_blit
+1621(538): OBJGET global(10) 'back_buffer' local(0)
+1622(0): PUSHARG local(0) _ _
+1623(0): CALLOBJGETMETHOD global(36) 'display' _
+1624(540): OBJGET global(10) 'back_buffer' local(0)
+1625(0): CALLEXTFUNC _ _ aladin::font_getdefault
+1626(540): GETRETVAL _ _ local(1)
+1627(540): OBJGET global(10) 'fps' local(2)
+1628(0): ADD 'FPS:' local(2) local(2)
+1629(0): CALLEXTFUNC _ _ aladin::drawable_white
+1630(540): GETRETVAL _ _ local(3)
+1631(540): PUSHARG local(3) 'left' local(2)
+1632(0): PUSHARG 0 0 local(1)
+1633(0): PUSHARG local(0) _ _
+1634(0): CALLEXTFUNC _ _ aladin::drawable_textdraw
+1635(550): OBJGET global(10) 'screen' local(0)
+1636(0): OBJGET global(10) 'back_buffer' local(1)
+1637(0): OBJGET global(10) 'sw' local(2)
+1638(0): OBJGET global(10) 'sh' local(3)
+1639(0): PUSHARG local(3) local(2) 0
+1640(0): PUSHARG 0 0 0
+1641(0): PUSHARG local(1) local(0) _
+1642(0): CALLEXTFUNC _ _ aladin::drawable_blit
+1643(556): CALLEXTFUNC _ _ aladin::screen_flip
+1644(0): FUNCRET func(1601) 4 0
+1645(0): ASSIGN func(1601) _ local(1)
+1646(561): OBJNEW _ _ local(0)
+1647(0): JUMP _ _ label(1651)
+1648(0): FUNCENTER func(1648) 0 0
+1649(562): RETURNVAL _ _ FALSE
+1650(0): FUNCRET func(1648) 0 0
+1651(0): OBJNEWSET func(1648) 6 _
+1652(0): JUMP _ _ label(1658)
+1653(0): FUNCENTER func(1653) 1 0
+1654(563): PUSHARG FALSE 'L' _
+1655(0): CALLOBJGETMETHOD global(36) 'move' _
+1656(563): RETURNVAL _ _ TRUE
+1657(0): FUNCRET func(1653) 1 0
+1658(0): OBJNEWSET func(1653) 0 _
+1659(0): JUMP _ _ label(1665)
+1660(0): FUNCENTER func(1660) 1 0
+1661(564): PUSHARG FALSE 'R' _
+1662(0): CALLOBJGETMETHOD global(36) 'move' _
+1663(564): RETURNVAL _ _ TRUE
+1664(0): FUNCRET func(1660) 1 0
+1665(0): OBJNEWSET func(1660) 1 _
+1666(0): JUMP _ _ label(1672)
+1667(0): FUNCENTER func(1667) 1 0
+1668(565): PUSHARG FALSE 'T' _
+1669(0): CALLOBJGETMETHOD global(36) 'move' _
+1670(565): RETURNVAL _ _ TRUE
+1671(0): FUNCRET func(1667) 1 0
+1672(0): OBJNEWSET func(1667) 2 _
+1673(0): JUMP _ _ label(1679)
+1674(0): FUNCENTER func(1674) 1 0
+1675(566): PUSHARG FALSE 'B' _
+1676(0): CALLOBJGETMETHOD global(36) 'move' _
+1677(566): RETURNVAL _ _ TRUE
+1678(0): FUNCRET func(1674) 1 0
+1679(0): OBJNEWSET func(1674) 3 _
+1680(0): JUMP _ _ label(1685)
+1681(0): FUNCENTER func(1681) 1 0
+1682(567): CALLOBJGETMETHOD global(36) 'pauseresume' _
+1683(567): RETURNVAL _ _ TRUE
+1684(0): FUNCRET func(1681) 1 0
+1685(0): OBJNEWSET func(1681) 5 _
+1686(0): JUMP _ _ label(1691)
+1687(0): FUNCENTER func(1687) 1 0
+1688(568): CALLOBJGETMETHOD global(36) 'start' _
+1689(568): RETURNVAL _ _ TRUE
+1690(0): FUNCRET func(1687) 1 0
+1691(0): OBJNEWSET func(1687) 4 _
+1692(0): JUMP _ _ label(1710)
+1693(0): FUNCENTER method(1693) 4 0
+1694(571): FOREACHBEGIN formal(2) _ local(1)
+1695(0): FOREACHCHECKEND formal(2) local(1) label(1707)
+1696(0): FOREACHGETVAL local(1) _ local(0)
+1697(571): BLOCKENTER 1 FALSE 1
+1698(572): CALLOBJGETMETHOD formal(0) local(0) _
+1699(572): GETRETVAL _ _ local(4)
+1700(572): JFALSETEST local(4) _ label(1702)
+1701(0): JUMP _ _ label(1705)
+1702(0): BLOCKENTER 0 FALSE 2
+1703(573): RETURNVAL _ _ FALSE
+1704(0): BLOCKEXIT 0 FALSE 2
+1705(0): BLOCKEXIT 1 FALSE 1
+1706(0): FOREACHFWD local(1) _ label(1695)
+1707(0): FOREACHEND local(1) _ _
+1708(574): RETURNVAL _ _ TRUE
+1709(0): FUNCRET method(1693) 4 0
+1710(575): OBJNEWSET method(1693) '()' _
+1711(0): OBJDONE _ _ _
+1712(0): ASSIGN local(0) _ local(2)
+1713(581): CALLEXTFUNC _ _ aladin::iswindowcloserequested
+1714(581): GETRETVAL _ _ local(0)
+1715(581): JFALSETEST local(0) _ label(1717)
+1716(0): JUMP _ _ label(1737)
+1717(581): BLOCKENTER 2 FALSE 2
+1718(582): CALLPROGRAMFUNC _ _ func(1601)
+1719(583): CALLOBJGETMETHOD global(48) 'istimetopoll' _
+1720(583): GETRETVAL _ _ local(5)
+1721(583): JTRUETEST local(5) _ label(1723)
+1722(0): JUMP _ _ label(1733)
+1723(0): CALLOBJGETMETHOD global(48) 'poll' _
+1724(583): GETRETVAL _ _ local(4)
+1725(583): PUSHARG local(4) _ _
+1726(0): CALLFUNC _ _ local(2)
+1727(583): GETRETVAL _ _ local(4)
+1728(583): JFALSETEST local(4) _ label(1730)
+1729(0): JUMP _ _ label(1733)
+1730(0): BLOCKENTER 0 FALSE 3
+1731(584): JUMP 2 _ label(1737)
+1732(0): BLOCKEXIT 0 FALSE 3
+1733(585): CALLOBJGETMETHOD global(36) 'automove' _
+1734(586): CALLOBJGETMETHOD global(10) 'fpscalculation' _
+1735(0): BLOCKEXIT 2 FALSE 2
+1736(0): JUMP _ _ label(1713)
+1737(589): CALLOBJGETMETHOD global(10) 'clear' _
+1738(0): FUNCRET func(1591) 4 0
+1739(0): ASSIGN func(1591) _ global(51)
+1740(594): CALLPROGRAMFUNC _ _ func(1515)
+1741(594): GETRETVAL _ _ global(2)
+1742(594): JTRUETEST global(2) _ label(1744)
+1743(0): JUMP _ _ label(1748)
+1744(0): BLOCKENTER 2 FALSE 2
+1745(595): CALLPROGRAMFUNC _ _ func(1591)
+1746(595): CALLPROGRAMFUNC _ _ func(1576)
+1747(0): BLOCKEXIT 2 FALSE 2
+1748(0): BLOCKEXIT 52 TRUE 0
+1749(0): PROGRAMEND _ _ _
