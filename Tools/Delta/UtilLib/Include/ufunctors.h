@@ -227,7 +227,7 @@ template <typename T1, typename T2, typename T3> struct utriple {
 	typedef T3 third_type;
 
 	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(utriple)
-
+	utriple (void) {}
 	utriple (const T1& _first, const T2& _second, const T3& _third) :
 		first(_first),
 		second(_second),
@@ -254,7 +254,7 @@ template <typename T1, typename T2, typename T3, typename T4> struct uquadruple 
 	typedef T4 fourth_type;
 
 	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(uquadruple)
-
+	uquadruple (void){}
 	uquadruple (const T1& _first, const T2& _second, const T3& _third, const T4 _fourth) :
 		first(_first),
 		second(_second),
@@ -287,6 +287,7 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5> struc
 
 	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(uquintuple)
 
+	uquintuple (void){}
 	uquintuple (const T1& _first, const T2& _second, const T3& _third, const T4 _fourth, const T5 _fifth) :
 		first(_first),
 		second(_second),
