@@ -255,7 +255,9 @@ class uchangenotifier {
 	typedef void			(*Callback)(void* context, void* closure);
 
 	protected:
-	mutable ucallbacklist<Callback, ucallbackwithclosure<Callback> >	callbacks;
+	typedef ucallbacklist<Callback, ucallbackwithclosure<Callback> >	Callbacks;
+	mutable Callbacks													onChanged;
+	mutable Callbacks													onDeleted;
 	mutable util_ui32													locked;
 	mutable util_ui32													pending;
 	void*																context;
@@ -263,39 +265,40 @@ class uchangenotifier {
 								{ return context? context : _context; }
 
 	void					NotifyChangedPriv (void* _context) const
-								{ DASSERT(!locked); callbacks.call(GetContext(_context)); pending = 0; }
+								{ DASSERT(!locked); onChanged.call(GetContext(_context)); pending = 0; }
+	void					NotifyDeletedPriv (void* _context = (void*) 0) const
+								{ onDeleted.call(GetContext(_context)); }
 	void					SafeNotifyChangedPriv (void* _context) const
-								{ DASSERT(!locked); callbacks.safecall(GetContext(_context)); pending = 0; }
+								{ DASSERT(!locked); onChanged.safecall(GetContext(_context)); pending = 0; }
 
 	public:
 	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(uchangenotifier)
+	UCALLBACKLIST_ADD_REMOVE_IMPL(Change, onChanged, Callback)
+	UCALLBACKLIST_ADD_REMOVE_IMPL(Delete, onDeleted, Callback)
 
 	void					SetContext (void* _context)
 								{ context = _context; }
 	void*					GetContext (void) const 
 								{ return context; }
-	void					AddOnChange (Callback f, void* c = (void*) 0) const
-								{ callbacks.add(f, c); }
-	void					RemoveOnChange (Callback f, void* c = (void*) 0) const
-								{ callbacks.remove(f, c); }
+
 	void					ClearOnChange (void) const
-								{ callbacks.clear(); }
+								{ onChanged.clear(); }
 	void					LockNotifyOnChange (void) const
 								{ ++locked; }
 
-	void					UnlockNotifyOnChange (void* context) const
-								{ DASSERT(locked); if (!--locked && pending) NotifyChangedPriv(context); }
+	void					UnlockNotifyOnChange (void* _context = (void*) 0) const
+								{ DASSERT(locked); if (!--locked && pending) NotifyChangedPriv(_context); }
 	void					UnlockSafeNotifyOnChange (void* context) const
 								{ DASSERT(locked); if (!--locked && pending) SafeNotifyChangedPriv(context); }
 
-	void					NotifyChanged (void* _context) const
+	void					NotifyChanged (void* _context = (void*) 0) const
 								{ if (!locked) NotifyChangedPriv(_context); else ++pending; }
 	void					SafeNotifyChanged (void* _context) const
 								{ if (!locked) SafeNotifyChangedPriv(_context); else ++pending; }
 
 	uchangenotifier (const uchangenotifier& n) : locked(0), pending(0), context ((void*) 0) {}	// no state is actually copied!
 	uchangenotifier (void) : locked(0), pending(0), context ((void*) 0) {}
-	virtual ~uchangenotifier(){}
+	virtual ~uchangenotifier(){  NotifyDeletedPriv();}
 };
 
 //---------------------------------------------------------------
