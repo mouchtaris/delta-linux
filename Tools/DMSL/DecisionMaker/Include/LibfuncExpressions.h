@@ -25,7 +25,7 @@ namespace dmsl {
 	// BUILT-IN FUNCTIONS.
 	//
 
-	class LibfuncExpression : public Expression {
+	template<class T> class LibfuncExpression : public Expression {
 	protected:
 		ExprList *list;
 	private:
@@ -49,6 +49,14 @@ namespace dmsl {
 				ret += (*i)->ConvertToString();
 			}
 			return ret + ")";
+		}
+
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new T(
+				owner,
+				util::cloneContainer<ExprList>(list, std::bind2nd(std::mem_fun(&Expression::Clone), owner))
+			);
 		}
 
 		LibfuncExpression (DecisionMaker *dm, const std::string& funcname, ExprList* list) :
@@ -99,7 +107,8 @@ namespace dmsl {
 	// built-in function with the given functor class instances.
 	//
 	template <const Expression::ExprType type, class OpFunctor>
-	class LibfuncExpressionWithStringArgument : public LibfuncExpression {
+	class LibfuncExpressionWithStringArgument :
+		public LibfuncExpression< LibfuncExpressionWithStringArgument<type, OpFunctor> > {
 	public:
 		ExprType GetType (void) const { return type; }
 
@@ -124,18 +133,8 @@ namespace dmsl {
 			return OpFunctor().CreateDependencies(list->front());
 		}
 
-		Expression* Clone(void) const {
-			return new LibfuncExpressionWithStringArgument<type, OpFunctor>(
-				GetDecisionMaker(),
-				util::cloneContainer<ExprList>(
-					list,
-					std::mem_fun(&Expression::Clone)
-				)
-			);
-		}
-
 		LibfuncExpressionWithStringArgument(DecisionMaker *dm, ExprList* list) :
-			LibfuncExpression(dm, OpFunctor().Id(), list) {}
+			LibfuncExpression< LibfuncExpressionWithStringArgument<type, OpFunctor> >(dm, OpFunctor().Id(), list) {}
 		~LibfuncExpressionWithStringArgument() {}
 	};
 
@@ -150,7 +149,7 @@ namespace dmsl {
 
 	/////////////////////////////////////////////////////////////
 
-	class RandomExpression : public LibfuncExpression {
+	class RandomExpression : public LibfuncExpression<RandomExpression> {
 		static int lastRandomValue;
 	public:
 		ExprType GetType (void) const { return ExprTypeRandom; }
@@ -159,20 +158,13 @@ namespace dmsl {
 
 		DependencyList CreateDependencies(void) const { return DependencyList(); }
 
-		Expression* Clone(void) const {
-			return new RandomExpression(
-				GetDecisionMaker(),
-				util::cloneContainer<ExprList>(list, std::mem_fun(&Expression::Clone))
-			);
-		}
-
-		RandomExpression(DecisionMaker *dm, ExprList* list) : LibfuncExpression(dm, "random", list) {}
+		RandomExpression(DecisionMaker *dm, ExprList* list) : LibfuncExpression<RandomExpression>(dm, "random", list) {}
 		~RandomExpression() {}
 	};
 
 	/////////////////////////////////////////////////////////////
 
-	class CanSupportExpression : public LibfuncExpression {
+	class CanSupportExpression : public LibfuncExpression<CanSupportExpression> {
 		static int lastRandomValue;
 	public:
 		ExprType GetType (void) const { return ExprTypeCanSupport; }
@@ -181,20 +173,13 @@ namespace dmsl {
 
 		DependencyList CreateDependencies(void) const { return DependencyList(); }
 
-		Expression* Clone(void) const {
-			return new CanSupportExpression(
-				GetDecisionMaker(),
-				util::cloneContainer<ExprList>(list, std::mem_fun(&Expression::Clone))
-			);
-		}
-
-		CanSupportExpression(DecisionMaker *dm, ExprList* list) : LibfuncExpression(dm, "cansupport", list) {}
+		CanSupportExpression(DecisionMaker *dm, ExprList* list) : LibfuncExpression<CanSupportExpression>(dm, "cansupport", list) {}
 		~CanSupportExpression() {}
 	};
 
 	/////////////////////////////////////////////////////////////
 
-	class LibraryExpression : public LibfuncExpression {
+	class LibraryExpression : public LibfuncExpression<LibraryExpression> {
 	public:
 		ExprType GetType (void) const { return ExprTypeLibrary; }
 
@@ -202,14 +187,7 @@ namespace dmsl {
 
 		DependencyList CreateDependencies(void) const { return DependencyList(); }
 
-		Expression* Clone(void) const {
-			return new LibraryExpression(
-				GetDecisionMaker(),
-				util::cloneContainer<ExprList>(list, std::mem_fun(&Expression::Clone))
-			);
-		}
-
-		LibraryExpression(DecisionMaker *dm, ExprList* list) : LibfuncExpression(dm, "library", list) {}
+		LibraryExpression(DecisionMaker *dm, ExprList* list) : LibfuncExpression<LibraryExpression>(dm, "library", list) {}
 		~LibraryExpression() {}
 	};
 }

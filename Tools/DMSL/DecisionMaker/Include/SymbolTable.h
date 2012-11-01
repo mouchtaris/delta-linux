@@ -36,19 +36,14 @@ namespace dmsl {
 	public:
 		typedef std::map<std::string, Expression *>	ExpressionMap;
 		typedef std::map<std::string, Statement *>	StatementMap;
-		typedef std::list<std::string>				StringList;
 	private:
-		ExpressionMap stereotypes;
-		ExpressionMap defines;
-		StatementMap  components;
-
 		template<class T> typename T::mapped_type GetElementFromMap(const typename T::key_type& name, const T& map) const {
 			typename T::const_iterator i = map.find(name);
 			return i == map.end() ? (typename T::mapped_type) 0 : i->second;
 		}
 
-		template<class T> bool AddElementToMap(const typename T::key_type& name, typename T::mapped_type& val, T& map) {
-			if(SymbolExists(name))
+		template<class T> bool AddElementToMap(const typename T::key_type& name, typename T::mapped_type& val, T& map, bool overwrite) {
+			if(!overwrite && SymbolExists(name))
 				return false;
 			else {
 				map[name] = val;
@@ -67,54 +62,33 @@ namespace dmsl {
 		}
 		
 	public:
-		/////////////////
-		// Stereotypes
-		//
-		bool AddStereotype(const std::string& name, Expression *expr)
-			{ return AddElementToMap<ExpressionMap>(name, expr, stereotypes); }
-		
-		bool HasStereotype(const std::string& name) const { return stereotypes.find(name) != stereotypes.end(); }		
 
-		Expression * GetStereotype(const std::string& name) const
-			{ return GetElementFromMap<ExpressionMap>(name, stereotypes); }
-		
-		const ExpressionMap& GetStereotypes(void) const { return stereotypes; }
-		
-		////////////////
-		// Defines
-		//
-		bool AddDefine(const std::string& name, Expression *expr)
-			{ return AddElementToMap<ExpressionMap>(name, expr, defines); }
-		
-		Expression * GetDefine(const std::string& name) const
-			{ return GetElementFromMap<ExpressionMap>(name, defines);  }
+#define DEFINE_ITEM_GROUP(_type, _var, _name)														\
+	private:																						\
+		_type _var;																					\
+	public:																							\
+		bool Add##_name(const std::string& name, _type::mapped_type val, bool overwrite = false)	\
+			{ return AddElementToMap<_type>(name, val, _var, overwrite); }							\
+		bool Has##_name(const std::string& name) const { return _var.find(name) != _var.end(); }	\
+		_type::mapped_type Get##_name(const std::string& name) const								\
+			{ return GetElementFromMap<_type>(name, _var); }										\
+			_type& Get##_name##s(void) { return _var; }												\
+			const _type& Get##_name##s(void) const { return _var; }
 
-		bool HasDefine(const std::string& name) const { return defines.find(name) != defines.end(); }
-		
-		const ExpressionMap& GetDefines(void) const { return defines; }
+	DEFINE_ITEM_GROUP(ExpressionMap,	stereotypes,	Stereotype)
+	DEFINE_ITEM_GROUP(ExpressionMap,	defines,		Define)
+	DEFINE_ITEM_GROUP(StatementMap,		components,		Component)
 
-		////////////////
-		// Components
-		//
-		bool AddComponent(const std::string& name, Statement *stmt) 
-			{ return AddElementToMap<StatementMap>(name, stmt, components); }
-		
-		Statement * GetComponent(const std::string& name) const
-			{ return GetElementFromMap<StatementMap>(name, components); }
-
-		bool HasComponent(const std::string& name) const { return components.find(name) != components.end(); }
-
-		StatementMap&		GetComponents(void)			{ return components; }
-		const StatementMap& GetComponents(void) const	{ return components; }
+#undef DEFINE_ITEM_GROUP
 
 		//***************************
 
-		bool AddSymbols(const SymbolTable& table, StringList& overwrites, std::string *error) {
+		bool CheckForRedeclarations(const SymbolTable& table, std::string *error) {
 
 	#define CHECK_REDECLARATION(type, map, func1, func2)						\
 		do {																	\
 			for(type::const_iterator i = map.begin(); i != map.end(); ++i) {	\
-				if(func1(i->first) || func2(i->first)) {						\
+				if(func1(i->first) || func2(i->first)) {							\
 					*error = i->first;											\
 					return false;												\
 				}																\
@@ -127,29 +101,9 @@ namespace dmsl {
 
 	#undef CHECK_REDECLARATION
 
-	#define ADD_ITEMS(type, map, func)																			\
-		do {																									\
-			for(type::const_iterator i = table.map.begin(); i != table.map.end(); ++i) {						\
-				if(GetElementFromMap(i->first, map)) {	/* Symboltable redefinition entries maintain values. */	\
-					overwrites.push_back(i->first);		/* We also switch thei Stmt inner data at AddLogic. */	\
-					map[i->first] = i->second;																	\
-				}																								\
-				else {																							\
-					bool added = func(i->first, i->second);														\
-					assert(added);																				\
-				}																								\
-			}																									\
-		}	while(false)
-
-			ADD_ITEMS(ExpressionMap,	stereotypes,	AddStereotype);
-			ADD_ITEMS(ExpressionMap,	defines,		AddDefine);
-			ADD_ITEMS(StatementMap,		components,		AddComponent);
-
-	#undef ADD_ITEMS
-
 			return true;
 		}
-
+	
 		//***************************
 
 		bool SymbolExists(const std::string& name) const

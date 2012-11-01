@@ -48,14 +48,15 @@ namespace dmsl {
 	// The statement super class.
 	//
 
-	class Statement {
+	class Statement : public util::Clonable<Statement, DecisionMaker> {
 	private:
 		typedef std::map<DecisionMaker *, StmtList> StatementMap;
 		static StatementMap statements;
 		typedef std::map<DecisionMaker *, StmtListList> StatementListMap;
 		static StatementListMap stmtLists;
-	protected:
 		DecisionMaker *dm;
+	protected:
+		DecisionMaker *	GetDecisionMaker(void) const { return dm; }
 	public:
 		enum StmtType {
 			StmtTypeActivate	= 0,
@@ -138,6 +139,9 @@ namespace dmsl {
 		DependencyList		CreateDependencies	(DecisionMaker *)		const	{ return DependencyList(); }
 		const std::string	ConvertToString		(unsigned int depth)	const	{ return ""; }
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const
+			{ return new EmptyStatement(dm ? dm : GetDecisionMaker()); }
+
 		EmptyStatement(DecisionMaker *dm) : Statement(dm) {}
 	};
 
@@ -152,9 +156,9 @@ namespace dmsl {
 
 		ListStatement (DecisionMaker *dm, StmtList *list) : Statement(dm), list(list) {}
 		virtual ~ListStatement() {
-			if(!Expression::InStaticDestruction(dm)) {
+			if(!Expression::InStaticDestruction(GetDecisionMaker())) {
 				util::destroyContainer<StmtList>(list);
-				RemoveList(dm, list);
+				RemoveList(GetDecisionMaker(), list);
 			}
 		}
 	};
@@ -171,8 +175,16 @@ namespace dmsl {
 		DependencyList		CreateDependencies	(DecisionMaker *dm)				const;
 		const std::string	ConvertToString		(unsigned int depth)			const;
 
-		void				AddLogic			(DecisionMaker *dm, LogicStatement *logic);
+		void				AddLogic			(LogicStatement *logic, std::list<std::string>& overwrites);
 		void				SetEvaluationTarget	(const std::string& component = "")	{ this->component = component; }
+
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new LogicStatement(
+				owner,
+				util::cloneContainer<StmtList>(list, std::bind2nd(std::mem_fun(&Statement::Clone), owner))
+			);
+		}
 
 		LogicStatement (DecisionMaker *dm, StmtList* list) :
 			ListStatement<Statement::StmtTypeLogic>(dm, list) {}
@@ -184,6 +196,14 @@ namespace dmsl {
 		void				WriteText			(FILE* fp, unsigned int depth)	const;
 		DependencyList		CreateDependencies	(DecisionMaker *dm)				const;
 		const std::string	ConvertToString		(unsigned int depth)			const;
+
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new CompoundStatement(
+				owner,
+				util::cloneContainer<StmtList>(list, std::bind2nd(std::mem_fun(&Statement::Clone), owner))
+			);
+		}
 
 		CompoundStatement (DecisionMaker *dm, StmtList* list) :
 			ListStatement<Statement::StmtTypeCompound>(dm, list) {}
@@ -258,9 +278,16 @@ namespace dmsl {
 
 		//*******************************************************
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new ComponentStatement(owner, name, compound->Clone(owner));
+		}
+
+		//*******************************************************
+
 		ComponentStatement (DecisionMaker *dm, const std::string& name, Statement* compound) : Statement(dm),
 			evaluating(false), neverEvaluated(true), name(name), compound(compound) {}
-		~ComponentStatement() {	if(!Expression::InStaticDestruction(dm)) delete compound; }
+		~ComponentStatement() {	if(!Expression::InStaticDestruction(GetDecisionMaker())) delete compound; }
 	};
 
 
@@ -289,9 +316,14 @@ namespace dmsl {
 
 		const std::string& GetName (void) const { return name; }
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new StereotypeStatement(owner, name, expr->Clone(owner));
+		}
+
 		StereotypeStatement (DecisionMaker *dm, const std::string& name, Expression* expr) :
 			Statement(dm), name(name), expr(expr) {}
-		~StereotypeStatement() { if(!Expression::InStaticDestruction(dm)) delete expr; }
+		~StereotypeStatement() { if(!Expression::InStaticDestruction(GetDecisionMaker())) delete expr; }
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -320,9 +352,14 @@ namespace dmsl {
 
 		const std::string& GetName (void) const { return name; }
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new DefineStatement(owner, name, expr->Clone(owner));
+		}
+
 		DefineStatement (DecisionMaker *dm, const std::string& name, Expression* expr) :
 			Statement(dm), name(name), expr(expr) {}
-		~DefineStatement() { if(!Expression::InStaticDestruction(dm)) delete expr; }
+		~DefineStatement() { if(!Expression::InStaticDestruction(GetDecisionMaker())) delete expr; }
 	};
 
 	////////////////////////////////////////////////
@@ -372,8 +409,12 @@ namespace dmsl {
 			assert(val && val->IsString());
 			Statement *stmt = dm->GetSymbolTable().GetComponent(val->GetString());
 			delete val;
-			assert(stmt->GetType() == Statement::StmtTypeComponent);
-			return static_cast<ComponentStatement *>(stmt)->CreateDependencies(dm);
+			if (stmt) {
+				assert(stmt->GetType() == Statement::StmtTypeComponent);
+				return static_cast<ComponentStatement *>(stmt)->CreateDependencies(dm);
+			}
+			else
+				return DependencyList();
 		}
 
 		const char* Id (void) const { return "evaluate"; }
@@ -424,8 +465,13 @@ namespace dmsl {
 			fputs("\n", fp);
 		}
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new ActionStatement(owner, expr->Clone(owner));
+		}
+
 		ActionStatement (DecisionMaker *dm, Expression* expr) : Statement(dm), expr(expr) {}
-		virtual ~ActionStatement() { if(!Expression::InStaticDestruction(dm)) delete expr; }
+		virtual ~ActionStatement() { if(!Expression::InStaticDestruction(GetDecisionMaker())) delete expr; }
 	};
 
 	typedef ActionStatement<Statement::StmtTypeActivate, ActivateFunctor> ActivateStatement;
@@ -446,9 +492,14 @@ namespace dmsl {
 		const std::string	ConvertToString		(unsigned int depth)			const;
 		void				WriteText			(FILE* fp, unsigned int depth)	const;
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new IfStatement(owner, expr->Clone(owner), ifSt->Clone(owner), elseSt->Clone(owner));
+		}
+
 		IfStatement (DecisionMaker *dm, Expression* expr, Statement* ifSt, Statement* elseSt) :
 			Statement(dm), expr(expr), ifSt(ifSt), elseSt(elseSt) {}
-		~IfStatement() { if(!Expression::InStaticDestruction(dm)) delete expr, delete ifSt, delete elseSt; }
+		~IfStatement() { if(!Expression::InStaticDestruction(GetDecisionMaker())) delete expr, delete ifSt, delete elseSt; }
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -466,9 +517,14 @@ namespace dmsl {
 		const std::string	ConvertToString		(unsigned int depth)			const;
 		void				WriteText			(FILE* fp, unsigned int depth)	const;
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new WhenStatement(owner, expr->Clone(owner), stmt->Clone(owner));
+		}
+
 		WhenStatement (DecisionMaker *dm, Expression* expr, Statement* stmt) :
 			Statement(dm), expr(expr), stmt(stmt) {}
-		~WhenStatement() { if(!Expression::InStaticDestruction(dm)) delete expr, delete stmt; }
+		~WhenStatement() { if(!Expression::InStaticDestruction(GetDecisionMaker())) delete expr, delete stmt; }
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -485,9 +541,19 @@ namespace dmsl {
 		const std::string	ConvertToString		(unsigned int depth)			const;
 		void				WriteText			(FILE* fp, unsigned int depth)	const;
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new CaseStatement(
+				owner,
+				expr->Clone(owner),
+				util::cloneContainer<StmtList>(list, std::bind2nd(std::mem_fun(&Statement::Clone), owner)),
+				otherwise->Clone(owner)
+			);
+		}
+
 		CaseStatement (DecisionMaker *dm, Expression* expr, StmtList* list, Statement* otherwise) :
 			ListStatement<Statement::StmtTypeCase>(dm, list), expr(expr), otherwise(otherwise) {}
-		~CaseStatement() { if(!Expression::InStaticDestruction(dm)) delete expr, delete otherwise; }
+		~CaseStatement() { if(!Expression::InStaticDestruction(GetDecisionMaker())) delete expr, delete otherwise; }
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,8 +568,13 @@ namespace dmsl {
 		const std::string	ConvertToString		(unsigned int depth)			const;
 		void				WriteText			(FILE* fp, unsigned int depth)	const;
 
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new ExpressionStatement(owner, expr->Clone(owner));
+		}
+
 		ExpressionStatement (DecisionMaker *dm, Expression* expr) : Statement(dm), expr(expr) {}
-		~ExpressionStatement() { if(!Expression::InStaticDestruction(dm)) delete expr; }
+		~ExpressionStatement() { if(!Expression::InStaticDestruction(GetDecisionMaker())) delete expr; }
 	};
 }
 

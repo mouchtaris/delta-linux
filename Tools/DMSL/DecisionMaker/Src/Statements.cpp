@@ -69,10 +69,10 @@ namespace dmsl {
 
 	#define LOGIC_IMPLEMENT_GET_ITEM_FUNCTION(name, type, stmtType)									\
 		type * LogicStatement::name(const std::string& name) const {								\
-			for(StmtList::const_iterator i = list->begin(); i != list->end(); ++i) {				\
+			for(StmtList::const_iterator i = list->begin(); i != list->end(); ++i) {					\
 				StmtType t = (*i)->GetType();														\
 				assert(t == StmtTypeComponent || t == StmtTypeStereotype || t == StmtTypeDefine);	\
-				if(t == stmtType && (static_cast<type*>(*i))->GetName() == name)					\
+				if(t == stmtType && (static_cast<type*>(*i))->GetName() == name)						\
 						return static_cast<type*>(*i);												\
 			}																						\
 			return (type *) 0;																		\
@@ -88,45 +88,33 @@ namespace dmsl {
 	template<> void swapDependencies<ComponentStatement>(ComponentStatement *s1, ComponentStatement *s2)
 		{ s1->SwapDependenciesWith(s2); }
 
-	void LogicStatement::AddLogic(DecisionMaker *dm, LogicStatement *logic) {
+	void LogicStatement::AddLogic(LogicStatement *logic, std::list<std::string>& overwrites) {
+		SymbolTable& table = GetDecisionMaker()->GetSymbolTable();
 		for(StmtList::iterator i = logic->list->begin(); i != logic->list->end(); /*empty*/) {
 			StmtType type = (*i)->GetType();
 
 	#define HANDLE_TYPE(outerType, outerGetFunction, innerType, innerGetFunction, innerSetFunction)	\
 		do {																						\
 			outerType *st = static_cast<outerType*>(*i);											\
-			outerType *previous = outerGetFunction(st->GetName());									\
-			if(previous) {	/*overwriting so swap the actual expression values*/					\
-				innerType *tmp = st->innerGetFunction();											\
-				st->innerSetFunction(previous->innerGetFunction());									\
-				previous->innerSetFunction(tmp);													\
+			if (outerType *previous = outerGetFunction(st->GetName())) {								\
+				overwrites.push_back(st->GetName());													\
+				innerType *tmp = st->innerGetFunction();												\
+				assert(tmp);																		\
+				delete tmp;																			\
+				st->innerSetFunction(previous->innerGetFunction()->Clone(GetDecisionMaker()));		\
 				swapDependencies(st, previous);														\
 				++i;																				\
 			}																						\
 			else {																					\
-				list->push_back(st);																\
+				list->push_back(st->Clone(GetDecisionMaker()));										\
 				i = logic->list->erase(i);															\
 			}																						\
 		}	while(false)
 
 			if(type == StmtTypeComponent)
 				HANDLE_TYPE(ComponentStatement, GetComponentStatement, Statement, GetCompound, SetCompound);
-			else if(type == StmtTypeStereotype) {
-				StereotypeStatement *st = static_cast<StereotypeStatement*>(*i);											
-				StereotypeStatement *previous = GetStereotypeStatement(st->GetName());									
-				if(previous) {	/*overwriting so swap the actual expression values*/					
-					Expression *tmp = st->GetExpression();											
-					st->SetExpression(previous->GetExpression());									
-					previous->SetExpression(tmp);													
-					swapDependencies(st, previous);														
-					++i;																				
-				}																						
-				else {																					
-					list->push_back(st);																
-					i = logic->list->erase(i);															
-				}																						
-			}
-			//	HANDLE_TYPE(StereotypeStatement, GetStereotypeStatement, Expression, GetExpression, SetExpression);
+			else if(type == StmtTypeStereotype)
+				HANDLE_TYPE(StereotypeStatement, GetStereotypeStatement, Expression, GetExpression, SetExpression);
 			else if(type == StmtTypeDefine)
 				HANDLE_TYPE(DefineStatement, GetDefineStatement, Expression, GetExpression, SetExpression);
 			else

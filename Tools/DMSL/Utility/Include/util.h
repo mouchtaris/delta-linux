@@ -110,9 +110,13 @@ namespace dmsl {
 			return t;
 		}
 
-		template<class T> class Clonable {
+		template<class T, class C = void> class Clonable {
 			public:
-				virtual T* Clone() const = 0;
+				virtual T* Clone(C* c = (C*) 0) const = 0;
+		};
+		template<class T> class Clonable<T, void> {
+			public:
+				virtual T* Clone(void) const = 0;
 		};
 
 		//**********************************************************************************************

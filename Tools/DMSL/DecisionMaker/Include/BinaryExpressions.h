@@ -379,11 +379,12 @@ namespace dmsl {
 			return result;
 		}
 
-		virtual Expression* Clone(void) const {
+		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
 			return new BinaryExpression<type, OpFunctor>(
-				this->GetDecisionMaker(),
-				this->GetLeft()->Clone(),
-				this->GetRight()->Clone()
+				owner,
+				this->GetLeft()->Clone(owner),
+				this->GetRight()->Clone(owner)
 			);
 		}
 
@@ -438,11 +439,12 @@ namespace dmsl {
 			return result;
 		}
 
-		virtual Expression* Clone(void) const {
+		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
 			return new LogicalBinaryExpression<type, OpFunctor>(
-				this->GetDecisionMaker(),
-				this->GetLeft()->Clone(),
-				this->GetRight()->Clone()
+				owner,
+				this->GetLeft()->Clone(owner),
+				this->GetRight()->Clone(owner)
 			);
 		}
 
@@ -461,11 +463,12 @@ namespace dmsl {
 		bool IsInteger	(void) const { return this->GetLeft()->IsInteger() && this->GetRight()->IsInteger(); }
 		bool IsReal		(void) const { return this->GetLeft()->IsReal() || this->GetRight()->IsReal(); }
 
-		virtual Expression* Clone(void) const {
+		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
 			return new ArithmeticBinaryExpression<type, OpFunctor>(
-				this->GetDecisionMaker(),
-				this->GetLeft()->Clone(),
-				this->GetRight()->Clone()
+				owner,
+				this->GetLeft()->Clone(owner),
+				this->GetRight()->Clone(owner)
 			);
 		}
 
@@ -505,8 +508,10 @@ namespace dmsl {
 		bool IsNumber	(void) const { return GetLeft()->IsNumber() && GetRight()->IsNumber(); }
 		bool IsString	(void) const { return GetLeft()->IsString() || GetRight()->IsString(); }
 
-		virtual Expression* Clone(void) const
-			{ return new AddExpression(GetDecisionMaker(), GetLeft()->Clone(), GetRight()->Clone()); }
+		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
+			return new AddExpression(owner, GetLeft()->Clone(owner), GetRight()->Clone(owner));
+		}
 
 		AddExpression (DecisionMaker *dm, Expression* left, Expression* right) :
 			ArithmeticBinaryExpression<Expression::ExprTypeAdd, PlusFunctor>(dm, left, right) {}

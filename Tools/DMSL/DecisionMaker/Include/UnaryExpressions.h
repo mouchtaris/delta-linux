@@ -111,7 +111,10 @@ namespace dmsl {
 
 		DependencyList CreateDependencies(void) const { return expr->CreateDependencies(); }
 
-		Expression* Clone(void) const { return new UnaryExpression<type, OpFunctor>(GetDecisionMaker(), expr->Clone()); }
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
+			return new UnaryExpression<type, OpFunctor>(owner, expr->Clone(owner));
+		}
 
 		UnaryExpression (DecisionMaker *dm, Expression* expr) : Expression(dm), expr(expr) {}
 		virtual ~UnaryExpression() { if(!InStaticDestruction(GetDecisionMaker())) delete expr; }
@@ -155,9 +158,9 @@ namespace dmsl {
 		bool IsConst	(void) const { return GetExpression()->IsConst();		}
 		bool IsNumber	(void) const { return GetExpression()->IsNumber();		}
 		bool IsInteger	(void) const { return GetExpression()->IsInteger();		}
-		bool IsReal		(void) const { return GetExpression()->IsReal();		}
+		bool IsReal		(void) const { return GetExpression()->IsReal();			}
 		bool IsString	(void) const { return GetExpression()->IsString();		}
-		bool IsBool		(void) const { return GetExpression()->IsBool();		}
+		bool IsBool		(void) const { return GetExpression()->IsBool();			}
 		bool IsSet		(void) const { return GetExpression()->IsSet();			}
 		bool IsRange	(void) const { return GetExpression()->IsRange();		}
 		bool IsRangeList(void) const { return GetExpression()->IsRangeList();	}

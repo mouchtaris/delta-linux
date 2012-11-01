@@ -38,7 +38,7 @@ namespace dmsl {
 	// The expression super class.
 	//
 
-	class Expression : public util::Clonable<Expression> {
+	class Expression : public util::Clonable<Expression, DecisionMaker> {
 	private:
 		typedef std::map<DecisionMaker *, ExprList> ExpressionMap;
 		static ExpressionMap expressions;
@@ -49,7 +49,7 @@ namespace dmsl {
 		static DestructionMap staticDestruction;
 		DecisionMaker *dm;
 	protected:
-		DecisionMaker *GetDecisionMaker(void) const { return dm; }
+		DecisionMaker *	GetDecisionMaker(void) const { return dm; }
 	public:
 		enum ExprType {
 			ExprTypeInt			= 0,
@@ -135,7 +135,7 @@ namespace dmsl {
 
 		virtual bool IsReal(void) const {
 			ExprType type = GetType();
-			return	HasUndefinedType()		||	//it can be a real
+			return	HasUndefinedType()			||	//it can be a real
 					type == ExprTypeReal		||
 					type == ExprTypeToNumber;
 					// no binary or unary operators declared here - virtualized and specified where necessary
@@ -194,9 +194,9 @@ namespace dmsl {
 					e2->HasUndefinedType()						||
 					(e1->IsNumber()		&& e2->IsNumber())		||
 					(e1->IsString()		&& e2->IsString())		||
-					(e1->IsBool()		&& e2->IsBool())		||
+					(e1->IsBool()		&& e2->IsBool())			||
 					(e1->IsRange()		&& e2->IsRange())		||
-					(e1->IsSet()		&& e2->IsSet())			||
+					(e1->IsSet()		&& e2->IsSet())				||
 					(e1->IsRangeList()	&& e2->IsRangeList())	;
 		}
 
@@ -281,7 +281,8 @@ namespace dmsl {
 		ExprValue*			Evaluate			(DecisionMaker *)	const { return new ExprValue(value); }
 		DependencyList		CreateDependencies	(void)				const { return DependencyList(); }
 
-		Expression* Clone(void) const { return new ConstExpression<T, Type>(GetDecisionMaker(), value); }
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const
+			{ return new ConstExpression<T, Type>(dm ? dm : GetDecisionMaker(), value); }
 
 		ConstExpression(DecisionMaker *dm, T value) : Expression(dm), value(value) {}
 		virtual ~ConstExpression() {}
@@ -304,10 +305,11 @@ namespace dmsl {
 		ExprValue*			Evaluate			(DecisionMaker *dm) const;
 		DependencyList		CreateDependencies	(void)				const;
 
-		Expression* Clone(void) const {
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
 			return new SetExpression(
-				GetDecisionMaker(),
-				util::cloneContainer<ExprList>(list, std::mem_fun(&Expression::Clone))
+				owner,
+				util::cloneContainer<ExprList>(list, std::bind2nd(std::mem_fun(&Expression::Clone), owner))
 			);
 		}
 
@@ -333,10 +335,11 @@ namespace dmsl {
 		ExprValue*			Evaluate			(DecisionMaker *dm) const;
 		DependencyList		CreateDependencies	(void)				const;
 
-		Expression* Clone(void) const {
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
 			return new RangeListExpression(
-				GetDecisionMaker(),
-				util::cloneContainer<ExprList>(list, std::mem_fun(&Expression::Clone))
+				owner,
+				util::cloneContainer<ExprList>(list, std::bind2nd(std::mem_fun(&Expression::Clone), owner))
 			);
 		}
 
@@ -363,7 +366,8 @@ namespace dmsl {
 		ExprValue*		Evaluate			(DecisionMaker *dm) const;
 		DependencyList	CreateDependencies	(void)				const;
 
-		Expression* Clone(void) const { return new ParamsExpression(GetDecisionMaker(), name); }
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const
+			{ return new ParamsExpression(dm ? dm : GetDecisionMaker(), name); }
 
 		ParamsExpression (DecisionMaker *dm, const std::string& name) : Expression(dm), name(name) {}
 		~ParamsExpression() {}

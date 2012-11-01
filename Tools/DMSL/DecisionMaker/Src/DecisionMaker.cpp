@@ -146,10 +146,10 @@ namespace dmsl {
 			DecisionMaker *dm = new DecisionMaker;
 			bool status = dm->Compile(file);
 			if(status) {
-				SymbolTable::StringList overwrites;
-				if(table.AddSymbols(dm->table, overwrites, &error)) {
-					logic->AddLogic(this, dm->logic);
-					for(SymbolTable::StringList::const_iterator i = overwrites.begin(); i != overwrites.end(); ++i)
+				if(status = table.CheckForRedeclarations(dm->table, &error)) {
+					std::list<std::string> overwrites;
+					logic->AddLogic(dm->logic, overwrites);
+					for(std::list<std::string>::const_iterator i = overwrites.begin(); i != overwrites.end(); ++i)
 						APPEND_WARNING_WITH_ONE_ARG(this, "AppendRulesRedeclaration", i->c_str());
 				}
 				else
