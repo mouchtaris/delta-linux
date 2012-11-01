@@ -57,11 +57,11 @@ CFLAGS = -O1 -Wall -g
 all: builddirs $(LIB_FILES) dynamiclink
 
 builddirs:
-	if test -d wibble; then; else mkdir $(UTIL_BUILD_DIR); fi
-	if test -d wibble; then; else mkdir $(PROFILE_BUILD_DIR); fi
-	if test -d wibble; then; else mkdir $(DECISIONMAKER_BUILD_DIR); fi
-	if test -d wibble; then; else mkdir $(DMSL_BUILD_DIR); fi
-	if test -d wibble; then; else mkdir $(TESTER_BUILD_DIR); fi
+	@mkdir -p $(UTIL_BUILD_DIR)
+	@mkdir -p $(PROFILE_BUILD_DIR)
+	@mkdir -p $(DECISIONMAKER_BUILD_DIR)
+	@mkdir -p $(DMSL_BUILD_DIR)
+	@mkdir -p $(TESTER_BUILD_DIR)
 
 # These only have dependency for their headers.
 # Change these creating individual rules for each object file.

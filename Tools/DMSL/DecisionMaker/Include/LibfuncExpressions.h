@@ -110,11 +110,11 @@ namespace dmsl {
 	class LibfuncExpressionWithStringArgument :
 		public LibfuncExpression< LibfuncExpressionWithStringArgument<type, OpFunctor> > {
 	public:
-		ExprType GetType (void) const { return type; }
+		Expression::ExprType GetType (void) const { return type; }
 
 		ExprValue* Evaluate (DecisionMaker *dm) const {
-			assert(list->size() == 1 && list->front()->IsString());
-			ExprValue *result = list->front()->Evaluate(dm);
+			assert(this->list->size() == 1 && this->list->front()->IsString());
+			ExprValue *result = this->list->front()->Evaluate(dm);
 			assert(result);
 			ExprValue *ret = new ExprValue;
 			const OpFunctor op;
@@ -129,8 +129,8 @@ namespace dmsl {
 		}
 
 		DependencyList CreateDependencies(void) const {
-			assert(list->size() == 1 && list->front()->IsString());
-			return OpFunctor().CreateDependencies(list->front());
+			assert(this->list->size() == 1 && this->list->front()->IsString());
+			return OpFunctor().CreateDependencies(this->list->front());
 		}
 
 		LibfuncExpressionWithStringArgument(DecisionMaker *dm, ExprList* list) :

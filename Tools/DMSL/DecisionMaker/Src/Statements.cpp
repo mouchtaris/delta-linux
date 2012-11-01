@@ -93,32 +93,45 @@ namespace dmsl {
 		for(StmtList::iterator i = logic->list->begin(); i != logic->list->end(); /*empty*/) {
 			StmtType type = (*i)->GetType();
 
-	#define HANDLE_TYPE(outerType, outerGetFunction, innerType, innerGetFunction, innerSetFunction)	\
-		do {																						\
-			outerType *st = static_cast<outerType*>(*i);											\
-			if (outerType *previous = outerGetFunction(st->GetName())) {								\
-				overwrites.push_back(st->GetName());													\
-				innerType *tmp = st->innerGetFunction();												\
-				assert(tmp);																		\
-				delete tmp;																			\
-				st->innerSetFunction(previous->innerGetFunction()->Clone(GetDecisionMaker()));		\
-				swapDependencies(st, previous);														\
-				++i;																				\
-			}																						\
-			else {																					\
-				list->push_back(st->Clone(GetDecisionMaker()));										\
-				i = logic->list->erase(i);															\
-			}																						\
-		}	while(false)
+	#define HANDLE_TYPE(outerType, outerGetFunction, innerType, innerGetFunction, innerSetFunction, replaceCode, insertCode)\
+		do {																												\
+			outerType *st = static_cast<outerType*>(*i);																	\
+			const std::string name = st->GetName();																			\
+			if (outerType *previous = outerGetFunction(name)) {																\
+				overwrites.push_back(name);																					\
+				innerType *tmp = st->innerGetFunction();																		\
+				assert(tmp);																								\
+				delete tmp;																									\
+				innerType *copy = previous->innerGetFunction()->Clone(GetDecisionMaker());									\
+				replaceCode;																								\
+				st->innerSetFunction(copy);																					\
+				swapDependencies(st, previous);																				\
+				++i;																										\
+			}																												\
+			else {																											\
+				outerType *copy = static_cast<outerType*>(st->Clone(GetDecisionMaker()));									\
+				list->push_back(copy);																						\
+				insertCode;																									\
+				i = logic->list->erase(i);																					\
+			}																												\
+		} while(false)
 
-			if(type == StmtTypeComponent)
-				HANDLE_TYPE(ComponentStatement, GetComponentStatement, Statement, GetCompound, SetCompound);
-			else if(type == StmtTypeStereotype)
-				HANDLE_TYPE(StereotypeStatement, GetStereotypeStatement, Expression, GetExpression, SetExpression);
-			else if(type == StmtTypeDefine)
-				HANDLE_TYPE(DefineStatement, GetDefineStatement, Expression, GetExpression, SetExpression);
-			else
-				assert(false);
+	#define EMPTY
+	#define REPLACER(func) table.func(name, copy, true)
+	#define ADDER(func)	table.func(name, copy->GetExpression())
+
+			switch(type) {
+				case StmtTypeComponent:		HANDLE_TYPE(ComponentStatement, GetComponentStatement, Statement,
+												GetCompound, SetCompound, EMPTY, table.AddComponent(name, copy));
+											break;
+				case StmtTypeStereotype:	HANDLE_TYPE(StereotypeStatement, GetStereotypeStatement, Expression, 
+												GetExpression, SetExpression, REPLACER(AddStereotype), ADDER(AddStereotype));
+											break;
+				case StmtTypeDefine:		HANDLE_TYPE(DefineStatement, GetDefineStatement, Expression,
+												GetExpression, SetExpression, REPLACER(AddDefine), ADDER(AddDefine));
+											break;
+				default:					assert(false);
+			}
 
 	#undef HANDLE_TYPE
 		}
