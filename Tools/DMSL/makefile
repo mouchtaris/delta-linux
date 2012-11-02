@@ -52,7 +52,7 @@ BUILD_DIRS = mkdir $(UTIL_BUILD_DIR) mkdir $(PROFILE_BUILD_DIR) $(DECISIONMAKER_
 CC = g++
 RM = rm
 OBJ = .o
-CFLAGS = -O1 -Wall -g
+CFLAGS = -O1 -Wall -fPIC
 
 all: builddirs $(LIB_FILES) dynamiclink
 
@@ -81,7 +81,7 @@ $(TESTER_BUILD_DIR)/%.o: $(TESTER_DIR)/$(SRC_DIR)/%.cpp
 	$(CC) $(CFLAGS) $(TESTER_INCLUDES) -c $< -o $@
 
 dynamiclink: builddirs $(LIB_FILES)
-	$(CC) -shared -fPIC -o $(TARGET) $(LIB_FILES)
+	$(CC) -shared -o $(TARGET) $(LIB_FILES)
 
 statictester: builddirs $(LIB_FILES) $(TESTER_FILES)
 	$(CC) $(LIB_FILES) $(TESTER_FILES) -o $@

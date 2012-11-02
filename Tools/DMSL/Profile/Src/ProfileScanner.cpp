@@ -461,13 +461,7 @@ char *yytext;
 #line 1 "Src/ProfileScanner.l"
 #define INITIAL 0
 #line 2 "Src/ProfileScanner.l"
-#if defined(WIN32)
-#define YY_NO_UNISTD_H
-static int isatty (int i) { return 0; }
-#elif defined(_WIN32_WCE)
-#define YY_NO_UNISTD_H
-static int isatty (void *i) { return 0; }
-#endif
+#define YY_NEVER_INTERACTIVE 1
 
 //Remove automatically generated file warnings
 #ifdef  _MSC_VER
@@ -487,7 +481,7 @@ using namespace dmsl;
 #define YY_DECL int yylex (YYSTYPE* lvalp)
 #define COMMENT 1
 
-#line 491 "Src/ProfileScanner.cpp"
+#line 485 "Src/ProfileScanner.cpp"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -638,10 +632,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 43 "Src/ProfileScanner.l"
+#line 37 "Src/ProfileScanner.l"
 
 
-#line 645 "Src/ProfileScanner.cpp"
+#line 639 "Src/ProfileScanner.cpp"
 
 	if ( yy_init )
 		{
@@ -734,129 +728,129 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 45 "Src/ProfileScanner.l"
+#line 39 "Src/ProfileScanner.l"
 BEGIN(COMMENT);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 46 "Src/ProfileScanner.l"
+#line 40 "Src/ProfileScanner.l"
 /* eat anything that's not a '*' */
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 47 "Src/ProfileScanner.l"
+#line 41 "Src/ProfileScanner.l"
 /* eat up '*'s not followed by '/'s */
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 48 "Src/ProfileScanner.l"
+#line 42 "Src/ProfileScanner.l"
 BEGIN(INITIAL);
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
-#line 50 "Src/ProfileScanner.l"
+#line 44 "Src/ProfileScanner.l"
 { return EOF; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 52 "Src/ProfileScanner.l"
+#line 46 "Src/ProfileScanner.l"
 /* eat comment 1 */
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 53 "Src/ProfileScanner.l"
+#line 47 "Src/ProfileScanner.l"
 /* eat comment 2 */
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 55 "Src/ProfileScanner.l"
+#line 49 "Src/ProfileScanner.l"
 return '=';
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 56 "Src/ProfileScanner.l"
+#line 50 "Src/ProfileScanner.l"
 return '.';
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 57 "Src/ProfileScanner.l"
+#line 51 "Src/ProfileScanner.l"
 return ',';
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 58 "Src/ProfileScanner.l"
+#line 52 "Src/ProfileScanner.l"
 return '{';
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 59 "Src/ProfileScanner.l"
+#line 53 "Src/ProfileScanner.l"
 return '}';
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 60 "Src/ProfileScanner.l"
+#line 54 "Src/ProfileScanner.l"
 return '[';
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 61 "Src/ProfileScanner.l"
+#line 55 "Src/ProfileScanner.l"
 return ']';
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 63 "Src/ProfileScanner.l"
+#line 57 "Src/ProfileScanner.l"
 return DOUBLEDOT;
 	YY_BREAK
 case 15:
-#line 66 "Src/ProfileScanner.l"
+#line 60 "Src/ProfileScanner.l"
 case 16:
 YY_RULE_SETUP
-#line 66 "Src/ProfileScanner.l"
+#line 60 "Src/ProfileScanner.l"
 { lvalp->boolVal = true;									return BOOL_VALUE;	}
 	YY_BREAK
 case 17:
-#line 69 "Src/ProfileScanner.l"
+#line 63 "Src/ProfileScanner.l"
 case 18:
 YY_RULE_SETUP
-#line 69 "Src/ProfileScanner.l"
+#line 63 "Src/ProfileScanner.l"
 { lvalp->boolVal = false;									return BOOL_VALUE;	}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 71 "Src/ProfileScanner.l"
+#line 65 "Src/ProfileScanner.l"
 { lvalp->stringVal = util::strdup(yytext);					return STRING_VALUE;	}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 72 "Src/ProfileScanner.l"
+#line 66 "Src/ProfileScanner.l"
 { lvalp->stringVal = util::strdup(yytext + 1, yyleng - 2);	return STRING_VALUE;	}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 74 "Src/ProfileScanner.l"
+#line 68 "Src/ProfileScanner.l"
 { lvalp->intVal = atoi(yytext);								return INT_VALUE;	}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 75 "Src/ProfileScanner.l"
+#line 69 "Src/ProfileScanner.l"
 { lvalp->realVal = (double) atof(yytext);					return REAL_VALUE;	}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 77 "Src/ProfileScanner.l"
+#line 71 "Src/ProfileScanner.l"
 /* eat the whitespace */
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 78 "Src/ProfileScanner.l"
+#line 72 "Src/ProfileScanner.l"
 return PROFILE_ERROR;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 80 "Src/ProfileScanner.l"
+#line 74 "Src/ProfileScanner.l"
 ECHO;
 	YY_BREAK
-#line 860 "Src/ProfileScanner.cpp"
+#line 854 "Src/ProfileScanner.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1738,5 +1732,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 80 "Src/ProfileScanner.l"
+#line 74 "Src/ProfileScanner.l"
 

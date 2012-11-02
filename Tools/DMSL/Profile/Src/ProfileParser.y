@@ -1,8 +1,5 @@
 %{
-#if defined(WIN32) || defined(_WIN32_WCE)
-#define YY_NO_UNISTD_H
-#define YYINCLUDED_STDLIB_H
-#endif
+#define YY_NEVER_INTERACTIVE 1
 
 //Remove automatically generated file warnings
 #ifdef  _MSC_VER
@@ -38,7 +35,6 @@ extern int yylex (YYSTYPE* lvalp);
 %parse-param {PairMap **attributeValueMap}
 %start logic
 
-%token 	INT_VALUE REAL_VALUE BOOL_VALUE STRING_VALUE
 %token	'=' '.' ',' '{' '}' DOUBLEDOT PROFILE_ERROR
 
 %left	'.'

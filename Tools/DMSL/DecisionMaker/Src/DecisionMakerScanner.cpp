@@ -571,13 +571,7 @@ char *yytext;
 #line 1 "Src/DecisionMakerScanner.l"
 #define INITIAL 0
 #line 2 "Src/DecisionMakerScanner.l"
-#if defined(WIN32)
-#define YY_NO_UNISTD_H
-static int isatty (int i) { return 0; }
-#elif defined(_WIN32_WCE)
-#define YY_NO_UNISTD_H
-static int isatty (void *i) { return 0; }
-#endif
+#define YY_NEVER_INTERACTIVE 1
 
 //Remove automatically generated file warnings
 #ifdef  _MSC_VER
@@ -600,7 +594,7 @@ using namespace dmsl;
 #define YY_DECL int yylex (YYSTYPE* lvalp)
 #define COMMENT 1
 
-#line 604 "Src/DecisionMakerScanner.cpp"
+#line 598 "Src/DecisionMakerScanner.cpp"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -751,10 +745,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 46 "Src/DecisionMakerScanner.l"
+#line 40 "Src/DecisionMakerScanner.l"
 
 
-#line 758 "Src/DecisionMakerScanner.cpp"
+#line 752 "Src/DecisionMakerScanner.cpp"
 
 	if ( yy_init )
 		{
@@ -847,288 +841,288 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 48 "Src/DecisionMakerScanner.l"
+#line 42 "Src/DecisionMakerScanner.l"
 BEGIN(COMMENT);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 49 "Src/DecisionMakerScanner.l"
+#line 43 "Src/DecisionMakerScanner.l"
 /* eat anything that's not a '*' */
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 50 "Src/DecisionMakerScanner.l"
+#line 44 "Src/DecisionMakerScanner.l"
 /* eat up '*'s not followed by '/'s */
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 51 "Src/DecisionMakerScanner.l"
+#line 45 "Src/DecisionMakerScanner.l"
 BEGIN(INITIAL);
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
-#line 53 "Src/DecisionMakerScanner.l"
+#line 47 "Src/DecisionMakerScanner.l"
 { fclose(yyin);	return EOF; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 55 "Src/DecisionMakerScanner.l"
+#line 49 "Src/DecisionMakerScanner.l"
 /* eat comment 1 */
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 56 "Src/DecisionMakerScanner.l"
+#line 50 "Src/DecisionMakerScanner.l"
 /* eat comment 2 */
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 58 "Src/DecisionMakerScanner.l"
+#line 52 "Src/DecisionMakerScanner.l"
 return '+';
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 59 "Src/DecisionMakerScanner.l"
+#line 53 "Src/DecisionMakerScanner.l"
 return '-';
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 60 "Src/DecisionMakerScanner.l"
+#line 54 "Src/DecisionMakerScanner.l"
 return '*';
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 61 "Src/DecisionMakerScanner.l"
+#line 55 "Src/DecisionMakerScanner.l"
 return '/';
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 62 "Src/DecisionMakerScanner.l"
+#line 56 "Src/DecisionMakerScanner.l"
 return '%';
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 64 "Src/DecisionMakerScanner.l"
+#line 58 "Src/DecisionMakerScanner.l"
 return '(';
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 65 "Src/DecisionMakerScanner.l"
+#line 59 "Src/DecisionMakerScanner.l"
 return ')';
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 66 "Src/DecisionMakerScanner.l"
+#line 60 "Src/DecisionMakerScanner.l"
 return '[';
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 67 "Src/DecisionMakerScanner.l"
+#line 61 "Src/DecisionMakerScanner.l"
 return ']';
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 68 "Src/DecisionMakerScanner.l"
+#line 62 "Src/DecisionMakerScanner.l"
 return '{';
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 69 "Src/DecisionMakerScanner.l"
+#line 63 "Src/DecisionMakerScanner.l"
 return '}';
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 71 "Src/DecisionMakerScanner.l"
+#line 65 "Src/DecisionMakerScanner.l"
 return LT;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 72 "Src/DecisionMakerScanner.l"
+#line 66 "Src/DecisionMakerScanner.l"
 return GT;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 73 "Src/DecisionMakerScanner.l"
+#line 67 "Src/DecisionMakerScanner.l"
 return LE;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 74 "Src/DecisionMakerScanner.l"
+#line 68 "Src/DecisionMakerScanner.l"
 return GE;
 	YY_BREAK
 case 22:
-#line 77 "Src/DecisionMakerScanner.l"
+#line 71 "Src/DecisionMakerScanner.l"
 case 23:
 YY_RULE_SETUP
-#line 77 "Src/DecisionMakerScanner.l"
+#line 71 "Src/DecisionMakerScanner.l"
 return EQ;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 78 "Src/DecisionMakerScanner.l"
+#line 72 "Src/DecisionMakerScanner.l"
 return NEQ;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 80 "Src/DecisionMakerScanner.l"
+#line 74 "Src/DecisionMakerScanner.l"
 return '.';
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 81 "Src/DecisionMakerScanner.l"
+#line 75 "Src/DecisionMakerScanner.l"
 return ',';
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 82 "Src/DecisionMakerScanner.l"
+#line 76 "Src/DecisionMakerScanner.l"
 return ':';
 	YY_BREAK
 case 28:
-#line 85 "Src/DecisionMakerScanner.l"
+#line 79 "Src/DecisionMakerScanner.l"
 case 29:
 YY_RULE_SETUP
-#line 85 "Src/DecisionMakerScanner.l"
+#line 79 "Src/DecisionMakerScanner.l"
 return AND;
 	YY_BREAK
 case 30:
-#line 88 "Src/DecisionMakerScanner.l"
+#line 82 "Src/DecisionMakerScanner.l"
 case 31:
 YY_RULE_SETUP
-#line 88 "Src/DecisionMakerScanner.l"
+#line 82 "Src/DecisionMakerScanner.l"
 return OR;
 	YY_BREAK
 case 32:
-#line 91 "Src/DecisionMakerScanner.l"
+#line 85 "Src/DecisionMakerScanner.l"
 case 33:
 YY_RULE_SETUP
-#line 91 "Src/DecisionMakerScanner.l"
+#line 85 "Src/DecisionMakerScanner.l"
 return NOT;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 93 "Src/DecisionMakerScanner.l"
+#line 87 "Src/DecisionMakerScanner.l"
 return DOUBLEDOT;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 95 "Src/DecisionMakerScanner.l"
+#line 89 "Src/DecisionMakerScanner.l"
 return IF;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 96 "Src/DecisionMakerScanner.l"
+#line 90 "Src/DecisionMakerScanner.l"
 return THEN;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 97 "Src/DecisionMakerScanner.l"
+#line 91 "Src/DecisionMakerScanner.l"
 return ELSE;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 99 "Src/DecisionMakerScanner.l"
+#line 93 "Src/DecisionMakerScanner.l"
 return CASE;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 100 "Src/DecisionMakerScanner.l"
+#line 94 "Src/DecisionMakerScanner.l"
 return WHEN;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 101 "Src/DecisionMakerScanner.l"
+#line 95 "Src/DecisionMakerScanner.l"
 return OTHERWISE;
 	YY_BREAK
 case 41:
-#line 104 "Src/DecisionMakerScanner.l"
+#line 98 "Src/DecisionMakerScanner.l"
 case 42:
 YY_RULE_SETUP
-#line 104 "Src/DecisionMakerScanner.l"
+#line 98 "Src/DecisionMakerScanner.l"
 { lvalp->boolVal = true;	return BOOL_VALUE; }
 	YY_BREAK
 case 43:
-#line 107 "Src/DecisionMakerScanner.l"
+#line 101 "Src/DecisionMakerScanner.l"
 case 44:
 YY_RULE_SETUP
-#line 107 "Src/DecisionMakerScanner.l"
+#line 101 "Src/DecisionMakerScanner.l"
 { lvalp->boolVal = false;	return BOOL_VALUE; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 109 "Src/DecisionMakerScanner.l"
+#line 103 "Src/DecisionMakerScanner.l"
 return COMPONENT;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 111 "Src/DecisionMakerScanner.l"
+#line 105 "Src/DecisionMakerScanner.l"
 return ACTIVATE;
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 112 "Src/DecisionMakerScanner.l"
+#line 106 "Src/DecisionMakerScanner.l"
 return CANCEL;
 	YY_BREAK
 case 48:
-#line 114 "Src/DecisionMakerScanner.l"
+#line 108 "Src/DecisionMakerScanner.l"
 case 49:
 YY_RULE_SETUP
-#line 114 "Src/DecisionMakerScanner.l"
+#line 108 "Src/DecisionMakerScanner.l"
 return EVALUATE;
 	YY_BREAK
 case 50:
-#line 117 "Src/DecisionMakerScanner.l"
+#line 111 "Src/DecisionMakerScanner.l"
 case 51:
 YY_RULE_SETUP
-#line 117 "Src/DecisionMakerScanner.l"
+#line 111 "Src/DecisionMakerScanner.l"
 return LIBRARY;
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 119 "Src/DecisionMakerScanner.l"
+#line 113 "Src/DecisionMakerScanner.l"
 return DMSL_IN;
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 121 "Src/DecisionMakerScanner.l"
+#line 115 "Src/DecisionMakerScanner.l"
 return IS_ACTIVE;
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 122 "Src/DecisionMakerScanner.l"
+#line 116 "Src/DecisionMakerScanner.l"
 return TO_NUMBER;
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 123 "Src/DecisionMakerScanner.l"
+#line 117 "Src/DecisionMakerScanner.l"
 return HAS_ATTR;
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 124 "Src/DecisionMakerScanner.l"
+#line 118 "Src/DecisionMakerScanner.l"
 return RANDOM;
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 125 "Src/DecisionMakerScanner.l"
+#line 119 "Src/DecisionMakerScanner.l"
 return CAN_SUPPORT;
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 127 "Src/DecisionMakerScanner.l"
+#line 121 "Src/DecisionMakerScanner.l"
 return PARAMS;
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 129 "Src/DecisionMakerScanner.l"
+#line 123 "Src/DecisionMakerScanner.l"
 return STEREOTYPE;
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 131 "Src/DecisionMakerScanner.l"
+#line 125 "Src/DecisionMakerScanner.l"
 return DEFINE;
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 133 "Src/DecisionMakerScanner.l"
+#line 127 "Src/DecisionMakerScanner.l"
 {
 							lvalp->stringVal = util::strdup(yytext);
 							return ID_VALUE;
@@ -1136,7 +1130,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 138 "Src/DecisionMakerScanner.l"
+#line 132 "Src/DecisionMakerScanner.l"
 {
 							lvalp->stringVal = util::strdup(yytext + 1, yyleng - 2);
 							return STRING_VALUE;
@@ -1144,7 +1138,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 143 "Src/DecisionMakerScanner.l"
+#line 137 "Src/DecisionMakerScanner.l"
 {
 							lvalp->intVal = atoi(yytext);
 							return INT_VALUE;
@@ -1152,7 +1146,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 147 "Src/DecisionMakerScanner.l"
+#line 141 "Src/DecisionMakerScanner.l"
 {
 							lvalp->realVal = (double) atof(yytext);
 							return REAL_VALUE;
@@ -1160,20 +1154,20 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 151 "Src/DecisionMakerScanner.l"
+#line 145 "Src/DecisionMakerScanner.l"
 /* eat the whitespace */
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 152 "Src/DecisionMakerScanner.l"
+#line 146 "Src/DecisionMakerScanner.l"
 { return DMSL_ERROR; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 154 "Src/DecisionMakerScanner.l"
+#line 148 "Src/DecisionMakerScanner.l"
 ECHO;
 	YY_BREAK
-#line 1177 "Src/DecisionMakerScanner.cpp"
+#line 1171 "Src/DecisionMakerScanner.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2055,5 +2049,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 154 "Src/DecisionMakerScanner.l"
+#line 148 "Src/DecisionMakerScanner.l"
 

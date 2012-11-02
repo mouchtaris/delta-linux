@@ -1,8 +1,5 @@
 %{
-#if defined(WIN32) || defined(_WIN32_WCE)
-#define YY_NO_UNISTD_H
-#define YYINCLUDED_STDLIB_H
-#endif
+#define YY_NEVER_INTERACTIVE 1
 
 //Remove automatically generated file warnings
 #ifdef  _MSC_VER
@@ -39,7 +36,6 @@ extern int yylex (YYSTYPE* lvalp);
 %parse-param { Statement **logic }
 %start logic
 
-%token 	INT_VALUE REAL_VALUE BOOL_VALUE STRING_VALUE ID_VALUE
 %token	IF THEN ELSE CASE WHEN OTHERWISE
 %token	ACTIVATE CANCEL EVALUATE LIBRARY
 %token	IS_ACTIVE TO_NUMBER HAS_ATTR RANDOM CAN_SUPPORT
@@ -48,7 +44,7 @@ extern int yylex (YYSTYPE* lvalp);
 %token	'(' ')' '[' ']' '{' '}'
 %token	'+' '-' '*' '/' '%'
 %token	'.' ',' ':'
-%token	OR AND EQ NEQ GT LT GE LE
+%token	EQ NEQ GT LT GE LE
 %token	AND OR NOT DOUBLEDOT
 %token	UNARY DMSL_ERROR
 

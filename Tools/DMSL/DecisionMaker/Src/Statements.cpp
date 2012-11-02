@@ -90,7 +90,7 @@ namespace dmsl {
 
 	void LogicStatement::AddLogic(LogicStatement *logic, std::list<std::string>& overwrites) {
 		SymbolTable& table = GetDecisionMaker()->GetSymbolTable();
-		for(StmtList::iterator i = logic->list->begin(); i != logic->list->end(); /*empty*/) {
+		for(StmtList::iterator i = logic->list->begin(); i != logic->list->end(); ++i) {
 			StmtType type = (*i)->GetType();
 
 	#define HANDLE_TYPE(outerType, outerGetFunction, innerType, innerGetFunction, innerSetFunction, replaceCode, insertCode)\
@@ -106,13 +106,11 @@ namespace dmsl {
 				replaceCode;																								\
 				st->innerSetFunction(copy);																					\
 				swapDependencies(st, previous);																				\
-				++i;																										\
 			}																												\
 			else {																											\
 				outerType *copy = static_cast<outerType*>(st->Clone(GetDecisionMaker()));									\
 				list->push_back(copy);																						\
 				insertCode;																									\
-				i = logic->list->erase(i);																					\
 			}																												\
 		} while(false)
 

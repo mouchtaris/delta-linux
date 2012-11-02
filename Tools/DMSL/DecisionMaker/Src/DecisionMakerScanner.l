@@ -1,11 +1,5 @@
 %{
-#if defined(WIN32)
-#define YY_NO_UNISTD_H
-static int isatty (int i) { return 0; }
-#elif defined(_WIN32_WCE)
-#define YY_NO_UNISTD_H
-static int isatty (void *i) { return 0; }
-#endif
+#define YY_NEVER_INTERACTIVE 1
 
 //Remove automatically generated file warnings
 #ifdef  _MSC_VER
