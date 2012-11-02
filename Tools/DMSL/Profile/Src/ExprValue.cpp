@@ -275,7 +275,7 @@ namespace dmsl {
 			case ValueTypeRangeList:return content.rangeListVal->toString();
 			case ValueTypeList:		return util::toString(*content.listVal, std::mem_fun(&ExprValue::toString));
 			case ValueTypeVoid:		return "void";
-			default:				assert(false);	return false;
+			default:				assert(false);	return "";
 		}
 	}
 
