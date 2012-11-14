@@ -15,13 +15,8 @@
 #include <list>
 #include <functional>
 
-#ifdef	UHAS_EXCEPTIONS	
 #define	UERRORCLASS_EXCEPTIONIMPL  throw udisengageexception()
 #define	UERRORCLASS_POSTEXCEPTION  uerror::GetSingleton().postexception()
-#else
-#define	UERRORCLASS_EXCEPTIONIMPL  postprimary("error disengage exception!")
-#define	UERRORCLASS_POSTEXCEPTION  uerror::GetSingleton().postexception(); return
-#endif
 
 //////////////////////////////////////////////////////////////////
 

@@ -129,8 +129,6 @@ typedef __uint64_t			util_ui64;		// Eight bytes, unsigned.
 typedef void (*uvoidvoid_f)(void);
 typedef std::list<std::string> ustrlist;
 
-#define	UHAS_EXCEPTIONS
-
 //---------------------------------------------------------------
 // This is a template to control use of the original type T, or a 
 // reference to T, through a boolean compile time flag.
