@@ -145,6 +145,24 @@ T2 umax2 (T1 x, T2 y) {
 }
 
 /////////////////////////////////////////////////////////////////
+
+template <typename T> 
+bool uinside_range (T val, T left, T right) 
+	{ return val >= left && val <= right; }
+
+template <typename T> 
+bool uinside_range_open (T val, T left, T right)
+	{ return val > left && val < right; }
+
+template <typename T> 
+bool uinside_range_left_open (T val, T left, T right)
+	{ return val > left && val <= right; }
+
+template <typename T> 
+bool uinside_range_right_open (T val, T left, T right)
+	{ return val >= left && val < right; }
+
+/////////////////////////////////////////////////////////////////
 // A very simple rectangle template class.
 
 template <class T> struct urectangleex;
