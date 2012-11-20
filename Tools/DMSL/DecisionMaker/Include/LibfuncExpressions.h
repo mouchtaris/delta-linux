@@ -120,7 +120,7 @@ namespace dmsl {
 			const OpFunctor op;
 			if(!result->IsString()) {	//only string allowed here so check here and not in op
 				const std::string error = result->IsError() ? " : " + result->GetError() : "";
-				SET_ERROR_WITH_FOUR_ARGS(ret, "EvaluationArgumentExpected", op.Id(), 1, "string", error.c_str());
+				SET_ERROR_WITH_FIVE_ARGS(ret, "EvaluationArgumentExpected", this->GetLine(), op.Id(), 1, "string", error.c_str());
 			}
 			else
 				op(dm, *result, ret);

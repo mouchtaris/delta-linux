@@ -54,7 +54,7 @@ namespace dmsl {
 			if(val->IsError()) {
 				util::destroyContainer(l);
 				const std::string error = " : " + val->GetError();
-				SET_ERROR_WITH_TWO_ARGS(val, "EvaluationSetInvalidArguments", count, error.c_str());
+				SET_ERROR_WITH_THREE_ARGS(val, "EvaluationSetInvalidArguments", GetLine(), count, error.c_str());
 				return val;
 			}
 			else
@@ -92,7 +92,7 @@ namespace dmsl {
 			else {
 				delete l;
 				const std::string error = val->IsError() ? " : " + val->GetError() : "";
-				SET_ERROR_WITH_TWO_ARGS(val, "EvaluationRangeListInvalidArguments", count, error.c_str());
+				SET_ERROR_WITH_THREE_ARGS(val, "EvaluationRangeListInvalidArguments", GetLine(), count, error.c_str());
 				return val;
 			}
 		}
@@ -120,7 +120,7 @@ namespace dmsl {
 			ret = ret->Clone();
 		else {
 			ret = new ExprValue;
-			SET_ERROR_WITH_ONE_ARG(ret, "EvaluationNoParamInProfile", name.c_str());
+			SET_ERROR_WITH_TWO_ARGS(ret, "EvaluationNoParamInProfile", GetLine(), name.c_str());
 		}
 		return ret;
 	}

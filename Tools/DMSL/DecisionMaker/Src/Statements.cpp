@@ -35,7 +35,7 @@ namespace dmsl {
 			return stmt->Evaluate(dm);
 		}
 		else {
-			SET_ERROR_WITH_ONE_ARG(dm, "EvaluationComponentNotFound", component.c_str());
+			SET_ERROR_WITH_TWO_ARGS(dm, "EvaluationComponentNotFound", GetLine(), component.c_str());
 			return false;
 		}
 	}
@@ -201,12 +201,7 @@ namespace dmsl {
 	DependencyList ComponentStatement::CreateDependencies (DecisionMaker *dm) const {
 		DependencyList ret;
 		if(evaluating)
-			dm->SetError(
-				util::MakeString(
-					DecisionMaker::GetConfiguration().GetStringAttribute("EvaluationCircle"),
-					name.c_str()
-				)
-			);
+			SET_ERROR_WITH_TWO_ARGS(dm, "EvaluationCircle", GetLine(), name.c_str());
 		else {
 			evaluating = true;
 			ret = compound->CreateDependencies(dm);
@@ -269,7 +264,7 @@ namespace dmsl {
 		assert(result);
 		if(!result->IsBool()) {
 			std::string error = result->IsError() ? " : " + result->GetError() : "";
-			SET_ERROR_WITH_THREE_ARGS(dm, "EvaluationExpressionExpected", "if", "boolean", error.c_str());
+			SET_ERROR_WITH_FOUR_ARGS(dm, "EvaluationExpressionExpected", GetLine(), "if", "boolean", error.c_str());
 			ret = false;
 		}
 		else if(result->GetBool())

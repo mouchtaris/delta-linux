@@ -59,7 +59,7 @@ namespace dmsl {
 		ExprValue *ret = new ExprValue;
 		if(list->empty()) {
 			if(lastRandomValue == -1)
-				SET_ERROR_WITH_ZERO_ARGS(ret, "EvaluationRandomInvalidCall");
+				SET_ERROR_WITH_ONE_ARG(ret, "EvaluationRandomInvalidCall", GetLine());
 			else
 				ret->SetNumber(lastRandomValue);
 		}
@@ -83,20 +83,20 @@ namespace dmsl {
 		ExprValue *comp = list->front()->Evaluate(dm);
 		if(!comp->IsString()) {
 			const std::string error = comp->IsError() ? " : " + comp->GetError() : "";
-			SET_ERROR_WITH_FOUR_ARGS(ret, "EvaluationArgumentExpected", name, 1, "string", error.c_str());
+			SET_ERROR_WITH_FIVE_ARGS(ret, "EvaluationArgumentExpected", GetLine(), name, 1, "string", error.c_str());
 		}
 		else {
 			ExprValue *style = list->back()->Evaluate(dm);
 			if(!style->IsString()) {
 				const std::string error = style->IsError() ? " : " + style->GetError() : "";
-				SET_ERROR_WITH_FOUR_ARGS(ret, "EvaluationArgumentExpected", name, 2, "string", error.c_str());
+				SET_ERROR_WITH_FIVE_ARGS(ret, "EvaluationArgumentExpected", GetLine(), name, 2, "string", error.c_str());
 			}
 			else {
 				DecisionMaker::PlausibilityFunction f = dm->GetPlausibilityFunction();
 				if(f)
 					ret->SetBool((*f)(comp->GetString(), style->GetString()));
 				else
-					SET_ERROR_WITH_ONE_ARG(ret, "EvaluationNoPlausibilityFunction", name);
+					SET_ERROR_WITH_TWO_ARGS(ret, "EvaluationNoPlausibilityFunction", GetLine(), name);
 			}
 			delete style;
 		}
@@ -114,7 +114,7 @@ namespace dmsl {
 		ExprValue *func = list->front()->Evaluate(dm);
 		if(!func->IsString()) {
 			const std::string error = func->IsError() ? " : " + func->GetError() : "";
-			SET_ERROR_WITH_FOUR_ARGS(ret, "EvaluationArgumentExpected", name, 1, "string", error.c_str());
+			SET_ERROR_WITH_FIVE_ARGS(ret, "EvaluationArgumentExpected", GetLine(), name, 1, "string", error.c_str());
 		}
 		else {
 			bool status = true;
@@ -123,7 +123,7 @@ namespace dmsl {
 				ExprValue *arg = list->back()->Evaluate(dm);
 				if(!arg->IsString()) {
 					const std::string error = arg->IsError() ? " : " + arg->GetError() : "";
-					SET_ERROR_WITH_FOUR_ARGS(ret, "EvaluationArgumentExpected", name, 2, "string", error.c_str());
+					SET_ERROR_WITH_FIVE_ARGS(ret, "EvaluationArgumentExpected", GetLine(), name, 2, "string", error.c_str());
 					status = false;
 				}
 				else
@@ -138,7 +138,7 @@ namespace dmsl {
 					ret->SetVoid();
 				}
 				else
-					SET_ERROR_WITH_TWO_ARGS(ret, "EvaluationLibraryUndeclaredFunction", name, funcName.c_str());
+					SET_ERROR_WITH_THREE_ARGS(ret, "EvaluationLibraryUndeclaredFunction", GetLine(), name, funcName.c_str());
 			}
 		}
 		delete func;

@@ -25,13 +25,13 @@ namespace dmsl {
 
 	//No AddOperator is used as the + is specially handled due to string concatenation
 
-	#define ARITH_OPERATOR_CLASS_DECLARATION(_name, _op)										\
-		class _name {																			\
-		public:																					\
-			double operator	()		(double x, double y)	const { return x _op y;			}	\
-			const char*		AnyError(double, double)		const { return (const char *) 0;}	\
-			const char*		Id		(void)					const { return #_op;			}	\
-			_name(void) {}																		\
+	#define ARITH_OPERATOR_CLASS_DECLARATION(_name, _op)									\
+		class _name {																		\
+		public:																				\
+			double operator	()			(double x, double y)	const { return x _op y;	}	\
+			const std::string	AnyError(double, double)		const { return ""; }		\
+			const char*			Id		(void)					const { return #_op;	}	\
+			_name(void) {}																	\
 		};
 
 	ARITH_OPERATOR_CLASS_DECLARATION(SubOperator, -)
@@ -41,10 +41,10 @@ namespace dmsl {
 
 	class DivOperator {
 	public:
-		double operator	()		(double x, double y)	const { return x / y; }
-		const char*		AnyError(double, double y)		const
-			{ return y == 0 ? DecisionMaker::GetConfiguration().GetStringAttribute("EvaluationZeroDivision").c_str() : (const char *) 0; }
-		const char*		Id		(void)					const { return "/";	  }
+		double operator	()			(double x, double y)	const { return x / y; }
+		const std::string	AnyError(double, double y)		const
+			{ return y == 0 ? DecisionMaker::GetConfiguration().GetStringAttribute("EvaluationZeroDivision") : ""; }
+		const char*			Id		(void)					const { return "/";	  }
 		DivOperator(void) {}
 	};
 
@@ -52,13 +52,13 @@ namespace dmsl {
 
 	class ModOperator {
 	public:
-		double operator	()		(double x, double y)	const { return (int) x % (int) y; }
-		const char*		AnyError(double x, double y)	const {
+		double operator	()			(double x, double y)	const { return (int) x % (int) y; }
+		const std::string	AnyError(double x, double y)	const {
 			return x != (int) x || y != (int) y ? 
-				DecisionMaker::GetConfiguration().GetStringAttribute("EvaluationRealModulo").c_str() : y == 0 ? 
-				DecisionMaker::GetConfiguration().GetStringAttribute("EvaluationZeroModulo").c_str() : (const char *) 0; 
+				DecisionMaker::GetConfiguration().GetStringAttribute("EvaluationRealModulo") : y == 0 ? 
+				DecisionMaker::GetConfiguration().GetStringAttribute("EvaluationZeroModulo") : ""; 
 		}
-		const char*		Id		(void)					const { return "%"; }
+		const char*			Id		(void)					const { return "%"; }
 		ModOperator(void) {}
 	};
 
@@ -102,13 +102,13 @@ namespace dmsl {
 	public:
 		bool LegalArgumentPair (const ExprValue& left, const ExprValue& right) const { return left.IsNumber() && right.IsNumber(); }
 
-		void operator()(ExprValue& left, ExprValue& right, ExprValue* result) const {
+		void operator()(const Expression* origin, ExprValue& left, ExprValue& right, ExprValue* result) const {
 			const OpFunctor op;
-			const char* error = op.AnyError(left.GetNumber(), right.GetNumber());
-			if (error)
-				result->SetError(error);
-			else
+			const std::string error = op.AnyError(left.GetNumber(), right.GetNumber());
+			if (error.empty())
 				result->SetNumber(op(left.GetNumber(), right.GetNumber()));
+			else
+				result->SetError(util::MakeString(error, origin->GetLine()));	//arithmetic related errors have only line information
 		}
 
 		const char* Id (void) const { return OpFunctor().Id(); }
@@ -139,7 +139,7 @@ namespace dmsl {
 	public:
 		bool LegalArgumentPair (const ExprValue& left, const ExprValue& right) const { return left.IsNumber() && right.IsNumber(); }
 
-		void operator()(ExprValue& left, ExprValue& right, ExprValue* result) const {
+		void operator()(const Expression*, ExprValue& left, ExprValue& right, ExprValue* result) const {
 			const OpFunctor op;
 			result->SetBool(op(left.GetNumber(), right.GetNumber()));
 		}
@@ -158,7 +158,7 @@ namespace dmsl {
 		bool LegalArgumentPair (const ExprValue& left, const ExprValue& right) const
 			{ return (left.GetType() == right.GetType() && !left.IsError()) || (left.IsNumber() && right.IsNumber()); }
 
-		void operator()(ExprValue& left, ExprValue& right, ExprValue* result) const {
+		void operator()(const Expression*, ExprValue& left, ExprValue& right, ExprValue* result) const {
 			const OpFunctor op;
 			result->SetBool(op(left, right));
 		}
@@ -179,7 +179,7 @@ namespace dmsl {
 					((left.IsNumber() && right.IsNumber()) || left.IsString() || right.IsString());
 		}
 
-		void operator()(ExprValue& left, ExprValue& right, ExprValue* result) const {
+		void operator()(const Expression*, ExprValue& left, ExprValue& right, ExprValue* result) const {
 			if(left.IsNumber() && right.IsNumber())
 				result->SetNumber(left.GetNumber() + right.GetNumber());
 			else if(left.IsString() && right.IsNumber())
@@ -209,10 +209,10 @@ namespace dmsl {
 		bool LegalArgumentPair (const ExprValue& left, const ExprValue& right) const
 			{ return left.IsNumber() && right.IsNumber(); }
 
-		void operator()(ExprValue& left, ExprValue& right, ExprValue* result) const {
+		void operator()(const Expression* origin, ExprValue& left, ExprValue& right, ExprValue* result) const {
 			double l = left.GetNumber(), r = right.GetNumber();
 			if(l > r)
-				SET_ERROR_WITH_TWO_ARGS(result, "EvaluationInvalidRange", l, r);
+				SET_ERROR_WITH_THREE_ARGS(result, "EvaluationInvalidRange", origin->GetLine(), l, r);
 			else
 				result->SetRange(Range(l, r));
 		}
@@ -293,7 +293,7 @@ namespace dmsl {
 					(!left.IsError() && !left.IsVoid() && right.IsList())			;
 		}
 
-		void operator()(ExprValue& left, ExprValue& right, ExprValue* result) const {
+		void operator()(const Expression*, ExprValue& left, ExprValue& right, ExprValue* result) const {
 			bool found = false;
 			if(right.IsList())
 				found = IsWithinSet(right.GetList(), left);
@@ -370,10 +370,10 @@ namespace dmsl {
 					error += leftResult->IsError() ? leftResult->GetError() : "";
 					error += rightResult->IsError() ? rightResult->GetError() : "";
 				}
-				SET_ERROR_WITH_TWO_ARGS(result, "EvaluationInvalidArguments", op.Id(), error.c_str());
+				SET_ERROR_WITH_THREE_ARGS(result, "EvaluationInvalidArguments", this->GetLine(), op.Id(), error.c_str());
 			}
 			else
-				op(*leftResult, *rightResult, result);
+				op(this, *leftResult, *rightResult, result);
 			delete leftResult;
 			delete rightResult;
 			return result;
@@ -432,7 +432,7 @@ namespace dmsl {
 					error += rightResult && rightResult->IsError() ? rightResult->GetError() : "";
 				}
 				result = new ExprValue;
-				SET_ERROR_WITH_TWO_ARGS(result, "EvaluationInvalidArguments", op.Id(), error.c_str());
+				SET_ERROR_WITH_THREE_ARGS(result, "EvaluationInvalidArguments", this->GetLine(), op.Id(), error.c_str());
 			}
 			delete leftResult;
 			delete rightResult;

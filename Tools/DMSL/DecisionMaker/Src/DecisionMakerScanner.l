@@ -142,7 +142,7 @@ comment2		"#".*
 							lvalp->realVal = (double) atof(yytext);
 							return REAL_VALUE;
 						}
-{space}+				/* eat the whitespace */
+{space}					/* eat the whitespace */
 .						{ return DMSL_ERROR; }
 
 %%

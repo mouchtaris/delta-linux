@@ -203,6 +203,7 @@ namespace dmsl {
 			RETURN_ON_ERROR_BINARY(expr, e1, e2);
 			Expression *tmp = new T(dm, e1, e2);
 			if(e1->IsConst() && e2->IsConst()) {
+				tmp->SetLine(DMSL_yylineno);		//to have line information in a possible evaluation error
 				ExprValue *val = tmp->Evaluate(dm);
 				if(val->IsError()) {
 					*expr = (Expression *) 0;
@@ -496,7 +497,6 @@ namespace dmsl {
 		void Manage_arithexpr_##_suffix(DecisionMaker *dm, Expression **expr, Expression *e1, Expression *e2)	\
 			{ BinaryExpressions::ManageNumberExpressions<_type>(dm, expr, e1, e2, #_op); }
 		
-
 	MANAGE_ARITHEXPR_BINARY_DECLARATION(sub, SubExpression, -)
 	MANAGE_ARITHEXPR_BINARY_DECLARATION(mul, MulExpression, *)
 	MANAGE_ARITHEXPR_BINARY_DECLARATION(div, DivExpression, /)

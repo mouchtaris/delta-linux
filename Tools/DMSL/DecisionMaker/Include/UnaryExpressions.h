@@ -101,7 +101,7 @@ namespace dmsl {
 			const OpFunctor op;
 			if (!op.LegalArgument(*result)) {
 				std::string error = result->IsError() ? " : " + result->GetError() : "";
-				SET_ERROR_WITH_TWO_ARGS(ret, "EvaluationInvalidArguments", op.Id(), error.c_str());
+				SET_ERROR_WITH_THREE_ARGS(ret, "EvaluationInvalidArguments", this->GetLine(), op.Id(), error.c_str());
 			}
 			else
 				op(*result, ret);

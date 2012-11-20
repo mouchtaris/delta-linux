@@ -86,7 +86,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 65 "Src/DecisionMakerParser.y"
+#line 72 "Src/DecisionMakerParser.y"
 
   int 			intVal;
   bool 			boolVal;
@@ -96,11 +96,12 @@ typedef union YYSTYPE
   ExprList*		exprList;
   Statement*	stmt;
   StmtList*		stmtList;
+  unsigned		line;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 104 "Src/DecisionMakerBisonParser.hpp"
+#line 105 "Src/DecisionMakerBisonParser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

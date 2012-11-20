@@ -96,19 +96,26 @@ using namespace dmsl;
 
 #include "DecisionMakerBisonParser.h"	//must be included after ManageExpressions and ManageStatements
 
+extern int DMSL_yylineno;
+
 void yyerror (DecisionMaker *dm, Statement**, const char *msg) {
-	extern int DMSL_yylineno;
 	extern char *DMSL_yytext;
 	dm->SetError(util::MakeString("Line %d : %s: before token: %s\n", DMSL_yylineno, msg, DMSL_yytext));
 }
 
 extern int yylex (YYSTYPE* lvalp);
 
-#define ABORT_ON_ERROR(x)	do { if(!x) YYABORT; } while(false)
+#define RESULT_ACTION(x) RESULT_ACTION_EX(x, DMSL_yylineno)
+#define RESULT_ACTION_EX(x, line)	do { if (x) SetLine(x, line); else YYABORT; } while(false)
+
+template<class T> void SetLine(T*, unsigned) {}
+template<> void SetLine<Expression>(Expression* x, unsigned line) { x->SetLine(line); }
+template<> void SetLine<Statement>(Statement* x, unsigned line) { x->SetLine(line); }
+
 
 
 /* Line 189 of yacc.c  */
-#line 112 "Src/DecisionMakerBisonParser.cpp"
+#line 119 "Src/DecisionMakerBisonParser.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -182,7 +189,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 65 "Src/DecisionMakerParser.y"
+#line 72 "Src/DecisionMakerParser.y"
 
   int 			intVal;
   bool 			boolVal;
@@ -192,11 +199,12 @@ typedef union YYSTYPE
   ExprList*		exprList;
   Statement*	stmt;
   StmtList*		stmtList;
+  unsigned		line;
 
 
 
 /* Line 214 of yacc.c  */
-#line 200 "Src/DecisionMakerBisonParser.cpp"
+#line 208 "Src/DecisionMakerBisonParser.cpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -208,7 +216,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 212 "Src/DecisionMakerBisonParser.cpp"
+#line 220 "Src/DecisionMakerBisonParser.cpp"
 
 #ifdef short
 # undef short
@@ -423,16 +431,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  12
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   338
+#define YYLAST   390
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  54
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  20
+#define YYNNTS  21
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  70
+#define YYNRULES  71
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  138
+#define YYNSTATES  173
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -479,57 +487,61 @@ static const yytype_uint8 yytranslate[] =
 #if YYDEBUG
 /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
    YYRHS.  */
-static const yytype_uint8 yyprhs[] =
+static const yytype_uint16 yyprhs[] =
 {
-       0,     0,     3,     5,     6,     9,    11,    15,    20,    24,
-      28,    30,    32,    34,    38,    40,    41,    44,    46,    52,
-      59,    62,    65,    68,    73,    75,    78,    79,    81,    82,
-      85,    87,    91,    94,    95,    97,    99,   103,   107,   111,
-     113,   114,   118,   120,   124,   128,   132,   136,   140,   144,
-     148,   152,   156,   159,   164,   169,   174,   176,   180,   182,
-     186,   190,   194,   198,   202,   206,   209,   212,   217,   222,
-     224
+       0,     0,     3,     4,     6,     7,    10,    12,    17,    23,
+      28,    32,    34,    36,    38,    42,    44,    45,    48,    50,
+      57,    65,    69,    73,    77,    83,    85,    88,    89,    91,
+      92,    95,    97,   102,   106,   107,   109,   111,   115,   119,
+     123,   125,   126,   130,   132,   137,   142,   147,   152,   157,
+     162,   167,   172,   177,   181,   187,   193,   199,   201,   206,
+     208,   213,   218,   223,   228,   233,   238,   242,   246,   252,
+     258,   260
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      55,     0,    -1,    56,    -1,    -1,    56,    57,    -1,    57,
-      -1,    18,    59,    60,    -1,    21,    59,    36,    72,    -1,
-      22,    59,    69,    -1,    58,    34,    59,    -1,    59,    -1,
-      51,    -1,    52,    -1,    25,    61,    26,    -1,    62,    -1,
-      -1,    62,    63,    -1,    63,    -1,     3,    72,     4,    63,
-      64,    -1,     6,    69,    25,    65,    68,    26,    -1,     9,
-      69,    -1,    10,    69,    -1,    11,    69,    -1,    12,    23,
-      70,    24,    -1,    60,    -1,     5,    63,    -1,    -1,    66,
-      -1,    -1,    66,    67,    -1,    67,    -1,     7,    69,    63,
-      -1,     8,    63,    -1,    -1,    72,    -1,    73,    -1,    69,
-      46,    69,    -1,    27,    70,    28,    -1,    25,    70,    26,
-      -1,    71,    -1,    -1,    71,    35,    69,    -1,    69,    -1,
-      69,    44,    69,    -1,    69,    43,    69,    -1,    69,    40,
-      69,    -1,    69,    42,    69,    -1,    69,    39,    69,    -1,
-      69,    41,    69,    -1,    69,    37,    69,    -1,    69,    38,
-      69,    -1,    69,    19,    69,    -1,    45,    69,    -1,    13,
-      23,    70,    24,    -1,    15,    23,    70,    24,    -1,    17,
-      23,    70,    24,    -1,    53,    -1,    23,    69,    24,    -1,
-      58,    -1,    20,    34,    58,    -1,    69,    29,    69,    -1,
-      69,    30,    69,    -1,    69,    31,    69,    -1,    69,    32,
-      69,    -1,    69,    33,    69,    -1,    29,    69,    -1,    30,
-      69,    -1,    14,    23,    70,    24,    -1,    16,    23,    70,
-      24,    -1,    49,    -1,    50,    -1
+      56,     0,    -1,    -1,    57,    -1,    -1,    57,    58,    -1,
+      58,    -1,    18,    60,    55,    61,    -1,    21,    60,    55,
+      36,    73,    -1,    22,    60,    55,    70,    -1,    59,    34,
+      60,    -1,    60,    -1,    51,    -1,    52,    -1,    25,    62,
+      26,    -1,    63,    -1,    -1,    63,    64,    -1,    64,    -1,
+       3,    55,    73,     4,    64,    65,    -1,     6,    55,    70,
+      25,    66,    69,    26,    -1,     9,    55,    70,    -1,    10,
+      55,    70,    -1,    11,    55,    70,    -1,    12,    55,    23,
+      71,    24,    -1,    61,    -1,     5,    64,    -1,    -1,    67,
+      -1,    -1,    67,    68,    -1,    68,    -1,     7,    55,    70,
+      64,    -1,     8,    55,    64,    -1,    -1,    73,    -1,    74,
+      -1,    70,    46,    70,    -1,    27,    71,    28,    -1,    25,
+      71,    26,    -1,    72,    -1,    -1,    72,    35,    70,    -1,
+      70,    -1,    70,    44,    55,    70,    -1,    70,    43,    55,
+      70,    -1,    70,    40,    55,    70,    -1,    70,    42,    55,
+      70,    -1,    70,    39,    55,    70,    -1,    70,    41,    55,
+      70,    -1,    70,    37,    55,    70,    -1,    70,    38,    55,
+      70,    -1,    70,    19,    55,    70,    -1,    45,    55,    70,
+      -1,    13,    55,    23,    71,    24,    -1,    15,    55,    23,
+      71,    24,    -1,    17,    55,    23,    71,    24,    -1,    53,
+      -1,    23,    55,    70,    24,    -1,    59,    -1,    20,    55,
+      34,    59,    -1,    70,    29,    55,    70,    -1,    70,    30,
+      55,    70,    -1,    70,    31,    55,    70,    -1,    70,    32,
+      55,    70,    -1,    70,    33,    55,    70,    -1,    29,    55,
+      70,    -1,    30,    55,    70,    -1,    14,    55,    23,    71,
+      24,    -1,    16,    55,    23,    71,    24,    -1,    49,    -1,
+      50,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    92,    92,    93,    96,    97,   100,   101,   102,   105,
-     106,   109,   110,   113,   116,   117,   120,   121,   124,   125,
-     126,   127,   128,   129,   130,   133,   134,   137,   138,   141,
-     142,   145,   148,   149,   152,   153,   154,   155,   156,   159,
-     160,   163,   164,   167,   168,   169,   170,   171,   172,   173,
-     174,   175,   176,   177,   178,   179,   180,   182,   183,   184,
-     187,   188,   189,   190,   191,   192,   193,   194,   195,   196,
-     197
+       0,   101,   101,   103,   104,   107,   108,   111,   112,   113,
+     116,   117,   120,   121,   124,   127,   128,   131,   132,   135,
+     136,   137,   138,   139,   140,   141,   144,   145,   148,   149,
+     152,   153,   156,   159,   160,   163,   164,   165,   166,   167,
+     170,   171,   174,   175,   178,   179,   180,   181,   182,   183,
+     184,   185,   186,   187,   188,   189,   190,   191,   193,   194,
+     195,   198,   199,   200,   201,   202,   203,   204,   205,   206,
+     207,   208
 };
 #endif
 
@@ -545,7 +557,7 @@ static const char *const yytname[] =
   "'}'", "'+'", "'-'", "'*'", "'/'", "'%'", "'.'", "','", "':'", "EQ",
   "NEQ", "GT", "LT", "GE", "LE", "AND", "OR", "NOT", "DOUBLEDOT", "UNARY",
   "DMSL_ERROR", "INT_VALUE", "REAL_VALUE", "STRING_VALUE", "ID_VALUE",
-  "BOOL_VALUE", "$accept", "logic", "declList", "decl", "dottedId",
+  "BOOL_VALUE", "$accept", "M", "logic", "declList", "decl", "dottedId",
   "identifier", "compound", "stmts", "stmtList", "stmt", "elseSt",
   "whenList", "whenListNonEmpty", "when", "otherwise", "expr", "exprList",
   "exprListNonEmpty", "boolexpr", "arithexpr", 0
@@ -569,27 +581,27 @@ static const yytype_uint16 yytoknum[] =
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    54,    55,    55,    56,    56,    57,    57,    57,    58,
-      58,    59,    59,    60,    61,    61,    62,    62,    63,    63,
-      63,    63,    63,    63,    63,    64,    64,    65,    65,    66,
-      66,    67,    68,    68,    69,    69,    69,    69,    69,    70,
-      70,    71,    71,    72,    72,    72,    72,    72,    72,    72,
-      72,    72,    72,    72,    72,    72,    72,    72,    72,    72,
+       0,    54,    55,    56,    56,    57,    57,    58,    58,    58,
+      59,    59,    60,    60,    61,    62,    62,    63,    63,    64,
+      64,    64,    64,    64,    64,    64,    65,    65,    66,    66,
+      67,    67,    68,    69,    69,    70,    70,    70,    70,    70,
+      71,    71,    72,    72,    73,    73,    73,    73,    73,    73,
       73,    73,    73,    73,    73,    73,    73,    73,    73,    73,
-      73
+      73,    74,    74,    74,    74,    74,    74,    74,    74,    74,
+      74,    74
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     1,     3,     4,     3,     3,
-       1,     1,     1,     3,     1,     0,     2,     1,     5,     6,
-       2,     2,     2,     4,     1,     2,     0,     1,     0,     2,
-       1,     3,     2,     0,     1,     1,     3,     3,     3,     1,
-       0,     3,     1,     3,     3,     3,     3,     3,     3,     3,
-       3,     3,     2,     4,     4,     4,     1,     3,     1,     3,
-       3,     3,     3,     3,     3,     2,     2,     4,     4,     1,
-       1
+       0,     2,     0,     1,     0,     2,     1,     4,     5,     4,
+       3,     1,     1,     1,     3,     1,     0,     2,     1,     6,
+       7,     3,     3,     3,     5,     1,     2,     0,     1,     0,
+       2,     1,     4,     3,     0,     1,     1,     3,     3,     3,
+       1,     0,     3,     1,     4,     4,     4,     4,     4,     4,
+       4,     4,     4,     3,     5,     5,     5,     1,     4,     1,
+       4,     4,     4,     4,     4,     4,     3,     3,     5,     5,
+       1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -597,156 +609,182 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       3,     0,     0,     0,     0,     2,     5,    11,    12,     0,
-       0,     0,     1,     4,    15,     6,     0,     0,     0,     0,
-       0,     0,     0,     0,    40,    40,     0,     0,     0,    69,
-      70,    56,    58,    10,     8,    34,    35,     0,     0,     0,
-       0,     0,     0,    24,     0,    14,    17,     0,    34,    40,
-      40,    40,    40,    40,     0,     0,    42,     0,    39,     0,
-      65,    66,    52,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    34,
-       0,    20,    21,    22,    40,    13,    16,     0,     0,     0,
-       0,     0,    59,    57,    38,     0,    37,     9,    51,    60,
-      61,    62,    63,    64,    49,    50,    47,    45,    48,    46,
-      44,    43,    36,     0,    28,     0,    53,    67,    54,    68,
-      55,    41,    26,     0,    33,    27,    30,    23,     0,    18,
-       0,     0,     0,    29,    25,    31,    32,    19
+       4,     0,     0,     0,     0,     3,     6,    12,    13,     2,
+       2,     2,     1,     5,     0,     0,     0,    16,     7,     0,
+       2,     2,     2,     2,     2,     2,     2,    41,    41,     2,
+       2,     2,    70,    71,    57,    59,    11,     9,    35,    36,
+       2,     2,     2,     2,     2,     2,    25,     0,    15,    18,
+       0,    35,     0,     0,     0,     0,     0,     0,     0,    43,
+       0,    40,     0,     0,     0,     0,     0,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     0,     0,     0,     0,     0,     0,     0,    14,    17,
+      41,    41,    41,    41,    41,     0,     0,    39,     0,    38,
+      66,    67,    53,    10,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    37,    35,
+       0,    21,    22,    23,    41,     0,     0,     0,     0,     0,
+      60,    58,    42,    52,    61,    62,    63,    64,    65,    50,
+      51,    48,    46,    49,    47,    45,    44,     0,    29,     0,
+      54,    68,    55,    69,    56,    27,     2,    34,    28,    31,
+      24,     0,    19,     0,     2,     0,    30,    26,     0,     0,
+      20,    32,    33
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     4,     5,     6,    32,    33,    43,    44,    45,    46,
-     129,   124,   125,   126,   132,    56,    57,    58,    35,    36
+      -1,    14,     4,     5,     6,    35,    36,    46,    47,    48,
+      49,   162,   157,   158,   159,   165,    59,    60,    61,    38,
+      39
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -44
+#define YYPACT_NINF -66
 static const yytype_int16 yypact[] =
 {
-      21,   -38,   -38,   -38,     4,    21,   -44,   -44,   -44,   -16,
-     -25,   120,   -44,   -44,    68,   -44,   120,    -5,    -3,    -2,
-       2,    17,     7,   120,   120,   120,   120,   120,   120,   -44,
-     -44,   -44,    10,   -44,   207,   -44,   -44,   120,   120,   120,
-     120,   120,    22,   -44,    20,    68,   -44,   207,     1,   120,
-     120,   120,   120,   120,   -38,   155,   207,    23,    12,    24,
-     -44,   -44,   122,   -38,   120,   120,   120,   120,   120,   120,
-     120,   120,   120,   120,   120,   120,   120,   120,   120,    44,
-     181,   207,   207,   207,   120,   -44,   -44,    26,    27,    48,
-      49,    51,    10,   -44,   -44,   120,   -44,   -44,   251,     0,
-       0,   -44,   -44,   -44,   269,   269,   274,   274,   274,   274,
-     122,   233,   292,    68,    69,    57,   -44,   -44,   -44,   -44,
-     -44,   207,    77,   120,    75,    69,   -44,   -44,    68,   -44,
-      86,    68,    60,   -44,   -44,   -44,   -44,   -44
+      23,   -49,   -49,   -49,     9,    23,   -66,   -66,   -66,   -66,
+     -66,   -66,   -66,   -66,   -20,   -18,   172,    88,   -66,   172,
+     -66,   -66,   -66,   -66,   -66,   -66,   -66,   172,   172,   -66,
+     -66,   -66,   -66,   -66,   -66,   -11,   -66,   259,   -66,   -66,
+     -66,   -66,   -66,   -66,   -66,   -66,   -66,     1,    88,   -66,
+     259,     4,     6,    14,    19,    26,    27,    -6,   172,   259,
+      12,     8,    24,   172,   172,   172,   -49,   -66,   -66,   -66,
+     -66,   -66,   -66,   -66,   -66,   -66,   -66,   -66,   -66,   -66,
+     -66,   172,   172,   172,   172,   172,   172,    28,   -66,   -66,
+     172,   172,   172,   172,   172,   -49,   207,   -66,   172,   -66,
+     -66,   -66,   174,   -66,   172,   172,   172,   172,   172,   172,
+     172,   172,   172,   172,   172,   172,   172,   172,   326,    49,
+     233,   259,   259,   259,   172,    30,    31,    32,    48,    50,
+     -11,   -66,   259,   303,    15,    15,   -66,   -66,   -66,   321,
+     321,   344,   344,   344,   344,   174,   285,    88,    66,    51,
+     -66,   -66,   -66,   -66,   -66,    71,   -66,    69,    66,   -66,
+     -66,    88,   -66,   172,   -66,    53,   -66,   -66,   138,    88,
+     -66,   -66,   -66
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -44,   -44,   -44,    85,    37,     5,    90,   -44,   -44,   -43,
-     -44,   -44,   -44,   -31,   -44,   -11,   -15,   -44,   -13,   -44
+     -66,   -10,   -66,   -66,    76,   -13,     5,    78,   -66,   -66,
+      -8,   -66,   -66,   -66,   -65,   -66,    20,    -4,   -66,    -2,
+     -66
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule which
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
-#define YYTABLE_NINF -8
+#define YYTABLE_NINF -9
 static const yytype_int16 yytable[] =
 {
-      34,    -7,    86,    48,    12,    47,     9,    10,    11,    14,
-      59,    16,    55,     7,     8,    60,    61,    62,    49,    -7,
-      50,    51,    -7,    -7,    79,    52,    47,    80,    81,    82,
-      83,    67,    68,    69,    87,    88,    89,    90,    91,     1,
-      53,    54,     2,     3,    63,    84,    85,    95,   113,    94,
-     116,   117,    96,    98,    99,   100,   101,   102,   103,   104,
-     105,   106,   107,   108,   109,   110,   111,   112,    97,   115,
-     122,    37,   118,   119,    38,   120,   123,    39,    40,    41,
-      42,   127,   128,   131,   121,   134,   137,   135,   136,    37,
-      13,    92,    38,    14,   133,    39,    40,    41,    42,    15,
-       0,     0,     0,     0,     0,    64,     0,     0,     0,     0,
-       0,    14,   130,     0,     0,    65,    66,    67,    68,    69,
-       0,     0,     0,    70,    71,    72,    73,    74,    75,    76,
-      77,     0,    78,    17,    18,    19,    20,    21,     0,     0,
-      22,    64,     0,    23,     0,    24,     0,    25,     0,    26,
-      27,    65,    66,    67,    68,    69,     0,     0,     0,    70,
-      71,    72,    73,    74,    75,    28,     0,     0,    78,    29,
-      30,     7,     8,    31,    64,     0,     0,     0,     0,    93,
-       0,     0,     0,     0,    65,    66,    67,    68,    69,     0,
-       0,     0,    70,    71,    72,    73,    74,    75,    76,    77,
-      64,    78,     0,     0,     0,     0,   114,     0,     0,     0,
-      65,    66,    67,    68,    69,     0,     0,     0,    70,    71,
-      72,    73,    74,    75,    76,    77,    64,    78,     0,     0,
-       0,     0,     0,     0,     0,     0,    65,    66,    67,    68,
-      69,     0,     0,     0,    70,    71,    72,    73,    74,    75,
-      76,    77,    64,    78,     0,     0,     0,     0,     0,     0,
-       0,     0,    65,    66,    67,    68,    69,     0,     0,     0,
-      70,    71,    72,    73,    74,    75,    76,     0,     0,    78,
-      65,    66,    67,    68,    69,     0,     0,     0,    70,    71,
-      72,    73,    74,    75,     0,     0,     0,    78,    65,    66,
-      67,    68,    69,    65,    66,    67,    68,    69,    72,    73,
-      74,    75,     0,     0,     0,    78,     0,     0,     0,     0,
-      78,    65,    66,    67,    68,    69,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    -8
+      15,    16,     7,     8,    -8,    17,     9,    10,    11,    12,
+      52,    53,    54,    55,    56,    57,    58,    51,    19,    63,
+      64,    65,    -8,    66,    62,    -8,    -8,    88,    95,    90,
+      82,    83,    84,    85,    86,    87,    37,    91,    97,    50,
+      89,     1,    92,    98,     2,     3,    70,    71,    72,    93,
+      94,   124,    99,   147,   150,   151,   152,   104,   105,   106,
+     107,   108,   109,   110,   111,   112,   113,   114,   115,   116,
+     117,   103,   153,   156,   154,   160,   161,   164,    96,   170,
+     119,    13,   130,   100,   101,   102,   125,   126,   127,   128,
+     129,    40,    18,   166,    41,     0,     0,    42,    43,    44,
+      45,   118,    50,   120,   121,   122,   123,     0,     0,     0,
+       0,     0,     0,    17,     0,     0,     0,     0,   132,     0,
+     149,     0,     0,     0,   133,   134,   135,   136,   137,   138,
+     139,   140,   141,   142,   143,   144,   145,   146,     0,   155,
+       0,    40,     0,     0,    41,     0,   163,    42,    43,    44,
+      45,     0,     0,   167,   169,     0,     0,    67,     0,     0,
+     171,   172,     0,    17,     0,     0,     0,    68,    69,    70,
+      71,    72,     0,     0,     0,    73,    74,    75,    76,    77,
+      78,    79,    80,   168,    81,    20,    21,    22,    23,    24,
+       0,     0,    25,    67,     0,    26,     0,    27,     0,    28,
+       0,    29,    30,    68,    69,    70,    71,    72,     0,     0,
+       0,    73,    74,    75,    76,    77,    78,    31,     0,     0,
+      81,    32,    33,     7,     8,    34,    67,     0,     0,     0,
+       0,   131,     0,     0,     0,     0,    68,    69,    70,    71,
+      72,     0,     0,     0,    73,    74,    75,    76,    77,    78,
+      79,    80,    67,    81,     0,     0,     0,     0,   148,     0,
+       0,     0,    68,    69,    70,    71,    72,     0,     0,     0,
+      73,    74,    75,    76,    77,    78,    79,    80,    67,    81,
+       0,     0,     0,     0,     0,     0,     0,     0,    68,    69,
+      70,    71,    72,     0,     0,     0,    73,    74,    75,    76,
+      77,    78,    79,    80,    67,    81,     0,     0,     0,     0,
+       0,     0,     0,     0,    68,    69,    70,    71,    72,     0,
+       0,     0,    73,    74,    75,    76,    77,    78,    79,     0,
+       0,    81,    68,    69,    70,    71,    72,     0,     0,     0,
+      73,    74,    75,    76,    77,    78,     0,     0,     0,    81,
+      68,    69,    70,    71,    72,    68,    69,    70,    71,    72,
+      75,    76,    77,    78,     0,     0,     0,    81,     0,     0,
+       0,     0,    -9,    68,    69,    70,    71,    72,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      81
 };
 
 static const yytype_int16 yycheck[] =
 {
-      11,     0,    45,    16,     0,    16,     1,     2,     3,    25,
-      25,    36,    23,    51,    52,    26,    27,    28,    23,    18,
-      23,    23,    21,    22,    37,    23,    37,    38,    39,    40,
-      41,    31,    32,    33,    49,    50,    51,    52,    53,    18,
-      23,    34,    21,    22,    34,    23,    26,    35,     4,    26,
-      24,    24,    28,    64,    65,    66,    67,    68,    69,    70,
-      71,    72,    73,    74,    75,    76,    77,    78,    63,    84,
-     113,     3,    24,    24,     6,    24,     7,     9,    10,    11,
-      12,    24,     5,     8,    95,   128,    26,   130,   131,     3,
-       5,    54,     6,    25,   125,     9,    10,    11,    12,     9,
-      -1,    -1,    -1,    -1,    -1,    19,    -1,    -1,    -1,    -1,
-      -1,    25,   123,    -1,    -1,    29,    30,    31,    32,    33,
-      -1,    -1,    -1,    37,    38,    39,    40,    41,    42,    43,
-      44,    -1,    46,    13,    14,    15,    16,    17,    -1,    -1,
-      20,    19,    -1,    23,    -1,    25,    -1,    27,    -1,    29,
-      30,    29,    30,    31,    32,    33,    -1,    -1,    -1,    37,
-      38,    39,    40,    41,    42,    45,    -1,    -1,    46,    49,
-      50,    51,    52,    53,    19,    -1,    -1,    -1,    -1,    24,
-      -1,    -1,    -1,    -1,    29,    30,    31,    32,    33,    -1,
-      -1,    -1,    37,    38,    39,    40,    41,    42,    43,    44,
-      19,    46,    -1,    -1,    -1,    -1,    25,    -1,    -1,    -1,
-      29,    30,    31,    32,    33,    -1,    -1,    -1,    37,    38,
-      39,    40,    41,    42,    43,    44,    19,    46,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    29,    30,    31,    32,
+      10,    11,    51,    52,     0,    25,     1,     2,     3,     0,
+      20,    21,    22,    23,    24,    25,    26,    19,    36,    29,
+      30,    31,    18,    34,    28,    21,    22,    26,    34,    23,
+      40,    41,    42,    43,    44,    45,    16,    23,    26,    19,
+      48,    18,    23,    35,    21,    22,    31,    32,    33,    23,
+      23,    23,    28,     4,    24,    24,    24,    67,    68,    69,
+      70,    71,    72,    73,    74,    75,    76,    77,    78,    79,
+      80,    66,    24,     7,    24,    24,     5,     8,    58,    26,
+      82,     5,    95,    63,    64,    65,    90,    91,    92,    93,
+      94,     3,    14,   158,     6,    -1,    -1,     9,    10,    11,
+      12,    81,    82,    83,    84,    85,    86,    -1,    -1,    -1,
+      -1,    -1,    -1,    25,    -1,    -1,    -1,    -1,    98,    -1,
+     124,    -1,    -1,    -1,   104,   105,   106,   107,   108,   109,
+     110,   111,   112,   113,   114,   115,   116,   117,    -1,   147,
+      -1,     3,    -1,    -1,     6,    -1,   156,     9,    10,    11,
+      12,    -1,    -1,   161,   164,    -1,    -1,    19,    -1,    -1,
+     168,   169,    -1,    25,    -1,    -1,    -1,    29,    30,    31,
+      32,    33,    -1,    -1,    -1,    37,    38,    39,    40,    41,
+      42,    43,    44,   163,    46,    13,    14,    15,    16,    17,
+      -1,    -1,    20,    19,    -1,    23,    -1,    25,    -1,    27,
+      -1,    29,    30,    29,    30,    31,    32,    33,    -1,    -1,
+      -1,    37,    38,    39,    40,    41,    42,    45,    -1,    -1,
+      46,    49,    50,    51,    52,    53,    19,    -1,    -1,    -1,
+      -1,    24,    -1,    -1,    -1,    -1,    29,    30,    31,    32,
       33,    -1,    -1,    -1,    37,    38,    39,    40,    41,    42,
-      43,    44,    19,    46,    -1,    -1,    -1,    -1,    -1,    -1,
+      43,    44,    19,    46,    -1,    -1,    -1,    -1,    25,    -1,
       -1,    -1,    29,    30,    31,    32,    33,    -1,    -1,    -1,
-      37,    38,    39,    40,    41,    42,    43,    -1,    -1,    46,
-      29,    30,    31,    32,    33,    -1,    -1,    -1,    37,    38,
-      39,    40,    41,    42,    -1,    -1,    -1,    46,    29,    30,
-      31,    32,    33,    29,    30,    31,    32,    33,    39,    40,
-      41,    42,    -1,    -1,    -1,    46,    -1,    -1,    -1,    -1,
-      46,    29,    30,    31,    32,    33,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    46
+      37,    38,    39,    40,    41,    42,    43,    44,    19,    46,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    29,    30,
+      31,    32,    33,    -1,    -1,    -1,    37,    38,    39,    40,
+      41,    42,    43,    44,    19,    46,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    29,    30,    31,    32,    33,    -1,
+      -1,    -1,    37,    38,    39,    40,    41,    42,    43,    -1,
+      -1,    46,    29,    30,    31,    32,    33,    -1,    -1,    -1,
+      37,    38,    39,    40,    41,    42,    -1,    -1,    -1,    46,
+      29,    30,    31,    32,    33,    29,    30,    31,    32,    33,
+      39,    40,    41,    42,    -1,    -1,    -1,    46,    -1,    -1,
+      -1,    -1,    46,    29,    30,    31,    32,    33,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      46
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    18,    21,    22,    55,    56,    57,    51,    52,    59,
-      59,    59,     0,    57,    25,    60,    36,    13,    14,    15,
-      16,    17,    20,    23,    25,    27,    29,    30,    45,    49,
-      50,    53,    58,    59,    69,    72,    73,     3,     6,     9,
-      10,    11,    12,    60,    61,    62,    63,    69,    72,    23,
-      23,    23,    23,    23,    34,    69,    69,    70,    71,    70,
-      69,    69,    69,    34,    19,    29,    30,    31,    32,    33,
-      37,    38,    39,    40,    41,    42,    43,    44,    46,    72,
-      69,    69,    69,    69,    23,    26,    63,    70,    70,    70,
-      70,    70,    58,    24,    26,    35,    28,    59,    69,    69,
-      69,    69,    69,    69,    69,    69,    69,    69,    69,    69,
-      69,    69,    69,     4,    25,    70,    24,    24,    24,    24,
-      24,    69,    63,     7,    65,    66,    67,    24,     5,    64,
-      69,     8,    68,    67,    63,    63,    63,    26
+       0,    18,    21,    22,    56,    57,    58,    51,    52,    60,
+      60,    60,     0,    58,    55,    55,    55,    25,    61,    36,
+      13,    14,    15,    16,    17,    20,    23,    25,    27,    29,
+      30,    45,    49,    50,    53,    59,    60,    70,    73,    74,
+       3,     6,     9,    10,    11,    12,    61,    62,    63,    64,
+      70,    73,    55,    55,    55,    55,    55,    55,    55,    70,
+      71,    72,    71,    55,    55,    55,    34,    19,    29,    30,
+      31,    32,    33,    37,    38,    39,    40,    41,    42,    43,
+      44,    46,    55,    55,    55,    55,    55,    55,    26,    64,
+      23,    23,    23,    23,    23,    34,    70,    26,    35,    28,
+      70,    70,    70,    60,    55,    55,    55,    55,    55,    55,
+      55,    55,    55,    55,    55,    55,    55,    55,    70,    73,
+      70,    70,    70,    70,    23,    71,    71,    71,    71,    71,
+      59,    24,    70,    70,    70,    70,    70,    70,    70,    70,
+      70,    70,    70,    70,    70,    70,    70,     4,    25,    71,
+      24,    24,    24,    24,    24,    64,     7,    66,    67,    68,
+      24,     5,    65,    55,     8,    69,    68,    64,    70,    55,
+      26,    64,    64
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1272,38 +1310,38 @@ yydestruct (yymsg, yytype, yyvaluep, dm, logic)
       case 51: /* "STRING_VALUE" */
 
 /* Line 1000 of yacc.c  */
-#line 87 "Src/DecisionMakerParser.y"
+#line 96 "Src/DecisionMakerParser.y"
 	{ delete[] (yyvaluep->stringVal); };
 
 /* Line 1000 of yacc.c  */
-#line 1280 "Src/DecisionMakerBisonParser.cpp"
+#line 1318 "Src/DecisionMakerBisonParser.cpp"
 	break;
       case 52: /* "ID_VALUE" */
 
 /* Line 1000 of yacc.c  */
-#line 87 "Src/DecisionMakerParser.y"
+#line 96 "Src/DecisionMakerParser.y"
 	{ delete[] (yyvaluep->stringVal); };
 
 /* Line 1000 of yacc.c  */
-#line 1289 "Src/DecisionMakerBisonParser.cpp"
+#line 1327 "Src/DecisionMakerBisonParser.cpp"
 	break;
-      case 58: /* "dottedId" */
+      case 59: /* "dottedId" */
 
 /* Line 1000 of yacc.c  */
-#line 87 "Src/DecisionMakerParser.y"
+#line 96 "Src/DecisionMakerParser.y"
 	{ delete[] (yyvaluep->stringVal); };
 
 /* Line 1000 of yacc.c  */
-#line 1298 "Src/DecisionMakerBisonParser.cpp"
+#line 1336 "Src/DecisionMakerBisonParser.cpp"
 	break;
-      case 59: /* "identifier" */
+      case 60: /* "identifier" */
 
 /* Line 1000 of yacc.c  */
-#line 87 "Src/DecisionMakerParser.y"
+#line 96 "Src/DecisionMakerParser.y"
 	{ delete[] (yyvaluep->stringVal); };
 
 /* Line 1000 of yacc.c  */
-#line 1307 "Src/DecisionMakerBisonParser.cpp"
+#line 1345 "Src/DecisionMakerBisonParser.cpp"
 	break;
 
       default:
@@ -1608,490 +1646,497 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 92 "Src/DecisionMakerParser.y"
-    { Manage_logic_declList	(dm, logic, (yyvsp[(1) - (1)].stmtList)); ;}
+#line 101 "Src/DecisionMakerParser.y"
+    { (yyval.line) = DMSL_yylineno; ;}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 93 "Src/DecisionMakerParser.y"
-    { Manage_logic_empty	(dm, logic);	 ;}
+#line 103 "Src/DecisionMakerParser.y"
+    { Manage_logic_declList	(dm, logic, (yyvsp[(1) - (1)].stmtList)); ;}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 96 "Src/DecisionMakerParser.y"
-    { Manage_declList_declList	(dm, &(yyval.stmtList), (yyvsp[(1) - (2)].stmtList), (yyvsp[(2) - (2)].stmt));	ABORT_ON_ERROR((yyval.stmtList));	;}
+#line 104 "Src/DecisionMakerParser.y"
+    { Manage_logic_empty	(dm, logic);	 ;}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 97 "Src/DecisionMakerParser.y"
-    { Manage_declList_decl		(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmt));		ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 107 "Src/DecisionMakerParser.y"
+    { Manage_declList_declList	(dm, &(yyval.stmtList), (yyvsp[(1) - (2)].stmtList), (yyvsp[(2) - (2)].stmt));	RESULT_ACTION((yyval.stmtList));	;}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 100 "Src/DecisionMakerParser.y"
-    { Manage_decl_component	(dm, &(yyval.stmt), (yyvsp[(2) - (3)].stringVal), (yyvsp[(3) - (3)].stmt));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 108 "Src/DecisionMakerParser.y"
+    { Manage_declList_decl		(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmt));		RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 101 "Src/DecisionMakerParser.y"
-    { Manage_decl_stereotype(dm, &(yyval.stmt), (yyvsp[(2) - (4)].stringVal), (yyvsp[(4) - (4)].expr));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 111 "Src/DecisionMakerParser.y"
+    { Manage_decl_component	(dm, &(yyval.stmt), (yyvsp[(2) - (4)].stringVal), (yyvsp[(4) - (4)].stmt));	RESULT_ACTION_EX((yyval.stmt), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 102 "Src/DecisionMakerParser.y"
-    { Manage_decl_define	(dm, &(yyval.stmt), (yyvsp[(2) - (3)].stringVal), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 112 "Src/DecisionMakerParser.y"
+    { Manage_decl_stereotype(dm, &(yyval.stmt), (yyvsp[(2) - (5)].stringVal), (yyvsp[(5) - (5)].expr));	RESULT_ACTION_EX((yyval.stmt), (yyvsp[(3) - (5)].line)); ;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 105 "Src/DecisionMakerParser.y"
-    { Manage_dottedId_dottedId	(dm, &(yyval.stringVal), (yyvsp[(1) - (3)].stringVal), (yyvsp[(3) - (3)].stringVal));	ABORT_ON_ERROR((yyval.stringVal)); ;}
+#line 113 "Src/DecisionMakerParser.y"
+    { Manage_decl_define	(dm, &(yyval.stmt), (yyvsp[(2) - (4)].stringVal), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.stmt), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 106 "Src/DecisionMakerParser.y"
-    { Manage_dottedId_identifier(dm, &(yyval.stringVal), (yyvsp[(1) - (1)].stringVal));		ABORT_ON_ERROR((yyval.stringVal)); ;}
+#line 116 "Src/DecisionMakerParser.y"
+    { Manage_dottedId_dottedId	(dm, &(yyval.stringVal), (yyvsp[(1) - (3)].stringVal), (yyvsp[(3) - (3)].stringVal));	RESULT_ACTION((yyval.stringVal)); ;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 109 "Src/DecisionMakerParser.y"
-    { Manage_identifier_string	(dm, &(yyval.stringVal), (yyvsp[(1) - (1)].stringVal));	ABORT_ON_ERROR((yyval.stringVal)); ;}
+#line 117 "Src/DecisionMakerParser.y"
+    { Manage_dottedId_identifier(dm, &(yyval.stringVal), (yyvsp[(1) - (1)].stringVal));		RESULT_ACTION((yyval.stringVal)); ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 110 "Src/DecisionMakerParser.y"
-    { Manage_identifier_id		(dm, &(yyval.stringVal), (yyvsp[(1) - (1)].stringVal));	ABORT_ON_ERROR((yyval.stringVal)); ;}
+#line 120 "Src/DecisionMakerParser.y"
+    { Manage_identifier_string	(dm, &(yyval.stringVal), (yyvsp[(1) - (1)].stringVal));	RESULT_ACTION((yyval.stringVal)); ;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 113 "Src/DecisionMakerParser.y"
-    { Manage_compound(dm, &(yyval.stmt), (yyvsp[(2) - (3)].stmtList)); ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 121 "Src/DecisionMakerParser.y"
+    { Manage_identifier_id		(dm, &(yyval.stringVal), (yyvsp[(1) - (1)].stringVal));	RESULT_ACTION((yyval.stringVal)); ;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 116 "Src/DecisionMakerParser.y"
-    { Manage_stmts_stmtList	(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmtList));	ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 124 "Src/DecisionMakerParser.y"
+    { Manage_compound(dm, &(yyval.stmt), (yyvsp[(2) - (3)].stmtList)); RESULT_ACTION((yyval.stmt)); ;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 117 "Src/DecisionMakerParser.y"
-    { Manage_stmts_empty	(dm, &(yyval.stmtList));		ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 127 "Src/DecisionMakerParser.y"
+    { Manage_stmts_stmtList	(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmtList));	RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 120 "Src/DecisionMakerParser.y"
-    { Manage_stmtList_stmtList	(dm, &(yyval.stmtList), (yyvsp[(1) - (2)].stmtList), (yyvsp[(2) - (2)].stmt));	ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 128 "Src/DecisionMakerParser.y"
+    { Manage_stmts_empty	(dm, &(yyval.stmtList));		RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 121 "Src/DecisionMakerParser.y"
-    { Manage_stmtList_stmt		(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmt));		ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 131 "Src/DecisionMakerParser.y"
+    { Manage_stmtList_stmtList	(dm, &(yyval.stmtList), (yyvsp[(1) - (2)].stmtList), (yyvsp[(2) - (2)].stmt));	RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 124 "Src/DecisionMakerParser.y"
-    { Manage_stmt_if		(dm, &(yyval.stmt), (yyvsp[(2) - (5)].expr), (yyvsp[(4) - (5)].stmt), (yyvsp[(5) - (5)].stmt));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 132 "Src/DecisionMakerParser.y"
+    { Manage_stmtList_stmt		(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmt));		RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 125 "Src/DecisionMakerParser.y"
-    { Manage_stmt_case		(dm, &(yyval.stmt), (yyvsp[(2) - (6)].expr), (yyvsp[(4) - (6)].stmtList), (yyvsp[(5) - (6)].stmt));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 135 "Src/DecisionMakerParser.y"
+    { Manage_stmt_if		(dm, &(yyval.stmt), (yyvsp[(3) - (6)].expr), (yyvsp[(5) - (6)].stmt), (yyvsp[(6) - (6)].stmt));	RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (6)].line)); ;}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 126 "Src/DecisionMakerParser.y"
-    { Manage_stmt_activate	(dm, &(yyval.stmt), (yyvsp[(2) - (2)].expr));			ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 136 "Src/DecisionMakerParser.y"
+    { Manage_stmt_case		(dm, &(yyval.stmt), (yyvsp[(3) - (7)].expr), (yyvsp[(5) - (7)].stmtList), (yyvsp[(6) - (7)].stmt));	RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (7)].line)); ;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 127 "Src/DecisionMakerParser.y"
-    { Manage_stmt_cancel	(dm, &(yyval.stmt), (yyvsp[(2) - (2)].expr));			ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 137 "Src/DecisionMakerParser.y"
+    { Manage_stmt_activate	(dm, &(yyval.stmt), (yyvsp[(3) - (3)].expr));			RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (3)].line)); ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 128 "Src/DecisionMakerParser.y"
-    { Manage_stmt_evaluate	(dm, &(yyval.stmt), (yyvsp[(2) - (2)].expr));			ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 138 "Src/DecisionMakerParser.y"
+    { Manage_stmt_cancel	(dm, &(yyval.stmt), (yyvsp[(3) - (3)].expr));			RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (3)].line)); ;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 129 "Src/DecisionMakerParser.y"
-    { Manage_stmt_library	(dm, &(yyval.stmt), (yyvsp[(3) - (4)].exprList));			ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 139 "Src/DecisionMakerParser.y"
+    { Manage_stmt_evaluate	(dm, &(yyval.stmt), (yyvsp[(3) - (3)].expr));			RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (3)].line)); ;}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 130 "Src/DecisionMakerParser.y"
-    { Manage_stmt_compound	(dm, &(yyval.stmt), (yyvsp[(1) - (1)].stmt));			ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 140 "Src/DecisionMakerParser.y"
+    { Manage_stmt_library	(dm, &(yyval.stmt), (yyvsp[(4) - (5)].exprList));			RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (5)].line)); ;}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 133 "Src/DecisionMakerParser.y"
-    { Manage_elseSt_else	(dm, &(yyval.stmt), (yyvsp[(2) - (2)].stmt));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 141 "Src/DecisionMakerParser.y"
+    { Manage_stmt_compound	(dm, &(yyval.stmt), (yyvsp[(1) - (1)].stmt));			RESULT_ACTION((yyval.stmt)); ;}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 134 "Src/DecisionMakerParser.y"
-    { Manage_elseSt_empty	(dm, &(yyval.stmt));		ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 144 "Src/DecisionMakerParser.y"
+    { Manage_elseSt_else	(dm, &(yyval.stmt), (yyvsp[(2) - (2)].stmt));	RESULT_ACTION((yyval.stmt)); ;}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 137 "Src/DecisionMakerParser.y"
-    { Manage_whenList_whenListNonEmpty	(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmtList));	ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 145 "Src/DecisionMakerParser.y"
+    { Manage_elseSt_empty	(dm, &(yyval.stmt));		RESULT_ACTION((yyval.stmt)); ;}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 138 "Src/DecisionMakerParser.y"
-    { Manage_whenList_empty				(dm, &(yyval.stmtList));		ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 148 "Src/DecisionMakerParser.y"
+    { Manage_whenList_whenListNonEmpty	(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmtList));	RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 141 "Src/DecisionMakerParser.y"
-    { Manage_whenListNonEmpty_whenListNonEmpty	(dm, &(yyval.stmtList), (yyvsp[(1) - (2)].stmtList), (yyvsp[(2) - (2)].stmt));	ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 149 "Src/DecisionMakerParser.y"
+    { Manage_whenList_empty				(dm, &(yyval.stmtList));		RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 142 "Src/DecisionMakerParser.y"
-    { Manage_whenListNonEmpty_when				(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmt));		ABORT_ON_ERROR((yyval.stmtList)); ;}
+#line 152 "Src/DecisionMakerParser.y"
+    { Manage_whenListNonEmpty_whenListNonEmpty	(dm, &(yyval.stmtList), (yyvsp[(1) - (2)].stmtList), (yyvsp[(2) - (2)].stmt));	RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 145 "Src/DecisionMakerParser.y"
-    { Manage_when(dm, &(yyval.stmt), (yyvsp[(2) - (3)].expr), (yyvsp[(3) - (3)].stmt));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 153 "Src/DecisionMakerParser.y"
+    { Manage_whenListNonEmpty_when				(dm, &(yyval.stmtList), (yyvsp[(1) - (1)].stmt));		RESULT_ACTION((yyval.stmtList)); ;}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 148 "Src/DecisionMakerParser.y"
-    { Manage_otherwise_otherwise(dm, &(yyval.stmt), (yyvsp[(2) - (2)].stmt));	ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 156 "Src/DecisionMakerParser.y"
+    { Manage_when(dm, &(yyval.stmt), (yyvsp[(3) - (4)].expr), (yyvsp[(4) - (4)].stmt));	RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (4)].line)); ;}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 149 "Src/DecisionMakerParser.y"
-    { Manage_otherwise_empty	(dm, &(yyval.stmt));		ABORT_ON_ERROR((yyval.stmt)); ;}
+#line 159 "Src/DecisionMakerParser.y"
+    { Manage_otherwise_otherwise(dm, &(yyval.stmt), (yyvsp[(3) - (3)].stmt));	RESULT_ACTION_EX((yyval.stmt), (yyvsp[(2) - (3)].line)); ;}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 152 "Src/DecisionMakerParser.y"
-    { Manage_expr_boolexpr	(dm, &(yyval.expr), (yyvsp[(1) - (1)].expr));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 160 "Src/DecisionMakerParser.y"
+    { Manage_otherwise_empty	(dm, &(yyval.stmt));		RESULT_ACTION((yyval.stmt)); ;}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 153 "Src/DecisionMakerParser.y"
-    { Manage_expr_arithexpr	(dm, &(yyval.expr), (yyvsp[(1) - (1)].expr));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 163 "Src/DecisionMakerParser.y"
+    { Manage_expr_boolexpr	(dm, &(yyval.expr), (yyvsp[(1) - (1)].expr));		RESULT_ACTION((yyval.expr)); ;}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 154 "Src/DecisionMakerParser.y"
-    { Manage_expr_doubledot	(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 164 "Src/DecisionMakerParser.y"
+    { Manage_expr_arithexpr	(dm, &(yyval.expr), (yyvsp[(1) - (1)].expr));		RESULT_ACTION((yyval.expr)); ;}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 155 "Src/DecisionMakerParser.y"
-    { Manage_expr_set		(dm, &(yyval.expr), (yyvsp[(2) - (3)].exprList));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 165 "Src/DecisionMakerParser.y"
+    { Manage_expr_doubledot	(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	RESULT_ACTION((yyval.expr)); ;}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 156 "Src/DecisionMakerParser.y"
-    { Manage_expr_rangelist	(dm, &(yyval.expr), (yyvsp[(2) - (3)].exprList));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 166 "Src/DecisionMakerParser.y"
+    { Manage_expr_set		(dm, &(yyval.expr), (yyvsp[(2) - (3)].exprList));		RESULT_ACTION((yyval.expr)); ;}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 159 "Src/DecisionMakerParser.y"
-    { Manage_exprList_exprListNonEmpty	(dm, &(yyval.exprList), (yyvsp[(1) - (1)].exprList));	ABORT_ON_ERROR((yyval.exprList)); ;}
+#line 167 "Src/DecisionMakerParser.y"
+    { Manage_expr_rangelist	(dm, &(yyval.expr), (yyvsp[(2) - (3)].exprList));		RESULT_ACTION((yyval.expr)); ;}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 160 "Src/DecisionMakerParser.y"
-    { Manage_exprList_empty				(dm, &(yyval.exprList));		ABORT_ON_ERROR((yyval.exprList)); ;}
+#line 170 "Src/DecisionMakerParser.y"
+    { Manage_exprList_exprListNonEmpty	(dm, &(yyval.exprList), (yyvsp[(1) - (1)].exprList));	RESULT_ACTION((yyval.exprList)); ;}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 163 "Src/DecisionMakerParser.y"
-    { Manage_exprListNonEmpty_exprListNonEmpty	(dm, &(yyval.exprList), (yyvsp[(1) - (3)].exprList), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.exprList)); ;}
+#line 171 "Src/DecisionMakerParser.y"
+    { Manage_exprList_empty				(dm, &(yyval.exprList));		RESULT_ACTION((yyval.exprList)); ;}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 164 "Src/DecisionMakerParser.y"
-    { Manage_exprListNonEmpty_expr				(dm, &(yyval.exprList), (yyvsp[(1) - (1)].expr));		ABORT_ON_ERROR((yyval.exprList)); ;}
+#line 174 "Src/DecisionMakerParser.y"
+    { Manage_exprListNonEmpty_exprListNonEmpty	(dm, &(yyval.exprList), (yyvsp[(1) - (3)].exprList), (yyvsp[(3) - (3)].expr));	RESULT_ACTION((yyval.exprList)); ;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 167 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_or			(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 175 "Src/DecisionMakerParser.y"
+    { Manage_exprListNonEmpty_expr				(dm, &(yyval.exprList), (yyvsp[(1) - (1)].expr));		RESULT_ACTION((yyval.exprList)); ;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 168 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_and			(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 178 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_or			(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 169 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_lessThan		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 179 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_and			(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 170 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_lessEqual		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 180 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_lessThan		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 171 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_greaterThan	(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 181 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_lessEqual		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 172 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_greaterEqual	(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 182 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_greaterThan	(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 173 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_equal			(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 183 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_greaterEqual	(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 174 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_notEqual		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 184 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_equal			(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 175 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_in			(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 185 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_notEqual		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 176 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_not			(dm, &(yyval.expr), (yyvsp[(2) - (2)].expr));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 186 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_in			(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 177 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_isactive		(dm, &(yyval.expr), (yyvsp[(3) - (4)].exprList));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 187 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_not			(dm, &(yyval.expr), (yyvsp[(3) - (3)].expr));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (3)].line)); ;}
     break;
 
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 178 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_hasattr		(dm, &(yyval.expr), (yyvsp[(3) - (4)].exprList));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 188 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_isactive		(dm, &(yyval.expr), (yyvsp[(4) - (5)].exprList));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (5)].line)); ;}
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 179 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_cansupport	(dm, &(yyval.expr), (yyvsp[(3) - (4)].exprList));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 189 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_hasattr		(dm, &(yyval.expr), (yyvsp[(4) - (5)].exprList));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (5)].line)); ;}
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 180 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_bool			(dm, &(yyval.expr), (yyvsp[(1) - (1)].boolVal));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 190 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_cansupport	(dm, &(yyval.expr), (yyvsp[(4) - (5)].exprList));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (5)].line)); ;}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 182 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_parenthesis	(dm, &(yyval.expr), (yyvsp[(2) - (3)].expr));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 191 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_bool			(dm, &(yyval.expr), (yyvsp[(1) - (1)].boolVal));		RESULT_ACTION((yyval.expr)); ;}
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 183 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_dottedId		(dm, &(yyval.expr), (yyvsp[(1) - (1)].stringVal));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 193 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_parenthesis	(dm, &(yyval.expr), (yyvsp[(3) - (4)].expr));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (4)].line)); ;}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 184 "Src/DecisionMakerParser.y"
-    { Manage_boolexpr_params		(dm, &(yyval.expr), (yyvsp[(3) - (3)].stringVal));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 194 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_dottedId		(dm, &(yyval.expr), (yyvsp[(1) - (1)].stringVal));		RESULT_ACTION((yyval.expr)); ;}
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 187 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_add		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 195 "Src/DecisionMakerParser.y"
+    { Manage_boolexpr_params		(dm, &(yyval.expr), (yyvsp[(4) - (4)].stringVal));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (4)].line)); ;}
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 188 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_sub		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 198 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_add		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 189 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_mul		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 199 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_sub		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 190 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_div		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 200 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_mul		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 191 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_mod		(dm, &(yyval.expr), (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr));	ABORT_ON_ERROR((yyval.expr)); ;}
+#line 201 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_div		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 192 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_uplus	(dm, &(yyval.expr), (yyvsp[(2) - (2)].expr));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 202 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_mod		(dm, &(yyval.expr), (yyvsp[(1) - (4)].expr), (yyvsp[(4) - (4)].expr));	RESULT_ACTION_EX((yyval.expr), (yyvsp[(3) - (4)].line)); ;}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 193 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_uminus	(dm, &(yyval.expr), (yyvsp[(2) - (2)].expr));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 203 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_uplus	(dm, &(yyval.expr), (yyvsp[(3) - (3)].expr));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (3)].line)); ;}
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 194 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_tonumber	(dm, &(yyval.expr), (yyvsp[(3) - (4)].exprList));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 204 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_uminus	(dm, &(yyval.expr), (yyvsp[(3) - (3)].expr));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (3)].line)); ;}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 195 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_random	(dm, &(yyval.expr), (yyvsp[(3) - (4)].exprList));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 205 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_tonumber	(dm, &(yyval.expr), (yyvsp[(4) - (5)].exprList));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (5)].line)); ;}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 196 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_int		(dm, &(yyval.expr), (yyvsp[(1) - (1)].intVal));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 206 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_random	(dm, &(yyval.expr), (yyvsp[(4) - (5)].exprList));		RESULT_ACTION_EX((yyval.expr), (yyvsp[(2) - (5)].line)); ;}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 197 "Src/DecisionMakerParser.y"
-    { Manage_arithexpr_real		(dm, &(yyval.expr), (yyvsp[(1) - (1)].realVal));		ABORT_ON_ERROR((yyval.expr)); ;}
+#line 207 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_int		(dm, &(yyval.expr), (yyvsp[(1) - (1)].intVal));		RESULT_ACTION((yyval.expr)); ;}
+    break;
+
+  case 71:
+
+/* Line 1455 of yacc.c  */
+#line 208 "Src/DecisionMakerParser.y"
+    { Manage_arithexpr_real		(dm, &(yyval.expr), (yyvsp[(1) - (1)].realVal));		RESULT_ACTION((yyval.expr)); ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2095 "Src/DecisionMakerBisonParser.cpp"
+#line 2140 "Src/DecisionMakerBisonParser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2303,7 +2348,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 199 "Src/DecisionMakerParser.y"
+#line 210 "Src/DecisionMakerParser.y"
 
 
 

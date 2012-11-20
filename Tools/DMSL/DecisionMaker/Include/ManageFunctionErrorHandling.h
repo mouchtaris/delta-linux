@@ -90,6 +90,14 @@
 		)																	\
 	)
 
+#define SET_ERROR_WITH_FIVE_ARGS(var, error, arg1, arg2, arg3, arg4, arg5)	\
+	var->SetError(															\
+		util::MakeString(													\
+			DecisionMaker::GetConfiguration().GetStringAttribute(error),	\
+			arg1, arg2, arg3, arg4, arg5									\
+		)																	\
+	)
+
 //*************************************************************************
 
 #define APPEND_WARNING_WITH_ZERO_ARGS(var, warn)						\

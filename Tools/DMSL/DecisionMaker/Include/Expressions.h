@@ -48,6 +48,7 @@ namespace dmsl {
 		typedef std::map<DecisionMaker *, bool> DestructionMap;
 		static DestructionMap staticDestruction;
 		DecisionMaker *dm;
+		unsigned line;
 	protected:
 		DecisionMaker *	GetDecisionMaker(void) const { return dm; }
 	public:
@@ -247,6 +248,11 @@ namespace dmsl {
 		}
 
 		/////////////////////////////////////////////////////////////////
+		// Line support
+		unsigned	GetLine (void) const	{ return line; }
+		void		SetLine	(unsigned line) { this->line = line; }
+
+		/////////////////////////////////////////////////////////////////
 		// Pure virtual members.
 		//
 		virtual ExprType			GetType				(void)				const = 0;
@@ -254,8 +260,8 @@ namespace dmsl {
 		virtual DependencyList		CreateDependencies	(void)				const = 0;
 		virtual const std::string	ConvertToString		(void)				const = 0;
 
-		Expression (DecisionMaker *dm) : dm(dm)	{ expressions[dm].push_back(this);	}
-		virtual ~Expression()					{ expressions[dm].remove(this);		}
+		Expression (DecisionMaker *dm) : dm(dm), line(0)	{ expressions[dm].push_back(this);	}
+		virtual ~Expression()								{ expressions[dm].remove(this);		}
 	};
 
 	/////////////////////////////////////////////////////////////////

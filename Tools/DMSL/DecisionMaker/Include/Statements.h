@@ -55,6 +55,7 @@ namespace dmsl {
 		typedef std::map<DecisionMaker *, StmtListList> StatementListMap;
 		static StatementListMap stmtLists;
 		DecisionMaker *dm;
+		unsigned line;
 	protected:
 		DecisionMaker *	GetDecisionMaker(void) const { return dm; }
 	public:
@@ -117,6 +118,11 @@ namespace dmsl {
 		}
 
 		/////////////////////////////////////////////////////////////////
+		// Line support
+		unsigned	GetLine (void) const	{ return line; }
+		void		SetLine	(unsigned line) { this->line = line; }
+
+		/////////////////////////////////////////////////////////////////
 		// Pure abstract members.
 		//
 		virtual StmtType			GetType				(void)							const = 0;
@@ -125,8 +131,8 @@ namespace dmsl {
 		virtual DependencyList		CreateDependencies	(DecisionMaker *dm)				const = 0;
 		virtual const std::string	ConvertToString		(unsigned int depth)			const = 0;
 
-		Statement (DecisionMaker *dm) : dm(dm) 	{ statements[dm].push_back(this);	}
-		virtual ~Statement()					{ statements[dm].remove(this);		}
+		Statement (DecisionMaker *dm) : dm(dm), line(0) { statements[dm].push_back(this);	}
+		virtual ~Statement()							{ statements[dm].remove(this);		}
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,7 +373,7 @@ namespace dmsl {
 	//
 	class ActivateFunctor {
 	public:
-		bool operator()(DecisionMaker *dm, ExprValue& val) const {
+		bool operator()(DecisionMaker *dm, const Statement*, ExprValue& val) const {
 			dm->SetActiveComponent(val.GetString(), true);
 			return true;
 		}
@@ -380,7 +386,7 @@ namespace dmsl {
 
 	class CancelFunctor {
 	public:
-		bool operator()(DecisionMaker *dm, ExprValue& val) const {
+		bool operator()(DecisionMaker *dm, const Statement*, ExprValue& val) const {
 			dm->SetActiveComponent(val.GetString(), false);
 			return true;
 		}
@@ -393,12 +399,12 @@ namespace dmsl {
 
 	class EvaluateFunctor {
 	public:
-		bool operator()(DecisionMaker *dm, ExprValue& val) const {
+		bool operator()(DecisionMaker *dm, const Statement* origin, ExprValue& val) const {
 			Statement *stmt = dm->GetSymbolTable().GetComponent(val.GetString());
 			if(stmt)
 				return stmt->Evaluate(dm);
 			else {
-				SET_ERROR_WITH_ONE_ARG(dm, "EvaluationUndeclaredComponent", val.GetString().c_str());
+				SET_ERROR_WITH_TWO_ARGS(dm, "EvaluationComponentNotFound", origin->GetLine(), val.GetString().c_str());
 				return false;
 			}
 		}
@@ -439,11 +445,11 @@ namespace dmsl {
 			const OpFunctor op;
 			if (!result->IsString()) {	//only string allowed here so make the check here and not in op
 				const std::string error = result->IsError() ? " : " + result->GetError() : "";
-				SET_ERROR_WITH_THREE_ARGS(dm, "EvaluationExpressionExpected", op.Id(), "string", error.c_str());
+				SET_ERROR_WITH_FOUR_ARGS(dm, "EvaluationExpressionExpected", this->GetLine(), op.Id(), "string", error.c_str());
 				ret = false;
 			}
 			else
-				ret = op(dm, *result);
+				ret = op(dm, this, *result);
 			delete result;
 			return ret;
 		}
