@@ -260,6 +260,8 @@ namespace dmsl {
 		virtual DependencyList		CreateDependencies	(void)				const = 0;
 		virtual const std::string	ConvertToString		(void)				const = 0;
 
+		Expression& operator= (const Expression& expr) { line = expr.line; return *this; }
+
 		Expression (DecisionMaker *dm) : dm(dm), line(0)	{ expressions[dm].push_back(this);	}
 		virtual ~Expression()								{ expressions[dm].remove(this);		}
 	};
@@ -287,8 +289,11 @@ namespace dmsl {
 		ExprValue*			Evaluate			(DecisionMaker *)	const { return new ExprValue(value); }
 		DependencyList		CreateDependencies	(void)				const { return DependencyList(); }
 
-		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const
-			{ return new ConstExpression<T, Type>(dm ? dm : GetDecisionMaker(), value); }
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			Expression* result = new ConstExpression<T, Type>(dm ? dm : GetDecisionMaker(), value);
+			*result = *this;
+			return result;
+		}
 
 		ConstExpression(DecisionMaker *dm, T value) : Expression(dm), value(value) {}
 		virtual ~ConstExpression() {}
@@ -313,10 +318,12 @@ namespace dmsl {
 
 		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new SetExpression(
+			Expression* result = new SetExpression(
 				owner,
 				util::cloneContainer<ExprList>(list, std::bind2nd(std::mem_fun(&Expression::Clone), owner))
 			);
+			*result = *this;
+			return result;
 		}
 
 		SetExpression(DecisionMaker *dm, ExprList *list) : Expression(dm), list(list) {}
@@ -343,10 +350,12 @@ namespace dmsl {
 
 		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new RangeListExpression(
+			Expression* result = new RangeListExpression(
 				owner,
 				util::cloneContainer<ExprList>(list, std::bind2nd(std::mem_fun(&Expression::Clone), owner))
 			);
+			*result = *this;
+			return result;
 		}
 
 		RangeListExpression(DecisionMaker *dm, ExprList *list) : Expression(dm), list(list) {}
@@ -372,8 +381,11 @@ namespace dmsl {
 		ExprValue*		Evaluate			(DecisionMaker *dm) const;
 		DependencyList	CreateDependencies	(void)				const;
 
-		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const
-			{ return new ParamsExpression(dm ? dm : GetDecisionMaker(), name); }
+		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			Expression* result = new ParamsExpression(dm ? dm : GetDecisionMaker(), name);
+			*result = *this;
+			return result;
+		}
 
 		ParamsExpression (DecisionMaker *dm, const std::string& name) : Expression(dm), name(name) {}
 		~ParamsExpression() {}

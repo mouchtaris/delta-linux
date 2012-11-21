@@ -53,10 +53,12 @@ namespace dmsl {
 
 		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new T(
+			Expression* result = new T(
 				owner,
 				util::cloneContainer<ExprList>(list, std::bind2nd(std::mem_fun(&Expression::Clone), owner))
 			);
+			*result = *this;
+			return result;
 		}
 
 		LibfuncExpression (DecisionMaker *dm, const std::string& funcname, ExprList* list) :

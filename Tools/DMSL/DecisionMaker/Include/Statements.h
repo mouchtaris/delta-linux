@@ -131,6 +131,8 @@ namespace dmsl {
 		virtual DependencyList		CreateDependencies	(DecisionMaker *dm)				const = 0;
 		virtual const std::string	ConvertToString		(unsigned int depth)			const = 0;
 
+		Statement& operator= (const Statement& stmt) { line = stmt.line; return *this; }
+
 		Statement (DecisionMaker *dm) : dm(dm), line(0) { statements[dm].push_back(this);	}
 		virtual ~Statement()							{ statements[dm].remove(this);		}
 	};
@@ -145,8 +147,11 @@ namespace dmsl {
 		DependencyList		CreateDependencies	(DecisionMaker *)		const	{ return DependencyList(); }
 		const std::string	ConvertToString		(unsigned int depth)	const	{ return ""; }
 
-		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const
-			{ return new EmptyStatement(dm ? dm : GetDecisionMaker()); }
+		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
+			Statement* result = new EmptyStatement(dm ? dm : GetDecisionMaker());
+			*result = *this;
+			return result;
+		}
 
 		EmptyStatement(DecisionMaker *dm) : Statement(dm) {}
 	};
@@ -186,10 +191,12 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new LogicStatement(
+			Statement* result = new LogicStatement(
 				owner,
 				util::cloneContainer<StmtList>(list, std::bind2nd(std::mem_fun(&Statement::Clone), owner))
 			);
+			*result = *this;
+			return result;
 		}
 
 		LogicStatement (DecisionMaker *dm, StmtList* list) :
@@ -205,10 +212,12 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new CompoundStatement(
+			Statement* result = new CompoundStatement(
 				owner,
 				util::cloneContainer<StmtList>(list, std::bind2nd(std::mem_fun(&Statement::Clone), owner))
 			);
+			*result = *this;
+			return result;
 		}
 
 		CompoundStatement (DecisionMaker *dm, StmtList* list) :
@@ -286,7 +295,9 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new ComponentStatement(owner, name, compound->Clone(owner));
+			Statement* result = new ComponentStatement(owner, name, compound->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		//*******************************************************
@@ -324,7 +335,9 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new StereotypeStatement(owner, name, expr->Clone(owner));
+			Statement* result = new StereotypeStatement(owner, name, expr->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		StereotypeStatement (DecisionMaker *dm, const std::string& name, Expression* expr) :
@@ -360,7 +373,9 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new DefineStatement(owner, name, expr->Clone(owner));
+			Statement* result = new DefineStatement(owner, name, expr->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		DefineStatement (DecisionMaker *dm, const std::string& name, Expression* expr) :
@@ -473,7 +488,9 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new ActionStatement(owner, expr->Clone(owner));
+			Statement* result = new ActionStatement(owner, expr->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		ActionStatement (DecisionMaker *dm, Expression* expr) : Statement(dm), expr(expr) {}
@@ -500,7 +517,9 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new IfStatement(owner, expr->Clone(owner), ifSt->Clone(owner), elseSt->Clone(owner));
+			Statement* result = new IfStatement(owner, expr->Clone(owner), ifSt->Clone(owner), elseSt->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		IfStatement (DecisionMaker *dm, Expression* expr, Statement* ifSt, Statement* elseSt) :
@@ -525,7 +544,9 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new WhenStatement(owner, expr->Clone(owner), stmt->Clone(owner));
+			Statement* result = new WhenStatement(owner, expr->Clone(owner), stmt->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		WhenStatement (DecisionMaker *dm, Expression* expr, Statement* stmt) :
@@ -549,12 +570,14 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new CaseStatement(
+			Statement* result = new CaseStatement(
 				owner,
 				expr->Clone(owner),
 				util::cloneContainer<StmtList>(list, std::bind2nd(std::mem_fun(&Statement::Clone), owner)),
 				otherwise->Clone(owner)
 			);
+			*result = *this;
+			return result;
 		}
 
 		CaseStatement (DecisionMaker *dm, Expression* expr, StmtList* list, Statement* otherwise) :
@@ -576,7 +599,9 @@ namespace dmsl {
 
 		Statement* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new ExpressionStatement(owner, expr->Clone(owner));
+			Statement* result = new ExpressionStatement(owner, expr->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		ExpressionStatement (DecisionMaker *dm, Expression* expr) : Statement(dm), expr(expr) {}

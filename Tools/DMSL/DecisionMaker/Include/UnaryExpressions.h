@@ -113,7 +113,9 @@ namespace dmsl {
 
 		Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
-			return new UnaryExpression<type, OpFunctor>(owner, expr->Clone(owner));
+			Expression* result = new UnaryExpression<type, OpFunctor>(owner, expr->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		UnaryExpression (DecisionMaker *dm, Expression* expr) : Expression(dm), expr(expr) {}

@@ -381,11 +381,13 @@ namespace dmsl {
 
 		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
-			return new BinaryExpression<type, OpFunctor>(
+			Expression* result = new BinaryExpression<type, OpFunctor>(
 				owner,
 				this->GetLeft()->Clone(owner),
 				this->GetRight()->Clone(owner)
 			);
+			*result = *this;
+			return result;
 		}
 
 		BinaryExpression (DecisionMaker *dm, Expression* left, Expression* right) :
@@ -441,11 +443,13 @@ namespace dmsl {
 
 		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
-			return new LogicalBinaryExpression<type, OpFunctor>(
+			Expression* result = new LogicalBinaryExpression<type, OpFunctor>(
 				owner,
 				this->GetLeft()->Clone(owner),
 				this->GetRight()->Clone(owner)
 			);
+			*result = *this;
+			return result;
 		}
 
 		LogicalBinaryExpression (DecisionMaker *dm, Expression* left, Expression* right) :
@@ -465,11 +469,13 @@ namespace dmsl {
 
 		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : this->GetDecisionMaker();
-			return new ArithmeticBinaryExpression<type, OpFunctor>(
+			Expression* result = new ArithmeticBinaryExpression<type, OpFunctor>(
 				owner,
 				this->GetLeft()->Clone(owner),
 				this->GetRight()->Clone(owner)
 			);
+			*result = *this;
+			return result;
 		}
 
 		ArithmeticBinaryExpression (DecisionMaker *dm, Expression* left, Expression* right) :
@@ -510,7 +516,9 @@ namespace dmsl {
 
 		virtual Expression* Clone(DecisionMaker* dm = (DecisionMaker*) 0) const {
 			DecisionMaker* owner = dm ? dm : GetDecisionMaker();
-			return new AddExpression(owner, GetLeft()->Clone(owner), GetRight()->Clone(owner));
+			Expression* result = new AddExpression(owner, GetLeft()->Clone(owner), GetRight()->Clone(owner));
+			*result = *this;
+			return result;
 		}
 
 		AddExpression (DecisionMaker *dm, Expression* left, Expression* right) :
