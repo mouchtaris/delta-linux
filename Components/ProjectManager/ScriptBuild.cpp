@@ -731,7 +731,6 @@ bool Script::ResolveDependencies (
 				}
 				else
 					outDeps->push_back(newDep = producers.front());
-				DASSERT(newDep == m_buildDeps.back());
 
 				if (newDep == this)
 					BUILD_ERROR_CYCLIC_SELF_DEPENDENCY(GetSource());
