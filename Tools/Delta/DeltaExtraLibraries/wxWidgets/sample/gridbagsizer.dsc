@@ -1,0 +1,37 @@
+using wx;
+
+dll = std::dllimportdeltalib("..\\lib\\release\\" + wx::DLL);
+
+app = app_construct();
+
+function oninitfunc() {
+	frame = frame_construct(nil, "ID_ANY", "test");
+	frame.show(true);
+	sizer = gridbagsizer_construct();
+	frame.setsizer(sizer);
+	gbspan = gbspan_construct(1, 1);
+	row = 0;
+	column = 0;
+	rows = 5;
+	columns = 3;
+	for (i = 0; i < rows * columns; ++i) {
+		button = button_construct(frame, ID_ANY, "Button " + i);
+		button.setdefault();
+		gbposition = gbposition_construct(row, column);
+		sizer.add(button, gbposition, gbspan, EXPAND);
+		if (++column == columns) {
+			column = 0;
+			++row;
+		}
+	}
+
+	frame.fit();
+	frame.refresh();
+	frame.centre();
+}
+
+app_oninitadd(app, oninitfunc);
+app_start(app);
+
+std::dllunimport(dll);
+

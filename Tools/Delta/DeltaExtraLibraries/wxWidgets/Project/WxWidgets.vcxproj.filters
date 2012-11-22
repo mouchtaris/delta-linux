@@ -662,6 +662,18 @@
     <ClCompile Include="..\Src\DeltaWxBufferedPaintDC.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxGridBagSizer.cpp">
+      <Filter>Source Files\Sizers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxGBPosition.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxGBSpan.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxGBSizerItem.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\DeltaWxWidgets.h">
@@ -1256,6 +1268,18 @@
       <Filter>Header Files\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\DeltaWxBufferedPaintDC.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxGridBagSizer.h">
+      <Filter>Header Files\Sizers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxGBPosition.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxGBSpan.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxGBSizerItem.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
   </ItemGroup>

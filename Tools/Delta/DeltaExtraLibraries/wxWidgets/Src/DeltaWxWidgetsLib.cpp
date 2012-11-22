@@ -224,6 +224,10 @@ DWXWIDGETS_CFUNC void* Install (void) {
 	Install_DeltaWxScrollBar_Lib(api);
 	Install_DeltaWxPaintEvent_Lib(api);
 	Install_DeltaWxBufferedPaintDC_Lib(api);
+	Install_DeltaWxGBPosition_Lib(api);
+	Install_DeltaWxGBSpan_Lib(api);
+	Install_DeltaWxGBSizerItem_Lib(api);
+	Install_DeltaWxGridBagSizer_Lib(api);
 	return udynamiclibloader::New("CleanUp", true);	 // Explicitly supply a cleaner.
 }
 
@@ -425,6 +429,10 @@ DWXWIDGETS_CFUNC void* CleanUp (void) {
 	CleanUp_DeltaWxScrollBar_Lib();
 	CleanUp_DeltaWxPaintEvent_Lib();
 	CleanUp_DeltaWxBufferedPaintDC_Lib();
+	CleanUp_DeltaWxGBPosition_Lib();
+	CleanUp_DeltaWxGBSpan_Lib();
+	CleanUp_DeltaWxGBSizerItem_Lib();
+	CleanUp_DeltaWxGridBagSizer_Lib();
 
 	DeltaLibraryObjectCreator::DestroyAPI(api);
 	return udynamiclibloader::New("dll cleared");

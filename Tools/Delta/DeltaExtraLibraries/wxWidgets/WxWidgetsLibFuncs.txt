@@ -453,6 +453,14 @@ scrollbar					: control
 paintevent					: event
 @type
 bufferedpaintdc				: buffereddc
+@type
+gbposition
+@type
+gbspan
+@type
+gbsizeritem					: sizeritem
+@type
+gridbagsizer				: flexgridsizer
 @const
 DLL										"WxWidgets.dll"
 @const
@@ -5456,6 +5464,31 @@ gauge_setrange								(gauge:gauge,range:Number)
 gauge_setshadowwidth						(gauge:gauge,width:Number)
 gauge_setvalue								(gauge:gauge,pos:Number)
 gauge_pulse									(gauge:gauge)
+#group(wxsizer)
+gbposition_construct						():gbposition (row:Number,column:Number):gbposition
+gbposition_destruct							(gbposition:gbposition)
+gbposition_getcol							(gbposition:gbposition) : Number
+gbposition_getrow							(gbposition:gbposition) : Number
+gbposition_setcol							(gbposition:gbposition,column:Number)
+gbposition_setrow							(gbposition:gbposition,row:Number)
+gbposition_equal							(gbposition:gbposition,other:gbposition) : Bool
+gbposition_notequal							(gbposition:gbposition,other:gbposition) : Bool
+gbsizeritem_construct						(width:Number,height:Number,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem (window:window,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem (sizer:sizer,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem
+gbsizeritem_destruct						(item:gbsizeritem)
+gbsizeritem_getendpos						(item:gbsizeritem) : gbposition
+gbsizeritem_getpos							(item:gbsizeritem) : gbposition
+gbsizeritem_getspan							(item:gbsizeritem) : gbspan
+gbsizeritem_intersects						(item:gbsizeritem,other:gbsizeritem):Bool (item:gbsizeritem,pos:gbposition,span:gbspan):Bool
+gbsizeritem_setpos							(item:gbsizeritem,pos:gbposition) : Bool
+gbsizeritem_setspan							(item:gbsizeritem,span:gbspan) : Bool
+gbspan_construct							():gbspan (rowspan:Number,columnspan:Number):gbspan
+gbspan_destruct								(gbspan:gbspan)
+gbspan_getcolspan							(gbspan:gbspan) : Number
+gbspan_getrowspan							(gbspan:gbspan) : Number
+gbspan_setcolspan							(gbspan:gbspan,columnspan:Number)
+gbspan_setrowspan							(gbspan:gbspan,rowspan:Number)
+gbspan_equal								(gbspan:gbspan,other:gbspan) : Bool
+gbspan_notequal								(gbspan:gbspan,other:gbspan) : Bool
 #group(wxcontrol)
 genericdirctrl_construct					():genericdirctrl (parent:+{window,Nil}):genericdirctrl (parent:+{window,Nil},id:+{Number,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String,defaultFilter:Number):genericdirctrl
 genericdirctrl_construct					(parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String,defaultFilter:Number,name:String):genericdirctrl
@@ -5486,6 +5519,23 @@ genericvalidator_copy						(genericvalidator:genericvalidator,other:genericvalid
 genericvalidator_transferfromwindow			(genericvalidator:genericvalidator) : Bool
 genericvalidator_transfertowindow			(genericvalidator:genericvalidator) : Bool
 #group(wxsizer)
+gridbagsizer_construct						():gridbagsizer (vgap:Number):gridbagsizer (vgap:Number,hgap:Number):gridbagsizer
+gridbagsizer_destruct						(sizer:gridbagsizer)
+gridbagsizer_add							(sizer:gridbagsizer,window:+{window,Nil},pos:gbposition):sizeritem (sizer:gridbagsizer,window:+{window,Nil},pos:gbposition,span:gbspan):sizeritem (sizer:gridbagsizer,window:+{window,Nil},pos:gbposition,span:gbspan,flag:+{Number,String}):sizeritem (sizer:gridbagsizer,window:+{window,Nil},pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):sizeritem (sizer:gridbagsizer,other:+{sizer,Nil},pos:gbposition):sizeritem (sizer:gridbagsizer,other:+{sizer,Nil},pos:gbposition,span:gbspan):sizeritem (sizer:gridbagsizer,other:+{sizer,Nil},pos:gbposition,span:gbspan,flag:+{Number,String}):sizeritem (sizer:gridbagsizer,other:+{sizer,Nil},pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):sizeritem (sizer:gridbagsizer,width:Number,height:Number,pos:gbposition):sizeritem (sizer:gridbagsizer,width:Number,height:Number,pos:gbposition,span:gbspan):sizeritem
+gridbagsizer_add							(sizer:gridbagsizer,width:Number,height:Number,pos:gbposition,span:gbspan,flag:+{Number,String}):sizeritem (sizer:gridbagsizer,width:Number,height:Number,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):sizeritem (sizer:gridbagsizer,item:+{gbsizeritem,Nil}):sizeritem
+gridbagsizer_calcmin						(sizer:gridbagsizer) : size
+gridbagsizer_checkforintersection			(sizer:gridbagsizer,item:+{gbsizeritem,Nil}):Bool (sizer:gridbagsizer,item:+{gbsizeritem,Nil},excludeitem:+{gbsizeritem,Nil}):Bool (sizer:gridbagsizer,pos:gbposition,span:gbspan):Bool (sizer:gridbagsizer,pos:gbposition,span:gbspan,excludeitem:+{gbsizeritem,Nil}):Bool
+gridbagsizer_finditem						(sizer:gridbagsizer,window:+{window,Nil}):gbsizeritem (sizer:gridbagsizer,other:+{sizer,Nil}):gbsizeritem
+gridbagsizer_finditematpoint				(sizer:gridbagsizer,pt:point) : gbsizeritem
+gridbagsizer_finditematposition				(sizer:gridbagsizer,pos:gbposition) : gbsizeritem
+gridbagsizer_getcellsize					(sizer:gridbagsizer,row:Number,column:Number) : size
+gridbagsizer_getemptycellsize				(sizer:gridbagsizer) : size
+gridbagsizer_getitemposition				(sizer:gridbagsizer,window:+{window,Nil}):gbposition (sizer:gridbagsizer,other:+{sizer,Nil}):gbposition (sizer:gridbagsizer,index:Number):gbposition
+gridbagsizer_getitemspan					(sizer:gridbagsizer,window:+{window,Nil}):gbspan (sizer:gridbagsizer,other:+{sizer,Nil}):gbspan (sizer:gridbagsizer,index:Number):gbspan
+gridbagsizer_recalcsizes					(sizer:gridbagsizer)
+gridbagsizer_setemptycellsize				(sizer:gridbagsizer,size:size)
+gridbagsizer_setitemposition				(sizer:gridbagsizer,window:+{window,Nil},pos:gbposition):Bool (sizer:gridbagsizer,other:+{sizer,Nil},pos:gbposition):Bool (sizer:gridbagsizer,index:Number,pos:gbposition):Bool
+gridbagsizer_setitemspan					(sizer:gridbagsizer,window:+{window,Nil},span:gbspan):Bool (sizer:gridbagsizer,other:+{sizer,Nil},span:gbspan):Bool (sizer:gridbagsizer,index:Number,span:gbspan):Bool
 gridsizer_construct							(columns:Number):gridsizer (columns:Number,verticalGap:Number):gridsizer (columns:Number,verticalGap:Number,horizontalGap:Number):gridsizer (rows:Number,columns:Number,verticalGap:Number,horizontalGap:Number):gridsizer
 gridsizer_destruct							(gridsizer:gridsizer)
 gridsizer_getcols							(gridsizer:gridsizer) : Number
@@ -6446,7 +6496,7 @@ sizeevent_setrect							(sizeevent:sizeevent,rect:rect)
 #group(wxsizer)
 sizer_destruct								(sizer:sizer)
 sizer_add									(sizer:sizer,window:+{window,Nil}):sizeritem (sizer:sizer,window:+{window,Nil},sizerflags:sizerflags):sizeritem (sizer:sizer,window:+{window,Nil},proportion:Number):sizeritem (sizer:sizer,window:+{window,Nil},proportion:Number,flags:+{Number,String}):sizeritem (sizer:sizer,win:+{window,Nil},proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,other:sizer):sizeritem (sizer:sizer,other:sizer,sizerflags:sizerflags):sizeritem (sizer:sizer,other:sizer,proportion:Number):sizeritem (sizer:sizer,other:sizer,proportion:Number,flags:+{Number,String}):sizeritem (sizer:sizer,other:sizer,proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,width:Number,height:Number):sizeritem (sizer:sizer,width:Number,height:Number,proportion:Number):sizeritem
-sizer_add									(sizer:sizer,width:Number,height:Number,proportion:Number,flags:+{Number,String}):sizeritem (sizer:sizer,width:Number,height:Number,proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem
+sizer_add									(sizer:sizer,width:Number,height:Number,proportion:Number,flags:+{Number,String}):sizeritem (sizer:sizer,width:Number,height:Number,proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,item:sizeritem):sizeritem
 sizer_addspacer								(sizer:sizer,size:Number) : sizeritem
 sizer_addstretchspacer						(sizer:sizer):sizeritem (sizer:sizer,prop:Number):sizeritem
 sizer_calcmin								(sizer:sizer) : size
@@ -6462,13 +6512,13 @@ sizer_getposition							(sizer:sizer) : point
 sizer_getminsize							(sizer:sizer) : size
 sizer_hide									(sizer:sizer,window:+{window,Nil}):Bool (sizer:sizer,window:+{window,Nil},recursive:Bool):Bool (sizer:sizer,other:sizer):Bool (sizer:sizer,other:sizer,recursive:Bool):Bool (sizer:sizer,index:Number):Bool
 sizer_insert								(sizer:sizer,index:Number,window:+{window,Nil}):sizeritem (sizer:sizer,index:Number,window:+{window,Nil},sizerflags:sizerflags):sizeritem (sizer:sizer,index:Number,window:+{window,Nil},proportion:Number):sizeritem (sizer:sizer,index:Number,window:+{window,Nil},proportion:Number,flag:+{Number,String}):sizeritem (sizer:sizer,index:Number,window:+{window,Nil},proportion:Number,flag:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,index:Number,other:sizer):sizeritem (sizer:sizer,index:Number,other:sizer,sizerflags:sizerflags):sizeritem (sizer:sizer,index:Number,other:sizer,proportion:Number):sizeritem (sizer:sizer,index:Number,other:sizer,flag:+{Number,String}):sizeritem (sizer:sizer,index:Number,other:sizer,flag:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,index:Number,width:Number,height:Number):sizeritem (sizer:sizer,index:Number,width:Number,height:Number,proportion:Number):sizeritem
-sizer_insert								(sizer:sizer,index:Number,width:Number,height:Number,proportion:Number,flag:+{Number,String}):sizeritem (sizer:sizer,index:Number,width:Number,height:Number,proportion:Number,flag:+{Number,String},border:+{Number,String}):sizeritem
+sizer_insert								(sizer:sizer,index:Number,width:Number,height:Number,proportion:Number,flag:+{Number,String}):sizeritem (sizer:sizer,index:Number,width:Number,height:Number,proportion:Number,flag:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,index:Number,item:sizeritem):sizeritem
 sizer_insertspacer							(sizer:sizer,index:Number,size:Number) : sizeritem
 sizer_insertstretchspacer					(sizer:sizer,index:Number):sizeritem (sizer:sizer,index:Number,prop:Number):sizeritem
 sizer_isshown								(sizer:sizer,window:+{window,Nil}):Bool (sizer:sizer,other:sizer):Bool (sizer:sizer,index:Number):Bool
 sizer_layout								(sizer:sizer)
 sizer_prepend								(sizer:sizer,window:+{window,Nil}):sizeritem (sizer:sizer,window:+{window,Nil},sizerflags:sizerflags):sizeritem (sizer:sizer,window:+{window,Nil},proportion:Number):sizeritem (sizer:sizer,window:+{window,Nil},proportion:Number,flags:+{Number,String}):sizeritem (sizer:sizer,win:+{window,Nil},proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,other:sizer):sizeritem (sizer:sizer,other:sizer,sizerflags:sizerflags):sizeritem (sizer:sizer,other:sizer,proportion:Number):sizeritem (sizer:sizer,other:sizer,proportion:Number,flags:+{Number,String}):sizeritem (sizer:sizer,other:sizer,proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,width:Number,height:Number):sizeritem (sizer:sizer,width:Number,height:Number,proportion:Number):sizeritem (sizer:sizer,width:Number,height:Number,proportion:Number,flags:+{Number,String}):sizeritem
-sizer_prepend								(sizer:sizer,width:Number,height:Number,proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem
+sizer_prepend								(sizer:sizer,width:Number,height:Number,proportion:Number,flags:+{Number,String},border:+{Number,String}):sizeritem (sizer:sizer,item:sizeritem):sizeritem
 sizer_prependspacer							(sizer:sizer,size:Number) : sizeritem
 sizer_prependstretchspacer					(sizer:sizer):sizeritem (sizer:sizer,prop:Number):sizeritem
 sizer_recalcsizes							(sizer:sizer)
@@ -6496,7 +6546,7 @@ sizerflags_proportion						(sizerflags:sizerflags,proportion:Number) : sizerflag
 sizerflags_right							(sizerflags:sizerflags) : sizerflags
 sizerflags_shaped							(sizerflags:sizerflags) : sizerflags
 sizerflags_tripleborder						(sizerflags:sizerflags):sizerflags (sizerflags:sizerflags,direction:+{Number,String}):sizerflags
-sizeritem_construct							():sizerflags (window:+{window,Nil},sizerflags:sizerflags):sizerflags (sizer:+{sizer,Nil},sizerflags:sizerflags):sizerflags (window:+{window,Nil},proportion:Number,flag:+{Number,String},border:+{Number,String}):sizerflags (sizer:+{sizer,Nil},proportion:Number,flag:+{Number,String},border:+{Number,String}):sizerflags (width:Number,height:Number,proportion:Number,flag:+{Number,String},border:+{Number,String}):sizeritem
+sizeritem_construct							():sizeritem (window:+{window,Nil},sizerflags:sizerflags):sizeritem (sizer:+{sizer,Nil},sizerflags:sizerflags):sizeritem (window:+{window,Nil},proportion:Number,flag:+{Number,String},border:+{Number,String}):sizeritem (sizer:+{sizer,Nil},proportion:Number,flag:+{Number,String},border:+{Number,String}):sizeritem (width:Number,height:Number,proportion:Number,flag:+{Number,String},border:+{Number,String}):sizeritem
 sizeritem_destruct							(sizeritem:sizeritem)
 sizeritem_calcmin							(sizeritem:sizeritem) : size
 sizeritem_deletewindows						(sizeritem:sizeritem)

@@ -196,5 +196,9 @@
 #include "DeltaWxScrollBar.h"
 #include "DeltaWxPaintEvent.h"
 #include "DeltaWxBufferedPaintDC.h"
+#include "DeltaWxGBPosition.h"
+#include "DeltaWxGBSpan.h"
+#include "DeltaWxGBSizerItem.h"
+#include "DeltaWxGridBagSizer.h"
 
 #endif	// Do not add stuff beyond this point.

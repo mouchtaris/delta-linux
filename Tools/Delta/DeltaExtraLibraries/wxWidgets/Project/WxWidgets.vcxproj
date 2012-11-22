@@ -88,6 +88,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\DeltaWxBufferedPaintDC.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGBPosition.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGBSizerItem.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGBSpan.cpp" />
+    <ClCompile Include="..\Src\DeltaWxGridBagSizer.cpp" />
     <ClCompile Include="..\Src\DeltaWxPaintEvent.cpp" />
     <ClCompile Include="..\Src\DeltaWxScrollBar.cpp" />
     <ClCompile Include="..\Src\DeltaWxWidgetsLib.cpp" />
@@ -287,6 +291,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\DeltaWxBufferedPaintDC.h" />
+    <ClInclude Include="..\Include\DeltaWxGBPosition.h" />
+    <ClInclude Include="..\Include\DeltaWxGBSizerItem.h" />
+    <ClInclude Include="..\Include\DeltaWxGBSpan.h" />
+    <ClInclude Include="..\Include\DeltaWxGridBagSizer.h" />
     <ClInclude Include="..\Include\DeltaWxPaintEvent.h" />
     <ClInclude Include="..\Include\DeltaWxScrollBar.h" />
     <ClInclude Include="..\Include\DeltaWxWidgets.h" />

@@ -216,6 +216,10 @@ WX_FUNC_ARGRANGE_START(sizer_add, 2, 6, Nil)
 					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(szr, proportion, flag, border)));
 				}
 			}
+		} else
+		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, sizeritem_wr)) {
+			wxSizerItem *szrItem = (wxSizerItem*) sizeritem_wr->GetCastToNativeInstance();
+			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(szrItem)));
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(width)
@@ -409,6 +413,10 @@ WX_FUNC_ARGRANGE_START(sizer_insert, 3, 7, Nil)
 					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, szr, proportion, flag, border)));
 				}
 			}
+		} else
+		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, sizeritem_wr)) {
+			wxSizerItem *szrItem = (wxSizerItem*) sizeritem_wr->GetCastToNativeInstance();
+			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, szrItem)));
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(width)
@@ -500,6 +508,10 @@ WX_FUNC_ARGRANGE_START(sizer_prepend, 2, 6, Nil)
 					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(szr, proportion, flag, border)));
 				}
 			}
+		} else
+		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, sizeritem_wr)) {
+			wxSizerItem *szrItem = (wxSizerItem*) sizeritem_wr->GetCastToNativeInstance();
+			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(szrItem)));
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(width)
