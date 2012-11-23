@@ -670,14 +670,6 @@ static bool GetWindowVariant (void* val, DeltaValue* at)
 	return true;
 }
 
-static bool GetBestSizeCache (void* val, DeltaValue* at)
-{
-	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(win->GetBestSize())));
-	WX_SETOBJECT_EX(*at, Size, retval)
-	return true;
-}
-
 static bool GetxThumbSize (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
@@ -736,7 +728,6 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "hasCustomPalette",	&GetHasCustomPalette,	DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "virtualSize",		&GetVirtualSize,		DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "windowVariant",		&GetWindowVariant,		DELTA_GETBYSTRING_NO_PRECOND	},
-	{ "bestSizeCache",		&GetBestSizeCache,		DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "xThumbSize",			&GetxThumbSize,			DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "yThumbSize",			&GetyThumbSize,			DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "frozenness",			&GetFrozenness,			DELTA_GETBYSTRING_NO_PRECOND	}
