@@ -270,9 +270,10 @@
 namespace ide {
 
 	boost::mutex			Script::s_mutex;
-	Script::ScriptPtrList*	Script::s_allScripts	= (ScriptPtrList*) 0;
-	Script::UpToDateMap*	Script::s_upToDate		= (UpToDateMap*) 0;		// Used only upon run, not in normal build
-	Script::VisitMap*		Script::s_visitMap		= (VisitMap*) 0;		// Used only on cyclic reference path detection
+	Script::ScriptPtrList*	Script::s_allScripts				= (ScriptPtrList*) 0;
+	Script::UpToDateMap*	Script::s_upToDate					= (UpToDateMap*) 0;		// Used only upon run, not in normal build
+	Script::VisitMap*		Script::s_visitMap					= (VisitMap*) 0;		// Used only on cyclic reference path detection
+	Script::VisitMap*		Script::s_visitMapProduceCyclicPath	= (VisitMap*) 0;		// Used only on producing the cyclic path
 
 	unsigned				Script::s_buildNesting	= 0;
 	const Script*			Script::m_cleanStarter	= (Script*) 0;
@@ -288,7 +289,8 @@ Script::Script(void) :
 	m_runAutomatically				(false),
 	m_isApplication					(false),
 	m_isCleaned						(false),
-	m_upToDate						(false) {
+	m_upToDate						(false),
+	m_buildDepsResolved				(false)	{
 
 	MakeAllProperties();
 	s_allScripts->push_back(this);
@@ -381,15 +383,21 @@ EXPORTED_FUNCTION(Script, bool, Load, (const String& uri)) {
 
 /////////////////////////////////////////////////////////////////////////
 
+bool Script::DirectlyDependsOn (const Script* script) const {
+	DASSERT(m_buildDepsResolved);
+	return	this == script || 
+			std::find(m_buildDeps.begin(), m_buildDeps.end(), script) !=  m_buildDeps.end();
+}
+
 bool Script::DependsOnRecursion (const Script* from, const Script* to) {
 
-	if (std::find(from->m_buildDeps.begin(), from->m_buildDeps.end(), to) !=  from->m_buildDeps.end())
+	if (from->DirectlyDependsOn(to))
 		return true;
 
 	(*s_visitMap)[const_cast<Script*>(from)] = true;
 
 	for (ScriptPtrList::const_iterator i =  from->m_buildDeps.begin(); i !=  from->m_buildDeps.end(); ++i)
-		if (s_visitMap->find(*i) == s_visitMap->end() && (*i)->DependsOn(to))
+		if (s_visitMap->find(*i) == s_visitMap->end() && DependsOnRecursion(*i, to))
 			return true;
 	return false;
 }
@@ -434,20 +442,22 @@ bool Script::HasAnyCyclicDependencies (const ScriptPtrList& toBuild, ScriptPtrLi
 }
 
 /////////////////////////////////////////////////////////////////////////
+// Produces path this -> target when the dep initiates from start.
 
 const std::string Script::ProcuceCyclicDependencyPathString (const Script* target, const Script* start) const {
+	VisitMap& vs = *s_visitMapProduceCyclicPath;
 	std::string curr = GetSource();
-	if (this == target)				// Reach destination.
-		if (this == start)			// Cycle is closed.
+	if (this == target)		// Reach destination.
+		if (this == start)	// Cycle is closed.
 			return curr;
-		else {						// We found path to target, so we now seek for the path to start.
-			s_visitMap->clear();	// So that we can go back target->start even on nodes over start->target
-			return curr + "->" + ProcuceCyclicDependencyPathString(start, start);
+		else {				// We found path to target, so we now seek for the path to start.
+			vs.clear();		// So that we can go back target->start even on nodes over start->target
+			return ProcuceCyclicDependencyPathString(start, start);
 		}
 	else {
 		for (ScriptPtrList::const_iterator i = m_buildDeps.begin(); i != m_buildDeps.end(); ++i)
-			if (s_visitMap->find(*i) == s_visitMap->end() && (*i)->DependsOn(target)) {
-				(*s_visitMap)[*i] = true;
+			if (vs.find(*i) == vs.end() && DependsOnRecursion(*i, target)) {
+				vs[*i] = true;
 				return curr + "->" + (*i)->ProcuceCyclicDependencyPathString(target, start);
 			}
 		DASSERT(false);
@@ -706,6 +716,7 @@ bool Script::ResolveDependencies (
 
 	DASSERT(deps.size() % 2 == 0 && (outDeps == &m_buildDeps || !outputErrors));
 	bool dependencyErrors = false;
+	m_buildDepsResolved = true;
 
 	for (StringList::const_iterator i = deps.begin(); i != deps.end(); ++i) {
 
@@ -735,10 +746,10 @@ bool Script::ResolveDependencies (
 				if (newDep == this)
 					BUILD_ERROR_CYCLIC_SELF_DEPENDENCY(GetSource());
 				else
-				if (newDep->DependsOn(this)) {	// Cyclic dependency!
-					DASSERT(s_visitMap->empty());
+				if (newDep->m_buildDepsResolved && newDep->DependsOn(this)) {	// Cyclic dependency!
+					DASSERT(s_visitMapProduceCyclicPath->empty());
 					std::string path = ProcuceCyclicDependencyPathString(newDep, this);
-					s_visitMap->clear();
+					s_visitMapProduceCyclicPath->clear();
 					BUILD_ERROR_CYCLIC_INDIRECT_DEPENDENCY(GetSource(), newDep->GetSource(), path);
 				}
 			}
@@ -952,6 +963,7 @@ void Script::ClearBuildInformation (void) {
 	m_buildInitiator		= (Script*) 0;
 	m_buildDepsSucceeded	= false;
 	m_someDepsCompiled		= false;
+	m_buildDepsResolved		= false;
 
 	m_workId.clear();
 	m_allBuildPids.clear();

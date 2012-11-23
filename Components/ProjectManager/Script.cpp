@@ -91,9 +91,10 @@ namespace ide
 	EXPORTED_STATIC(Script, void, Initialize, (void))
 	{
 		extensions.insert(std::make_pair(s_classId, ".dsc"));
-		s_allScripts	= new ScriptPtrList;
-		s_upToDate		= new UpToDateMap;
-		s_visitMap		= new VisitMap;
+		s_allScripts				= new ScriptPtrList;
+		s_upToDate					= new UpToDateMap;
+		s_visitMap					= new VisitMap;
+		s_visitMapProduceCyclicPath	= new VisitMap;
 	}
 
 	//-----------------------------------------------------------------------
@@ -110,6 +111,9 @@ namespace ide
 
 		delete s_visitMap;
 		s_visitMap = (VisitMap*) 0;
+
+		delete s_visitMapProduceCyclicPath;
+		s_visitMapProduceCyclicPath = (VisitMap*) 0;
 	}
 
 	//-----------------------------------------------------------------------

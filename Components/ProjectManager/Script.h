@@ -118,9 +118,11 @@ namespace ide
 
 		static UpToDateMap*					s_upToDate;
 		static VisitMap*					s_visitMap;
+		static VisitMap*					s_visitMapProduceCyclicPath;
 		static ScriptPtrList*				s_allScripts;
 		static unsigned						s_buildNesting;
 		ScriptPtrList						m_buildDeps;
+		bool								m_buildDepsResolved;
 		ScriptPtrList						m_buildDepsRetained;
 		StdStringList						m_externalBuildDepsRetained;
 		DeploymentDeps						m_deploymentDeps;
@@ -171,6 +173,7 @@ namespace ide
 												{ return m_isCleaned; }
 
 		bool								DependsOn (const Script* script) const;
+		bool								DirectlyDependsOn (const Script* script) const;
 		static bool							DependsOnRecursion (const Script* from, const Script* to);
 		bool								HasAnyCyclicDependencies (const ScriptPtrList& toBuild, ScriptPtrList* putCyclicHere);
 		const std::string					ProcuceCyclicDependencyPathString (const Script* target, const Script* start) const;
