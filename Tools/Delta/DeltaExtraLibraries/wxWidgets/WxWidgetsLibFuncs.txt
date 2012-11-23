@@ -5473,7 +5473,7 @@ gbposition_setcol							(gbposition:gbposition,column:Number)
 gbposition_setrow							(gbposition:gbposition,row:Number)
 gbposition_equal							(gbposition:gbposition,other:gbposition) : Bool
 gbposition_notequal							(gbposition:gbposition,other:gbposition) : Bool
-gbsizeritem_construct						(width:Number,height:Number,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem (window:window,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem (sizer:sizer,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem
+gbsizeritem_construct						():gbsizeritem (width:Number,height:Number,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem (window:window,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem (sizer:sizer,pos:gbposition,span:gbspan,flag:+{Number,String},border:Number):gbsizeritem
 gbsizeritem_destruct						(item:gbsizeritem)
 gbsizeritem_getendpos						(item:gbsizeritem) : gbposition
 gbsizeritem_getpos							(item:gbsizeritem) : gbposition
