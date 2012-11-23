@@ -130,20 +130,12 @@ class UTILLIB_CLASS uerror : public UERRORCLASS_SINGLETON {};
 #define	UCHECK_DOMINO_ERROR_EX(call, what, onerror)		\
 	if (!(call)) { onerror; ERROR_HANDLER(ucstringarg(what), domino); } else
 
-#ifdef	UHAS_EXCEPTIONS	
 #define	UXCHECK_DOMINO_ERROR(call, what)				\
 	if (true)											\
 	try { (call); }										\
 	catch (uerrorclass::udisengageexception)			\
 	{ ERROR_HANDLER(ucstringarg(what), domino); }		\
 	else
-#else
-#define	UXCHECK_DOMINO_ERROR(call, what)				\
-	if (true) {											\
-		{ call;	}										\
-		UCHECK_WHATEVER_ERROR(UERROR_ISRAISED(), what);	\
-	} else
-#endif
 
 //////////////////////////////////////////////////////////////////
 
