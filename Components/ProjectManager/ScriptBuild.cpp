@@ -740,13 +740,15 @@ bool Script::ResolveDependencies (
 					outDeps->push_back(newDep = GetScriptWithMostRecentSource(producers));
 					BUILD_WARNING_MULTIPLE_SOURCES(dbc, newDep->GetSource());
 				}
-				else
+				else {
 					outDeps->push_back(newDep = producers.front());
+					newDep->m_buildDepsResolved = true;
+				}
 
 				if (newDep == this)
 					BUILD_ERROR_CYCLIC_SELF_DEPENDENCY(GetSource());
 				else
-				if (newDep->m_buildDepsResolved && newDep->DependsOn(this)) {	// Cyclic dependency!
+				if (newDep->DependsOn(this)) {	// Cyclic dependency!
 					DASSERT(s_visitMapProduceCyclicPath->empty());
 					std::string path = ProcuceCyclicDependencyPathString(newDep, this);
 					s_visitMapProduceCyclicPath->clear();
