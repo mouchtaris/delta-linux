@@ -246,6 +246,15 @@ template <typename T> void ureset_via_default_ctor (T* t)
 	const T& Get##_attr(void) const							\
 		{ DASSERT(_inv()); return _var; }
 
+#define	UCLASSID_STD_ABSTRACT_METHOD						\
+	virtual const std::string	GetClassId (void) const = 0;
+
+#define	UCLASSID_STD_DERIVED_METHODS(_classid)				\
+	virtual const std::string	GetClassId (void) const		\
+									{ return _classid; }	\
+	static const std::string	ClassId (void)				\
+									{ return _classid; }
+
 //---------------------------------------------------------------
 
 // This template converts a constant integer to a distinct type.

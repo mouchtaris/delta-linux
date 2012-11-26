@@ -160,6 +160,69 @@ class GenericReader {
 };
 
 ///////////////////////////////////////////////////////////
+
+template <typename T> class uloaders_registry {
+	public:
+	typedef T*			(*Loader)(GenericReader& reader);
+
+	protected:
+	typedef std::map<std::string, Loader> Loaders;
+	Loaders				loaders;
+	uloaders_registry (void)
+		{}
+
+	public:
+	void				Initialise (void) 
+							{ DASSERT(loaders.empty()); }
+	void				CleanUp (void)
+							{ loaders.clear(); }
+	void				Install (Loader loader, const std::string& classId) {
+							DASSERT(loaders.find(classId) == loaders.end());
+							loaders[classId] = loader;
+						}
+	T*					Load (GenericReader& reader, const std::string& classId) const {
+							Loaders::const_iterator i = loaders.find(classId);
+							DASSERT(i != loaders.end());
+							return (*i->second)(reader);
+						}
+};
+
+///////////////////////////////////////////////////////////
+
+#define	ULOADERS_REGISTRY_SINGLETON_DEF(_class, _type)					\
+class _class : public uloaders_registry<_type> {						\
+	DFRIENDDESTRUCTOR()													\
+	private:															\
+	USINGLETON_APISTYLE_DECLARE_PRIVATEINSTANCE(_class)					\
+	public:																\
+	USINGLETON_APISTYLE_DECLARE_PUBLICSTDMETHODS						\
+	USINGLETON_APISTYLE_DECLARE_GETTER(_class)							\
+};																		\
+USINGLETON_INLINE_ACCESS_HELPER(_class)
+
+///////////////////////////////////////////////////////////
+
+#define	ULOADERS_REGISTRY_SINGLETON_IMPL(_class)						\
+	USINGLETON_APISTYLE_DEFINE_PRIVATEINSTANCE(_class)					\
+	USINGLETON_APISTYLE_IMPL_PUBLICSTDMETHODS(_class)					\
+	USINGLETON_APISTYLE_IMPL_GETTER(_class)
+
+///////////////////////////////////////////////////////////
+// Requires usage of UCLASSID_STD_ABSTRACT_METHOD in superclass
+
+#define	ULOADERS_DERIVEDF_CLASS_PUBLIC_COMMON(_class,_loaders,_classid)	\
+	UCLASSID_STD_DERIVED_METHODS(_classid)								\
+	static void					Install (void) {						\
+										_loaders##Get().Install(		\
+										&_class::Load,					\
+										_classid						\
+									);									\
+								}										\
+	virtual void				Write (GenericWriter& writer) const;	\
+	virtual void				WriteText (FILE* fp) const;				\
+	static _class*				Load (GenericReader& reader);
+
+///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
 
 class TextFileReader : public GenericReader {
