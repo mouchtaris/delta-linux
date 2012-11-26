@@ -33,7 +33,7 @@
 	static void				CleanUpReaderConstructors (void);												\
 	static void				InstallReaderConstructor (														\
 								const std::string&		classId,											\
-								ReaderConstructorFunc		ctor											\
+								ReaderConstructorFunc	ctor												\
 							);																				\
 	static _superclass*	 Construct (GenericReader& reader);													\
 	static void			 WriteClassId (GenericWriter& writer, const std::string& classId);					\
@@ -164,6 +164,7 @@ class GenericReader {
 template <typename T> class uloaders_registry {
 	public:
 	typedef T*			(*Loader)(GenericReader& reader);
+	typedef T			LoaderRetunType;
 
 	protected:
 	typedef std::map<std::string, Loader> Loaders;
@@ -220,7 +221,8 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 								}										\
 	virtual void				Write (GenericWriter& writer) const;	\
 	virtual void				WriteText (FILE* fp) const;				\
-	static _class*				Load (GenericReader& reader);
+	static _loaders::LoaderRetunType*									\
+								Load (GenericReader& reader);
 
 ///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
