@@ -16,6 +16,7 @@
 #include "ubinaryio.h"
 #include "ufiles.h"
 #include "FileReadersDefs.h"
+#include "GenericWriter.h"
 #include <string>
 #include <map>
 
@@ -177,15 +178,34 @@ template <typename T> class uloaders_registry {
 							{ DASSERT(loaders.empty()); }
 	void				CleanUp (void)
 							{ loaders.clear(); }
+
 	void				Install (Loader loader, const std::string& classId) {
 							DASSERT(loaders.find(classId) == loaders.end());
 							loaders[classId] = loader;
 						}
+
+	void				WriteClassId (GenericWriter& writer, const std::string& classId)
+							{ writer.write(classId); }
+
 	T*					Load (GenericReader& reader, const std::string& classId) const {
 							Loaders::const_iterator i = loaders.find(classId);
 							DASSERT(i != loaders.end());
 							return (*i->second)(reader);
-						}
+	}
+
+	T*					Load (GenericReader& reader) const {
+							
+							std::string				classId("<unknown class>");
+							Loaders::const_iterator i = loaders.end();
+							UCHECK_ERROR_FORMAT_DEFINE(uconstructstr("Loading %s: error in reading '%%s'!", classId.c_str()));
+
+							UCHECK_PRIMARY_ERROR_REPORT(reader.read(classId, false), "class id");
+							i = loaders.find(classId);
+							UCHECK_PRIMARY_ERROR_REPORT(i != loaders.end(), uconstructstr("invalid class id '%s'", classId.c_str()));
+
+							return (*i->second)(reader);
+							FAIL: return (T*) 0;
+	}
 };
 
 ///////////////////////////////////////////////////////////
@@ -211,18 +231,17 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 ///////////////////////////////////////////////////////////
 // Requires usage of UCLASSID_STD_ABSTRACT_METHOD in superclass
 
-#define	ULOADERS_DERIVEDF_CLASS_PUBLIC_COMMON(_class,_loaders,_classid)	\
-	UCLASSID_STD_DERIVED_METHODS(_classid)								\
-	static void					Install (void) {						\
-										_loaders##Get().Install(		\
-										&_class::Load,					\
-										_classid						\
-									);									\
-								}										\
-	virtual void				Write (GenericWriter& writer) const;	\
-	virtual void				WriteText (FILE* fp) const;				\
-	static _loaders::LoaderRetunType*									\
-								Load (GenericReader& reader);
+#define	ULOADERS_DERIVEDF_CLASS_PUBLIC_COMMON(_class,_loaders,_load,_classid)	\
+	UCLASSID_STD_DERIVED_METHODS(_classid)										\
+	static void					Install (void) {								\
+										_loaders##Get().Install(				\
+										&_class::_load,							\
+										_classid								\
+									);											\
+								}												\
+	virtual void				Write (GenericWriter& writer) const;			\
+	static _loaders::LoaderRetunType*											\
+								_load (GenericReader& reader);
 
 ///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
