@@ -191,7 +191,7 @@ template <typename T> class uloaders_registry {
 							Loaders::const_iterator i = loaders.find(classId);
 							DASSERT(i != loaders.end());
 							return (*i->second)(reader);
-	}
+						}
 
 	T*					Load (GenericReader& reader) const {
 							
@@ -205,7 +205,7 @@ template <typename T> class uloaders_registry {
 
 							return (*i->second)(reader);
 							FAIL: return (T*) 0;
-	}
+					}
 };
 
 ///////////////////////////////////////////////////////////
@@ -231,7 +231,7 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 ///////////////////////////////////////////////////////////
 // Requires usage of UCLASSID_STD_ABSTRACT_METHOD in superclass
 
-#define	ULOADERS_DERIVEDF_CLASS_PUBLIC_COMMON(_class,_loaders,_load,_classid)	\
+#define	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON(_class,_loaders,_load,_classid)	\
 	UCLASSID_STD_DERIVED_METHODS(_classid)										\
 	static void					Install (void) {								\
 										_loaders##Get().Install(				\
