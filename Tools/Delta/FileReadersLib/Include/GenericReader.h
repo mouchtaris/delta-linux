@@ -22,51 +22,6 @@
 
 ///////////////////////////////////////////////////////////
 
-#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PRIVATE_DEF(_superclass)									\
-	typedef _superclass*	(*ReaderConstructorFunc)(GenericReader& reader);								\
-	typedef std::map<std::string, ReaderConstructorFunc>	ReaderConstructors;								\
-	static ReaderConstructors*	readerConstructors;															\
-
-//**************************
-	
-#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_PUBLIC_DEF(_superclass)									\
-	static void				InitialiseReaderConstructors (void);											\
-	static void				CleanUpReaderConstructors (void);												\
-	static void				InstallReaderConstructor (														\
-								const std::string&		classId,											\
-								ReaderConstructorFunc	ctor												\
-							);																				\
-	static _superclass*	 Construct (GenericReader& reader);													\
-	static void			 WriteClassId (GenericWriter& writer, const std::string& classId);					\
-
-//**************************
-
-#define	GENERIC_READER_DECODER_CONSTRUCTOR_FACTORY_IMPL(_superclass)										\
-	_superclass::ReaderConstructors* _superclass::readerConstructors = (ReaderConstructors*) 0;				\
-	void	_superclass::InitialiseReaderConstructors (void) { unew(readerConstructors); }					\
-	void	_superclass::CleanUpReaderConstructors (void) { udelete(readerConstructors); }					\
-	/* invoke for every distinct subclass upon initialisation */											\
-	void _superclass::InstallReaderConstructor (const std::string& classId, ReaderConstructorFunc ctor)	{	\
-		DASSERT(DPTR(readerConstructors)->find(classId) == DPTR(readerConstructors)->end());				\
-		(*DPTR(readerConstructors))[classId] = ctor;														\
-	}																										\
-	/* requires the ERROR_HANDLER macro for posting primary / domino errors */								\
-	_superclass* _superclass::Construct (GenericReader& reader) {											\
-		std::string				classId;																	\
-		ReaderConstructors::iterator i = DPTR(readerConstructors)->end();									\
-		UCHECK_PRIMARY_ERROR(reader.read(classId, false), "class id");										\
-		UCHECK_PRIMARY_ERROR(																				\
-			(i = DPTR(readerConstructors)->find(classId)) != DPTR(readerConstructors)->end(),				\
-			uconstructstr("invalid class id '%s'", classId.c_str())											\
-		);																									\
-		return (*i->second)(reader);																		\
-		FAIL: return (_superclass*) 0;																		\
-	}																										\
-	void _superclass::WriteClassId (GenericWriter& writer, const std::string& classId)						\
-		{ writer.write(classId); }
-
-///////////////////////////////////////////////////////////
-
 #define	GENERIC_READER_COMMON_LOAD_STORE_METHODS_PUBLIC_DEF								\
 	bool	LoadBin (const std::string& path);											\
 	void	StoreBin (const std::string& path) const;									\
@@ -197,11 +152,16 @@ template <typename T> class uloaders_registry {
 							
 							std::string				classId("<unknown class>");
 							Loaders::const_iterator i = loaders.end();
-							UCHECK_ERROR_FORMAT_DEFINE(uconstructstr("Loading %s: error in reading '%%s'!", classId.c_str()));
+							UCHECK_ERROR_FORMAT_DEFINE(
+								uconstructstr("Loading %s: error in reading '%%s'!", classId.c_str())
+							);
 
 							UCHECK_PRIMARY_ERROR_REPORT(reader.read(classId, false), "class id");
 							i = loaders.find(classId);
-							UCHECK_PRIMARY_ERROR_REPORT(i != loaders.end(), uconstructstr("invalid class id '%s'", classId.c_str()));
+							UCHECK_PRIMARY_ERROR_REPORT(
+								i != loaders.end(), 
+								uconstructstr("invalid class id '%s'", classId.c_str())
+							);
 
 							return (*i->second)(reader);
 							FAIL: return (T*) 0;
@@ -231,17 +191,20 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 ///////////////////////////////////////////////////////////
 // Requires usage of UCLASSID_STD_ABSTRACT_METHOD in superclass
 
-#define	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON(_class,_loaders,_load,_classid)	\
-	UCLASSID_STD_DERIVED_METHODS(_classid)										\
-	static void					Install (void) {								\
-										_loaders##Get().Install(				\
-										&_class::_load,							\
-										_classid								\
-									);											\
-								}												\
-	virtual void				Write (GenericWriter& writer) const;			\
-	static _loaders::LoaderRetunType*											\
+#define	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON_NO_WRITE(_class,_loaders,_load,_classid)	\
+	UCLASSID_STD_DERIVED_METHODS(_classid)												\
+	static void					InstallLoader (void) {									\
+									_loaders##Get().Install(							\
+										&_class::_load,									\
+										_classid										\
+									);													\
+								}														\
+	static _loaders::LoaderRetunType*													\
 								_load (GenericReader& reader);
+
+#define	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON(_class,_loaders,_load,_classid)			\
+	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON_NO_WRITE(_class,_loaders,_load,_classid)		\
+	virtual void				Write (GenericWriter& writer) const;
 
 ///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
