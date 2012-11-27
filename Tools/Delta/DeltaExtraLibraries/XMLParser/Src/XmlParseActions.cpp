@@ -88,7 +88,7 @@ XmlElement* XmlLoaderActions::Manage_ElementWithContent(TagValue* STag,
 	// Clean up
 	udelete(STag);
 	udelete(ETag);
-	if (!retValue && content) // if there has been an error, also clean up "contant"
+	if (!retValue && content) // if there has been an error, also clean up "content"
 		DeltaObject::NativeCodeHelpers::GiveUp(content);
 
 	return retValue;
@@ -133,8 +133,10 @@ TagValue* XmlLoaderActions::Manage_AttlistSpaces(void)
 	return Manage_AttlistNothing();
 }
 
-DeltaObject* XmlLoaderActions::Manage_ContentElement(DeltaObject* content,
-												 XmlElement* element)
+DeltaObject* XmlLoaderActions::Manage_ContentElement
+	(
+		DeltaObject* content, XmlElement* element
+	)
 {
 	NEWPTR(DeltaObject, retValue);
 
@@ -149,10 +151,10 @@ DeltaObject* XmlLoaderActions::Manage_ContentElement(DeltaObject* content,
 	}
 
 	// (XML)element not needed any more (and nether are its included strings)
-	if (content)
-		DeltaObject::NativeCodeHelpers::GiveUp(element->GetContent());
 	if (element) {
 		DDELETE(element->GetName());
+		if (element->GetContent())
+			DeltaObject::NativeCodeHelpers::GiveUp(element->GetContent());
 		udelete(element);
 	}
 
