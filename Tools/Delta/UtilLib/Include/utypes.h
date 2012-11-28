@@ -170,6 +170,9 @@ template <typename T> void udestructor_invocation (T* t)
 template <typename T> void ureset_via_default_ctor (T* t)
 	{ udestructor_invocation(t); new (t) T(); } 
 
+template <typename T, typename C> void ureset_via_ctor_arg (T* t, const C& arg)
+	{ udestructor_invocation(t); new (t) T(arg); } 
+
 #define	UOVERLOADED_VOID_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)				\
 	void operator=(const _class& rvalue) {									\
 		if (this != &rvalue) {												\
