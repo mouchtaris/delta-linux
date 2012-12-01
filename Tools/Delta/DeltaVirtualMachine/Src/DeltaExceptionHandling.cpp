@@ -86,9 +86,11 @@ void DeltaExceptionHandling::PushFunc (DeltaVirtualMachine* vm, Context context)
 
 	trapBlockStack.push_front(currList = DNEW(TrapBlockList));
 	callStack.push_front(
-		CallContext(currVM = vm, 
-		currContext = context, 
-		ContextInfo())
+		CallContext(
+			currVM = vm, 
+			currContext = context, 
+			ContextInfo()
+		)
 	);
 	unullify(currFunc);
 
@@ -164,7 +166,8 @@ void DeltaExceptionHandling::SetUnwindingCheckers (void) const {
 	DASSERT(Invariant());
 	for (CallStack::const_iterator i = callStack.begin(); i != callStack.end(); ++i) {
 		DASSERT(IsValidCallContext(*i));
-		i->first->SetUnwindingChecker();
+		if (DeltaVirtualMachine* vm = i->first)
+			DPTR(vm)->SetUnwindingChecker();
 	}
 }
 
