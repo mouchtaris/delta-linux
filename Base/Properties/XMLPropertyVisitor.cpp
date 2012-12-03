@@ -60,18 +60,9 @@ void save_value (const std::string& id, TProperty* prop, const xml::Node& parent
 template<class TProperty>
 void load_value (const std::string& id, TProperty* prop, const xml::Node& parent)
 {
-	xml::Node node = parent.GetChild(_Id2XMLTag(id));
-	if (!node.isNull()) {
-		try {	//Backward compatibility
-			typename TProperty::ValueType value;
-			comm::decoder(util::str2std(node.GetContent())) >> value;
-			prop->SetValue(value);
-		}
-		catch(...) {
-			if (!prop->Deserialize(node.GetContent()))
-				DBGOUT << "Error loading property '" << id << "'" << DBGENDL;
-		}
-	}
+	const xml::Node node = parent.GetChild(_Id2XMLTag(id));
+	if (!node.isNull() && !prop->Deserialize(node.GetContent()))
+		DBGOUT << "Error loading property '" << id << "'" << DBGENDL;
 }
 
 ////////////////////////////////////////////////////////////////////////
