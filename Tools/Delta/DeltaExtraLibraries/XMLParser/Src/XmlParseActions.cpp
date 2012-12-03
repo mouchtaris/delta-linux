@@ -161,31 +161,6 @@ DeltaObject* XmlLoaderActions::Manage_ContentElement
 	return retValue;
 }
 
-DeltaObject* XmlLoaderActions::Manage_ContentReference(DeltaObject* content,
-												   std::string* reference)
-{
-	NEWPTR(DeltaObject, retValue);
-
-	if (content) {
-		std::string* str;
-		if ((*DPTR(reference))[0] == '#')
-			str = ReferenceTranslation::Singleton()->CharRefValue(*reference);
-		else
-			str = ReferenceTranslation::Singleton()->EntityRefValue(*reference);
-
-		DeltaValue index(CHARDATA_DOBJ_INDEX);
-		DeltaValue value(str);
-		Set(*content, index, value);
-
-		udelete(str);
-
-		retValue = content;
-	}
-
-	udelete(reference);
-	return retValue;
-}
-
 DeltaObject* XmlLoaderActions::Manage_ContentCdsect(DeltaObject* content,
 												std::string* cdsection)
 {
@@ -210,7 +185,7 @@ DeltaObject* XmlLoaderActions::Manage_ContentChardata(DeltaObject* content,
 
 	if (content) {
 		DeltaValue index(CHARDATA_DOBJ_INDEX);
-		DeltaValue value(*chardata);
+		DeltaValue value(*ReferenceTranslation::Singleton()->SubstituteReferences(DPTR(chardata)));
 		Set(*content, index, value);
 
 		retValue = content;

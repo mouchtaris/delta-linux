@@ -210,9 +210,6 @@ ETag:			LTSLASH NAME GT											{
 content:		content element											{
 																			$$ = Manage_ContentElement($1, $2);
 																		}
-				| content REFERENCE										{
-																			$$ = Manage_ContentReference($1, $2);
-																		}
 				| content CDSECT										{
 																			$$ = Manage_ContentCdsect($1, $2);
 																		}

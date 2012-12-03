@@ -86,7 +86,7 @@ EncName				[A-Za-z]([A-Za-z0-9\.\_\-])*
 EncodingDecl		{S}"encoding"{Eq}("\""{EncName}"\""|"'"{EncName}"'")
 DefaultDecl			("#REQUIRED")|("#IMPLIED")|(("#FIXED"{S})?{AttValue})
 PublicID			"PUBLIC"{S}{PubidLiteral}
-CharData			([^&<])+
+CharData			([^<])+
 /*Must not contain sub-string ']]>'. Check and if it does throw an error.*/
 
 Comment				<!--([^-]|[-][^-])*-->

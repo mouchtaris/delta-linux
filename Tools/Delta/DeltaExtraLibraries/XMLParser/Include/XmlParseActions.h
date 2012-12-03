@@ -19,7 +19,6 @@ extern TagValue*		Manage_AttlistSpaces(void);
 extern TagValue*		Manage_AttlistNothing(void);
 
 extern DeltaObject*	Manage_ContentElement(DeltaObject*, XmlElement*);
-extern DeltaObject*	Manage_ContentReference(DeltaObject*, std::string*);
 extern DeltaObject*	Manage_ContentCdsect(DeltaObject*, std::string*);
 extern DeltaObject*	Manage_ContentChardata(DeltaObject*, std::string*);
 extern DeltaObject*	Manage_ContentNothing(void);
