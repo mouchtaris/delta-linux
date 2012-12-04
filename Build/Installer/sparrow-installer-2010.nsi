@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Sparrow"
-!define PRODUCT_VERSION "1.0-rev-163"
+!define PRODUCT_VERSION "1.0-rev-404"
 !define PRODUCT_WEB_SITE "http://www.ics.forth.gr/hci/files/plang/Delta/Delta.html"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Sparrow.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -317,8 +317,6 @@ Section "Test Workspaces" SEC06
   SetOutPath "$PROFILE\Sparrow\Properties"
   File ".\Config\Shell_Config.xml"
 
-  StrCpy $3 "22 serialization::archive 4 0 0 1 0" ; String serialization prefix
-
   ; Register Recent workspaces
   FileOpen $0 "$PROFILE\Sparrow\Properties\RecentWorkspaces_Config.xml" w
   FileWrite $0 `<?xml version="1.0" encoding="utf-8"?>$\n`
@@ -329,50 +327,35 @@ Section "Test Workspaces" SEC06
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "$\t<workspace5>$3 $2 $1</workspace5>$\n"
+  FileWrite $0 "$\t<workspace5>$1</workspace5>$\n"
 
   StrCpy $1 "$PROFILE\Sparrow\Workspaces\DeltaUIGenerator\UIGenerator.wsp"
   Push $1
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "$\t<workspace4>$3 $2 $1</workspace4>$\n"
+  FileWrite $0 "$\t<workspace4>$1</workspace4>$\n"
 
   StrCpy $1 "$PROFILE\Sparrow\Workspaces\DeltaCORBA\DeltaCorba.wsp"
   Push $1
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "$\t<workspace3>$3 $2 $1</workspace3>$\n"
+  FileWrite $0 "$\t<workspace3>$1</workspace3>$\n"
 
   StrCpy $1 "$PROFILE\Sparrow\Workspaces\DeltaWxWidgets\sample_workspace.wsp"
   Push $1
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "$\t<workspace2>$3 $2 $1</workspace2>$\n"
+  FileWrite $0 "$\t<workspace2>$1</workspace2>$\n"
 
   StrCpy $1 "$PROFILE\Sparrow\Workspaces\DeltaTests\Tests.wsp"
   Push $1
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "$\t<workspace1>$3 $2 $1</workspace1>$\n"
+  FileWrite $0 "$\t<workspace1>$1</workspace1>$\n"
 
   FileWrite $0 `</PropertyTable>`
   FileClose $0
@@ -389,11 +372,8 @@ Section "Test Workspaces" SEC06
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "<path>$3 $2 $1</path>$\n"
-  FileWrite $0 `$\t$\t$\t$\t<name>$3 37 22 serialization::archive 4 0 0 3 xml</name>$\n$\t$\t$\t</value4>$\n`
+  FileWrite $0 "<path>$1</path>$\n"
+  FileWrite $0 `$\t$\t$\t$\t<name>xml</name>$\n$\t$\t$\t</value4>$\n`
 
   FileWrite $0 `$\t$\t$\t<value3>$\n$\t$\t$\t$\t`
   StrCpy $1 "$INSTDIR\DeltaExtraLibraries\WxWidgetsLibFuncs.txt"
@@ -401,11 +381,8 @@ Section "Test Workspaces" SEC06
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "<path>$3 $2 $1</path>$\n"
-  FileWrite $0 `$\t$\t$\t$\t<name>$3 36 22 serialization::archive 4 0 0 2 wx</name>$\n$\t$\t$\t</value3>$\n`
+  FileWrite $0 "<path>$1</path>$\n"
+  FileWrite $0 `$\t$\t$\t$\t<name>wx</name>$\n$\t$\t$\t</value3>$\n`
 
   FileWrite $0 `$\t$\t$\t<value2>$\n$\t$\t$\t$\t`
   StrCpy $1 "$INSTDIR\scripts\SparrowLibFuncs.txt"
@@ -413,11 +390,8 @@ Section "Test Workspaces" SEC06
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "<path>$3 $2 $1</path>$\n"
-  FileWrite $0 `$\t$\t$\t$\t<name>$3 37 22 serialization::archive 4 0 0 3 spw</name>$\n$\t$\t$\t</value2>$\n`
+  FileWrite $0 "<path>$1</path>$\n"
+  FileWrite $0 `$\t$\t$\t$\t<name>spw</name>$\n$\t$\t$\t</value2>$\n`
 
   FileWrite $0 `$\t$\t$\t<value1>$\n$\t$\t$\t$\t`
   StrCpy $1 "$INSTDIR\DeltaExtraLibraries\CorbaLibfuncs.txt"
@@ -425,11 +399,8 @@ Section "Test Workspaces" SEC06
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "<path>$3 $2 $1</path>$\n"
-  FileWrite $0 `$\t$\t$\t$\t<name>$3 39 22 serialization::archive 4 0 0 5 corba</name>$\n$\t$\t$\t</value1>$\n`
+  FileWrite $0 "<path>$1</path>$\n"
+  FileWrite $0 `$\t$\t$\t$\t<name>corba</name>$\n$\t$\t$\t</value1>$\n`
 
   FileWrite $0 `$\t$\t$\t<value0>$\n$\t$\t$\t$\t`
   StrCpy $1 "$INSTDIR\DeltaExtraLibraries\ALADINLibFuncs.txt"
@@ -437,20 +408,17 @@ Section "Test Workspaces" SEC06
   Push "\"
   Call StrSlash
   Pop $1
-  StrLen $2 "$1"
-  StrCpy $1 "22 serialization::archive 4 0 0 $2 $1"
-  StrLen $2 "$1"
-  FileWrite $0 "<path>$3 $2 $1</path>$\n"
-  FileWrite $0 `$\t$\t$\t$\t<name>$3 40 22 serialization::archive 4 0 0 6 aladin</name>$\n$\t$\t$\t</value0>$\n`
+  FileWrite $0 "<path>$1</path>$\n"
+  FileWrite $0 `$\t$\t$\t$\t<name>aladin</name>$\n$\t$\t$\t</value0>$\n`
 
   FileWrite $0 `$\t$\t</libdefs>$\n$\t</vm>$\n$\t<debugger>$\n`
-  FileWrite $0 `$\t$\t<tostring_maxlength>22 serialization::archive 4 0 0 1 0 30 22 serialization::archive 4 64</tostring_maxlength>$\n`
-  FileWrite $0 `$\t$\t<receive_variables>22 serialization::archive 4 0 0 1 0 29 22 serialization::archive 4 1</receive_variables>$\n`
+  FileWrite $0 `$\t$\t<tostring_maxlength>64</tostring_maxlength>$\n`
+  FileWrite $0 `$\t$\t<receive_variables>1</receive_variables>$\n`
   FileWrite $0 `$\t$\t<object_graph>$\n`
-  FileWrite $0 `$\t$\t$\t<expandProgramFuncs>22 serialization::archive 4 0 0 1 0 29 22 serialization::archive 4 0</expandProgramFuncs>$\n`
-  FileWrite $0 `$\t$\t$\t<expandMethodFuncs>22 serialization::archive 4 0 0 1 0 29 22 serialization::archive 4 0</expandMethodFuncs>$\n`
-  FileWrite $0 `$\t$\t$\t<expandLibraryFuncs>22 serialization::archive 4 0 0 1 0 29 22 serialization::archive 4 0</expandLibraryFuncs>$\n`
-  FileWrite $0 `$\t$\t$\t<expandFuncVMs>22 serialization::archive 4 0 0 1 0 29 22 serialization::archive 4 0</expandFuncVMs>$\n`
+  FileWrite $0 `$\t$\t$\t<expandProgramFuncs>0</expandProgramFuncs>$\n`
+  FileWrite $0 `$\t$\t$\t<expandMethodFuncs>0</expandMethodFuncs>$\n`
+  FileWrite $0 `$\t$\t$\t<expandLibraryFuncs>0</expandLibraryFuncs>$\n`
+  FileWrite $0 `$\t$\t$\t<expandFuncVMs>0</expandFuncVMs>$\n`
   FileWrite $0 `$\t$\t</object_graph>$\n$\t</debugger>$\n</PropertyTable>`
 
 SectionEnd
