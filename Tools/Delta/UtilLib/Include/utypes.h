@@ -220,22 +220,22 @@ template <typename T, typename C> void ureset_via_ctor_arg (T* t, const C& arg)
 	~_class(){}
 
 #define	UATTRIBUTEMETHOD_SCALAR(T,_var,_attr)				\
-	void Set##_attr(T _var##New) {_var = _var##New;}		\
+	void Set##_attr(T _var##New) {_var = _var##New; }		\
 	T Get##_attr(void) const {return _var;}
 
 #define	UATTRIBUTEMETHOD_AGGREGATE(T,_var,_attr)			\
 	void Set##_attr(const T& _var##New) {_var = _var##New;}	\
-	const T& Get##_attr(void) const {return _var;}
+	const T& Get##_attr(void) const {return _var; }
 
 #define	UATTRIBUTEMETHOD_SCALAR_EX(T,_var,_attr,_check)		\
 	void Set##_attr(T _var##New)							\
 		{_check(_var##New); _var = _var##New; }				\
-	T Get##_attr(void) const {return _var;}
+	T Get##_attr(void) const { return _var; }
 
 #define	UATTRIBUTEMETHOD_AGGREGATE_EX(T,_var,_attr,_check)	\
 	void Set##_attr(const T& _var##New)						\
 		{_check(_var##New); _var = _var##New; }				\
-	const T& Get##_attr(void) const {return _var;}
+	const T& Get##_attr(void) const { return _var; }
 
 #define	UATTRIBUTEMETHOD_SCALAR_INV(T,_var,_attr,_inv)		\
 	void Set##_attr(T _var##New)							\
@@ -247,6 +247,37 @@ template <typename T, typename C> void ureset_via_ctor_arg (T* t, const C& arg)
 	void Set##_attr(const T& _var##New)						\
 		{ _var = _var##New; DASSERT(_inv()); }				\
 	const T& Get##_attr(void) const							\
+		{ DASSERT(_inv()); return _var; }
+
+
+#define	UATTRIBUTEMETHOD_SELF_SCALAR(_class, T,_var,_attr)						\
+	_class& Set##_attr(T _var##New) {_var = _var##New; return *this; }			\
+	T Get##_attr(void) const {return _var;}
+
+#define	UATTRIBUTEMETHOD_SELF_AGGREGATE(_class, T,_var,_attr)					\
+	_class& Set##_attr(const T& _var##New) {_var = _var##New; return *this; }	\
+	const T& Get##_attr(void) const {return _var; }
+
+#define	UATTRIBUTEMETHOD_SELF_SCALAR_EX(_class, T,_var,_attr,_check)			\
+	_class& Set##_attr(T _var##New)												\
+		{_check(_var##New); _var = _var##New; return *this; }					\
+	T Get##_attr(void) const { return _var; }
+
+#define	UATTRIBUTEMETHOD_SELF_AGGREGATE_EX(_class, T,_var,_attr,_check)			\
+	_class& Set##_attr(const T& _var##New)										\
+		{_check(_var##New); _var = _var##New; return *this; }					\
+	const T& Get##_attr(void) const { return _var; }
+
+#define	UATTRIBUTEMETHOD_SELF_SCALAR_INV(_class, T,_var,_attr,_inv)				\
+	_class& Set##_attr(T _var##New)												\
+		{_var = _var##New; DASSERT(_inv()); return *this; }						\
+	T Get##_attr(void) const													\
+		{  DASSERT(_inv()); return _var; }
+
+#define	UATTRIBUTEMETHOD_SELF_AGGREGATE_INV(_class, T,_var,_attr,_inv)			\
+	_class& Set##_attr(const T& _var##New)										\
+		{ _var = _var##New; DASSERT(_inv()); return *this; }					\
+	const T& Get##_attr(void) const												\
 		{ DASSERT(_inv()); return _var; }
 
 #define	UCLASSID_STD_ABSTRACT_METHOD						\
