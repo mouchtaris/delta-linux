@@ -25,6 +25,8 @@ bool DeltaVirtualMachine::Load (GenericReader& reader) {
 	if (GetDebugger())
 		GetDebuggerRef().OnStartLoading();
 
+	DeltaDebugExtensionsSuper::LoopLeadingLines loopLines;
+
 	UCHECK_DOMINO_ERROR(DeltaReadVersionInformation(reader), "version information");
 	UCHECK_PRIMARY_ERROR(reader.read(srcFile, false), "source file");
 
@@ -84,9 +86,12 @@ bool DeltaVirtualMachine::Load (GenericReader& reader) {
 		PrebindLibraryFuncs(curr);
 		PrebindFunctionsOrMethods(curr);
 		
-		if (curr->line && i >= DELTA_USER_CODE_START && GetDebugger())
-			GetDebuggerRef().OnReadingLineWithCode(i, curr->line);
+		if (GetDebugger())
+			loopLines.Preprocess(*curr, i);
 	}
+
+	if (GetDebugger())
+		loopLines.Add(GetDebuggerRef());
 
 	GlobalGarbageCollection();
 	ResetTotalActualArgs();			

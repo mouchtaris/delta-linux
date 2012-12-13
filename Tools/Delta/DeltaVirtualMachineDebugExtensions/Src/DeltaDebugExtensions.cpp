@@ -570,9 +570,10 @@ void DeltaDebugExtensions::ForEachVirtualMachineInstantiateDebugExtensions (void
 		DeltaDebugLinesWithCodeHolder& lines = DPTR(debugger)->GetLines();
 		lines.Initialize(vm->GetCodeSize());
 
-		for (util_ui32 i = 0, n = vm->GetCodeSize(); i < n; ++i)
-			if (util_ui32 line = DPTR(vm)->GetInstructionLine(i))
-				lines.AddLineWithCode(line, i);
+		DeltaDebugExtensionsSuper::LoopLeadingLines loopLines;
+		for (util_ui32 i = 0, n = DPTR(vm)->GetCodeSize(); i < n; ++i)
+			loopLines.Preprocess(DPTR(vm)->GetInstruction(i), i);
+		loopLines.Add(*debugger);
 	}
 }
 

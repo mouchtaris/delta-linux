@@ -19,6 +19,36 @@ class DVM_CLASS DeltaDebugExtensionsSuper {
 	public:
 	typedef DeltaDebugExtensionsSuper* (*ConstructorFunc) (DeltaVirtualMachine*);
 
+	class LoopLeadingLines {
+
+		private:
+		typedef std::pair<DeltaCodeAddress, util_ui32> Line;
+		std::list<Line>		linesWidthCode;
+		ubag<util_ui32>		explicitLeaders;
+
+		public:
+		void Preprocess (const DeltaInstruction& curr, util_ui32 i) {
+
+			if (curr.line && i >= DELTA_USER_CODE_START)
+				linesWidthCode.push_back(Line(i, curr.line));
+
+			if (curr.GetOpCode() == DeltaVM_JUMP) {
+				util_ui32 target = curr.DELTA_OPERAND_JUMP_TARGET.GetValue();
+				if (target < i)	// jumps backwards ? likely a loop
+					explicitLeaders.insert(target);
+			}
+		}
+
+		void Add (DeltaDebugExtensionsSuper& debugger) {
+			for (std::list<Line>::iterator i = linesWidthCode.begin(); i != linesWidthCode.end(); ++i)
+				debugger.OnReadingLineWithCode(
+					i->first, 
+					i->second, 
+					explicitLeaders.in(i->first)
+				);
+		}
+	};
+
 	private:
 	static ConstructorFunc ctor;
 
@@ -39,7 +69,7 @@ class DVM_CLASS DeltaDebugExtensionsSuper {
 	virtual void	OnReturnLibraryFunction (DeltaLibraryFunc func) = 0;
 	virtual void	OnReturnProgramFunction (const std::string& name) = 0;
 	virtual void	OnInitLinesOfCodes (util_ui16 codeSize) = 0;
-	virtual void	OnReadingLineWithCode (DeltaCodeAddress addr, util_ui16 line) = 0;
+	virtual void	OnReadingLineWithCode (DeltaCodeAddress addr, util_ui16 line, bool explicitLeader) = 0;
 	virtual void	OnExecuteHandleErrorBreak (void) = 0;
 	virtual void	OnVirtualMachineDestruction (void) = 0;
 	virtual void	OnExecutionError (void) = 0;

@@ -112,7 +112,7 @@ class DeltaDebugExtensions : public DeltaDebugExtensionsSuper  {
 	virtual void			OnReturnLibraryFunction (DeltaLibraryFunc f);
 	virtual void			OnReturnProgramFunction (const std::string& name);
 	virtual void			OnInitLinesOfCodes (util_ui16 codeSize);
-	virtual void			OnReadingLineWithCode (DeltaCodeAddress addr, util_ui16 line);
+	virtual void			OnReadingLineWithCode (DeltaCodeAddress addr, util_ui16 line, bool explicitLeader);
 	virtual void			OnExecuteHandleErrorBreak (void);
 	virtual CheckBreakPointStatus		
 							OnExecuteCheckBreakPoints (void);

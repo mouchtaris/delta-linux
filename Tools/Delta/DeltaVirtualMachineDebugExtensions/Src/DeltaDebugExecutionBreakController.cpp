@@ -228,19 +228,22 @@ bool DeltaDebugExecutionBreakController::WeShouldBreakFromTraceCommand (void) {
 ////////////////////////////////////////////////////////////////////////
 
 bool DeltaDebugExecutionBreakController::WeShouldBreakDueToUserRequest (void) {
-	if (IsBreakExecutionRequested() && IsValidBreakPointLine(DPTR(vm)->Line())) {
+	if (!IsBreakExecutionRequested())
+		return false;
+	else
+	if (!THREAD_SAFE_EXPR_VALUE(GetLines().IsLeadingInstructionOfLine(DPTR(vm)->PC(), DPTR(vm)->Line())))
+		return false;
+	else {
 		SetIsBreakFromTraceCommand(false);
 		return true;
 	}
-	else
-		return false;
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 bool DeltaDebugExecutionBreakController::WeShouldBreakAtLine (util_ui16 line) {
 
-	if (!IsValidBreakPointLine(line))
+	if (!THREAD_SAFE_EXPR_VALUE(GetLines().IsLeadingInstructionOfLine(DPTR(vm)->PC(), line)))
 		return false;
 
 	std::string source(GetContext().GetSourcePath());

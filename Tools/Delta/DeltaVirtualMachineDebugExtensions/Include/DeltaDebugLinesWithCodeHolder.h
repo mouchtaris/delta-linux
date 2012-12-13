@@ -20,9 +20,7 @@
 // first line of a block of instructions sharing the line.
 //
 class DeltaDebugLinesWithCodeHolder {
-	
 	private:
-
 	class Line {
 		private:
 		util_ui16			line;
@@ -79,7 +77,7 @@ class DeltaDebugLinesWithCodeHolder {
 	void					Initialize (util_ui16 _codeSize);
 	void					Clear (void);
 
-	void					AddLineWithCode (util_ui16 line, DeltaCodeAddress pc);
+	void					AddLineWithCode (util_ui16 line, DeltaCodeAddress pc, bool explicitLeader);
 	bool					IsLeadingInstructionOfLine(DeltaCodeAddress addr, util_ui16 line) const;
 	bool					IsLineWithCode (util_ui16 line) const;
 

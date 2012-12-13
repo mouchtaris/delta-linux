@@ -35,7 +35,7 @@
 #include <list>
 #include <new>
 
-//	#define	AUTO_ASSIGN_ZERO_NUMBERED_LINES
+#define	AUTO_ASSIGN_ZERO_NUMBERED_LINES
 #define	NO_DEBUG_INFORMATION_IS_PRODUCED(sym)
 
 //-----------------------------------------------------------------

@@ -236,8 +236,8 @@ void DeltaDebugExtensions::OnInitLinesOfCodes (util_ui16 _codeSize)
 
 /////////////////////////////////////////////////////////////////////////
 
-void DeltaDebugExtensions::OnReadingLineWithCode (DeltaCodeAddress addr, util_ui16 line) 
-	{ GetLines().AddLineWithCode(line, addr); }
+void DeltaDebugExtensions::OnReadingLineWithCode (DeltaCodeAddress addr, util_ui16 line, bool explicitLeader) 
+	{ GetLines().AddLineWithCode(line, addr, explicitLeader); }
 
 ////////////////////////////////////////////////////////////////////
 

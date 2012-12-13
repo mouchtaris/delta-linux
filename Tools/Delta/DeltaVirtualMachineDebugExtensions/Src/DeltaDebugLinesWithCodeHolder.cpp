@@ -10,23 +10,24 @@
 
 ///////////////////////////////////////////////////////////////////
 
-void DeltaDebugLinesWithCodeHolder::AddLineWithCode (util_ui16 line, DeltaCodeAddress pc) {
+void DeltaDebugLinesWithCodeHolder::AddLineWithCode (util_ui16 line, DeltaCodeAddress pc, bool explicitLeader) {
 
 	DASSERT(instructionLeadingLines && pc < codeSize);
 
-	for (	std::list<Line>::iterator i = linesWithCode.begin();
-			i != linesWithCode.end();
-			++i	) 
-			if (line == i->GetLine()) { // Lines match.
-				if (i->IsNextInstruction(pc)) { // One more instruction of a block at the same line.
-					DASSERT(!i->FallsInInstructions(pc));
-					i->AssumeOneMoreInstruction(); 
-					DASSERT(i->FallsInInstructions(pc)); 
-					return;
+	if (!explicitLeader)
+		for (	std::list<Line>::iterator i = linesWithCode.begin();
+				i != linesWithCode.end();
+				++i	) 
+				if (line == i->GetLine()) { // Lines match.
+					if (i->IsNextInstruction(pc)) { // One more instruction of a block at the same line.
+						DASSERT(!i->FallsInInstructions(pc));
+						i->AssumeOneMoreInstruction(); 
+						DASSERT(i->FallsInInstructions(pc)); 
+						return;
+					}
+					else
+						DASSERT(!i->FallsInInstructions(pc)); // Must be independent of the line's block.
 				}
-				else
-					DASSERT(!i->FallsInInstructions(pc)); // Must be independent of the line's block.
-			}
 
 	linesWithCode.push_back(			// A new block of instructions for this line.
 		Line(line, pc)
