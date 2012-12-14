@@ -9,6 +9,7 @@
 #define	DELTADEBUGEXTENSIONSSUPER_H
 
 #include "DeltaValueTypes.h"
+#include "DeltaByteCodeTypes.h"
 
 /////////////////////////////////////////////////////////////////
 
