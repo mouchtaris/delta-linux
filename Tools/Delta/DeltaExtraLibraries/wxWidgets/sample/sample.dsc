@@ -239,12 +239,16 @@ function oninitfunc() {
 //CREATE MENUS
 	fileMenu = menu_construct();
 	helpMenu = menu_construct();
-	menuitem = menuitem_construct(helpMenu, ID_ABOUT, "&Change Background...\tAlt-C", "Change the frame background colour");
-	menuitem.setbitmap(fileopen_bmp);
+	menuitem = menuitem_construct(helpMenu);
+	menuitem.setid(ID_ABOUT);
+	menuitem.setkind(ITEM_NORMAL);
+	menuitem.settext("&Change Background...\tAlt-C");
+	menuitem.sethelp("Change the frame background colour");
+//	menuitem.setbitmap(fileopen_bmp);
 	helpMenu.append(menuitem);
 	helpMenu.append(0, "Show Modal &Dialog\tAlt-D", "Show an empty modal dialog");
 	fileMenu.append("ID_OPEN", "O&pen\tAlt-O", "Open a file dialog");
-	fileMenu.append(11, "&Run wizard modal...\tCtrl-R");
+	fileMenu.append(11, "&Run wizard  modal...\tCtrl-R");
 	fileMenu.append(16, "&Treebook...\tCtrl-N");
 	fileMenu.append("ID_EXIT", "E&xit\tAlt-X", "Quit this program");
 	menus = [fileMenu, helpMenu];

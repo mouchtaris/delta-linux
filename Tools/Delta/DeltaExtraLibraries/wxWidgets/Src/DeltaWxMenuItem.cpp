@@ -34,7 +34,6 @@ WX_FUNC_DEF(settextcolour)
 WX_FUNC_DEF(setbitmap)
 WX_FUNC_DEF(setbitmaps)
 WX_FUNC_DEF(gethelp)
-WX_FUNC_DEF(getid)
 WX_FUNC_DEF(getkind)
 WX_FUNC_DEF(getlabel)
 WX_FUNC_DEF(getlabelfromtext)
@@ -51,6 +50,14 @@ WX_FUNC_DEF(sethelp)
 WX_FUNC_DEF(setmenu)
 WX_FUNC_DEF(setsubmenu)
 WX_FUNC_DEF(settext)
+WX_FUNC_DEF(getid)
+WX_FUNC_DEF(setid)
+WX_FUNC_DEF(setkind)
+WX_FUNC_DEF(setcheckable)
+WX_FUNC_DEF(toggle)
+WX_FUNC_DEF(setname)
+WX_FUNC_DEF(setitemlabel)
+WX_FUNC_DEF(getitemlabeltext)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
@@ -84,12 +91,19 @@ WX_FUNCS_START
 	WX_FUNC(sethelp),
 	WX_FUNC(setmenu),
 	WX_FUNC(setsubmenu),
-	WX_FUNC(settext)
+	WX_FUNC(settext),
+	WX_FUNC(setid),
+	WX_FUNC(setkind),
+	WX_FUNC(setcheckable),
+	WX_FUNC(toggle),
+	WX_FUNC(setname),
+	WX_FUNC(setitemlabel),
+	WX_FUNC(getitemlabeltext)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(2, uarraysize(funcs) - 2, "destruct", "settext")
+DELTALIBFUNC_DECLARECONSTS(2, uarraysize(funcs) - 2, "destruct", "getitemlabeltext")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MenuItem, "menuitem", Object)
 
@@ -459,4 +473,44 @@ DLIB_FUNC_START(menuitem_settext, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETSTRING(text)
 	mitem->SetText(text);
+}
+
+DLIB_FUNC_START(menuitem_setid, 2, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	WX_GETDEFINE(id)
+	mitem->SetId(id);
+}
+
+DLIB_FUNC_START(menuitem_setkind, 2, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	WX_GETDEFINE(kind)
+	mitem->SetKind((wxItemKind)kind);
+}
+
+DLIB_FUNC_START(menuitem_setcheckable, 2, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	WX_GETBOOL(checkable)
+	mitem->SetCheckable(checkable);
+}
+
+DLIB_FUNC_START(menuitem_toggle, 1, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	mitem->Toggle();
+}
+
+DLIB_FUNC_START(menuitem_setname, 2, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	WX_GETSTRING(name)
+	mitem->wxMenuItemBase::SetName(name);
+}
+
+DLIB_FUNC_START(menuitem_setitemlabel, 2, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	WX_GETSTRING(str)
+	mitem->SetItemLabel(str);
+}
+
+DLIB_FUNC_START(menuitem_getitemlabeltext, 1, Nil)
+	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
+	WX_SETSTRING(mitem->GetItemLabelText())
 }

@@ -6001,6 +6001,7 @@ menuitem_getmarginwidth						(menuitem:menuitem) : Number
 menuitem_gettextcolour						(menuitem:menuitem) : colour
 menuitem_gethelp							(menuitem:menuitem) : String
 menuitem_getid								(menuitem:menuitem) : Number
+menuitem_getitemlabeltext					(menuitem:menuitem) : String
 menuitem_getkind							(menuitem:menuitem) : Number
 menuitem_getlabel							(menuitem:menuitem) : String
 menuitem_getmenu							(menuitem:menuitem) : menu
@@ -6018,10 +6019,16 @@ menuitem_setmarginwidth						(menuitem:menuitem,width:Number)
 menuitem_settextcolour						(menuitem:menuitem,colour:colour)
 menuitem_setbitmap							(menuitem:menuitem,bitmap:bitmap)
 menuitem_setbitmaps							(menuitem:menuitem,checked:bitmap) (menuitem:menuitem,checked:bitmap,unchecked:bitmap)
+menuitem_setcheckable						(menuitem:menuitem,checkable:Bool)
 menuitem_sethelp							(menuitem:menuitem,helpString:String)
+menuitem_setid								(menuitem:menuitem,id:+{Number,String})
+menuitem_setitemlabel						(menuitem:menuitem,label:String)
+menuitem_setkind							(menuitem:menuitem,kind:+{Number,String})
 menuitem_setmenu							(menuitem:menuitem,menu:+{menu,Nil})
+menuitem_setname							(menuitem:menuitem,name:String)
 menuitem_setsubmenu							(menuitem:menuitem,menu:+{menu,Nil})
 menuitem_settext							(menuitem:menuitem,text:String)
+menuitem_toggle								(menuitem:menuitem)
 #group(wxdialog)
 messagedialog_construct						(parent:+{window,Nil},msg:String):messagedialog (parent:+{window,Nil},msg:String,caption:String):messagedialog (parent:+{window,Nil},msg:String,caption:String,style:+{Number,String}):messagedialog (parent:+{window,Nil},msg:String,caption:String,style:+{Number,String},pos:+{point,String}):messagedialog
 messagedialog_destruct						(messagedialog:messagedialog)
