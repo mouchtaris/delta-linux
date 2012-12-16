@@ -175,7 +175,6 @@ namespace ide
 		bool								DependsOn (const Script* script) const;
 		bool								DirectlyDependsOn (const Script* script) const;
 		static bool							DependsOnRecursion (const Script* from, const Script* to);
-		bool								HasAnyCyclicDependencies (const ScriptPtrList& toBuild, ScriptPtrList* putCyclicHere);
 		const std::string					ProcuceCyclicDependencyPathString (const Script* target, const Script* start) const;
 
 		const std::string					GetProducedByteCodeFileFullPath (void) const;

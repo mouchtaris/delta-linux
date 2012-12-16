@@ -61,21 +61,27 @@ void DelayedCaller::CancelAllDelayedCalls (void)
 
 void DelayedCaller::onCallExpired(wxCommandEvent& PORT_UNUSED_PARAM(event))
 {
-	boost::recursive_mutex::scoped_lock lock(m_mutex);
+	CallbackList copy;
+	{
+		boost::recursive_mutex::scoped_lock lock(m_mutex);
+		if (!m_callbackList.empty())
+			m_callbackList.swap(copy);
+	}
 
-	if (!m_callbackList.empty()) {
-		CallbackList copy;
-		m_callbackList.swap(copy);
+	if (!copy.empty()) {
 		m_duringCall = true;
 		std::for_each(copy.begin(), copy.end(), Caller<Callback>());
 		m_duringCall = false;
 		copy.clear();
 	}
-	if (!m_nextRound.empty()) {
-		assert(m_callbackList.empty());
-		m_callbackList.swap(m_nextRound);
-		wxCommandEvent event(EVENT_CALL);
-		this->AddPendingEvent(event);
+	{
+		boost::recursive_mutex::scoped_lock lock(m_mutex);
+		if (!m_nextRound.empty()) {
+			assert(m_callbackList.empty());
+			m_callbackList.swap(m_nextRound);
+			wxCommandEvent event(EVENT_CALL);
+			this->AddPendingEvent(event);
+		}
 	}
 }
 

@@ -397,7 +397,7 @@ bool Script::DependsOnRecursion (const Script* from, const Script* to) {
 	(*s_visitMap)[const_cast<Script*>(from)] = true;
 
 	for (ScriptPtrList::const_iterator i =  from->m_buildDeps.begin(); i !=  from->m_buildDeps.end(); ++i)
-		if (s_visitMap->find(*i) == s_visitMap->end() && DependsOnRecursion(*i, to))
+		if (s_visitMap->find(*i) == s_visitMap->end() && to->m_buildDepsResolved && DependsOnRecursion(*i, to))
 			return true;
 	return false;
 }
@@ -429,16 +429,6 @@ EXPORTED_FUNCTION(Script, const HandleList, FindScriptsOfUsedByteCodeFile, (cons
 	BOOST_FOREACH(Script* script, scripts)
 		handles.push_back(Handle(script));
 	return handles;
-}
-
-/////////////////////////////////////////////////////////////////////////
-
-bool Script::HasAnyCyclicDependencies (const ScriptPtrList& toBuild, ScriptPtrList* putCyclicHere) {
-	DASSERT(putCyclicHere->empty());
-	for (ScriptPtrList::const_iterator i = toBuild.begin(); i != toBuild.end(); ++i)
-		if ((*i)->DependsOn(this))
-			putCyclicHere->push_back(*i);
-	return putCyclicHere->empty();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -679,11 +669,9 @@ void Script::TerminateAllLaunchedCompilers (void) {
 			DASSERT(m_allBuildPids.front() != NO_COMPILER_THREAD_PID);
 			util::ConsoleHost().TerminateProcess(m_allBuildPids.front());
 		}
-
-		ClearBuildInformation();
 	}
-	else
-		DASSERT(m_workId.empty() && m_buildDeps.empty() && !GetBuildInitiator());
+	else if (m_beingBuilt)
+		ClearBuildInformation();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -992,12 +980,13 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 
 	unsigned long pid = wasCompiled ? m_allBuildPids.front() : NO_COMPILER_THREAD_PID;
 
-	if (GetBuildInitiator())
-		GetBuildInitiator()->SetInitiatedBuildIsCompleted(this, pid, succeeded);
+	if (Script* initiator = GetBuildInitiator())
+		if (initiator->m_beingBuilt)
+			initiator->SetInitiatedBuildIsCompleted(this, pid, succeeded);
 
 	for (PseudoInitiators::iterator i = m_pseudoInitiators.begin(); i != m_pseudoInitiators.end(); ++i) {
 		timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkCompleted, this, BUILD_TASK_ID, i->second));
-		if (i->first)
+		if (i->first && i->first->m_beingBuilt)
 			i->first->SetInitiatedBuildIsCompleted(this, NO_COMPILER_THREAD_PID, succeeded);
 	}
 
@@ -1182,7 +1171,7 @@ void Script::OnCompilationMessage(const UIntList& buildId, const String& content
 
 EXPORTED_SLOT_MEMBER(Script, void, OnCompileFinished, (const std::string& compiler, const Handle& script), "CompileFinished") {
 
-	if (script.Resolve() == this) {
+	if (script.Resolve() == this && m_beingBuilt) {	//it may have been canceled
 
 		boost::mutex::scoped_lock lock(m_compMutex);
 		DASSERT(!m_workId.empty() && m_allBuildPids.size() == ONLY_ONE_COMPILER_LAUNCHED_PIDS && m_buildDeps.empty());

@@ -528,6 +528,7 @@ namespace ide
 		const String& task), "WorkCanceled")
 	{
 		ClearWorkingChildren();
+		StopWorker();
 	}
 
 	//-----------------------------------------------------------------------
@@ -599,8 +600,8 @@ namespace ide
 				list.push_back(++id);
 				{
 					boost::recursive_mutex::scoped_lock lock(m_workingChildrenMutex);
-					assert(m_workingChildren.find(child) != m_workingChildren.end());
-					m_workingChildren[child].second = list;
+					if (m_workingChildren.find(child) != m_workingChildren.end())
+						m_workingChildren[child].second = list;
 				}
 				unsigned long pid = Call<unsigned long (const UIntList&)>(this, child, task)(list);
 				{
