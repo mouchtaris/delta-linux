@@ -113,6 +113,10 @@ class DVM_CLASS CollectableContainer : public virtual Validatable {
 	static void				Initialise (void);						
 	static void				CleanUp (void);
 
+							// Always invoke after a value is inserted in the container
+	bool					Contains (const DeltaValue& val) const;
+	void					SetContained (DeltaValue* val);
+
 	virtual void			IncRefCounter (DeltaValue* from);	// When being refered by an object. 
 	virtual void			DecRefCounter (DeltaValue* from);	// When stop being referred by an object.
 	void 					IncRefCounter (DeltaValue& from)

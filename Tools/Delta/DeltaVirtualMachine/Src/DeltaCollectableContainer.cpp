@@ -85,6 +85,14 @@ void CollectableContainer::ExplicitDestructor (void) {
 
 /////////////////////////////////////////////////////////////
 
+bool CollectableContainer::Contains (const DeltaValue& val) const
+	{ return val.GetResidencyContext() == this; }
+
+void CollectableContainer::SetContained (DeltaValue* val)
+	{ val->SetResidencyType(DeltaValue::Contained, this); }
+
+/////////////////////////////////////////////////////////////
+
 bool CollectableContainer::IsIndirectlyReferencable (void) const { 
 
 	DASSERT(!DPTR(visitList)->size());
