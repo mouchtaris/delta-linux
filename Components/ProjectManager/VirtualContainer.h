@@ -40,7 +40,7 @@ namespace ide
 		///--- public API
 
 		///-- exported API
-		DECLARE_EXPORTED_FUNCTION(bool, CanDestroy, (void));
+		DECLARE_EXPORTED_FUNCTION(virtual bool, CanDestroy, (void));
 
 		DECLARE_EXPORTED_FUNCTION(virtual bool, Save, (void));
 		DECLARE_EXPORTED_FUNCTION(virtual bool, SaveProperties, (void));

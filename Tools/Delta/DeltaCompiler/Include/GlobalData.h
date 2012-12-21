@@ -6,24 +6,34 @@
 #ifndef	GLOBALDATA_H
 #define	GLOBALDATA_H
 
+#include "CompilerComponentDirectory.h"
 #include "LocalDataHandling.h"
-#include "ParseParms.h"
+#include "ParseActions.h"
+
+///////////////////////////////////////////////////////////
 
 class GlobalData {
-	
+	USE_COMPILER_COMPONENT_DIRECTORY();
 	public:
-	static void			Start (void) {
-							extern void ParseActions_MakeReservedGlobalSymbols (void);
-							LocalDataHandler::OnGlobalBegin(); 
-							ParseActions_MakeReservedGlobalSymbols();
-						}
+	void	Start (void) {
+				LOCALDATA.OnGlobalBegin(); 
+				TRANSLATOR.MakeReservedGlobalSymbols();
+			}
 
-	static void			End (void) {
-							ParseParms::SetGlobalDataSize(
-								LocalDataHandler::OnGlobalEnd()
-							);
-						}
+	void	End (void) {
+				PARSEPARMS.SetGlobalDataSize(
+					LOCALDATA.OnGlobalEnd()
+				);
+			}
 };
 
-#endif	// Do not add stuff beyond this point.
+///////////////////////////////////////////////////////////
 
+#define GLOBALDATA_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), GlobalData)))
+
+#define GLOBALDATA	GLOBALDATA_EX(COMPONENT_DIRECTORY())
+
+///////////////////////////////////////////////////////////
+
+#endif	// Do not add stuff beyond this point.

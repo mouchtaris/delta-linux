@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <components>
 	<component path="AdaptationManager.xdf"/>
+	<component path="ASTView.xdf"/>
 	<component path="AutoAdjustDebugTools.xdf"/>
+	<component path="BuildSystem.xdf"/>
 	<component path="BuildTreeListView.xdf"/>
 	<component path="BreakpointsView.xdf"/>
 	<component path="CommonComponents.xdf"/>

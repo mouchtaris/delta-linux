@@ -50,7 +50,7 @@ const std::string upathmanager::make_entire_path (void) {
 			result += ";";
 		result += ustrconcat(normalPaths, ";");
 	}
-	return result.empty() ? "<none set>" : result;
+	return result;
 }
 
 /////////////////////////////////////////////////////////////////

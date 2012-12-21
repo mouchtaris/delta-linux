@@ -117,7 +117,6 @@ namespace ide
 
 	EXPORTED_FUNCTION(VirtualContainer, bool, CanDestroy, (void))
 	{
-		SaveAll();
 		bool hasWorker = false;
 		{
 			boost::mutex::scoped_lock lock(m_mutex);
@@ -480,7 +479,7 @@ namespace ide
 
 	EXPORTED_FUNCTION(VirtualContainer, int, OnCompareItems, (const Handle& handle1, const Handle& handle2))
 	{
-		char *priorities[] = { "Filter", "Project", "Script", "TextFile", "GenericFile" };
+		char *priorities[] = { "Filter", "AspectProject", "Project", "Aspect", "Script", "TextFile", "GenericFile" };
 		assert(handle1.Resolve() && handle2.Resolve());
 		if (handle1->GetClassId() != handle2->GetClassId()) {
 			char **pos1 = std::find(priorities, priorities + SIZEOF_ARRAY(priorities), handle1->GetClassId());
@@ -625,10 +624,9 @@ namespace ide
 	void VirtualContainer::ClearWorkingChildren(void)
 	{
 		boost::recursive_mutex::scoped_lock lock(m_workingChildrenMutex);
-		util::ConsoleHost cmd;
 		BOOST_FOREACH(WorkMap::value_type& pair, m_workingChildren) {
 			if (pair.second.first)
-				cmd.TerminateProcess(pair.second.first);
+				util::ConsoleHost::TerminateProcess(pair.second.first);
 			pair.second.second.clear();
 		}
 		m_workingChildren.clear();

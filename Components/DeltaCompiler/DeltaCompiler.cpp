@@ -27,12 +27,11 @@
 #include <boost/foreach.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/lexical_cast.hpp>
 
 #ifndef NO_VLD
 #include <vld.h>
 #endif
-#include <wx/app.h>
-#include <wx/event.h>
 
 #define	FILENAME(name, ext) \
 			(std::string(name) + std::string(ext)).c_str()
@@ -44,11 +43,6 @@
 
 namespace ide
 {
-	//-------------------------------------------------------//
-	//---- static members -----------------------------------//
-
-	std::string	DeltaCompiler::output_path;
-
 	//-------------------------------------------------------//
 	//---- class DeltaCompiler ------------------------------//
 
@@ -69,7 +63,9 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_STATIC_SIGNAL(DeltaCompiler, CompileStarted, (const Handle& script, const UIntList& buildId));
 	EXPORTED_STATIC_SIGNAL(DeltaCompiler, CompileFinished, (const Handle& script));
+	EXPORTED_STATIC_SIGNAL(DeltaCompiler, TransformationFinished, (const Handle& script));
 	EXPORTED_STATIC_SIGNAL(DeltaCompiler, CompilationMessage, (const UIntList& buildId, const String& type, const String& content, const String& file, uint line));
 
 	//-----------------------------------------------------------------------
@@ -88,16 +84,14 @@ namespace ide
 
 	class OnCompilationMessage {
 	private:
-		static const String GetSingleQuotedItem(const String& message)
-		{
+		static const String GetSingleQuotedItem(const String& message) {
 			String::size_type firstSingleQuote = message.find_first_of(_T("'"));
 			String::size_type secondSingleQuote = message.find_first_of(_T("'"), firstSingleQuote + 1);
 			assert(firstSingleQuote != String::npos && secondSingleQuote != String::npos);
 			return message.substr(firstSingleQuote + 1, secondSingleQuote - firstSingleQuote - 1);
 		}
 
-		void NotifyCompilationMessageThreadSafe(const String& message)
-		{
+		void NotifyCompilationMessageThreadSafe(const String& message) {
 			String type, content, file;
 			uint line = 0;
 			if (message.StartsWith(_T(DELTA_COMPILER_ERROR_PREFIX)) || message.StartsWith(_T(DELTA_COMPILER_WARNING_PREFIX)))
@@ -127,29 +121,39 @@ namespace ide
 				content = message;
 				file = GetSingleQuotedItem(message);
 			}
-			else	//not a recognized prefix, discard message
-				return;
+			else if (message.StartsWith(_T(DELTA_COMPILER_REFERENCE_PREFIX))) {
+				type = _T(DELTA_COMPILER_REFERENCE_PREFIX);
+				file = GetSingleQuotedItem(message);
+
+				String::size_type comma = message.find_first_of(_T(","));
+				assert(comma != String::npos);
+				comma = message.find_first_of(_T(","), comma + 1);
+				assert(comma != String::npos);	//second comma
+				String::size_type dot = message.find_last_of(_T("."));
+				assert(dot != String::npos);
+
+				line = atoi(util::str2std(message.substr(comma + 7, dot - comma - 7)).c_str());
+			}
+			else	//not a recognized prefix, just forward message
+				content = message;
 
 			const DeltaCompiler::Message msg(buildId, type, content, file, line);
 			timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(NotifyCompilationMessage, msg));
 		}
 
 		static void NotifyCompilationMessage(const DeltaCompiler::Message& m)
-		{
-			sigCompilationMessage(m.get<0>(), m.get<1>(), m.get<2>(), m.get<3>(), m.get<4>());
-		}
+			{ sigCompilationMessage(m.get<0>(), m.get<1>(), m.get<2>(), m.get<3>(), m.get<4>()); }
 
 	public:
-		void operator()(const Buffer& buffer)
-		{
+
+		void operator()(const Buffer& buffer) {
 			// Assume that the data coming should be in junks ending with '\n' characters.
 			// If not (because  i.e. the last line exceeds the buffer size) the remaining
 			// data are maintained and appended at the next invocation.
 			Buffer::size_type pos = buffer.find_last_of("\n");
 			if (pos == String::npos)
 				prevRemainingData = buffer;
-			else 
-			{
+			else {
 				Buffer newBuffer = prevRemainingData + buffer.substr(0, ++pos);
 				std::vector<std::string> tokens;
 				util::stringtokenizer(tokens, newBuffer, "\n");
@@ -159,21 +163,26 @@ namespace ide
 			}
 		}
 		OnCompilationMessage(const UIntList& buildId = UIntList()) : buildId(buildId) {}
+		~OnCompilationMessage() {}
 	private:
-		UIntList buildId;
-		Buffer prevRemainingData;
+		UIntList	buildId;
+		Buffer		prevRemainingData;
 	};
 
 	//-----------------------------------------------------------------------
 	
-	static void onFinish(const Handle& script, bool success)
+	void DeltaCompiler::onFinish(const Handle& script, bool compilation)
 	{
-		sigCompileFinished(script);
+		if (compilation)
+			sigCompileFinished(script);
+		else
+			sigTransformationFinished(script);
 	}
 
-	static void onFinishThreadSafe(const Handle& script, bool success)
+	void DeltaCompiler::onFinishThreadSafe(const Handle& script, bool compilation, bool success)
 	{
-		timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(onFinish, script, success));
+		if (success)
+			timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(onFinish, script, compilation));
 	}
 
 	//-----------------------------------------------------------------------
@@ -205,11 +214,53 @@ namespace ide
 #endif
 		const std::string sparrowDir = IDECore::GetInstallationDir();
 		util::ConsoleHost *compiler = new util::ConsoleHost(false);
+
+		std::string allOptions = util::str2std(options);
+
+		uint port = Call<uint (void)>(s_classId, "BuildSystem", "GetServerPort")();
+		allOptions += " --build_server_port=" + boost::lexical_cast<std::string>(port);
+		
+		sigCompileStarted(script, buildId);
 		return compiler->Execute(
-			sparrowDir + executable + " \"" + util::str2std(uri) + "\"" + util::str2std(options),
+			sparrowDir + executable + " \"" + util::str2std(uri) + "\"" + allOptions,
 			util::str2std(directory),
 			OnCompilationMessage(buildId),
-			boost::bind(onFinishThreadSafe, script, _1)
+			boost::bind(onFinishThreadSafe, script, true, _1)
+		);
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_STATIC(DeltaCompiler, unsigned long, AspectTransformation, (const String& uri,
+		const StringList& transformations, const String& options, const String& directory,
+		const UIntList& buildId, const Handle& script))
+	{
+#ifndef NDEBUG
+	const std::string executable = "AspectCompiler_d";
+#else 
+	const std::string executable = "AspectCompiler";
+#endif
+
+		const std::string sparrowDir = IDECore::GetInstallationDir();
+		util::ConsoleHost *compiler = new util::ConsoleHost(false);
+
+		std::string allOptions = util::str2std(options);
+		allOptions += " --input=\"" + util::str2std(uri) + "\"";
+
+		String aspects;
+		BOOST_FOREACH(const String& aspect, transformations)
+			aspects += (aspects.empty() ? _T("\"") : _T(" \"")) + aspect + _T("\"");
+		allOptions += " --aspects=" + util::str2std(aspects);
+
+		uint port = Call<uint (void)>(s_classId, "BuildSystem", "GetServerPort")();
+		allOptions += " --build_server_port=" + boost::lexical_cast<std::string>(port);
+		
+		sigCompileStarted(script, buildId);
+		return compiler->Execute(
+			sparrowDir + executable + allOptions,
+			util::str2std(directory),
+			OnCompilationMessage(buildId),
+			boost::bind(onFinishThreadSafe, script, false, _1)
 		);
 	}
 
@@ -223,7 +274,7 @@ namespace ide
 	do {																						\
 		try { boost::filesystem::remove(boost::filesystem::path(file)); }						\
 		catch(...) {																			\
-			Call<void (const String&), SafeCall>("DeltaCompiler", "Output", "Append")			\
+			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")					\
 				(wxString::Format(_T("Cannot delete file %s."), util::std2str(file).c_str()));	\
 		}																						\
 	} while(false)
@@ -231,15 +282,6 @@ namespace ide
 		REMOVE(BIN(out));
 		REMOVE(ICODE(out));
 		REMOVE(TXT(out));
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaCompiler, void, SetOutputPath, (const String& path))
-	{
-		output_path = util::str2std(path);
-		if (!output_path.empty() && output_path[output_path.length() -1] != '/')
-			output_path += '/';
 	}
 
 	//-----------------------------------------------------------------------

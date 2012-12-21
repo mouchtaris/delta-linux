@@ -28,7 +28,7 @@
 
 namespace ide
 {
-	static const char *textfileContainers[] = { "Workspace", "Project" };
+	static const char *textfileContainers[] = { "Workspace", "Project", "AspectProject" };
 
 	//-------------------------------------------------------//
 	//---- class TextFile -----------------------------------//

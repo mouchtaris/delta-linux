@@ -99,6 +99,7 @@
   <ItemGroup>
     <ClCompile Include="DebugAsyncEvaluator.cpp" />
     <ClCompile Include="DeltaVM.cpp" />
+    <ClCompile Include="DeltaVMBreakpoints.cpp" />
     <ClCompile Include="DynamicCodeManager.cpp" />
   </ItemGroup>
   <ItemGroup>

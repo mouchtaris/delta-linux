@@ -617,7 +617,7 @@ bool DeltaObject::VisitDelegation (VisitorPred pred, void* closure) {
 		ulistcopy(GetDelegates(), currList);
 
 		while (true) {																
-			DASSERT(currList.size());
+			DASSERT(!currList.empty());
 			for (std::list<DeltaTable*>::iterator i = currList.begin(); i != currList.end(); ++i)
 				if ((*i)->IsOfClass(DELTA_OBJECT_CLASS_ID)) {	// We only visit prototypes.
 					DeltaObject* proto = (DeltaObject*) *i;

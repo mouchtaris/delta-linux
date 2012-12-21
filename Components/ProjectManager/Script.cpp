@@ -22,6 +22,7 @@
 #include "ComponentRegistry.h"
 #include "ComponentFactory.h"
 #include "ComponentEntry.h"
+#include "ComponentLoader.h"
 #include "ComponentFunctionCallerSafe.h"
 #include "Call.h"
 #include "DelayedCaller.h"
@@ -41,9 +42,9 @@
 
 #include <fstream>
 #include <ctype.h>
+#include <set>
 #include <assert.h>
 
-#include "Icons/script.xpm"
 #include "Icons/build.xpm"
 #include "Icons/run_script.xpm"
 #include "Icons/debug_script.xpm"
@@ -95,6 +96,8 @@ namespace ide
 		s_upToDate					= new UpToDateMap;
 		s_visitMap					= new VisitMap;
 		s_visitMapProduceCyclicPath	= new VisitMap;
+
+		ComponentLoader::Instance().LoadComponent("BuildSystem");
 	}
 
 	//-----------------------------------------------------------------------
@@ -135,18 +138,18 @@ namespace ide
 
 	EXPORTED_IMAGE(Script, "debug_script", debug_script_xpm);
 	
-	EXPORTED_CMD_FUNCTION(Script, Debug, _("/{20}Debug"), MT_NMAIN, "debug_script")
+	EXPORTED_CMD_FUNCTION(Script, Debug, _("/{15}Debug"), MT_NMAIN, "debug_script")
 		{ RunImpl("DebugConsole"); }
 
 	EXPORTED_IMAGE(Script, "debug_script_console", debug_script_console_xpm);
 
-	EXPORTED_CMD_FUNCTION(Script, DebugWithConsoleDebugger, _("/{30}Debug (Console)"), MT_NMAIN, "debug_script_console")
+	EXPORTED_CMD_FUNCTION(Script, DebugWithConsoleDebugger, _("/{20}Debug (Console)"), MT_NMAIN, "debug_script_console")
 		{ RunImpl("DebugConsoleWithConsoleDebugger"); }
 
 	//-----------------------------------------------------------------------
 
 	EXPORTED_IMAGE(Script, "build", build_xpm);
-	EXPORTED_CMD_FUNCTION(Script, BuildCtx, _("/{50}--Build"), MT_NMAIN, "build")
+	EXPORTED_CMD_FUNCTION(Script, BuildCtx, _("/{25}--Build"), MT_NMAIN, "build")
 	{
 		const Handle& workspace = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
 		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")()) {
@@ -157,7 +160,18 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_CMD_FUNCTION(Script, CleanCtx, _("/{60}Clean"), MT_CTX, "")
+	EXPORTED_CMD_FUNCTION(Script, DebugBuildCtx, _("/{30}Debug Build"), MT_NMAIN, "build")
+	{
+		const Handle& workspace = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
+		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")()) {
+			Call<void (const Handle&, const String&)>(this, workspace, "StartWorking")(this, _T("Build"));
+			DebugBuild(UIntList(1, 1));
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_CMD_FUNCTION(Script, CleanCtx, _("/{35}Clean--"), MT_CTX, "")
 	{
 		const Handle& workspace = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
 		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")()) {
@@ -184,7 +198,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_CMD_FUNCTION(Script, SetStartupScript, _("/{100}--Select"), MT_CTX, "")
+	EXPORTED_CMD_FUNCTION(Script, SetStartupScript, _("/{100}--Select--"), MT_CTX, "")
 	{
 		Call<bool (const String&), SafeCall>(this, GetParent(), "SetStartupResource")(GetURI());
 	}
@@ -220,19 +234,29 @@ namespace ide
 
 	EXPORTED_SLOT_MEMBER(Script, void, OnFileNameChanged, (const Handle& editor, const String& uri), "FileNameChanged") {
 		if (editor.GetClassId() == "Editor" && uri == GetURI()) {
-			Call<void (const String&)>(this, editor, "SetByteCodeLoadingPath")(GetByteCodeLoadingPath());
+			Call<void (const String&)>(this, editor, "SetByteCodeLoadingPath")(GetEditorByteCodeLoadingPaths());
 
 			StringList libfuncs = GetFileLibraryFunctions();
 			if (!libfuncs.empty())
 				Call<void (const StringList&)>(this, editor, "SetExtraLibraryDefinitions")(libfuncs);
 		}
 	}
-
+	
 	//-----------------------------------------------------------------------
 
 	void Script::ComponentAppliedChangedProperties(const conf::PropertyTable& old, const conf::PropertyIdVec& changed)
 	{
 		HandleNewProperties(changed);
+
+		if (std::find(changed.begin(), changed.end(), "output") != changed.end()) {
+			conf::Property* output = const_cast<conf::Property*>(GetInstanceProperty("output"));
+			assert(output);
+			if (conf::get_prop_value<conf::StringProperty>(output, _T("")).empty()) {
+				const String name = conf::get_prop_value<conf::StringProperty>(old.GetProperty("output"), _T(""));
+				assert(!name.empty());
+				conf::set_prop_value<conf::StringProperty>(output, name);
+			}
+		}
 		GenericFile::ComponentAppliedChangedProperties(old, changed);
 	}
 
@@ -254,14 +278,15 @@ namespace ide
 
 		if (ComponentRegistry::Instance().GetFocusedInstance("EditorManager")) {
 
-			PropertyIdVec::const_iterator ib = std::find(changed.begin(), changed.end(), GetByteCodePathPropertyId());
-			PropertyIdVec::const_iterator il = std::find(changed.begin(), changed.end(), "libs");
-
-			if (ib != changed.end() || il != changed.end()) 
+			bool byteCodePathChanged = std::find(changed.begin(), changed.end(), GetByteCodePathPropertyId()) != changed.end();
+			bool libsChanged = std::find(changed.begin(), changed.end(), "libs") != changed.end();
+			bool stageSourcesOptionsChanged = std::find(changed.begin(), changed.end(), "stage_sources_options") != changed.end();
+			
+			if (byteCodePathChanged || libsChanged || stageSourcesOptionsChanged)
 				if (const Handle& editor = Call<const Handle& (const String&)>(this, "EditorManager", "GetEditor")(GetURI())) {
-					if (ib != changed.end())
-						Call<void (const String&)>(this, editor, "SetByteCodeLoadingPath")(GetByteCodeLoadingPath());
-					if (il != changed.end())
+					if (byteCodePathChanged || stageSourcesOptionsChanged)
+						Call<void (const String&)>(this, editor, "SetByteCodeLoadingPath")(GetEditorByteCodeLoadingPaths());
+					if (libsChanged || stageSourcesOptionsChanged)
 						Call<void (const StringList&)>(this, editor, "SetExtraLibraryDefinitions")(GetFileLibraryFunctions());
 				}
 		}
@@ -301,26 +326,64 @@ namespace ide
 
 		const String directory(const_cast<Script*>(this)->GetPath());
 		StringList functions;
-		if (const conf::Property* property = GetInstanceProperty("libs")) {
-			const conf::MultiChoiceProperty *p = conf::safe_prop_cast<const conf::MultiChoiceProperty>(property);
-			BOOST_FOREACH(const String& lib, p->GetSelectedChoices()) {
+		
+		std::set<String> libraries;
+		if (const conf::Property* prop = GetInstanceProperty("libs")) {
+			const conf::MultiChoiceProperty *p = conf::safe_prop_cast<const conf::MultiChoiceProperty>(prop);
+			const StringVec& libs = p->GetSelectedChoices();
+			libraries.insert(libs.begin(), libs.end());
+		}
 
-				const String path = GetLibraryPath(lib);
-				functions.push_back(_T("#libname(") + path + _T(")"));
-				std::ifstream in(util::str2std(path).c_str());
+		//also add libraries for any stage sources
+		if (const conf::Property* prop = GetInstanceProperty("stage_sources_options")) {
+			const conf::AggregateListProperty* options = conf::safe_prop_cast<const conf::AggregateListProperty>(prop);
+			BOOST_FOREACH(const conf::AggregateProperty* aggregate, options->GetPropertyList())
+				if (const conf::Property* prop = aggregate->GetProperty("libs")) {
+					const conf::MultiChoiceProperty *p = conf::safe_prop_cast<const conf::MultiChoiceProperty>(prop);
+					const StringVec& libs = p->GetSelectedChoices();
+					libraries.insert(libs.begin(), libs.end());
+				}
+		}
 
-				if(in) {
-					char str[MAX_LIBRARY_FUNC_DESCRIPTION];
-					while(!in.eof()) {
-						in.getline(str, MAX_LIBRARY_FUNC_DESCRIPTION - 1);
-						const std::string value = util::strip<std::string>(str, UTIL_WHITESPACE);
-						if(!value.empty())
-							functions.push_back(util::std2str(str));
-					}
+		BOOST_FOREACH(const String& lib, libraries) {
+
+			const String path = GetLibraryPath(lib);
+			functions.push_back(_T("#libname(") + path + _T(")"));
+			std::ifstream in(util::str2std(path).c_str());
+
+			if(in) {
+				char str[MAX_LIBRARY_FUNC_DESCRIPTION];
+				while(!in.eof()) {
+					in.getline(str, MAX_LIBRARY_FUNC_DESCRIPTION - 1);
+					const std::string value = util::strip<std::string>(str, UTIL_WHITESPACE);
+					if(!value.empty())
+						functions.push_back(util::std2str(str));
 				}
 			}
 		}
 		return functions;
+	}
+
+	//-----------------------------------------------------------------------
+
+	const String Script::GetEditorByteCodeLoadingPaths(void) const {
+		StringList paths(1, GetByteCodeLoadingPath());
+		if (const conf::Property* prop = GetInstanceProperty("stage_sources_options")) {
+			const conf::AggregateListProperty* options = conf::safe_prop_cast<const conf::AggregateListProperty>(prop);
+			BOOST_FOREACH(const conf::AggregateProperty* aggregate, options->GetPropertyList())
+				if (const conf::Property* prop = aggregate->GetProperty(conf::GetByteCodePathPropertyId())) {
+					const conf::DirectoryListProperty *p = conf::safe_prop_cast<const conf::DirectoryListProperty>(prop);
+					BOOST_FOREACH(const String& value, p->GetValue())
+						paths.push_back(MakeAbsolutePath(value, const_cast<Script*>(this)->GetPath()));
+				}
+		}
+		String result;
+		BOOST_FOREACH(const String& path, paths) {
+			if (!result.empty() && !path.empty())
+				result += _T(";");
+			result += path;
+		}
+		return result;
 	}
 
 	//-----------------------------------------------------------------------

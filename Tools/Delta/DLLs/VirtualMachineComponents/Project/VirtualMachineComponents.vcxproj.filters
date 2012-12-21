@@ -304,6 +304,15 @@
     <ClCompile Include="..\..\..\DeltaStdLib\Src\AlgorithmLib.cpp">
       <Filter>Source Files\StdLib</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\DeltaStdLib\Src\ASTVisitorLib.cpp">
+      <Filter>Source Files\StdLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaStdLib\Src\ASTLib.cpp">
+      <Filter>Source Files\StdLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaStdLib\Src\VMCompLib.cpp">
+      <Filter>Source Files\StdLib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\ResourceLoaderLib\Src\RcLexAnalyser.l">
@@ -604,6 +613,15 @@
       <Filter>Header Files\StdLib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\DeltaStdLib\Include\TableIterLib.h">
+      <Filter>Header Files\StdLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaStdLib\Include\ASTVisitorLib.h">
+      <Filter>Header Files\StdLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaStdLib\Include\ASTLib.h">
+      <Filter>Header Files\StdLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaStdLib\Include\VMCompLib.h">
       <Filter>Header Files\StdLib</Filter>
     </ClInclude>
   </ItemGroup>

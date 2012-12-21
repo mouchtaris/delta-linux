@@ -9,7 +9,10 @@
  *	July 2007
  */
 #include "Delta.h"
-#include "DeltaStdLib.h"
+#include "VMCompLib.h"
+#include "DeltaCompilerInit.h"
+#include "DeltaMetaCompiler.h"
+#include "BuildDependencies.h"
 #include "DeltaPureVMFacade.h"
 #include "DeltaDebuggedVMFacade.h"
 #include "DebugServer.h"
@@ -56,11 +59,11 @@ int main (int argc, char* argv[])
 		("bytecode_path,b",
 			boost::program_options::value<std::string>(),
 			"byte code loading paths (as a single string with semicolon separated values)")
-		("dllimport_path,b",
+		("dllimport_path,d",
 			boost::program_options::value<std::string>(),
 			"additional paths for dllimport (as a single string with semicolon separated values)")
 		("negotiationport,n",
-			boost::program_options::value<unsigned int>(),
+			boost::program_options::value<util_ui32>()->default_value(0),
 			"debug client-supplied negotiation port")
 	;
 
@@ -85,6 +88,9 @@ int main (int argc, char* argv[])
 		return -1;
 	}
 
+	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler);
+	INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
+
 	DeltaPureVMFacade::Initialise();
 	if(vars.count("bytecode_path"))
 		DeltaPureVMFacade::SetByteCodeLoadingPath(vars["bytecode_path"].as<std::string>());
@@ -92,7 +98,7 @@ int main (int argc, char* argv[])
 		DeltaPureVMFacade::SetDllImportPath(vars["dllimport_path"].as<std::string>());
 	DeltaVirtualMachine::SetWarningCallback(OnWarning);
 
-	if (DeltaDebuggedVMFacade::Initialise(argc, argv)) {
+	if (DeltaDebuggedVMFacade::Initialise(vars["negotiationport"].as<util_ui32>())) {
 
 		DeltaDebuggedVMFacade::SetOnStartCallback(OnStartRequested);
 		DeltaDebuggedVMFacade::SetOnStopDebuggingCallback(OnStopRequested);

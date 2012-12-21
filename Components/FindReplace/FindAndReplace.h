@@ -75,9 +75,7 @@ namespace ide {
 		DECLARE_EXPORTED_STATIC_(void, OnFocusedEditorChanged,
 								(const std::string& invokerId, const Handle& focusedEditor),
 								_(""));
-		
-		
-
+		DECLARE_EXPORTED_STATIC_(void, OnAllEditorsClosed, (const std::string& invokerId), _(""));		
 	};
 
 }	//namespace ide

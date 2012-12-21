@@ -54,15 +54,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTA)\DeltaSyntaxTree\Include;$(DELTA)\DeltaCompiler\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -72,29 +74,20 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(Delta)\DLLs\BytecodeStructures\lib\debug\BytecodeStructuresD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\ReadersWriters\lib\debug\ReadersWritersD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\DebuggerBackend\lib\debug\DebuggerBackendD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\DebuggerCommon\lib\debug\DebuggerCommonD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\DebuggerFrontend\lib\debug\DebuggerFrontendD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\SocketLib\lib\debug\SocketsD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\UtilAndDebugLib\lib\debug\UtilAndDefensiveHeapD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\SyntaxTree\lib\debug\SyntaxTreeD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\CompilerComponents\lib\debug\CompilerComponentsD.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\VirtualMachineComponents\lib\debug\VirtualMachineComponentsD.dll" "$(OutDir)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTA)\DeltaSyntaxTree\Include;$(DELTA)\DeltaCompiler\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;comctl32.lib;rpcrt4.lib;wsock32.lib;oleacc.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -106,52 +99,43 @@ copy "$(Delta)\DLLs\VirtualMachineComponents\lib\debug\VirtualMachineComponentsD
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(Delta)\DLLs\BytecodeStructures\lib\release\BytecodeStructures.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\ReadersWriters\lib\release\ReadersWriters.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\DebuggerBackend\lib\release\DebuggerBackend.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\DebuggerCommon\lib\release\DebuggerCommon.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\DebuggerFrontend\lib\release\DebuggerFrontend.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\SocketLib\lib\release\Sockets.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\UtilAndDebugLib\lib\release\UtilAndDefensiveHeap.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\SyntaxTree\lib\release\SyntaxTree.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\CompilerComponents\lib\release\CompilerComponents.dll" "$(OutDir)"
-copy "$(Delta)\DLLs\VirtualMachineComponents\lib\release\VirtualMachineComponents.dll" "$(OutDir)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Delta\DLLs\BytecodeStructures\Project\BytecodeStructures.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\BytecodeStructures\Project\BytecodeStructures.vcxproj">
       <Project>{bec371d3-e221-4bac-ba70-3aed5c4f0150}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Delta\DLLs\CompilerComponents\Project\CompilerComponents.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\CompilerComponents\Project\CompilerComponents.vcxproj">
       <Project>{56a22761-a765-45ce-8448-60c1c15b9c78}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Delta\DLLs\DebuggerBackend\Project\DebuggerBackend.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\DebuggerBackend\Project\DebuggerBackend.vcxproj">
       <Project>{a6f36dc1-335b-404b-8571-78e2141cb146}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Delta\DLLs\DebuggerCommon\Project\DebuggerCommon.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\DebuggerCommon\Project\DebuggerCommon.vcxproj">
       <Project>{f9f82253-899e-4862-a03e-da6ee937139b}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Delta\DLLs\ReadersWriters\Project\ReadersWriters.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\ReadersWriters\Project\ReadersWriters.vcxproj">
       <Project>{9c0f9ac1-ed6c-41c3-8078-ce565e945b75}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Delta\DLLs\SocketLib\Project\SocketLib.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\SocketLib\Project\SocketLib.vcxproj">
       <Project>{ce9d2174-a1f1-48ee-927e-94ca4a752f4b}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Delta\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
       <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Delta\DLLs\VirtualMachineComponents\Project\VirtualMachineComponents.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\VirtualMachineComponents\Project\VirtualMachineComponents.vcxproj">
       <Project>{8e7fd87f-7874-468a-913c-eb3837233606}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

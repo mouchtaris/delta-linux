@@ -27,11 +27,11 @@ using namespace delta;
 
 //---------------------------------------------------------------------------//
 
-int										DeltaGotoDefinition::possiblePos		= INVALID_POSSIBLE_POS;
+DeltaASTNode::Range						DeltaGotoDefinition::possibleRange		= DeltaASTNode::Range(INVALID_POSSIBLE_POS, INVALID_POSSIBLE_POS);
 int										DeltaGotoDefinition::triedStartPos		= INVALID_POSSIBLE_POS;
 util_ui32								DeltaGotoDefinition::refCounter			= 0;
 DeltaGotoDefinition::EditorPosVector*	DeltaGotoDefinition::editorPositions	= (EditorPosVector*) 0;	
-util_ui32								DeltaGotoDefinition::currPosition		=  0;
+util_ui32								DeltaGotoDefinition::currPosition		= 0;
 int										DeltaGotoDefinition::targetEditorPos	= 0;
 void*									DeltaGotoDefinition::targetLangModule	= (void*) 0;
 
@@ -45,7 +45,7 @@ void DeltaGotoDefinition::CleanUp (void)
 
 bool DeltaGotoDefinition::GotoDefinitionPrecond (void* langModule, int x, int y) {
 
-	delta::LanguageModule*	mod			= (LanguageModule*) langModule;
+	LanguageModule*			mod			= (LanguageModule*) langModule;
 	EditorWindow*			editor		= mod->GetEditor(); 
 	ProgramDescription&		progDesc	= mod->GetProgramDesc();
 
@@ -80,6 +80,13 @@ int DeltaGotoDefinition::ParseAround_Ident (EditorWindow* editor, int* startPos)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+void DeltaGotoDefinition::GotoEditorPos(EditorWindow* editor, const DeltaASTNode::Range& range) {
+	editor->GotoPos(range.left);
+	editor->SetSelection(range.left, range.right);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // All find in AST functions should be generic engough so that I can
 // reuse them to make a simple quick info implementation.
 
@@ -87,7 +94,7 @@ bool DeltaGotoDefinition::GotoDefinition (void* langModule, int x, int y) {
 
 	DASSERT(GotoDefinitionPrecond(langModule, x, y));
 
-	delta::LanguageModule*	mod			= (LanguageModule*) langModule;
+	LanguageModule*			mod			= (LanguageModule*) langModule;
 	EditorWindow*			editor		= mod->GetEditor(); 
 	ProgramDescription&		progDesc	= mod->GetProgramDesc();
 
@@ -136,8 +143,9 @@ bool DeltaGotoDefinition::GotoDefinition (void* langModule, int x, int y) {
 		ustrlist path = utokenizestr(ns, ":");
 		if (path.size() == 1 && DeltaAutoCompletion::HasByteCodeLibrary(langModule, path.front())) {
 
+			const uint stage = DeltaAutoCompletion::GetStagingDepth(progDesc.GetNode(startPos));
 			LanguageModuleIface::GotoDefinitionResult result;
-			result = mod->GotoGlobalDefinitionOfFile(path.front() + DELTA_BYTECODE_FILE_EXT, id);
+			result = mod->GotoGlobalDefinitionOfFile(path.front() + DELTA_BYTECODE_FILE_EXT, id, stage);
 
 			switch (result) {
 
@@ -217,6 +225,7 @@ bool DeltaGotoDefinition::HasFoundAndPositionedAtDefinition (
 		const std::string&	id, 
 		EditorWindow*		editor,
 		DeltaASTNode*		node,
+		bool				includeFormals,
 		bool				doNotPositionAtVars
 	) {
 
@@ -226,7 +235,7 @@ bool DeltaGotoDefinition::HasFoundAndPositionedAtDefinition (
 			UnaryKwdASTNode* p = (UnaryKwdASTNode*) node;
 			if ((p->GetValueStr() == DELTA_CONST_KWD || p->GetValueStr() == DELTA_LOCAL_KWD) && 
 				id == DeltaAutoCompletion::GetText(editor, p->GetChild())) {
-				editor->GotoPos(p->GetRange().left);
+					GotoEditorPos(editor, p->GetChild()->GetRange());
 				return true;
 			}
 			return false;
@@ -234,23 +243,25 @@ bool DeltaGotoDefinition::HasFoundAndPositionedAtDefinition (
 
 		case FunctionASTNodeType : {
 			FunctionASTNode* p = (FunctionASTNode*) node;
+			DeltaASTNode* child;
 
 			// Try with the function name.
-			if (p->GetValue() == DELTA_FUNCTION_KWD						&& 
-				p->GetChild<0>()										&& 
-				p->GetChild<0>()->GetType() == FunctionNameASTNodeType	&&
-				id == DeltaAutoCompletion::GetText(editor, p->GetChild<0>())) {
-					editor->GotoPos(p->GetRange().left);
+			if (p->GetValue() == DELTA_FUNCTION_KWD			&& 
+				(child = p->GetChild<0>())					&& 
+				child->GetType() == FunctionNameASTNodeType	&&
+				id == DeltaAutoCompletion::GetText(editor, child)) {
+					GotoEditorPos(editor, child->GetRange());
 					return true;
 				}
 
 			// Try with the formal args.
-			if (ArgListASTNode* args = (ArgListASTNode*) p->GetChild<1>()) {
+			ArgListASTNode* args;
+			if (includeFormals && (args = (ArgListASTNode*) p->GetChild<1>())) {
 				DeltaASTNodeList l;
 				args->GetChildren(l);
 				for (DeltaASTNodeList::reverse_iterator i = l.rbegin(); i != l.rend(); ++i)
 					if (id == DeltaAutoCompletion::GetText(editor, *i)) {
-						editor->GotoPos((*i)->GetRange().left);
+						GotoEditorPos(editor, (*i)->GetRange());
 						return true;
 					}
 			}
@@ -262,9 +273,9 @@ bool DeltaGotoDefinition::HasFoundAndPositionedAtDefinition (
 			VariableASTNode* p = (VariableASTNode*) node;
 			if (id == DeltaAutoCompletion::GetText(editor, p))
 				if (doNotPositionAtVars)
-					possiblePos = p->GetRange().left;
+					possibleRange = p->GetRange();
 				else {
-					editor->GotoPos(p->GetRange().left);
+					GotoEditorPos(editor, p->GetRange());
 					return true;
 				}
 			return false;
@@ -284,11 +295,13 @@ bool DeltaGotoDefinition::HasFoundAndPositionedAtFunction (
 	) {
 	if (node->GetType() == FunctionASTNodeType) {
 		FunctionASTNode* p = (FunctionASTNode*) node;
-		if (p->GetValue() == DELTA_FUNCTION_KWD						&& 
-			p->GetChild<0>()										&& 
-			p->GetChild<0>()->GetType() == FunctionNameASTNodeType	&&
-			func == DeltaAutoCompletion::GetText(editor, p->GetChild<0>())) {
-				editor->GotoPos(targetEditorPos = p->GetRange().left);
+		DeltaASTNode* child;
+		if (p->GetValue() == DELTA_FUNCTION_KWD			&&
+			(child = p->GetChild<0>())					&&
+			child->GetType() == FunctionNameASTNodeType	&&
+			func == DeltaAutoCompletion::GetText(editor, child)) {
+				targetEditorPos = child->GetRange().left;
+				GotoEditorPos(editor, child->GetRange());
 				targetLangModule = editor->GetLangIface();
 				return true;
 			}
@@ -315,12 +328,13 @@ bool DeltaGotoDefinition::SearchUpDefinition (
 		EditorWindow*		editor,
 		DeltaASTNode*		parent,
 		DeltaASTNode*		node,
-		int					startPos
+		int					startPos,
+		bool				searchingInParent
 	) {
 	if (!parent)
 		return false;
 
-	if (HasFoundAndPositionedAtDefinition(id, editor, parent))
+	if (HasFoundAndPositionedAtDefinition(id, editor, parent, searchingInParent))
 		return true;
 
 	if (IsClosedScopeAbovePosition(parent, startPos))
@@ -337,7 +351,7 @@ bool DeltaGotoDefinition::SearchUpDefinition (
 		if (before && SearchDownDefinition(id, editor, *i, startPos))
 			return true;
 
-	return SearchUpDefinition(id, editor, parent->GetParent(), parent, startPos);
+	return SearchUpDefinition(id, editor, parent->GetParent(), parent, startPos, true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -349,7 +363,10 @@ bool DeltaGotoDefinition::SearchDownDefinition (
 		int					startPos
 	) {
 
-	if (HasFoundAndPositionedAtDefinition(id, editor, node))
+	if (node->GetType() == QuotedElementsASTNodeType)	//Do not search in quasi-quotes
+		return false;
+	else
+	if (HasFoundAndPositionedAtDefinition(id, editor, node, false))
 		return true;
 	else
 	if (IsClosedScopeAbovePosition(node, startPos))
@@ -374,7 +391,7 @@ bool DeltaGotoDefinition::GotoGlobalDefinition (
 		DeltaASTNode*		node
 	) {
 	
-	if (HasFoundAndPositionedAtDefinition(id, editor, node, false))
+	if (HasFoundAndPositionedAtDefinition(id, editor, node, true, false))
 		return true;
 	else
 	if (IsClosedScope(node))
@@ -419,7 +436,7 @@ bool DeltaGotoDefinition::GotoGlobalFunction (
 ///////////////////////////////////////////////////////////////////////////////
 
 bool DeltaGotoDefinition::GotoGlobalFunction (void* langModule, const std::string& func) {
-	delta::LanguageModule*	mod			= (LanguageModule*) langModule;
+	LanguageModule*			mod			= (LanguageModule*) langModule;
 	EditorWindow*			editor		= mod->GetEditor(); 
 	ProgramDescription&		progDesc	= mod->GetProgramDesc();
 	return GotoGlobalFunction(func, editor, progDesc.GetAST());
@@ -434,12 +451,12 @@ bool DeltaGotoDefinition::GotoClosestDefinition (
 		int					startPos
 	) {
 	DASSERT(node);
-	possiblePos = INVALID_POSSIBLE_POS;
+	possibleRange = DeltaASTNode::Range(INVALID_POSSIBLE_POS, INVALID_POSSIBLE_POS);
 	if (SearchUpDefinition(id, editor, node->GetParent(), node, startPos))
 		return true;
 	else
-	if (possiblePos != INVALID_POSSIBLE_POS)
-		{ editor->GotoPos(possiblePos); return true; }
+	if (possibleRange.left != INVALID_POSSIBLE_POS && possibleRange.right != INVALID_POSSIBLE_POS)
+		{ GotoEditorPos(editor, possibleRange); return true; }
 	else
 		return false;
 }

@@ -671,7 +671,7 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 							{ objectConstructionStack.push_back(currConstructedObject = obj); }
 
 	void				PopConstructedObject (void) { 
-							DASSERT(objectConstructionStack.size());
+							DASSERT(!objectConstructionStack.empty());
 							objectConstructionStack.pop_back();
 							if (objectConstructionStack.size())
 								currConstructedObject = *(objectConstructionStack.rbegin());

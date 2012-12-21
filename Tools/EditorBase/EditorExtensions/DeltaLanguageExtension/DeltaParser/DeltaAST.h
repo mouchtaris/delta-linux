@@ -189,6 +189,10 @@ public:
 				other.m_children.begin(), other.m_children.end(),
 				m_children.begin(), NodeCloner<TASTNode>()
 			);
+			std::for_each(
+				m_children.begin(), m_children.end(),
+				std::bind2nd(std::mem_fun(&DeltaASTNode::SetParent), this)
+			);
 		}
 	~ContainerASTNode (void) { this->Clear(); }
 
@@ -356,6 +360,20 @@ public:
 
 	////////////////////////////////////////////////////////////////////
 
+	template<unsigned N> struct parentsetter {
+		static void apply (TASTNode* nodes[], DeltaASTNode* parent) {
+			parentsetter<N-1>::apply(nodes, parent);
+			if (nodes[N])
+				nodes[N]->SetParent(parent);
+		}
+	};
+	template<> struct parentsetter<0> {
+		static void apply (TASTNode* nodes[], DeltaASTNode* parent)
+			{ if (nodes[0]) nodes[0]->SetParent(parent); }
+	};
+
+	////////////////////////////////////////////////////////////////////
+
 	template<unsigned N> struct appender {
 		static bool apply (TASTNode* const nodes[], DeltaASTNodeList& result) {
 			bool retVal = appender<N-1>::apply(nodes, result);
@@ -382,7 +400,10 @@ public:
 	NaryASTNode (const Range& range) : DeltaASTNode(range) { this->zero(); }
 	NaryASTNode (const NaryASTNode& other) :
 		DeltaASTNode(other), ValueHolder<TValue>(other)
-		{ cloner<_N-1>::apply(m_children, other.m_children); }
+	{
+		cloner<_N-1>::apply(m_children, other.m_children);
+		parentsetter<_N-1>::apply(m_children, this);
+	}
 	~NaryASTNode (void) { this->Clear(); }
 
 	//******************************************************************
@@ -498,10 +519,12 @@ public:
 			this->SetRightChild(right);
 		}
 	BinaryASTNode (const BinaryASTNode& other) :
-		DeltaASTNode(other),
-		ValueHolder<TValue>(other),
-		m_leftChild(static_cast<TASTNodeLeft*>(other.m_leftChild->Clone())),
-		m_rightChild(static_cast<TASTNodeRight*>(other.m_rightChild->Clone())) {}
+		DeltaASTNode(other), ValueHolder<TValue>(other), m_leftChild(0), m_rightChild(0) {
+			if (other.m_leftChild)
+				SetLeftChild(static_cast<TASTNodeLeft*>(other.m_leftChild->Clone()));
+			if (other.m_rightChild)
+				SetRightChild(static_cast<TASTNodeLeft*>(other.m_rightChild->Clone()));
+		}
 	~BinaryASTNode (void) {
 		delete m_leftChild;
 		delete m_rightChild;
@@ -613,10 +636,8 @@ public:
 	UnaryASTNode (void) : m_child(0) {}
 	UnaryASTNode (const Range& range, TASTNode* child = 0) :
 		DeltaASTNode(range), m_child(0) { this->SetChild(child); }
-	UnaryASTNode (const UnaryASTNode& other) :
-		DeltaASTNode(other),
-		ValueHolder<TValue>(other),
-		m_child(static_cast<TASTNode*>(other.m_child->Clone())) {}
+	UnaryASTNode (const UnaryASTNode& other) : DeltaASTNode(other), ValueHolder<TValue>(other), m_child(0)
+		{ if (other.m_child) SetChild(static_cast<TASTNode*>(other.m_child->Clone())); }
 	~UnaryASTNode (void) { delete m_child; }
 
 	//******************************************************************

@@ -107,6 +107,9 @@ public:
 
 	virtual bool VisitEnter (UsingASTNode* node) = 0;
 	virtual bool VisitLeave (UsingASTNode* node) = 0;
+
+	virtual bool VisitEnter (QuotedElementsASTNode* node) = 0;
+	virtual bool VisitLeave (QuotedElementsASTNode* node) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -149,6 +152,7 @@ public:
 	virtual void Visit (TableConstKeyASTNode* node) = 0;
 	virtual void Visit (OtherStmtASTNode* node) = 0;
 	virtual void Visit (UsingASTNode* node) = 0;
+	virtual void Visit (QuotedElementsASTNode* node) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -246,6 +250,9 @@ public:
 
 	virtual bool VisitEnter (UsingASTNode* node);
 	virtual bool VisitLeave (UsingASTNode* node);
+	
+	virtual bool VisitEnter (QuotedElementsASTNode* node);
+	virtual bool VisitLeave (QuotedElementsASTNode* node);
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -288,6 +295,7 @@ public:
 	virtual void Visit (TableConstKeyASTNode* node);
 	virtual void Visit (OtherStmtASTNode* node);
 	virtual void Visit (UsingASTNode* node);
+	virtual void Visit (QuotedElementsASTNode* node);
 };
 
 ////////////////////////////////////////////////////////////////////////

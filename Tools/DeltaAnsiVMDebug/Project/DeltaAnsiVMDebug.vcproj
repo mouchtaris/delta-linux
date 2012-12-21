@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Include;&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTAIDEDEPS)\Include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT"
+				AdditionalIncludeDirectories="..\Include;&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTA)\DeltaCompiler\Include&quot;;&quot;$(DELTA)\DeltaSyntaxTree\Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -117,8 +117,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Include;&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTAIDEDEPS)\Include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT"
+				AdditionalIncludeDirectories="..\Include;&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTA)\DeltaCompiler\Include&quot;;&quot;$(DELTA)\DeltaSyntaxTree\Include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

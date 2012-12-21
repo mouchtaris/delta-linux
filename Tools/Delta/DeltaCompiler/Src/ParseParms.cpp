@@ -4,31 +4,11 @@
 // A. Savidis, October 1999.
 //
 
+#include "ParseParms.h"
 #include "DeltaByteCodeTypes.h"
 #include "Symbol.h"
-#include "ParseParms.h"
-#include "ParseActions.h"
-#include "CompilerAPI.h"
 
 ////////////////////////////////////////////////////////////////////
-
-DeltaSymbol*				ParseParms::currFunctionStack[DELTA_MAXNESTED_FUNCTIONS];
-util_i16					ParseParms::topFunc = -1;
-util_ui16					ParseParms::globalDataSize = 0;
-util_ui16					ParseParms::globalBlocks = 0;
-bool						ParseParms::inFormalArgs = false;
-util_ui16					ParseParms::currFuncSerial = DELTA_FUNCSERIAL_OF_GLOBAL_CODE;
-
-NestedState					ParseParms::inLoop;
-bool						ParseParms::productionMode = false;
-
-NestedState					ParseParms::inAssertStmt;
-NestedState					ParseParms::inTableExpr;
-NestedState					ParseParms::currScope(DELTA_GLOBAL_SCOPE);	
-std::list<util_ui32>*		ParseParms::unindexedElemOrder	= (std::list<util_ui32>*) 0;
-std::list<DeltaExpr*>*		ParseParms::newTableStack		= (std::list<DeltaExpr*>*) 0;
-std::list<DeltaSymboList>*	ParseParms::controlFlowInitialisationsStack =  (std::list<DeltaSymboList>*) 0;
-std::list<std::string>*		ParseParms::namespacePath		= (std::list<std::string>*) 0;
 
 static const char* operators[] = {
 	"+",	
@@ -72,13 +52,13 @@ void ParseParms::Initialise (void) {
 	unew(namespacePath);
 	DPTR(unindexedElemOrder)->push_back(0);
 
+	currLine			= 1;	// Set first file line.
 	currScope			= 0;
 	topFunc				= -1;
 	globalDataSize		= 0;
 	globalBlocks		= 0;
 	inFormalArgs		= 0;
 	currFuncSerial		= 0;
-	productionMode		= false;
 
 	inAssertStmt.reset();
 	inTableExpr.reset();
@@ -95,30 +75,45 @@ void ParseParms::CleanUp (void) {
 
 ////////////////////////////////////////////////////////////////////
 
-bool ParseParms::InProductionMode (void) 
-	{ return productionMode; }
+ParseParms::ParseParms(void) :
+	topFunc							(-1),
+	globalDataSize					(0),
+	globalBlocks					(0),
+	inFormalArgs					(false),
+	currFuncSerial					(DELTA_FUNCSERIAL_OF_GLOBAL_CODE),
+	currScope						(DELTA_GLOBAL_SCOPE),
+	unindexedElemOrder				((std::list<util_ui32>*) 0),
+	newTableStack					((std::list<DeltaExpr*>*) 0),
+	controlFlowInitialisationsStack	((std::list<DeltaSymboList>*) 0),
+	namespacePath					((std::list<std::string>*) 0)
+{}
 
-void ParseParms::SetInProductionMode (bool val) 
-	{ productionMode = val; }
+ParseParms::~ParseParms() {}
 
 ////////////////////////////////////////////////////////////////////
 
-util_ui16 ParseParms::CurrLine (void) 
-	{ return (util_ui16) DeltaCompiler::GetLine(); }
+util_ui32 ParseParms::GetLine (void) 
+	{ return currLine; }
+
+util_ui32 ParseParms::SetLine (util_ui32 line) 
+	{ return currLine = line; }
+
+void ParseParms::NextLine (void) 
+	{ ++currLine; }
 
 ////////////////////////////////////////////////////////////////////
 
-DeltaSymbol* ParseParms::CurrFunction (void) 
+DeltaSymbol* ParseParms::CurrFunction (void) const
 	{ return topFunc == -1 ? NIL_SYMBOL : currFunctionStack[topFunc]; }
 
-bool ParseParms::IsOuterFunction (DeltaSymbol* func) {
+bool ParseParms::IsOuterFunction (DeltaSymbol* func) const {
 	for (util_i16 i = topFunc; i != -1; --i)
 		if (currFunctionStack[i] == func)
 			return true;
 	return false;
 }
 
-bool ParseParms::InMethod (void) {
+bool ParseParms::InMethod (void) const {
 	DeltaSymbol* currFunc = CurrFunction();
 	return currFunc && DPTR(currFunc)->funcClass == DELTA_FUNCCLASS_METHOD;
 }
@@ -128,9 +123,8 @@ bool ParseParms::IsOperator(const std::string& name)
 
 ////////////////////////////////////////////////////////////////////
 
-util_ui16 ParseParms::GlobalDataSize (void) 
+util_ui16 ParseParms::GlobalDataSize (void) const
 	{ return globalDataSize; }
-
 
 void ParseParms::SetGlobalDataSize (util_ui16 n) 
 	{ globalDataSize = n; }
@@ -138,25 +132,23 @@ void ParseParms::SetGlobalDataSize (util_ui16 n)
 util_ui16 ParseParms::IncGlobalBlocks (void) 
 	{ return globalBlocks++; }
 
-util_ui16 ParseParms::GetTotalGlobalBlocks (void) 
+util_ui16 ParseParms::GetTotalGlobalBlocks (void) const 
 	{ return globalBlocks; }
 
 ////////////////////////////////////////////////////////////////////
 
-bool ParseParms::InFormalArgs (void) 
+bool ParseParms::InFormalArgs (void) const
 	{ return inFormalArgs; }
-
 
 void ParseParms::SetInFormalArgs (bool val) 
 	{ inFormalArgs = val; }
 
 ////////////////////////////////////////////////////////////////////
 
-util_ui16 ParseParms::CurrFuncSerial (void) {
-	return currFuncSerial;
-}
+util_ui16 ParseParms::CurrFuncSerial (void) const
+	{ return currFuncSerial; }
 
-util_ui16 ParseParms::InsideFuncSerial (void) {
+util_ui16 ParseParms::InsideFuncSerial (void) const {
 	return InFunction() ? CurrFunction()->serial + 1 : DELTA_FUNCSERIAL_OF_GLOBAL_CODE;
 }
 
@@ -185,7 +177,7 @@ void ParseParms::PopFunction (void) {
 	ExitingControlFlowStmt(true, true);
 }
 
-bool ParseParms::InFunction (void) 
+bool ParseParms::InFunction (void) const
 	{ return topFunc != -1; }
 
 ////////////////////////////////////////////////////////////////////
@@ -240,7 +232,7 @@ void ParseParms::AssumeToBeInitialised (DeltaSymbol* var) {
 
 ////////////////////////////////////////////////////////////////////
 
-bool ParseParms::InLoop (void) 
+bool ParseParms::InLoop (void) const
 	{ return inLoop.value() != 0; }
 
 void ParseParms::EnteringLoop (void) 
@@ -339,7 +331,7 @@ void ParseParms::ExitingTableConstructor (void) {
 	DPTR(newTableStack)->pop_front();
 }
 
-DeltaExpr* ParseParms::GetCurrConstructedTable (void) {
+DeltaExpr* ParseParms::GetCurrConstructedTable (void) const {
 	DASSERT(!DPTR(newTableStack)->empty());
 	return DPTR(newTableStack)->front();
 }
@@ -352,7 +344,7 @@ void ParseParms::AppendToNamespacePath (const std::string& id)
 void ParseParms::ClearNamespacePath (void)
 	{ DPTR(namespacePath)->clear(); }
 
-const ParseParms::NameList&	ParseParms::GetNamespacePath (void)
+const ParseParms::NameList&	ParseParms::GetNamespacePath (void) const
 	{ return *DPTR(namespacePath); }
 
 ////////////////////////////////////////////////////////////////////

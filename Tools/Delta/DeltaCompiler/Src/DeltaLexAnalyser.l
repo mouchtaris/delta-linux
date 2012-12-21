@@ -8,58 +8,42 @@
 #include <cstring>
 #include <cstdio>
 #include <ctype.h>
+#include <cstdarg>
 
 #include "DDebug.h"
 #include "Expr.h"
 #include "Symbol.h"
-#include "ParseActions.h"
 #include "DeltaByteCodeTypes.h"
 #include "ulexutil.h"
 #include "DeltaCompErrorMsg.h"
+#include "InterCode.h"					//must be included before DeltaParser.h
+#include "ParseTableConstruction.h"		//must be included before DeltaParser.h
 #include "DeltaParser.h"
-#include "CompilerAPI.h"
-#include "ParseActions.h"
+#include "ParseParms.h"
+#include "CompilerStringHolder.h"
+#include "ParsingContext.h"
+#include "ufunctors.h"
 
 #define	YY_SKIP_YYWRAP
 #define YY_USE_PROTOS
 #define	YY_NEVER_INTERACTIVE 1
 
-// Must be static local since every lexer
-// has its own scan buffer.
-
-static void* lexBufferState = (void*) 0;
-
-bool DeltaCompiler::InitialiseForText (const char* text) {
-	DASSERT(!lexBufferState);
-	lexBufferState		= DeltaCompiler_yy_scan_string(text);
-	*DPTR(srcFile)		= DBG_DYNAMIC_SOURCE;
-	*DPTR(dynamicCode)	= text;
-	isDynamicCode		= true;
-	return true;
-}
-
-void DeltaCompiler::CleanUpForText (void) {
-	if (lexBufferState) {
-		DeltaCompiler_yy_flush_buffer((YY_BUFFER_STATE) lexBufferState);
-		DeltaCompiler_yy_delete_buffer((YY_BUFFER_STATE) lexBufferState);
-		unullify(lexBufferState);
-	}
-}
-
 // The yylex() must be re-entrant, so it takes
 // yylval as a formal parameter.
 //
-#define YY_DECL		int DeltaCompiler_yylex (void* yylval)
-#define	STACKVAL	((YYSTYPE*) yylval)
-#define	yywrap		DeltaCompiler_yywrap
+#define YY_DECL		int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
+#define	STACKVAL	yylval
 
-// Lexical analysis helpers.
-//
-static void					IgnoreCStyleComments (void);
-static void					IgnoreCPPStyleComments (void);
-static const std::string	ReadQuotedString (void);
+///////////////////////////////////////////////////////////
 
-extern int DeltaCompiler_yywrap(void);
+#undef COMPMESSENGER
+#define COMPMESSENGER	COMPMESSENGER_EX(context())
+
+#undef PARSEPARMS
+#define PARSEPARMS		PARSEPARMS_EX(context())
+
+#undef STRINGHOLDER
+#define STRINGHOLDER	STRINGHOLDER_EX(context())
 
 %}
 
@@ -76,6 +60,11 @@ flag			{ws}+{decdigit}
 cpp				#{ws}+{decdigit}+{ws}+\"[^"]+{flag}?
 attr			[@]
 
+%option c++
+%option prefix="DeltaLexAnalyser"
+%option outfile="DeltaLexAnalyser.cpp"
+%option verbose
+%option noyywrap
 %%
 
 function		return  FUNCTION;
@@ -161,17 +150,17 @@ using			return	USING;
 
 {ws}*			{}
 
-{line}			{	DeltaCompiler::NextLine(); }
+{line}			{	PARSEPARMS.NextLine(); }
 
 {decdigit}+		{	ucastassign(STACKVAL->numberConst, ustrdectodouble(yytext));
 					return NUMBER_CONST;
 				}
 
-{ident}			{	STACKVAL->id = usaveidstr(yytext);
+{ident}			{	STACKVAL->id = usaveidstr(yytext, &yy_id_buffer);
 					return IDENT;
 				}
 
-{attr}{ident}	{	STACKVAL->id = usaveidstr(yytext);
+{attr}{ident}	{	STACKVAL->id = usaveidstr(yytext, &yy_id_buffer);
 					return ATTRIBUTE_IDENT;
 				}
 				
@@ -185,12 +174,12 @@ using			return	USING;
 
 {cpp}			{	util_ui32 line;
 					sscanf(yytext + 1, "%u", &line);
-					DeltaCompiler::SetLine(line);
-					DeltaCompSetCurrentFile(DNULLCHECK(strchr(yytext, '\"')) + 1);
+					PARSEPARMS.SetLine(line);
+					COMPMESSENGER.SetCurrentFile(DNULLCHECK(strchr(yytext, '\"')) + 1);
 					while (yyinput() != '\n'){} // Read until end of line.
 				}
 
-\"				{	STACKVAL->strConst = Translate_StringWithLateDestruction(ucopystr(ReadQuotedString()));
+\"				{	STACKVAL->strConst = STRINGHOLDER.StringWithLateDestruction(ucopystr(ReadQuotedString()));
 					return STRING_CONST;
 				}
 
@@ -203,30 +192,42 @@ using			return	USING;
 
 //------------------------------------------------------------------
 
-int					DeltaCompiler_yywrap (void)			{ return 1; }
-void				DeltaCompiler_ResetLex (FILE* fp)	{ yyrestart(fp); }
-const std::string	DeltaCompiler_GetText (void)		{ return yytext; }
+int DeltaCompiler_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx)
+	{ return ctx.GetLexer().yylex(yylval, yylloc); }
 
-static char input_wrapper (void)	{ return yyinput(); }
-static void unput_wrapper (char c)	{ unput(c); }
+char yyFlexLexer::yyinput_wrapper(void* closure) { return ((yyFlexLexer*) closure)->yyinput(); }
 
-static void IgnoreCStyleComments (void)  {
-	util_ui32 line = DeltaCompiler::GetLine();
-	uignoreCcomments(input_wrapper, unput_wrapper, &line, &DeltaCompError);
-	DeltaCompiler::SetLine(line);
-} 
-
-static void IgnoreCPPStyleComments (void) {
-	util_ui32 line = DeltaCompiler::GetLine();
-	uignoreCPPcomments(input_wrapper, &line);
-	DeltaCompiler::SetLine(line);
+void yyFlexLexer::yyunput_wrapper(char c, void *closure) {
+	yyFlexLexer* lexer = (yyFlexLexer*) closure;
+	lexer->yyunput(c, lexer->yytext_ptr);
 }
 
-static const std::string ReadQuotedString (void) {
-	util_ui32 line = DeltaCompiler::GetLine();
+void yyFlexLexer::IgnoreCStyleComments (void)  {
+	util_ui32 line = PARSEPARMS.GetLine();
+	std::string error;
+	bool result = uignoreCcomments(
+		umakecallback(yyinput_wrapper, this),
+		umakecallback(yyunput_wrapper, this),
+		&line,
+		&error
+	);
+	if (!result)
+		COMPMESSENGER.Error(error.c_str());
+	PARSEPARMS.SetLine(line);
+} 
+
+void yyFlexLexer::IgnoreCPPStyleComments (void) {
+	if (uignoreCPPcomments(umakecallback(yyinput_wrapper, this)))
+		PARSEPARMS.NextLine();
+}
+
+const std::string yyFlexLexer::ReadQuotedString (void) {
+	util_ui32 line = PARSEPARMS.GetLine();
 	std::string s;
-	ureadquotedstring(s, input_wrapper, &line, &DeltaCompError);
-	DeltaCompiler::SetLine(line);
+	std::string error;
+	if (!ureadquotedstring(s, umakecallback(yyinput_wrapper, this), &line, &error))
+		COMPMESSENGER.Error(error.c_str());
+	PARSEPARMS.SetLine(line);
 	return uextendescapesequences(s.c_str());
 }
 

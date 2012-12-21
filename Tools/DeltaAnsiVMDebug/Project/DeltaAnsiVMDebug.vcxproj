@@ -48,12 +48,14 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Include;$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTA)\DeltaSyntaxTree\Include;$(DELTA)\DeltaCompiler\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -63,13 +65,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Include;$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Include;$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DebugServer\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DeltaDebuggedVMFacade\Include;$(DELTA)\DeltaSyntaxTree\Include;$(DELTA)\DeltaCompiler\Include;$(DELTAIDEDEPS)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,13 +92,16 @@
     <ClInclude Include="..\include\CommandLineArguments_Forward.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Delta\DLLs\DebuggerBackend\Project\DebuggerBackend.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\CompilerComponents\Project\CompilerComponents.vcxproj">
+      <Project>{56a22761-a765-45ce-8448-60c1c15b9c78}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(DELTA)\DLLs\DebuggerBackend\Project\DebuggerBackend.vcxproj">
       <Project>{a6f36dc1-335b-404b-8571-78e2141cb146}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\Delta\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
       <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\Delta\DLLs\VirtualMachineComponents\Project\VirtualMachineComponents.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\VirtualMachineComponents\Project\VirtualMachineComponents.vcxproj">
       <Project>{8e7fd87f-7874-468a-913c-eb3837233606}</Project>
     </ProjectReference>
   </ItemGroup>

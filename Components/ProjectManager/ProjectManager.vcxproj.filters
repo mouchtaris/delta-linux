@@ -48,6 +48,15 @@
     <ClCompile Include="Workspace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StageSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AspectProject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Container.h">
@@ -80,7 +89,16 @@
     <ClInclude Include="Workspace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StageSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ProjectManagerFuncReturnTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AspectProject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

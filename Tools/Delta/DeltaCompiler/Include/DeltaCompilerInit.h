@@ -1,5 +1,5 @@
 // DeltaCompilerInit.h
-// Global program start-up  and ending actions.
+// Global program start-up and ending actions.
 // ScriptFigher Project.
 // A. Savidis, May 2003.
 //
@@ -10,7 +10,15 @@
 #include "DeltaCompilerDefs.h"
 
 namespace DeltaCompilerInit {
-	DCOMPLIB_FUNC void Initialise (void);
+
+	struct VMOptions {
+		bool		debug;
+		util_ui32	negotiationPort;
+
+		VMOptions (void) : debug(false), negotiationPort(0) {}
+	};
+
+	DCOMPLIB_FUNC void Initialise (const VMOptions& vmOptions = VMOptions());
 	DCOMPLIB_FUNC void CleanUp (void);
 }
 

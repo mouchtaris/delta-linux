@@ -6,9 +6,9 @@
 // Changed July 2009, table elements are added exactly after
 // their expression is evaluated.
 //
+#include "ParseTableConstruction.h"
 #include "DDebug.h"
 #include "ParseActions.h"
-#include "ParseParms.h"
 #include "DeltaByteCodeTypes.h"
 #include "DeltaCompErrorMsg.h"
 #include "Symbol.h"
@@ -21,7 +21,7 @@ void NamedMethodEmitter::Emit (DeltaExpr* table) const {
 	QUADS.Emit(
 		DeltaIC_OBJNEWSET,
 		method,
-		DeltaExpr::MakeConst(DPTR(method)->sym->methodName),
+		EXPRFACTORY.MakeConst(DPTR(method)->sym->methodName),
 		NIL_EXPR
 	);
 }
@@ -43,7 +43,7 @@ void UnindexedElemEmitter::Emit (DeltaExpr* table) const {
 	QUADS.Emit(
 		DeltaIC_OBJNEWSET,
 		content,
-		DeltaExpr::Make((DeltaNumberValueType) order),
+		EXPRFACTORY.Make((DeltaNumberValueType) order),
 		NIL_EXPR
 	);
 }
@@ -51,15 +51,21 @@ void UnindexedElemEmitter::Emit (DeltaExpr* table) const {
 //------------------------------------------------------------------
 // TABLE CONSTRUCTOR.
 
+TableElements* Translator::CreateTableElements (void) const {
+	AutoCollector* collector = UCOMPONENT_DIRECTORY_GET(*COMPONENT_DIRECTORY(), AutoCollector);
+	TableElements* t = DNEWCLASS(TableElements, (collector));
+	return t;
+}
+
 // In case more indices than values exist, the last value is copied
 // to the remaining extra indices.
 
-TableElements* Translate_IndexedValues (DeltaExpr* indices, DeltaExpr* values) {
+TableElements* Translator::Translate_IndexedValues (DeltaExpr* indices, DeltaExpr* values) {
 
 	if (!indices || !values)
 		return NIL_ELEMS;
 
-	TableElements*	p = DNEW(TableElements);
+	TableElements*	p = CreateTableElements();
 	DPTR(DPTR(p)->indices)->Append(DPTR(indices));
 	DPTR(p->indexedValues)->Append(DPTR(values));
 
@@ -69,20 +75,21 @@ TableElements* Translate_IndexedValues (DeltaExpr* indices, DeltaExpr* values) {
 		DeltaExpr* value = values;
 
 		if (copyValue)
-			p->indexedValues->Append(value = values->Copy());
+			p->indexedValues->Append(value = EXPRFACTORY.Copy(values));
 		else
 		if (values->next)
 			{ DASSERT(!copyValue); values = DPTR(values->next); }
 		else
 			copyValue = true;				// When we run out of values, we copy the last value.
 
-		if (DPTR(value)->IsNamedMethod())	// An explicit name is preserved even if the method is indexed.
-			NamedMethodEmitter(value).Emit(
-				ParseParms::GetCurrConstructedTable()
-			);
-		IndexedElemEmitter(indices, value).Emit(
-			ParseParms::GetCurrConstructedTable()
-		);
+		if (DPTR(value)->IsNamedMethod()) {	// An explicit name is preserved even if the method is indexed.
+			NamedMethodEmitter emitter(value);
+			INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+			emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
+		}
+		IndexedElemEmitter emitter(indices, value);
+		INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+		emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
 	}
 
 	return p;
@@ -90,8 +97,8 @@ TableElements* Translate_IndexedValues (DeltaExpr* indices, DeltaExpr* values) {
 
 ///////////////////////////////////////////////////////////////////
 
-TableElements* Translate_IdentIndexElement (
-		const char*			index, 
+TableElements* Translator::Translate_IdentIndexElement (
+		const std::string&	index, 
 		DeltaExpr*			expr, 
 		DeltaQuadAddress	Mquad, 
 		util_ui32			line
@@ -100,7 +107,7 @@ TableElements* Translate_IdentIndexElement (
 		return NIL_ELEMS;
 	else {
 		expr = DPTR(expr)->AdaptIfBool();
-		TableElements* elems = Translate_IndexedValues(DeltaExpr::MakeConst(index), expr);
+		TableElements* elems = Translate_IndexedValues(EXPRFACTORY.MakeConst(index), expr);
 		Unparse_IdentIndexElement(elems, index, expr);
 		QUADS.SetQuadLine(Mquad, line);
 		return elems;
@@ -109,26 +116,27 @@ TableElements* Translate_IdentIndexElement (
 
 ///////////////////////////////////////////////////////////////////
 
-TableElements* Translate_TableElement (DeltaExpr* expr) {
+TableElements* Translator::Translate_TableElement (DeltaExpr* expr) {
 	if (!expr)
 		return NIL_ELEMS;
 	else {
-		TableElements* elems = DNEW(TableElements);
+		TableElements* elems = CreateTableElements();
 
 		DPTR(elems)->unindexedValues->Append(
 			expr = DPTR(expr)->AdaptIfBool()
 		);
 
 		if (expr->GetType() != DeltaExprNewAttribute) {
-			if (DPTR(expr)->IsNamedMethod())
-				NamedMethodEmitter(expr).Emit(
-					ParseParms::GetCurrConstructedTable()
-				);
+			if (DPTR(expr)->IsNamedMethod()) {
+				NamedMethodEmitter emitter(expr);
+				INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+				emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
+			}
 			else {
-				UnindexedElemEmitter(ParseParms::GetUnindexedElementOrder(), expr).Emit(
-					ParseParms::GetCurrConstructedTable()
-				);
-				ParseParms::IncUnindexedElementOrder();
+				UnindexedElemEmitter emitter(PARSEPARMS.GetUnindexedElementOrder(), expr);
+				INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+				emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
+				PARSEPARMS.IncUnindexedElementOrder();
 			}
 		}
 		return elems;
@@ -137,7 +145,7 @@ TableElements* Translate_TableElement (DeltaExpr* expr) {
 
 ///////////////////////////////////////////////////////////////////
 
-TableElements* Translate_TableElements (TableElements* t1, TableElements* t2) {
+TableElements* Translator::Translate_TableElements (TableElements* t1, TableElements* t2) {
 
 	if (!t1)
 		return t2;
@@ -160,15 +168,15 @@ TableElements* Translate_TableElements (TableElements* t1, TableElements* t2) {
 // should be generated prior to the code for creating the expressions that
 // appears inside the table.
 //
-DeltaExpr* Translate_TablePrefix (void) {
+DeltaExpr* Translator::Translate_TablePrefix (void) {
 
-	DeltaExpr* table	= DNEW(DeltaExpr);
+	DeltaExpr* table	= EXPRFACTORY.New();
 	DPTR(table)->type	= DeltaExprTableConstruction;
 	table->sym			= DELTASYMBOLS.NewTemp();
 
 	QUADS.Emit(DeltaIC_OBJNEW, NIL_EXPR, NIL_EXPR, table);
 
-	ParseParms::EnteringTableConstructor(table);
+	PARSEPARMS.EnteringTableConstructor(table);
 	table->SetTypeTag(TagObject);
 	table->GetTypeInfo().Set(TagObject);
 	return table;
@@ -176,7 +184,7 @@ DeltaExpr* Translate_TablePrefix (void) {
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_TableConstructor (DeltaExpr* table, TableElements* elems) {
+DeltaExpr* Translator::Translate_TableConstructor (DeltaExpr* table, TableElements* elems) {
 
 	NULL_EXPR_CHECK(table);
 	udeleteunlessnull(elems);
@@ -192,20 +200,20 @@ DeltaExpr* Translate_TableConstructor (DeltaExpr* table, TableElements* elems) {
 		QUADS.Emit(DeltaIC_OBJDONE, NIL_EXPR, NIL_EXPR, NIL_EXPR);
 	}
 
-	ParseParms::ExitingTableConstructor();
+	PARSEPARMS.ExitingTableConstructor();
 	return table;
 }
 
 ///////////////////////////////////////////////////////////////////
 
-TableElements* Translate_UnindexedValue (
+TableElements* Translator::Translate_UnindexedValue (
 		DeltaExpr*			expr,
 		DeltaQuadAddress	startQuad,
 		util_ui32			lastLine
 	) {
 
 	TableElements* elems = Translate_TableElement(expr->AdaptAsArgumentVariable());
-	DASSERT(elems || DeltaCompErrorsExist());	// Null possible due to comp errors.
+	DASSERT(elems || COMPMESSENGER.ErrorsExist());	// Null possible due to comp errors.
 	if (elems) {	
 		Unparse_UnindexedValue(elems, expr); 
 		QUADS.SetQuadLine(startQuad, lastLine, true);

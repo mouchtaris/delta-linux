@@ -3,12 +3,16 @@
 // ScriptFighter Project.
 // A. Savidis, September 2009.
 //
+
 #include "ASTTranslationVisitor.h"
+#include "ASTValidationVisitor.h"
 #include "ASTCreationActions.h"
 #include "ParseActions.h"
+#include "ParseTableConstruction.h"
 #include "CompilerAPI.h"
 #include "GlobalData.h"
 #include "ASTTags.h"
+#include "ASTMetaTags.h"
 #include "Unparsable.h"
 #include "DeltaCompErrorDefs.h"
 #include "Unparse.h"
@@ -17,21 +21,51 @@
 #include "uerrorclass.h"
 #include "ustlhelpers.h"
 
+#include "ASTEscapeTranslationVisitor.h"
+#include "ASTUnparseVisitor.h"
+#include "DeltaStdClassNames.h"
+
 ///////////////////////////////////////////////////////////
 
-#define Rule		AST::TranslationVisitor::EvaluationStack::TopRule
-#define	EvalStack()	DNULLCHECK((AST::TranslationVisitor*) closure)->GetEvalStack()
-#define	yysetline()	DeltaCompiler::SetLine(NEWLINE(node))
-#define	yyrule		yysetline();							\
-					Rule yy(EvalStack().GetValues());		\
-					yy = Rule::RuleSize()
-#define	yyapply		yy.Apply(__LINE__, node->GetTag().c_str())
-#define	yypreserve	yy.Preserve()
-#define	yypush		EvalStack().Set(__LINE__, node->GetTag().c_str()).Push
-#define	yytop		EvalStack().Top()
-#define	yv			yy[0]
-#define	M()			if (true) { yyrule;	yv = QUADS.NextQuadNo();	yyapply; } else
-#define	N()			if (true) { yyrule;	yv = Translate_N();			yyapply; } else
+#define VISITOR			DNULLCHECK((AST::TranslationVisitor*) closure)
+
+#undef COMPMESSENGER
+#define COMPMESSENGER	COMPMESSENGER_EX(VISITOR->COMPONENT_DIRECTORY())
+
+#undef GLOBALDATA
+#define GLOBALDATA		GLOBALDATA_EX(VISITOR->COMPONENT_DIRECTORY())
+
+#undef PARSEPARMS
+#define PARSEPARMS		PARSEPARMS_EX(VISITOR->COMPONENT_DIRECTORY())
+
+#undef TRANSLATOR
+#define TRANSLATOR		TRANSLATOR_EX(VISITOR->COMPONENT_DIRECTORY())
+
+#undef DELTASYMBOLS
+#define DELTASYMBOLS	DELTASYMBOLS_EX(VISITOR->COMPONENT_DIRECTORY())
+
+#undef QUADS
+#define QUADS			QUADS_EX(VISITOR->COMPONENT_DIRECTORY())
+
+#undef STMTFACTORY
+#define STMTFACTORY		STMTFACTORY_EX(VISITOR->COMPONENT_DIRECTORY())
+
+///////////////////////////////////////////////////////////
+
+#define Rule				AST::TranslationVisitor::EvaluationStack::TopRule
+#define	EvalStack()			VISITOR->GetEvalStack()
+#define	yysetsourceinfo()	SetSourceInfo(AST_VISITOR_ACTUALS)
+#define	yyrule				yysetsourceinfo();						\
+							Rule yy(EvalStack().GetValues());		\
+							yy = Rule::RuleSize()
+#define	yyapply				yy.Apply(__LINE__, node->GetTag().c_str())
+#define	yypreserve			yy.Preserve()
+#define	yypush				EvalStack().Set(__LINE__, node->GetTag().c_str()).Push
+#define	yytop				EvalStack().Top()
+#define	yv					yy[0]
+#define	M()					if (true) { yyrule;	yv = QUADS.NextQuadNo();		yyapply; } else
+#define	N()					if (true) { yyrule;	yv = TRANSLATOR.Translate_N();	yyapply; } else
+#define LINE(node)			DPTR((AST::Node*)node)->GetLine()
 
 ///////////////////////////////////////////////////////////
 
@@ -42,7 +76,7 @@
 		SetContextDependentHandler(tag, id, &Handle_##name, this)
 
 #define	SET_QUAD_LINE(yypos, is_expr)							\
-		util_ui32 line = LINE(node);							\
+		const util_ui32 line = LINE(node);						\
 		DASSERT(line);											\
 		QUADS.SetQuadLine(yy[yypos].quadNo(), line, is_expr)	\
 
@@ -54,8 +88,8 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_H(Program,							AST_TAG_PROGRAM);
 	_H(Stmts,							AST_TAG_STMTS);
 	_H(Stmt,							AST_TAG_STMT);
-	_H(BasicStmt,						AST_TAG_BASIC_EXPR_STMT);
-	_H(BasicStmt,						AST_TAG_BASIC_NON_EXPR_STMT);
+	_H(BasicStmt,						AST_TAG_BASIC_STMT);
+	_H(Name,							AST_TAG_NAME);
 	_H(Function,						AST_TAG_FUNCTION);
 	_H(LambdaFunction,					AST_TAG_LAMBDA_FUNCTION);
 	_H(FunctionStmt,					AST_TAG_FUNCTION_STMT);
@@ -65,8 +99,8 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_H(EmptyStmt,						AST_TAG_EMPTY_STMT);
 	_H(AssertStmt,						AST_TAG_ASSERT);
 	_H(Return,							AST_TAG_RETURN);
-	_H(UsingNamespace,					AST_TAG_USING_NAMESPACE);	
-	_H(UsingByteCodeLibrary,			AST_TAG_USING_BYTECODE_LIBRARY);	
+	_H(UsingNamespace,					AST_TAG_USING_NAMESPACE);
+	_H(UsingByteCodeLibrary,			AST_TAG_USING_BYTECODE_LIBRARY);
 	_H(ConstDefExpression,				AST_TAG_CONSTDEF);
 	_H(AssignExpr,						AST_TAG_ASSIGN);
 	_H(AssignArithExpr,					AST_TAG_OP_ADD_ASSIGN);
@@ -87,15 +121,14 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_H(ArithmeticExpression,			AST_TAG_OP_MUL);
 	_H(ArithmeticExpression,			AST_TAG_OP_DIV);
 	_H(ArithmeticExpression,			AST_TAG_OP_MOD);
-	_H(NOTExpression,					AST_TAG_NOT);	
+	_H(NOTExpression,					AST_TAG_NOT);
 	_H(UMINUSExpression,				AST_TAG_UMINUS);
 	_H(TermLvalueArith,					AST_LVALUE_PLUSPLUS);
 	_H(TermLvalueArith,					AST_LVALUE_MINUSMINUS);
 	_H(TermLvalueArith,					AST_PLUSPLUS_LVALUE);
 	_H(TermLvalueArith,					AST_MINUSMINUS_LVALUE);
-	_H(PrimaryFunctionAndTableObject,	AST_TAG_PRIMARY_FUNCTION_TABLE_OBJECT);
-	_H(PrimaryConstValue,				AST_TAG_PRIMARY_CONST_VALUE);	
 	_H(Ternary,							AST_TAG_TERNARY);
+	_H(PrimaryExpression,				AST_TAG_PRIMARY_EXPRESSION);
 	_H(Expr,							AST_TAG_EXPR);
 	_H(ParenthesisedExpr,				AST_TAG_PARENTHESISED_EXPR);
 	_H(ExprList,						AST_TAG_EXPR_LIST);
@@ -109,16 +142,16 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_H(NamespaceLvalue,					AST_TAG_LVALUE_NAMESPACE_IDENT);
 	_H(SELF,							AST_TAG_SELF);
 	_H(ARGUMENTS,						AST_TAG_ARGUMENTS);
-	_H(TRIPLE_DOT,						AST_TAG_TRIPLE_DOT);	
-	_H(LAMBDA_REF,						AST_TAG_LAMBDA_REF);	
+	_H(TRIPLE_DOT,						AST_TAG_TRIPLE_DOT);
+	_H(LAMBDA_REF,						AST_TAG_LAMBDA_REF);
 	_H(NEWSELF,							AST_TAG_LVALUE_NEWSELF);
-	_H(BREAK,							AST_TAG_BREAK);			
-	_H(CONTINUE,						AST_TAG_CONTINUE);		
+	_H(BREAK,							AST_TAG_BREAK);
+	_H(CONTINUE,						AST_TAG_CONTINUE);
 	_H(FunctionParenthesisForm,			AST_TAG_FUNCTION_PARENTHESIS);
 	_H(Argument,						AST_TAG_ARGUMENT);
 	_H(LateBoundArgument,				AST_TAG_LATEBOUND_ARGUMENT);
 	_H(FunctionCall,					AST_TAG_FUNCTION_CALL);
-	_H(Lvalue,							AST_TAG_LVALUE_IDENT);	
+	_H(Lvalue,							AST_TAG_LVALUE_IDENT);
 	_H(AttrLvalue,						AST_TAG_LVALUE_ATTRIBUTE);
 	_H(StaticLvalue,					AST_TAG_LVALUE_STATIC_IDENT);
 	_H(LocalLvalue,						AST_TAG_LVALUE_LOCAL_IDENT);
@@ -129,14 +162,11 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_H(TableContentDot,					AST_TAG_TABLE_CONTENT_DOT);
 	_H(BoundedTableContentDot,			AST_TAG_TABLE_CONTENT_DOUBLE_DOT);
 	_H(TableContentBracket,				AST_TAG_TABLE_CONTENT_BRACKET);
-	_H(BoundedTableContentBracket,		AST_TAG_TABLE_CONTENT_DOUBLE_BRACKET);	
-	_H(TableObject,						AST_TAG_TABLE_OBJECT);
+	_H(BoundedTableContentBracket,		AST_TAG_TABLE_CONTENT_DOUBLE_BRACKET);
 	_H(TableConstructor,				AST_TAG_TABLE_CONSTRUCTOR);
-	_H(UnindexedValue,					AST_TAG_TABLE_UNINDEXED_ELEM);	
-	_H(UnindexedValue,					AST_TAG_TABLE_UNINDEXED_ELEM);	
-	_H(IdentIndexElement,				AST_TAG_TABLE_INDENTINDEX_ELEM);
+	_H(UnindexedValue,					AST_TAG_TABLE_UNINDEXED_ELEM);
+	_H(IdentIndexElement,				AST_TAG_TABLE_IDENTINDEX_ELEM);
 	_H(FunctionExpression,				AST_TAG_FUNCTION_EXPR);
-	_H(FunctionExpression,				AST_TAG_PRIMARY_LAMBDA_DEFINITION);
 	_H(DottedIdent,						AST_TAG_TABLE_DOTTED_IDENT);
 	_H(OperatorIndex,					AST_TAG_TABLE_OPERATOR_INDEX);
 	_H(TableValues,						AST_TAG_TABLE_VALUES);
@@ -151,68 +181,78 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 	_H(THROW,							AST_TAG_THROW);
 	_H(ExceptionVar,					AST_TAG_EXCEPTION_VAR);
 	_H(Exception,						AST_TAG_TRYTRAP);
+	_H(QuasiQuotes,						AST_TAG_QUASI_QUOTES);
+	_H(Escape,							AST_TAG_ESCAPE);
+	_H(Inline,							AST_TAG_INLINE);
+	_H(Execute,							AST_TAG_EXECUTE);
 
 	// Context dependent handlers.
-	_C(AdaptBoolExpression, AST_TAG_OP_ADD,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_SUB,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MUL,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_DIV,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MOD,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GT,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LT,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GE,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LE,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_EQ,					AST_CHILD_LEFT);
-	_C(AdaptBoolExpression, AST_TAG_OP_NE,					AST_CHILD_LEFT);
+	_C(AdaptTableContent,	AST_TAG_TABLE_CONTENT_DOT,				AST_CHILD_TABLE);
+	_C(AdaptTableContent,	AST_TAG_TABLE_CONTENT_DOUBLE_DOT,		AST_CHILD_TABLE);
+	_C(AdaptTableContent,	AST_TAG_TABLE_CONTENT_BRACKET,			AST_CHILD_TABLE);
+	_C(AdaptTableContent,	AST_TAG_TABLE_CONTENT_DOUBLE_BRACKET,	AST_CHILD_TABLE);
 
-	_C(AdaptBoolExpression, AST_TAG_OP_ADD,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_SUB,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MUL,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_DIV,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_MOD,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GT,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LT,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_GE,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_LE,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_EQ,					AST_CHILD_RIGHT);
-	_C(AdaptBoolExpression, AST_TAG_OP_NE,					AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_ADD, 						AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_SUB, 						AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MUL, 						AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_DIV, 						AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MOD, 						AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GT,							AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LT,							AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GE,							AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LE,							AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_EQ,							AST_CHILD_LEFT);
+	_C(AdaptBoolExpression, AST_TAG_OP_NE,							AST_CHILD_LEFT);
 
-	_C(ElsePrefix,			AST_TAG_IF_ELSE,				AST_CHILD_ELSE);
+	_C(AdaptBoolExpression, AST_TAG_OP_ADD, 						AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_SUB, 						AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MUL, 						AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_DIV, 						AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_MOD, 						AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GT,							AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LT,							AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_GE,							AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_LE,							AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_EQ,							AST_CHILD_RIGHT);
+	_C(AdaptBoolExpression, AST_TAG_OP_NE,							AST_CHILD_RIGHT);
 
-	_C(ScopedStmt,			AST_TAG_TRYTRAP,				AST_CHILD_TRY);
-	_C(ScopedStmt,			AST_TAG_TRYTRAP,				AST_CHILD_TRAP);
-	_C(ScopedStmt,			AST_TAG_FOR,					AST_CHILD_STMT);
-	_C(ScopedStmt,			AST_TAG_FOREACH,				AST_CHILD_STMT);
-	_C(ScopedStmt,			AST_TAG_WHILE,					AST_CHILD_STMT);
-	_C(ScopedStmt,			AST_TAG_IF_ELSE,				AST_CHILD_IF);
-	_C(ScopedStmt,			AST_TAG_IF_ELSE,				AST_CHILD_ELSE);
-	_C(ScopedStmt,			AST_TAG_IF,						AST_CHILD_STMT);
+	_C(ElsePrefix,			AST_TAG_IF_ELSE,						AST_CHILD_ELSE);	//Must be before the ScopedStmts
+				
+	_C(ScopedStmt,			AST_TAG_TRYTRAP,						AST_CHILD_TRY);
+	_C(ScopedStmt,			AST_TAG_TRYTRAP,						AST_CHILD_TRAP);
+	_C(ScopedStmt,			AST_TAG_FOR,							AST_CHILD_STMT);
+	_C(ScopedStmt,			AST_TAG_FOREACH,						AST_CHILD_STMT);
+	_C(ScopedStmt,			AST_TAG_WHILE,							AST_CHILD_STMT);
+	_C(ScopedStmt,			AST_TAG_IF_ELSE,						AST_CHILD_IF);
+	_C(ScopedStmt,			AST_TAG_IF_ELSE,						AST_CHILD_ELSE);
+	_C(ScopedStmt,			AST_TAG_IF,								AST_CHILD_STMT);
+	
+	_C(IfCondition,			AST_TAG_IF,								AST_CHILD_COND);
+	_C(IfCondition,			AST_TAG_IF_ELSE,						AST_CHILD_COND);
+	_C(WhileCondition,		AST_TAG_WHILE,							AST_CHILD_COND);
+	_C(ForCond,				AST_TAG_FOR,							AST_CHILD_COND);
+	_C(ForeachContainer,	AST_TAG_FOREACH,						AST_CHILD_CONTAINER);
+	_C(ExpressionANDOR,		AST_TAG_AND,							AST_CHILD_LEFT);
+	_C(ExpressionANDOR,		AST_TAG_OR,								AST_CHILD_LEFT);
+	_C(TernaryCondition,	AST_TAG_TERNARY,						AST_CHILD_COND);
+	_C(TernaryLeftExpr,		AST_TAG_TERNARY,						AST_CHILD_LEFT);
+	_C(TernaryRightExpr,	AST_TAG_TERNARY,						AST_CHILD_RIGHT);
+	_C(ForInit,				AST_TAG_FOR,							AST_CHILD_INIT);
+	_C(ForSuffix,			AST_TAG_FOR,							AST_CHILD_SUFFIX);
+	_C(LambdaStmt,			AST_TAG_LAMBDA_FUNCTION,				AST_CHILD_EXPR);
 
-	_C(IfCondition,			AST_TAG_IF,						AST_CHILD_COND);
-	_C(IfCondition,			AST_TAG_IF_ELSE,				AST_CHILD_COND);
-	_C(WhileCondition,		AST_TAG_WHILE,					AST_CHILD_COND);
-	_C(ForCond,				AST_TAG_FOR,					AST_CHILD_COND);
-	_C(ForeachContainer,	AST_TAG_FOREACH,				AST_CHILD_CONTAINER);
-	_C(ExpressionANDOR,		AST_TAG_AND,					AST_CHILD_LEFT);
-	_C(ExpressionANDOR,		AST_TAG_OR,						AST_CHILD_LEFT);
-	_C(TernaryCondition,	AST_TAG_TERNARY,				AST_CHILD_COND);
-	_C(TernaryLeftExpr,		AST_TAG_TERNARY,				AST_CHILD_LEFT);
-	_C(TernaryRightExpr,	AST_TAG_TERNARY,				AST_CHILD_RIGHT);
-	_C(ForInit,				AST_TAG_FOR,					AST_CHILD_INIT);
-	_C(ForSuffix,			AST_TAG_FOR,					AST_CHILD_SUFFIX);
-	_C(LambdaStmt,			AST_TAG_LAMBDA_FUNCTION,		AST_CHILD_EXPR);
+	_C(AttributeMethod,		AST_TAG_TABLE_NEW_ATTRIBUTE,			AST_CHILD_SET);
+	_C(AttributeMethod,		AST_TAG_TABLE_NEW_ATTRIBUTE,			AST_CHILD_GET);
 
-	_C(AttributeMethod,		AST_TAG_TABLE_NEW_ATTRIBUTE,	AST_CHILD_SET);
-	_C(AttributeMethod,		AST_TAG_TABLE_NEW_ATTRIBUTE,	AST_CHILD_GET);
+	GetEvalStack().Initialise();
 }
 
 ///////////////////////////////////////////////////////////
 
-void AST::TranslationVisitor::operator()(AST::Node* root) {
+void AST::TranslationVisitor::operator()(AST::Node* root){
 	if (root) {
-		GetEvalStack().Initialise();
 		DPTR(root)->AcceptPreOrder(this);
-		GetEvalStack().CleanUp();
+		COMPMESSENGER_EX(COMPONENT_DIRECTORY()).SetSourceReferences();
 	}
 }
 
@@ -220,38 +260,47 @@ void AST::TranslationVisitor::operator()(AST::Node* root) {
 
 void AST::TranslationVisitor::Handle_Program (AST_VISITOR_ARGS){ 
 	if (entering)
-		GlobalData::Start();
+		GLOBALDATA.Start();
 	else {
-		GlobalData::End();
-		DASSERT(DeltaExpr::GetReturnValue()->sym->GetOffset() == DELTA_RETVALUE_OFFSET);
-		DASSERT(DeltaExpr::GetReturnValue()->sym->GetBlockId() == DELTA_MAIN_BLOCK_VALUE);
+		GLOBALDATA.End();
+		DASSERT(TRANSLATOR.GetReturnValue()->sym->GetOffset() == DELTA_RETVALUE_OFFSET);
+		DASSERT(TRANSLATOR.GetReturnValue()->sym->GetBlockId() == DELTA_MAIN_BLOCK_VALUE);
 	}
 }
 
+///////////////////////////////////////////////////////////
+
+void AST::TranslationVisitor::Handle_Name (AST_VISITOR_ARGS)
+	{ if (!entering) yypush(NAME(node).c_str()); }
+
 //*************************
-// Function: M(1.quadNo) Class Name(2.sym) FormalArgs Compound(3.stmt)
+// Function: M(1.quadNo) Class Function(2.sym) Name(3.str) FormalArgs Compound(4.stmt)
 //
 void AST::TranslationVisitor::Handle_FunctionBasic (AST_VISITOR_ARGS, const std::string (*unparser)(DeltaSymbol*, Stmt*)) {
 
-	if (entering) {	
+	if (entering) {
 
 		M();
 
 		yyrule;
 
-		const char*		name		= NAME(node);
-		util_ui8		funcClass	= AST::GetFuncClass((AST::Node*) node);
-		util_ui8		funcLinkage	= AST::GetFuncLinkage((AST::Node*) node);
-		yv = Translate_Function(name, funcClass, funcLinkage);
+		const char* name = (const char*) 0;
+		if (TreeNode* funcName = DPTR(node)->GetChild(AST_CHILD_NAME))
+			name = NAME(funcName).c_str();
+
+		util_ui8 funcClass = AST::GetFuncClass((AST::Node*) node);
+		util_ui8 funcLinkage = AST::GetFuncLinkage((AST::Node*) node);
+		yv = TRANSLATOR.Translate_Function(name, funcClass, funcLinkage);
 
 		yyapply;
 
 	} else {
+		const util_ui32 n = DPTR(node)->GetTotalChildren();
+		DASSERT(n == 2 || n == 3);
+		yyrule(n + 1);
 
-		yyrule(3);
-
-		UNPARSABLE_GET((*unparser)(yy[2].sym(), yy[3].stmt()));
-		if (yv = Translate_Function(yy[2].sym(), yy[3].stmt(), yy[1].quadNo()))
+		UNPARSABLE_GET((*unparser)(yy[2].sym(), yy[n + 1].stmt()));
+		if (yv = TRANSLATOR.Translate_Function(yy[2].sym(), yy[n + 1].stmt(), yy[1].quadNo(), LINE(node)))
 			DPTR(yv.sym())->SetSourceCode(unparsed);
 
 		yyapply;
@@ -261,18 +310,20 @@ void AST::TranslationVisitor::Handle_FunctionBasic (AST_VISITOR_ARGS, const std:
 //*************************
 
 void AST::TranslationVisitor::Handle_Function (AST_VISITOR_ARGS)
-	{  Handle_FunctionBasic(AST_VISITOR_ACTUALS, &Unparse_Function); }
+	{ Handle_FunctionBasic(AST_VISITOR_ACTUALS, &Unparse_Function); }
 
-void AST::TranslationVisitor::Handle_LambdaFunction (AST_VISITOR_ARGS)
-	{  Handle_FunctionBasic(AST_VISITOR_ACTUALS, &Unparse_LambdaFunction); }
+void AST::TranslationVisitor::Handle_LambdaFunction (AST_VISITOR_ARGS){
+	Handle_FunctionBasic(AST_VISITOR_ACTUALS, &Unparse_LambdaFunction);
+	Handle_FunctionExpression(AST_VISITOR_ACTUALS);
+}
 
 //*************************
 // LambdaStmt: M(1.quadNo) Expr(2.expr)
 
 void AST::TranslationVisitor::Handle_LambdaStmt (AST_VISITOR_ARGS) {
 	if (entering) {
-		yysetline();
-		Translate_CompoundBegin();
+		yysetsourceinfo();
+		TRANSLATOR.Translate_CompoundBegin();
 		M();
 	}
 	else {
@@ -281,8 +332,8 @@ void AST::TranslationVisitor::Handle_LambdaStmt (AST_VISITOR_ARGS) {
 		DeltaExpr* expr = yy[2].expr();
 		DASSERT(expr);
 
-		Unparse_LambdaStmt(yv = Translate_RETURN(expr), expr);
-		Translate_CompoundEnd();
+		Unparse_LambdaStmt(yv = TRANSLATOR.Translate_RETURN(expr), expr);
+		TRANSLATOR.Translate_CompoundEnd();
 		SET_QUAD_LINE(1, true);
 		yyapply;
 	}
@@ -299,28 +350,40 @@ void AST::TranslationVisitor::Handle_FunctionStmt (AST_VISITOR_ARGS){
 }
 
 //*************************
-// FormalArgs: IdentList (as attribute).
+// FormalArgs: IdentList (i.str).
 //
-void AST::TranslationVisitor::Handle_FormalArgs (AST_VISITOR_ARGS){ 
+void AST::TranslationVisitor::Handle_FormalArgs (AST_VISITOR_ARGS){
 
-	if (entering) {
-
-		if (AST::IdList* formals = (AST::IdList*) node->GetAttribute(AST_ATTRIBUTE_ITEMS)) {
-			std::list<std::string>&	l = DPTR(formals)->l;
-			for (std::list<std::string>::iterator i = l.begin(); i != l.end(); ++i) {
-				if (*i == AST_VALUE_VARARGS_FORMAL_NAME) {
-					DASSERT(&*i == &l.back());	// It is the last element.
-					Translate_VarArgs();
+	if (!entering) {
+		{
+			const util_ui32 n = DPTR(node)->GetTotalChildren();
+			yyrule(n);
+			for (util_ui32 i = 1; i <= n; ++i)
+				if (!strcmp(yy[i].str(), AST_VALUE_VARARGS_FORMAL_NAME)) {
+					DASSERT(i == n);
+					TRANSLATOR.Translate_VarArgs();
 				}
 				else
-					Translate_IdentList(i->c_str());
-			}
+					TRANSLATOR.Translate_IdentList(yy[i].str());
 		}
-
-		Translate_FunctionHeader(yytop.sym());
+		{
+			TreeNode* funcNode = DPTR(node)->GetParent();
+			DASSERT(funcNode);
+			const util_ui32 n = DPTR(funcNode)->GetTotalChildren();
+			DASSERT(n == 2 || n == 3);
+			DeltaSymbol* func;
+			if (n == 2)
+				func = yytop.sym();
+			else {
+				yyrule(n);
+				func = yy[2].sym();
+				yypreserve;
+			}
+			TRANSLATOR.Translate_FunctionHeader(func);
+		}
 		DELTASYMBOLS.PushAndResetTempCounter();
 	}
-} 
+}
 
 //*************************
 // Compound: [Stmts] (1.stmt)
@@ -328,21 +391,21 @@ void AST::TranslationVisitor::Handle_FormalArgs (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_Compound (AST_VISITOR_ARGS){ 
 	if (entering) {
 		if (DPTR(node)->GetTotalChildren())
-			Translate_CompoundBegin();
+			TRANSLATOR.Translate_CompoundBegin();
 	}
 	else {
-		util_ui32 n = DPTR(node)->GetTotalChildren();
-		DASSERT(n==1 || n==0);
+		const util_ui32 n = DPTR(node)->GetTotalChildren();
+		DASSERT(n == 1 || n == 0);
 
 		yyrule(n);
 		
 		if (n) {
 			Unparse_Compound(yv = yy[1].stmt()); 
-			Translate_CompoundEnd();
+			TRANSLATOR.Translate_CompoundEnd();
 		}
 		else {
 			Unparse_Compound(yv = NEW_STMT);
-			Translate_EmptyCompound();
+			TRANSLATOR.Translate_EmptyCompound();
 		}
 
 		yyapply;
@@ -356,8 +419,20 @@ void AST::TranslationVisitor::Handle_Stmts (AST_VISITOR_ARGS){
 
 	if (!entering) {
 
-		Stmt*		stmt	= NIL_STMT;
-		util_ui32	n		= DPTR(node)->GetTotalChildren();
+		Stmt*		stmt			= NIL_STMT;
+		util_ui32	n				= DPTR(node)->GetTotalChildren();
+		util_ui32	usingDirectives = 0;
+
+		for (util_ui32 i = 0; i < n; ++i) {
+			TreeNode* child = DPTR(node)->GetChild(i);
+			DASSERT(child);
+			child = DPTR(child)->GetChild(AST_CHILD_STMT);
+			DASSERT(child);
+			if(AST::ValidationVisitor::IsUsingDirective(DPTR(child)))
+				++usingDirectives;
+		}
+
+		n -= usingDirectives;
 
 		yyrule(n);	// All stmts on the stack.
 
@@ -366,7 +441,7 @@ void AST::TranslationVisitor::Handle_Stmts (AST_VISITOR_ARGS){
 				stmt = yy[1].stmt();
 			else {
 				UNPARSABLE_GET(Unparse_Stmts(stmt, yy[i].stmt()));
-				stmt = Translate_Stmts(stmt, yy[i].stmt()); 
+				stmt = TRANSLATOR.Translate_Stmts(stmt, yy[i].stmt()); 
 				UNPARSABLE_SET(stmt);
 			}
 
@@ -378,10 +453,12 @@ void AST::TranslationVisitor::Handle_Stmts (AST_VISITOR_ARGS){
 //*************************
 // Stmt: Any stmt (1.stmt)
 //
-void AST::TranslationVisitor::Handle_Stmt (AST_VISITOR_ARGS){ 
-	if (!entering) {
+void AST::TranslationVisitor::Handle_Stmt (AST_VISITOR_ARGS){
+	TreeNode* child = DPTR(node)->GetChild(AST_CHILD_STMT);
+	DASSERT(child);
+	if (!AST::ValidationVisitor::IsUsingDirective(DPTR(child)) && !entering) {
 		yyrule(1);
-		yv = Translate_Stmts(yy[1].stmt());
+		yv = TRANSLATOR.Translate_Stmts(yy[1].stmt());
 		yyapply;
 	}
 } 
@@ -389,13 +466,19 @@ void AST::TranslationVisitor::Handle_Stmt (AST_VISITOR_ARGS){
 //*************************
 // BasicStmt: M(1.quadNo) Stmt(2.stmt)
 //
-void AST::TranslationVisitor::Handle_BasicStmt (AST_VISITOR_ARGS){ 
+
+void AST::TranslationVisitor::Handle_BasicStmt (AST_VISITOR_ARGS){
+	TreeNode* child = DPTR(node)->GetChild(AST_CHILD_STMT);
+	DASSERT(child);
+	bool isExprStmt = AST::ValidationVisitor::IsBasicExprStmt(DPTR(child));
+	bool isNonExprStmt = AST::ValidationVisitor::IsBasicNonExprStmt(DPTR(child));
+	DASSERT(isExprStmt || isNonExprStmt);
 	if (entering)
 		M();
 	else {
 		yyrule(2);
-		SET_QUAD_LINE(1, DPTR(node)->GetTag() == AST_TAG_BASIC_EXPR_STMT);
-		Translate_BasicStmt(line);
+		SET_QUAD_LINE(1, isExprStmt);
+		TRANSLATOR.Translate_BasicStmt(line);
 		yv = yy[2].stmt();
 		yyapply;
 	}
@@ -409,14 +492,14 @@ void AST::TranslationVisitor::Handle_ExpressionListStmt (AST_VISITOR_ARGS){
 	if (!entering) {
 
 		DeltaExpr*	expr	= NIL_EXPR;
-		util_ui32	n		= DPTR(node)->GetTotalChildren();
+		const util_ui32	n	= DPTR(node)->GetTotalChildren();
 
 		yyrule(n);	// All exprs on the stack.
 
 		for (util_ui32 i = 1; i <= n; ++i)
-			expr = Translate_ExpressionList(expr, yy[i].expr());
+			expr = TRANSLATOR.Translate_ExpressionList(expr, yy[i].expr());
 
-		yv = Translate_ExprListStmt(expr); 
+		yv = TRANSLATOR.Translate_ExprListStmt(expr); 
 		Unparse_ExprListStmt(yv.stmt(), expr);
 
 		yyapply;
@@ -429,7 +512,8 @@ void AST::TranslationVisitor::Handle_EmptyStmt (AST_VISITOR_ARGS){
 	if (!entering) {
 		yyrule; 
 		yv = NEW_STMT; 
-		yv.stmt()->SetUnparsed(";");
+		yv.stmt()->SetUnparsed(Unparse_EmptyStmt());
+		DELTACOMP_WARNING_EMPTY_STMT();
 		DELTACOMP_WARNING_EMPTY_STMT();
 		yyapply;
 	}
@@ -440,11 +524,11 @@ void AST::TranslationVisitor::Handle_EmptyStmt (AST_VISITOR_ARGS){
 //
 void AST::TranslationVisitor::Handle_AssertStmt (AST_VISITOR_ARGS){ 
 	if (entering) 
-		ParseParms::InAssertStmt().enter();
+		PARSEPARMS.InAssertStmt().enter();
 	else {
 		yyrule(1);
-		Translate_ASSERT(yy[1].expr()); 
-		ParseParms::InAssertStmt().exit(); 
+		TRANSLATOR.Translate_ASSERT(yy[1].expr()); 
+		PARSEPARMS.InAssertStmt().exit(); 
 		Unparse_ExprStmt(yv = NEW_STMT, ASSERT, yy[1].expr());
 		yyapply;
 	}
@@ -457,47 +541,54 @@ void AST::TranslationVisitor::Handle_Return (AST_VISITOR_ARGS){
 	if (!entering) {
 		if (node->GetChild(AST_CHILD_EXPR)) {
 			yyrule(1);
-			yv = Translate_RETURN(yy[1].expr()); 
+			yv = TRANSLATOR.Translate_RETURN(yy[1].expr()); 
 			Unparse_ExprStmt(yv.stmt(), RETURN, yy[1].expr());
 			yyapply;
 		}
 		else {
 			yyrule;
-			Unparse_BuiltInStmt(yv = Translate_RETURN(), RETURN);
+			Unparse_BuiltInStmt(yv = TRANSLATOR.Translate_RETURN(), RETURN);
 			yyapply;
 		}
 	}
 } 
 
 ///////////////////////////////////////////////////////////
-// Using: using  ( Namespace (attr namespace)  | IDENT (attr name) )
+// Using: using ( Namespace (i.str) | ident (1.str) )
 //
 void AST::TranslationVisitor::Handle_UsingNamespace (AST_VISITOR_ARGS){ 
 	if (!entering) {
-		if (AST::IdList* path = NAMESPACE(node))
-			Translate_UsingNamespace(DPTR(path)->l);
-		else
-			Translate_UsingNamespace(NAME(node));
+		const util_ui32 n = DPTR(node)->GetTotalChildren();
+		DASSERT(n);
+		yyrule(n);
+		if (n == 1)
+			TRANSLATOR.Translate_UsingNamespace(yy[1].str());
+		else {
+			std::list<std::string> namespacePath;
+			for (util_ui32 i = 1; i <= n; ++i)
+				namespacePath.push_back(yy[i].str());
+			TRANSLATOR.Translate_UsingNamespace(namespacePath);
+		}
 	}
 }	
 
 ///////////////////////////////////////////////////////////
-// Using: using  StringConst (value) : IDENT (attr name)
+// Using: using StringConst (value) : ident (1.str)
 //
 void AST::TranslationVisitor::Handle_UsingByteCodeLibrary (AST_VISITOR_ARGS){ 
 	if (!entering) {
-		yysetline();
-		Translate_UsingByteCodeLibrary(NAME(node), LINE(node));
+		yyrule(1);
+		TRANSLATOR.Translate_UsingByteCodeLibrary(yy[1].str(), LINE(node));
 	}
 }	
 
 ///////////////////////////////////////////////////////////
-// Const: const IDENT (attr) Expr (1.expr)
+// Const: const ident (1.str) Expr (2.expr)
 //
 void AST::TranslationVisitor::Handle_ConstDefExpression (AST_VISITOR_ARGS){ 
 	if (!entering) {
-		yyrule(1);
-		yv = Translate_ConstAssignExpression(NAME(node), yy[1].expr());
+		yyrule(2);
+		yv = TRANSLATOR.Translate_ConstAssignExpression(yy[1].str(), yy[2].expr());
 		yyapply;
 	}
 } 
@@ -511,7 +602,7 @@ void AST::TranslationVisitor::Handle_ConstDefExpression (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_AssignExpr (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule(2);
-		yv = Translate_AssignExpr(lvalue, yy[2].expr()); 
+		yv = TRANSLATOR.Translate_AssignExpr(lvalue, yy[2].expr()); 
 		lvalue->SetInitialised(); 
 		Unparse_BinaryOp(yv.expr(), lvalue, ASSIGN, yy[2].expr());
 		yyapply;
@@ -560,7 +651,7 @@ void AST::TranslationVisitor::Handle_AssignArithExpr (AST_VISITOR_ARGS){
 		yyrule(2);
 		std::string	op							= node->GetTag();
 		std::pair<util_ui8, util_ui32>	opcode	= GetArithOpCode(op);
-		yv = Translate_AssignArithExpr(lvalue, yy[2].expr(), opcode.first, Unparse_Token(opcode.second).c_str()); 
+		yv = TRANSLATOR.Translate_AssignArithExpr(lvalue, yy[2].expr(), opcode.first, Unparse_Token(opcode.second).c_str()); 
 		Unparse_BinaryOp(yv.expr(), lvalue, opcode.second, yy[2].expr());
 		yyapply;
 	}
@@ -580,7 +671,7 @@ void AST::TranslationVisitor::Handle_ArithmeticExpression (AST_VISITOR_ARGS){
 		yyrule(2);
 		std::string	op							= node->GetTag();
 		std::pair<util_ui8, util_ui32>	opcode	= GetArithOpCode(op);
-		yv = Translate_ArithmeticExpression(left, opcode.first, right, Unparse_Token(opcode.second).c_str()); 
+		yv = TRANSLATOR.Translate_ArithmeticExpression(left, opcode.first, right, Unparse_Token(opcode.second).c_str()); 
 		Unparse_BinaryOp(yv.expr(), left, opcode.second, right);
 		yyapply;
 	}
@@ -594,7 +685,7 @@ void AST::TranslationVisitor::Handle_RelationalExpr (AST_VISITOR_ARGS){
 		yyrule(2);
 		std::string	op							= node->GetTag();
 		std::pair<util_ui8, util_ui32>	opcode	= GetRelatOpCode(op);
-		yv = Translate_RelationalExpr(left, right, opcode.first, Unparse_Token(opcode.second).c_str()); 
+		yv = TRANSLATOR.Translate_RelationalExpr(left, right, opcode.first, Unparse_Token(opcode.second).c_str()); 
 		Unparse_BinaryOp(yv.expr(), left, opcode.second, right);
 		yyapply;
 	}
@@ -619,39 +710,44 @@ void AST::TranslationVisitor::Handle_ExpressionANDOR( AST_VISITOR_ARGS){
 
 void AST::TranslationVisitor::Handle_BooleanExpression (
 		AST_VISITOR_ARGS, 
-		DeltaExpr* (*f)(DeltaExpr*, DeltaQuadAddress, DeltaExpr*),
+		DeltaExpr* (Translator::*f)(DeltaExpr*, DeltaQuadAddress, DeltaExpr*),
 		util_ui32 token
 	){ 
 	if (!entering) {
 		yyrule(3);
-		yv = (*f)(yy[1].expr(), yy[2].quadNo(), yy[3].expr()); 
-		Unparse_BinaryOp(yv.expr(), yy[1].expr(), token,  yy[3].expr());
+		yv = (TRANSLATOR.*f)(yy[1].expr(), yy[2].quadNo(), yy[3].expr()); 
+		Unparse_BinaryOp(yv.expr(), yy[1].expr(), token, yy[3].expr());
 		yyapply;
 	}
 } 
 
 void AST::TranslationVisitor::Handle_ExprANDExpr (AST_VISITOR_ARGS)
-	{ Handle_BooleanExpression(AST_VISITOR_ACTUALS, &Translate_ExprANDExpr, AND); }
+	{ Handle_BooleanExpression(AST_VISITOR_ACTUALS, &Translator::Translate_ExprANDExpr, AND); }
 
 void AST::TranslationVisitor::Handle_ExprORExpr (AST_VISITOR_ARGS)
-	{ Handle_BooleanExpression(AST_VISITOR_ACTUALS, &Translate_ExprORExpr, OR); }
+	{ Handle_BooleanExpression(AST_VISITOR_ACTUALS, &Translator::Translate_ExprORExpr, OR); }
 
 //*****************************
 
-void  AST::TranslationVisitor::Handle_UnaryExpression (AST_VISITOR_ARGS, DeltaExpr* (*f)(DeltaExpr*), util_ui32 token, const std::string& infix){ 
+void AST::TranslationVisitor::Handle_UnaryExpression (
+		AST_VISITOR_ARGS,
+		DeltaExpr* (Translator::*f)(DeltaExpr*),
+		util_ui32 token,
+		const std::string& infix
+	){ 
 	if (!entering) {
 		yyrule(1);
-		yv = (*f)(left); 
+		yv = (TRANSLATOR.*f)(left);
 		Unparse_UnaryOp(yv.expr(), token, left, infix);
 		yyapply;
 	}
 }
 
 void AST::TranslationVisitor::Handle_NOTExpression (AST_VISITOR_ARGS)
-	{  Handle_UnaryExpression(AST_VISITOR_ACTUALS, &Translate_NOTExpression, NOT, " "); }
+	{ Handle_UnaryExpression(AST_VISITOR_ACTUALS, &Translator::Translate_NOTExpression, NOT, " "); }
 
 void AST::TranslationVisitor::Handle_UMINUSExpression (AST_VISITOR_ARGS)
-	{  Handle_UnaryExpression(AST_VISITOR_ACTUALS, &Translate_UMINUSExpression, SUB); }
+	{ Handle_UnaryExpression(AST_VISITOR_ACTUALS, &Translator::Translate_UMINUSExpression, SUB); }
 
 //*****************************
 
@@ -681,27 +777,23 @@ void AST::TranslationVisitor::Handle_TermLvalueArith (AST_VISITOR_ARGS){
 	if (!entering) {
 		yyrule(1);
 		utriple<util_ui8, util_ui32, bool> opcodes = GetIncDecOpCode(node->GetTag());
-		yv = Translate_TermLvalue(yy[1].expr(), opcodes.third, opcodes.first); 
+		yv = TRANSLATOR.Translate_TermLvalue(yy[1].expr(), opcodes.third, opcodes.first); 
 		Unparse_UnaryIncDec(yv.expr(), opcodes.second, yy[1].expr(), opcodes.third);
-		yyapply;
-	}
-} 
-
-///////////////////////////////////////////////////////////
-
-void AST::TranslationVisitor::Handle_PrimaryFunctionAndTableObject (AST_VISITOR_ARGS) {
-	if (!entering) {
-		yyrule(1);
-		yv = DNPTR(yy[1].expr())->AdaptIfTableContent();
 		yyapply;
 	}
 }
 
-//*****************************
+///////////////////////////////////////////////////////////
 
-void AST::TranslationVisitor::Handle_PrimaryConstValue (AST_VISITOR_ARGS) {
-	if (!entering)
-		Unparse_ConstValue(yytop.expr());
+void AST::TranslationVisitor::Handle_PrimaryExpression (AST_VISITOR_ARGS) {
+	if (!entering) {
+		TreeNode* child = DPTR(node)->GetChild(AST_CHILD_EXPR);
+		DASSERT(child);
+		if (AST::ValidationVisitor::IsConstValue(DPTR(child)))
+			Unparse_ConstValue(yytop.expr());
+		else if (AST::ValidationVisitor::IsFunctionAndTableObject(DPTR(child)))
+			Handle_AdaptTableContent(AST_VISITOR_ACTUALS);
+	}
 }
 
 ///////////////////////////////////////////////////////////
@@ -709,7 +801,7 @@ void AST::TranslationVisitor::Handle_PrimaryConstValue (AST_VISITOR_ARGS) {
 void AST::TranslationVisitor::Handle_TernaryCondition (AST_VISITOR_ARGS) {
 	if (!entering) {
 		yyrule(1);
-		yv = Translate_Condition(left);
+		yv = TRANSLATOR.Translate_Condition(left);
 		yyapply;
 	}
 }
@@ -746,7 +838,7 @@ void AST::TranslationVisitor::Handle_TernaryRightExpr (AST_VISITOR_ARGS) {
 void AST::TranslationVisitor::Handle_Ternary (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule(6);
-		yv =	Translate_Ternary(
+		yv =	TRANSLATOR.Translate_Ternary(
 					yy[1].expr(),	yy[3].expr(),	yy[6].expr(), 
 					yy[2].quadNo(), yy[5].quadNo(), yy[4].quadNo()
 				); 
@@ -757,8 +849,8 @@ void AST::TranslationVisitor::Handle_Ternary (AST_VISITOR_ARGS){
 
 ///////////////////////////////////////////////////////////
 
-void AST::TranslationVisitor::Handle_Expr (AST_VISITOR_ARGS){ 
-	if (util_ui32 line = LINE(node)) {
+void AST::TranslationVisitor::Handle_Expr (AST_VISITOR_ARGS){
+	if (const util_ui32 line = LINE(node)) {
 		if (entering)
 			M();
 		else {
@@ -775,7 +867,7 @@ void AST::TranslationVisitor::Handle_Expr (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_ParenthesisedExpr (AST_VISITOR_ARGS){
 	if (!entering) {
 		yyrule(1);
-		Unparse_ParenthesisedExpr(yv = DNPTR(yy[1].expr())->CheckUninitialised());
+		Unparse_ParenthesisedExpr(yv = DNPTR(yy[1].expr()));
 		yyapply;
 	}
 }
@@ -787,12 +879,12 @@ void AST::TranslationVisitor::Handle_ExprList (AST_VISITOR_ARGS){
 	if (!entering) {
 
 		DeltaExpr*	expr	= NIL_EXPR;
-		util_ui32	n		= DPTR(node)->GetTotalChildren();
+		const util_ui32	n	= DPTR(node)->GetTotalChildren();
 
 		yyrule(n);	// All exprs on the stack.
 
 		for (util_ui32 i = 1; i <= n; ++i)
-			expr = Translate_ExpressionList(expr, yy[i].expr());
+			expr = TRANSLATOR.Translate_ExpressionList(expr, yy[i].expr());
 
 		yv = expr;
 		yyapply;	
@@ -804,22 +896,22 @@ void AST::TranslationVisitor::Handle_ExprList (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_ExpressionListItem (AST_VISITOR_ARGS) {
 	if (!entering) {
 		yyrule(1);
-		yv = Translate_ExpressionListItem(yy[1].expr());
+		yv = TRANSLATOR.Translate_ExpressionListItem(yy[1].expr());
 		yyapply;	
 	}	
 }
 
 ///////////////////////////////////////////////////////////
 
-#define	HANDLE_CONSTVALUE(val)					\
-	if (!entering) {							\
-		yyrule;									\
-		yv = Translate_ConstValue(val);			\
-		yyapply;								\
+#define	HANDLE_CONSTVALUE(val)						\
+	if (!entering) {								\
+		yyrule;										\
+		yv = TRANSLATOR.Translate_ConstValue(val);	\
+		yyapply;									\
 	}
 
 void AST::TranslationVisitor::Handle_NumConst (AST_VISITOR_ARGS)
-	{ HANDLE_CONSTVALUE(DPTR((AST::NumItem*) DPTR(node)->GetAttribute(AST_ATTRIBUTE_CONSTVALUE))->Get()); }
+	{ HANDLE_CONSTVALUE(DPTR(node)->GetAttribute(AST_ATTRIBUTE_CONSTVALUE)->GetDouble()); }
 
 //*****************************
 
@@ -829,22 +921,20 @@ void AST::TranslationVisitor::Handle_NilConst (AST_VISITOR_ARGS)
 //*****************************
 
 void AST::TranslationVisitor::Handle_BoolConst (AST_VISITOR_ARGS) {
-	util_ui32 i = (util_ui32) DPTR(node)->GetAttribute(AST_ATTRIBUTE_CONSTVALUE);
-	DASSERT(i == 1 || i == 0);
-	HANDLE_CONSTVALUE(i == 1); 
+	bool val = DPTR(node)->GetAttribute(AST_ATTRIBUTE_CONSTVALUE)->GetBool();
+	HANDLE_CONSTVALUE(val); 
 }
 
 //*****************************
 
-void AST::TranslationVisitor::Handle_StringItems (AST_VISITOR_ARGS, DeltaExpr* (*f)(const char*, DeltaExpr*), void(*g)(DeltaExpr*)){ 
+void AST::TranslationVisitor::Handle_StringItems (AST_VISITOR_ARGS, DeltaExpr* (Translator::*f)(const std::string&, DeltaExpr*), void(*g)(DeltaExpr*)){ 
 	if (!entering) {
 		yyrule;
-		AST::StringList*		sl		= (AST::StringList*) DPTR(node)->GetAttribute(AST_ATTRIBUTE_ITEMS);
-		std::list<std::string>& l		= DPTR(sl)->l;
+		std::list<std::string>&	l		= DPTR(node)->GetAttribute(AST_ATTRIBUTE_ITEMS)->GetStringList();
 		DeltaExpr*				expr	= NIL_EXPR;
 
 		for (std::list<std::string>::iterator i = l.begin(); i != l.end(); ++i)
-			expr = (*f)(i->c_str(), expr);
+			expr = (TRANSLATOR.*f)(i->c_str(), expr);
 
 		(*g)(yv = expr);
 		yyapply;
@@ -852,32 +942,46 @@ void AST::TranslationVisitor::Handle_StringItems (AST_VISITOR_ARGS, DeltaExpr* (
 } 
 
 void AST::TranslationVisitor::Handle_StringConst (AST_VISITOR_ARGS)
-	{ Handle_StringItems(AST_VISITOR_ACTUALS, &Translate_StringConst, &Unparse_ConstValue); }
+	{ Handle_StringItems(AST_VISITOR_ACTUALS, &Translator::Translate_StringConst, &Unparse_ConstValue); }
 
 //*****************************
 
 void AST::TranslationVisitor::Handle_StringifyDottedIdents (AST_VISITOR_ARGS)
-	{ Handle_StringItems(AST_VISITOR_ACTUALS, &Translate_StringifyDottedIdents, &Unparse_Stringify); }
+	{ Handle_StringItems(AST_VISITOR_ACTUALS, &Translator::Translate_StringifyDottedIdents, &Unparse_Stringify); }
 
 //*****************************
 
 void AST::TranslationVisitor::Handle_StringifyNamespaceIdent (AST_VISITOR_ARGS){ 
 	if (!entering) {
-		yyrule;
-		AST::StringList*		sl		= NAMESPACE(node);
-		std::list<std::string>& l		= DPTR(sl)->l;
-		DASSERT(!l.empty());
-		Unparse_Stringify(yv = Translate_StringifyNamespaceIdent(l));
+		const util_ui32 n = DPTR(node)->GetTotalChildren();
+		DASSERT(n > 1);
+		yyrule(n);
+		std::list<std::string> namespacePath;
+		for (util_ui32 i = 1; i <= n; ++i)
+			namespacePath.push_back(yy[i].str());
+		Unparse_Stringify(yv = TRANSLATOR.Translate_StringifyNamespaceIdent(namespacePath));
 		yyapply;
 	}
 } 
 
 ///////////////////////////////////////////////////////////
 
-void AST::TranslationVisitor::Handle_KwdExpr (AST_VISITOR_ARGS, DeltaExpr* (*f)(void), util_ui32 token){ 
+void AST::TranslationVisitor::Handle_KwdExpr (AST_VISITOR_ARGS, DeltaExpr* (Translator::*f)(void), util_ui32 token){ 
 	if (!entering) {
 		yyrule;
-		Unparse_BuiltIn(yv = (*f)(), token);
+		Unparse_BuiltIn(yv = (TRANSLATOR.*f)(), token);
+		yyapply;
+	}
+}
+
+void AST::TranslationVisitor::Handle_KwdExpr (
+		AST_VISITOR_ARGS,
+		DeltaExpr* (*f)(Translator& translator),
+		util_ui32 token
+	){ 
+	if (!entering) {
+		yyrule;
+		Unparse_BuiltIn(yv = (*f)(TRANSLATOR), token);
 		yyapply;
 	}
 }
@@ -885,29 +989,29 @@ void AST::TranslationVisitor::Handle_KwdExpr (AST_VISITOR_ARGS, DeltaExpr* (*f)(
 //*****************************
 
 void AST::TranslationVisitor::Handle_SELF (AST_VISITOR_ARGS)
-	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translate_SELF, SELF); }
+	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translator::Translate_SELF, SELF); }
 
 void AST::TranslationVisitor::Handle_ARGUMENTS (AST_VISITOR_ARGS)
-	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translate_ARGUMENTS, ARGUMENTS); }
+	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translator::Translate_ARGUMENTS, ARGUMENTS); }
 
 void AST::TranslationVisitor::Handle_TRIPLE_DOT (AST_VISITOR_ARGS)
-	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translate_TRIPLE_DOT, TRIPLE_DOT); }
+	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translator::Translate_TRIPLE_DOT, TRIPLE_DOT); }
 
-static DeltaExpr* Translate_LAMBDA_REF_Adapter (void)
-	{ return Translate_LAMBDA_REF(); }
+static DeltaExpr* Translate_LAMBDA_REF_Adapter (Translator& translator)
+	{ return translator.Translate_LAMBDA_REF(); }
 
 void AST::TranslationVisitor::Handle_LAMBDA_REF (AST_VISITOR_ARGS)
 	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translate_LAMBDA_REF_Adapter, LAMBDA_REF); }
 
 void AST::TranslationVisitor::Handle_NEWSELF (AST_VISITOR_ARGS)
-	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translate_NEWSELF, NEWSELF); }
+	{ Handle_KwdExpr(AST_VISITOR_ACTUALS, &Translator::Translate_NEWSELF, NEWSELF); }
 
 ///////////////////////////////////////////////////////////
 
-void AST::TranslationVisitor::Handle_BuiltInStmt (AST_VISITOR_ARGS, Stmt* (*f)(void), util_ui32 token){ 
+void AST::TranslationVisitor::Handle_BuiltInStmt (AST_VISITOR_ARGS, Stmt* (Translator::*f)(void), util_ui32 token){ 
 	if (!entering) {
 		yyrule;
-		Unparse_BuiltInStmt(yv = (*f)(), token);
+		Unparse_BuiltInStmt(yv = (TRANSLATOR.*f)(), token);
 		yyapply;
 	}
 }
@@ -915,17 +1019,17 @@ void AST::TranslationVisitor::Handle_BuiltInStmt (AST_VISITOR_ARGS, Stmt* (*f)(v
 //*****************************
 
 void AST::TranslationVisitor::Handle_BREAK (AST_VISITOR_ARGS)
-	{ Handle_BuiltInStmt(AST_VISITOR_ACTUALS, &Translate_BREAK, BREAK); }
+	{ Handle_BuiltInStmt(AST_VISITOR_ACTUALS, &Translator::Translate_BREAK, BREAK); }
 
 void AST::TranslationVisitor::Handle_CONTINUE (AST_VISITOR_ARGS)
-	{ Handle_BuiltInStmt(AST_VISITOR_ACTUALS, &Translate_CONTINUE, CONTINUE); }
+	{ Handle_BuiltInStmt(AST_VISITOR_ACTUALS, &Translator::Translate_CONTINUE, CONTINUE); }
 
 ///////////////////////////////////////////////////////////
 
 void AST::TranslationVisitor::Handle_FunctionParenthesisForm (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule(1);
-		yv = Translate_FunctionParenthesisForm(yy[1].sym()); 
+		yv = TRANSLATOR.Translate_FunctionParenthesisForm(yy[1].sym()); 
 		Unparse_FunctionParenthesisForm(yv.expr(), yy[1].sym());
 		yyapply;
 	}
@@ -958,7 +1062,7 @@ void AST::TranslationVisitor::Handle_FunctionCall (AST_VISITOR_ARGS){
 	if (!entering) {
 		yyrule(2);
 		UNPARSABLE_GET(Unparse_FunctionCall(yy[1].expr(), yy[2].expr()));
-		yv = Translate_FunctionCall(yy[1].expr()->CheckUninitialised(), yy[2].expr()); 
+		yv = TRANSLATOR.Translate_FunctionCall(yy[1].expr()->CheckUninitialised(), yy[2].expr()); 
 		UNPARSABLE_SET(yv.expr());	
 		yyapply;
 	}
@@ -968,11 +1072,14 @@ void AST::TranslationVisitor::Handle_FunctionCall (AST_VISITOR_ARGS){
 
 void AST::TranslationVisitor::Handle_NamespaceLvalue (AST_VISITOR_ARGS){ 
 	if (!entering) {
-		yyrule;
+		const util_ui32 n = DPTR(node)->GetTotalChildren();
+		DASSERT(n > 1);
+		yyrule(n);
+		std::list<std::string> namespacePath;
+		for (util_ui32 i = 1; i < n; ++i)
+			namespacePath.push_back(yy[i].str());
 		std::string unparsed;
-		AST::IdList*	ids	= NAMESPACE(node);
-		NameList&		ns	= DPTR(ids)->l;
-		yv = Translate_NamespaceLvalue(ns, NAME(node), &unparsed); 
+		yv = TRANSLATOR.Translate_NamespaceLvalue(namespacePath, yy[n].str(), &unparsed); 
 		Unparse_Var(yv.expr(), unparsed);
 		yyapply;
 	}
@@ -980,16 +1087,20 @@ void AST::TranslationVisitor::Handle_NamespaceLvalue (AST_VISITOR_ARGS){
 
 ///////////////////////////////////////////////////////////
 
-void AST::TranslationVisitor::Handle_LvalueByName (AST_VISITOR_ARGS, DeltaExpr* (*f)(const std::string& id), util_i32 token) {
+void AST::TranslationVisitor::Handle_LvalueByName (
+		AST_VISITOR_ARGS,
+		DeltaExpr* (Translator::*f)(const std::string& id),
+		util_i32 token
+	) {
 	if (!entering) {
-		yyrule;
-		const char* name = NAME(node);
+		yyrule(1);
+		const char* name = yy[1].str();
 		if (token != -1) {
 			DASSERT(token >= 0);
-			Unparse_Var(yv = (*f)(name), name, (util_ui32) token);
+			Unparse_Var(yv = (TRANSLATOR.*f)(name), name, (util_ui32) token);
 		}
 		else
-			Unparse_Var(yv = (*f)(name), name);
+			Unparse_Var(yv = (TRANSLATOR.*f)(name), name);
 		yyapply;
 	}
 }
@@ -997,21 +1108,21 @@ void AST::TranslationVisitor::Handle_LvalueByName (AST_VISITOR_ARGS, DeltaExpr* 
 //*****************************
 
 void AST::TranslationVisitor::Handle_Lvalue (AST_VISITOR_ARGS)
-	{ Handle_LvalueByName(AST_VISITOR_ACTUALS, &Translate_Lvalue); }
+	{ Handle_LvalueByName(AST_VISITOR_ACTUALS, &Translator::Translate_Lvalue); }
 
 void AST::TranslationVisitor::Handle_AttrLvalue (AST_VISITOR_ARGS)
-	{ Handle_LvalueByName(AST_VISITOR_ACTUALS, &Translate_AttrLvalue, ATTRIBUTE); }
+	{ Handle_LvalueByName(AST_VISITOR_ACTUALS, &Translator::Translate_AttrLvalue, ATTRIBUTE); }
 
 void AST::TranslationVisitor::Handle_StaticLvalue (AST_VISITOR_ARGS)
-	{ Handle_LvalueByName(AST_VISITOR_ACTUALS, &Translate_StaticLvalue); }
+	{ Handle_LvalueByName(AST_VISITOR_ACTUALS, &Translator::Translate_StaticLvalue); }
 
 ///////////////////////////////////////////////////////////
 
 void AST::TranslationVisitor::Handle_LocalLvalue (AST_VISITOR_ARGS){ 
 	if (!entering) {
-		yyrule;
-		const char* name = NAME(node);
-		Unparse_Var(yv = Translate_Lvalue(name, 0), name, LOCAL);
+		yyrule(1);
+		const char* name = yy[1].str();
+		Unparse_Var(yv = TRANSLATOR.Translate_Lvalue(name, 0), name, LOCAL);
 		yyapply;
 	}
 } 
@@ -1021,7 +1132,7 @@ void AST::TranslationVisitor::Handle_LocalLvalue (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_StringValue (AST_VISITOR_ARGS) {
 	if (!entering) {
 		yyrule;
-		yv = Translate_StringConst((const char*) node->GetAttribute(AST_ATTRIBUTE_VALUE));
+		yv = TRANSLATOR.Translate_StringConst(VALUE_STRING(node));
 		yyapply;
 	}
 }
@@ -1048,7 +1159,7 @@ static bool IsDotIndex (TreeNode* node) {
 	if (tag ==AST_TAG_DOTINDEX_OPSTRING)	return true;
 	if (tag ==AST_TAG_DOTINDEX_STRINGCONST)	return true;
 	return false;
-}			  
+}
 
 //*****************************
 // TableContent: Table(1.expr) Index(2.expr)
@@ -1056,7 +1167,7 @@ static bool IsDotIndex (TreeNode* node) {
 
 void AST::TranslationVisitor::Handle_TableContent (
 		AST_VISITOR_ARGS, 
-		DeltaExpr*	(*f)(DeltaExpr*, DeltaExpr*), 
+		DeltaExpr*	(Translator::*f)(DeltaExpr*, DeltaExpr*), 
 		bool bounded
 	) {
 	if (!entering) {
@@ -1064,7 +1175,7 @@ void AST::TranslationVisitor::Handle_TableContent (
 		yyrule(2);
 
 		DeltaExpr* index = yy[2].expr();
-		yv = (*f)(yy[1].expr()->CheckUninitialised(), index); 
+		yv = (TRANSLATOR.*f)(yy[1].expr()->CheckUninitialised(), index); 
 
 		if (IsDotIndex(node->GetChild(AST_CHILD_INDEX))) {
 			DASSERT(index->GetType() == DeltaExprString);
@@ -1086,20 +1197,20 @@ void AST::TranslationVisitor::Handle_TableContent (
 //*****************************
 
 void AST::TranslationVisitor::Handle_TableContentDot (AST_VISITOR_ARGS)
-	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translate_TableContent, false); }
+	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translator::Translate_TableContent, false); }
 
 void AST::TranslationVisitor::Handle_BoundedTableContentDot (AST_VISITOR_ARGS)
-	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translate_BoundedTableContent, true); }
+	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translator::Translate_BoundedTableContent, true); }
 
 void AST::TranslationVisitor::Handle_TableContentBracket (AST_VISITOR_ARGS)
-	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translate_TableContent, false); }
+	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translator::Translate_TableContent, false); }
 
 void AST::TranslationVisitor::Handle_BoundedTableContentBracket (AST_VISITOR_ARGS)
-	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translate_BoundedTableContent, true); }
+	{ Handle_TableContent(AST_VISITOR_ACTUALS, &Translator::Translate_BoundedTableContent, true); }
 
 ///////////////////////////////////////////////////////////
 
-void AST::TranslationVisitor::Handle_TableObject (AST_VISITOR_ARGS){ 
+void AST::TranslationVisitor::Handle_AdaptTableContent (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule(1);
 		yv = DNPTR(yy[1].expr())->AdaptIfTableContent();
@@ -1113,13 +1224,14 @@ void AST::TranslationVisitor::Handle_TableObject (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_TableConstructor (AST_VISITOR_ARGS){ 
 
 	if (entering) {
-		ParseParms::InTableExpr().enter(); 
-		yypush(Translate_TablePrefix());
+		yysetsourceinfo();
+		PARSEPARMS.InTableExpr().enter(); 
+		yypush(TRANSLATOR.Translate_TablePrefix());
 	} 
 	else {
 
 		TableElements*	elems	= (TableElements*) 0;
-		util_ui32		n		= DPTR(node)->GetTotalChildren() + 1;	// The table being the first element.
+		const util_ui32		n	= DPTR(node)->GetTotalChildren() + 1;	// The table being the first element.
 
 		yyrule(n);	// All exprs on the stack.
 
@@ -1128,14 +1240,14 @@ void AST::TranslationVisitor::Handle_TableConstructor (AST_VISITOR_ARGS){
 				elems = yy[i].elems();
 			else {
 				UNPARSABLE_GET(Unparse_TableElements(elems, yy[i].elems()));
-				elems = Translate_TableElements(elems, yy[i].elems()); 
+				elems = TRANSLATOR.Translate_TableElements(elems, yy[i].elems()); 
 				UNPARSABLE_SET(elems);
 			}			
 
 		DeltaExpr* table = yy[1].expr();
-		ParseParms::InTableExpr().exit();
+		PARSEPARMS.InTableExpr().exit();
 		UNPARSABLE_GET(Unparse_TableConstructor(elems)); 
-		table = Translate_TableConstructor(table, elems); 
+		table = TRANSLATOR.Translate_TableConstructor(table, elems); 
 		UNPARSABLE_SET(table);
 
 		yv = table;
@@ -1150,19 +1262,19 @@ void AST::TranslationVisitor::Handle_UnindexedValue (AST_VISITOR_ARGS){
 		M();
 	else {
 		yyrule(2);
-		yv = Translate_UnindexedValue(yy[2].expr(), yy[1].quadNo(), LINE(node));
+		yv = TRANSLATOR.Translate_UnindexedValue(yy[2].expr(), yy[1].quadNo(), LINE(node));
 		yyapply;
 	}
 }	
 
 //*****************************
 
-void  AST::TranslationVisitor::Handle_IdentIndexElement (AST_VISITOR_ARGS) {
+void AST::TranslationVisitor::Handle_IdentIndexElement (AST_VISITOR_ARGS) {
 	if (entering)
 		M();
 	else {
-		yyrule(2);
-		yv = Translate_IdentIndexElement(NAME(node), yy[2].expr(), yy[1].quadNo(), LINE(node));
+		yyrule(3);
+		yv = TRANSLATOR.Translate_IdentIndexElement(yy[2].str(), yy[3].expr(), yy[1].quadNo(), LINE(node));
 		yyapply;
 	}
 }
@@ -1172,7 +1284,7 @@ void  AST::TranslationVisitor::Handle_IdentIndexElement (AST_VISITOR_ARGS) {
 void AST::TranslationVisitor::Handle_FunctionExpression (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule(1);
-		yv = Translate_FunctionExpresssion(yy[1].sym());
+		yv = TRANSLATOR.Translate_FunctionExpresssion(yy[1].sym());
 		yyapply;
 	}
 }	
@@ -1182,8 +1294,8 @@ void AST::TranslationVisitor::Handle_FunctionExpression (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_DottedIdent (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule;
-		std::string name = NAME(node);
-		Unparse_DottedIdent(yv = Translate_ConstValue(name), name.c_str());
+		const std::string name = NAME(node);
+		Unparse_DottedIdent(yv = TRANSLATOR.Translate_ConstValue(name), name.c_str());
 		yyapply;
 	}
 } 
@@ -1203,12 +1315,12 @@ void AST::TranslationVisitor::Handle_TableIndices (AST_VISITOR_ARGS) {
 	if (!entering) {
 
 		DeltaExpr*	expr	= NIL_EXPR;
-		util_ui32	n		= DPTR(node)->GetTotalChildren();
+		const util_ui32	n	= DPTR(node)->GetTotalChildren();
 
 		yyrule(n);	// All exprs on the stack.
 
 		for (util_ui32 i = 1; i <= n; ++i)
-			expr = Translate_ExpressionList(expr, yy[i].expr()->AdaptAsArgumentVariable());
+			expr = TRANSLATOR.Translate_ExpressionList(expr, yy[i].expr()->AdaptAsArgumentVariable());
 
 		yv = expr;
 		yyapply;	
@@ -1221,21 +1333,20 @@ void AST::TranslationVisitor::Handle_TableIndices (AST_VISITOR_ARGS) {
 void AST::TranslationVisitor::Handle_IndexedValues (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule(2);
-		yv = Translate_IndexedValues(yy[1].expr(), yy[2].expr());
+		yv = TRANSLATOR.Translate_IndexedValues(yy[1].expr(), yy[2].expr());
 		Unparse_IndexedValues(yv.elems());
 		yyapply;
 	}
 } 
 
 //*****************************
-// Attribute: IDENT (attr) Set(1.expr) Get(2.expr)
+// Attribute: ident (1.str) Set(2.expr) Get(3.expr)
 //
 void AST::TranslationVisitor::Handle_NewAttribute (AST_VISITOR_ARGS){ 
 	if (!entering) {
-		yyrule(2);
-		const char* name = NAME(node);
-		DeltaExpr* attr = Translate_NewAttribute(name, yy[1].expr(), yy[2].expr());
-		Unparse_UnindexedValue(yv = Translate_TableElement(attr), attr); 
+		yyrule(3);
+		DeltaExpr* attr = TRANSLATOR.Translate_NewAttribute(yy[1].str(), yy[2].expr(), yy[3].expr());
+		Unparse_UnindexedValue(yv = TRANSLATOR.Translate_TableElement(attr), attr); 
 		yyapply;
 	}
 } 
@@ -1247,7 +1358,7 @@ void AST::TranslationVisitor::Handle_AttributeMethod (AST_VISITOR_ARGS) {
 		M();
 	else {
 		yyrule(2);
-		yv = Translate_AttributeMethod(yy[2].expr(), yy[1].quadNo(), LINE(node));
+		yv = TRANSLATOR.Translate_AttributeMethod(yy[2].expr(), yy[1].quadNo(), LINE(node));
 		yyapply;
 	}
 }
@@ -1258,8 +1369,8 @@ void AST::TranslationVisitor::Handle_Condition (AST_VISITOR_ARGS){
 	if (!entering) {
 		{
 		yyrule(1);
-		yv = Translate_Condition(yy[1].expr()); 
-		Translate_BasicStmt(LINE(node));
+		yv = TRANSLATOR.Translate_Condition(yy[1].expr()); 
+		TRANSLATOR.Translate_BasicStmt(LINE(node));
 		yyapply;
 		}
 		M();
@@ -1271,7 +1382,7 @@ void AST::TranslationVisitor::Handle_Condition (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_IfCondition (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		Handle_Condition(AST_VISITOR_ACTUALS);
-		Translate_IfStmtPrefix();
+		TRANSLATOR.Translate_IfStmtPrefix();
 	}
 }
 
@@ -1281,7 +1392,7 @@ void AST::TranslationVisitor::Handle_IfCondition (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_IfStmt (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		yyrule(3);
-		Translate_IfStmt(yy[1].expr(), yy[2].quadNo());
+		TRANSLATOR.Translate_IfStmt(yy[1].expr(), yy[2].quadNo());
 		Unparse_If(yv = yy[3].stmt(), yy[1].expr(), yy[3].stmt());
 		yyapply;
 	}
@@ -1291,7 +1402,7 @@ void AST::TranslationVisitor::Handle_IfStmt (AST_VISITOR_ARGS){
 
 void AST::TranslationVisitor::Handle_ElsePrefix (AST_VISITOR_ARGS){ 
 	if (entering) {
-		Translate_ElseStmtPrefix();
+		TRANSLATOR.Translate_ElseStmtPrefix();
 		N(); 
 		M(); 
 	} 
@@ -1305,10 +1416,10 @@ void AST::TranslationVisitor::Handle_IfElseStmt (AST_VISITOR_ARGS){
 	if (!entering) {
 		yyrule(6);
 
-		Translate_IfElseStmt(yy[1].expr(), yy[2].quadNo(), yy[4].quadNo(), yy[5].quadNo());
+		TRANSLATOR.Translate_IfElseStmt(yy[1].expr(), yy[2].quadNo(), yy[4].quadNo(), yy[5].quadNo());
 		UNPARSABLE_GET(Unparse_IfElse(yy[1].expr(), yy[3].stmt(), yy[6].stmt()));
 		DELTASYMBOLS.ResetTemp();
-		yv = Translate_Stmts(yy[3].stmt(), yy[6].stmt()); 
+		yv = TRANSLATOR.Translate_Stmts(yy[3].stmt(), yy[6].stmt()); 
 		UNPARSABLE_SET(yv.stmt());
 
 		yyapply;
@@ -1320,7 +1431,7 @@ void AST::TranslationVisitor::Handle_IfElseStmt (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_WhileCondition (AST_VISITOR_ARGS){ 
 	if (!entering) {
 		Handle_Condition(AST_VISITOR_ACTUALS);
-		Translate_WhilePrefix();
+		TRANSLATOR.Translate_WhilePrefix();
 	}
 }
 
@@ -1333,9 +1444,9 @@ void AST::TranslationVisitor::Handle_WhileStmt (AST_VISITOR_ARGS){
 	else {
 		yyrule(4);
 
-		util_ui32 line = LINE(DPTR(node)->GetChild(AST_CHILD_STMT));
+		const util_ui32 line = LINE(DPTR(node)->GetChild(AST_CHILD_STMT));
 		UNPARSABLE_GET(Unparse_While(yy[2].expr(), yy[4].stmt()));
-		yv = Translate_WhileStmt(yy[2].expr(), yy[1].quadNo(), yy[3].quadNo(), yy[4].stmt(), line); 
+		yv = TRANSLATOR.Translate_WhileStmt(yy[2].expr(), yy[1].quadNo(), yy[3].quadNo(), yy[4].stmt(), line); 
 		UNPARSABLE_SET(yv.stmt());
 
 		yyapply;
@@ -1347,7 +1458,7 @@ void AST::TranslationVisitor::Handle_WhileStmt (AST_VISITOR_ARGS){
 //
 void AST::TranslationVisitor::Handle_ForInit (AST_VISITOR_ARGS){
 	if (entering) {
-		Translate_ForOpening(); 
+		TRANSLATOR.Translate_ForOpening(); 
 		M();
 	}
 	else {
@@ -1356,11 +1467,11 @@ void AST::TranslationVisitor::Handle_ForInit (AST_VISITOR_ARGS){
 
 		Unparse_ForInitList(yv = NEW_STMT, yy[2].expr());
 
-		util_ui32 line = LINE(node);
+		const util_ui32 line = LINE(node);
 		DASSERT(line);
 
-		Translate_ForPrefix(yy[1].quadNo(), line);  
-		Translate_BasicStmt(line);
+		TRANSLATOR.Translate_ForPrefix(yy[1].quadNo(), line);
+		TRANSLATOR.Translate_BasicStmt(line);
 
 		yyapply;
 		}
@@ -1381,7 +1492,7 @@ void AST::TranslationVisitor::Handle_ForSuffix (AST_VISITOR_ARGS){
 	}
 	else {
 		{
-		util_ui32 n = DPTR(node)->GetTotalChildren(); // Subexpressions.
+		const util_ui32 n = DPTR(node)->GetTotalChildren(); // Subexpressions.
 		yyrule(n ? 2 : 1); // M and ExprList already translated
 
 		yv = NEW_STMT; 
@@ -1389,7 +1500,7 @@ void AST::TranslationVisitor::Handle_ForSuffix (AST_VISITOR_ARGS){
 			UNPARSABLE_GET(Unparse_ExprList(yy[2].expr()));
 			UNPARSABLE_SET(yv.stmt()); 		
 			SET_QUAD_LINE(1, true);
-			Translate_BasicStmt(line);
+			TRANSLATOR.Translate_BasicStmt(line);
 		}
 		else // Has a null expr for expression list.
 			DASSERT(!yy[1].expr());
@@ -1411,10 +1522,10 @@ void AST::TranslationVisitor::Handle_ForCond (AST_VISITOR_ARGS){
 	else {
 		{
 		yyrule(2);
-		yv = Translate_Condition(yy[2].expr()); 
+		yv = TRANSLATOR.Translate_Condition(yy[2].expr()); 
 		
 		SET_QUAD_LINE(1, true);
-		Translate_BasicStmt(line);
+		TRANSLATOR.Translate_BasicStmt(line);
 
 		yyapply;
 		}
@@ -1430,7 +1541,7 @@ void AST::TranslationVisitor::Handle_ForStmt (AST_VISITOR_ARGS){
 	if (!entering) {
 		yyrule(8);
 		UNPARSABLE_GET(Unparse_For(yy[1].stmt(), yy[3].expr(), yy[5].stmt(), yy[8].stmt()));
-		yv = Translate_ForStmt(yy[3].expr(), yy[2].quadNo(), yy[4].quadNo(), yy[7].quadNo(), yy[6].quadNo(), yy[8].stmt()); 
+		yv = TRANSLATOR.Translate_ForStmt(yy[3].expr(), yy[2].quadNo(), yy[4].quadNo(), yy[7].quadNo(), yy[6].quadNo(), yy[8].stmt()); 
 		UNPARSABLE_SET(yv.stmt());
 		yyapply;
 	}
@@ -1452,7 +1563,7 @@ void AST::TranslationVisitor::Handle_ForeachContainer (AST_VISITOR_ARGS){
 #define	VALUE_POS					(n == VALUE_CONTAINER_FORM ? 1 : 2)
 #define	INDEX_POS					1
 
-		util_ui32 n = DPTR(DPTR(node->GetParent()))->GetTotalChildren();
+		const util_ui32 n = DPTR(DPTR(node->GetParent()))->GetTotalChildren();
 		DASSERT(n == VALUE_CONTAINER_FORM || n == INDEX_VALUE_CONTAINER_FORM);
 		yyrule(n);
 		
@@ -1467,9 +1578,9 @@ void AST::TranslationVisitor::Handle_ForeachContainer (AST_VISITOR_ARGS){
 		); 
 
 		if (n == VALUE_CONTAINER_FORM)
-			yv = Translate_ForeachPrefix(yy[VALUE_POS].expr(), NIL_EXPR, yy[CONTAINER_POS].expr()); 
+			yv = TRANSLATOR.Translate_ForeachPrefix(yy[VALUE_POS].expr(), NIL_EXPR, yy[CONTAINER_POS].expr()); 
 		else
-			yv = Translate_ForeachPrefix(yy[VALUE_POS].expr(),  yy[INDEX_POS].expr(), yy[CONTAINER_POS].expr()); 
+			yv = TRANSLATOR.Translate_ForeachPrefix(yy[VALUE_POS].expr(), yy[INDEX_POS].expr(), yy[CONTAINER_POS].expr()); 
 		UNPARSABLE_SET(yv.stmt());		
 
 		yyapply;
@@ -1496,7 +1607,7 @@ void AST::TranslationVisitor::Handle_ForeachStmt (AST_VISITOR_ARGS){
 		yyrule(3);
 
 		UNPARSABLE_GET(Unparse_ForeachStmt(yy[1].stmt(), yy[3].stmt()));
-		yv = Translate_ForeachStmt(yy[1].stmt(), yy[3].stmt(), yy[2].quadNo());
+		yv = TRANSLATOR.Translate_ForeachStmt(yy[1].stmt(), yy[3].stmt(), yy[2].quadNo());
 		SET_QUAD_LINE(2, false);
 		UNPARSABLE_SET(yv.stmt());	
 
@@ -1510,44 +1621,44 @@ void AST::TranslationVisitor::Handle_THROW (AST_VISITOR_ARGS){
 
 	if (!entering) {
 		yyrule(1);
-		yv = Translate_THROW(yy[1].expr()); 
+		yv = TRANSLATOR.Translate_THROW(yy[1].expr()); 
 		Unparse_ExprStmt(yv.stmt(), THROW, yy[1].expr());
 		yyapply;
 	}
 } 
 
 //*****************************
-// Try(1.quadNo) Stmt(2.stmt) Trap(3.quadNo) JumpOver(4.quadNo) Var(Expr)
+// Try(1.quadNo) Stmt(2.stmt) Trap(3.quadNo) JumpOver(4.quadNo) VarName(5.str)
 //
 void AST::TranslationVisitor::Handle_ExceptionVar (AST_VISITOR_ARGS){ 
 	if (entering) {
-		yypush(Translate_TRAP());			// Trap quad
-		yypush(Translate_TrapJumpOver());	// JumpOver quad
+		yypush(TRANSLATOR.Translate_TRAP());			// Trap quad
+		yypush(TRANSLATOR.Translate_TrapJumpOver());	// JumpOver quad
 	}
 	else {
-		yyrule(4);
-		if (yv = Translate_Lvalue(NAME(node))) 
+		yyrule(5);
+		if (yv = TRANSLATOR.Translate_Lvalue(yy[5].str()))
 			DPTR(yv.expr())->SetInitialised();
 
-		Translate_TrapStart(yy[1].quadNo(), yy[3].quadNo(), yv.expr());
+		TRANSLATOR.Translate_TrapStart(yy[1].quadNo(), yy[3].quadNo(), yv.expr());
 		yypreserve;
 		yyapply;
 	}
 } 
 
 //*****************************
-// Try(1.quadNo) Stmt(2.stmt) Trap(3.quadNo) JumpOver(4.quadNo) Var(5.expr) Stmt(6.stmt)
+// Try(1.quadNo) Stmt(2.stmt) Trap(3.quadNo) JumpOver(4.quadNo) VarName(5.str) Var(6.expr) Stmt(7.stmt)
 //
 void AST::TranslationVisitor::Handle_Exception (AST_VISITOR_ARGS){ 
 	if (entering)
-		yypush(Translate_TRY());	// Try
+		yypush(TRANSLATOR.Translate_TRY());	// Try
 	else {
-		yyrule(6);
+		yyrule(7);
 
-		Translate_TrapEnd(yy[4].quadNo()); ; 
-		UNPARSABLE_GET(Unparse_TryTrap(yy[2].stmt(), yy[6].stmt(), yy[5].expr()));
+		TRANSLATOR.Translate_TrapEnd(yy[4].quadNo()); ; 
+		UNPARSABLE_GET(Unparse_TryTrap(yy[2].stmt(), yy[7].stmt(), yy[6].expr()));
 		DELTASYMBOLS.ResetTemp();
-		yv = Translate_Stmts(yy[2].stmt(), yy[6].stmt());
+		yv = TRANSLATOR.Translate_Stmts(yy[2].stmt(), yy[7].stmt());
 		UNPARSABLE_SET(yv.stmt());
 
 		yyapply;
@@ -1559,9 +1670,83 @@ void AST::TranslationVisitor::Handle_Exception (AST_VISITOR_ARGS){
 void AST::TranslationVisitor::Handle_ScopedStmt (AST_VISITOR_ARGS) {
 	if (node->GetTag() != AST_TAG_EMPTY_STMT && node->GetTag() != AST_TAG_COMPOUND)
 		if (entering)
-			Translate_CompoundBegin();
+			TRANSLATOR.Translate_CompoundBegin();
 		else
-			Translate_CompoundEnd();
+			TRANSLATOR.Translate_CompoundEnd();
+}
+
+///////////////////////////////////////////////////////////
+
+void AST::TranslationVisitor::Handle_QuasiQuotes (AST_VISITOR_ARGS){ 
+	if (entering) {
+		yyrule;
+		AST::Node* child = (Node *) node->GetChild(AST_CHILD_EXPR);
+
+		Translator& translator = TRANSLATOR;
+		const std::string quoted = UnparseVisitor()(child);
+		std::string ns;
+		DeltaExpr* func = translator.Translate_NamespaceLvalue(NameList(1, DELTA_STDLIB_NAMESPACE), "vmparsequotedelements", &ns);
+		DeltaExpr* code = translator.Translate_ConstValue(quoted);
+		
+		// Generate an empty OnError callback for vmparsequotedelements
+		DeltaQuadAddress quad = QUADS.NextQuadNo();
+		DeltaSymbol* funcdef = translator.Translate_Function((const char *) 0, DELTA_FUNCCLASS_PROGRAMFUNCTION);
+		translator.Translate_FunctionHeader(funcdef);
+		DELTASYMBOLS.PushAndResetTempCounter();
+		translator.Translate_CompoundBegin();
+		translator.Translate_CompoundEnd();
+		funcdef = translator.Translate_Function(funcdef, (Stmt*) 0, quad, 0);
+
+		DeltaExpr* args = translator.Translate_FunctionExpresssion(funcdef);
+		DASSERT(args || COMPMESSENGER.ErrorsExist());
+		if (args)
+			args->next = code;
+
+		yv = translator.Translate_FunctionCall(func, args);
+
+		EscapeTranslationVisitor visitor;
+		INIT_COMPILER_COMPONENT_DIRECTORY(&visitor, VISITOR->COMPONENT_DIRECTORY());
+		bool hasEscapes = visitor(child);
+		EvaluationStack::StackValues& values = visitor.GetEvalStack().GetValues();
+		for (EvaluationStack::StackValues::reverse_iterator i = values.rbegin(); i != values.rend(); ++i) {
+			func = translator.Translate_NamespaceLvalue(NameList(1, DELTA_STDLIB_NAMESPACE), "ast_inject", &ns);
+			DeltaExpr* args = i->first.expr()->AdaptIfBool();
+			DASSERT(args || COMPMESSENGER.ErrorsExist());
+			if (args)
+				args->next = yv.expr();
+			yv = translator.Translate_FunctionCall(func, args, yv.expr()->sym);
+		}
+		if (hasEscapes) {
+			func = translator.Translate_NamespaceLvalue(NameList(1, DELTA_STDLIB_NAMESPACE), "ast_decr_esc_cardinalities", &ns);
+			translator.Translate_FunctionCall(func, yv.expr(), DELTASYMBOLS.NewTemp());
+		}
+		yyapply;
+
+		((AST::TranslationVisitor *) closure)->Leave();
+	}
+}
+
+void AST::TranslationVisitor::Handle_Escape (AST_VISITOR_ARGS)
+	{ DASSERT(false); }	//handled before translation
+
+void AST::TranslationVisitor::Handle_Inline (AST_VISITOR_ARGS)
+	{ DASSERT(false); }	//never found during normal translation 
+
+void AST::TranslationVisitor::Handle_Execute (AST_VISITOR_ARGS)
+	{ DASSERT(false); }	//never found during normal translation
+
+///////////////////////////////////////////////////////////
+
+void AST::TranslationVisitor::SetSourceInfo (AST_VISITOR_ARGS) {
+	AST::Node* n = (AST::Node*) node;
+	PARSEPARMS.SetLine(DPTR(n)->GetStartLine());
+	util_ui32 nodeId = 0;
+	if (const TreeAttribute* serial = DPTR(n)->GetAttribute("serial"))
+		nodeId = DPTR(serial)->GetUInt();
+	if (const AST::Node::SourceInfoReferences* refs = DPTR(n)->GetSourceReferences())
+		COMPMESSENGER.SetSourceReferences(*refs);
+	else
+		COMPMESSENGER.SetSourceReferences();
 }
 
 ///////////////////////////////////////////////////////////

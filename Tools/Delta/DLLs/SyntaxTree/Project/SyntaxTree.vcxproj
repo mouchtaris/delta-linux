@@ -51,12 +51,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\Common\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -65,11 +68,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\Common\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -79,11 +83,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\ASTAlphaRenamer.cpp" />
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\ASTInjector.cpp" />
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\ASTValidationVisitor.cpp" />
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\StagedSymbolTable.cpp" />
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeAttribute.cpp" />
     <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeNode.cpp" />
     <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeToStringVisitor.cpp" />
     <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeVisitor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTAlphaRenamer.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTInjector.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTMetaTags.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTSanitiseVisitor.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTTags.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTValidationVisitor.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\DeltaSyntaxTreeDefs.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\StagedSymbolTable.h" />
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeAttribute.h" />
     <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeNode.h" />
     <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeToStringVisitor.h" />
     <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeVisitor.h" />

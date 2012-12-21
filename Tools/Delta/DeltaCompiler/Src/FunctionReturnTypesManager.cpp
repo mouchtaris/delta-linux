@@ -10,11 +10,6 @@
 #include <algorithm>
 #include "ufunctors.h"
 
-DeltaFunctionReturnTypesManager* DeltaFunctionReturnTypesManager::singletonPtr = (DeltaFunctionReturnTypesManager*) 0;
-
-USINGLETON_APISTYLE_IMPL_PUBLICSTDMETHODS(DeltaFunctionReturnTypesManager)
-USINGLETON_APISTYLE_IMPL_GETTER(DeltaFunctionReturnTypesManager)
-
 ///////////////////////////////////////////////////////////
 
 DeltaFunctionReturnTypesManager::DeltaFunctionReturnTypesManager (void)

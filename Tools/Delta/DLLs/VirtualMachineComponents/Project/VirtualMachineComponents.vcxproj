@@ -58,6 +58,9 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -72,6 +75,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -83,6 +87,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\DeltaStdLib\Src\AlgorithmLib.cpp" />
+    <ClCompile Include="..\..\..\DeltaStdLib\Src\ASTLib.cpp" />
+    <ClCompile Include="..\..\..\DeltaStdLib\Src\ASTVisitorLib.cpp" />
+    <ClCompile Include="..\..\..\DeltaStdLib\Src\VMCompLib.cpp" />
     <ClCompile Include="..\..\..\DeltaVirtualMachine\Src\ContainerDelayedCollector.cpp" />
     <ClCompile Include="..\..\..\DeltaVirtualMachine\Src\DeltaCollectableContainer.cpp" />
     <ClCompile Include="..\..\..\DeltaVirtualMachine\Src\DeltaExternId.cpp" />
@@ -169,7 +176,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\DeltaStdLib\Include\AlgorithmLib.h" />
+    <ClInclude Include="..\..\..\DeltaStdLib\Include\ASTLib.h" />
+    <ClInclude Include="..\..\..\DeltaStdLib\Include\ASTVisitorLib.h" />
     <ClInclude Include="..\..\..\DeltaStdLib\Include\TableIterLib.h" />
+    <ClInclude Include="..\..\..\DeltaStdLib\Include\VMCompLib.h" />
     <ClInclude Include="..\..\..\DeltaVirtualMachine\Include\Delta.h" />
     <ClInclude Include="..\..\..\DeltaPureVMFacade\Include\DeltaPureVMFacade.h" />
     <ClInclude Include="..\..\..\DeltaVirtualMachine\Include\ContainerDelayedCollector.h" />
@@ -270,10 +280,6 @@
       <Project>{bec371d3-e221-4bac-ba70-3aed5c4f0150}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\CompilerComponents\Project\CompilerComponents.vcxproj">
-      <Project>{56a22761-a765-45ce-8448-60c1c15b9c78}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\ReadersWriters\Project\ReadersWriters.vcxproj">
       <Project>{9c0f9ac1-ed6c-41c3-8078-ce565e945b75}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -281,6 +287,9 @@
     <ProjectReference Include="..\..\SocketLib\Project\SocketLib.vcxproj">
       <Project>{ce9d2174-a1f1-48ee-927e-94ca4a752f4b}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyntaxTree\Project\SyntaxTree.vcxproj">
+      <Project>{325efb2c-b985-4ddf-97e6-5fcf2a5e3bb3}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
       <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>

@@ -6,22 +6,16 @@
 
 #include "DeltaStdDefs.h"
 #include "BuildDependencies.h"
+#include "DeltaDependenciesScanner.h"
+#include "DeltaSyntaxParser.h"
+#include "ParsingContext.h"
 #include "ufunctors.h"
 #include "ustrings.h"
 #include "ufiles.h"
 #include "usystem.h"
 #include <algorithm>
 
-extern int		DeltaDependencies_yydebug;
-extern FILE*	DeltaDependencies_yyin;
-extern void		DeltaDependencies_ResetLex (FILE* fp);
-extern int		DeltaDependencies_yyparse (void);
-
-DeltaBuildDependencies::DynamicStrings*	DeltaBuildDependencies::dynamicStrings	= (DynamicStrings*) 0;
-bool									DeltaBuildDependencies::hasError		= false;
-bool									DeltaBuildDependencies::inUsing			= false;
-DeltaBuildDependencies::Dependencies*	DeltaBuildDependencies::deps			= (Dependencies*) 0;
-std::string*							DeltaBuildDependencies::path			= (std::string*) 0;
+extern int DeltaDependencies_yydebug;
 
 ///////////////////////////////////////////////////////////////
 
@@ -83,11 +77,6 @@ bool DeltaBuildDependencies::Extract (
 	) {
 
 	DASSERT(!dynamicStrings && !hasError && !deps && !path);
-	FILE* fp =  fopen(sourceFile.c_str(), "rt");
-	if (!fp)
-		return false;
-
-	DeltaDependencies_ResetLex(fp);
 
 	unew(dynamicStrings);
 	path = DNEWCLASS(std::string, (ugetenvironmentvar(DELTA_ENVIRONMENT_VAR_BYTECODE_PATH)));
@@ -97,11 +86,25 @@ bool DeltaBuildDependencies::Extract (
 	deps		= outDeps;
 	hasError	= false;
 	inUsing		= false;
-	DeltaDependencies_yyparse();
 
-	fclose(fp);
+	DeltaDependenciesFlexLexer lexer;
+	ParsingContext context(lexer);
+	context.Register("DeltaBuildDependencies", this);
+	DeltaSyntaxParser parser(lexer, context, &DeltaDependencies_yyparse);
+	parser.ParseFile(sourceFile);
+
 	CleanUp();
 	return !hasError;
 }
 
 ///////////////////////////////////////////////////////////////
+
+DeltaBuildDependencies::DeltaBuildDependencies (void) :
+	dynamicStrings((DynamicStrings*) 0),
+	hasError(false),
+	inUsing(false),
+	deps((Dependencies*) 0),
+	path((std::string*) 0) {}
+
+///////////////////////////////////////////////////////////////
+

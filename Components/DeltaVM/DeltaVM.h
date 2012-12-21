@@ -70,12 +70,17 @@ namespace ide
 			_("Start debugging the specified script as a console program, in a separate process and with a separate console debugger"));
 		DECLARE_EXPORTED_STATIC_(void, DebugLocalScript, (const String& cmdLine, const String& source, const String& directory),
 			_("Start debugging of a script at a local executing host"));
+		DECLARE_EXPORTED_STATIC_(unsigned long, DebugCompilerInvocation, (const String& uri, const String& options, const String& directory, const UIntList& buildId, const Handle& script),
+			_("Start debugging of a compiler invocation"));
+		DECLARE_EXPORTED_STATIC_(unsigned long, DebugAspectCompilerInvocation, (const String& uri, const StringList& transformations, const String& options, const String& directory, const UIntList& buildId, const Handle& script),
+			_("Start debugging of a compiler invocation"));
 		DECLARE_EXPORTED_STATIC_(void, DebugLocalScriptWithConsoleDebugger, (const String& cmdLine, const String& source, const String& directory),
 			_("Start debugging of a script at a local executing host using a separate console debugger"));
 		DECLARE_EXPORTED_STATIC_(void, DebugAttach, (const String& host, int port),
 			_("Attach to the debugger running at a specific host"));
 		DECLARE_EXPORTED_STATIC_(void, StopDebug, (void),
 			_("Stop debugging of the currently running script"));
+
 
 		DECLARE_EXPORTED_STATIC_(bool, ToggleBreakpoint, (const String& symbolic, int line),
 			_("Toggle a breakpoint at the specified location. Returns true if breakpoint is set, false otherwise"));
@@ -99,6 +104,8 @@ namespace ide
 		DECLARE_EXPORTED_STATIC_(StringListList, GetAllBreakpoints, (void),
 			_("Returns a list with all breakpoints in the workspace (each breakpoint represented as a list of strings)"));
 
+		DECLARE_EXPORTED_STATIC_(void, DeleteAllSourceBreakpoints, (const String& symbolic),
+			_("Delete all breakpoints of the given source"));
 		DECLARE_EXPORTED_STATIC_(void, DeleteAllBreakpoints, (void),
 			_("Delete all breakpoints in the workspace"));
 		DECLARE_EXPORTED_STATIC_(void, EnableAllBreakpoints, (void),
@@ -192,6 +199,9 @@ namespace ide
 			_("Upon changing the symbolic uri of a script make the appropriate changes for it's breakpoints"));
 		DECLARE_EXPORTED_STATIC_(void, OnEditLinesChangedBy, (const Handle& editor, int fromLine, int offset),
 			_("Upon changing lines during editing move breakpoints accordingly"));
+		DECLARE_EXPORTED_STATIC_(void, OnScriptSourceAdded, (const Handle& script, const Handle& addedSource,
+			const StringList& encodedLineMappings, const String& type, uint index),
+			_("Upon addition of a script intermediate source"));
 		DECLARE_EXPORTED_STATIC_(void, OnUserListSelected, (const Handle& editor, int listType, const String& selection),
 			_("Notification about the user list selection (used for the selective step in)"));
 
@@ -201,6 +211,9 @@ namespace ide
 
 	private:
 		///--- private type definitions
+		typedef boost::tuple<String, int, String>	Breakpoint;
+		typedef std::list<Breakpoint>				BreakpointList;
+
 		typedef boost::tuple<std::string, uint, uint, uint, std::string> FuncInfo;
 		static bool	IsLibraryFunction (const FuncInfo& info);
 
@@ -208,6 +221,9 @@ namespace ide
 		typedef std::pair<std::string, int> VarDeclInfo;	// <name, line>
 
 		typedef boost::function<void (void)> EvaluationFunction;
+
+		typedef boost::tuple<unsigned long, std::string, uint, String, String, bool> DebugServer;	//<pid, host, port, source, directory, isCompilation>
+		typedef std::stack<DebugServer> DebugServerStack;
 
 		enum DebugState {
 			DEBUG_IDLE		= 0,
@@ -217,6 +233,9 @@ namespace ide
 		};
 
 		///--- private API
+		static const DebugServer LocalDebugServer(unsigned long pid, const String& source, const String& directory, bool isCompilation);
+		static void DebugProcess (unsigned long pid, const String& source, const String& directory, bool isCompilation);
+
 		static const std::string GetExtensionAndConfigScriptsReservedByteCodeLoadingPath(void);
 		static const std::string GetExtensionAndConfigScriptsReservedDllImportPath(void);
 
@@ -243,17 +262,28 @@ namespace ide
 
 		typedef void (*DebugFunc)(const String& cmdLine, const String& source, const String& directory);
 		static void DebugConsoleWithFunc(DebugFunc func, const String& binary, const String& source, const String& options, const String& directory);
-		static void DebugClientThread(const std::string& binary, const std::string& host, ushort port);
+
+		static bool InitializeDebugClient(const DebugServer& server, bool initial);
+		static void CleanUpDebugClient (const DebugServer& server, bool final);
+		static bool ActivateMostRecentDebugServer(bool previousFinished);
+		static void DebugClientThread(const DebugServer& server);
+
+		static void AddBreakpointSynchronously (const String& symbolic, int line, const String& condition);
+		static void GenerateBreakpoints (const std::string original, const String& generated,  const StringList& lineMappings,
+			void (*adderFunc)(const String&, int, const String&), BreakpointList& breakpoints, bool deleteOriginal = false);
+		static void GeneratedFinalSourceBreakpoints (void);
+		static void ClearBreakpointList (BreakpointList& breakpoints);
+		static void RemoveSourceFromBreakpointList (BreakpointList& breakpoints, const String& symbolic);
 
 		static void HandleBreakpointHit(void);
 		static void HandleVMError(void);
 		static void HandleVMWarning(void);
 		static void HandleVMStop(void);
-		static void	MessageConditionError (const String& cond, util_ui32 line);
-		static void	MessageConditionSatisifed (const String& cond, util_ui32 line);
+		static void	MessageConditionError(const String& cond, util_ui32 line);
+		static void	MessageConditionSatisifed(const String& cond, util_ui32 line);
 		static void HandleInvalidBreakpoint(void);
 		static void HandleValidBreakpointAdded(void);
-		static void CommitAddBreakpoint (const String& symbolic, int line, const String& condition);
+		static void CommitAddBreakpoint(const String& symbolic, int line, const String& condition);
 
 		static const std::string MakeContext(const std::string& name, uint defLine);
 		static const VarDeclInfo ExtractVarDeclInfo(const std::string& data);	//<name:line>
@@ -266,7 +296,14 @@ namespace ide
 		static void onBreakpointEnabled(const String& uri, const String& symbolic, int line);
 		static void onBreakpointDisabled(const String& uri, const String& symbolic, int line);
 		static void onBreakpointConditionChanged(const String& uri, const String& symbolic, int line, const String& condition);
+		static void onBreakpointLineChanged(const String& uri, const String& symbolic, int line, int newLine);
 		static void onBreakpointHit(const String& uri, const String& symbolic, int line);
+		static void onFirstBreakpoint(void);
+		static void onFirstBreakpointEnabled(void);
+		static void onFirstBreakpointDisabled(void);
+		static void onNoBreakpoints(void);
+		static void onNoBreakpointsEnabled(void);
+		static void onNoBreakpointsDisabled(void);
 
 		static void onPushStackFrame(const String& record, uint defLine, uint callLine, uint scope, const String& params);
 		static void onStackFrameMoved(uint index);
@@ -283,6 +320,8 @@ namespace ide
 		typedef std::pair<String, int> StopPointInfo;	// <source, line>
 		static StopPointInfo stopPoint;
 
+		static BreakpointList	finalGeneratedBreakpoints, stageGeneratedBreakpoints;
+		
 		enum VariableState {
 			VARIABLE_DEFAULT	= 0,
 			VARIABLE_NEW		= 1,
@@ -307,15 +346,14 @@ namespace ide
 
 		static bool inGlobal;
 		static bool inBreakPoint;				///< a breakpoint is hit
-		static bool waitingBreakpointValidation;
-		static bool changingBreakpointInfo;
+		static volatile bool waitingBreakpointValidation;
 		static DebugState debugRunningState;	///< state of debugging VM
 
 		static uint stackFrameIndex;	///< index of the currently active stack frame
 		static uint guid;
 
-		static unsigned long debuggedPid;
-		static String debuggedWorkingDirectory;
+		static DebugServerStack debugServers;
+		static DebugServer currDebugServer;
 
 		typedef std::map<String, String> VMIdSourceMapping;
 		static VMIdSourceMapping vmIds;

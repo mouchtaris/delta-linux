@@ -1,27 +1,37 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
-   This program is free software; you can redistribute it and/or modify
+/* Skeleton interface for Bison's Yacc-like parsers in C
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+   
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -106,127 +116,41 @@
      DOT_EQUAL = 332,
      DOT_CAST = 333,
      DOT_EQUAL_RHS = 334,
-     NUMBER_CONST = 335,
-     STRING_CONST = 336,
-     IDENT = 337,
-     ATTRIBUTE_IDENT = 338,
-     OPERATOR = 339,
-     PARENTHESIS = 340,
-     SQUARE_BRACKETS = 341,
-     COMMENT = 342,
-     INCOMPLETE_COMMENT = 343,
-     INCOMPLETE_STRING = 344,
-     CPP = 345,
-     PARSE_STMT = 346,
-     PARSE_FUNCTION_CALL_OBJECT = 347,
-     PARSE_TABLE_OBJECT = 348,
-     PARSE_NAMESPACE = 349,
-     TOKEN_LAST = 350,
-     UMINUS = 351
+     META_LSHIFT = 335,
+     META_RSHIFT = 336,
+     META_ESCAPE = 337,
+     META_INLINE = 338,
+     META_EXECUTE = 339,
+     META_RENAME = 340,
+     NUMBER_CONST = 341,
+     STRING_CONST = 342,
+     IDENT = 343,
+     ATTRIBUTE_IDENT = 344,
+     OPERATOR = 345,
+     PARENTHESIS = 346,
+     SQUARE_BRACKETS = 347,
+     COMMENT = 348,
+     INCOMPLETE_COMMENT = 349,
+     INCOMPLETE_STRING = 350,
+     CPP = 351,
+     PARSE_STMT = 352,
+     PARSE_FUNCTION_CALL_OBJECT = 353,
+     PARSE_TABLE_OBJECT = 354,
+     PARSE_NAMESPACE = 355,
+     TOKEN_LAST = 356,
+     UMINUS = 357
    };
 #endif
-/* Tokens.  */
-#define TOKEN_FIRST 258
-#define FUNCTION 259
-#define RETURN 260
-#define ASSERT 261
-#define LAMBDA 262
-#define LAMBDA_REF 263
-#define ONEVENT 264
-#define METHOD 265
-#define SELF 266
-#define ARGUMENTS 267
-#define STATIC 268
-#define CONST 269
-#define KWD_IF 270
-#define ELSE 271
-#define WHILE 272
-#define FOR 273
-#define FOREACH 274
-#define NIL 275
-#define AND 276
-#define NOT 277
-#define OR 278
-#define TRUE 279
-#define FALSE 280
-#define BREAK 281
-#define CONTINUE 282
-#define LOCAL 283
-#define TRY 284
-#define TRAP 285
-#define THROW 286
-#define USING 287
-#define ADD 288
-#define SUB 289
-#define MUL 290
-#define DIV 291
-#define MOD 292
-#define GT 293
-#define LT 294
-#define NE 295
-#define EQ 296
-#define GE 297
-#define LE 298
-#define ASSIGN 299
-#define ADD_POSTFIX 300
-#define SUB_POSTFIX 301
-#define MUL_POSTFIX 302
-#define DIV_POSTFIX 303
-#define MOD_POSTFIX 304
-#define GT_POSTFIX 305
-#define LT_POSTFIX 306
-#define NE_POSTFIX 307
-#define EQ_POSTFIX 308
-#define GE_POSTFIX 309
-#define LE_POSTFIX 310
-#define CAST 311
-#define CALL 312
-#define GLOBAL_SCOPE 313
-#define PLUSPLUS 314
-#define MINUSMINUS 315
-#define DOT 316
-#define DOT_ASSIGN 317
-#define DOUBLE_DOT 318
-#define TRIPLE_DOT 319
-#define DOUBLE_LB 320
-#define DOUBLE_RB 321
-#define ADD_A 322
-#define SUB_A 323
-#define MUL_A 324
-#define DIV_A 325
-#define MOD_A 326
-#define SET 327
-#define GET 328
-#define ATTRIBUTE 329
-#define STRINGIFICATION 330
-#define NEWSELF 331
-#define DOT_EQUAL 332
-#define DOT_CAST 333
-#define DOT_EQUAL_RHS 334
-#define NUMBER_CONST 335
-#define STRING_CONST 336
-#define IDENT 337
-#define ATTRIBUTE_IDENT 338
-#define OPERATOR 339
-#define PARENTHESIS 340
-#define SQUARE_BRACKETS 341
-#define COMMENT 342
-#define INCOMPLETE_COMMENT 343
-#define INCOMPLETE_STRING 344
-#define CPP 345
-#define PARSE_STMT 346
-#define PARSE_FUNCTION_CALL_OBJECT 347
-#define PARSE_TABLE_OBJECT 348
-#define PARSE_NAMESPACE 349
-#define TOKEN_LAST 350
-#define UMINUS 351
 
 
 
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
+{
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 89 "DeltaParserSpec.y"
-typedef union YYSTYPE {
+/* Line 1676 of yacc.c  */
+#line 102 "DeltaParserSpec.y"
+
 	const char*						literalValue;
 
 	delta::DeltaASTNode*			nodeValue;
@@ -248,7 +172,6 @@ typedef union YYSTYPE {
 	delta::TrapASTNode*				trapValue;
 
 	delta::FunctionASTNode*			funcValue;
-	delta::FunctionNameASTNode*		funcNameValue;
 
 	delta::TernaryOpASTNode*		ternaryOpValue;
 	delta::PrefixOpASTNode*			prefixOpValue;
@@ -267,20 +190,25 @@ typedef union YYSTYPE {
 	delta::NewAttributeASTNode*		newAttributeValue;
 	delta::TableElemASTNode*		tableElemValue;
 	delta::TableElemsASTNode*		tableElemsValue;
-	delta::TableIndexListASTNode*	tableIListVlaue;
+	delta::TableIndexListASTNode*	tableIListValue;
 	delta::TableConstructASTNode*	tableCtorValue;
 	delta::UsingASTNode*			usingValue;
+	
+	delta::QuotedElementsASTNode*	elementsValue;
+
+
+
+/* Line 1676 of yacc.c  */
+#line 203 "DeltaParserGen.hpp"
 } YYSTYPE;
-/* Line 1447 of yacc.c.  */
-#line 276 "DeltaParserGen.hpp"
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 
 
-#if ! defined (YYLTYPE) && ! defined (YYLTYPE_IS_DECLARED)
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE
 {
   int first_line;
@@ -292,7 +220,6 @@ typedef struct YYLTYPE
 # define YYLTYPE_IS_DECLARED 1
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
-
 
 
 

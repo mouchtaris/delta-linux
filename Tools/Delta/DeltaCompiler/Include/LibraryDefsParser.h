@@ -1,5 +1,5 @@
 // LibraryDefsParser.h
-// Parser for library deifnitions.
+// Parser for library definitions.
 // ScriptFighter Project.
 // A. Savidis, September 2009.
 //
@@ -9,6 +9,9 @@
 
 #include "LibraryDefsScanner.h"
 #include "LibraryTypes.h"
+#include "CompilerComponentDirectory.h"
+
+class DeltaLibraryNamespaceHolder;
 
 ///////////////////////////////////////////////////////////
 
@@ -19,10 +22,11 @@ class DeltaLibraryDefsParser : public DeltaLibraryDefsErrorReporting {
 	typedef std::list<std::string>			StringList;
 
 	DeltaLibraryDefsScanner	scanner;
-	bool					useLookAhead;
-	Token					lookAhead;
-	std::string				idTokenContent;
-	
+	bool							useLookAhead;
+	Token							lookAhead;
+	std::string						idTokenContent;
+	DeltaLibraryNamespaceHolder*	namespaceHolder;
+
 	// Signatures.
 	ucallbackwithclosure<void(*)(void*)>													onNewSig;
 	ucallbackwithclosure<void(*)(const DeltaLibraryTypeInfo&, const std::string&, void*)>	onNewArg;
@@ -30,7 +34,8 @@ class DeltaLibraryDefsParser : public DeltaLibraryDefsErrorReporting {
 	ucallbackwithclosure<void(*)(bool, void*)>												onDoneSigs;
 
 	// User-defined types
-	ucallbackwithclosure<void(*)(const std::string&, const StringList&, void*)>	onNewBase;
+	typedef void(*NewBaseFunc)(const std::string&, const StringList&, void*);
+	ucallbackwithclosure<NewBaseFunc>	onNewBase;
 
 	void				NotifyNewSig (void)										
 							{ onNewSig(); }
@@ -57,7 +62,7 @@ class DeltaLibraryDefsParser : public DeltaLibraryDefsErrorReporting {
 							StringList*			namespacePath, 
 							const std::string&	context
 						);
-	void				NotifyNewBase (const std::string& name, const StringList& namespacePath)	
+	void				NotifyNewBase (const std::string& name, const StringList& namespacePath)
 							{ onNewBase(name, namespacePath); }
 
 	Token				CurrToken (void) const 
@@ -69,6 +74,8 @@ class DeltaLibraryDefsParser : public DeltaLibraryDefsErrorReporting {
 	///////////////////////////////////////////////////////////
 
 	public:
+	void				SetNamespaceHolder(DeltaLibraryNamespaceHolder* holder) { namespaceHolder = holder; }
+
 	static bool			TagStringToTypeTag (const std::string& tagString, DeltaTypeTag* tag);
 	static const std::string	
 						TypeTagToTagString (DeltaTypeTag tag);
@@ -91,14 +98,15 @@ class DeltaLibraryDefsParser : public DeltaLibraryDefsErrorReporting {
 	static bool			SplitConstDefinition (const std::string& def, std::string* name, std::string* value);
 
 	// User-defined types.
-	void				SetOnNewBase (void(*f)(const std::string&, const StringList&, void*), void* c)	
+	void				SetOnNewBase (NewBaseFunc f, void* c)
 							{ onNewBase.set(f,c); }
 	bool				ParseBaseTypes (const std::string& input);
 	static bool			SplitTypeDefinition (const std::string& def, std::string* name, std::string* basesDef);
 
 	DeltaLibraryDefsParser (void) : 
 		useLookAhead(false), 
-		lookAhead(DeltaLibraryDefsScanner::Error) {}
+		lookAhead(DeltaLibraryDefsScanner::Error),
+		namespaceHolder((DeltaLibraryNamespaceHolder*) 0) {}
 	~DeltaLibraryDefsParser(){}
 };
 

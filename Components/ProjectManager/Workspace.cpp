@@ -64,7 +64,7 @@
 
 namespace ide
 {
-	static const char *defaultChildren[] = { "Project" };
+	static const char *defaultChildren[] = { "Project", "AspectProject" };
 
 	//-------------------------------------------------------//
 	//---- static members -----------------------------------//
@@ -107,7 +107,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	Workspace::Workspace(void)
+	Workspace::Workspace(void) : m_buildingEditorScript(false)
 	{
 		StringVec options;
 		options.push_back(_T("debug"));
@@ -163,6 +163,10 @@ namespace ide
 			UserCommandDesc(UserCommandDesc::Callback("Workspace", "BuildScript"), false, UC_MAIN, false, true, _T("build"))
 		);
 		AddCommand(
+			_("/{100}Build/{13}Build Script with Debugging\tCtrl+Alt+F7"),
+			UserCommandDesc(UserCommandDesc::Callback("Workspace", "BuildScriptWithDebugging"), false, UC_MAIN, false, true, _T("build"))
+		);
+		AddCommand(
 			_("/{100}Build/{15}Clean Workspace\tCtrl+Shift+F7"),
 			UserCommandDesc(UserCommandDesc::Callback("Workspace", "CleanCtx"), false, UC_MAIN, false, true, _T("clean_workspace"))
 		);
@@ -215,6 +219,7 @@ namespace ide
 
 		RemoveCommand(_("/Build/Build Workspace\tF7"));
 		RemoveCommand(_("/Build/Build Script\tCtrl+F7"));
+		RemoveCommand(_("/Build/Build Script with Debugging\tCtrl+Alt+F7"));
 		RemoveCommand(_("/Build/Clean Workspace\tCtrl+Shift+F7"));
 		RemoveCommand(_("/Debug/Run\tCtrl+F5"));
 		RemoveCommand(_("/Debug/Debug (Zen, graphical)\tF5"));
@@ -246,6 +251,14 @@ namespace ide
 			Unregister(s_classId, "TreeItemComponent", "UnregisterChildType");
 		BOOST_FOREACH(const char* child, defaultChildren)
 			Unregister(s_classId, child);
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(Workspace, bool, CanDestroy, (void))
+	{
+		SaveAll();
+		return Container::CanDestroy();
 	}
 
 	//-----------------------------------------------------------------------
@@ -287,8 +300,19 @@ namespace ide
 	EXPORTED_FUNCTION(Workspace, void, BuildScript, (void))
 	{
 		Handle resource;
-		if ((resource = GetActiveResource()) && resource.GetClassId() == "Script")
+		if ((resource = GetActiveResource()) && (resource.GetClassId() == "Script" || resource.GetClassId() == "Aspect")) {
+			m_buildingEditorScript = true;
 			Call<void (void), SafeCall>(this, resource, "BuildCtx")();
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(Workspace, void, BuildScriptWithDebugging, (void))
+	{
+		Handle resource;
+		if ((resource = GetActiveResource()) && (resource.GetClassId() == "Script" || resource.GetClassId() == "Aspect"))
+			Call<void (void), SafeCall>(this, resource, "DebugBuildCtx")();
 	}
 
 	//-----------------------------------------------------------------------
@@ -347,6 +371,7 @@ namespace ide
 		Call<void (const String& path)> EnableCommand("DeltaVM", "Shell", "EnableCommand");
 		EnableCommand(_("/Build/Build Workspace\tF7"));
 		EnableCommand(_("/Build/Build Script\tCtrl+F7"));
+		EnableCommand(_("/Build/Build Script with Debugging\tCtrl+Alt+F7"));
 		EnableCommand(_("/Build/Clean Workspace\tCtrl+Shift+F7"));
 		EnableCommand(_("/Debug/Run\tCtrl+F5"));
 		EnableCommand(_("/Debug/Debug (Zen, graphical)\tF5"));
@@ -368,6 +393,7 @@ namespace ide
 		Call<void (const String& path)> DisableCommand("DeltaVM", "Shell", "DisableCommand");
 		DisableCommand(_("/Build/Build Workspace\tF7"));
 		DisableCommand(_("/Build/Build Script\tCtrl+F7"));
+		DisableCommand(_("/Build/Build Script with Debugging\tCtrl+Alt+F7"));
 		DisableCommand(_("/Build/Clean Workspace\tCtrl+Shift+F7"));
 		DisableCommand(_("/Debug/Run\tCtrl+F5"));
 		DisableCommand(_("/Debug/Debug (Zen, graphical)\tF5"));
@@ -536,8 +562,15 @@ namespace ide
 		if (resource == m_rootWorkingResource && task == m_task) {
 			FocusComponent("ErrorList");
 			SetWorkspaceWorkCommandsStatus(true);
+			if (m_buildingEditorScript)
+				if (Component* comp = ComponentRegistry::Instance().GetFocusedInstance("Editor")) {
+					comp->Focus();
+					if (wxWindow* win = comp->GetWindow())
+						win->SetFocus();
+				}
 
 			timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnWorkCompleted, m_rootWorkingResource, m_task));
+			m_buildingEditorScript = false;
 			m_rootWorkingResource = Handle();
 			m_task.clear();
 		}

@@ -21,7 +21,7 @@
 // ARITHMETIC.
 //
 
-static DeltaNumberValueType CheckDivisionByZero (DeltaNumberValueType& num) {
+DeltaNumberValueType Translator::CheckDivisionByZero (DeltaNumberValueType& num) {
 	if (!num) {
 		DELTACOMP_ERROR_DIVISION_BY_ZERO();
 		return 1;
@@ -32,7 +32,7 @@ static DeltaNumberValueType CheckDivisionByZero (DeltaNumberValueType& num) {
 
 //******************************
 
-DeltaExpr*	Translate_ArithmeticExpression (
+DeltaExpr*	Translator::Translate_ArithmeticExpression (
 		DeltaExpr*		e1, 
 		DeltaICOpcode	op, 
 		DeltaExpr*		e2, 
@@ -53,7 +53,7 @@ DeltaExpr*	Translate_ArithmeticExpression (
 					DPTR(e1)->GetType() == DeltaExprTableConstruction	|| 
 					DPTR(e2)->GetType() == DeltaExprTableConstruction;
 
-	if (!TypeCheck_InArithmetic(e1, op, opStr, !warning) || !TypeCheck_InArithmetic(e2, op, opStr, !warning))
+	if (!TYPECHECKER.Check_InArithmetic(e1, op, opStr, !warning) || !TYPECHECKER.Check_InArithmetic(e2, op, opStr, !warning))
 		if (!warning)
 			return result;
 
@@ -75,20 +75,20 @@ DeltaExpr*	Translate_ArithmeticExpression (
 			default : DASSERT(false);
 		}
 
-		result = DNEW(DeltaExpr);
+		result = EXPRFACTORY.New();
 		DPTR(result)->SetNumber(resultValue);
 	}
 	else
 	if (DPTR(e1)->type == DeltaExprString && DPTR(e2)->type == DeltaExprString) {
 		if (op == DeltaIC_ADD) {
-			result = DNEW(DeltaExpr);
+			result = EXPRFACTORY.New();
 			DPTR(result)->SetString(uconstructstr("%s%s", e1->strConst.c_str(), e2->strConst.c_str()));
 		}
 		else
 			DELTACOMP_ERROR_INVALID_OP_FOR_STRING_CONSTS(opStr);
 	}
 	else {
-		result = DNEW(DeltaExpr);
+		result = EXPRFACTORY.New();
 		DPTR(result)->type	=	DeltaExprArithmetic;
 		DPTR(result)->sym	=	DPTR(e1)->IsTemp() ? e1->sym : 
 								DPTR(e2)->IsTemp() ? e2->sym : DELTASYMBOLS.NewTemp();

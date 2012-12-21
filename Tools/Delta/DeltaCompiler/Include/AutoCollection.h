@@ -13,61 +13,74 @@
 
 #include "ulatedestructor.h"
 #include "ufunctors.h"
+#include "DeltaCompilerDefs.h"
 
 /////////////////////////////////////////////////////////////////
 
-class AutoCollectable;
+class DCOMPLIB_CLASS AutoCollectable;
 
 struct AutoCollectableDestructor {
 	void operator()(AutoCollectable* item) const;
 };
 
-class AutoCollector : public	ulatedestructionmanager<
+class DCOMPLIB_CLASS AutoCollector : public	ulatedestructionmanager<
 									AutoCollectable, 
 									AutoCollectableDestructor  
 								> {
-	static AutoCollector* singletonPtr;
-
 	public:
 	bool			IsCommitting (void) const { return committing; }
 	void			CleanUp (void) { commit(); }
 	void			ValidateAll (void);
 
-	static void		SingletonCreate (void);						
-	static void		SingletonDestroy (void);
-
-	static AutoCollector*	GetPtr (void) 
-								{ DASSERT(singletonPtr); return singletonPtr; }
-	private:
-	DFRIENDDESTRUCTOR()
 	AutoCollector(void){}
 	~AutoCollector(){}
 };
-
-#define	AUTOCOLLECTOR	GetAutoCollector()
-
-inline AutoCollector& GetAutoCollector (void) {
-	DASSERT(AutoCollector::GetPtr());
-	return *AutoCollector::GetPtr();
-}
 
 /////////////////////////////////////////////////////////////////
 // Auto-collectable items should never perform DDELETE of constituent
 // collectable members when UnderAutoCollection() returns true.
 //
-class AutoCollectable  {
+class DCOMPLIB_CLASS AutoCollectable  {
+	protected:
+		AutoCollector* collector;
 	public:
 	struct ValidateFunctor : public std::unary_function<AutoCollectable*, void> {
 		void operator()(AutoCollectable* p) { p = DPTR(p); } // statement used
 	};
 
+	void			SetAutoCollector(AutoCollector* c) {
+						DASSERT(!collector && c);
+						DPTR(collector = c)->add(this);
+					}
 	bool			UnderAutoCollection (void) const
-						{ return AUTOCOLLECTOR.IsCommitting(); }
+						{ return DPTR(collector)->IsCommitting(); }
 	virtual void	Delete (void) // Refine per derived class.
 						{ DDELETE(this); }
 
-	AutoCollectable (void)		{ AUTOCOLLECTOR.add(this); }
-	virtual ~AutoCollectable()	{  AUTOCOLLECTOR.remove(this);  }
+	//If no auto-collector provided, it should be explicitly set after construction
+	AutoCollectable (AutoCollector* c = (AutoCollector*) 0) :
+		collector(c) { if (c) DPTR(collector)->add(this); }
+	virtual ~AutoCollectable() { DPTR(collector)->remove(this); }
+};
+
+/////////////////////////////////////////////////////////////////
+// Use this class to create Auto-collectable items
+// that are  aware of their collector.
+//
+template<class T> class AutoCollectableFactory {
+	private:
+		AutoCollector* collector;
+	public:
+	void SetAutoCollector(AutoCollector* c) { collector = c; }
+
+	virtual T* New (void) const {
+		T* t = DNEW(T);
+		t->SetAutoCollector(DPTR(collector));
+		return t;
+	}
+
+	AutoCollectableFactory (void) : collector((AutoCollector*) 0) {}
+	virtual ~AutoCollectableFactory() {}
 };
 
 /////////////////////////////////////////////////////////////////

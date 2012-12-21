@@ -39,7 +39,6 @@
 #include "DeltaDebugDynamicActivator.h"
 #endif
 #include "DeltaDebugClientBreakPoints.h"
-#include "DeltaDebugServerBreakPoints.h"
 #include "DebugServer.h"
 #include "DeltaVMRegistry.h"
 #include "DeltaDebugExtensionsInit.h"
@@ -133,7 +132,6 @@ namespace ide
 	//---- static members -----------------------------------//
 			
 	static Component *instance;
-	static boost::mutex evaluationMutex;
 	static boost::mutex stackProcessingMutex;
 	static boost::mutex selectiveStepMutex;
 	static boost::mutex debugTryingMutex;
@@ -153,8 +151,6 @@ namespace ide
 	bool DeltaVM::stopped		= false;
 	bool DeltaVM::inGlobal		= true;
 	bool DeltaVM::inBreakPoint	= false;
-	bool DeltaVM::waitingBreakpointValidation	= false;
-	bool DeltaVM::changingBreakpointInfo		= false;
 
 	DeltaVM::DebugState	DeltaVM::debugRunningState = DeltaVM::DEBUG_IDLE;
 
@@ -163,8 +159,8 @@ namespace ide
 	uint DeltaVM::stackFrameIndex		= 0;
 	uint DeltaVM::guid					= 0;
 
-	unsigned long DeltaVM::debuggedPid	= 0;
-	String DeltaVM::debuggedWorkingDirectory;
+	DeltaVM::DebugServerStack DeltaVM::debugServers;
+	DeltaVM::DebugServer DeltaVM::currDebugServer(0, std::string(), 0, String(), String(), false);
 
 	DeltaVM::VMIdSourceMapping DeltaVM::vmIds;
 
@@ -186,20 +182,6 @@ namespace ide
 	IMPLEMENT_COMPONENT_(DeltaVM, IDEComponent);
 
 	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC_SIGNAL(DeltaVM, BreakpointAdded, (const String& uri, const String& symbolic, int line, const String& condition));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, BreakpointRemoved, (const String& uri, const String& symbolic, int line, bool enabled));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, BreakpointEnabled, (const String& uri, const String& symbolic, int line));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, BreakpointDisabled, (const String& uri, const String& symbolic, int line));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, BreakpointConditionChanged, (const String& uri, const String& symbolic, int line, const String& condition));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, BreakpointLineChanged, (const String& uri, const String& symbolic, int line, int newLine));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, BreakpointHit, (const String& uri, const String& symbolic, int line));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, FirstBreakpoint, (void));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, FirstBreakpointEnabled, (void));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, FirstBreakpointDisabled, (void));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, NoBreakpoints, (void));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, NoBreakpointsEnabled, (void));
-	EXPORTED_STATIC_SIGNAL(DeltaVM, NoBreakpointsDisabled, (void));
 
 	EXPORTED_STATIC_SIGNAL(DeltaVM, PushStackFrame, (const String& record, uint defLine, uint callLine, uint scope, const String& params));
 	EXPORTED_STATIC_SIGNAL(DeltaVM, StackFrameMoved, (uint index));
@@ -450,7 +432,8 @@ namespace ide
 	{
 		typedef DeltaBuildDependencies::Dependencies Dependencies;
 		DeltaBuildDependencies::Dependencies deps;
-		DeltaBuildDependencies::Extract(util::str2std(bytecodePath), util::str2std(source), &deps);
+		DeltaBuildDependencies dependencies;
+		dependencies.Extract(util::str2std(bytecodePath), util::str2std(source), &deps);
 
 		StringList result;
 		for (Dependencies::iterator i = deps.begin(); i != deps.end(); ++i) {
@@ -521,10 +504,6 @@ namespace ide
 		);
 
 		if (pid) {
-			if (!(debuggedWorkingDirectory = util::normalizepath(directory)).empty())
-				if (debuggedWorkingDirectory.GetChar(debuggedWorkingDirectory.length() - 1) != _T('/'))
-					debuggedWorkingDirectory += _T('/');
-
 			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")(
 				_T("Debugging (via console debugger)") + source + _T(".\n")
 			);
@@ -587,56 +566,111 @@ namespace ide
 			util::str2std(cmdLine) + DeltaDebugClient::ServerPortNegotiation::ToArg(negotiationPort),
 			util::normalizepath(util::str2std(directory))
 		);
-		if (pid) {
-			if (!(debuggedWorkingDirectory = util::normalizepath(directory)).empty() &&
-				debuggedWorkingDirectory.GetChar(debuggedWorkingDirectory.length() - 1) != _T('/')
-			)
-				debuggedWorkingDirectory += _T('/');
+		DebugProcess(pid, source, directory, false);
+	}
 
+	//-----------------------------------------------------------------------
+
+	EXPORTED_STATIC(DeltaVM, unsigned long, DebugCompilerInvocation, (const String& uri, const String& options,
+		const String& directory, const UIntList& buildId, const Handle& script))
+	{
+		boost::mutex::scoped_lock lock(debugTryingMutex);
+		util_ui32 negotiationPort = DeltaDebugClient::ServerPortNegotiation::Start();
+		if (!negotiationPort)
+		{
 			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
-				(_T("Debugging ") + source + _T("\n"));
-
-			//-- run the debug client
-			util_ui32 serverPort = DeltaDebugClient::ServerPortNegotiation::Finish();
-			if (serverPort) {
-				debuggedPid = pid;
-				debugRunningState = DEBUG_TRYING;
-				onDebugStarted(source);
-				boost::thread debugClient(
-					boost::bind(
-						&DeltaVM::DebugClientThread, 
-						util::str2std(source),
-						"localhost", 
-						serverPort
-					)
-				);
-				while (debugRunningState == DEBUG_TRYING)	// Busy wait.
-					Sleep(100);
-			}
-			else
-				Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
-					(_("Can not determine debug server port. Try to attach manually.\n"));
-		}
-		else
+				(_("Unable to open a negotiation port."));
 			DeltaDebugClient::ServerPortNegotiation::Finish();
+			return 0;
+		}
+
+		const String debugOptions = _T(" --debugged ") + util::std2str(DeltaDebugClient::ServerPortNegotiation::ToArg(negotiationPort));
+
+		unsigned long pid  = Call<unsigned long (const String&, const String&, const String&, const UIntList&, const Handle&)>
+			(script.Resolve(), "DeltaCompiler", "Compile")(uri, debugOptions + options, directory, buildId, script);
+		DebugProcess(pid, uri, directory, true);
+		return pid;
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_STATIC(DeltaVM, unsigned long, DebugAspectCompilerInvocation, (const String& uri, const StringList& transformations,
+		const String& options, const String& directory, const UIntList& buildId, const Handle& script))
+	{
+		boost::mutex::scoped_lock lock(debugTryingMutex);
+		util_ui32 negotiationPort = DeltaDebugClient::ServerPortNegotiation::Start();
+		if (!negotiationPort)
+		{
+			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
+				(_("Unable to open a negotiation port."));
+			DeltaDebugClient::ServerPortNegotiation::Finish();
+			return 0;
+		}
+
+		const String debugOptions = _T(" --debugged ") + util::std2str(DeltaDebugClient::ServerPortNegotiation::ToArg(negotiationPort));
+
+		unsigned long pid  = Call<unsigned long (const String&, const StringList&, const String&, const String&, const UIntList&, const Handle&)>
+			(script.Resolve(), "DeltaCompiler", "AspectTransformation")(uri, transformations, debugOptions + options, directory, buildId, script);
+		DebugProcess(pid, uri, directory, false);
+		return pid;
+	}
+
+	//-----------------------------------------------------------------------
+
+	const DeltaVM::DebugServer DeltaVM::LocalDebugServer(unsigned long pid, const String& source, const String& directory, bool isCompilation) {
+		util_ui32 serverPort = DeltaDebugClient::ServerPortNegotiation::Finish();
+		String dir;
+		if (!(dir = util::normalizepath(directory)).empty() && dir.GetChar(dir.length() - 1) != _T('/')	)
+			dir += _T('/');
+		return DebugServer(pid, "localhost", serverPort, source, directory, isCompilation);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void DeltaVM::DebugProcess (unsigned long pid, const String& source, const String& directory, bool isCompilation)
+	{
+		const DebugServer info = LocalDebugServer(pid, source, directory, isCompilation);
+		if (info.get<0>()) {
+			debugServers.push(info);
+			if (debugServers.size() == 1) {
+				Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
+					(_T("Debugging ") + source + _T("\n"));
+				if (info.get<2>()) {
+					currDebugServer = info;
+					debugRunningState = DEBUG_TRYING;
+					CALL_DELAYED(boost::bind(&DeltaVM::onDebugStarted, source));
+					boost::thread debugClient(boost::bind(&DeltaVM::DebugClientThread, currDebugServer));
+					while (debugRunningState == DEBUG_TRYING)	// Busy wait.
+						Sleep(100);
+				}
+				else {
+					Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
+						(_("Can not determine debug server port. Try to attach manually.\n"));
+					debugServers.pop();
+				}
+			}
+		}
 	}
 
 	//-----------------------------------------------------------------------
 
 	EXPORTED_STATIC(DeltaVM, void, DebugAttach, (const String& host, int port))
 	{
-		Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
-			(_("Debugging remote script at host: ") + host + _T("\n"));
+		if (debugRunningState != DEBUG_IDLE)
+			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
+				(_("Cannot attach while a debug session is active\n"));
+		else {
+			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
+				(_("Debugging remote script at host: ") + host + _T("\n"));
 
-		//-- run the debug client
-		debugRunningState = DEBUG_TRYING;
-		onDebugStarted(_T("remote script"));
-		boost::thread debugClient(
-			boost::bind(&DeltaVM::DebugClientThread, "remote script",
-			util::str2std(host), ushort(port))
-		);
-		while (debugRunningState == DEBUG_TRYING)	// Busy wait.
-			Sleep(100);
+			const String source = _T("remote script");
+			debugRunningState = DEBUG_TRYING;
+			onDebugStarted(source);
+			DebugServer server(0, util::str2std(host), uint(port), source, String());
+			boost::thread debugClient(boost::bind(&DeltaVM::DebugClientThread, server));
+			while (debugRunningState == DEBUG_TRYING)	// Busy wait.
+				Sleep(100);
+		}
 	}
 
 	//-----------------------------------------------------------------------
@@ -651,330 +685,6 @@ namespace ide
 			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
 				(_("\nExecution stopped by user!\n"));
 		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, bool, ToggleBreakpoint, (const String& symbolic, int line))
-	{
-		const std::string csymbolic = util::str2std(symbolic);
-
-		if (!DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line))
-			AddBreakpoint(symbolic, line, String());
-		else if (!DeltaDebugClientBreakPoints::Get().Get(csymbolic, line).IsEnabled())
-			EnableBreakpoint(symbolic, line);
-		else {
-			RemoveBreakpoint(symbolic, line);
-			return false;
-		}
-		return true;
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, bool, ToggleBreakpointStatus, (const String& symbolic, int line))
-	{
-		if (waitingBreakpointValidation || changingBreakpointInfo) // Operation suspended temporarily.
-			return false;	
-
-		const std::string csymbolic = util::str2std(symbolic);
-
-		if (DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line)) {
-			if(DeltaDebugClientBreakPoints::Get().Get(csymbolic, line).IsEnabled())
-				DisableBreakpoint(symbolic, line);
-			else
-				EnableBreakpoint(symbolic, line);
-			return true;
-		}
-		else
-			return false;
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::CommitAddBreakpoint (const String& symbolic, int line, const String& condition) {
-	
-		bool hadBreakpoints			= !!DeltaDebugClientBreakPoints::Get().Total();
-		bool hadEnabledBreakpoints	= DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints();
-
-		DeltaDebugClientBreakPoints::Get().Add(util::str2std(symbolic), line, util::str2std(condition));
-
-		sigBreakpointAdded(GetURIFromSymbolic(symbolic), symbolic, line, condition);
-
-		if (!hadEnabledBreakpoints)	//was this the first breakpoint to be enabled?
-			sigFirstBreakpointEnabled();
-
-		if (!hadBreakpoints)	//was this the first breakpoint at all?
-			sigFirstBreakpoint();
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, AddBreakpoint, (const String& symbolic, int line, const String& condition))
-	{
-		if (waitingBreakpointValidation || changingBreakpointInfo) // Operation suspended temporarily.
-			return;	
-
-		const std::string csymbolic = util::str2std(symbolic);
-		const std::string ccondition = util::str2std(condition);
-
-		if (!DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line)) {
-			
-			if (debugRunningState == DEBUG_RUNNING) {
-				waitingBreakpointValidation = true;	// Added only by validation.
-				DeltaDebugClient::DoAddBreakPoint(csymbolic, line, ccondition);
-			}
-			else	// Added instantly.
-				CommitAddBreakpoint(symbolic, line, condition);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, RemoveBreakpoint, (const String& symbolic, int line))
-	{
-		const std::string csymbolic = util::str2std(symbolic);
-		
-		//Don't assert because commands can be invoked from the introspection with invalid arguments
-		if (DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line)) {
-			bool enabled = DeltaDebugClientBreakPoints::Get().Get(csymbolic, line).IsEnabled();
-
-			DeltaDebugClientBreakPoints::Get().Remove(csymbolic, line);
-			if (debugRunningState == DEBUG_RUNNING)
-				DeltaDebugClient::DoRemoveBreakPoint(csymbolic, line);
-			sigBreakpointRemoved(GetURIFromSymbolic(symbolic), symbolic, line, enabled);
-
-			if (enabled && !DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints())	//was this the last enabled breakpoint
-				sigNoBreakpointsEnabled();
-			else if (!enabled && !DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints())	//was this the last disabled breakpoint
-				sigNoBreakpointsDisabled();
-			if (!DeltaDebugClientBreakPoints::Get().Total())
-				sigNoBreakpoints();
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, EnableBreakpoint, (const String& symbolic, int line))
-	{
-		const std::string csymbolic = util::str2std(symbolic);
-
-		//Don't assert because commands can be invoked from the introspection with invalid arguments
-		if (DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line) &&
-			!DeltaDebugClientBreakPoints::Get().Get(csymbolic, line).IsEnabled()
-		) {
-			bool hadEnabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints();
-
-			DeltaDebugClientBreakPoints::Get().Enable(csymbolic, line);
-			if (debugRunningState == DEBUG_RUNNING)
-				DeltaDebugClient::DoEnableBreakPoint(csymbolic, line);
-			sigBreakpointEnabled(GetURIFromSymbolic(symbolic), symbolic, line);
-
-			if (!hadEnabledBreakpoints)	//was this the first breakpoint to be enabled?
-				sigFirstBreakpointEnabled();
-			if (!DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints())	//was this the last disabled breakpoint?
-				sigNoBreakpointsDisabled();
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, DisableBreakpoint, (const String& symbolic, int line))
-	{
-		const std::string csymbolic = util::str2std(symbolic);
-
-		//Don't assert because commands can be invoked from the introspection with invalid arguments
-		if (DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line) &&
-			DeltaDebugClientBreakPoints::Get().Get(csymbolic, line).IsEnabled()
-		) {
-			bool hadDisabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints();
-
-			DeltaDebugClientBreakPoints::Get().Disable(csymbolic, line);
-			if (debugRunningState == DEBUG_RUNNING)
-				DeltaDebugClient::DoDisableBreakPoint(csymbolic, line);
-			sigBreakpointDisabled(GetURIFromSymbolic(symbolic), symbolic, line);
-
-			if (!hadDisabledBreakpoints)	//was this the first breakpoint to be disabled?
-				sigFirstBreakpointDisabled();
-			if (!DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints())	//was this the last enabled breakpoint?
-				sigNoBreakpointsEnabled();
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, ChangeBreakpointCondition, (const String& symbolic, int line, const String& condition))
-	{
-		const std::string csymbolic = util::str2std(symbolic);
-		const std::string ccondition = util::str2std(condition);
-
-		//Don't assert because commands can be invoked from the introspection with invalid arguments
-		if (DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line)) {
-			DeltaDebugClientBreakPoints::Get().Change(csymbolic, line, ccondition.c_str());
-			if (debugRunningState == DEBUG_RUNNING)
-				DeltaDebugClient::DoChangeBreakPointCondition(csymbolic, line, ccondition);
-			sigBreakpointConditionChanged(GetURIFromSymbolic(symbolic), symbolic, line, condition);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, ChangeBreakpointLine, (const String& symbolic, int line, int newLine))
-	{
-		const std::string csymbolic = util::str2std(symbolic);
-
-		//Don't assert because commands can be invoked from the introspection with invalid arguments
-		if (DeltaDebugClientBreakPoints::Get().HasBreakPoint(csymbolic, line)) {
-			const DeltaBreakPoint bpt = DeltaDebugClientBreakPoints::Get().Get(csymbolic, line);
-			DeltaDebugClientBreakPoints::Get().Change(csymbolic, line, newLine);
-			if (debugRunningState == DEBUG_RUNNING) {	//when running remove and insert to get up-to-date info
-				const String condition = bpt.HasCondition() ? util::std2str(bpt.GetCondition()) : String();
-				RemoveBreakpoint(symbolic, line);
-				AddBreakpoint(symbolic, line, condition);
-			}
-			else	//else just change the line of the breakpoint assuming it is valid
-				sigBreakpointLineChanged(GetURIFromSymbolic(symbolic), symbolic, line, newLine);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, StringListList, GetBreakpoints, (const String& symbolic))
-	{
-		const std::string csymbolic = util::str2std(symbolic);
-		StringListList ret;
-		if (DeltaDebugClientBreakPoints::Get().HasAnyBreakPoints(csymbolic)) {
-			BOOST_FOREACH(const DeltaBreakPoint& bpt, DeltaDebugClientBreakPoints::Get().Get(csymbolic)) {
-				StringList breakpoint;
-				breakpoint.push_back(GetURIFromSymbolic(symbolic));
-				breakpoint.push_back(symbolic);
-				breakpoint.push_back(boost::lexical_cast<String>(bpt.GetLine()));
-				breakpoint.push_back(util::std2str(bpt.GetCondition()));
-				breakpoint.push_back(bpt.IsEnabled() ? _T("true") : _T("false"));
-				ret.push_back(breakpoint);
-			}
-		}
-		return ret;
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, StringListList, GetAllBreakpoints, (void))
-	{
-		StringListList ret;
-		util_ui16 total = DeltaDebugClientBreakPoints::Get().Total();
-		for (util_i16 i = 0; i < total; ++i) {
-			const std::string source = DeltaDebugClientBreakPoints::Get().GetSource(i);
-			const StringListList l = GetBreakpoints(util::std2str(source));
-			ret.insert(ret.end(), l.begin(), l.end());
-		}
-		return ret;
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, DeleteAllBreakpoints, (void))
-	{
-		bool hadEnabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints();
-		bool hadDisabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints();
-		while (DeltaDebugClientBreakPoints::Get().Total()) {
-			//Do not use char * here as it is deleted after RemoveAll
-			const std::string source = DeltaDebugClientBreakPoints::Get().GetSource(0);
-			const std::list<DeltaBreakPoint> l = DeltaDebugClientBreakPoints::Get().Get(source);
-			DeltaDebugClientBreakPoints::Get().RemoveAll(source);
-			if (debugRunningState == DEBUG_RUNNING)
-				DeltaDebugClient::DoRemoveAllBreakPoints(source);
-			BOOST_FOREACH(const DeltaBreakPoint& bpt, l) {
-				const String symbolic = util::std2str(source);
-				sigBreakpointRemoved(GetURIFromSymbolic(symbolic), symbolic, bpt.GetLine(), bpt.IsEnabled());
-			}
-		}
-		if (hadEnabledBreakpoints)
-			sigNoBreakpointsEnabled();
-		if (hadDisabledBreakpoints)
-			sigNoBreakpointsDisabled();
-		sigNoBreakpoints();
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, EnableAllBreakpoints, (void))
-	{
-		bool hadEnabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints();
-		bool hadDisabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints();
-		util_ui16 total = DeltaDebugClientBreakPoints::Get().Total();
-		for (util_i16 i = 0; i < total; ++i) {
-			const std::string source = DeltaDebugClientBreakPoints::Get().GetSource(i);
-			const std::list<DeltaBreakPoint> l = DeltaDebugClientBreakPoints::Get().Get(source);
-			DeltaDebugClientBreakPoints::Get().EnableAll(source);
-			if (debugRunningState == DEBUG_RUNNING)
-				DeltaDebugClient::DoEnableAllBreakPoints(source);
-			BOOST_FOREACH(const DeltaBreakPoint& bpt, l)
-				if(!bpt.IsEnabled()) {
-					const String symbolic = util::std2str(source);
-					sigBreakpointEnabled(GetURIFromSymbolic(symbolic), symbolic, bpt.GetLine());
-				}
-		}
-		if (hadDisabledBreakpoints)
-			sigNoBreakpointsDisabled();
-		if (!hadEnabledBreakpoints && DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints())
-			sigFirstBreakpointEnabled();
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, void, DisableAllBreakpoints, (void))
-	{
-		bool hadEnabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints();
-		bool hadDisabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints();
-		util_ui16 total = DeltaDebugClientBreakPoints::Get().Total();
-		for (util_i16 i = 0; i < total; ++i) {
-			const std::string source = DeltaDebugClientBreakPoints::Get().GetSource(i);
-			const std::list<DeltaBreakPoint> l = DeltaDebugClientBreakPoints::Get().Get(source);
-			DeltaDebugClientBreakPoints::Get().DisableAll(source);
-			if (debugRunningState == DEBUG_RUNNING)
-				DeltaDebugClient::DoDisableAllBreakPoints(source);
-			BOOST_FOREACH(const DeltaBreakPoint& bpt, l)
-				if (bpt.IsEnabled()) {
-					const String symbolic = util::std2str(source);
-					sigBreakpointDisabled(GetURIFromSymbolic(symbolic), symbolic, bpt.GetLine());
-				}
-		}
-		if (hadEnabledBreakpoints)
-			sigNoBreakpointsEnabled();
-		if (!hadDisabledBreakpoints && DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints())
-			sigFirstBreakpointDisabled();
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, bool, LoadBreakpoints, (const String& uri))
-	{
-		const std::string& curi = util::normalizepath(util::str2std(uri));
-		bool hadBreakpoints = DeltaDebugClientBreakPoints::Get().Total() > 0;
-		bool hadEnabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints();
-		bool hadDisabledBreakpoints = DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints();
-		bool status = DeltaDebugClientBreakPoints::Get().LoadText(curi.c_str());
-		if(!status) {
-			DASSERT(UERROR_ISRAISED());
-			DeltaVirtualMachine::ResetRunTimeErrors();
-			UERROR_CLEAR();
-		}
-		if (!hadEnabledBreakpoints && DeltaDebugClientBreakPoints::Get().HasEnabledBreakPoints())
-			sigFirstBreakpointEnabled();
-		if (!hadDisabledBreakpoints && DeltaDebugClientBreakPoints::Get().HasDisabledBreakPoints())
-			sigFirstBreakpointDisabled();
-		if (!hadBreakpoints && DeltaDebugClientBreakPoints::Get().Total() > 0)
-			sigFirstBreakpoint();
-		return status;
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_STATIC(DeltaVM, bool, SaveBreakpoints, (const String& uri))
-	{
-		const std::string& curi = util::normalizepath(util::str2std(uri));
-		return DeltaDebugClientBreakPoints::Get().StoreText(curi.c_str());
 	}
 
 	//-----------------------------------------------------------------------
@@ -1302,20 +1012,24 @@ namespace ide
 	EXPORTED_STATIC(DeltaVM, const String, GetURIFromSymbolic, (const String& symbolic))
 	{
 		const Handle& script = Call<const Handle& (const String&)>(s_classId, "ProjectManager", "GetResourceBySymbolicURI")(symbolic);
-		if (script)
+		if (script)	{		//first try for a script within the wsp
+			//TODO: this code corresponds to the final source version getting the same symbolic as the original but this
+			//is not the case right now. Determine if the symbolic should be the same or different and change accordingly.
+			//if (debugRunningState == DEBUG_RUNNING)
+			//	return Call<const String& (void)>(s_classId, script, "GetFinalSourceURI")();
+			//else
 			return Call<const String& (void)>(s_classId, script, "GetURI")();
-		else {
-			const String comp = Call<const String (const String&)>(s_classId, "DeltaComponentDirectory", "GetComponentFromSymbolicURI")(symbolic);
-			if (!comp.empty())
-				return Call<const String (const String&)>(s_classId, "DeltaComponentDirectory", "GetURIFromComponent")(comp);
-			else
-				return util::std2str(DynamicCodeManager::GetURI(util::str2std(symbolic)));
 		}
-		// TODO(Lilis): handle the case where the script is not found in the wsp.
-		//else if (!debuggedWorkingDirectory.empty())
-		//	return debuggedWorkingDirectory + symbolic;
-		//else
-		//	return symbolic;
+
+		const String comp = Call<const String (const String&)>(s_classId, "DeltaComponentDirectory", "GetComponentFromSymbolicURI")(symbolic);
+		if (!comp.empty())	//then try for a sparrow component
+			return Call<const String (const String&)>(s_classId, "DeltaComponentDirectory", "GetURIFromComponent")(comp);
+
+		const String dynamicURI = util::std2str(DynamicCodeManager::GetURI(util::str2std(symbolic)));
+		if (!dynamicURI.empty())	//then try for a dynamic source
+			return dynamicURI;
+		
+		return currDebugServer.get<4>() + symbolic;	//finally assume an external script residing at the executing directory
 	}
 
 
@@ -1443,72 +1157,6 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_SLOT_STATIC(DeltaVM, void, OnEditorMarginMarksClicked,
-		(const Handle& editor, int line), "EditorMarginMarksClicked")
-	{
-		const String symbolic = GetSymbolicURIFromEditor(editor);
-		if (!symbolic.empty())
-			ToggleBreakpoint(symbolic, line);
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_SLOT_STATIC(DeltaVM, void, OnFileNameChanged,
-		(const Handle& editor, const String& uri), "FileNameChanged")
-	{
-		ComponentEntry& entry = ComponentRegistry::Instance().GetComponentEntry("ProjectManager");
-		if (entry && entry.GetFocusedInstance() && editor.GetClassId() == "Editor") {	//No breakpoint Handling if no ProjectManager
-			const String normalizedUri = util::normalizepath(uri);
-			const String symbolic = GetSymbolicURIFromURI(normalizedUri);
-			const std::string csymbolic = util::str2std(symbolic);
-			if (DeltaDebugClientBreakPoints::Get().HasAnyBreakPoints(csymbolic))
-				BOOST_FOREACH(const DeltaBreakPoint& bpt, DeltaDebugClientBreakPoints::Get().Get(csymbolic))
-					Call<void (int, bool), SafeCall>(s_classId, editor, "InsertBreakpoint")(
-						bpt.GetLine(),
-						bpt.IsEnabled()
-					);
-			if (debugRunningState == DEBUG_RUNNING && stopPoint.first == symbolic)
-				Call<void (int), SafeCall>(s_classId, editor, "SetBreakpointArrow")(stopPoint.second);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_SLOT_STATIC(DeltaVM, void, OnTreeItemSymbolicURIChanged,
-		(const Handle& handle, const String& oldUri, const String& newUri), "TreeItemSymbolicURIChanged")
-	{
-		if (handle.GetClassId() == "Script") {
-			const std::string symbolic = util::str2std(oldUri);
-			if (DeltaDebugClientBreakPoints::Get().HasAnyBreakPoints(symbolic)) {
-				const std::list<DeltaBreakPoint> l = DeltaDebugClientBreakPoints::Get().Get(symbolic);
-				BOOST_FOREACH(const DeltaBreakPoint& bpt, l) {
-					RemoveBreakpoint(oldUri, bpt.GetLine());
-					AddBreakpoint(newUri, bpt.GetLine(), util::std2str(bpt.GetCondition()));
-					if (!bpt.IsEnabled())
-						DisableBreakpoint(newUri, bpt.GetLine());
-				}
-			}
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	EXPORTED_SLOT_STATIC(DeltaVM, void, OnEditLinesChangedBy,
-		(const Handle& editor, int fromLine, int offset), "EditLinesChangedBy")
-	{
-		const String& uri = Call<const String& (void), SafeCall>(s_classId, "Editor", "GetURI")();
-		const String symbolic = GetSymbolicURIFromURI(uri);
-		const std::string csymbolic = util::str2std(symbolic);
-		if (DeltaDebugClientBreakPoints::Get().HasAnyBreakPoints(csymbolic)) {
-			const std::list<DeltaBreakPoint> l = DeltaDebugClientBreakPoints::Get().Get(csymbolic);
-			BOOST_FOREACH(const DeltaBreakPoint& bpt, l)
-				if(bpt.GetLine() > fromLine)
-					ChangeBreakpointLine(symbolic, bpt.GetLine(), bpt.GetLine() + offset);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
 	EXPORTED_SLOT_STATIC(DeltaVM, void, OnUserListSelected,
 		(const Handle& editor, int listType, const String& selection), "UserListSelected")
 	{
@@ -1617,7 +1265,8 @@ namespace ide
 	void DeltaVM::ResumeDebug(void)
 	{
 		CALL_DELAYED(&DeltaVM::onDebugResumed);
-		WindowFocuser::FocusWindowByProcessId(debuggedPid);
+		if (unsigned long pid = currDebugServer.get<0>())
+			WindowFocuser::FocusWindowByProcessId(pid);
 		//Do not clear the variables here to maintain old/new value information
 		callstack.clear();
 		inBreakPoint = false;
@@ -1855,7 +1504,7 @@ namespace ide
 		for (unsigned i = 0; i < (unsigned) wxTheApp->argc; ++i)
 			argv[i] = ucopystr(util::str2std(wxTheApp->argv[i]));
 		argv[wxTheApp->argc] = (char *) 0;
-		DeltaDebuggedVMFacade::Initialise(wxTheApp->argc, argv);
+		DeltaDebuggedVMFacade::Initialise(DeltaDebuggedVMFacade::NegotiationPortFromArguments(wxTheApp->argc, argv));
 		for(unsigned i = 0; i < (unsigned) wxTheApp->argc; ++i)
 			DDELARR(argv[i]);
 		DDELARR(argv);
@@ -1923,17 +1572,17 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	void DeltaVM::DebugClientThread(const std::string& source, const std::string& host, ushort port)
-	{
+	bool DeltaVM::InitializeDebugClient(const DebugServer& server, bool initial) {
 		DeltaDebugClient::Initialise();
+		if (initial)
+			GeneratedFinalSourceBreakpoints();
 
-		if (!DeltaDebugClient::Connect(host, port)) {
-			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
-				(_("Can not connect with the debug server.\n"));
+		if (!DeltaDebugClient::Connect(server.get<1>(), server.get<2>())) {
 			DeltaDebugClient::CleanUp();
 			debugRunningState = DEBUG_IDLE;
-			CALL_DELAYED(boost::bind(&DeltaVM::onDebugStopped, util::std2str(source)));
-			return;
+			if (initial)
+				CALL_DELAYED(boost::bind(&DeltaVM::onDebugStopped, server.get<3>()));
+			return false;
 		}
 
 		if (debugRunningState != DEBUG_STOPPED) {	//was not stopped before connection was established
@@ -1944,103 +1593,151 @@ namespace ide
 			SetObjectGraphConfiguration();
 			DeltaDebugClient::DoStart();
 		}
+		return true;
+	}
 
-		while (debugRunningState == DEBUG_RUNNING) {
+	//-----------------------------------------------------------------------
 
-			if (DeltaDebugClient::IsConnectionBroken()) {
-				SPARROW_OUTPUT_MESSAGE("Stopping debugging since debugger connection is broken!");
-				break;
+	void DeltaVM::CleanUpDebugClient (const DebugServer& server, bool final) {
+		DebugAsyncEvaluator::CancelAll();
+
+		boost::mutex::scoped_lock lock(debugClientThreadFinishedMutex);
+		DeltaDebugClient::CleanUp();
+
+		debugRunningState = DEBUG_IDLE;
+
+		inBreakPoint					= false;
+		waitingBreakpointValidation		= false;
+
+		if (final) {
+			ClearBreakpointList(finalGeneratedBreakpoints);
+			if (server.get<5>())
+				ClearBreakpointList(stageGeneratedBreakpoints);
+		}
+
+		CALL_DELAYED(&DeltaVM::onDebugResumed);
+		if (final)
+			CALL_DELAYED(boost::bind(&DeltaVM::onDebugStopped, server.get<3>()));
+		variables.clear();
+		callstack.clear();
+		stackFrameIndex = 0;
+		debugClientThreadSource = server.get<3>();
+		debugClientThreadFinished = true;
+	}
+
+	//-----------------------------------------------------------------------
+
+	bool DeltaVM::ActivateMostRecentDebugServer(bool previousFinished) {
+		CleanUpDebugClient(currDebugServer, debugServers.size() == 1);
+		currDebugServer = DebugServer(0, std::string(), 0, String(), String(), false);
+		if (previousFinished) {
+			DASSERT(!debugServers.empty());
+			debugServers.pop();
+		}
+		while (!debugServers.empty())
+			if (InitializeDebugClient(debugServers.top(), false)) {
+				currDebugServer = debugServers.top();
+				return true;
 			}
+			else
+				debugServers.pop();
+		return false;
+	}
 
-			boost::mutex::scoped_lock lock(stackProcessingMutex);
+	//-----------------------------------------------------------------------
 
-			try {
+	void DeltaVM::DebugClientThread(const DebugServer& server)
+	{
+		if (!InitializeDebugClient(server, true)) {
+			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
+				(_("Can not connect with the debug server.\n"));
+			return;
+		}
+		do {
+			while (debugRunningState == DEBUG_RUNNING) {
 
-				boost::mutex::scoped_lock lock(selectiveStepMutex);
+				if (DeltaDebugClient::IsConnectionBroken()) {
+					SPARROW_OUTPUT_MESSAGE("Stopping debugging since debugger connection is broken!");
+					break;
+				}
 
-				if (!DeltaDebugClient::IsResponsePending()) 
-					{ uprocesssleep(100); continue; }
+				boost::mutex::scoped_lock lock(stackProcessingMutex);
+				try {
 
-				DeltaDebugClient::ReceiveResponse();
+					boost::mutex::scoped_lock lock(selectiveStepMutex);
 
-				switch (DeltaDebugClient::GetResponseType()) {
-					case Debug_InfoStopPoint:
-						HandleBreakpointHit();
-						break;
+					if (!DeltaDebugClient::IsResponsePending()) {
+						uprocesssleep(100);
+						DebugServer& top = debugServers.top();
+						if (top.get<1>() != currDebugServer.get<1>() || top.get<2>() != currDebugServer.get<2>()) {
+							DASSERT(debugServers.size() > 1);
+							if (!ActivateMostRecentDebugServer(false)) {
+								SPARROW_OUTPUT_MESSAGE("Stopping debugging since unable to connect to any available debugger!");
+								break;
+							}
+						}
+						continue;
+					}
+					DeltaDebugClient::ReceiveResponse();
+					switch (DeltaDebugClient::GetResponseType()) {
+						case Debug_InfoStopPoint:
+							HandleBreakpointHit();
+							break;
 
-					case Debug_InfoInvalidBreakPoint:
-					case Debug_InfoBreakPointConditionError:
-						HandleInvalidBreakpoint();
-						break;
+						case Debug_InfoInvalidBreakPoint:
+						case Debug_InfoBreakPointConditionError:
+							HandleInvalidBreakpoint();
+							break;
 
-					case Debug_InfoValidBreakPoint:
-						HandleValidBreakpointAdded();
-						break;
+						case Debug_InfoValidBreakPoint:
+							HandleValidBreakpointAdded();
+							break;
 
-					case Debug_InfoError:
-						HandleVMError();
-						break;
+						case Debug_InfoError:
+							HandleVMError();
+							break;
 
-					case Debug_InfoWarning:
-						HandleVMWarning();
-						break;
+						case Debug_InfoWarning:
+							HandleVMWarning();
+							break;
 
-					case Debug_InfoStop:
-						HandleVMStop();
-						break;
+						case Debug_InfoStop:
+							HandleVMStop();
+							break;
 
-					// All expression evaluation requests are handled asynchronously. 
-					case Debug_InfoValue				:
-					case Debug_InfoExprTypeData			:
-					case Debug_InfoErrorValue			:
-					case Debug_InfoValueMany			:
-					case Debug_InfoExprTypeDataMany		:
-					case Debug_InfoObjectGraph			:
-					case Debug_InfoBinaryData			: 
+						case Debug_InfoDynamicCode:
+							DeltaDebugClient::ResponseProcessed();	//Ignore the async message.
+							break;
+
+						// All expression evaluation requests are handled asynchronously. 
+						case Debug_InfoValue				:
+						case Debug_InfoExprTypeData			:
+						case Debug_InfoErrorValue			:
+						case Debug_InfoValueMany			:
+						case Debug_InfoExprTypeDataMany		:
+						case Debug_InfoObjectGraph			:
+						case Debug_InfoBinaryData			: 
 						
-						{ DebugAsyncEvaluator::Receive(DeltaDebugClient::GetResponseType()); break; }
+							{ DebugAsyncEvaluator::Receive(DeltaDebugClient::GetResponseType()); break; }
 
-					default: {
-						DeltaDebugClient::GetResponseType();
-						SPARROW_OUTPUT_MESSAGE("Unexpected message at this point!");
-						DeltaDebugClient::ResponseProcessed();
-						break;
+						default: {
+							DS2CR response = DeltaDebugClient::GetResponseType();
+							SPARROW_OUTPUT_MESSAGE(uconstructstr("Unexpected message: %d", response));
+							DeltaDebugClient::ResponseProcessed();
+							break;
+						}
 					}
 				}
+				catch (DeltaDebugClient::BrokenConnection) {
+					SPARROW_OUTPUT_MESSAGE("Stopping debugging since debugger connection is broken!");
+					debugRunningState = DEBUG_IDLE;
+				}
+				catch (...) {
+					SPARROW_OUTPUT_MESSAGE("Unknown error occured!");
+					DASSERT(false);
+				}
 			}
-			catch (DeltaDebugClient::BrokenConnection) {
-				SPARROW_OUTPUT_MESSAGE("Stopping debugging since debugger connection is broken!");
-				debugRunningState = DEBUG_IDLE;
-			}
-			catch (...) {
-				SPARROW_OUTPUT_MESSAGE("Unknown error occured!");
-				DASSERT(false);
-			}
-		}
-
-		{
-			DebugAsyncEvaluator::CancelAll();
-
-			boost::mutex::scoped_lock lock(debugClientThreadFinishedMutex);
-			DeltaDebugClient::CleanUp();
-
-			debugRunningState = DEBUG_IDLE;
-
-			inBreakPoint					= false;
-			waitingBreakpointValidation		= false;
-			changingBreakpointInfo			= false;
-
-			debuggedPid = 0;
-			debuggedWorkingDirectory.clear();
-
-			CALL_DELAYED(&DeltaVM::onDebugResumed);
-			CALL_DELAYED(boost::bind(&DeltaVM::onDebugStopped, util::std2str(source)));
-			variables.clear();
-			callstack.clear();
-			stackFrameIndex = 0;
-			debugClientThreadSource = util::std2str(source);
-			debugClientThreadFinished = true;
-		}
+		} while (ActivateMostRecentDebugServer(true));
 	}
 
 	//-----------------------------------------------------------------------
@@ -2164,100 +1861,6 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	void DeltaVM::HandleInvalidBreakpoint(void)
-	{
-		std::string	source, cond;
-		util_ui32	line, newLine;
- 
-		DeltaDebugClient::GetInfoInvalidBreakPoint(&source, &line, &newLine, &cond);
-		DeltaDebugClient::ResponseProcessed();
-
-		if (DeltaDebugClientBreakPoints::Get().HasBreakPoint(source, line)) {	// Was set before running
-			
-			DASSERT(!waitingBreakpointValidation && !changingBreakpointInfo);
-
-			bool			wasEnabled	= DeltaDebugClientBreakPoints::Get().Get(source, line).IsEnabled();
-			const String	symbolic	= util::std2str(source);
-			const String	uri			= GetURIFromSymbolic(symbolic);
-
-			DeltaDebugClient::InvalidBreakPointReason reason = DeltaDebugClient::GetInvalidBreakPointReason(line, newLine);
-
-			if (reason == DeltaDebugClient::ConditionWasInvalid) {
-				DeltaDebugClientBreakPoints::Get().Disable(source, line);
-				CALL_DELAYED(boost::bind(&DeltaVM::onBreakpointDisabled, uri, symbolic, line));
-				CALL_DELAYED(boost::bind(&DeltaVM::MessageConditionError, util::std2str(cond), line));
-			}
-			else {
-				if (reason == DeltaDebugClient::LineWasInvalidButSuccceededToReposition && 
-					!DeltaDebugClientBreakPoints::Get().HasBreakPoint(source, newLine)) { 
-
-					DeltaDebugClientBreakPoints::Get().Change(source, line, newLine);
-
-					CALL_DELAYED(boost::bind(&DeltaVM::onBreakpointRemoved, uri, symbolic, line, wasEnabled));
-					CALL_DELAYED(boost::bind(&DeltaVM::onBreakpointAdded, uri, symbolic, newLine, util::std2str(cond)));
-
-					if (!wasEnabled)
-						CALL_DELAYED(boost::bind(&DeltaVM::DisableBreakpoint, symbolic, newLine));
-				}
-				else {
-					DeltaDebugClientBreakPoints::Get().Remove(source, line);
-					CALL_DELAYED(boost::bind(&DeltaVM::onBreakpointRemoved, uri, symbolic, line, wasEnabled));
-				}
-			}
-		}
-		else {	// Set while running.
-			if (waitingBreakpointValidation) {
-				if (line == newLine) 	// Condition error.
-					CALL_DELAYED(boost::bind(&DeltaVM::MessageConditionError, util::std2str(cond), line));
-				else if (newLine && !DeltaDebugClientBreakPoints::Get().HasBreakPoint(source, newLine))
-					CommitAddBreakpoint(util::std2str(source), newLine, util::std2str(cond));
-				waitingBreakpointValidation = false;
-			}
-			else if (changingBreakpointInfo) {
-				if (line == newLine) { 	// Condition error.
-					const String symbolic	= util::std2str(source);
-					const String uri		= GetURIFromSymbolic(symbolic);
-					const String condition	= util::std2str(cond);
-					CommitAddBreakpoint(util::std2str(source), newLine, condition);
-					DeltaDebugClientBreakPoints::Get().Disable(source, line);
-					CALL_DELAYED(boost::bind(&DeltaVM::onBreakpointDisabled,uri, symbolic, line));
-					CALL_DELAYED(boost::bind(&DeltaVM::MessageConditionError, condition, line));
-				}
-				else if (newLine)
-					CommitAddBreakpoint(util::std2str(source), newLine, util::std2str(cond));
-				changingBreakpointInfo = false;
-			}
-			else
-				DASSERT(false);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::HandleValidBreakpointAdded(void)
-	{
-		std::string	source, cond;
-		util_ui32	line;
-
-		DeltaDebugClient::GetInfoValidBreakPoint(&source, &line, &cond);
-		DeltaDebugClient::ResponseProcessed();
-
-		if (waitingBreakpointValidation) {
-			DASSERT(!DeltaDebugClientBreakPoints::Get().HasBreakPoint(source, line));
-			CommitAddBreakpoint(util::std2str(source), line, util::std2str(cond));
-
-			waitingBreakpointValidation = false;
-		}
-		else if (changingBreakpointInfo) {
-			DASSERT(!DeltaDebugClientBreakPoints::Get().HasBreakPoint(source, line));
-			changingBreakpointInfo = false;
-		}
-		else
-			DASSERT(false);
-	}
-
-	//-----------------------------------------------------------------------
-
 	const std::string DeltaVM::MakeContext (const std::string& name, uint defLine)
 	{
 		return uconstructstr("%s, line %d", name.c_str(), defLine);
@@ -2289,48 +1892,6 @@ namespace ide
 			data.substr(0, colon),
 			boost::lexical_cast<int>(data.substr(colon + 1))
 		);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::onBreakpointAdded(const String& uri, const String& symbolic, int line, const String& condition)
-	{
-		sigBreakpointAdded(uri, symbolic, line, condition);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::onBreakpointRemoved(const String& uri, const String& symbolic, int line, bool enabled)
-	{
-		sigBreakpointRemoved(uri, symbolic, line, enabled);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::onBreakpointEnabled(const String& uri, const String& symbolic, int line)
-	{
-		sigBreakpointEnabled(uri, symbolic, line);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::onBreakpointDisabled(const String& uri, const String& symbolic, int line)
-	{
-		sigBreakpointDisabled(uri, symbolic, line);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::onBreakpointConditionChanged(const String& uri, const String& symbolic, int line, const String& condition)
-	{
-		sigBreakpointConditionChanged(uri, symbolic, line, condition);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void DeltaVM::onBreakpointHit(const String& uri, const String& symbolic, int line)
-	{
-		sigBreakpointHit(uri, symbolic, line);
 	}
 
 	//-----------------------------------------------------------------------

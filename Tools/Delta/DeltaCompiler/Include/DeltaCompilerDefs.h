@@ -9,6 +9,7 @@
 
 #include "utypes.h"
 
+#define	DELTA_COMPILER_REFERENCE_PREFIX		"See original source"
 #define	DELTA_COMPILER_ERROR_PREFIX			"Error"
 #define	DELTA_COMPILER_WARNING_PREFIX		"Warning"
 #define	DELTA_COMPILER_STARTED_PREFIX		"Started"

@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\DeltaCompiler\Include;..\..\..\DeltaStdLib\Include;..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\ResourceLoaderLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\SocketLib\Include;..\..\..\DeltaSyntaxTree\Include"
+				AdditionalIncludeDirectories="..\..\..\DeltaStdLib\Include;..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\ResourceLoaderLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\SocketLib\Include;..\..\..\DeltaSyntaxTree\Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;UTILLIB_IMPORT;DVM_EXPORT;DDEBUG_IMPORT;READERS_IMPORT;RCLOAD_EXPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_IMPORT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\DeltaCompiler\Include;..\..\..\DeltaStdLib\Include;..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\ResourceLoaderLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\SocketLib\Include;..\..\..\DeltaSyntaxTree\Include"
+				AdditionalIncludeDirectories="..\..\..\DeltaStdLib\Include;..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\ResourceLoaderLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\SocketLib\Include;..\..\..\DeltaSyntaxTree\Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;UTILLIB_IMPORT;DVM_EXPORT;DDEBUG_IMPORT;READERS_IMPORT;RCLOAD_EXPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_IMPORT"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -411,6 +411,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\DeltaStdLib\Src\ASTLib.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaStdLib\Src\ASTVisitorLib.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\DeltaStdLib\Src\BitOpLib.cpp"
 					>
 				</File>
@@ -480,6 +488,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\DeltaStdLib\Src\VectorLib.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaStdLib\Src\VMCompLib.cpp"
 					>
 				</File>
 				<File
@@ -827,6 +839,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\DeltaStdLib\Include\ASTLib.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaStdLib\Include\ASTVisitorLib.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\DeltaStdLib\Include\BitOpLib.h"
 					>
 				</File>
@@ -952,6 +972,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\DeltaStdLib\Include\VectorLibP.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaStdLib\Include\VMCompLib.h"
 					>
 				</File>
 				<File

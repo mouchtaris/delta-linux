@@ -16,13 +16,8 @@ namespace AST {
 class AttributeStringifier : public ::AttributeStringifier  {
 
 	public:
+	static void Handle_Name (ATTR_STRINGIFIER_ARGS);
 	static void Handle_Function (ATTR_STRINGIFIER_ARGS);
-	static void Handle_FormalArgs (ATTR_STRINGIFIER_ARGS);
-	static void Handle_Lvalue (ATTR_STRINGIFIER_ARGS);
-	static void Handle_StaticLvalue (ATTR_STRINGIFIER_ARGS);
-	static void Handle_LocalLvalue (ATTR_STRINGIFIER_ARGS);
-	static void Handle_AttrLvalue (ATTR_STRINGIFIER_ARGS);
-	static void Handle_NamespaceLvalue (ATTR_STRINGIFIER_ARGS);
 
 	static void Handle_DotIndexIdent  (ATTR_STRINGIFIER_ARGS);
 	static void Handle_DotIndexOpString  (ATTR_STRINGIFIER_ARGS);
@@ -30,18 +25,13 @@ class AttributeStringifier : public ::AttributeStringifier  {
 
 	static void Handle_DottedIdent (ATTR_STRINGIFIER_ARGS);
 	static void Handle_OperatorIndex (ATTR_STRINGIFIER_ARGS);
-	static void Handle_ExceptionVar (ATTR_STRINGIFIER_ARGS);
 
-	static void Handle_UsingNamespace (ATTR_STRINGIFIER_ARGS);
 	static void Handle_UsingByteCodeLibrary (ATTR_STRINGIFIER_ARGS);
-	static void Handle_StringifyNamespaceIdent (ATTR_STRINGIFIER_ARGS);
 	static void Handle_StringConst (ATTR_STRINGIFIER_ARGS);
 	static void Handle_StringifyDottedIdents (ATTR_STRINGIFIER_ARGS);
-	static void Handle_ConstDefExpression (ATTR_STRINGIFIER_ARGS);
 	
 	static void Handle_NumConst (ATTR_STRINGIFIER_ARGS);
 	static void Handle_BoolConst (ATTR_STRINGIFIER_ARGS);
-	static void Handle_NewAttribute (ATTR_STRINGIFIER_ARGS);
 
 	static void	DefaultHandler (ATTR_STRINGIFIER_ARGS);
 

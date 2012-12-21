@@ -3,6 +3,10 @@
 //
 #include <iostream>
 //
+#include "VMCompLib.h"
+#include "DeltaCompilerInit.h"
+#include "DeltaMetaCompiler.h"
+#include "BuildDependencies.h"
 #include "DeltaPureVMFacade.h"
 #include "DeltaDebuggedVMFacade.h"
 #include "DeltaVirtualMachine.h"
@@ -42,10 +46,10 @@ static void DeltaDebuggedVirtualMachineFacadeOnEndDebuggingRequestCallback (void
 /////////////////////////////
 
 static bool Initialisations (void) {
-	bool result = true;
+	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler);
+	INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
 	DeltaPureVMFacade::Initialise(true);
-	result = DeltaDebuggedVMFacade::Initialise(0, NULL);
-	return result;
+	return DeltaDebuggedVMFacade::Initialise();
 }
 
 static void CleanUps (void) {

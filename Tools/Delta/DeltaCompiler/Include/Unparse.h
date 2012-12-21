@@ -82,11 +82,15 @@ extern _CS_ Unparse_FunctionPrettyPrint (_CS_& prefix, _CS_& formals, _CS_& comp
 inline _CS_ Unparse_FunctionDef (_CS_& func) { return func; }
 extern _CS_ Unparse_UsingNamespace (const std::list<std::string>& namespacePath);
 extern _CS_ Unparse_UsingNamespace (_CS_& ns);
-extern _CS_ Unparse_UsingByteCodeLibrary (_CS_& file, _CS_& id);
 extern _CS_ Unparse_UsingByteCodeLibrary (_CS_& id);
 extern _CS_ Unparse_FunctionCall (_CS_& func, _CS_& args);
 extern _CS_ Unparse_FunctionParenthesisForm (_CS_& func);
 extern _CS_	Unparse_NewAttributeSet (_CS_& id, _CS_& set, _CS_& get);
+
+extern _CS_	Unparse_Escape (util_ui32 cardinality, _CS_& expr);
+extern _CS_ Unparse_QuotedElements (_CS_& elems, _CS_& elem);
+extern _CS_ Unparse_QuasiQuotes (_CS_& prefix, _CS_& value, _CS_& suffix);
+extern _CS_ Unparse_Inline (_CS_& expr);
 
 #undef	_CS_
 extern void Unparse_SingletonCreate (void);

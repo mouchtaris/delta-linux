@@ -1,6 +1,6 @@
 // DescriptiveParseErrorHandler.h
 // A method to support descriptive parse erros for S/R parsers
-// without relying on imlpementation-dependent aspects (only reductions).
+// without relying on implementation-dependent aspects (only reductions).
 // ScriptFighter Project.
 // A. Savidis, July 2007.
 //
@@ -8,9 +8,11 @@
 #ifndef	DESCRIPTIVEPARSEERRORHANDLER_H
 #define	DESCRIPTIVEPARSEERRORHANDLER_H
 
+#include "CompilerComponentDirectory.h"
 #include "utypes.h"
 #include "DDebug.h"
 #include "Symbol.h"
+#include "ucallbacks.h"
 
 #include <stack>
 #include <map>
@@ -28,25 +30,25 @@
 //
 
 #define	SM(id)	\
-	DescriptiveParseErrorHandler::Push(id, DescriptiveParseErrorHandler::role_main_symbol)
+	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_main_symbol)
 
 #define	EM(id)	\
-	DescriptiveParseErrorHandler::PopTill(id, DescriptiveParseErrorHandler::role_main_symbol)
+	DESCRIPTIVE_ERROR_HANDLER.PopTill(id, DescriptiveParseErrorHandler::role_main_symbol)
 
 #define	SG(id)	\
-	DescriptiveParseErrorHandler::Push(id, DescriptiveParseErrorHandler::role_group_symbol)
+	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_group_symbol)
 
 #define	EG(id)	\
-	DescriptiveParseErrorHandler::PopTill(id, DescriptiveParseErrorHandler::role_group_symbol)
+	DESCRIPTIVE_ERROR_HANDLER.PopTill(id, DescriptiveParseErrorHandler::role_group_symbol)
 
 #define	PE(id)	\
-	DescriptiveParseErrorHandler::Push(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
+	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
 
 #define	OE(id)	\
-	DescriptiveParseErrorHandler::Push(id, DescriptiveParseErrorHandler::role_any_expected_temp_symbol)
+	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_any_expected_temp_symbol)
 
 #define	EI(id)	\
-	DescriptiveParseErrorHandler::PopIf(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
+	DESCRIPTIVE_ERROR_HANDLER.PopIf(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
 
 #define	PE2(id1,id2) \
 		PE(id1); PE(id2)
@@ -202,6 +204,8 @@ extern util_ui32 S_BRACKET_INDEX_ (const std::string& tag);
 
 class DescriptiveParseErrorHandler {
 
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
 	public:
 	typedef util_ui32 grammar_symbol_t;
 
@@ -235,32 +239,42 @@ class DescriptiveParseErrorHandler {
 
 	//***************************
 
-	static std::stack<StackItem>*					parseStack;
+	std::stack<StackItem>*					parseStack;
 	typedef std::map<grammar_symbol_t, std::string>	SymbolMessageMap;
-	static SymbolMessageMap*						symbolMessages;
-	static bool										isMainAddedAutomatically;
+	SymbolMessageMap*						symbolMessages;
+	bool									isMainAddedAutomatically;
 
-	static const std::string (*getTokenText)(void);
+	ucallbackwithclosure<const std::string (*)(void *)> getTokenText;
 
-	static bool					IsInitialised (void) { return parseStack && symbolMessages; }
-	static const std::string	GetMessage (grammar_symbol_t code);
-	static void					Pop (void);
+	bool				IsInitialised (void) { return parseStack && symbolMessages; }
+	const std::string	GetMessage (grammar_symbol_t code);
+	void				Pop (void);
 
 	//***************************
 
 	public:
-	static void					Push (grammar_symbol_t code, symbol_role_t role);
-	static void					PopTill (grammar_symbol_t code, symbol_role_t role);
-	static void					PopIf (grammar_symbol_t code, symbol_role_t role);
+	void				Push (grammar_symbol_t code, symbol_role_t role);
+	void				PopTill (grammar_symbol_t code, symbol_role_t role);
+	void				PopIf (grammar_symbol_t code, symbol_role_t role);
 
-	static const std::string	GetReport (void);
-	static void					Clear (void);
-	static void					HandleSyntaxError (void);
-	static void					SetGetTokenText (const std::string (*f)(void))	// TODO: remove when AST prevails
-									{ getTokenText = f; }
-	static void					Initialise (void);
-	static void					CleanUp (void);
+	const std::string	GetReport (void);
+	void				Clear (void);
+	void				HandleSyntaxError (void);
+	void				SetGetTokenText (ucallbackwithclosure<const std::string (*)(void *)> f)	// TODO: remove when AST prevails
+							{ getTokenText = f; }
+	void				Initialise (void);
+	void				CleanUp (void);
+
+	DescriptiveParseErrorHandler (void);
+	~DescriptiveParseErrorHandler () {}
 };
+
+//////////////////////////////////////////////////////
+
+#define DESCRIPTIVE_ERROR_HANDLER_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DescriptiveParseErrorHandler)))
+
+#define DESCRIPTIVE_ERROR_HANDLER	DESCRIPTIVE_ERROR_HANDLER_EX(COMPONENT_DIRECTORY())
 
 //////////////////////////////////////////////////////
 

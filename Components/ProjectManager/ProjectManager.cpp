@@ -36,10 +36,16 @@
 
 #include "Icons/workspace.xpm"
 #include "Icons/project.xpm"
+#include "Icons/aspect_project.xpm"
 #include "Icons/filter.xpm"
 #include "Icons/generic_file.xpm"
 #include "Icons/text_file.xpm"
 #include "Icons/script.xpm"
+#include "Icons/aspect.xpm"
+
+#include "Icons/stage_source.xpm"
+#include "Icons/stage_result.xpm"
+#include "Icons/aspect_transformation.xpm"
 
 #include "Icons/open.xpm"
 #include "Icons/save.xpm"
@@ -52,22 +58,36 @@
 
 _PROJECT_MANAGER_C_API void Initialize(void)
 {
+	//Components
 	ide::BitmapRegistry::Instance().Insert(_T("Workspace"),		workspace_xpm);
 	ide::BitmapRegistry::Instance().Insert(_T("Project"),		project_xpm);
+	ide::BitmapRegistry::Instance().Insert(_T("AspectProject"),	aspect_project_xpm);
 	ide::BitmapRegistry::Instance().Insert(_T("Filter"),		filter_xpm);
 	ide::BitmapRegistry::Instance().Insert(_T("GenericFile"),	generic_file_xpm);
 	ide::BitmapRegistry::Instance().Insert(_T("TextFile"),		text_file_xpm);
 	ide::BitmapRegistry::Instance().Insert(_T("Script"),		script_xpm);
+	ide::BitmapRegistry::Instance().Insert(_T("Aspect"),		aspect_xpm);
+
+	//Sub-types of StageSource
+	ide::BitmapRegistry::Instance().Insert(_T("stage"),			stage_source_xpm);
+	ide::BitmapRegistry::Instance().Insert(_T("result"),		stage_result_xpm);
+	ide::BitmapRegistry::Instance().Insert(_T("aspect"),		aspect_transformation_xpm);
 }
 
 //-----------------------------------------------------------------------
 
 _PROJECT_MANAGER_C_API void CleanUp(void)
 {
+	ide::BitmapRegistry::Instance().Remove(_T("stage"));
+	ide::BitmapRegistry::Instance().Remove(_T("result"));
+	ide::BitmapRegistry::Instance().Remove(_T("aspect"));
+
+	ide::BitmapRegistry::Instance().Remove(_T("Aspect"));
 	ide::BitmapRegistry::Instance().Remove(_T("Script"));
 	ide::BitmapRegistry::Instance().Remove(_T("TextFile"));
 	ide::BitmapRegistry::Instance().Remove(_T("GenericFile"));
 	ide::BitmapRegistry::Instance().Remove(_T("Filter"));
+	ide::BitmapRegistry::Instance().Remove(_T("AspectProject"));
 	ide::BitmapRegistry::Instance().Remove(_T("Project"));
 	ide::BitmapRegistry::Instance().Remove(_T("Workspace"));
 }

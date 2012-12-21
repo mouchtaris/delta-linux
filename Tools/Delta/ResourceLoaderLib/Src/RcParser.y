@@ -24,16 +24,10 @@ using namespace RcLoader;
 #define alloca malloc
 #endif
 
-// We want the yylval to be passed as a parameter to yylex,
-// not being a global variable. This is why we define YYPURE.
-//
-#define	YYPURE
+#define YYINCLUDED_STDLIB_H
 
 extern int ResourceLoader_yylex (void* yylval);
 extern unsigned long ResourceLoader_yylineno;
-#define	yyparse	ResourceLoader_yyparse
-#define yylex	ResourceLoader_yylex
-#define	yydebug	ResourceLoader_yydebug
 
 extern const std::string ResourceLoader_GetText (void);
 
@@ -68,6 +62,13 @@ static void yyerror (const char* s) {
 %token	TRUE FALSE UMINUS SINGLETON DIRECTIVE
 %token	'[' ']' ',' ':'
 
+%output="RcParser.cpp"
+%name-prefix="ResourceLoader_yy"
+%debug
+%defines
+%verbose
+%pure-parser
+%expect 2
 %%
 
 ResourceItems:		ResourceItems IndexedResource

@@ -15,21 +15,16 @@
 
 /////////////////////////////////////////////////////////
 
-#define	ATTR_STRINGIFIER_ARGS			\
-		const std::string&	attr,		\
-		void*				data,		\
-		std::string*		result,		\
-		void*				closure
+#define	ATTR_STRINGIFIER_ARGS				\
+		const std::string&		attr,		\
+		const TreeAttribute*	data,		\
+		std::string*			result,		\
+		void*					closure
 
 class SYNTAXTREELIB_CLASS AttributeStringifier  {
 
 	public:
-	typedef void (*Handler)(
-						const std::string&	attr, 
-						void*				data, 
-						std::string*		result, 
-						void*				closure
-					);
+	typedef void (*Handler)(ATTR_STRINGIFIER_ARGS);
 
 	protected:
 	typedef ucallbackwithclosure<Handler>			HandlerCallback;
@@ -48,9 +43,9 @@ class SYNTAXTREELIB_CLASS AttributeStringifier  {
 									{ defaultHandler.set(f,c); }
 
 	virtual const std::string	operator()(
-									const std::string&	nodeTag, 
-									const std::string&	attr, 
-									void*				data
+									const std::string&		nodeTag, 
+									const std::string&		attr, 
+									const TreeAttribute*	data
 								) const;
 
 	AttributeStringifier (void){}

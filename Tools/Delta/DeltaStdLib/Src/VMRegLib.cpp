@@ -10,9 +10,6 @@
 
 #include "DeltaLibraryCreators.h"
 #include "VMRegLib.h"
-#include "CompilerAPI.h"
-#include "BuildDependencies.h"
-#include "DeltaCompilerInit.h"
 #include "DeltaStdLibFuncNames.h"
 #include "DeltaStdClassNames.h"
 #include "BufferLib.h"
@@ -90,14 +87,6 @@ static void vmreseterror_LibFunc (DeltaVirtualMachine* vm);
 static void vmresetallerrors_LibFunc (DeltaVirtualMachine* vm);
 static void vmgeterrorreport_LibFunc (DeltaVirtualMachine* vm);
 
-static void vmcomp_LibFunc (DeltaVirtualMachine* vm);
-static void vmcomptooutputbuffer_LibFunc (DeltaVirtualMachine* vm);
-static void vmcomponwriter_LibFunc (DeltaVirtualMachine* vm);
-static void vmcompstring_LibFunc (DeltaVirtualMachine* vm);
-static void vmcompstringtooutputbuffer_LibFunc (DeltaVirtualMachine* vm);
-static void vmcompstringonwriter_LibFunc (DeltaVirtualMachine* vm);
-static void vmextractbuilddeps_LibFunc (DeltaVirtualMachine* vm);
-
 static void vmregistercopiedlib_LibFunc (DeltaVirtualMachine* vm);
 static void vmregistersharedlib_LibFunc (DeltaVirtualMachine* vm);
 static void vmunregisterlib_LibFunc (DeltaVirtualMachine* vm);
@@ -142,14 +131,6 @@ static DeltaLibraryObjectCreator::FuncEntry funcs[] = {
 	{ "isvalid",					vmisvalid_LibFunc					},
 	{ "geterrorreport",				vmgeterrorreport_LibFunc			},
 
-	{ "comp",						vmcomp_LibFunc						},
-	{ "comptooutputbuffer",			vmcomptooutputbuffer_LibFunc		},
-	{ "componwriter",				vmcomponwriter_LibFunc				},
-	{ "compstring",					vmcompstring_LibFunc				},
-	{ "compstringtooutputbuffer",	vmcompstringtooutputbuffer_LibFunc	},
-	{ "compstringonwriter",			vmcompstringonwriter_LibFunc		},
-	{ "extractbuilddeps",			vmextractbuilddeps_LibFunc			},
-
 	{ LP "registercopied",			vmregistercopiedlib_LibFunc			},
 	{ LP "registershared",			vmregistersharedlib_LibFunc			},
 	{ LP "unregister",				vmunregisterlib_LibFunc				},
@@ -191,7 +172,7 @@ extern void DeltaVM_AddLoadingPath (const std::string& path, bool prioritised)
 static void AddEnvironmentLoadingPaths (void)
 	{ DPTR(pathManager)->add_environment_path(DELTA_ENVIRONMENT_VAR_BYTECODE_PATH, false); }
 
-static const std::string MakeLoadingPath (void)
+extern const std::string DeltaVM_MakeLoadingPath (void)
 	{ return DPTR(pathManager)->make_entire_path(); }
 
 #define	LOADING_RESOLVE_BYTECODE_FILE(_full_path, _file, _reset)							\
@@ -201,7 +182,7 @@ static const std::string MakeLoadingPath (void)
 			"in %s byte code file '%s' was not found in cwd and '%s' vm loading path!",		\
 			CURR_FUNC,																		\
 			_file.c_str(),																	\
-			MakeLoadingPath().c_str()														\
+			DeltaVM_MakeLoadingPath().c_str()												\
 		);																					\
 		_reset;																				\
 	} else
@@ -256,8 +237,6 @@ static void Initialise (void) {
 	vmGetter = DNEWCLASS(DeltaExternIdFieldGetter, (&ValidateValue));
 	DPTR(vmGetter)->SetGetByString(vmGetters, uarraysize(vmGetters));
 	DPTR(vmGetter)->SetKeyToGetKeys("keys");
-	DeltaCompilerInit::Initialise();
-	DeltaCompiler::AddExternFuncs(DeltaStdLib_FuncNames());
 	DELTALIBFUNC_CREATE_METHODS_TABLE();
 	libs::Initialise();
 }
@@ -269,7 +248,6 @@ static void CleanUp(void) {
 	udelete(vmGetter); 
 	udelete(pathManager);
 
-	DeltaCompilerInit::CleanUp(); 
 	DELTALIBFUNC_DESTROY_METHODS_TABLE(); 
 	libs::CleanUp(); 
 }
@@ -770,178 +748,6 @@ if (UERROR_ISRAISED())
 	DLIB_RETVAL_REF.FromString(uerror::GetSingleton().getreport());
 else
 	DLIB_RETVAL_REF.FromNil();
-DLIB_FUNC_END
-
-//-----------------------------------------------------------------------
-// DYNAMIC COMPILATION.
-
-static DeltaValue*	onError				= (DeltaValue*) 0;
-static bool			onErrorSucceeded	= true;
-
-static void OnErrorWrapper (const char* error) {
-	DASSERT(onError);
-	if (onErrorSucceeded)
-		onErrorSucceeded = (*onError)(DeltaValue(error));
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-#define	BEFORE_COMPILATION()										\
-onErrorSucceeded = true;											\
-DeltaCompiler::SetErrorCallback(&OnErrorWrapper);					\
-if (DPTR(pathManager)->has_paths())									\
-	DeltaCompiler::SetByteCodePath(MakeLoadingPath());				\
-onError = DLIB_ARGVAL(errorHandler);								\
-bool oldMode = DeltaCompiler::GetProductionMode();					\
-DeltaCompiler::SetProductionMode(DLIB_ARGVAL(productionMode))
-
-#define	DUMP_TEXT_CODE(path)										\
-if (!DLIB_ARGVAL(productionMode)) {									\
-	std::string prefix = ufileprefix(DLIB_ARGVAL(path));			\
-	DeltaCompiler::DumpTextCode((prefix + ".txt").c_str());			\
-}																	\
-
-#define	AFTER_COMPILATION()											\
-DeltaCompiler::CleanUp();											\
-unullify(onError);													\
-DeltaCompiler::ResetErrorCallback();								\
-DeltaCompiler::SetProductionMode(oldMode);							\
-if (!onErrorSucceeded) {											\
-	DPTR(vm)->PossiblePrimaryError(									\
-		"in '%s' while calling error reporting function!",			\
-		CURR_FUNC													\
-	); return; } else
-
-///////////////////////////////////////////////////////////////////////////
-
-DLIB_FUNC_START(vmcomp, 4, False)
-DLIB_ARG(const char*,	srcPath)
-DLIB_ARG(const char*,	destPath)
-DLIB_ARG(DeltaValue*,	errorHandler)
-DLIB_ARG(bool,			productionMode)
-
-BEFORE_COMPILATION();
-bool result = DeltaCompiler::Compile(DLIB_ARGVAL(srcPath)) && onErrorSucceeded;
-if (result)
-	DeltaCompiler::DumpBinaryCode(DLIB_ARGVAL(destPath));
-DUMP_TEXT_CODE(destPath);
-AFTER_COMPILATION();
-DLIB_RETVAL_REF.FromBool(result);
-DLIB_FUNC_END
-
-///////////////////////////////////////////////////////////////////////////
-
-DLIB_FUNC_START(vmextractbuilddeps, 1, Nil)
-DLIB_ARG(const char*, srcPath)
-typedef DeltaBuildDependencies::Dependencies Dependencies;
-Dependencies deps;
-if (!DeltaBuildDependencies::Extract("", DLIB_ARGVAL(srcPath), &deps))
-	DLIB_RETVAL_REF.FromNil();
-else {
-	DeltaList_Make(DLIB_RETVAL_REF);
-	std::list<DeltaValue>* l = 	DeltaList_Get(DLIB_RETVAL_REF);
-	for (Dependencies::iterator i = deps.begin(); i != deps.end(); ++i) {
-		l->push_back(i->first);
-		switch (i->second) {
-			case DeltaBuildDependencies::NotFound	: l->push_back(DELTA_DEPENDENCY_NOT_FOUND);		break;
-			case DeltaBuildDependencies::OneFound	: l->push_back(DELTA_DEPENDENCY_ONE_FOUND);		break;
-			case DeltaBuildDependencies::ManyFound	: l->push_back(DELTA_DEPENDENCY_MANY_FOUND);	break;
-			default : DASSERT(false);
-		}
-	}
-}
-DLIB_FUNC_END
-
-///////////////////////////////////////////////////////////////////////////
-
-DLIB_FUNC_START(vmcompstring, 4, False)
-DLIB_ARG(const char*,	code)
-DLIB_ARG(const char*,	destPath)
-DLIB_ARG(DeltaValue*,	errorHandler)
-DLIB_ARG(bool,			productionMode)
-
-BEFORE_COMPILATION();
-bool result = DeltaCompiler::CompileText(DLIB_ARGVAL(code)) && onErrorSucceeded;
-if (result)
-	DeltaCompiler::DumpBinaryCode(DLIB_ARGVAL(destPath));
-DUMP_TEXT_CODE(destPath);
-AFTER_COMPILATION();
-DLIB_RETVAL_REF.FromBool(result);
-DLIB_FUNC_END
-
-///////////////////////////////////////////////////////////////////////////
-
-DLIB_FUNC_START(vmcomptooutputbuffer, 3, Nil)
-DLIB_ARG(const char*,	srcPath)
-DLIB_ARG(DeltaValue*,	errorHandler)
-DLIB_ARG(bool,			productionMode)
-BEFORE_COMPILATION();
-ubinaryio::OutputBuffer* ob = DNEW(ubinaryio::OutputBuffer);
-bool result = DeltaCompiler::Compile(DLIB_ARGVAL(srcPath)) && onErrorSucceeded;
-if (result) {
-	PortableBufferWriter writer(*DPTR(ob));
-	DeltaCompiler::DumpBinaryCode(writer);
-	DeltaOutputBuffer_Make(DLIB_RETVAL_PTR, ob);
-}
-else {
-	DDELETE(ob);
-	DLIB_RETVAL_REF.FromNil();
-}
-AFTER_COMPILATION();
-DLIB_FUNC_END
-
-///////////////////////////////////////////////////////////////////////////
-
-DLIB_FUNC_START(vmcomponwriter, 4, False)
-DLIB_ARG(const char*,	srcPath)
-DLIB_GET_WRITER
-DLIB_ARG(DeltaValue*,	errorHandler)
-DLIB_ARG(bool,			productionMode)
-
-BEFORE_COMPILATION();
-bool result = DeltaCompiler::Compile(DLIB_ARGVAL(srcPath)) && onErrorSucceeded;
-if (result)
-	DeltaCompiler::DumpBinaryCode(*DPTR(writer));
-AFTER_COMPILATION();
-DLIB_RETVAL_REF.FromBool(result);
-DLIB_FUNC_END
-
-///////////////////////////////////////////////////////////////////////////
-
-DLIB_FUNC_START(vmcompstringtooutputbuffer, 3, Nil)
-DLIB_ARG(const char*,	code)
-DLIB_ARG(DeltaValue*,	errorHandler)
-DLIB_ARG(bool,			productionMode)
-
-BEFORE_COMPILATION();
-ubinaryio::OutputBuffer* ob = DNEW(ubinaryio::OutputBuffer);
-bool result = DeltaCompiler::CompileText(DLIB_ARGVAL(code)) && onErrorSucceeded;
-if (result) {
-	PortableBufferWriter writer(*DPTR(ob));
-	DeltaCompiler::DumpBinaryCode(writer);
-	DeltaOutputBuffer_Make(DLIB_RETVAL_PTR, ob);
-}
-else {
-	DDELETE(ob);
-	DLIB_RETVAL_REF.FromNil();
-}
-AFTER_COMPILATION();
-DLIB_FUNC_END
-
-///////////////////////////////////////////////////////////////////////////
-
-DLIB_FUNC_START(vmcompstringonwriter, 4, False)
-DLIB_ARG(const char*,	code)
-DLIB_GET_WRITER
-DLIB_ARG(DeltaValue*,	errorHandler)
-DLIB_ARG(bool,			productionMode)
-
-BEFORE_COMPILATION();
-bool result = DeltaCompiler::CompileText(DLIB_ARGVAL(code)) && onErrorSucceeded;
-if (result)
-	DeltaCompiler::DumpBinaryCode(*DPTR(writer));
-AFTER_COMPILATION();
-DLIB_RETVAL_REF.FromBool(result);
 DLIB_FUNC_END
 
 //-----------------------------------------------------------------------

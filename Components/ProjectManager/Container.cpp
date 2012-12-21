@@ -271,11 +271,11 @@ namespace ide
 				Call<void (const String&)>(comp, item, "SetName")(node[_T("name")]);
 				Call<void (const String&)>(comp, item, "SetURI")(String());	//filters don't have valid uris
 			}
-			else {	// Script
-				if (type == "Script") {	// Get script properties (if any).
+			else {
+				if (type == "Script" || type == "Aspect") {	// Get child properties (if any).
 					conf::XMLValueLoader propertyLoader;
 					propertyLoader.SetParent(node);
-					const_cast<conf::PropertyTable&>(item->GetInstancePropertyTable()).Accept("ScriptProperties", &propertyLoader);
+					const_cast<conf::PropertyTable&>(item->GetInstancePropertyTable()).Accept(type + "Properties", &propertyLoader);
 				}
 
 				String path = node[_T("name")];	// Bwd compatibility.
@@ -303,21 +303,21 @@ namespace ide
 	{
 		BOOST_FOREACH(Component* child, comp->GetChildren())
 		{
-			const String type = util::std2str(child->GetClassId());
+			const std::string type = child->GetClassId();
 			xml::Node node;
 			node.Create(_T("Child"));
-			node.SetProperty(_T("type"), type);
+			node.SetProperty(_T("type"), util::std2str(type));
 
-			if (type == _T("Filter")) {
+			if (type == "Filter") {
 				node.SetProperty(_T("name"), Call<const String& (void)>(this, child, "GetName")());
 				SaveChildrenForComponent(node, child);
 			}
 			else {
 				wxFileName filename(Call<const String& (void)>(this, child, "GetURI")());
-				if (type == _T("Script")) {	//-- Save script properties
-					conf::XMLValueSaver propertySaver(conf::MAKE_PATHS_RELATIVE, filename.GetFullPath());
+				if (type == "Script" || type == "Aspect") {	//-- Save child properties
+					conf::XMLValueSaver propertySaver(conf::MAKE_PATHS_RELATIVE, filename.GetPath());
 					propertySaver.SetParent(node); 
-					const_cast<conf::PropertyTable&>(child->GetInstancePropertyTable()).Accept("ScriptProperties", &propertySaver);
+					const_cast<conf::PropertyTable&>(child->GetInstancePropertyTable()).Accept(type + "Properties", &propertySaver);
 				}
 
 				if (!Call<bool (void)>(this, child, "HasDefaultSymbolicURI")())
@@ -335,8 +335,11 @@ namespace ide
 
 	void Container::CancelFileModificationWatcher(void)
 	{
-		if (m_changeWatcher)
+		boost::mutex::scoped_lock lock(m_changeWatcherMutex);
+		if (m_changeWatcher) {
 			util::FileChangeWatcher::Instance().Cancel(GetURI(), m_changeWatcher);
+			m_changeWatcher = 0;
+		}
 		m_internalSaveCounter = 0;
 	}
 
@@ -344,24 +347,24 @@ namespace ide
 
 	void Container::OnFileModification(void)
 	{
-		if (m_internalSaveCounter)
-			--m_internalSaveCounter;
-		else {
-			boost::mutex::scoped_lock lock(m_reloadMutex);
-			if (!m_reloadPending)
-				timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Container::AskForReload, this));
-		}
+		boost::mutex::scoped_lock lock(m_changeWatcherMutex);
+		if (m_changeWatcher) 
+			if (m_internalSaveCounter)
+				--m_internalSaveCounter;
+			else {
+				boost::mutex::scoped_lock lock(m_reloadMutex);
+				if (!m_reloadPending) {
+					m_reloadPending = true;
+					timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Container::AskForReload, this));
+				}	
+			}
 	}
 
 	//-----------------------------------------------------------------------
 
 	void Container::AskForReload(void)
 	{
-		{
-			boost::mutex::scoped_lock lock(m_reloadMutex);
-			m_reloadPending = true;
-		}
-
+		assert(m_reloadPending);
 		const String message = _("The workspace '") + GetName() + _("' has been modified outside the environment.");
 		const String question = _T("Do you want to reload the updated workspace from disk?");
 		if (gui::getConfirmation(0, _T("File Modification Detected"), message + _T("\n") + question))

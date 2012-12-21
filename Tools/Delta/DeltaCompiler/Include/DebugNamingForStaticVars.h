@@ -20,11 +20,9 @@
 
 /////////////////////////////////////////////////////////////
 
-class DebugNamingForStaticVars {	// Singleton.
+class DebugNamingForStaticVars {
 
 	private:
-	static DebugNamingForStaticVars* singletonPtr;
-
 	typedef std::pair<DeltaSymbol*, util_ui16>				StaticEntry;
 	typedef std::map<std::string, std::list<StaticEntry> >	StaticMap;
 
@@ -43,25 +41,17 @@ class DebugNamingForStaticVars {	// Singleton.
 
 	void						CleanUp (void);
 
-	static void					SingletonCreate (void);								
-	static void					SingletonDestroy (void);
-	static DebugNamingForStaticVars*	
-								GetPtr (void) 
-									{ DASSERT(singletonPtr); return singletonPtr; }
-
-	private:
-	DFRIENDDESTRUCTOR()
 	DebugNamingForStaticVars (void);
 	~DebugNamingForStaticVars();
 };
 
 /////////////////////////////////////////////////////////////
 
-#define	DEBUGSTATICS GetDebugNamingForStaticVars()
+#define DEBUGSTATICS_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DebugNamingForStaticVars)))
 
-inline DebugNamingForStaticVars& GetDebugNamingForStaticVars (void) {
-	DASSERT(DebugNamingForStaticVars::GetPtr());
-	return *DebugNamingForStaticVars::GetPtr();
-}
+#define DEBUGSTATICS	DEBUGSTATICS_EX(COMPONENT_DIRECTORY())
+	
+/////////////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

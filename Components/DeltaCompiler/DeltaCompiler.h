@@ -43,20 +43,21 @@ namespace ide
 			const String& directory), _("Compile an internal Sparrow Delta script file"));
 		DECLARE_EXPORTED_STATIC_(unsigned long, Compile, (const String& uri, const String& options,
 			const String& directory, const UIntList& buildId, const Handle& script), _("Compile a Delta script file"));
+		DECLARE_EXPORTED_STATIC_(unsigned long, AspectTransformation, (const String& uri, 
+			const StringList& transformations, const String& options, const String& directory, 
+			const UIntList& buildId, const Handle& script), _("Transform a Delta script file"));
 		DECLARE_EXPORTED_STATIC_(void, Clean, (const String& dbc),
 			_("Clean targets of a Delta compiled file"));
-		DECLARE_EXPORTED_STATIC_(void, SetOutputPath, (const String& path),
-			_("Set target files output path"));
 
 	private:
 		///--- private API
 		friend class OnCompilationMessage;
 
+		static void onFinish(const Handle& script, bool compilation);
+		static void onFinishThreadSafe(const Handle& script, bool compilation, bool success);
+
 		typedef boost::tuple<UIntList, String, String, String, uint> Message;
 		typedef std::list<Message> MessageList;
-
-		///--- private members
-		static std::string output_path;
 	};
 }
 

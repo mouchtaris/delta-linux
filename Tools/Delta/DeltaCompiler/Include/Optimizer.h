@@ -8,6 +8,7 @@
 #define	OPTIMIZER_H
 
 #include "DDebug.h"
+#include "CompilerComponentDirectory.h"
 #include "InterCode.h"
 #include "Symbol.h"
 #include "UnusedTempAssignElimination.h"
@@ -18,11 +19,11 @@
 #include <map>
 
 class Optimizer {
+	
+	USE_COMPILER_COMPONENT_DIRECTORY();
 
 	private:
 	////////////////////////////////////////////////////
-
-	static Optimizer* singletonPtr;
 
 	UnusedTempAssignElimination unsedTempAssigns;
 	std::list<util_ui32>	excludedFromTempElimination;	
@@ -33,6 +34,8 @@ class Optimizer {
 	typedef std::pair<util_ui32, util_ui32> BasicBlock;	// Start and end quads.
 	std::list<BasicBlock>	basicBlocks;
 	bool*					isLeaderTable; // Marks leader quads, size equal to total quads.
+
+	const std::string		OptimizerOutput (void) const;
 
 	void					IdentifyBasicBlocksByLeaders (DeltaQuadManager& quadManager); // Produces basic blocks consisting only of leaders.
 	void					AddNewBasicBlock (util_ui32 leader);
@@ -97,27 +100,17 @@ class Optimizer {
 
 	////////////////////////////////////////////////////
 
-	static void				SingletonCreate (void);
-	static void				SingletonDestroy (void);
-	static Optimizer*		GetPtr (void) 
-								{ DASSERT(singletonPtr); return singletonPtr; }
-
-	////////////////////////////////////////////////////
-
-	private:
-	DFRIENDDESTRUCTOR()
 	Optimizer (void);
 	~Optimizer();
 };
 
 ////////////////////////////////////////////
 
-#define	OPTIMIZER	GetOptimizer()
+#define OPTIMIZER_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), Optimizer)))
 
-inline Optimizer& GetOptimizer (void) {
-	DASSERT(Optimizer::GetPtr());
-	return *Optimizer::GetPtr();
-}
+#define OPTIMIZER	OPTIMIZER_EX(COMPONENT_DIRECTORY())
 
+////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

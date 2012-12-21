@@ -458,7 +458,7 @@ class DVM_CLASS DeltaTable :	public CollectableContainer,
 
 		while (true) {	// BFS traversal.
 
-			DASSERT(currList.size());
+			DASSERT(!currList.empty());
 
 			for (std::list<DeltaTable*>::iterator i = currList.begin(); i != currList.end(); ++i) {
 
@@ -515,7 +515,7 @@ class DVM_CLASS DeltaTable :	public CollectableContainer,
 
 		while (true) {	// BFS traversal.
 
-			DASSERT(currList.size());
+			DASSERT(!currList.empty());
 
 			for (std::list<DeltaTable*>::iterator i = currList.begin(); i != currList.end(); ++i) {
 

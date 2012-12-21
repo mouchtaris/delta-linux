@@ -175,11 +175,11 @@ namespace ide
 		ComponentRegistry::Instance().sigAddedUserCommand.disconnect(
 			boost::bind(&Shell::ClassAddedUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigRemovedUserCommand.disconnect(
-			boost::bind(&Shell::ClassRemovedUserCommand, this, _1, _2));
+			boost::bind(&Shell::ClassRemovedUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigEnabledUserCommand.disconnect(
-			boost::bind(&Shell::ClassEnabledUserCommand, this, _1, _2));
+			boost::bind(&Shell::ClassEnabledUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigDisabledUserCommand.disconnect(
-			boost::bind(&Shell::ClassDisabledUserCommand, this, _1, _2));
+			boost::bind(&Shell::ClassDisabledUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigMergedUserCommands.disconnect(
 			boost::bind(&Shell::ClassMergedUserCommands, this, _1, _2));
 		ComponentRegistry::Instance().sigUnMergedUserCommands.disconnect(
@@ -264,11 +264,11 @@ namespace ide
 		ComponentRegistry::Instance().sigAddedUserCommand.connect(
 			boost::bind(&Shell::ClassAddedUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigRemovedUserCommand.connect(
-			boost::bind(&Shell::ClassRemovedUserCommand, this, _1, _2));
+			boost::bind(&Shell::ClassRemovedUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigEnabledUserCommand.connect(
-			boost::bind(&Shell::ClassEnabledUserCommand, this, _1, _2));
+			boost::bind(&Shell::ClassEnabledUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigDisabledUserCommand.connect(
-			boost::bind(&Shell::ClassDisabledUserCommand, this, _1, _2));
+			boost::bind(&Shell::ClassDisabledUserCommand, this, _1, _2, _3));
 		ComponentRegistry::Instance().sigMergedUserCommands.connect(
 			boost::bind(&Shell::ClassMergedUserCommands, this, _1, _2));
 		ComponentRegistry::Instance().sigUnMergedUserCommands.connect(
@@ -744,26 +744,29 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	void Shell::ChildRemovedUserCommand(Component* component, const String& path)
+	void Shell::ChildRemovedUserCommand(Component* component, const String& path, uint flags)
 	{
-		ClassRemovedUserCommand(component->GetClassId(), path);
-		UpdateToolbar(component);
+		ClassRemovedUserCommand(component->GetClassId(), path, flags);
+		if (flags & MT_TOOLBAR)
+			UpdateToolbar(component);
 	}
 
 	//-----------------------------------------------------------------------
 
-	void Shell::ChildEnabledUserCommand(Component* component, const String& path)
+	void Shell::ChildEnabledUserCommand(Component* component, const String& path, uint flags)
 	{
-		ClassEnabledUserCommand(component->GetClassId(), path);
-		UpdateToolbar(component);
+		ClassEnabledUserCommand(component->GetClassId(), path, flags);
+		if (flags & MT_TOOLBAR)
+			UpdateToolbar(component);
 	}
 
 	//-----------------------------------------------------------------------
 
-	void Shell::ChildDisabledUserCommand(Component* component, const String& path)
+	void Shell::ChildDisabledUserCommand(Component* component, const String& path, uint flags)
 	{
-		ClassDisabledUserCommand(component->GetClassId(), path);
-		UpdateToolbar(component);
+		ClassDisabledUserCommand(component->GetClassId(), path, flags);
+		if (flags & MT_TOOLBAR)
+			UpdateToolbar(component);
 	}
 
 	//-----------------------------------------------------------------------
@@ -821,22 +824,28 @@ namespace ide
 		UpdateMenuBar();
 	}
 
-	void Shell::ClassRemovedUserCommand(const std::string& classId, const String& path)
-	{		
-		rootMenu.RemoveUserCommand(path);
-		UpdateMenuBar();
+	void Shell::ClassRemovedUserCommand(const std::string& classId, const String& path, uint flags)
+	{
+		if (flags & MT_MAIN) {
+			rootMenu.RemoveUserCommand(path);
+			UpdateMenuBar();
+		}
 	}
 
-	void Shell::ClassEnabledUserCommand(const std::string& classId, const String& path)
+	void Shell::ClassEnabledUserCommand(const std::string& classId, const String& path, uint flags)
 	{
-		rootMenu.EnableUserCommand(path);
-		UpdateMenuBar();
+		if (flags & MT_MAIN) {
+			rootMenu.EnableUserCommand(path);
+			UpdateMenuBar();
+		}
 	}
 
-	void Shell::ClassDisabledUserCommand(const std::string& classId, const String& path)
+	void Shell::ClassDisabledUserCommand(const std::string& classId, const String& path, uint flags)
 	{
-		rootMenu.DisableUserCommand(path);
-		UpdateMenuBar();
+		if (flags & MT_MAIN) {
+			rootMenu.DisableUserCommand(path);
+			UpdateMenuBar();
+		}
 	}
 
 	void Shell::ClassMergedUserCommands(const std::string& classId, const UserCommand& cmds)

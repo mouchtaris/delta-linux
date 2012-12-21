@@ -1,5 +1,5 @@
 // usingleton.h
-// A mixn class for singletons (turning a class to singleton).
+// A mixin class for singletons (turning a class to singleton).
 // ScriptFighter Project.
 // A. Savidis, January 2007 (extracting here).
 //

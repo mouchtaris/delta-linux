@@ -21,8 +21,10 @@
 
 
 
-#define CHECK_FOR_PROJECT_MANAGER()	if ( !ComponentRegistry::Instance().GetFocusedInstance("ProjectManager") ) { return; }
+#define CHECK_FOR_COMPONENT(component)	if ( !ComponentRegistry::Instance().GetFocusedInstance(component) ) { return; }
 
+#define CHECK_FOR_PROJECT_MANAGER()	CHECK_FOR_COMPONENT("ProjectManager")
+#define CHECK_FOR_EDITOR_MANAGER()	CHECK_FOR_COMPONENT("EditorManager")
 
 namespace ide {
 	
@@ -153,6 +155,7 @@ namespace ide {
 	//-----------------------------------------------------------------------
 	
 	void SparrowTextSourceCollectionProducer::AllOpenDocuments (void){
+		CHECK_FOR_EDITOR_MANAGER();
 		//pernoume prwta ton focus editor oste na isxiei h sun8ilh pou 8elei sthn arxh ths lista na einai
 		//o focus editor
 		CurrentDocument(false);
@@ -172,13 +175,16 @@ namespace ide {
 	//-----------------------------------------------------------------------
 	
 	void SparrowTextSourceCollectionProducer::CurrentDocument (const bool _findOnSelection){
+		CHECK_FOR_EDITOR_MANAGER();
+
 		findOnSelection = _findOnSelection;
 		const Handle& editor =	Call<const Handle& (void)>
 								("FindAndReplace", "EditorManager", "GetFocusedEditor")
 								();
-		
-		std::string uri = util::str2std( Call<const String& (void)>("FindAndReplace", editor, "GetURI")() );
-		tsList.push_back(SelectFileType(editor.Resolve(), uri));
+		if (editor) {
+			std::string uri = util::str2std( Call<const String& (void)>("FindAndReplace", editor, "GetURI")() );
+			tsList.push_back(SelectFileType(editor.Resolve(), uri));
+		}
 		
  		return;		
 	}

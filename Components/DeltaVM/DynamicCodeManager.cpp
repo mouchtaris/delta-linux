@@ -61,18 +61,20 @@ namespace ide
 
 	void DynamicCodeManager::Update(const std::string& symbolic, const std::string& code)
 	{
-		Component* shell = ComponentRegistry::Instance().GetFocusedInstance("Shell");
-		assert(shell);
-		GUI_SCOPED_FREEZE(shell->GetWindow());
 		DynamicCodeFileMap::iterator i = dynamicFiles.find(symbolic);
 		assert(i != dynamicFiles.end());
-		const Handle& editor = i->second.GetEditor();
-		Call<void (bool)>(s_classId, editor, "SetReadOnly")(false);
-		Call<void (const String&)>(s_classId, editor, "SetText")(util::std2str(code));
-		Call<void (bool)>(s_classId, editor, "SetReadOnly")(true);
-		Call<void (bool)>(s_classId, editor, "SetModified")(false);
-		const String uri = util::std2str(i->second.GetURI());
-		Call<void (const String&)>(s_classId, editor, "SetURI")(uri);
+		if (i->second.GetCode() != code) {
+			Component* shell = ComponentRegistry::Instance().GetFocusedInstance("Shell");
+			assert(shell);
+			GUI_SCOPED_FREEZE(shell->GetWindow());
+			const Handle& editor = i->second.GetEditor();
+			Call<void (bool)>(s_classId, editor, "SetReadOnly")(false);
+			Call<void (const String&)>(s_classId, editor, "SetText")(util::std2str(code));
+			Call<void (bool)>(s_classId, editor, "SetReadOnly")(true);
+			Call<void (bool)>(s_classId, editor, "SetModified")(false);
+			const String uri = util::std2str(i->second.GetURI());
+			Call<void (const String&)>(s_classId, editor, "SetURI")(uri);
+		}
 	}
 
 	//-----------------------------------------------------------------------

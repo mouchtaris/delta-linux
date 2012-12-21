@@ -18,12 +18,12 @@
 #include "TargetCode.h"
 #include "DeltaCompErrorMsg.h"
 
+#include "CompileOptions.h"
 #include "GlobalData.h"
 #include "Optimizer.h"
 #include "DebugNamingForStaticVars.h"
 #include "AutoCollection.h"
 #include "DescriptiveParseErrorHandler.h"
-#include "Unparse.h"
 #include "ufiles.h"
 #include "SelectiveStepInPreparator.h"
 #include "GenericWriter.h"
@@ -35,84 +35,69 @@
 #include "TreeToStringVisitor.h"
 #include "ASTAttributeStringifier.h"
 #include "ASTTranslationVisitor.h"
+#include "ASTValidationVisitor.h"
 #include "ASTUnparseVisitor.h"
+#include "ASTUtilVisitors.h"
 #include "usystem.h"
+
+#include "DeltaScanner.h"
+#include "DeltaSyntax.h"
+#include "DeltaLexAnalyser.h"
+#include "DeltaSyntaxParser.h"
+#include "ParsingContext.h"
+
+#include "TypeCheck.h"
+#include "CompilerStringHolder.h"
 
 #define	TRANSLATE_SYNTAX_TREE
 
-////////////////////////////////////////////////////////
-
-extern int							DeltaCompiler_yydebug;
-extern FILE*						DeltaCompiler_yyin;
-extern void							DeltaCompiler_ResetLex (FILE* fp);
-extern int							DeltaCompiler_yyparse (void);
-
-extern int							DeltaSyntax_yydebug;
-extern FILE*						DeltaSyntax_yyin;
-extern void							DeltaSyntax_ResetLex (FILE* fp);
-extern int							DeltaSyntax_yyparse (void);
+#define AUTOCOLLECTOR	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*COMPONENT_DIRECTORY(), AutoCollector)))
 
 ////////////////////////////////////////////////////////
 
-bool								DeltaCompiler::phaseCleaned		= true;
-std::list<UPTR(const char*)>*		DeltaCompiler::externFuncs		= (std::list<UPTR(const char*)>*) 0;
-std::string*						DeltaCompiler::byteCodePath		= (std::string*) 0;
-std::string*						DeltaCompiler::srcFile			= (std::string*) 0;
-std::stack<DeltaCompErrorCallback>*	DeltaCompiler::errorCallbacks	= (std::stack<DeltaCompErrorCallback>*) 0;
-bool								DeltaCompiler::isCompiling		= false;
-bool								DeltaCompiler::isDynamicCode	= false;
-std::string*						DeltaCompiler::dynamicCode		= (std::string*) 0;
-util_ui32							DeltaCompiler::currLine			= 1;
-AST::Node*							DeltaCompiler::ast				= (AST::Node*) 0;
+extern int	DeltaCompiler_yydebug;
+extern int	DeltaCompiler_yyparse (ParsingContext& ctx);
 
-DeltaCompiler::CompileFlags	DeltaCompiler::compileFlags = { false };
+extern int	DeltaSyntax_yydebug;
+extern int	DeltaSyntax_yyparse (ParsingContext& ctx);
 
 ////////////////////////////////////////////////////////
 
-util_ui32 DeltaCompiler::GetLine (void) 
-	{ return currLine; }
+static const std::string getTokenTextWrapper(void *closure)
+	{ return ((DeltaSyntaxParser*)closure)->GetTokenText(); }
 
-util_ui32 DeltaCompiler::SetLine (util_ui32 line) 
-	{ return currLine = line; }
+////////////////////////////////////////////////////////
 
-void DeltaCompiler::NextLine (void) 
-	{ ++currLine; }
-
-const char*	DeltaCompiler::GetSourceFile (void) 
-	{ DASSERT(srcFile); return DPTR(srcFile)->c_str(); }
-
-void DeltaCompiler::SetByteCodePath (const std::string& path) {
-	*DPTR(byteCodePath) =  ugetenvironmentvar(DELTA_ENVIRONMENT_VAR_BYTECODE_PATH);
-	if (!DPTR(byteCodePath)->empty())
-		DPTR(byteCodePath)->append(";");
-	DPTR(byteCodePath)->append(path);
-}
-
-const std::string& DeltaCompiler::GetByteCodePath (void)
-	{ return *DPTR(byteCodePath); }
-
-bool DeltaCompiler::IsCompiling (void) 
+bool DeltaCompiler::IsCompiling (void) const
 	{ return isCompiling; }
 
-bool DeltaCompiler::IsDynamicCode (void) 
-	{ return isDynamicCode; }
+////////////////////////////////////////////////////////
 
-const std::string& DeltaCompiler::GetDynamicCode (void)
-	{ return *DPTR(dynamicCode); }
+void DeltaCompiler::SetByteCodePath (const std::string& path)
+	{ COMPOPTIONS.SetByteCodePath(path); }
 
-void DeltaCompiler::SetProductionMode (bool val)	
-	{ compileFlags.productionMode = val; }
-
-bool DeltaCompiler::GetProductionMode (void)		
-	{ return compileFlags.productionMode; }
+const std::string& DeltaCompiler::GetByteCodePath (void) const
+	{ return COMPOPTIONS.GetByteCodePath(); }
 
 ////////////////////////////////////////////////////////
 
-void  DeltaCompiler::AddExternFuncs (const UPTR(const char*) funcs) {
+void DeltaCompiler::SetProductionMode (bool val)
+	{ COMPOPTIONS.SetProductionMode(val); }
+
+bool DeltaCompiler::GetProductionMode (void) const
+	{ return COMPOPTIONS.GetProductionMode(); }
+
+////////////////////////////////////////////////////////
+
+void DeltaCompiler::AddExternFuncs (const UPTR(const char*) funcs) {
 	if (!externFuncs)
-		externFuncs = DNEW(std::list<UPTR(const char*)>);
+		externFuncs = DNEW(FuncList);
 	externFuncs->push_back(funcs);
 }
+
+DeltaCompiler::FuncList* DeltaCompiler::GetExternFuncs (void) const
+	{ return externFuncs; }
 
 void DeltaCompiler::ClearExternFuncs (void) {
 	if (externFuncs) {
@@ -124,97 +109,170 @@ void DeltaCompiler::ClearExternFuncs (void) {
 
 ////////////////////////////////////////////////////////
 
-bool DeltaCompiler::InitialiseForFile (
-		FILE*&		fp, 
-		void		(*reset)(FILE*),
-		const char* inFile, 
-		const char* optSymbolicName
-	) {
-	if ((fp = fopen(inFile, "rt"))) {
-		DPTR(dynamicCode)->clear();
-		isDynamicCode = false;
-		*DPTR(srcFile) = !optSymbolicName? inFile : optSymbolicName;
-		(*reset)(fp);
-		return true;
-	}
-	else {
-		DeltaCompMsg(DELTA_COMPILER_FAILED_PREFIX " to open file '%s' for compiling.\n", inFile);
-		return false;
-	}
+static util_ui32 ValidationGetLine (TreeNode* node)
+	{ return static_cast<AST::Node*>(node)->GetStartLine(); }
+
+static void ValidationSetLine (util_ui32 line, void *closure)
+	{ ((ParseParms*) closure)->SetLine(line); }
+
+AST::ValidationVisitor* DeltaCompiler::NewValidator (bool allowEmptyInlines) const {
+	return DNEWCLASS(AST::ValidationVisitor, (
+		allowEmptyInlines,
+		&ValidationGetLine,
+		umakecallback(&ValidationSetLine, &PARSEPARMS)
+	));
 }
-
-bool DeltaCompiler::InitialiseForFile (const char* inFile, const char* optSymbolicName) 
-	{ return InitialiseForFile(DeltaCompiler_yyin, &DeltaCompiler_ResetLex, inFile, optSymbolicName); }
-
-bool DeltaCompiler::InitialiseForFileAST (const char* inFile, const char* optSymbolicName) 
-	{ return InitialiseForFile(DeltaSyntax_yyin, &DeltaSyntax_ResetLex, inFile, optSymbolicName); }
 
 ////////////////////////////////////////////////////////
 
 void DeltaCompiler::Initialise (void) {
 
-	DeltaCompiler_yydebug	= 1;
+	DeltaCompiler_yydebug	= 0;
 	DeltaSyntax_yydebug		= 0;
-	currLine = 1;	// Set first file line.
 
-	ParseParms::Initialise();
-	SelectiveStepInPreparator::Initialise();
-	ParseParms::SetInProductionMode(compileFlags.productionMode);
+	PARSEPARMS.Initialise();
+	SELECTIVESTEPIN.Initialise();
+	TRANSLATOR.Initialise();
 
-	ParseActions_Initialise();
-
-	DeltaCompResetErrors();
-	DeltaCompResetWarnings();
-	DeltaCompSetCurrentFile(DPTR(srcFile)->c_str());
+	COMPMESSENGER.ResetErrors();
+	COMPMESSENGER.ResetWarnings();
+	COMPMESSENGER.SetCurrentFile(COMPOPTIONS.GetSourceFile());
 
 	DELTANAMESPACES.Initialise();
 	DELTARETURNTYPES.Initialise();
-	DELTANAMESPACES.Install(*DPTR(externFuncs));
-	AST::Initialise();
+	if (externFuncs)
+		DELTANAMESPACES.Install(*DPTR(externFuncs));
 }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::InformAboutErrors (void) {
-	util_ui32 numErrors = DeltaCompErrorsExist();
-	if (!numErrors)
-		DeltaCompMsg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', NO ERRORS detected.\n", DPTR(srcFile)->c_str());
-	else
-		DeltaCompMsg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', %d ERRORS detected.\n", DPTR(srcFile)->c_str(), numErrors);
-
-	util_ui32 numWarnings = DeltaCompWarningsExist();
-	if (!numWarnings)
-		DeltaCompMsg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', NO WARNINGS reported.\n", DPTR(srcFile)->c_str());
-	else
-		DeltaCompMsg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', %d WARNINGS reported.\n", DPTR(srcFile)->c_str(), numWarnings);
+void DeltaCompiler::OnParseStarted (bool success, void* closure) {
+	DeltaCompiler* compiler = (DeltaCompiler*) closure;
+	CompilerComponentDirectory* directory = compiler->COMPONENT_DIRECTORY();
+	const char* file = ucstringarg(COMPOPTIONS_EX(directory).GetSourceFile());
+	if (!compiler->parseOnly)
+		if (success)
+			COMPMESSENGER_EX(directory).Msg(DELTA_COMPILER_STARTED_PREFIX " compiling '%s'.\n", file);
+		else
+			COMPMESSENGER_EX(directory).Msg(DELTA_COMPILER_FAILED_PREFIX " to open file '%s' for compiling.\n", file);
+	compiler->sourceSuccessfullyOpened = success;
 }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::SyntaxAnlysisAndIntermediateCode (void) {
+void DeltaCompiler::PreInitialise (void) {
+	isCompiling = true;
+	if (!phaseCleaned)	
+		CleanUp();
+	phaseCleaned = false;
+}
 
-	DeltaCompMsg(DELTA_COMPILER_STARTED_PREFIX " compiling '%s'.\n", DPTR(srcFile)->c_str());
+////////////////////////////////////////////////////////
 
-	GlobalData::Start();
+bool DeltaCompiler::PureSyntaxAnalysis (DeltaSyntaxParser& parser) {
+	parser.SetParseStartCallback(umakecallback(&DeltaCompiler::OnParseStarted, this));
+	DESCRIPTIVE_ERROR_HANDLER.SetGetTokenText(umakecallback(&getTokenTextWrapper, &parser));
+
+	if (COMPOPTIONS.IsDynamicCode())
+		return parser.ParseText(COMPOPTIONS.GetDynamicCode());
+	else
+		return parser.ParseFile(COMPOPTIONS.GetOriginalSourceFile());
+}
+
+////////////////////////////////////////////////////////
+
+bool DeltaCompiler::SyntaxAnalysisAndIntermediateCode (void) {
+
+	GLOBALDATA.Start();
+
+	DeltaLexAnalyserFlexLexer lexer;
+	ParsingContext context(lexer);
+	context.Register("DeltaCompilerMessenger",			&COMPMESSENGER);
+	context.Register("ParseParms",						&PARSEPARMS);
+	context.Register("CompilerStringHolder",			&STRINGHOLDER);
+	context.Register("DescriptiveParseErrorHandler",	&DESCRIPTIVE_ERROR_HANDLER);
+	context.Register("DeltaSymbolTable",				&DELTASYMBOLS);
+	context.Register("Translator",						&TRANSLATOR);
+	context.Register("DeltaQuadManager",				&QUADS);
+	context.Register("DeltaStmtFactory",				&STMTFACTORY);	
 	
-	DeltaCompiler_yyparse();
+	if (!PureSyntaxAnalysis(DeltaSyntaxParser(lexer, context, &DeltaCompiler_yyparse)))
+		return false;
 
-	if (!IsDynamicCode()) {
-		DASSERT(DeltaCompiler_yyin);
-		fclose(DeltaCompiler_yyin);
-		unullify(DeltaCompiler_yyin);
-	}
-	if (!DeltaCompErrorsExist())
-		GlobalData::End();
-
-	InformAboutErrors();
+	if (!COMPMESSENGER.ErrorsExist())
+		GLOBALDATA.End();
+	return true;
 }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::IntermediateCode (void) {
-	if (!DeltaCompErrorsExist())
-		AST::TranslationVisitor()(GetSyntaxTree());
+class Lexer : public DeltaScannerFlexLexer {
+	private:
+	std::list<int> pseudoTokens;
+
+	public:
+	virtual int	yylex (YYSTYPE* yylval, YYLTYPE* yylloc) {
+		if (pseudoTokens.empty())
+			return DeltaScannerFlexLexer::yylex(yylval, yylloc);
+		else 
+			{ int t = pseudoTokens.front(); pseudoTokens.pop_front(); return t; }
+	}
+
+	Lexer (const std::list<int>& tokens) : pseudoTokens(tokens){}
+};
+
+bool DeltaCompiler::SyntaxAnalysis (const std::list<int>& tokens) {
+
+	Lexer lexer(tokens);
+	ParsingContext context(lexer);
+	context.Register("DeltaCompilerMessenger",			&COMPMESSENGER);
+	context.Register("ParseParms",						&PARSEPARMS);
+	context.Register("CompilerStringHolder",			&STRINGHOLDER);
+	context.Register("DescriptiveParseErrorHandler",	&DESCRIPTIVE_ERROR_HANDLER);
+	context.Register("AST::Creator",					&ASTCREATOR);
+
+	if (!PureSyntaxAnalysis(DeltaSyntaxParser(lexer, context, &DeltaSyntax_yyparse)))
+		return false;
+
+	PARSEPARMS.SetLine(1);
+	if (!COMPMESSENGER.ErrorsExist()) {
+		AST::ValidationVisitor* validator = NewValidator();
+		if (!tokens.empty())	//quotedElements
+			validator->EnterQuotes();
+		bool retval;
+		if (!(*validator)(ASTCREATOR.GetSyntaxTree())) {
+			COMPMESSENGER.Error("%s.\n", validator->GetValidationError().c_str());
+			retval = false;
+		}
+		else {
+			PARSEPARMS.SetLine(1);
+			ast = ASTCREATOR.GetSyntaxTree();
+			AST::SerialProducer()(ast);
+			if (onParse)
+				onParse(ast);
+			retval = true;
+		}
+		DDELETE(validator);
+		return retval;
+	}
+	else
+		return false;
+}
+
+AST::Node* DeltaCompiler::GetSyntaxTree (void) 
+	{ return DNULLCHECK(ast); }
+
+////////////////////////////////////////////////////////
+
+bool DeltaCompiler::IntermediateCode (void) {
+	if (!COMPMESSENGER.ErrorsExist()) {
+		AST::TranslationVisitor visitor;
+		INIT_COMPILER_COMPONENT_DIRECTORY(&visitor, COMPONENT_DIRECTORY());
+		visitor(GetSyntaxTree());
+		return true;
+	}
+	else
+		return false;
 }
 
 ////////////////////////////////////////////////////////
@@ -231,43 +289,40 @@ void DeltaCompiler::OptimizationAndTargetCode (void) {
 
 ////////////////////////////////////////////////////////
 
-bool DeltaCompiler::SyntaxAnalysis (void) {
+void DeltaCompiler::InformAboutErrors (void) const {
+	const char* srcFile = ucstringarg(COMPOPTIONS.GetSourceFile());
 
-	DeltaCompMsg(DELTA_COMPILER_STARTED_PREFIX " compiling '%s'.\n", DPTR(srcFile)->c_str());
-
-	DeltaSyntax_yyparse();
-
-	if (!IsDynamicCode()) {
-		DASSERT(DeltaSyntax_yyin);
-		fclose(DeltaSyntax_yyin);
-		unullify(DeltaSyntax_yyin);
-	}
-
-	currLine = 1;
-	if (!DeltaCompErrorsExist())
-		{ ast = AST::GetSyntaxTree(); return true; }
+	util_ui32 numErrors = COMPMESSENGER.ErrorsExist();
+	if (!numErrors)
+		COMPMESSENGER.Msg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', NO ERRORS detected.\n", srcFile);
 	else
-		return false;
-}
+		COMPMESSENGER.Msg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', %d ERRORS detected.\n", srcFile, numErrors);
 
-AST::Node* DeltaCompiler::GetSyntaxTree (void) 
-	{ return DNULLCHECK(ast); }
+	util_ui32 numWarnings = COMPMESSENGER.WarningsExist();
+	if (!numWarnings)
+		COMPMESSENGER.Msg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', NO WARNINGS reported.\n", srcFile);
+	else
+		COMPMESSENGER.Msg(DELTA_COMPILER_FINISHED_PREFIX " compiling '%s', %d WARNINGS reported.\n", srcFile, numWarnings);
+}
 
 ////////////////////////////////////////////////////////
 
 bool DeltaCompiler::PerformFirstPass (void) {
-
+	
 	Initialise();
 
+	bool result;
 #ifdef	TRANSLATE_SYNTAX_TREE
-	if (SyntaxAnalysis())
-		IntermediateCode();
-	InformAboutErrors();
+	result = (!!ast || SyntaxAnalysis()) && IntermediateCode();
 #else
-	SyntaxAnlysisAndIntermediateCode();
+	result = SyntaxAnalysisAndIntermediateCode();
 #endif
 
-	if (!DeltaCompErrorsExist()) {
+	DASSERT(sourceSuccessfullyOpened || !result);
+	if (sourceSuccessfullyOpened)
+		InformAboutErrors();
+
+	if (result && !COMPMESSENGER.ErrorsExist()) {
 		OptimizationAndTargetCode(); 
 		return true;  
 	}
@@ -277,58 +332,69 @@ bool DeltaCompiler::PerformFirstPass (void) {
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::PreInitialise (void) {
-	isCompiling = true;
-	if (!phaseCleaned)	
-		CleanUp();
-	phaseCleaned = false;
-}
+#define COMPILE_CODE						\
+	bool result = PerformFirstPass();		\
+	isCompiling = false;					\
+	return result
 
-////////////////////////////////////////////////////////
+#define PARSE_CODE(EXTRA_TOKENS)						\
+	Initialise();										\
+	parseOnly = true;									\
+	bool result = SyntaxAnalysis(EXTRA_TOKENS);			\
+	parseOnly = false;									\
+	isCompiling = false;								\
+	return result ? GetSyntaxTree() : (AST::Node*) 0
 
-bool DeltaCompiler::CompileText (const char* text) {
+#define COMPILE_FUNC_IMPL(INIT_CODE, CODE)	\
+	DASSERT(!IsCompiling());				\
+	PreInitialise();						\
+	INIT_CODE;								\
+	CODE
 
+bool DeltaCompiler::Compile (const char* inFile, const char* optSymbolicName)
+	{ COMPILE_FUNC_IMPL(COMPOPTIONS.InitialiseForFile(inFile, optSymbolicName), COMPILE_CODE); }
+
+bool DeltaCompiler::CompileText (const char* text)
+	{ COMPILE_FUNC_IMPL(COMPOPTIONS.InitialiseForText(text), COMPILE_CODE); }
+
+bool DeltaCompiler::Translate (const TreeNode* ast) {
 	DASSERT(!IsCompiling());
-	
-	bool (*init)(const char*);
-	unullify(init);
 
-#ifdef	TRANSLATE_SYNTAX_TREE
-	init = &InitialiseForTextAST;
-#else
-	init = &InitialiseForText;
-#endif
+	AST::Node* node = (AST::Node*) ast->Clone(ubind1st(umemberfunctionpointer(&AST::Factory::NewNode), &ASTFACTORY));
+	AST::ValidationVisitor* validator = NewValidator();
+	bool result;
+	if (!(*validator)(node)) {
+		COMPMESSENGER.Error("%s.\n", validator->GetValidationError().c_str());
+		result = false;
+	}
+	else {
+		this->ast = node;
+		AST::SerialProducer()(this->ast);
 
-	PreInitialise();
-	bool result = (*init)(text) &&  PerformFirstPass();
-	isCompiling = false;
+		PreInitialise();
+		COMPOPTIONS.InitialiseForText(AST::UnparseVisitor()(this->ast).c_str());
+		sourceSuccessfullyOpened = true;
+		result = PerformFirstPass();
+		isCompiling = false;
+	}
+	DDELETE(validator);
 	return result;
 }
 
-////////////////////////////////////////////////////////
+AST::Node* DeltaCompiler::Parse (const char* inFile)
+	{ COMPILE_FUNC_IMPL(COMPOPTIONS.InitialiseForFile(inFile), PARSE_CODE(UEMPTY)); }
 
-bool DeltaCompiler::Compile (const char* inFile, const char* optSymbolicName) {
+AST::Node* DeltaCompiler::ParseText (const char* text)
+	{ COMPILE_FUNC_IMPL(COMPOPTIONS.InitialiseForText(text), PARSE_CODE(UEMPTY)); }
 
-	DASSERT(!IsCompiling());
+AST::Node* DeltaCompiler::ParseQuotedElements (const char* text)
+	{ COMPILE_FUNC_IMPL(COMPOPTIONS.InitialiseForText(text), PARSE_CODE(std::list<int>(1, PARSE_QUOTED_ELEMENTS))); }
 
-	bool (*init)(const char*, const char*);
-	unullify(init);
-
-#ifdef	TRANSLATE_SYNTAX_TREE
-	init = &InitialiseForFileAST;
-#else
-	init = &InitialiseForFile;
-#endif
-
-	PreInitialise();
-	bool result = (*init)(inFile, optSymbolicName) && PerformFirstPass();
-	isCompiling = false;
-	return result;
-}
+const std::string DeltaCompiler::Unparse (const TreeNode* ast) const { return AST::UnparseVisitor().Unparse(ast); }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::DumpUnparsed (const char* file) {
+void DeltaCompiler::DumpUnparsed (const char* file) const {
 	if (ast) {
 		std::string text = AST::UnparseVisitor()(ast);
 		if (FILE* fp = fopen(file, "wt")) {
@@ -340,7 +406,7 @@ void DeltaCompiler::DumpUnparsed (const char* file) {
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::DumpAST (const char* file) {
+void DeltaCompiler::DumpAST (const char* file) const {
 	if (ast) {
 		std::string text = TreeToStringVisitor(AST::AttributeStringifier())(ast);
 		if (FILE* fp = fopen(file, "wt")) {
@@ -352,39 +418,39 @@ void DeltaCompiler::DumpAST (const char* file) {
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::DumpInterCode (const char* file) {
-	DASSERT(!DeltaCompErrorsExist());
+void DeltaCompiler::DumpInterCode (const char* file) const {
+	DASSERT(!COMPMESSENGER.ErrorsExist());
 	QUADS.WriteText(file); 
 }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::DumpTextCode (const char* file) {
-	DASSERT(!DeltaCompErrorsExist());
+void DeltaCompiler::DumpTextCode (const char* file) const {
+	DASSERT(!COMPMESSENGER.ErrorsExist());
 	CODEGENERATOR.WriteTextCode(file); 
 }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::DumpBinaryCode (GenericWriter& writer) {
-	DASSERT(!DeltaCompErrorsExist());
-	CODEGENERATOR.WriteBinaryCode(writer, !compileFlags.productionMode);
+void DeltaCompiler::DumpBinaryCode (GenericWriter& writer) const {
+	DASSERT(!COMPMESSENGER.ErrorsExist());
+	CODEGENERATOR.WriteBinaryCode(writer, !COMPOPTIONS.GetProductionMode());
 }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::DumpBinaryCode (const char* file) {
+void DeltaCompiler::DumpBinaryCode (const char* file) const {
 
-	DASSERT(!DeltaCompErrorsExist());
+	DASSERT(!COMPMESSENGER.ErrorsExist());
 	if (FILE* fp = ubinaryfileopen(file, "w")) {
 		CODEGENERATOR.WriteBinaryCode(
 			utempobj(PortableBinFileWriter(fp)), 
-			!compileFlags.productionMode
+			!COMPOPTIONS.GetProductionMode()
 		);
 		fclose(fp);	
 	} 
 	else
-		DeltaCompMsg(
+		COMPMESSENGER.Msg(
 			DELTA_COMPILER_FAILED_PREFIX " to open file '%s' to write target code (%s)", 
 			file, 
 			strerror(errno)
@@ -393,78 +459,45 @@ void DeltaCompiler::DumpBinaryCode (const char* file) {
 
 ////////////////////////////////////////////////////////
 
-void* DeltaCompiler::DumpBinaryCode (util_ui32* size) {
+void* DeltaCompiler::DumpBinaryCode (util_ui32* size) const {
 
-	DASSERT(!DeltaCompErrorsExist());
+	DASSERT(!COMPMESSENGER.ErrorsExist());
 	ubinaryio::OutputBuffer output;
 	CODEGENERATOR.WriteBinaryCode(
 		utempobj(PortableBufferWriter(output)), 
-		!compileFlags.productionMode
+		!COMPOPTIONS.GetProductionMode()
 	);
 	return output.MakeBuffer(size);
 }
 
 ////////////////////////////////////////////////////////
 
-void DeltaCompiler::SetErrorCallback (void (*callback)(const char*)) {
+void DeltaCompiler::SetErrorCallback (ErrorCallback callback) {
 	DPTR(errorCallbacks)->push(callback);
-	DeltaCompSetErrorCallback(callback);
+	COMPMESSENGER.SetErrorCallback(callback);
+}
+
+DeltaCompiler::ErrorCallback DeltaCompiler::GetErrorCallback (void) const {
+	DASSERT(!DPTR(errorCallbacks)->empty());
+	return DPTR(errorCallbacks)->top();
 }
 
 void DeltaCompiler::ResetErrorCallback (void) {
 	DASSERT(!DPTR(errorCallbacks)->empty());
 	DPTR(errorCallbacks)->pop();
 	if (DPTR(errorCallbacks)->empty())
-		DeltaCompSetErrorCallback((DeltaCompErrorCallback) 0);
+		COMPMESSENGER.SetErrorCallback((ErrorCallback) 0);
 	else
-		DeltaCompSetErrorCallback(DPTR(errorCallbacks)->top());
+		COMPMESSENGER.SetErrorCallback(DPTR(errorCallbacks)->top());
 }
+
+bool DeltaCompiler::ErrorsExist (void) const { return COMPMESSENGER.ErrorsExist(); }
 
 ////////////////////////////////////////////////////////
 
-extern const std::string DeltaCompiler_GetText (void);
-extern const std::string DeltaSyntax_GetText (void);
+void DeltaCompiler::SetParseCallback (ParseCallback callback) { onParse = callback; }
 
-void DeltaCompiler::SingletonCreate (void) {
-
-	DescriptiveParseErrorHandler::Initialise();
-
-#ifdef	TRANSLATE_SYNTAX_TREE
-	DescriptiveParseErrorHandler::SetGetTokenText(&DeltaSyntax_GetText);
-#else
-	DescriptiveParseErrorHandler::SetGetTokenText(&DeltaCompiler_GetText);
-#endif
-	
-	unew(srcFile);
-	unew(dynamicCode);
-	unew(errorCallbacks);
-	unew(byteCodePath);
-	*byteCodePath = ugetenvironmentvar(DELTA_ENVIRONMENT_VAR_BYTECODE_PATH);
-
-	Unparse_SingletonCreate();
-	SelectiveStepInPreparator::SingletonCreate();
-	ParseActions_SingletonCreate();
-	AST::SingletonCreate();
-	FunctionValueReturnChecker::SingletonCreate();
-}
-
-////////////////////////////////////////////////////////
-
-void DeltaCompiler::SingletonDestroy (void) {
-
-	CleanUp();
-	ClearExternFuncs();
-	DescriptiveParseErrorHandler::CleanUp();
-	udelete(srcFile);
-	udelete(dynamicCode);
-	udelete(errorCallbacks);
-	udelete(byteCodePath);
-	Unparse_SingletonDestroy();
-	SelectiveStepInPreparator::SingletonDestroy();
-	ParseActions_SingletonDestroy();
-	AST::SingletonDestroy();
-	FunctionValueReturnChecker::SingletonDestroy();
-}
+DeltaCompiler::ParseCallback DeltaCompiler::GetParseCallback (void) const { return onParse; }
 
 ////////////////////////////////////////////////////////
 
@@ -473,14 +506,15 @@ void DeltaCompiler::CleanUp (void) {
 	if (phaseCleaned)
 		return;
 
-	phaseCleaned = true;
-	DPTR(byteCodePath)->clear();
-	CleanUpForText();
-	CleanUpForTextAST();
+	phaseCleaned				= true;
+	sourceSuccessfullyOpened	= false;
+	parseOnly					= false;
+	ast							= (AST::Node*) 0;
 
-	ParseActions_CleanUp();
-	AST::CleanUp();
-	ParseParms::CleanUp();
+	STRINGHOLDER.commit();
+	COMPOPTIONS.Clear();
+	TRANSLATOR.CleanUp();
+	PARSEPARMS.CleanUp();
 	DELTASYMBOLS.CleanUp();
 	DELTANAMESPACES.CleanUp();
 	DELTARETURNTYPES.CleanUp();
@@ -488,8 +522,110 @@ void DeltaCompiler::CleanUp (void) {
 	QUADS.CleanUp();
 	CODEGENERATOR.CleanUp();
 	DEBUGSTATICS.CleanUp();
-	DescriptiveParseErrorHandler::Clear();
-	SelectiveStepInPreparator::CleanUp();
+	DESCRIPTIVE_ERROR_HANDLER.Clear();
+	SELECTIVESTEPIN.CleanUp();
 }
 
 ////////////////////////////////////////////////////////
+
+DeltaCompiler::DeltaCompiler (void) :
+	phaseCleaned			(true),
+	sourceSuccessfullyOpened(false),
+	parseOnly				(false),
+	externFuncs				((DeltaCompiler::FuncList*) 0),
+	errorCallbacks			((std::stack<ErrorCallback>*) 0),
+	isCompiling				(false),
+	ast						((AST::Node*) 0)
+{
+
+	INIT_COMPILER_COMPONENT_DIRECTORY(this, DNEW(CompilerComponentDirectory));
+
+#define CREATE_COMPONENT(type)	\
+	COMPONENT_DIRECTORY()->Register(#type, DNEW(type));
+	CREATE_COMPONENT(CompileOptions);
+	CREATE_COMPONENT(CompilerStringHolder);
+	CREATE_COMPONENT(LocalDataHandler);
+	CREATE_COMPONENT(DebugNamingForStaticVars);
+	CREATE_COMPONENT(GlobalData);
+	CREATE_COMPONENT(DeltaSymbolTable);
+	CREATE_COMPONENT(Optimizer);
+	CREATE_COMPONENT(DeltaCodeGenerator);
+	CREATE_COMPONENT(DeltaQuadManager);
+	CREATE_COMPONENT(DeltaLibraryNamespaceHolder);
+	CREATE_COMPONENT(DeltaFunctionReturnTypesManager);
+	CREATE_COMPONENT(AutoCollector);
+	CREATE_COMPONENT(ParseParms);
+	CREATE_COMPONENT(DeltaExprFactory);
+	CREATE_COMPONENT(DeltaStmtFactory);
+	CREATE_COMPONENT(AST::Factory);
+	CREATE_COMPONENT(Translator);
+	CREATE_COMPONENT(TypeChecker);
+	CREATE_COMPONENT(FunctionValueReturnChecker);
+	CREATE_COMPONENT(SelectiveStepInPreparator);
+	CREATE_COMPONENT(AST::Creator);
+	CREATE_COMPONENT(DescriptiveParseErrorHandler);
+	CREATE_COMPONENT(DeltaCompilerMessenger);
+
+#define INIT_COMPONENT(c)	\
+	INIT_COMPILER_COMPONENT_DIRECTORY(c, COMPONENT_DIRECTORY());
+
+	INIT_COMPONENT(&LOCALDATA);
+	INIT_COMPONENT(&GLOBALDATA);
+	INIT_COMPONENT(&DELTASYMBOLS);
+	INIT_COMPONENT(&OPTIMIZER);
+	INIT_COMPONENT(&CODEGENERATOR);
+	INIT_COMPONENT(&QUADS);
+	INIT_COMPONENT(&DELTANAMESPACES);
+	INIT_COMPONENT(&DELTARETURNTYPES);
+	INIT_COMPONENT(&EXPRFACTORY);
+	INIT_COMPONENT(&TYPECHECKER);
+	INIT_COMPONENT(&TRANSLATOR);
+	INIT_COMPONENT(&RETVALCHECKER);
+	INIT_COMPONENT(&SELECTIVESTEPIN);
+	INIT_COMPONENT(&ASTCREATOR);
+	INIT_COMPONENT(&DESCRIPTIVE_ERROR_HANDLER);
+	INIT_COMPONENT(&COMPMESSENGER);
+	
+	AutoCollector* autoCollector = &AUTOCOLLECTOR;
+	EXPRFACTORY.SetAutoCollector(autoCollector);
+	STMTFACTORY.SetAutoCollector(autoCollector);
+	ASTFACTORY.SetAutoCollector(autoCollector);
+
+	unew(errorCallbacks);
+	DESCRIPTIVE_ERROR_HANDLER.Initialise();
+}
+
+////////////////////////////////////////////////////////
+
+DeltaCompiler::~DeltaCompiler () {
+
+	CleanUp();
+	ClearExternFuncs();
+	DESCRIPTIVE_ERROR_HANDLER.CleanUp();
+	udelete(errorCallbacks);
+
+	DDELETE(&COMPOPTIONS);
+	DDELETE(&STRINGHOLDER);
+	DDELETE(&LOCALDATA);
+	DDELETE(&DEBUGSTATICS);
+	DDELETE(&GLOBALDATA);
+	DDELETE(&DELTASYMBOLS);
+	DDELETE(&OPTIMIZER);
+	DDELETE(&CODEGENERATOR);
+	DDELETE(&QUADS);
+	DDELETE(&DELTANAMESPACES);
+	DDELETE(&DELTARETURNTYPES);
+	DDELETE(&AUTOCOLLECTOR);
+	DDELETE(&PARSEPARMS);
+	DDELETE(&EXPRFACTORY);
+	DDELETE(&STMTFACTORY);
+	DDELETE(&ASTFACTORY);
+	DDELETE(&TYPECHECKER);
+	DDELETE(&TRANSLATOR);
+	DDELETE(&RETVALCHECKER);
+	DDELETE(&SELECTIVESTEPIN);
+	DDELETE(&ASTCREATOR);
+	DDELETE(&DESCRIPTIVE_ERROR_HANDLER);
+	DDELETE(&COMPMESSENGER);
+	DDELETE(COMPONENT_DIRECTORY());
+}

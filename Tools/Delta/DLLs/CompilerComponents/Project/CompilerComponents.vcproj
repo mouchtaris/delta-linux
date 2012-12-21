@@ -39,8 +39,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include"
-				PreprocessorDefinitions="WIN32;_DEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_EXPORT"
+				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugClient\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;..\..\..\DebugServer\Include"
+				PreprocessorDefinitions="WIN32;_DEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DVM_IMPORT;DVMDEBUG_IMPORT;DCOMPLIB_EXPORT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -113,8 +113,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include"
-				PreprocessorDefinitions="WIN32;NDEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_EXPORT"
+				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugClient\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;..\..\..\DebugServer\Include"
+				PreprocessorDefinitions="WIN32;NDEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DVM_IMPORT;DVMDEBUG_IMPORT;DCOMPLIB_EXPORT"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -278,11 +278,19 @@
 				Name="API"
 				>
 				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\CompileOptions.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\DeltaCompiler\Src\CompilerAPI.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\DeltaCompiler\Src\DeltaCompilerInit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\DeltaSyntaxParser.cpp"
 					>
 				</File>
 			</Filter>
@@ -446,6 +454,38 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Meta"
+				>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\ASTAlphaRenamer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\ASTEscapeTranslationVisitor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\ASTStageAssembler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\ASTStageDepthCalculator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\DeltaMetaCompiler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\MetaCompilerLib.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Src\StagedSymbolTable.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -522,7 +562,19 @@
 				Name="API"
 				>
 				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\CompileOptions.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\DeltaCompiler\Include\CompilerAPI.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\CompilerComponentDirectory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\CompilerStringHolder.h"
 					>
 				</File>
 				<File
@@ -534,11 +586,31 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\DeltaLexAnalyser.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\DeltaCompiler\Include\DeltaParser.h"
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\DeltaScanner.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\DeltaCompiler\Include\DeltaSyntax.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\DeltaSyntaxParser.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\FlexLexer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\ParsingContext.h"
 					>
 				</File>
 				<File
@@ -638,6 +710,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\ASTCreationHelpers.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\DeltaCompiler\Include\ASTEvaluationHelpers.h"
 					>
 				</File>
@@ -646,7 +722,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\DeltaCompiler\Include\ASTTags.h"
+					RelativePath="..\..\..\DeltaCompiler\Include\ASTStackValue.h"
 					>
 				</File>
 				<File
@@ -667,6 +743,42 @@
 				</File>
 				<File
 					RelativePath="..\..\..\DeltaCompiler\Include\DeltaDependenciesParser.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\DeltaDependenciesScanner.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Meta"
+				>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\ASTAlphaRenamer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\ASTEscapeTranslationVisitor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\ASTStageAssembler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\ASTStageDepthCalculator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\DeltaMetaCompiler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\MetaCompilerLib.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\DeltaCompiler\Include\StagedSymbolTable.h"
 					>
 				</File>
 			</Filter>

@@ -1,5 +1,5 @@
 // LibraryDefsParser.cpp
-// Parser for library deifnitions.
+// Parser for library definitions.
 // ScriptFighter Project.
 // A. Savidis, September 2009.
 //
@@ -8,6 +8,9 @@
 #include "LibraryNamespaceHolder.h"
 #include "DeltaStdDefs.h"
 #include "ustrings.h"
+
+#undef	DELTANAMESPACES
+#define DELTANAMESPACES (*DNULLCHECK(namespaceHolder))
 
 //---------------------------------------------------------
 // COMMON

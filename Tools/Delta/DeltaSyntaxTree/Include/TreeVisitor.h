@@ -7,7 +7,7 @@
 #ifndef	TREEVISITOR_H
 #define	TREEVISITOR_H
 
-#include "utypes.h"
+#include "DeltaSyntaxTreeDefs.h"
 #include "DDebug.h"
 #include "TreeNode.h"
 #include "ucallbacks.h"
@@ -29,7 +29,7 @@ class SYNTAXTREELIB_CLASS TreeVisitor {
 
 	public:
 	typedef void (*Handler)(TreeNode*, const std::string& childId, bool entering, void* closure);
-	enum State { VisitStopped = 1, VisitLeave = 2, VisitContinue = 3 };
+	enum State { VisitStopped = 1, VisitLeave = 2, VisitPrune = 3, VisitContinue = 4 };
 
 	protected:
 	typedef ucallbackwithclosure<Handler>			HandlerCallback;
@@ -41,6 +41,7 @@ class SYNTAXTREELIB_CLASS TreeVisitor {
 	Handlers		handlers;
 	MultiHandlers	contextHandlers;
 	State			state;
+	bool			pruneAndDelete;
 
 	virtual State	Visit (TreeNode* node, const std::string& childId, bool entering);
 
@@ -51,12 +52,31 @@ class SYNTAXTREELIB_CLASS TreeVisitor {
 					}
 
 	public:
+	State			GetState (void) const
+						{ return state; }
+
 	void			Stop (void) 
-						{ state = VisitStopped; }	
+						{ state = VisitStopped; }
+	bool			ShouldStop (void) const
+						{ return state == VisitStopped; }
+
 	void			Leave (void) // On enter skips children; on leave skips siblings
 						{ state = VisitLeave; }
 	bool			ShouldLeave (void) const
 						{ return state == VisitLeave; }
+
+	void			Prune (bool deleteToo = true) //Can prune everything but the root
+						{ state = VisitPrune, pruneAndDelete = deleteToo; }
+	bool			ShouldPrune (bool *shouldDelete) const {
+						if (state == VisitPrune) {
+							if (shouldDelete)
+								*shouldDelete = pruneAndDelete;
+							return true;
+						}
+						else
+							return false;
+					}
+
 	void			Continue (void) 
 						{ state = VisitContinue; }
 
@@ -88,7 +108,7 @@ class SYNTAXTREELIB_CLASS TreeVisitor {
 	virtual State	OnVisitLeaving (TreeNode* node, const std::string& childId) 
 						{ return InvokeVisit(node, childId, false); }
 
-	TreeVisitor (void) : state(VisitContinue){}
+	TreeVisitor (void) : state(VisitContinue), pruneAndDelete(false) {}
 	virtual ~TreeVisitor(){}
 };
 

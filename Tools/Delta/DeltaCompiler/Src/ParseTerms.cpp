@@ -15,20 +15,19 @@
 #include "DeltaCompErrorMsg.h"
 #include "Symbol.h"
 #include "TypeCheck.h"
-#include "CompilerAPI.h"
 #include "DeltaCompErrorDefs.h"
 
 //------------------------------------------------------------------
 // TERM.
 
-DeltaExpr* Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode op) {
+DeltaExpr* Translator::Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode op) {
 
 	NULL_EXPR_CHECK(lvalue);
 
-	if (!TypeCheck_Assign(lvalue))
+	if (!TYPECHECKER.Check_Assign(lvalue))
 		return NIL_EXPR;
 
-	if (!TypeCheck_InArithmetic(lvalue, op, op == DeltaIC_ADD ? "++" : "--"))
+	if (!TYPECHECKER.Check_InArithmetic(lvalue, op, op == DeltaIC_ADD ? "++" : "--"))
 		return (DeltaExpr*) 0;
 
 	DPTR(lvalue)->CheckUninitialised();
@@ -40,7 +39,7 @@ DeltaExpr* Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode o
 	//
 	if (postop) {
 
-		result = DNEW(DeltaExpr);
+		result = EXPRFACTORY.New();
 		DPTR(result)->sym = DELTASYMBOLS.NewTemp();
 
 		if (lvalue->type == DeltaExprTableElement) {
@@ -61,7 +60,7 @@ DeltaExpr* Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode o
 			QUADS.Emit(
 				op,
 				value,
-				DeltaExpr::One(),
+				EXPRFACTORY.One(),
 				value
 			);
 
@@ -88,7 +87,7 @@ DeltaExpr* Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode o
 			QUADS.Emit(
 				op,
 				lvalue,
-				DeltaExpr::One(),
+				EXPRFACTORY.One(),
 				lvalue
 			);
 		}
@@ -104,7 +103,7 @@ DeltaExpr* Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode o
 			QUADS.Emit(
 				op,
 				result,
-				DeltaExpr::One(),
+				EXPRFACTORY.One(),
 				result
 			);
 
@@ -122,11 +121,11 @@ DeltaExpr* Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode o
 			QUADS.Emit(
 				op,
 				lvalue,
-				DeltaExpr::One(),
+				EXPRFACTORY.One(),
 				lvalue
 			);
 
-			result = DNEW(DeltaExpr);
+			result = EXPRFACTORY.New();
 
 			// In case lvalue is not a temp symbol, we should use a temp
 			// to carry the result, as the lvalue may be used more than once,
@@ -157,15 +156,15 @@ DeltaExpr* Translate_TermLvalue (DeltaExpr* lvalue, bool postop, DeltaICOpcode o
 ///////////////////////////////////////////////////////////////////
 // Multiply by -1 to make this expression.
 //
-DeltaExpr* Translate_UMINUSExpression (DeltaExpr* expr) {
+DeltaExpr* Translator::Translate_UMINUSExpression (DeltaExpr* expr) {
 
 	NULL_EXPR_CHECK(expr);
 
-	if (!TypeCheck_InArithmetic(expr, DeltaIC_MUL, "-(unary)"))
+	if (!TYPECHECKER.Check_InArithmetic(expr, DeltaIC_MUL, "-(unary)"))
 		return (DeltaExpr*) 0;
 
 	DPTR(expr)->CheckUninitialised();
-	DeltaExpr* result = DNEW(DeltaExpr);
+	DeltaExpr* result = EXPRFACTORY.New();
 
 	if (expr->type == DeltaExprNumber) {	// If constant, result is constant.
 		result->type	 = DeltaExprNumber;
@@ -177,7 +176,7 @@ DeltaExpr* Translate_UMINUSExpression (DeltaExpr* expr) {
 		QUADS.Emit(
 			DeltaIC_MUL,
 			expr,
-			DeltaExpr::One(true),
+			EXPRFACTORY.One(true),
 			result
 		);
 

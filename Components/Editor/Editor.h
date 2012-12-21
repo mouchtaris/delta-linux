@@ -232,7 +232,7 @@ private:
 	bool Reload (void);
 	
 	static editor::LanguageModuleIface::GotoDefinitionResult 
-					GotoGlobalDefinitionOfFile (const std::string& file, const std::string& id, void* closure);
+					GotoGlobalDefinitionOfFile (const std::string& file, const std::string& id, uint stage, void* closure);
 	static void		GotoPosition (int pos, void* closure);
 
 	editor::EditorWindow*	m_editor;

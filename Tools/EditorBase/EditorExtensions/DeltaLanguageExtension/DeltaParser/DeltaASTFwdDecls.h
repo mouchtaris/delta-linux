@@ -75,6 +75,7 @@ class LeafASTNode;
 #define CallASTNodeType				36
 #define CompoundASTNodeType			37
 #define	UsingASTNodeType			38
+#define	QuotedElementsASTNodeType	39
 
 #define DELTA_STYLING_MASK			31
 
@@ -114,6 +115,7 @@ typedef UnaryASTNode		<UnaryOpASTNodeType, DeltaASTNode, Literal>					UnaryOpAST
 typedef NaryASTNode			<CallASTNodeType, 2, DeltaASTNode, void>					CallASTNode;
 typedef UnaryASTNode		<CompoundASTNodeType, StmtsASTNode, void>					CompoundASTNode;
 typedef NaryASTNode			<UsingASTNodeType, 2, DeltaASTNode, Literal>				UsingASTNode;
+typedef ContainerASTNode	<QuotedElementsASTNodeType, DeltaASTNode, void>				QuotedElementsASTNode;
 
 ////////////////////////////////////////////////////////////////////////
 

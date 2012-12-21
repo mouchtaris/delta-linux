@@ -15,7 +15,7 @@
 
 //------------------------------------------------------------------
 
-DeltaExpr* Translate_AttributeMethod (
+DeltaExpr* Translator::Translate_AttributeMethod (
 		DeltaExpr*			f,
 		DeltaQuadAddress	startQuad,
 		util_ui32			lastLine
@@ -23,7 +23,7 @@ DeltaExpr* Translate_AttributeMethod (
 	NULL_EXPR_CHECK(f);
 	DPTR(f)->CheckUninitialised();
 	f = DPTR(f)->AdaptIfBool();	// May fail type checking, but needed for completeness.
-	if (!TypeCheck_FunctionCall(f))
+	if (!TYPECHECKER.Check_FunctionCall(f))
 		return NIL_EXPR;
 	QUADS.SetQuadLine(startQuad, lastLine);
 	return f;
@@ -31,15 +31,15 @@ DeltaExpr* Translate_AttributeMethod (
 
 /////////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_NewAttribute (
-		const char*		id,
-		DeltaExpr*		set,
-		DeltaExpr*		get
+DeltaExpr* Translator::Translate_NewAttribute (
+		const std::string&	id,
+		DeltaExpr*			set,
+		DeltaExpr*			get
 	) {
 
 	NULL_EXPR_PAIR_CHECK(set, get);
 
-	DeltaExpr* attr		= DNEW(DeltaExpr);
+	DeltaExpr* attr		= EXPRFACTORY.New();
 	DPTR(attr)->type	= DeltaExprNewAttribute;
 	Upnparse_NewAttributeSet(attr, id, set, get);
 
@@ -47,7 +47,7 @@ DeltaExpr* Translate_NewAttribute (
 		DeltaIC_OBJNEWATTR,
 		set,
 		get,
-		DeltaExpr::MakeConst(id)
+		EXPRFACTORY.MakeConst(id)
 	);
 
 	return attr;

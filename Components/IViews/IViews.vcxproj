@@ -111,9 +111,6 @@
     <ProjectReference Include="..\..\IDE\IDECore\IDECore.vcxproj">
       <Project>{255813b9-3ed9-4017-a65d-7047bc9a5948}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\Tools\Delta\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
-      <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\Tools\FindReplace\Automaton\Automaton.vcxproj">
       <Project>{49906156-bfff-40ba-97ee-5aaf29404fa8}</Project>
     </ProjectReference>
@@ -161,13 +158,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Tools\i-views\UserInterface\Project\UserInterface.vcxproj">
       <Project>{c344f2f3-22b8-4d4b-a7ec-4c30960aa297}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Tools\SparrowLib\SparrowLib.vcxproj">
-      <Project>{edeb0882-33b3-40d2-8a56-d34797b54e3b}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Tools\SparrowLib\SparrowLib_LocalCopy.vcxproj">
-      <Project>{edeb0882-33b3-40d2-8a56-d34797b54e3b}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

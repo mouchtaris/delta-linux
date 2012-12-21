@@ -167,6 +167,9 @@ Section "Delta Support" SEC03
   File "..\extension_scripts\*.dsc"
   File "..\extension_scripts\*.dbc"
 
+  SetOutPath "$INSTDIR\extension_dlls"
+  File "..\extension_dlls\*.dll"
+
   SetOutPath "$INSTDIR\config_scripts"
   File "..\config_scripts\*.dbc"
 
@@ -464,6 +467,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\config_scripts"
   RMDir /r "$INSTDIR\EditorExtensions"
   RMDir /r "$INSTDIR\extension_scripts"
+  RMDir /r "$INSTDIR\extension_dlls"  
   RMDir /r "$INSTDIR\extensions"
   RMDir /r "$INSTDIR\profiles"
   RMDir /r "$INSTDIR\resources"

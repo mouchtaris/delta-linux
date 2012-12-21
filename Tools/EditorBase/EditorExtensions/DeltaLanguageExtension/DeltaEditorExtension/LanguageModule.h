@@ -211,7 +211,7 @@ public:
 
 	virtual void CharacterAdded (int keyCode);
 
-	virtual void GetInfoForPosition (
+	virtual bool GetInfoForPosition (
 			uint		pos,
 			uint*		startPos,
 			uint*		endPos,

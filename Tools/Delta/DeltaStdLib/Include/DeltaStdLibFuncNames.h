@@ -36,6 +36,8 @@ static const char* stdLibFuncNames[] = {
 	DELTA_STDLIB_NAMESPACE_TYPE(inputbuffer)
 	DELTA_STDLIB_NAMESPACE_TYPE(socket)
 	DELTA_STDLIB_NAMESPACE_TYPE(dll)
+	DELTA_STDLIB_NAMESPACE_TYPE(ast)
+	DELTA_STDLIB_NAMESPACE_TYPE(astvisitor)
 
 	DELTA_STDLIB_NAMESPACE_CONST(TYPEOF_NUMBER,				DELTA_NUMBER_TYPESTRING)
 	DELTA_STDLIB_NAMESPACE_CONST(TYPEOF_STRING,				DELTA_STRING_TYPESTRING)
@@ -93,6 +95,12 @@ static const char* stdLibFuncNames[] = {
 	DELTA_STDLIB_NAMESPACE_CONST(DELTA_INDEXING_INVALID_VALUE_ERROR,			DELTA_INDEXING_INVALID_VALUE_ERROR)
 	DELTA_STDLIB_NAMESPACE_CONST(DELTA_OBJECT_ATTRIBUTE_OPERATION_ERROR,		DELTA_OBJECT_ATTRIBUTE_OPERATION_ERROR)
 	DELTA_STDLIB_NAMESPACE_CONST(DELTA_USER_RUNTIME_ERROR,						DELTA_USER_RUNTIME_ERROR)
+
+	// MetaCompiler functions
+	"#group(meta)",
+	"inline"						"(val:Any)												:	Void		",
+	"context"						"()														:	ast			"
+									"(tag:String)											:	ast			",
 
 	// Common miscellaneous functions.
 	"#group(misc)",
@@ -353,7 +361,13 @@ static const char* stdLibFuncNames[] = {
 	"vmgeterrorreport"				"()														:	String		",
 
 	// Dynamic compilation (reflection).
-	"#group(vm)",
+	"#group(comp)",
+	"vmparse"						"(dsc:String,onError:Callable)							:	ast			",
+	"vmparsestring"					"(code:String,onError:Callable)							:	ast			",
+	"vmparsequotedelements"			"(code:String,onError:Callable)							:	ast			",
+	"vmtranslate"					"(a:ast,dbc:String,onError:Callable,release:Bool)		:	Bool		",
+	"vmtranslatetooutputbuffer"		"(a:ast,onError:Callable,release:Bool)					:	outputbuffer",
+	"vmtranslateonwriter"			"(a:ast,w:writer,onError:Callable,release:Bool)			:	Bool		",
 	"vmcomp"						"(dsc:String,dbc:String,onError:Callable,release:Bool)	:	Bool		",
 	"vmcomptooutputbuffer"			"(dsc:String,onError:Callable,release:Bool)				:	outputbuffer",
 	"vmcomponwriter"				"(dsc:String,w:writer,onError:Callable,release:Bool)	:	Bool		",
@@ -444,6 +458,65 @@ static const char* stdLibFuncNames[] = {
 	"vectoriter_setval"				"(i:vectoriter,val:Any)									:	Any			",
 	"vectoriter_getindex"			"(i:vectoriter)											:	Number		",
 
+	// List manipulation.
+	"#group(list)",
+	"list_new"						"(...)													:	list		",
+	"list_iterator"					"(l:list)												:	listiter	",
+	"list_push_back"				"(l:list,val:Any,...)									:	Void		",
+	"list_push_front"				"(l:list,val:Any,...)									:	Void		",
+	"list_pop_back"					"(l:list)												:	Void		",
+	"list_pop_front"				"(l:list)												:	Void		",
+	"list_back"						"(l:list)												:	Any			",
+	"list_front"					"(l:list)												:	Any			",
+	"list_insert"					"(l:list, i:listiter,val:Any)							:	Void		",
+	"list_remove"					"(l:list, val:Any)										:	Bool		",
+	"list_erase"					"(l:list, i:listiter)									:	Void		",
+	"list_clear"					"(l:list)												:	Void		",
+	"list_total"					"(l:list)												:	Number		",
+
+	// AST manipulation.
+	"#group(ast)",
+	"ast_new"						"(tag:String)											:	ast			"
+									"(tag:String, attrs:Object)								:	ast			",
+	"ast_get_tag"					"(a:ast)												:	String		",
+	"ast_get_child"					"(a:ast, index:+{String, Number})						:	ast			",
+	"ast_get_child_index"			"(a:ast, node:ast)										:	Object		",
+	"ast_get_children"				"(a:ast)												:	list		",
+	"ast_get_total_children"		"(a:ast)												:	Number		",
+	"ast_get_parent"				"(a:ast)												:	ast			",
+	"ast_is_descendant"				"(a:ast, node:ast)										:	Bool		",
+	"ast_push_back"					"(a:ast, node:ast)										:	Void		"
+									"(a:ast, node:ast, id:String)							:	Void		",
+	"ast_push_front"				"(a:ast, node:ast)										:	Void		"
+									"(a:ast, node:ast, id:String)							:	Void		",
+	"ast_insert_after"				"(a:ast,after:+{ast,Number,String},node:ast)			:	Void		"
+									"(a:ast,after:+{ast,Number,String},node:ast,id:String)	:	Void		",
+	"ast_insert_before"				"(a:ast,before:+{ast,Number,String},node:ast)			:	Void		"
+									"(a:ast,before:+{ast,Number,String},node:ast,id:String)	:	Void		",
+	"ast_pop_back"					"(a:ast)												:	Void		",
+	"ast_pop_front"					"(a:ast)												:	Void		",
+	"ast_remove"					"(a:ast, indexOrNode:+{ast, Number, String})			:	Void		",
+	"ast_remove_from_parent"		"(a:ast)												:	Void		",
+	"ast_replace"					"(a:ast, old:ast, new:ast)								:	Void		",
+	"ast_get_attribute"				"(a:ast, id:String)										:	Any			",
+	"ast_set_attribute"				"(a:ast, id:String, val:Any)							:	Bool		",
+	"ast_get_attributes"			"(a:ast)												:	Object		",
+	"ast_accept_postorder"			"(a:ast, visitor:astvisitor)							:	Bool		",
+	"ast_accept_preorder"			"(a:ast, visitor:astvisitor)							:	Bool		",
+	"ast_copy"						"(a:ast)												:	ast			",
+	"ast_unparse"					"(a:ast)												:	String		",
+	"ast_inject"					"(a:ast, node:+{ast,Number,String,Bool,Nil})			:	ast			",
+	"ast_decr_esc_cardinalities"	"(a:ast)												:	Void		",
+
+	// AST traversal.
+	"#group(ast)",
+	"astvisitor_new"				"()															:	astvisitor	",
+	"astvisitor_set_handler"		"(v:astvisitor, tag:String, f:Callable)						:	Void		",
+	"astvisitor_set_context_handler""(v:astvisitor,parentTag:String,childId:String,f:Callable)	:	Void		",
+	"astvisitor_set_default_handler""(v:astvisitor, f:Callable)									:	Void		",
+	"astvisitor_stop"				"(v:astvisitor)												:	Void		",
+	"astvisitor_leave"				"(v:astvisitor)												:	Void		",
+
 	// Algorithms
 	"#group(algo)",
 	"find"							"(elem,cont)											:	Any			"
@@ -487,7 +560,7 @@ static const char* stdLibFuncNames[] = {
 //////////////////////////////////////
 
 POSSIBLY_UNUSED_STATIC_FUNCTION(UPTR(const char*) DeltaStdLib_FuncNames (void) )
-static  UPTR(const char*) DeltaStdLib_FuncNames (void) 
+static UPTR(const char*) DeltaStdLib_FuncNames (void) 
 	{ return stdLibFuncNames; }
 
 #endif	// Do not add stuff beyond this point.

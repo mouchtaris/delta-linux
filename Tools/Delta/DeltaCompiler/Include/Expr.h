@@ -8,6 +8,7 @@
 #ifndef	EXPR_H
 #define	EXPR_H
 
+#include "CompilerComponentDirectory.h"
 #include "DeltaByteCodeTypes.h"
 #include "TypeTag.h"
 #include "LibraryTypes.h"
@@ -47,12 +48,16 @@ enum DeltaExprType {
 
 #define	TOTAL_EXPR_TYPES	15
 
-// AWLAYS, I MEAN ALWAYS, create instances of DeltaExpr that
-// are ONLY dynamic (i.e. via DNEW). NEVER make auto or static
-// instances.
+// DeltaExpr instances are always dynamic and created via DeltaExprFactory.
 //
 struct DeltaExpr :	public AutoCollectable, 
 					public Unparsable {
+
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
+	public:
+	DFRIENDDESTRUCTOR()
+	friend class AutoCollectableFactory<DeltaExpr>;
 
 	typedef std::list<DeltaLibraryTypeInfo> TypeList;
 
@@ -186,9 +191,6 @@ struct DeltaExpr :	public AutoCollectable,
 										type == DeltaExprBoolean;
 							}
 
-	bool					IsReturnValue (void) const
-								{ return this == GetReturnValue(); }
-
 	bool					IsStringified (void) const
 								{ DASSERT(type == DeltaExprString); return isStringified; }
 
@@ -232,13 +234,6 @@ struct DeltaExpr :	public AutoCollectable,
 								}
 							}
 
-	static DeltaExpr*		CopyConst (DeltaSymbol* constSym) {
-								DASSERT(constSym && (DPTR(constSym)->IsUserDefinedConst() || DPTR(constSym)->IsLibraryConst()));
-								DeltaExpr* copy = DPTR(constSym)->GetConst()->Copy();
-								DPTR(copy)->userData = constSym;	// associate with its constant if needed
-								return copy;
-							}
-
 	////////////////////////////////////////
 	// Type adapters.
 
@@ -250,28 +245,12 @@ struct DeltaExpr :	public AutoCollectable,
 	void					PreEvaluateIfConstBool (void);
 
 	////////////////////////////////////////
-	// Factories.
 
-	static DeltaExpr*		One (bool minus = false);
-	static DeltaExpr*		MakeBool (bool);	
-	static DeltaExpr*		MakeTempVar (void);
-	static DeltaExpr*		MakeInternalVar (const char* id);
-	static DeltaExpr*		MakeInternalVar (DeltaSymbol* sym);
-	static DeltaExpr*		MakeConst (const std::string& s);
-	static DeltaExpr*		MakeStringifiedConst (const std::string& s);
-	static DeltaExpr*		Make (DeltaNumberValueType num);
-
-	static DeltaExpr*		GetReturnValue (void);
-	static DeltaExpr*		GetLambdaRef (void);
-	static DeltaExpr*		GetNewSelf (void);
-
-	////////////////////////////////////////
-
-	DeltaExpr*					Copy (void);
 	static const std::string	Handle (DeltaExpr* expr);
 	void						AddAllPlausibleTypes (TypeList* typeList) const;
 	void						AddAllPlausibleReturnTypes (TypeList* typeList) const;
 
+	private:
 	DeltaExpr (void);
 	~DeltaExpr();
 };
@@ -282,18 +261,60 @@ struct DeltaExpr :	public AutoCollectable,
 // the job.
 //
 struct ExprList : public AutoCollectable {
+	friend struct TableElements;
+	DFRIENDDESTRUCTOR()
 
 	DeltaExpr* head;
 	DeltaExpr* tail;
 
 	void Append (DeltaExpr* expr);
 	void Append (ExprList* elist);
-	ExprList (void) { head = tail = (DeltaExpr*) 0; }
+
+	private:
+	ExprList (AutoCollector* collector) : AutoCollectable(collector) { head = tail = (DeltaExpr*) 0; }
 	~ExprList(){}
 };
 
 #define	NIL_EXPR	(DeltaExpr*) 0
-#define	TRUE_EXPR	DeltaExpr::MakeBool(true)
-#define	FALSE_EXPR	DeltaExpr::MakeBool(false)
+
+//-----------------------------------------------------------------
+
+class DeltaExprFactory : public AutoCollectableFactory<DeltaExpr> {
+
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
+	public:
+	DeltaExpr*	New (void) const;
+	DeltaExpr*	Copy (DeltaExpr* expr) const;
+	DeltaExpr*	CopyConst (DeltaSymbol* constSym) const;
+
+	DeltaExpr*	One (bool minus = false) const;
+	DeltaExpr*	MakeBool (bool) const;
+	DeltaExpr*	MakeTempVar (void) const;
+	DeltaExpr*	MakeInternalVar (const char* id) const;
+	DeltaExpr*	MakeInternalVar (DeltaSymbol* sym) const;
+	DeltaExpr*	MakeConst (const std::string& s) const;
+	DeltaExpr*	MakeStringifiedConst (const std::string& s) const;
+	DeltaExpr*	Make (DeltaNumberValueType num) const;
+
+	DeltaExpr*	GetNewSelf (void) const;
+
+	void		Delete (DeltaExpr* expr) const;
+
+	DeltaExprFactory (void) {}
+	~DeltaExprFactory() {}
+};
+
+//-----------------------------------------------------------------
+
+#define EXPRFACTORY_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaExprFactory)))
+
+#define EXPRFACTORY	EXPRFACTORY_EX(COMPONENT_DIRECTORY())
+
+#define	TRUE_EXPR	EXPRFACTORY.MakeBool(true)
+#define	FALSE_EXPR	EXPRFACTORY.MakeBool(false)
+
+//-----------------------------------------------------------------
 
 #endif	// Do not add stuff beyond this point.

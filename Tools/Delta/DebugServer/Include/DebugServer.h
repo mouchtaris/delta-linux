@@ -9,6 +9,7 @@
 #ifndef	DELTADEBUGSERVER_H
 #define	DELTADEBUGSERVER_H
 
+#include "DeltaStdDefs.h"
 #include "DeltaDebugCommands.h"
 #include "utypes.h"
 #include "ufunctors.h"
@@ -28,7 +29,7 @@
 
 class DeltaVirtualMachine;
 
-class DeltaDebugServer {
+class DVMDEBUG_CLASS DeltaDebugServer {
 
 	/////////////////////////////////////////////////////////////
 
@@ -126,7 +127,7 @@ class DeltaDebugServer {
 				);
 
 	//************************
-	// Callabcks to be set on debug extensions.
+	// Callbacks to be set on debug extensions.
 
 	static void		DoInvalidBreakPointAdapter(
 						const char*	source, 
@@ -201,7 +202,7 @@ class DeltaDebugServer {
 	static void		DebugServiceLoopThread (void* unused);
 	static void		TryEstablishClientConnection (void* unused = (void*) 0);
 
-	static bool		IsNegotiationWithClientSuccessful (int argc, char** argv);
+	static bool		IsNegotiationWithClientSuccessful (util_ui32 negotiationPort);
 	static void		UserMessageAboutServerPort (void);
 	static bool		TryAcceptClient (void);
 	static bool		InitialiseAfterClientConnection (void);
@@ -211,10 +212,11 @@ class DeltaDebugServer {
 	/////////////////////////////////////////////////////////////
 
 	public:
-	static bool			Initialise (util_ui32 port, int argc, char** argv);
+	static bool			Initialise (util_ui32 port, util_ui32 negotiationPort);
 	static void			CleanUp (void);
 	static bool			IsClientConnected (void);	// If a client was connected.
 	static bool			ClientWasAttached (void);
+	static util_ui32	NegotiationPortFromArguments (int argc, char **argv);
 	static util_ui32	GetPort (void);
 	static void			CloseClientConnection (void);
 	static bool			IsDebugStopped (void);	// If it was running and was stopped explicitly (just before exit).

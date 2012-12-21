@@ -13,9 +13,8 @@
 #define	AST_TAG_PROGRAM							"Program"
 #define	AST_TAG_STMTS							"Stmts"
 #define	AST_TAG_STMT							"Stmt"
-#define	AST_TAG_BASIC_EXPR_STMT					"BasicExprStmt"
-#define	AST_TAG_BASIC_NON_EXPR_STMT				"BasicNonExprStmt"
-#define	AST_TAG_STMT							"Stmt"
+#define	AST_TAG_BASIC_STMT						"BasicStmt"
+#define	AST_TAG_NAME							"Name"
 #define	AST_TAG_FUNCTION						"Function"
 #define	AST_TAG_LAMBDA_FUNCTION					"LambdaFunction"
 #define	AST_TAG_FUNCTION_STMT					"FunctionStmt"
@@ -24,12 +23,8 @@
 #define	AST_TAG_COMPOUND						"Compound"
 #define	AST_TAG_EXPRLIST_STMT					"ExprListStmt"
 #define	AST_TAG_EMPTY_STMT						"EmptyStmt"
-#define	AST_TAG_TABLE_OBJECT					"TableObject"
 #define	AST_TAG_USING_NAMESPACE					"UsingNamespace"
 #define	AST_TAG_USING_BYTECODE_LIBRARY			"UsingByteCodeLibrary"
-#define	AST_TAG_PRIMARY_FUNCTION_TABLE_OBJECT	"PrimaryFunctionAndTableObject"
-#define	AST_TAG_PRIMARY_LAMBDA_DEFINITION		"PrimaryLambdaDefinition"
-#define	AST_TAG_PRIMARY_CONST_VALUE				"PrimaryConstValue"
 #define	AST_TAG_FUNCTION_EXPR					"FunctionExpr"
 #define	AST_TAG_PARENTHESISED_EXPR				"ParenthesisedExpr"					
 #define	AST_TAG_CONSTDEF						"ConstDef"
@@ -61,6 +56,7 @@
 #define	AST_LVALUE_MINUSMINUS					"Lvalue--"
 #define	AST_PLUSPLUS_LVALUE						"++Lvalue"
 #define	AST_MINUSMINUS_LVALUE					"--Lvalue"
+#define AST_TAG_PRIMARY_EXPRESSION				"PrimaryExpression"
 
 #define	AST_TAG_NUM_CONST						"NumConst"
 #define	AST_TAG_BOOL_CONST						"BoolConst"
@@ -105,8 +101,9 @@
 
 #define	AST_TAG_TABLE_CONSTRUCTOR				"TableConstructor"
 #define	AST_TAG_TABLE_UNINDEXED_ELEM			"UnindexedElem"
+#define	AST_TAG_TABLE_ATTRIBUTE_IDENT			"AttributeIdent"
 #define	AST_TAG_TABLE_NEW_ATTRIBUTE				"NewAttribute"
-#define	AST_TAG_TABLE_INDENTINDEX_ELEM			"IdentIndexElem"
+#define	AST_TAG_TABLE_IDENTINDEX_ELEM			"IdentIndexElem"
 #define	AST_TAG_TABLE_INDEXED_VALUES			"IndexedValues"
 #define	AST_TAG_TABLE_INDICES					"TableIndices"
 #define	AST_TAG_TABLE_VALUES					"TableValues"
@@ -124,32 +121,25 @@
 // NODE ATTRIBUTES AND CHILD NAMES (FIELDS).
 //
 #define	AST_ATTRIBUTE_NAME						"name"
+#define	AST_ATTRIBUTE_RENAME					"rename"
 #define	AST_ATTRIBUTE_CLASS						"class"
 #define	AST_ATTRIBUTE_LINKAGE					"linkage"
-#define	AST_ATTRIBUTE_NAMESPACE					"namespace"
 #define	AST_ATTRIBUTE_CONSTVALUE				"constvalue"
 #define	AST_ATTRIBUTE_ITEMS						"items"
 #define	AST_ATTRIBUTE_VALUE						"value"
 
-#define	LINE(node)			\
-		((util_ui32) node->GetAttribute(DELTA_AST_LINE_ATTRIBUTE))
-
-#define	NEWLINE(node)		\
-		((util_ui32) node->GetAttribute(DELTA_AST_NEWLINE_ATTRIBUTE))
-
 #define	NAME(node)			\
-		((const char*) DPTR(node)->GetAttribute(AST_ATTRIBUTE_NAME))
-
-#define	NAMESPACE(node)		\
-		((AST::IdList*) DPTR(node)->GetAttribute(AST_ATTRIBUTE_NAMESPACE))
+		(DPTR(DPTR(node)->GetAttribute(AST_ATTRIBUTE_NAME))->GetString())
 
 #define	VALUE_STRING(node)	\
-		((const char*) DPTR(node)->GetAttribute(AST_ATTRIBUTE_VALUE))
+		(DPTR(DPTR(node)->GetAttribute(AST_ATTRIBUTE_VALUE))->GetString())
 
 #define	AST_CHILD_BODY							"body"
 #define	AST_CHILD_FUNCTION						"function"
 #define	AST_CHILD_FORMALS						"formals"
 #define	AST_CHILD_ACTUALS						"actuals"
+#define	AST_CHILD_NAME							"name"
+#define	AST_CHILD_NAMESPACE						"namespace"
 #define	AST_CHILD_EXPR							"expr"
 #define	AST_CHILD_STMT							"stmt"
 #define	AST_CHILD_STMTS							"stmts"

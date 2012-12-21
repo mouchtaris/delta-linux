@@ -24,7 +24,7 @@
 //------------------------------------------------------------------
 // LVALUES.
 
-static DeltaExpr* Translate_ByteCodeLibraryFunctionLvalue (const std::string& libName, const std::string& funcName, bool* wasLib) {
+DeltaExpr* Translator::Translate_ByteCodeLibraryFunctionLvalue (const std::string& libName, const std::string& funcName, bool* wasLib) {
 	if (DeltaSymbol* lib = DELTASYMBOLS.Lookup(libName, DELTA_GLOBAL_SCOPE))
 		if (DPTR(lib)->IsImportedLibVar()) {
 			*wasLib = true;
@@ -33,7 +33,7 @@ static DeltaExpr* Translate_ByteCodeLibraryFunctionLvalue (const std::string& li
 			else
 			if (DeltaSymbol* func = lib->GetImportedLibVar()->Get(funcName)) {
 				DPTR(func)->GetImportedFuncVar()->SetIsUsed();
-				return DeltaExpr::MakeInternalVar(func);
+				return EXPRFACTORY.MakeInternalVar(func);
 			}
 			else
 				DELTACOMP_ERROR_BYTECODE_LIBRARY_FUNC_NOT_FOUND(libName, funcName);
@@ -57,14 +57,14 @@ static DeltaExpr* Translate_ByteCodeLibraryFunctionLvalue (const std::string& li
 
 /////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_NamespaceLvalue (const NameList& nsPath, const std::string& id, std::string* ns) {
+DeltaExpr* Translator::Translate_NamespaceLvalue (const NameList& nsPath, const std::string& id, std::string* ns) {
 
 	DASSERT(!nsPath.empty());
 
 	if (nsPath.front() == DELTA_LIBRARYNAMESPACE_SEPARATOR)
 		if (nsPath.size() == 1) {															// ::ident
 			*ns = std::string(DELTA_LIBRARYNAMESPACE_SEPARATOR) + id;
-			return Translate_Lvalue(id.c_str(), ParseParms::CurrScope().value()); 
+			return Translate_Lvalue(id.c_str(), PARSEPARMS.CurrScope().value()); 
 		}
 		else {
 			NameList copiedPath(nsPath);
@@ -81,16 +81,16 @@ DeltaExpr* Translate_NamespaceLvalue (const NameList& nsPath, const std::string&
 
 /////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_NamespaceLvalue (const std::string& id, std::string* ns) {
+DeltaExpr* Translator::Translate_NamespaceLvalue (const std::string& id, std::string* ns) {
 
-	DeltaExpr* result = Translate_NamespaceLvalue(ParseParms::GetNamespacePath(), id, ns);
-	ParseParms::ClearNamespacePath();
+	DeltaExpr* result = Translate_NamespaceLvalue(PARSEPARMS.GetNamespacePath(), id, ns);
+	PARSEPARMS.ClearNamespacePath();
 	return result;
 }
 
 /////////////////////////////////////////////////////////
 
-static DeltaExpr* SetLvalueTypeInformation (DeltaSymbol* sym, DeltaExpr* lvalue) {
+DeltaExpr* Translator::SetLvalueTypeInformation (DeltaSymbol* sym, DeltaExpr* lvalue) {
 	if (DPTR(sym)->isUserDefinedFunc) {
 		lvalue->type = DeltaExprProgramFunction;
 		DASSERT(sym->funcClass != DELTA_FUNCCLASS_METHOD);	// Methods can't be referred by name.
@@ -109,7 +109,7 @@ static DeltaExpr* SetLvalueTypeInformation (DeltaSymbol* sym, DeltaExpr* lvalue)
 
 /////////////////////////////////////////////////////////
 
-static bool HasConflictWithLibraryFunctionOrConst (DeltaSymbol* sym) {
+bool Translator::HasConflictWithLibraryFunctionOrConst (DeltaSymbol* sym) {
 	if (sym->IsLibraryFunction())
 		return false;
 	else
@@ -129,7 +129,7 @@ static bool HasConflictWithLibraryFunctionOrConst (DeltaSymbol* sym) {
 
 /////////////////////////////////////////////////////////
 
-static bool	Translate_ShoudlUseFunctionViaClosureFunctionVar (DeltaSymbol* func, DeltaSymbol* clientFunc) {
+bool Translator::Translate_ShoudlUseFunctionViaClosureFunctionVar (DeltaSymbol* func, DeltaSymbol* clientFunc) {
 	return	clientFunc									&&	// Used in a function.
 			!DPTR(func)->IsAnonymousFunction()			&&
 			DPTR(func)->HasClosure()					&&
@@ -142,7 +142,7 @@ static bool	Translate_ShoudlUseFunctionViaClosureFunctionVar (DeltaSymbol* func,
 // We make a closure var with the name of the function, not the
 // hidden name of the func var.
 
-static DeltaSymbol* Translate_UseClosureFunctionVar (
+DeltaSymbol* Translator::Translate_UseClosureFunctionVar (
 		DeltaSymbol*	funcVar, 
 		DeltaSymbol*	func, 
 		DeltaSymbol*	clientFunc
@@ -168,10 +168,8 @@ static DeltaSymbol* Translate_UseClosureFunctionVar (
 						clientFunc->GetMyFunction()
 					);
 
-	DeltaSymbol* closureVar =	DNEWCLASS(
-									DeltaSymbol, 
-									(func->GetName(), DeltaSymbol_NotAVar)		// Make a non-var symbol.
-								);
+	DeltaSymbol* closureVar = DELTASYMBOLS.NewSymbol(func->GetName(), false, false);	// Make a non-var symbol.
+
 	DPTR(closureVar)->SetIsClosureVarAccess(funcVar, clientFunc);				// Associate it with func var.
 	DELTASYMBOLS.RegisterClosureFunctionVar(closureVar, clientFunc);			// Install it at client side.
 
@@ -180,7 +178,7 @@ static DeltaSymbol* Translate_UseClosureFunctionVar (
 
 //***************************
 
-DeltaSymbol* Translate_UseClosureFunctionVar (DeltaSymbol* func, DeltaSymbol* clientFunc) {
+DeltaSymbol* Translator::Translate_UseClosureFunctionVar (DeltaSymbol* func, DeltaSymbol* clientFunc) {
 
 	DPTR(DPTR(func)->GetFunctionAccess())->SetFunctionVarUsed();
 	if (util_ui32 quadNo = DPTR(DPTR(func)->GetFunctionAccess())->GetAssignQuadNo())	// May not have been set yet.
@@ -195,26 +193,26 @@ DeltaSymbol* Translate_UseClosureFunctionVar (DeltaSymbol* func, DeltaSymbol* cl
 
 /////////////////////////////////////////////////////////
 
-static DeltaSymbol* Translate_ClosureVar (DeltaSymbol* sym, const std::string& id) {
+DeltaSymbol* Translator::Translate_ClosureVar (DeltaSymbol* sym, const std::string& id) {
 
-	DeltaSymbol* outerFunc	= DPTR(ParseParms::CurrFunction())->GetMyFunction();
+	DeltaSymbol* outerFunc	= DPTR(PARSEPARMS.CurrFunction())->GetMyFunction();
 	DeltaSymbol* closureVar	= NIL_SYMBOL;
 	
 	// An outer non-top global or a local / formal / closure var requiring closure access?
 	if (DPTR(sym)->IsGlobal() || DPTR(sym)->GetMyFunction() == outerFunc) {
-		if ((closureVar = DPTR(ParseParms::CurrFunction())->GetClosureVar(id)))
+		if ((closureVar = DPTR(PARSEPARMS.CurrFunction())->GetClosureVar(id)))
 			DASSERT(
 				DPTR(closureVar)->IsClosureVarAccess() && 
 				sym == DPTR(closureVar)->GetClosureVarAccessed()	// Existing closure var sould access sym.
 			); 
 		else {
 			closureVar = DELTASYMBOLS.NewSymbol(id, false);	// Install as a non-var symbol.
-			DPTR(closureVar)->SetIsClosureVarAccess(sym, ParseParms::CurrFunction());	// Associate it with sym
+			DPTR(closureVar)->SetIsClosureVarAccess(sym, PARSEPARMS.CurrFunction());	// Associate it with sym
 
 			// Accessed symbol happens to be a closure var of the outer function.
 			if (DPTR(sym)->IsClosureVarAccess()) {
 				DELTACOMP_WARNING_OUTERFUNC_CLOSUREVAR_ACCESS(
-					 DPTR(ParseParms::CurrFunction())->GetName(),
+					 DPTR(PARSEPARMS.CurrFunction())->GetName(),
 					 id,
 					 DPTR(outerFunc)->GetName(),
 					 closureVar->GetLine()
@@ -226,20 +224,20 @@ static DeltaSymbol* Translate_ClosureVar (DeltaSymbol* sym, const std::string& i
 	else	// Accessing a closure var of the outer function in an inactive block?
 	if (outerFunc && (closureVar = DPTR(outerFunc)->GetClosureVar(id))) {
 		DELTACOMP_WARNING_OUTERFUNC_CLOSUREVAR_STILL_VISIBLE(
-			 DPTR(ParseParms::CurrFunction())->GetName(),
+			 DPTR(PARSEPARMS.CurrFunction())->GetName(),
 			 id,
 			 DPTR(outerFunc)->GetName(),
 			 closureVar->GetLine()
 		);
 		sym = closureVar;	// We actually access the closure var of the outer function.
 		closureVar = DELTASYMBOLS.NewSymbol(id, false);	// So we make a new closure var in curr function.
-		DPTR(closureVar)->SetIsClosureVarAccess(sym, ParseParms::CurrFunction()); // And associate it with the outer closure var (at sym).
+		DPTR(closureVar)->SetIsClosureVarAccess(sym, PARSEPARMS.CurrFunction()); // And associate it with the outer closure var (at sym).
 		sym = closureVar;	// Now sym should point to the closure var.
 	}
 	else {	// Any other case concerns inaccessible symbols.
 		DELTACOMP_ERROR_INACCESSIBLE_SYMBOL(
 			DPTR(sym)->GetName().c_str(),
-			ParseParms::CurrFunction()->GetFunctionReadableName().c_str()
+			PARSEPARMS.CurrFunction()->GetFunctionReadableName().c_str()
 		);
 		return NIL_SYMBOL;
 	}
@@ -249,7 +247,7 @@ static DeltaSymbol* Translate_ClosureVar (DeltaSymbol* sym, const std::string& i
 
 /////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_Lvalue (const std::string& id) {	// Unqualified (pure) ident.
+DeltaExpr* Translator::Translate_Lvalue (const std::string& id) {	// Unqualified (pure) ident.
 
 	// Overall we check if already a defined symbol, 
 	// else make a new one (that is always an uninitialised var).
@@ -262,23 +260,23 @@ DeltaExpr* Translate_Lvalue (const std::string& id) {	// Unqualified (pure) iden
 		else
 		if (HasConflictWithLibraryFunctionOrConst(sym))
 			return NIL_EXPR;
-		return DeltaExpr::CopyConst(sym);
+		return EXPRFACTORY.CopyConst(sym);
 	}
 	else {
-		if (sym && ParseParms::InFunction()) {
-			if (sym == ParseParms::CurrFunction())	// sym is referring to current function.
+		if (sym && PARSEPARMS.InFunction()) {
+			if (sym == PARSEPARMS.CurrFunction())	// sym is referring to current function.
 				return Translate_LAMBDA_REF(sym);
 			else
 			if (DPTR(sym)->IsUserDefinedFunction())
-				if (Translate_ShoudlUseFunctionViaClosureFunctionVar(sym, ParseParms::CurrFunction()))
-					sym = Translate_UseClosureFunctionVar(sym, ParseParms::CurrFunction());	// access via closure func var.
+				if (Translate_ShoudlUseFunctionViaClosureFunctionVar(sym, PARSEPARMS.CurrFunction()))
+					sym = Translate_UseClosureFunctionVar(sym, PARSEPARMS.CurrFunction());	// access via closure func var.
 				else
 					;
 			else
 			if (DPTR(sym)->IsTopGlobal()		||		// sym is a legally accessed top-global / static / library function
 				DPTR(sym)->IsStatic()			|| 
 				DPTR(sym)->IsLibraryFunction()	||
-				DPTR(sym)->GetMyFunction() == ParseParms::CurrFunction())	// sym is a var defined in the current context.
+				DPTR(sym)->GetMyFunction() == PARSEPARMS.CurrFunction())	// sym is a var defined in the current context.
 				;
 			else
 			if (!(sym = Translate_ClosureVar(sym, id)))
@@ -299,10 +297,10 @@ DeltaExpr* Translate_Lvalue (const std::string& id) {	// Unqualified (pure) iden
 		else
 		if ((sym = DELTANAMESPACES.LookupFunctionOrConst(id)) && sym->IsLibraryConst()) {
 			QUADS.AddUsedLibraryConst(sym);
-			return DeltaExpr::CopyConst(sym);
+			return EXPRFACTORY.CopyConst(sym);
 		}
 		
-		DeltaExpr* expr = DNEW(DeltaExpr);	// In this case we need an expression.
+		DeltaExpr* expr = EXPRFACTORY.New();	// In this case we need an expression.
 		if (!sym) {
 			sym = DELTASYMBOLS.NewSymbol(id);
 			DPTR(expr)->SetVarDeclaration();		// First appearence of the symbol (var decl).
@@ -312,9 +310,9 @@ DeltaExpr* Translate_Lvalue (const std::string& id) {	// Unqualified (pure) iden
 
 		// Handle inner uses since the function may get a closure later.
 		if (DPTR(sym)->IsUserDefinedFunction()	&& 
-			ParseParms::CurrFunction()			&&
-			ParseParms::CurrFunction()->IsInnerFunctionOf(sym))
-			DPTR(DPTR(sym)->GetFunctionAccess())->RecordInnerUse(expr, ParseParms::CurrFunction());
+			PARSEPARMS.CurrFunction()			&&
+			PARSEPARMS.CurrFunction()->IsInnerFunctionOf(sym))
+			DPTR(DPTR(sym)->GetFunctionAccess())->RecordInnerUse(expr, PARSEPARMS.CurrFunction());
 
 		return expr;
 	}
@@ -323,14 +321,14 @@ DeltaExpr* Translate_Lvalue (const std::string& id) {	// Unqualified (pure) iden
 /////////////////////////////////////////////////////////
 // Looks for an id either globally or locally.
 
-DeltaExpr* Translate_Lvalue (const std::string& id, util_i16 scopeOffset) {
+DeltaExpr* Translator::Translate_Lvalue (const std::string& id, util_i16 scopeOffset) {
 
 	DASSERT(
 		scopeOffset == DELTA_LOCAL_SCOPEOFFSET ||					// local
-		((util_ui32)scopeOffset == ParseParms::CurrScope().value())	// ::
+		((util_ui32)scopeOffset == PARSEPARMS.CurrScope().value())	// ::
 	);
 
-	util_ui16 scope = ParseParms::CurrScope().value() - scopeOffset;
+	util_ui16 scope = PARSEPARMS.CurrScope().value() - scopeOffset;
 
 	// Lookup with scope required. If not found, and
 	// scopeOffset is for local vars, make new local var. Else,
@@ -340,11 +338,11 @@ DeltaExpr* Translate_Lvalue (const std::string& id, util_i16 scopeOffset) {
 	DeltaSymbol*	sym			= DELTASYMBOLS.Lookup(id, scope);
 	bool			isVarDecl	= false;
 	if (sym && DPTR(sym)->IsUserDefinedConst())
-		return DeltaExpr::CopyConst(sym);
+		return EXPRFACTORY.CopyConst(sym);
 	else
 	if (!sym) {
 
-		// We need to check for gloabl scope first since when :: is used
+		// We need to check for global scope first since when :: is used
 		// while at global scope, scopeOffset is still 0
 
 		if (scope == DELTA_GLOBAL_SCOPE) {
@@ -360,7 +358,7 @@ DeltaExpr* Translate_Lvalue (const std::string& id, util_i16 scopeOffset) {
 	}
 
 	DASSERT(sym);
-	DeltaExpr* expr = DNEW(DeltaExpr);
+	DeltaExpr* expr = EXPRFACTORY.New();
 	DPTR(expr)->sym = DPTR(sym);
 	if (isVarDecl)
 		DPTR(expr)->SetVarDeclaration();
@@ -370,7 +368,7 @@ DeltaExpr* Translate_Lvalue (const std::string& id, util_i16 scopeOffset) {
 
 /////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_NamespaceLvalueAsLibraryFunctionOrConst (
+DeltaExpr* Translator::Translate_NamespaceLvalueAsLibraryFunctionOrConst (
 		const NameList&		namespacePath,
 		const std::string&	funcName, 
 		std::string*		ns, 
@@ -394,7 +392,7 @@ DeltaExpr* Translate_NamespaceLvalueAsLibraryFunctionOrConst (
 
 			DASSERT(DPTR(funcOrConst)->isLibraryFunc);
 
-			result				= DNEW(DeltaExpr);
+			result				= EXPRFACTORY.New();
 			DPTR(result)->sym	= DPTR(funcOrConst);
 			DPTR(result)->type	= DeltaExprLibraryFunction;
 			DPTR(result)->SetTypeTag(TagLibFunction);
@@ -403,7 +401,7 @@ DeltaExpr* Translate_NamespaceLvalueAsLibraryFunctionOrConst (
 		else {
 			DASSERT(funcOrConst->IsLibraryConst());
 			QUADS.AddUsedLibraryConst(funcOrConst);
-			return DPTR(DPTR(funcOrConst)->GetConst())->Copy();
+			return EXPRFACTORY.Copy(DPTR(DPTR(funcOrConst)->GetConst()));
 		}
 
 		ns->append(
@@ -423,9 +421,9 @@ DeltaExpr* Translate_NamespaceLvalueAsLibraryFunctionOrConst (
 /////////////////////////////////////////////////////////
 // Equivalent to self.id but via get attribute, not simple get.
 //
-DeltaExpr* Translate_AttrLvalue (const std::string& id) {
-	if (ParseParms::InMethod()) {
-		DeltaExpr* self		=  DeltaExpr::MakeInternalVar(DELTA_SELF_POINTER_ID);
+DeltaExpr* Translator::Translate_AttrLvalue (const std::string& id) {
+	if (PARSEPARMS.InMethod()) {
+		DeltaExpr* self		=  EXPRFACTORY.MakeInternalVar(DELTA_SELF_POINTER_ID);
 		DPTR(self)->index	= Translate_ConstValue(id);
 		DPTR(self)->type	= DeltaExprTableElement;
 		DPTR(self)->SetIsAttribute();
@@ -439,16 +437,16 @@ DeltaExpr* Translate_AttrLvalue (const std::string& id) {
 
 /////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_StaticLvalue (const std::string& id) {
+DeltaExpr* Translator::Translate_StaticLvalue (const std::string& id) {
 
 	// If static is used for formal arguments, it is completely ignored.
 	//
-	if (ParseParms::InFormalArgs()) {
+	if (PARSEPARMS.InFormalArgs()) {
 		DELTACOMP_ERROR_ILLEGAL_STATIC_QUALIFIER(id, "formal argument");
 		return Translate_Lvalue(id);
 	}
 	else
-	if (ParseParms::CurrScope().value() == DELTA_GLOBAL_SCOPE) {
+	if (PARSEPARMS.CurrScope().value() == DELTA_GLOBAL_SCOPE) {
 		DELTACOMP_ERROR_ILLEGAL_STATIC_QUALIFIER(id, "global variable");
 		return Translate_Lvalue(id);
 	}
@@ -456,7 +454,7 @@ DeltaExpr* Translate_StaticLvalue (const std::string& id) {
 
 		// Check if already defined symbol in current scope.
 
-		DeltaSymbol* sym = DELTASYMBOLS.Lookup(id, ParseParms::CurrScope().value());
+		DeltaSymbol* sym = DELTASYMBOLS.Lookup(id, PARSEPARMS.CurrScope().value());
 		bool isVarDecl = false;
 
 		if (sym) {
@@ -471,7 +469,7 @@ DeltaExpr* Translate_StaticLvalue (const std::string& id) {
 			isVarDecl = true;
 		}
 
-		DeltaExpr* expr = DNEW(DeltaExpr);
+		DeltaExpr* expr = EXPRFACTORY.New();
 		DPTR(expr)->sym = DPTR(sym);
 		if (isVarDecl)
 			DPTR(expr)->SetVarDeclaration();	// First appearence of the symbol.
@@ -483,33 +481,33 @@ DeltaExpr* Translate_StaticLvalue (const std::string& id) {
 /////////////////////////////////////////////////////////
 // 'self' is for method similar to 'this'.
 //
-DeltaExpr* Translate_SELF (void) {
-	if (ParseParms::InMethod())
-		return DeltaExpr::MakeInternalVar(DELTA_SELF_POINTER_ID);
+DeltaExpr* Translator::Translate_SELF (void) {
+	if (PARSEPARMS.InMethod())
+		return EXPRFACTORY.MakeInternalVar(DELTA_SELF_POINTER_ID);
 	else
-	if (ParseParms::InFunction()						&& 
-		ParseParms::CurrFunction()->GetMyFunction()) {
+	if (PARSEPARMS.InFunction()						&& 
+		PARSEPARMS.CurrFunction()->GetMyFunction()) {
 
 			DeltaSymbol* sym = DELTASYMBOLS.Lookup(DELTA_SELF_POINTER_ID);
 			if (!sym) {
-				DASSERT(!ParseParms::CurrFunction()->GetMyFunction()->IsMethod());
+				DASSERT(!PARSEPARMS.CurrFunction()->GetMyFunction()->IsMethod());
 				DELTACOMP_ERROR_USING_SELF_OUTSIDE_METHODS();
 				return NIL_EXPR	;
 			}
 
 			// Either first time met (not yet a closure var) or not a closure var of the
 			// current function.
-			if (!DPTR(sym)->IsClosureVarAccess() || !ParseParms::CurrFunction()->GetClosureVar(DELTA_SELF_POINTER_ID)) {
+			if (!DPTR(sym)->IsClosureVarAccess() || !PARSEPARMS.CurrFunction()->GetClosureVar(DELTA_SELF_POINTER_ID)) {
 				DELTACOMP_WARNING_SELF_IS_CLOSUREVAR_ACCESS(
-					ParseParms::CurrFunction()->GetFunctionReadableName(),
+					PARSEPARMS.CurrFunction()->GetFunctionReadableName(),
 					DELTA_SELF_POINTER_ID,
-					ParseParms::CurrFunction()->GetMyFunction()->GetFunctionReadableName()
+					PARSEPARMS.CurrFunction()->GetMyFunction()->GetFunctionReadableName()
 				);
 				sym = Translate_ClosureVar(sym, DELTA_SELF_POINTER_ID);
 			}
 
 			DASSERT(sym && DPTR(sym)->IsClosureVarAccess());
-			DeltaExpr* expr = DNEW(DeltaExpr);
+			DeltaExpr* expr = EXPRFACTORY.New();
 			DPTR(expr)->sym = sym;
 
 			return expr;
@@ -524,10 +522,10 @@ DeltaExpr* Translate_SELF (void) {
 // Not an Lvalue.
 // '@self' is the currently constructed table.
 //
-DeltaExpr* Translate_NEWSELF (void) {
+DeltaExpr* Translator::Translate_NEWSELF (void) {
 
-	if (ParseParms::InTableExpr().inside())
-		return DeltaExpr::GetNewSelf();
+	if (PARSEPARMS.InTableExpr().inside())
+		return EXPRFACTORY.GetNewSelf();
 	else {
 		DELTACOMP_ERROR_USING_NEWSELF_OUTSIDE_OBJECT_CTOR();
 		return NIL_EXPR;
@@ -539,21 +537,21 @@ DeltaExpr* Translate_NEWSELF (void) {
 // '@lambda' refers to the function / method itself without
 // needing a name.
 //
-DeltaExpr* Translate_LAMBDA_REF (DeltaSymbol* func) {
+DeltaExpr* Translator::Translate_LAMBDA_REF (DeltaSymbol* func) {
 
-	DASSERT(!func || func == ParseParms::CurrFunction());
+	DASSERT(!func || func == PARSEPARMS.CurrFunction());
 
-	if (!func && !ParseParms::InFunction()) {
+	if (!func && !PARSEPARMS.InFunction()) {
 		DELTACOMP_ERROR_USING_LAMBDA_REF_OUTSIDE_FUNCTIONS();
 		return NIL_EXPR;
 	}
 	else
-	if (ParseParms::InMethod() || ParseParms::CurrFunction()->HasClosure())
-		return DeltaExpr::GetLambdaRef();
+	if (PARSEPARMS.InMethod() || PARSEPARMS.CurrFunction()->HasClosure())
+		return GetLambdaRef();
 	else {
 		if (!func)
-			func = ParseParms::CurrFunction();
-		DeltaExpr*	expr = DNEW(DeltaExpr);
+			func = PARSEPARMS.CurrFunction();
+		DeltaExpr*	expr = EXPRFACTORY.New();
 
 		DPTR(expr)->sym = DPTR(func);
 		expr->type		= DeltaExprProgramFunction;
@@ -566,13 +564,13 @@ DeltaExpr* Translate_LAMBDA_REF (DeltaSymbol* func) {
 
 /////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_ARGUMENTS (void) {
-	if (!ParseParms::InFunction()) {
+DeltaExpr* Translator::Translate_ARGUMENTS (void) {
+	if (!PARSEPARMS.InFunction()) {
 		DELTACOMP_ERROR_USING_ARGUMENTS_OUTSIDE_FUNCTIONS();
 		return NIL_EXPR;
 	}
 	else {
-		DeltaExpr* result = DeltaExpr::MakeInternalVar(DELTA_ARGUMENTS_POINTER_ID);
+		DeltaExpr* result = EXPRFACTORY.MakeInternalVar(DELTA_ARGUMENTS_POINTER_ID);
 		result->SetTypeTag(TagObject);
 		result->GetTypeInfo().Set(TagObject);
 		return result;
@@ -581,7 +579,7 @@ DeltaExpr* Translate_ARGUMENTS (void) {
 
 /////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_TRIPLE_DOT (void) {
+DeltaExpr* Translator::Translate_TRIPLE_DOT (void) {
 	DeltaExpr* expr = Translate_ARGUMENTS(); 
 	DNPTR(expr)->SetLateBound(); 
 	return expr;
@@ -594,11 +592,11 @@ DeltaExpr* Translate_TRIPLE_DOT (void) {
 // will be crated once the table content is used with its adaptation
 // function.
 //
-DeltaExpr* Translate_TableContent (DeltaExpr* table, const char* index) {
+DeltaExpr* Translator::Translate_TableContent (DeltaExpr* table, const char* index) {
 	
 	NULL_EXPR_CHECK(table);
 
-	if (!TypeCheck_Table(table))
+	if (!TYPECHECKER.Check_Table(table))
 		return NIL_EXPR;
 
 	if (!strcmp(index, DELTA_SELF_POINTER_ID)) {
@@ -624,11 +622,11 @@ DeltaExpr* Translate_TableContent (DeltaExpr* table, const char* index) {
 
 //*****************************
 
-DeltaExpr* Translate_TableContent (DeltaExpr* table, DeltaExpr* index) {
+DeltaExpr* Translator::Translate_TableContent (DeltaExpr* table, DeltaExpr* index) {
 
 	NULL_EXPR_PAIR_CHECK(table, index);
 
-	if (!TypeCheck_Table(table) || !TypeCheck_TableIndex(index))
+	if (!TYPECHECKER.Check_Table(table) || !TYPECHECKER.Check_TableIndex(index))
 		return (DeltaExpr*) 0;
 
 	// The index should be nil.
@@ -656,14 +654,14 @@ DeltaExpr* Translate_TableContent (DeltaExpr* table, DeltaExpr* index) {
 
 //*****************************
 
-DeltaExpr* Translate_BoundedTableContent (DeltaExpr* table, const char* index) {
+DeltaExpr* Translator::Translate_BoundedTableContent (DeltaExpr* table, const char* index) {
 	table = Translate_TableContent(table, index);
 	if (table)
 		DPTR(table)->SetBoundedElement();
 	return table;
 }
 
-DeltaExpr* Translate_BoundedTableContent (DeltaExpr* table, DeltaExpr* index) {
+DeltaExpr* Translator::Translate_BoundedTableContent (DeltaExpr* table, DeltaExpr* index) {
 	table = Translate_TableContent(table, index);
 	if (table)
 		DPTR(table)->SetBoundedElement();

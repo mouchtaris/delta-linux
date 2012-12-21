@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Workspace name="MetaTests" version="alpha">
+    <WorkspaceProperties>
+        <symbolic>MetaTests.wsp</symbolic>
+        <startup>tests.dproj</startup>
+        <config>0</config>
+        <collapsed>0</collapsed>
+        <breakpoints>break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="Project" name="tests.dproj"/>
+    <Child type="Project" name="DesignPatterns.dproj"/>
+    <Child type="Project" name="RPC.dproj"/>
+    <Child type="Project" name="Exceptions.dproj"/>
+    <Child type="Project" name="Integrated.dproj"/>
+    <Child type="AspectProject" name="Aspects.aproj"/>
+</Workspace>

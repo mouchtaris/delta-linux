@@ -25,15 +25,15 @@
 
 #define DELTA_CALL(F, ERROR_RETVAL)															\
 	do {																					\
-		if (!DPTR(vm)->HasProducedError() && DPTR(vm)->GlobalFuncExists(STRINGIFY(F))) {	\
+		if (!DPTR(vm)->HasProducedError() && DPTR(vm)->GlobalFuncExists(STRINGIFY(F))) {		\
 			DPTR(vm)->ExtCallGlobalFunc(STRINGIFY(F));										\
 			if (UERROR_ISRAISED()) {														\
-				Call<void (const String&), SafeCall>(DPTR(vm)->Id(), "Output", "Append")	\
+				Call<void (const String&), SafeCall>(DPTR(vm)->Id(), "Output", "Append")		\
 					(util::std2str(uerror::GetSingleton().getreport() + "\n"));				\
 				uerror::GetSingleton().clear();												\
 				DELTA_VM_CALL_AND_RESET_ERRORS(vm, UEMPTY, DELTA_NO_VM_CALLER_FAILED);		\
 				if (!GetInDestruction())													\
-					this->Destroy();														\
+					this->Destroy();															\
 				return ERROR_RETVAL;														\
 			}																				\
 		}																					\
@@ -70,9 +70,12 @@ namespace ide
 	//---- class ScriptInstanceProxy ------------------------//
 
 	ScriptInstanceProxy::ScriptInstanceProxy(const std::string& classId, DeltaVirtualMachine* vm, Component* base)
-		: classId(classId), vm(vm), base(base)
+		: classId(classId), vm(vm), base(base), baseSerial(0)
 	{
-		baseSerial = base ? base->GetSerial() : 0;
+		if (base) {
+			baseSerial = base->GetSerial();
+			base->SetDerivedClassId(classId);
+		}
 	}
 
 	//-----------------------------------------------------------------------

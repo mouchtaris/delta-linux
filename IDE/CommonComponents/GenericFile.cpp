@@ -37,7 +37,7 @@
 
 namespace ide
 {
-	static const char *fileContainers[] = { "Workspace", "Project" };
+	static const char *fileContainers[] = { "Workspace", "Project", "AspectProject" };
 
 	//-------------------------------------------------------//
 	//---- class GenericFile --------------------------------//
@@ -179,7 +179,7 @@ namespace ide
 
 	EXPORTED_CMD_FUNCTION(GenericFile, Open, _("/{0}Open"), MT_CTX, "")
 	{
-		util::ConsoleHost().ExecuteShell(util::str2std(GetURI()));
+		util::ConsoleHost::ExecuteShell(util::str2std(GetURI()));
 	}
 
 	//-----------------------------------------------------------------------
@@ -198,7 +198,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_CMD_FUNCTION(GenericFile, RenameDialog, _("/{60}Rename"), MT_CTX, "")
+	EXPORTED_CMD_FUNCTION(GenericFile, RenameDialog, _("/{60}Rename--"), MT_CTX, "")
 	{
 		StringBoolPair result = 
 			Call<StringBoolPair (const String&, const String&, const String&)>(this, "Shell", "PromptInput")

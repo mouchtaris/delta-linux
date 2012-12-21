@@ -52,13 +52,16 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DELTA)\DebugLib\Include;$(DELTA)\UtilLib\Include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_; _DEBUG; UTILLIB_EXPORT; DDEBUG_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -68,12 +71,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(DELTA)\DebugLib\Include;$(DELTA)\UtilLib\Include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\DebugLib\Include;..\..\..\UtilLib\Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_; NDEBUG; UTILLIB_EXPORT; DDEBUG_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>

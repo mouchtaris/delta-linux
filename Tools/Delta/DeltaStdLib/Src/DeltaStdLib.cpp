@@ -14,6 +14,7 @@
 #include "ShMemLib.h"
 #include "BitOpLib.h"
 #include "VMRegLib.h"
+#include "VMCompLib.h"
 #include "ListLib.h"
 #include "ListIterLib.h"
 #include "TableIterLib.h"
@@ -24,6 +25,8 @@
 #include "ReaderWriterLib.h"
 #include "SocketsLib.h"
 #include "AlgorithmLib.h"
+#include "ASTLib.h"
+#include "ASTVisitorLib.h"
 
 static DeltaObject* api = (DeltaObject*) 0;
 DELTA_LIBRARY_GETAPI_IMPL(std_getapi,api)
@@ -50,6 +53,7 @@ void Install_StdLib (void) {
 	Install_DeltaShMem_Lib(api);
 	Install_DeltaBitOp_Lib(api);
 	Install_DeltaVM_Lib(api);
+	Install_DeltaVMComp_Lib(api);
 	Install_DeltaListIter_Lib(api);	
 	Install_DeltaTableIter_Lib(api);	
 	Install_DeltaVector_Lib(api);
@@ -60,6 +64,8 @@ void Install_StdLib (void) {
 	Install_DeltaReaderWriter_Lib(api);
 	Install_DeltaSockets_Lib(api);
 	Install_DeltaAlgorithm_Lib(api);
+	Install_DeltaAST_Lib(api);
+	Install_DeltaASTVisitor_Lib(api);
 }
 
 //////////////////////////////////////
@@ -77,6 +83,7 @@ void CleanUp_StdLib (void) {
 		CleanUp_DeltaShMem_Lib();
 		CleanUp_DeltaBitOp_Lib();
 		CleanUp_DeltaVM_Lib();
+		CleanUp_DeltaVMComp_Lib();
 		CleanUp_DeltaListIter_Lib();
 		CleanUp_DeltaTableIter_Lib();
 		CleanUp_DeltaVector_Lib();
@@ -87,6 +94,8 @@ void CleanUp_StdLib (void) {
 		CleanUp_DeltaReaderWriter_Lib();
 		CleanUp_DeltaSockets_Lib();
 		CleanUp_DeltaAlgorithm_Lib();
+		CleanUp_DeltaAST_Lib();
+		CleanUp_DeltaASTVisitor_Lib();
 
 		DeltaVirtualMachine::ResetStdUtilities();
 		StdUtilities::SingletonDestroy();
@@ -104,10 +113,10 @@ static void SetPath (const std::string& path, void (*set)(const std::string&, bo
 		(*set)(*i, prioritised);
 }
 
-void SetByteCodeLoadingPath_StdLib (const std::string& path, bool prioritised) 
+DVM_FUNC void SetByteCodeLoadingPath_StdLib (const std::string& path, bool prioritised) 
 	{ SetPath(path, &DeltaVM_AddLoadingPath, prioritised); }
 
-void SetDllImportPath_StdLib (const std::string& path, bool prioritised)
+DVM_FUNC void SetDllImportPath_StdLib (const std::string& path, bool prioritised)
 	{ SetPath(path, &DeltaAdd_dllimport_Path, prioritised); }
 
 //////////////////////////////////////

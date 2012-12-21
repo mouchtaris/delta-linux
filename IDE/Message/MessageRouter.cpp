@@ -167,7 +167,7 @@ void MessageRouter::DispatchSignal (const Message& msg)
 	}
 
 	BOOST_FOREACH(ComponentMap::value_type& pair, instances)	//Then match them with their derived ComponentEntries
-		pair.second = &_GetComponentEntry(pair.first->GetClassId());
+		pair.second = &_GetComponentEntry(pair.first->GetDerivedClassId());
 
 	Message result;	//ignored
 	BOOST_FOREACH(ComponentMap::value_type& pair, instances) {	//Finally apply the function to the correct entry in the hierarchy

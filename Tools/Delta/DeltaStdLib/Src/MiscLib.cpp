@@ -719,7 +719,7 @@ static void dllimport_get_func (
 ///////////////////////////////////////////////////////////////////////
 
 #define	IF_DELTA_DLL_ERROR_ELSE(format, dll_arg)													\
-	if (DPTR(vm)->HasProducedError()) /* The DLL may load and execute scripts causing errors. */	\
+	if (DPTR(vm)->HasProducedError()) /* The DLL may load and execute scripts causing errors. */		\
 		return;																						\
 	else																							\
 	if (UERROR_ISRAISED())	/* But not all errors are caused by scripts (thus known by vms).*/		\
@@ -737,6 +737,10 @@ static void dllimport_handler (DeltaVirtualMachine* vm, const char* funcName, bo
 	DeltaTotalArgsCheck(is_delta ? 1 : 2, CURR_FUNC, RESET_NIL_RETURNVALUE);
 	DeltaValue* argObj;
 	GET_STRING(path, CURR_FUNC, RESET_NIL_RETURNVALUE, 0);
+
+#ifndef NDEBUG
+	path = path.substr(0, path.find_last_of('.')) + "D" + path.substr(path.find_last_of('.'));
+#endif
 
 	LOADING_RESOLVE_DLL_FILE(fullPath, path, RESET_NIL_RETURNVALUE);
 

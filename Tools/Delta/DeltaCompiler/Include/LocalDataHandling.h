@@ -6,28 +6,58 @@
 #ifndef	LOCALDATAHANDLING_H
 #define	LOCALDATAHANDLING_H
 
+#include "CompilerComponentDirectory.h"
 #include "utypes.h"
 #include "Symbol.h"
+#include "InterCode.h"
 
-namespace LocalDataHandler {
+class BlockInfo;
 
-	extern void			SingletonCreate (void);
-	extern void			SingletonDestroy (void);
+//////////////////////////////////////////////////////
 
-	extern void			Initialise (void);
-	extern void			CleanUp (void);
+class LocalDataHandler {
 
-	extern void			OnGlobalBegin (void);
-	extern util_ui16	OnGlobalEnd (void);
+	USE_COMPILER_COMPONENT_DIRECTORY();
 
-	extern void			OnBlockBegin (void);
-	extern void			OnBlockEnd (void);
+private:
+	BlockInfo*						currBlock;
+	util_ui16						currBlockId;
+	util_ui16						blockLocals;
+	std::list<util_ui16>*			blockIdStack;
+	std::list<util_ui16>*			blockLocalsStack;
+	std::list<DeltaQuadAddress>*	blockBeginStack;
 
-	extern void			OnFunctionBegin (void);
-	extern void			OnFunctionEnd (void);	// Returns local data block size.
+	void EmitBlockBegin (util_ui16 blockId, bool isMainProgramBlock);
+	void EmitBlockEnd	(util_ui16 blockId, bool isMainProgramBlock);
 
-	extern void			OnNewLocalVar (DeltaSymbol* sym);
-	extern util_ui16	GetCurrBlockId (void);	// Gets the unique (to curr function) block id.
-}
+public:
+
+	void		Initialise (void);
+	void		CleanUp (void);
+
+	void		OnGlobalBegin (void);
+	util_ui16	OnGlobalEnd (void);
+
+	void		OnBlockBegin (void);
+	void		OnBlockEnd (void);
+
+	void		OnFunctionBegin (void);
+	void		OnFunctionEnd (void);	// Returns local data block size.
+
+	void		OnNewLocalVar (DeltaSymbol* sym);
+	util_ui16	GetCurrBlockId (void);	// Gets the unique (to curr function) block id.
+
+	LocalDataHandler();
+	~LocalDataHandler();
+};
+
+//////////////////////////////////////////////////////
+
+#define LOCALDATA_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), LocalDataHandler)))
+
+#define LOCALDATA	LOCALDATA_EX(COMPONENT_DIRECTORY())
+
+//////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

@@ -22,6 +22,87 @@ mostbase = nil;
 treeData = [];
 
 //-------------------------------------------------------//
+//---- Communication Protocol ---------------------------//
+//NOTE: absoluteref is not used
+
+function ParseAndAdaptXML(str) {
+	const ATTRIBUTES = "$Attributes";
+	const CHARDATA = "$CharData";
+
+	function GetCharData(t) { return ((local t1 = t[0][CHARDATA]) ? t1[0] : ""); }
+	function MakeAttribute(t, attribute) { t[attribute] = t[ATTRIBUTES][attribute]; }
+	function MakeCharData(t, index) { t[index] = GetCharData(t[index]); }
+	function MakeTypeValueItem(t, index) {		
+		t[index] = [
+			@type : t[index][0][ATTRIBUTES].type,
+			@value : GetCharData(t[index])
+		];
+	}
+
+	local t = xml::parse(str);
+	local value;
+	if (t.contents) {
+		local contents = t.contents[0].content;
+		contents.size = std::tablength(contents);
+		contents.absoluteref = GetCharData(t.contents[0].absoluteref);
+		contents.overview = GetCharData(t.contents[0].overview);
+		
+		for (local i = 0; i < contents.size; ++i) {
+			MakeAttribute(contents[i], "subindex");
+			MakeCharData(contents[i], "keyaccess");
+			MakeTypeValueItem(contents[i], "displaydesc");
+			MakeTypeValueItem(contents[i], "keytypeinfo");
+			
+			contents[i].fieldkeys = contents[i].fieldkeys[0].fieldkey;
+			local size = std::tablength(contents[i].fieldkeys);
+			contents[i].fieldkeys.size = size;		
+			for(local j = 0; j < size; ++j) {
+				local key = contents[i].fieldkeys[j];
+				MakeTypeValueItem(key, "keycontentref");
+				MakeCharData(key, "displayedkey");
+			}
+		}
+		value = [@contents : contents];
+	}
+	else
+		value = t[ATTRIBUTES].value;
+	return [ @type: t[ATTRIBUTES].type, @value: value ];
+}
+xmlDll = nil;
+
+//-----------------------------------------------------------------------
+
+decoder = nil;
+decoders = [];
+
+const DEFAULT_DECODER = "rc";
+
+//-----------------------------------------------------------------------
+
+function InitializeDecoders() { xmlDll = dllimportdeltalib(xml::DLL); }
+
+function InstallDecoders() {
+	decoders["rc"] = [
+		@format : "rc",
+		method @operator()(str){ return rcparse(str); }
+	];
+	decoders["xml"] = [
+		@format : "xml",
+		method @operator()(str){ return ParseAndAdaptXML(str); }		
+	];
+}
+
+function CleanupDecoders() {
+	assert xmlDll;
+	dllunimportdeltalib(xmlDll);
+}
+
+function SelectDecoder(format) {
+	assert decoders[format];
+	decoder = decoders[format];
+}
+
+//-------------------------------------------------------//
 //---- Constant Definitions -----------------------------//
 
 const COMPOSITE 					= "COMPOSITE";
@@ -172,8 +253,8 @@ function RemoveExpression(id)
 
 function InsertExpressionEx(parent, pos, displayedExpression, expression, str)
 {
-	local t = rcparse(str);
-	if (t) {	//expr evaluation may return a single string upon error so check parse result
+	local t = decoder(str);
+	if (t) {	//expr evaluation may return a single string upon error so check decoder result
 		assert t.type;
 		local composite = t.type == COMPOSITE;
 		local value = (composite ? t.value.contents.overview : t.value);
@@ -193,7 +274,7 @@ function InsertExpressionEx(parent, pos, displayedExpression, expression, str)
 
 function InsertExpression(index, expr)
 {
-	local table = spw.components.DeltaVM.EvalExprEx("rc", expr);
+	local table = spw.components.DeltaVM.EvalExprEx(decoder.format, expr);
 	assert typeof(table) == "Table" or typeof(table) == "Object";
 	return InsertExpressionEx(window.GetRoot(), index, expr, expr, table.first);
 }
@@ -216,7 +297,7 @@ function AddContents(parent, startIndex, contents)
 		expressions.push_back(treeData[parent].expression + entry.subindex);
 	}
 	
-	local strs = spw.components.DeltaVM.EvalExprListEx("rc", expressions);
+	local strs = spw.components.DeltaVM.EvalExprListEx(decoder.format, expressions);
 	assert typeof(strs) == TYPEOF_EXTERNID and externidtype(strs) == "std::list";
 	if (expressions.total() != strs.total())	//error getting the strs
 		return [];
@@ -329,10 +410,10 @@ function UpdateExpression(id)
 	local prevValue = GetValue(id);
 	local modified = false;
 	
-	local table = spw.components.DeltaVM.EvalExprEx("rc", expression);
+	local table = spw.components.DeltaVM.EvalExprEx(decoder.format, expression);
 	assert (typeof(table) == "Table" or typeof(table) == "Object") and table.first;
 	local str = table.first;
-	if (table.second and (local t = rcparse(str))) {	//expr evaluation may return a single string upon error so check parse result
+	if (table.second and (local t = decoder(str))) {	//expr evaluation may return a single string upon error so check decoder result
 		assert t.type;
 		local composite = t.type == COMPOSITE;
 		local value = (composite ? t.value.contents.overview : t.value);
@@ -470,11 +551,12 @@ onevent ClassLoad
 	);
 	
 	SetProperties();
+	InitializeDecoders();
 }
 
 //-----------------------------------------------------------------------
 
-onevent ClassUnload {}
+onevent ClassUnload { CleanupDecoders(); }
 
 //-------------------------------------------------------//
 //---- Instance Creation --------------------------------//
@@ -490,6 +572,9 @@ onevent Constructor
 
 	spw::inst_impl_required_member_command(classId, "ConfigureExpressionTreeListView", 
 		(function Configure {spw.components.Shell.ConfigureComponent(classId); }));
+		
+	InstallDecoders();
+	SelectDecoder(DEFAULT_DECODER);
 }
 
 //-----------------------------------------------------------------------

@@ -11,6 +11,7 @@
 #define	INTERCODE_H
 
 #include <stdio.h>
+#include "CompilerComponentDirectory.h"
 #include "DeltaByteCodeTypes.h"
 #include "utypes.h"
 #include "usystem.h"
@@ -210,6 +211,8 @@ struct DeltaQuad {
 
 class DeltaQuadManager {
 
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
 	////////////////////////////////////////////////////
 
 	private:
@@ -220,8 +223,6 @@ class DeltaQuadManager {
 	util_ui32			size;
 	bool				quadsEmitted;
 	ubag<DeltaSymbol*>	usedLibraryConsts;
-
-	static DeltaQuadManager*	singletonPtr;
 
 	bool				IsJump (util_ui16 quad) const {
 							return	quads[quad].opcode == DeltaIC_JUMP		||
@@ -371,25 +372,17 @@ class DeltaQuadManager {
 
 	////////////////////////////////////////////////////
 
-	static void			SingletonCreate (void);
-	static void			SingletonDestroy (void);
-	static DeltaQuadManager*	GetPtr (void) 
-							{ DASSERT(singletonPtr); return singletonPtr; }
-
-	////////////////////////////////////////////////////
-
-	private:
-	DFRIENDDESTRUCTOR()
 	DeltaQuadManager (void);
 	~DeltaQuadManager();
 };
 
 ////////////////////////////////////////////
 
-#define	QUADS	GetQuads()
-inline DeltaQuadManager& GetQuads (void) {
-	DASSERT(DeltaQuadManager::GetPtr());
-	return *DeltaQuadManager::GetPtr();
-}
+#define QUADS_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaQuadManager)))
+
+#define QUADS	QUADS_EX(COMPONENT_DIRECTORY())
+
+////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

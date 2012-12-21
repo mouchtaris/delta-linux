@@ -73,7 +73,7 @@ namespace ide
 		wxStaticText* lblDescription = new wxStaticText(this, wxID_ANY, _(" Create a new item. "),
 			wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER);
 		lstItems = new wxListView(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-			wxLC_SMALL_ICON | wxLC_SINGLE_SEL);
+			wxLC_LIST | wxLC_SMALL_ICON | wxLC_SINGLE_SEL);
 		lstItems->AssignImageList(images, wxIMAGE_LIST_SMALL);
 
 		BOOST_FOREACH(const std::string& classId, items)

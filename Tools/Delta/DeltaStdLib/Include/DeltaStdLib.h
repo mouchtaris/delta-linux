@@ -55,9 +55,9 @@ DVM_FUNC		DeltaTable* DeltaMakeTupple (DELTATUPLE_FIELD(1), DELTATUPLE_FIELD(2),
 
 //////////////////////////////////////////////////////////////////////
 
-extern void		Install_StdLib (void);	
-extern void		SetByteCodeLoadingPath_StdLib (const std::string& path, bool prioritised);
-extern void		SetDllImportPath_StdLib (const std::string& path, bool prioritised);
-extern void		CleanUp_StdLib (void);
+extern   void	Install_StdLib (void);	
+extern   void	CleanUp_StdLib (void);
+DVM_FUNC void	SetByteCodeLoadingPath_StdLib (const std::string& path, bool prioritised);
+DVM_FUNC void	SetDllImportPath_StdLib (const std::string& path, bool prioritised);
 
 #endif	// Do not add stuff beyond this point.

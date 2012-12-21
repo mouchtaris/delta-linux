@@ -156,7 +156,7 @@ static void ToString (DeltaString* at, void* val) {										\
 }
 
 /////////////////////////////////////////////////////
-// Basic to string converter with type strign and serial number only.
+// Basic to string converter with type string and serial number only.
 //
 #define	DLIB_COLLECTABLESIMPLE_TOSTRING_FUNC(typestr)									\
 static void ToString (DeltaString* at, void* val) {										\

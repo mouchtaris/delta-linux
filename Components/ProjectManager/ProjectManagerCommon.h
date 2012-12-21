@@ -2,7 +2,7 @@
  *	ProjectManagerCommon.h
  *	Common stuff across project manager files.
  *	Anthony Savidis, November 2010
- *	Functionality moved here from opriginal code from Yannis Lilis.
+ *	Functionality moved here from original code from Yannis Lilis.
  *	Additions may be thematically incorporated depending on what they extend
  *	to appropriate existing or new namespaces. 
  */
@@ -45,9 +45,12 @@ namespace conf {
 	_PROJECT_MANAGER_API void					AddProjectBuildProperties (ide::Component* comp); 
 	_PROJECT_MANAGER_API void					AddScriptBuildProperties (ide::Component* comp); 
 	_PROJECT_MANAGER_API void					AddScriptLastBuildProperties (conf::PropertyTable* props);
+	_PROJECT_MANAGER_API void					AddScriptStageSourceProperties (conf::PropertyTable* props);
 	_PROJECT_MANAGER_API void					AddScriptExecutionProperties (ide::Component* comp); 
+	_PROJECT_MANAGER_API const char **			GetScriptPropertyIdsForStageSources (void);
 	_PROJECT_MANAGER_API const char **			GetProjectBuildPropertyIdsForScripts (void);
 	_PROJECT_MANAGER_API const char **			GetScriptBuildPropertyIds (void);
+	_PROJECT_MANAGER_API const char **			GetScriptLastBuildPropertyIds (void);
 	_PROJECT_MANAGER_API const char **			GetScriptExecutionPropertyIds (void);
 	_PROJECT_MANAGER_API const char *			GetByteCodePathPropertyId (void);
 	_PROJECT_MANAGER_API const char *			GetDeploymentPropertyId (void);

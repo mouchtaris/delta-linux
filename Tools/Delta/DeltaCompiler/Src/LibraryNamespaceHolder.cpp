@@ -8,11 +8,6 @@
 #include "DeltaCompErrorDefs.h"
 #include "LibraryDefsParser.h"
 
-DeltaLibraryNamespaceHolder* DeltaLibraryNamespaceHolder::singletonPtr = (DeltaLibraryNamespaceHolder*) 0;
-
-USINGLETON_APISTYLE_IMPL_PUBLICSTDMETHODS(DeltaLibraryNamespaceHolder)
-USINGLETON_APISTYLE_IMPL_GETTER(DeltaLibraryNamespaceHolder)
-
 DeltaLibraryNamespaceHolder::DeltaLibraryNamespaceHolder (void) 
 	{ unullify(globalNamespace); }
 
@@ -20,7 +15,8 @@ DeltaLibraryNamespaceHolder::~DeltaLibraryNamespaceHolder()
 	{ udeleteunlessnull(globalNamespace); }
 
 void DeltaLibraryNamespaceHolder::Initialise (void) {
-	globalNamespace = DNEWCLASS(DeltaLibraryNamespace, (DELTA_LIBRARYNAMESPACE_GLOBAL)); 
+	globalNamespace = DNEWCLASS(DeltaLibraryNamespace, (DELTA_LIBRARYNAMESPACE_GLOBAL));
+	INIT_COMPILER_COMPONENT_DIRECTORY(globalNamespace, COMPONENT_DIRECTORY());
 	namespaceStack.push_front(globalNamespace);
 	openedNamespaces[DELTA_LIBRARYNAMESPACE_GLOBAL] = globalNamespace;
 }

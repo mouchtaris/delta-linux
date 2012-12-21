@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTAIDEDEPS)\Include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT"
+				AdditionalIncludeDirectories="&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTA)\DeltaCompiler\Include&quot;;&quot;$(DELTA)\DeltaSyntaxTree\Include&quot;;&quot;$(DELTAIDEDEPS)\Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -92,7 +92,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(Delta)\DLLs\BytecodeStructures\lib\debug\BytecodeStructuresD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\ReadersWriters\lib\debug\ReadersWritersD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\DebuggerBackend\lib\debug\DebuggerBackendD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\DebuggerCommon\lib\debug\DebuggerCommonD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\DebuggerFrontend\lib\debug\DebuggerFrontendD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\SocketLib\lib\debug\SocketsD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\UtilAndDebugLib\lib\debug\UtilAndDefensiveHeapD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\SyntaxTree\lib\debug\SyntaxTreeD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\CompilerComponents\lib\debug\CompilerComponentsD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\VirtualMachineComponents\lib\debug\VirtualMachineComponentsD.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -120,8 +120,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTAIDEDEPS)\Include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT"
+				AdditionalIncludeDirectories="&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachine\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DebugBreakPointHolder\Include&quot;;&quot;$(DELTA)\DebugServer\Include&quot;;&quot;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaPureVMFacade\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;;&quot;$(DELTA)\DeltaCompiler\Include&quot;;&quot;$(DELTA)\DeltaSyntaxTree\Include&quot;;&quot;$(DELTAIDEDEPS)\Include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DVMDEBUG_IMPORT;DVMDEBUGCOMMON_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -171,7 +171,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(Delta)\DLLs\BytecodeStructures\lib\release\BytecodeStructures.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\ReadersWriters\lib\release\ReadersWriters.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\DebuggerBackend\lib\release\DebuggerBackend.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\DebuggerCommon\lib\release\DebuggerCommon.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\DebuggerFrontend\lib\release\DebuggerFrontend.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\SocketLib\lib\release\Sockets.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\UtilAndDebugLib\lib\release\UtilAndDefensiveHeap.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\SyntaxTree\lib\release\SyntaxTree.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\CompilerComponents\lib\release\CompilerComponents.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(Delta)\DLLs\VirtualMachineComponents\lib\release\VirtualMachineComponents.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>

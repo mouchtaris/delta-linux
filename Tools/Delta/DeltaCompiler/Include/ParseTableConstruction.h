@@ -8,16 +8,17 @@
 #define	PARSETABLECONSTRUCTION_H
 
 #include "DDebug.h"
+#include "CompilerComponentDirectory.h"
 #include "Expr.h"
 #include "utypes.h"
 #include "AutoCollection.h"
-#include "ParseParms.h"
 #include "Unparsable.h"
 #include <functional>
 
 //////////////////////////////////////////////////////
 
 class NamedMethodEmitter  {
+	USE_COMPILER_COMPONENT_DIRECTORY();
 	private:
 	DeltaExpr* method;
 
@@ -30,6 +31,7 @@ class NamedMethodEmitter  {
 //////////////////////////////////////////////////////
 
 class IndexedElemEmitter  {
+	USE_COMPILER_COMPONENT_DIRECTORY();
 	private:
 	DeltaExpr*	index;
 	DeltaExpr*	content;
@@ -44,6 +46,7 @@ class IndexedElemEmitter  {
 //////////////////////////////////////////////////////
 
 class UnindexedElemEmitter  {
+	USE_COMPILER_COMPONENT_DIRECTORY();
 	private:
 	util_ui32	order;
 	DeltaExpr*	content;
@@ -60,14 +63,18 @@ class UnindexedElemEmitter  {
 struct TableElements :	public AutoCollectable,
 						public Unparsable {
 
+	DFRIENDDESTRUCTOR()
+	friend class Translator;
+	
 	ExprList*	unindexedValues;
 	ExprList*	indexedValues;
 	ExprList*	indices;
-
-	TableElements (void) {
-		unindexedValues		= DNEW(ExprList);
-		indexedValues		= DNEW(ExprList);
-		indices				= DNEW(ExprList);
+	
+	private:
+	TableElements (AutoCollector* collector) : AutoCollectable(collector) {
+		unindexedValues		= DNEWCLASS(ExprList, (collector));
+		indexedValues		= DNEWCLASS(ExprList, (collector));
+		indices				= DNEWCLASS(ExprList, (collector));
 	}
 
 	~TableElements() {
@@ -78,6 +85,8 @@ struct TableElements :	public AutoCollectable,
 		}
 	}
 };
+
+typedef AutoCollectableFactory<TableElements> TableElementsFactory;
 
 #define	NIL_ELEMS (TableElements*) 0
 

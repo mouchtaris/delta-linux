@@ -66,7 +66,7 @@ public:
 
 	virtual void CharacterAdded (int keyCode) = 0;
 
-	virtual void GetInfoForPosition (
+	virtual bool GetInfoForPosition (
 			uint		pos,
 			uint*		startPos,
 			uint*		endPos,
@@ -94,8 +94,9 @@ public:
 	};
 
 	typedef GotoDefinitionResult	(*GotoGlobalDefinitionFunc)(
-										const std::string&	file, 
-										const std::string&	id, 
+										const std::string&	file,
+										const std::string&	id,
+										uint				stage,
 										void*				closure
 									);
 	typedef void					(*GotoPositionCallback)(
@@ -111,9 +112,9 @@ public:
 					}
 	
 	GotoDefinitionResult			
-					GotoGlobalDefinitionOfFile (const std::string& file, const std::string& id) {
+					GotoGlobalDefinitionOfFile (const std::string& file, const std::string& id, uint stage) {
 						if (gotoGlobalDefinitionCallback) 
-							return (*gotoGlobalDefinitionCallback)(file, id, gotoGlobalDefinitionClosure); 
+							return (*gotoGlobalDefinitionCallback)(file, id, stage, gotoGlobalDefinitionClosure); 
 						else
 							return GotoDefinitionFailedFileNotFound;
 					}

@@ -10,6 +10,7 @@
 #include <string>
 #include "utypes.h"
 #include "ufunctors.h"
+#include "ucallbacks.h"
 #include "ulatedestructor.h"
 #include "uptr.h"
 
@@ -19,26 +20,36 @@ UTILLIB_FUNC	const std::string	uunparseescapesequences (const char* src, const c
 UTILLIB_FUNC	util_ui32			ustrtohex (const char* s);
 UTILLIB_FUNC	double				ustrdectodouble (const char* s);
 UTILLIB_FUNC	double				ustrfracttodouble (const char* s);
-UTILLIB_FUNC	const char*			usaveidstr (const char* s);
+UTILLIB_FUNC	const char*			usaveidstr (const char* s, std::string* buffer = (std::string*) 0);
 
-UTILLIB_FUNC	void				uignoreCcomments (
-										char		(*input)(void), 
-										void		(*unput)(char),
-										util_ui32*	line,
-										void		(*error)(const char*,...)
+UTILLIB_FUNC	bool				uignoreCcomments (
+										char			(*input)(void), 
+										void			(*unput)(char),
+										util_ui32*		line,
+										std::string*	error = (std::string*) 0
+									);
+UTILLIB_FUNC	bool				uignoreCcomments (
+										ucallbackwithclosure<char (*)(void*)>		input,
+										ucallbackwithclosure<void (*)(char, void*)> unput,
+										util_ui32*									line,
+										std::string*								error = (std::string*) 0
 									);
 
+UTILLIB_FUNC	bool				ureadquotedstring (
+										std::string&							s,
+										ucallbackwithclosure<char (*)(void*)>	input, 
+										util_ui32*								line,
+										std::string*							error = (std::string*) 0
+									);
 UTILLIB_FUNC	bool				ureadquotedstring (
 										std::string&	s,
 										char			(*input)(void), 
 										util_ui32*		line,
-										void			(*error)(const char*,...)
+										std::string*	error = (std::string*) 0
 									);
 
-UTILLIB_FUNC	void				uignoreCPPcomments (
-										char (*input)(void), 
-										util_ui32*	line
-									);
+UTILLIB_FUNC	bool				uignoreCPPcomments (ucallbackwithclosure<char (*)(void*)> input);
+UTILLIB_FUNC	bool				uignoreCPPcomments (char (*input)(void));
 
 typedef	udestroyablewrapper<
 			char*, 

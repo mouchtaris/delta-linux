@@ -133,44 +133,77 @@ UTILLIB_FUNC double ustrfracttodouble (const char* s) {
 
 //------------------------------------------------------------------
 
-static char id[256];
-
-UTILLIB_FUNC const char* usaveidstr (const char* s) {
-	DASSERT(strlen(s) < sizeof(id));
-	strcpy(id, s);
-	return id;
+UTILLIB_FUNC const char* usaveidstr (const char* s, std::string* buffer) {
+	//TODO make the buffer a required argument
+	if (buffer) {
+		DASSERT(buffer);
+		buffer->assign(s);
+		return buffer->c_str();
+	}
+	else {
+		static char id[256];
+		DASSERT(strlen(s) < sizeof(id));
+		strcpy(id, s);
+		return id;
+	}
 }
 
 //------------------------------------------------------------------
 
-UTILLIB_FUNC void uignoreCcomments (
-		char		(*input)(void), 
-		void		(*unput)(char),
-		util_ui32*	line,
-		void		(*error)(const char*,...)
-	) {
+static char input_wrapper (void *func) {
+	DASSERT(func);
+	return (*(char (*)(void)) func)();
+}
+
+static void unput_wrapper (char c, void *func) {
+	DASSERT(func);
+	(*(void (*)(char)) func)(c);
+}
+
+//------------------------------------------------------------------
+
+UTILLIB_FUNC bool uignoreCcomments (
+		char			(*input)(void), 
+		void			(*unput)(char),
+		util_ui32*		line,
+		std::string*	error
+	){
+	return uignoreCcomments(
+		umakecallback(&input_wrapper, input),
+		umakecallback(&unput_wrapper, unput),
+		line,
+		error
+	);
+}
+
+UTILLIB_FUNC bool uignoreCcomments (
+		ucallbackwithclosure<char (*)(void*)>		input,
+		ucallbackwithclosure<void (*)(char, void*)> unput,
+		util_ui32*									line,
+		std::string*								error
+	){
 
 	util_ui16 stack = 1;
 	char nextc, ic;
 
-	while ((ic = (*input)()) != EOF)  {
+	while ((ic = input()) != EOF)  {
 		switch (ic)  {
      		case '/' : {
-				if ((nextc = (*input)()) == '*')
+				if ((nextc = input()) == '*')
  					++stack;
 				else
-					(*unput)(nextc);
+					unput(nextc);
 				break;
 			}
 
      		case '*' : {
-				 if ((nextc = (*input)())=='/')
+				 if ((nextc = input())=='/')
  					if (--stack)
    						continue;
  					else
-    					return;
+    					return true;
 				 else
- 					(*unput)(nextc);
+ 					unput(nextc);
 				 break;
 			}
 
@@ -179,8 +212,10 @@ UTILLIB_FUNC void uignoreCcomments (
         }
 	}
 
-	if (ic == EOF)
-		(*error)("EOF reached while parsing comments");
+	DASSERT(ic == EOF);
+	if (error)
+		*error = "EOF reached while parsing comments";
+	return false;
 }
 
 //------------------------------------------------------------------
@@ -189,13 +224,22 @@ UTILLIB_FUNC bool ureadquotedstring (
 		std::string&	s,
 		char			(*input)(void), 
 		util_ui32*		line,
-		void			(*error)(const char*,...)
+		std::string*	error
 	) {
+	return ureadquotedstring(s, umakecallback(&input_wrapper, input), line, error);
+}
+UTILLIB_FUNC bool ureadquotedstring (
+		std::string&							s,
+		ucallbackwithclosure<char (*)(void*)>	input,
+		util_ui32*								line,
+		std::string*							error
+	){
 
 	while (true) {
-		char c = (*input)();
+		char c = input();
 		if (c == EOF) {
-			(*error)("EOF reached while parsing quoted string");
+			if (error)
+				*error = "EOF reached while parsing quoted string";
 			return false;
 		}
 		else
@@ -225,18 +269,17 @@ UTILLIB_FUNC bool ureadquotedstring (
 
 //------------------------------------------------------------------
 
-void uignoreCPPcomments (
-		char		(*input)(void), 
-		util_ui32*	line
-	) {
+UTILLIB_FUNC bool uignoreCPPcomments (char (*input)(void))
+	{ return uignoreCPPcomments(umakecallback(&input_wrapper, input)); }
 
+UTILLIB_FUNC bool uignoreCPPcomments (ucallbackwithclosure<char (*)(void*)>	input) {
 	while (true) {
-		char c = (*input)();
+		char c = input();
 		if (c == '\n') 
-			{ ++*line; return; }
+			return true;
 		else
 		if (c == EOF)
-			return;
+			return false;
 	}
 }
 

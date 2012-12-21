@@ -681,8 +681,8 @@ void DeltaDebugServer::HandleStop (void)
 	{ DeltaDebugServer::NotifyExit(); }
 
 void DeltaDebugServer::HandleStart (void) {
-	DASSERT(startFunc);
-	(*startFunc)(); 
+	if (startFunc)
+		(*startFunc)(); 
 	if (startFunc != &DeltaDebugServer::DefaultOnStart)
 		unullify(startFunc);
 }

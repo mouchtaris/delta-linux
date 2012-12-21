@@ -20,7 +20,7 @@
 //------------------------------------------------------------------
 // TERNARY
 
-DeltaExpr*	Translate_Ternary (
+DeltaExpr*	Translator::Translate_Ternary (
 		DeltaExpr*			cond,
 		DeltaExpr*			expr1,
 		DeltaExpr*			expr2,
@@ -31,7 +31,7 @@ DeltaExpr*	Translate_Ternary (
 
 	if (cond && expr1 && expr2) {
 
-		DeltaExpr* result = DNEW(DeltaExpr);
+		DeltaExpr* result = EXPRFACTORY.New();
 
 		DPTR(result)->sym =	DPTR(expr1)->IsTemp() ? expr1->sym : 
 							DPTR(expr2)->IsTemp() ? expr2->sym : 

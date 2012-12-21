@@ -23,6 +23,7 @@ namespace UtilPackage {
 	}
 
 	UTILLIB_FUNC void CleanUp (void) {
+		DASSERT(initCounter);
 		if (!--initCounter) {
 			ValidatableHandler::SingletonDestroy();
 			uerror::SingletonDestroy();

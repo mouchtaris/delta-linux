@@ -60,7 +60,7 @@ extern void					Unparse_ParenthesisedExpr (DeltaExpr* e);
 struct TableElements;
 extern void					Unparse_IndexedValues (TableElements* elems);
 extern void					Unparse_UnindexedValue (TableElements* elem, DeltaExpr* e);
-extern void					Unparse_IdentIndexElement (TableElements* elem, const char* index, DeltaExpr* expr);
+extern void					Unparse_IdentIndexElement (TableElements* elem, const std::string& index, DeltaExpr* expr);
 extern void					Unparse_DottedIdent (DeltaExpr* e, const char* id);
 extern void					Unparse_OperatorIndex (DeltaExpr* e, const char* op);
 extern const std::string	Unparse_TableElements (TableElements* elems, TableElements* elem);

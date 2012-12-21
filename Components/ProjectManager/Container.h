@@ -59,6 +59,7 @@ namespace ide
 		///--- private members
 		unsigned			m_internalSaveCounter;
 		unsigned long long	m_changeWatcher;
+		boost::mutex		m_changeWatcherMutex;
 		bool				m_reloadPending;
 		bool				m_duringReload;
 		boost::mutex		m_reloadMutex;

@@ -149,7 +149,7 @@ void LanguageModule::CleanUp (void) {
 void LanguageModule::SetEditor (editor::EditorWindow* editor) {
 	LanguageModuleIface::SetEditor(editor);
 	editor->AddContextMenuAction(
-		"Goto To Definition",
+		"Go To Definition",
 		(void(*)(void*, int, int)) &DeltaGotoDefinition::GotoDefinition,
 		&DeltaGotoDefinition::GotoDefinitionPrecond,
 		this
@@ -232,7 +232,6 @@ void LanguageModule::ContentDeleted (
 	Slice slice = m_progDesc.GetAffectedSliceAfterRemove(Range(atPos, atPos + length));
 	this->parseSlice(slice);
 	DeltaGotoDefinition::HandleContentEdited(this);
-
 }
 
 //**********************************************************************
@@ -302,7 +301,7 @@ void LanguageModule::CharacterAdded (int keyCode)
 //**********************************************************************
 // i-sense additions to support quick (semantic) info tooltip
 
-void LanguageModule::GetInfoForPosition (
+bool LanguageModule::GetInfoForPosition (
 		uint			pos,
 		uint*			startPos,
 		uint*			endPos,
@@ -332,8 +331,7 @@ void LanguageModule::GetInfoForPosition (
 			*type = -2;
 			*msg = _("Cannot recognize symbols due to parse errors");
 		}
-		else 
-		if (DeltaASTNode* node = m_progDesc.GetNode(pos)) { // Syntactically correct text, thus normally parsed text.
+		else if (DeltaASTNode* node = m_progDesc.GetNode(pos)) { // Syntactically correct text, thus normally parsed text.
 
 			const DeltaASTNode::Range range = node->GetRange();
 			this->setInfoIndicator(m_infoAtRange, range, wxSCI_INDIC2_MASK);
@@ -346,7 +344,10 @@ void LanguageModule::GetInfoForPosition (
 			node->AcceptNode(&printer);
 			*msg = _("Syntax information:\n") + printer.GetDescription();
 		}
+		else	//no position information
+			return false;
 	}
+	return true;
 }
 
 //**********************************************************************
@@ -974,8 +975,11 @@ bool LanguageModule::checkQualifiedFunction (DeltaASTNode* node, bool *std, bool
 {
 	const Range& range = node->GetRange();
 	const String path = GetEditor()->GetTextRange(range.left, range.right);
-	std::string error;
 
+	if (path.find_first_of(_T("~!")) != String::npos)	//TODO: how to resolve generated namespaces?
+		return false;
+
+	std::string error;
 	StdStringList pathList = Namespace::CreateNamespacePathList(util::str2std(path));
 	if (pathList.size() == 2 && DeltaAutoCompletion::HasByteCodeLibraryFunction(this, pathList.front(), pathList.back()))
 		return true;
@@ -1002,6 +1006,9 @@ void LanguageModule::checkNamespaces (DeltaASTNode* node)
 					if (node->GetChild<0>() && !node->GetChild<1>()) {	// it is 'using <namespace>' form
 						const Range& range	= node->GetChild<0>()->GetRange();
 						const String path	= GetEditor()->GetTextRange(range.left, range.right);
+						if (path.find_first_of(_T("~!")) != String::npos)	//TODO: how to resolve generated namespaces?
+							break;
+
 						std::string error;
 						if (!Namespace::Open(node->GetRange().left, Namespace::CreateNamespacePathList(util::str2std(path)), &error))
 							m_progDesc.AddSemanticError(range, util::std2str(error));
@@ -1014,7 +1021,7 @@ void LanguageModule::checkNamespaces (DeltaASTNode* node)
 				case BinaryOpASTNode::Type:
 					if (!strcmp(static_cast<BinaryOpASTNode*>(child)->GetValue(), DELTA_LIBRARYNAMESPACE_SEPARATOR))
 					{
-						bool std;
+						bool std = false;
 						if (checkQualifiedFunction(child, &std))
 							patchBinaryQualifiedId(static_cast<BinaryOpASTNode*>(child), std);
 					}
@@ -1026,13 +1033,14 @@ void LanguageModule::checkNamespaces (DeltaASTNode* node)
 					if (!strcmp(static_cast<UnaryOpASTNode*>(child)->GetValue(), DELTA_LIBRARYNAMESPACE_SEPARATOR))
 					{
 						UnaryOpASTNode* op = static_cast<UnaryOpASTNode*>(child);
-						bool std;
+						bool std = false;
 						switch(op->GetChild()->GetType()) {
 							case BinaryOpASTNode::Type:
 								if (checkQualifiedFunction(op, &std))
 									patchBinaryQualifiedId(static_cast<BinaryOpASTNode*>(op->GetChild()), std);
 								break;
-							case VariableASTNode::Type:
+							case VariableASTNode::Type:		//FALLTHROUGH
+							case UnaryOpASTNode::Type:
 								if (checkQualifiedFunction(op, &std, false))
 									m_progDesc.ReplaceNode(op->GetChild(), createLibfuncNode(op->GetChild()->GetRange(), std));
 								break;
@@ -1051,7 +1059,7 @@ void LanguageModule::checkNamespaces (DeltaASTNode* node)
 
 				case VariableASTNode::Type:
 					{
-						bool std;
+						bool std = false;
 						if (checkQualifiedFunction(child, &std, false))
 							m_progDesc.ReplaceNode(child, createLibfuncNode(child->GetRange(), std));
 					}

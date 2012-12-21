@@ -8,7 +8,6 @@
 #include "Expr.h"
 #include "InterCode.h"
 #include "Symbol.h"
-#include "ParseParms.h"
 #include "ParseActions.h"
 #include "ExprCleaner.h"
 #include "Optimizer.h"
@@ -46,30 +45,6 @@ DeltaExpr::DeltaExpr (void) :	typeTag (TagAnyValue),
 }
 
 DeltaExpr::~DeltaExpr() {}
-
-///////////////////////////////////////////////////////////////////
-
-DeltaExpr* DeltaExpr::Copy (void) {
-
-	DeltaExpr* copy = DNEW(DeltaExpr);
-
-	copy->type			= type;
-	copy->typeTag		= typeTag;
-	copy->sym			= sym;		
-	copy->strConst		= strConst;
-	copy->numConst		= numConst;
-	copy->boolConst 	= boolConst;
-	copy->lateBindArg	= lateBindArg;
-	copy->index			= index;
-	copy->tableItem		= tableItem;
-	copy->isBounded		= isBounded;
-
-	unullify(copy->next);
-	copy->trueList = copy->falseList = DELTA_NIL_QUAD_LABEL;
-
-	copy->SetUnparsed(GetUnparsed());
-	return copy;
-}
 
 ///////////////////////////////////////////////////////////////////
 
@@ -181,92 +156,9 @@ bool DeltaExpr::IsAutoTableConstruction (void) const {
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* DeltaExpr::GetNewSelf (void) {
-	DeltaExpr* newSelfExpr			= DNEW(DeltaExpr);
-	DPTR(newSelfExpr)->type			= DeltaExprNewSelf;
-	DPTR(newSelfExpr)->isNewSelf	= true;
-	DPTR(newSelfExpr)->SetTypeTag(TagObject);
-	DPTR(newSelfExpr)->GetTypeInfo().Set(TagObject);
-	return newSelfExpr;
-}
-
-///////////////////////////////////////////////////////////////////
-
-DeltaExpr* DeltaExpr::MakeBool (bool val) {
-	DeltaExpr* expr		= DNEW(DeltaExpr);
-	DPTR(expr)->type	= DeltaExprBoolean;
-	expr->boolConst		= val;
-	DPTR(expr)->SetTypeTag(TagBool);
-	DPTR(expr)->GetTypeInfo().Set(TagBool);
-	return expr;
-}
-
-///////////////////////////////////////////////////////////////////
-
-DeltaExpr* DeltaExpr::One (bool minus) 
-	{ return minus ? Make(-1) : Make(1); }
-
-///////////////////////////////////////////////////////////////////
-
-DeltaExpr* DeltaExpr::MakeConst (const std::string& s) {
-	DeltaExpr* expr			= DNEW(DeltaExpr);
-	DPTR(expr)->type		= DeltaExprString;
-	DPTR(expr)->strConst	= s;
-	DPTR(expr)->SetTypeTag(TagString);
-	DPTR(expr)->GetTypeInfo().Set(TagString);
-	return expr;
-}
-
-DeltaExpr* DeltaExpr::MakeStringifiedConst (const std::string& s) {
-	DeltaExpr* result = MakeConst(s);
-	DPTR(result)->SetIsStringified();
-	return result;
-}
-
-///////////////////////////////////////////////////////////////////
-// Internal vars are not assumed to be variable decls
-// (thats is initially undefined) since they are used to carry 
-// reserved values (builtin names like 'self', or temps).
-
-DeltaExpr* DeltaExpr::MakeInternalVar (const char* id) {
-	DeltaSymbol* sym = DELTASYMBOLS.Lookup(id);
-	DASSERT(sym);
-	DeltaExpr* expr = MakeInternalVar(sym);
-	return expr;
-}
-
-DeltaExpr* DeltaExpr::MakeInternalVar (DeltaSymbol* sym) {
-	DeltaExpr* expr		= DNEW(DeltaExpr);
-	DPTR(expr)->sym		= sym;
-	DPTR(expr)->SetTypeTag(TagAnyValue);
-	DPTR(expr)->GetTypeInfo().Set(TagAnyValue);
-	return expr;
-}
-
-///////////////////////////////////////////////////////////////////
-
-DeltaExpr* DeltaExpr::MakeTempVar (void) {
-	DeltaExpr* expr		= DNEW(DeltaExpr);
-	DPTR(expr)->sym		= DELTASYMBOLS.NewTemp();
-	DPTR(expr)->SetTypeTag(TagAnyValue);
-	DPTR(expr)->GetTypeInfo().Set(TagAnyValue);
-	return expr;
-}
-
-DeltaExpr* DeltaExpr::Make (DeltaNumberValueType num) {
-	DeltaExpr* expr		=	DNEW(DeltaExpr);
-	DPTR(expr)->type	=	DeltaExprNumber;
-	expr->numConst		=	num;
-	DPTR(expr)->SetTypeTag(TagNumber);
-	DPTR(expr)->GetTypeInfo().Set(TagNumber);
-	return expr;
-}
-
-///////////////////////////////////////////////////////////////////
-
 void DeltaExpr::SetInitialised (void) {
 	if (this && type == DeltaExprVar && sym && !DPTR(sym)->IsTempVar()) {
-		ParseParms::AssumeToBeInitialised(sym);
+		PARSEPARMS.AssumeToBeInitialised(sym);
 		DPTR(sym)->SetInitialised();								
 	}
 }
@@ -298,7 +190,7 @@ DeltaExpr* DeltaExpr::AdaptIfBool (void) {
 	
 	if (this && type == DeltaExprLogical) {
 
-		DeltaExpr* expr = DNEW(DeltaExpr);
+		DeltaExpr* expr = EXPRFACTORY.New();
 		expr->sym = IsTemp() ? sym : DELTASYMBOLS.NewTemp();
 		ADAPT_IF_BOOL_ACTIONS(expr);
 		DPTR(expr)->SetUnparsed(GetUnparsed()); // Retains unparsed form.
@@ -356,7 +248,7 @@ DeltaExpr* DeltaExpr::AdaptToBool (void) {
 		}
 		else {
 			type = DeltaExprLogical;
-			DELTA_EXPR_EMIT_BOOL_TEST(this, this, true);
+			TRANSLATOR.DELTA_EXPR_EMIT_BOOL_TEST(this, this, true);
 		}
 	}
 		
@@ -376,7 +268,7 @@ DeltaExpr* DeltaExpr::AdaptIfTableContent (void) {
 		return this;
 	else {
 
-		DeltaExpr* content = DNEW(DeltaExpr);
+		DeltaExpr* content = EXPRFACTORY.New();
 		DPTR(content)->sym = DELTASYMBOLS.NewTemp();
 
 		QUADS.Emit(
@@ -429,7 +321,7 @@ DeltaExpr* DeltaExpr::AdaptAsArgumentVariable (void) {
 	//
 	if (type == DeltaExprVar && !IsTemp()) {
 
-		DeltaExpr* expr = DNEW(DeltaExpr);
+		DeltaExpr* expr = EXPRFACTORY.New();
 		DPTR(expr)->sym = DELTASYMBOLS.NewTemp();
 		if (IsVarDeclaration())
 			DPTR(expr)->userData = this;	// Store original var for future reference.
@@ -511,7 +403,7 @@ void DeltaExpr::AddAllPlausibleReturnTypes (TypeList* typeList) const {
 	if (type == DeltaExprLibraryFunction && sym->GetLibraryFuncSignatures())
 		DPTR(DPTR(sym)->GetLibraryFuncSignatures())->AddAllPlausibleReturnTypes(typeList);
 	else
-	if (type == DeltaExprProgramFunction && !ParseParms::IsOuterFunction(sym))							// Can't be sure for all its return types if enclosing.
+	if (type == DeltaExprProgramFunction && !PARSEPARMS.IsOuterFunction(sym))							// Can't be sure for all its return types if enclosing.
 		DeltaLibraryTypeInfo::AppendInTypeListIfNotInside(typeList, DPTR(sym)->GetFunctionSignature()->GetReturnTypes());
 	else
 		DeltaLibraryTypeInfo::AddInTypeListIfNotInside(typeList, DeltaLibraryTypeInfo(TagAnyValue));	// We assume it return anything.
@@ -545,3 +437,127 @@ void ExprList::Append (ExprList* elist) {
 }
 
 //-----------------------------------------------------------------
+
+DeltaExpr* DeltaExprFactory::New (void) const {
+	DeltaExpr* expr = AutoCollectableFactory::New();
+	INIT_COMPILER_COMPONENT_DIRECTORY(expr, COMPONENT_DIRECTORY());
+	return expr;
+}
+
+void DeltaExprFactory::Delete (DeltaExpr* expr) const { DDELETE(expr); }
+
+///////////////////////////////////////////////////////////////////
+
+DeltaExpr* DeltaExprFactory::Copy (DeltaExpr* expr) const {
+
+	DeltaExpr* copy = EXPRFACTORY.New();
+
+	copy->type			= expr->type;
+	copy->typeTag		= expr->typeTag;
+	copy->sym			= expr->sym;		
+	copy->strConst		= expr->strConst;
+	copy->numConst		= expr->numConst;
+	copy->boolConst 	= expr->boolConst;
+	copy->lateBindArg	= expr->lateBindArg;
+	copy->index			= expr->index;
+	copy->tableItem		= expr->tableItem;
+	copy->isBounded		= expr->isBounded;
+
+	unullify(copy->next);
+	copy->trueList = copy->falseList = DELTA_NIL_QUAD_LABEL;
+
+	copy->SetUnparsed(expr->GetUnparsed());
+	return copy;
+}
+
+///////////////////////////////////////////////////////////////////
+
+DeltaExpr* DeltaExprFactory::CopyConst (DeltaSymbol* constSym) const {
+	DASSERT(constSym && (DPTR(constSym)->IsUserDefinedConst() || DPTR(constSym)->IsLibraryConst()));
+	DeltaExpr* copy = Copy(DPTR(constSym)->GetConst());
+	DPTR(copy)->userData = constSym;	// associate with its constant if needed
+	return copy;
+}
+
+///////////////////////////////////////////////////////////////////
+
+DeltaExpr* DeltaExprFactory::GetNewSelf (void) const {
+	DeltaExpr* newSelfExpr			= New();
+	DPTR(newSelfExpr)->type			= DeltaExprNewSelf;
+	DPTR(newSelfExpr)->isNewSelf	= true;
+	DPTR(newSelfExpr)->SetTypeTag(TagObject);
+	DPTR(newSelfExpr)->GetTypeInfo().Set(TagObject);
+	return newSelfExpr;
+}
+
+///////////////////////////////////////////////////////////////////
+
+DeltaExpr* DeltaExprFactory::MakeBool (bool val) const {
+	DeltaExpr* expr		= New();
+	DPTR(expr)->type	= DeltaExprBoolean;
+	expr->boolConst		= val;
+	DPTR(expr)->SetTypeTag(TagBool);
+	DPTR(expr)->GetTypeInfo().Set(TagBool);
+	return expr;
+}
+
+///////////////////////////////////////////////////////////////////
+
+DeltaExpr* DeltaExprFactory::One (bool minus) const
+	{ return minus ? Make(-1) : Make(1); }
+
+///////////////////////////////////////////////////////////////////
+
+DeltaExpr* DeltaExprFactory::MakeConst (const std::string& s) const {
+	DeltaExpr* expr			= New();
+	DPTR(expr)->type		= DeltaExprString;
+	DPTR(expr)->strConst	= s;
+	DPTR(expr)->SetTypeTag(TagString);
+	DPTR(expr)->GetTypeInfo().Set(TagString);
+	return expr;
+}
+
+DeltaExpr* DeltaExprFactory::MakeStringifiedConst (const std::string& s) const {
+	DeltaExpr* result = MakeConst(s);
+	DPTR(result)->SetIsStringified();
+	return result;
+}
+
+///////////////////////////////////////////////////////////////////
+// Internal vars are not assumed to be variable decls
+// (thats is initially undefined) since they are used to carry 
+// reserved values (builtin names like 'self', or temps).
+
+DeltaExpr* DeltaExprFactory::MakeInternalVar (const char* id) const {
+	DeltaSymbol* sym = DELTASYMBOLS.Lookup(id);
+	DASSERT(sym);
+	DeltaExpr* expr = MakeInternalVar(sym);
+	return expr;
+}
+
+DeltaExpr* DeltaExprFactory::MakeInternalVar (DeltaSymbol* sym) const {
+	DeltaExpr* expr		= New();
+	DPTR(expr)->sym		= sym;
+	DPTR(expr)->SetTypeTag(TagAnyValue);
+	DPTR(expr)->GetTypeInfo().Set(TagAnyValue);
+	return expr;
+}
+
+///////////////////////////////////////////////////////////////////
+
+DeltaExpr* DeltaExprFactory::MakeTempVar (void) const {
+	DeltaExpr* expr		= New();
+	DPTR(expr)->sym		= DELTASYMBOLS.NewTemp();
+	DPTR(expr)->SetTypeTag(TagAnyValue);
+	DPTR(expr)->GetTypeInfo().Set(TagAnyValue);
+	return expr;
+}
+
+DeltaExpr* DeltaExprFactory::Make (DeltaNumberValueType num) const {
+	DeltaExpr* expr		=	New();
+	DPTR(expr)->type	=	DeltaExprNumber;
+	expr->numConst		=	num;
+	DPTR(expr)->SetTypeTag(TagNumber);
+	DPTR(expr)->GetTypeInfo().Set(TagNumber);
+	return expr;
+}

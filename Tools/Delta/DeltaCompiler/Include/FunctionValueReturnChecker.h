@@ -7,14 +7,16 @@
 #ifndef	FUNCTIONVALUERETURNCHECKER_H
 #define	FUNCTIONVALUERETURNCHECKER_H
 
-#include "usingleton.h"
+#include "CompilerComponentDirectory.h"
 #include "InterCode.h"
 #include <list>
 #include <map>
 
 /////////////////////////////////////////////////////////////
 
-class FunctionValueReturnCheckerClass {
+class FunctionValueReturnChecker {
+
+	USE_COMPILER_COMPONENT_DIRECTORY();
 
 	private:
 	typedef std::list<DeltaQuadAddress>			MarkedList;
@@ -52,16 +54,16 @@ class FunctionValueReturnCheckerClass {
 	public:
 	void				CheckFunction (DeltaCodeAddress end);
 
-	FunctionValueReturnCheckerClass (void) : returnExprFound(false){}
-	~FunctionValueReturnCheckerClass(){}
+	FunctionValueReturnChecker (void) : returnExprFound(false){}
+	~FunctionValueReturnChecker(){}
 };
 
 /////////////////////////////////////////////////////////////
 
-class FunctionValueReturnChecker : public usingleton<FunctionValueReturnCheckerClass>{};
+#define RETVALCHECKER_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), FunctionValueReturnChecker)))
 
-#define	RETVALCHECKER \
-			FunctionValueReturnChecker::GetSingleton()
+#define RETVALCHECKER	RETVALCHECKER_EX(COMPONENT_DIRECTORY())
 
 /////////////////////////////////////////////////////////////
 

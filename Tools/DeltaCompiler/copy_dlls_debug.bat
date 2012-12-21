@@ -1,0 +1,11 @@
+copy "..\Delta\DLLs\BytecodeStructures\lib\debug\BytecodeStructuresD.dll" "..\..\Build"
+copy "..\Delta\DLLs\ReadersWriters\lib\debug\ReadersWritersD.dll" "..\..\Build"
+copy "..\Delta\DLLs\DebuggerBackend\lib\debug\DebuggerBackendD.dll" "..\..\Build"
+copy "..\Delta\DLLs\DebuggerCommon\lib\debug\DebuggerCommonD.dll" "..\..\Build"
+copy "..\Delta\DLLs\DebuggerFrontend\lib\debug\DebuggerFrontendD.dll" "..\..\Build"
+copy "..\Delta\DLLs\SocketLib\lib\debug\SocketsD.dll" "..\..\Build"
+copy "..\Delta\DLLs\UtilAndDebugLib\lib\debug\UtilAndDefensiveHeapD.dll" "..\..\Build"
+copy "..\Delta\DLLs\SyntaxTree\lib\debug\SyntaxTreeD.dll" "..\..\Build"
+copy "..\Delta\DLLs\CompilerComponents\lib\debug\CompilerComponentsD.dll" "..\..\Build"
+copy "..\Delta\DLLs\VirtualMachineComponents\lib\debug\VirtualMachineComponentsD.dll" "..\..\Build"
+

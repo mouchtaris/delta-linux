@@ -12,7 +12,7 @@
 #include "usingleton.h"
 
 UGLOBALINSTANCE_CLASS_DEF(
-	DVM_CLASS DeltaDebugServerBreakPoints, 
+	DVMDEBUG_CLASS DeltaDebugServerBreakPoints, 
 	DebugBreakPointHolder
 )
 

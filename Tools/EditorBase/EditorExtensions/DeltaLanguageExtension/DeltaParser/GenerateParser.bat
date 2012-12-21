@@ -1,7 +1,7 @@
 @ECHO OFF
 REM parser generator generator
 
-set exe="C:\Program Files\GnuWin32\Bin\bison.exe"
+set exe="C:\Progra~1\GnuWin32\Bin\bison.exe"
 
 setlocal
 

@@ -24,6 +24,9 @@
     <ClCompile Include="..\DeltaVM\DynamicCodeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\DeltaVM\DeltaVMBreakpoints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeltaVM\DebugAsyncEvaluator.h">

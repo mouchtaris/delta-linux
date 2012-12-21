@@ -1,58 +1,100 @@
 // DeltaCompilerInit.cpp
-// Global program start-up  and ending actions.
+// Global program start-up and ending actions.
 // ScriptFigher Project.
 // A. Savidis, May 2003.
 //
-
-#ifndef	DELTACOMPILERINIT_H
-#define	DELTACOMPILERINIT_H
-
-#include "CompilerAPI.h"
-#include "InterCode.h"
-#include "Symbol.h"
-#include "TargetCode.h"
-#include "LocalDataHandling.h"
-#include "Optimizer.h"
-#include "DebugNamingForStaticVars.h"
-#include "AutoCollection.h"
 #include "DeltaCompilerInit.h"
-#include "LibraryNamespaceHolder.h"
-#include "FunctionReturnTypesManager.h"
+#include "DeltaMetaCompiler.h"
+#include "BuildDependencies.h"
+#include "Unparse.h"
+#include "MetaCompilerLib.h"
+#include "DeltaPureVMFacade.h"
+#include "DeltaVirtualMachine.h"
+#include "DeltaDebuggedVMFacade.h"
+#include "DeltaDebugClientBreakPoints.h"
+#include "VMCompLib.h"
+#include "DDebug.h"
+#include "uinit.h"
 
-static util_ui32 initCounter = 0;
+/////////////////////////////////////////////////////////
+
+static util_ui32	initCounter		= 0;
+static bool			initialising	= false;
+static bool			cleaningup		= false;
+static bool			debug			= false;
+
+//-------------------------------------------------------
+
+static void onError (const char* error) {
+	fprintf(stderr, "%s", error);
+	fflush(stderr);
+}
+
+static void OnWarning(const char* warning) {
+	fprintf(stderr, "%s", warning);
+	fflush(stderr);
+}
+
+//-------------------------------------------------------
+
+static void OnStopRequested(void)
+	{ exit(0); }
+
+static volatile bool execute = false;
+
+static void OnStartRequested (void) 
+	{ execute = true; }
+
+static void WaitStartMessage (void)
+	{ while (!execute) ; }
+
+/////////////////////////////////////////////////////////
 
 namespace DeltaCompilerInit {
 
-	DCOMPLIB_FUNC void Initialise (void) {
+	DCOMPLIB_FUNC void Initialise (const VMOptions& vmOptions) {
+		if (initialising)
+			return;
+		initialising = true;
 		if (!initCounter++) {
-			DeltaCompiler::SingletonCreate();
-			DeltaSymbolTable::SingletonCreate();
-			Optimizer::SingletonCreate();
-			DeltaQuadManager::SingletonCreate();
-			AutoCollector::SingletonCreate();
-			DeltaCodeGenerator::SingletonCreate();
-			LocalDataHandler::SingletonCreate();
-			DebugNamingForStaticVars::SingletonCreate();
-			DeltaLibraryNamespaceHolder::SingletonCreate();
-			DeltaFunctionReturnTypesManager::SingletonCreate();
+			debug = vmOptions.debug;
+			dinit(onError);
+			UtilPackage::Initialise();
+			Unparse_SingletonCreate();
+			INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler);						
+			INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
+			
+			DeltaPureVMFacade::Initialise();
+			DeltaVirtualMachine::SetWarningCallback(OnWarning);
+			
+			if (debug) {
+				DeltaDebuggedVMFacade::Initialise(vmOptions.negotiationPort);
+				DeltaDebuggedVMFacade::SetOnStartCallback(OnStartRequested);
+				DeltaDebuggedVMFacade::SetOnStopDebuggingCallback(OnStopRequested);
+				WaitStartMessage();
+			}
+
+			Install_DeltaMetaCompiler_Lib();
 		}
+		initialising = false;
 	}
 
 	DCOMPLIB_FUNC void CleanUp (void) {
+		if (cleaningup)
+			return;
+		cleaningup = true;
 		DASSERT(initCounter);
 		if (!--initCounter) {
-			DeltaCompiler::SingletonDestroy();
-			DeltaSymbolTable::SingletonDestroy();
-			DeltaCodeGenerator::SingletonDestroy();
-			AutoCollector::SingletonDestroy();
-			Optimizer::SingletonDestroy();
-			DeltaQuadManager::SingletonDestroy();
-			LocalDataHandler::SingletonDestroy();
-			DebugNamingForStaticVars::SingletonDestroy();
-			DeltaLibraryNamespaceHolder::SingletonDestroy();
-			DeltaFunctionReturnTypesManager::SingletonDestroy();
+			Unparse_SingletonDestroy();
+			CleanUp_DeltaMetaCompiler_Lib();
+			if (debug)
+				DeltaDebuggedVMFacade::CleanUp();
+			DeltaPureVMFacade::CleanUp();
+			UtilPackage::CleanUp();
+			dclose();
 		}
+		cleaningup = false;
 	}
 }
 
-#endif	// Do not add stuff beyond this point.
+/////////////////////////////////////////////////////////

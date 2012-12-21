@@ -62,6 +62,7 @@ const char * DeltaASTNodeTypeStr(int type)
 		"CallASTNode",
 		"CompoundASTNode",
 		"UsingASTNode",
+		"QuotedElementsASTNode",
 	};
 	assert(type >= 0 && type < SIZEOF_ARRAY(types));
 	return types[type];

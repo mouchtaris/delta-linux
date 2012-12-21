@@ -51,6 +51,7 @@ IMPLEMENT_VISIT(TableConstructASTNode, "Table construction expression")
 IMPLEMENT_VISIT(TableConstKeyASTNode, "Constant key of table")
 IMPLEMENT_VISIT(OtherStmtASTNode, "Other statement")
 IMPLEMENT_VISIT(UsingASTNode, "Using")
+IMPLEMENT_VISIT(QuotedElementsASTNode, "Quoted element list ")
 
 ////////////////////////////////////////////////////////////////////////
 

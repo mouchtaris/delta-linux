@@ -407,6 +407,8 @@ void DeltaDebugProgramInfo::Clear (void) {
 	lines.Clear();
 	chunks.Clear();
 	calls.Clear();
+
+	isDynamicCode = false;
 }
 
 /////////////////////////////////////

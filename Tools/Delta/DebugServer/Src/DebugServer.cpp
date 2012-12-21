@@ -215,12 +215,17 @@ bool DeltaDebugServer::ReceiveAllBreakPoints (void) {
 
 ////////////////////////////////////////////////////////////
 
-bool DeltaDebugServer::IsNegotiationWithClientSuccessful (int argc, char** argv) {
-
+util_ui32 DeltaDebugServer::NegotiationPortFromArguments (int argc, char **argv) {
 	util_ui32 negotiationPort = 0;
 	while (argc-- > 1)
 		if (!strcmp(argv[argc], DEBUG_CLIENT_NEGOTIATIONPORT_CMMDARG))
 			{ negotiationPort = atoi(argv[argc + 1]); break; }
+	return negotiationPort;
+}
+
+////////////////////////////////////////////////////////////
+
+bool DeltaDebugServer::IsNegotiationWithClientSuccessful (util_ui32 negotiationPort) {
 
 	if (negotiationPort) {
 
@@ -371,7 +376,7 @@ util_ui32 DeltaDebugServer::GetPort (void) {
 
 ////////////////////////////////////////////////////////////
 
-bool DeltaDebugServer::Initialise (util_ui32 port, int argc, char** argv) {
+bool DeltaDebugServer::Initialise (util_ui32 port, util_ui32 negotiationPort) {
 
 	SocketNetLink::Initialise();
 	DebugExprEvaluator::SingletonCreate();
@@ -390,7 +395,7 @@ bool DeltaDebugServer::Initialise (util_ui32 port, int argc, char** argv) {
 		// handling the connection trials.
 		//
 		connectThread = DNEWCLASS(uthread, (TryEstablishClientConnection));
-		if (IsNegotiationWithClientSuccessful(argc, argv)) {
+		if (IsNegotiationWithClientSuccessful(negotiationPort)) {
 			TryEstablishClientConnection();		// Blocking waiting for connection.
 			return !!client;
 		}

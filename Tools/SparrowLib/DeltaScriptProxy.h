@@ -230,11 +230,13 @@ namespace ide
 			ClassVMInfo(DeltaVirtualMachine* vm = (DeltaVirtualMachine *) 0) : vm(vm), guid(0) {}
 		};
 		typedef std::map<std::string, ClassVMInfo> ClassVMMap;
+		typedef std::map<Component*, Component*> ComponentMap;
 
 		///--- private members
 		static const std::string s_classId;
 		static ScriptInstanceHolder scriptInstances;
 		static ClassVMMap classVMs;
+		static ComponentMap derivedInstances;
 	};
 }
 

@@ -10,16 +10,6 @@
 #include "DeltaCompErrorMsg.h"
 #include "ASTTags.h"
 
-std::stack<DescriptiveParseErrorHandler::StackItem>*	
-DescriptiveParseErrorHandler::parseStack =	(std::stack<StackItem>*) 0;
-
-DescriptiveParseErrorHandler::SymbolMessageMap*	
-DescriptiveParseErrorHandler::symbolMessages = (SymbolMessageMap*) 0;	
-
-bool DescriptiveParseErrorHandler::isMainAddedAutomatically	 = false;
-
-const std::string (*DescriptiveParseErrorHandler::getTokenText)(void);
-
 /////////////////////////////////////////////////////
 
 util_ui32 S_FUNC_ (const std::string& funcClass) {
@@ -164,9 +154,9 @@ void DescriptiveParseErrorHandler::HandleSyntaxError (void) {
 	std::string report = GetReport();
 
 	if (!report.empty())
-		DeltaCompError("syntax error before '%s': %s", (*getTokenText)().c_str(), report.c_str());
+		COMPMESSENGER.Error("syntax error before '%s': %s", getTokenText().c_str(), report.c_str());
 	else
-		DeltaCompError("syntax error before '%s'", (*getTokenText)().c_str());
+		COMPMESSENGER.Error("syntax error before '%s'", getTokenText().c_str());
 }
 
 /////////////////////////////////////////////////////
@@ -190,7 +180,7 @@ void DescriptiveParseErrorHandler::Initialise (void) {
 	DASSERT(!IsInitialised());
 	unew(parseStack);
 	unew(symbolMessages);
-	unullify(getTokenText);
+	getTokenText.reset();
 	isMainAddedAutomatically = false;
 
 	_MS(S_FUNC,				"function_def");	
@@ -323,5 +313,13 @@ void DescriptiveParseErrorHandler::CleanUp (void) {
 	udelete(parseStack);
 	udelete(symbolMessages);
 }
+
+/////////////////////////////////////////////////////
+
+DescriptiveParseErrorHandler::DescriptiveParseErrorHandler (void) : 
+	parseStack					((std::stack<StackItem>*) 0),
+	symbolMessages				((SymbolMessageMap*) 0),
+	isMainAddedAutomatically	(false)
+{}
 
 /////////////////////////////////////////////////////

@@ -49,23 +49,25 @@ class RealDebugger : public Debugger {
 ////////////////////////////////////////////////////////////
 
 static RealDebugger 
-				debugger;
+					debugger;
 static Debugger*
-				oldDebugger				= (Debugger*) 0;
+					oldDebugger				= (Debugger*) 0;
 
-static bool		isInitialised			= false;
+static util_ui32	initCounter				= 0;
+static bool			initialising			= false;
+static bool			cleaningup				= false;
 
 static DeltaVirtualMachine::ErrorWarningCallback 
-				vmErrorCallback			= (DeltaVirtualMachine::ErrorWarningCallback) 0;
+					vmErrorCallback			= (DeltaVirtualMachine::ErrorWarningCallback) 0;
 
 static DeltaVirtualMachine::ErrorWarningCallback 
-				vmWarningCallback		= (DeltaVirtualMachine::ErrorWarningCallback) 0;
+					vmWarningCallback		= (DeltaVirtualMachine::ErrorWarningCallback) 0;
 
 static DeltaAssertExtensions::AssertInterfaceCallback
-				assertInterfaceCallback	= (DeltaAssertExtensions::AssertInterfaceCallback) 0;
+					assertInterfaceCallback	= (DeltaAssertExtensions::AssertInterfaceCallback) 0;
 
 static DeltaAssertExtensions::ErrorInterfaceCallback
-				errorInterfaceCallback	= (DeltaAssertExtensions::ErrorInterfaceCallback) 0;
+					errorInterfaceCallback	= (DeltaAssertExtensions::ErrorInterfaceCallback) 0;
 
 ////////////////////////////////////////////////////////////
 // The only difference to the default is that it includes
@@ -158,35 +160,41 @@ static void SendWarningToDebugger (const char* warning) {
 ///////////////////////////////////////////
 
 DVMDEBUG_CFUNC void* DeltaDebuggedVMFacade_Initialise (void) {
-	DeltaDebuggedVMFacade::Initialise(0, (char**) 0);
+	DeltaDebuggedVMFacade::Initialise();
 	return udynamiclibloader::New("init");
 }
 
 ///////////////////////////////////////////
 
-bool DeltaDebuggedVMFacade::Initialise (int argc, char** argv) {
+bool DeltaDebuggedVMFacade::Initialise (util_ui32 negotiationPort) {
 
-	DASSERT(!IsInitialised() && DeltaPureVMFacade::IsInitialised());
+	if (initialising)
+		return false;
+	
+	bool result = true;
+	initialising = true;
+	if (!initCounter++) {
+		DASSERT(DeltaPureVMFacade::IsInitialised());
 
-	assertInterfaceCallback	= DeltaAssertExtensions::GetAssertInterfaceCallback();
-	errorInterfaceCallback	= DeltaAssertExtensions::GetErrorInterfaceCallback();
-	DeltaAssertExtensions::SetAssertInterfaceCallback(&DeltaAssertInterfaceCallback);
-	DeltaAssertExtensions::SetErrorInterfaceCallback(&DeltaErrorInterfaceCallback);
+		assertInterfaceCallback	= DeltaAssertExtensions::GetAssertInterfaceCallback();
+		errorInterfaceCallback	= DeltaAssertExtensions::GetErrorInterfaceCallback();
+		DeltaAssertExtensions::SetAssertInterfaceCallback(&DeltaAssertInterfaceCallback);
+		DeltaAssertExtensions::SetErrorInterfaceCallback(&DeltaErrorInterfaceCallback);
 
-	DeltaDebugServerBreakPoints::Create();
-	VirtualMachineDebugExtensionsPackage::Initialise();
-		
-	vmErrorCallback		= DeltaVirtualMachine::GetErrorCallback();
-	vmWarningCallback	= DeltaVirtualMachine::GetWarningCallback();
-	DeltaVirtualMachine::SetErrorCallback(&SendErrorToDebugger);
-	DeltaVirtualMachine::SetWarningCallback(&SendWarningToDebugger);
+		DeltaDebugServerBreakPoints::Create();
+		VirtualMachineDebugExtensionsPackage::Initialise();
+			
+		vmErrorCallback		= DeltaVirtualMachine::GetErrorCallback();
+		vmWarningCallback	= DeltaVirtualMachine::GetWarningCallback();
+		DeltaVirtualMachine::SetErrorCallback(&SendErrorToDebugger);
+		DeltaVirtualMachine::SetWarningCallback(&SendWarningToDebugger);
 
-	oldDebugger = &DeltaPureVMDebuggerProxy::GetDebugger();
-	DeltaPureVMDebuggerProxy::SetDebugger(&debugger);
+		oldDebugger = &DeltaPureVMDebuggerProxy::GetDebugger();
+		DeltaPureVMDebuggerProxy::SetDebugger(&debugger);
 
-	bool result = DeltaDebugServer::Initialise(DEBUG_SERVER_PORT, argc, argv);	// Always at the end.
-
-	isInitialised = true;
+		result = DeltaDebugServer::Initialise(DEBUG_SERVER_PORT, negotiationPort);	// Always at the end.
+	}
+	initialising = false;
 	return result;
 }
 
@@ -199,22 +207,26 @@ DVMDEBUG_CFUNC void* DeltaDebuggedVMFacade_CleanUp (void) {
 
 void DeltaDebuggedVMFacade::CleanUp (void) {
 
+	if (cleaningup)
+		return;
+
+	cleaningup = true;
 	DASSERT(IsInitialised() && DeltaPureVMFacade::IsInitialised()); // Should destroy before pure.
+	if (!--initCounter) {
+		DeltaAssertExtensions::SetAssertInterfaceCallback(assertInterfaceCallback);
+		DeltaAssertExtensions::SetErrorInterfaceCallback(errorInterfaceCallback);
 
-	DeltaAssertExtensions::SetAssertInterfaceCallback(assertInterfaceCallback);
-	DeltaAssertExtensions::SetErrorInterfaceCallback(errorInterfaceCallback);
+		DeltaVirtualMachine::SetErrorCallback(vmErrorCallback);
+		DeltaVirtualMachine::SetWarningCallback(vmWarningCallback);
 
-	DeltaVirtualMachine::SetErrorCallback(vmErrorCallback);
-	DeltaVirtualMachine::SetWarningCallback(vmWarningCallback);
+		DeltaDebugServer::CleanUp();
 
-	DeltaDebugServer::CleanUp();
+		VirtualMachineDebugExtensionsPackage::CleanUp(); // Always after the debug server.
+		DeltaDebugServerBreakPoints::Destroy();
 
-	VirtualMachineDebugExtensionsPackage::CleanUp(); // Always after the debug server.
-	DeltaDebugServerBreakPoints::Destroy();
-
-	DeltaPureVMDebuggerProxy::SetDebugger(oldDebugger);
-
-	isInitialised = false;
+		DeltaPureVMDebuggerProxy::SetDebugger(oldDebugger);
+	}
+	cleaningup = false;
 }
 
 ///////////////////////////////////////////
@@ -227,6 +239,9 @@ bool DeltaDebuggedVMFacade::IsClientConnected (void)
 
 bool DeltaDebuggedVMFacade::ClientWasAttached (void)
 	{ return DeltaDebugServer::ClientWasAttached(); }
+
+util_ui32 DeltaDebuggedVMFacade::NegotiationPortFromArguments (int argc, char **argv)
+	{ return DeltaDebugServer::NegotiationPortFromArguments(argc, argv); }
 
 ///////////////////////////////////////////
 
@@ -250,6 +265,6 @@ void DeltaDebuggedVMFacade::SetOnStartCallback (uvoidvoid_f onGo) {
 }
 
 bool DeltaDebuggedVMFacade::IsInitialised (void) 
-	{ return isInitialised; }
+	{ return initCounter; }
 
 ////////////////////////////////////////////////////////////

@@ -10,104 +10,112 @@
 #include "DDebug.h"
 #include "utypes.h"
 #include "DeltaCompErrorMsg.h"
-#include "GenericWriter.h"
 #include "DeltaCompilerDefs.h"
 #include "ASTNode.h"
+#include "CompilerComponentDirectory.h"
 #include <list>
 #include <string>
 #include <stack>
 
 ///////////////////////////////////////////////////////////////
 
+class GenericWriter;
+class DeltaSyntaxParser;
+
+namespace AST {
+	class ValidationVisitor;
+}
+
+///////////////////////////////////////////////////////////////
+
 class DCOMPLIB_CLASS DeltaCompiler {
 
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
+	public:
+	typedef std::list<UPTR(const char*)> FuncList;
+	typedef DeltaCompilerMessenger::ErrorCallback ErrorCallback;
+	typedef ucallbackwithclosure<void (*)(AST::Node*, void*)> ParseCallback;
 	private:
 
 	///////////////////////////////////////////////////////////////
 
-	static bool									phaseCleaned;
-	static std::list<UPTR(const char*)>*		externFuncs;
-	static std::string*							byteCodePath;
-	static std::string*							srcFile;
-	static std::stack<DeltaCompErrorCallback>*	errorCallbacks;
-	static bool									isCompiling;		// Reetrancy check.
-	static bool									isDynamicCode;		// If compiling from text string.
-	static std::string*							dynamicCode;
-	static util_ui32							currLine;
-	static AST::Node*							ast;
+	bool						phaseCleaned;
+	bool						sourceSuccessfullyOpened;
+	bool						parseOnly;
+	FuncList*					externFuncs;
+	std::stack<ErrorCallback>*	errorCallbacks;
+	ParseCallback				onParse;
+	bool						isCompiling;		// Reetrancy check.
+	AST::Node*					ast;
 
-	struct DCOMPLIB_CLASS CompileFlags {
-		bool		productionMode;					// FALSE
-	};
+	static void			OnParseStarted	(bool success, void* closure);
 
-	static CompileFlags	compileFlags;
+	void				PreInitialise (void);
+	bool				PureSyntaxAnalysis (DeltaSyntaxParser& parser);
 
-	static bool					InitialiseForFile (
-									FILE*&		fp, 
-									void		(*reset)(FILE*),
-									const char* inFile, 
-									const char* optSymbolicName
-								);
+	bool				SyntaxAnalysis (const std::list<int>& tokens = std::list<int>());
+	bool				SyntaxAnalysisAndIntermediateCode (void);
 
-	static bool					InitialiseForFileAST (const char* inFile, const char* optSymbolicName);
-	static bool					InitialiseForTextAST (const char* text);
-	static void					CleanUpForTextAST (void);
+	bool				PerformFirstPass (void);
+	void				OptimizationAndTargetCode (void);
+	void				InformAboutErrors (void) const;
 
-	static bool					InitialiseForFile (const char* inFile, const char* optSymbolicName);
-	static bool					InitialiseForText (const char* text);
-	static void					CleanUpForText (void);
+	protected:
+	virtual void		Initialise (void);
+	virtual bool		IntermediateCode (void);
 
-	static void					PreInitialise (void);
-	static void					Initialise (void);
-
-	static bool					SyntaxAnalysis (void);
-	static void					IntermediateCode (void);
-
-	static bool					PerformFirstPass (void);
-	static void					SyntaxAnlysisAndIntermediateCode (void);
-	static void					OptimizationAndTargetCode (void);
-	static void					InformAboutErrors (void);
+	AST::ValidationVisitor* NewValidator (bool allowEmptyInlines = false) const;
 
 	///////////////////////////////////////////////////////////////
 
 	public:
-	static void 				SetErrorCallback (void (*callback)(const char*));
-	static void 				ResetErrorCallback (void);
+	void 				SetErrorCallback (ErrorCallback callback);
+	ErrorCallback		GetErrorCallback (void) const;
+	void 				ResetErrorCallback (void);
+	bool				ErrorsExist (void) const;
 
-	static util_ui32			GetLine (void);
-	static util_ui32			SetLine (util_ui32 line);
-	static void					NextLine (void);
+	void				SetParseCallback (ParseCallback callback);
+	ParseCallback		GetParseCallback (void) const;
 
-	static const char*			GetSourceFile (void);
-	static bool					IsCompiling (void);
-	static bool					IsDynamicCode (void);
-	static const std::string&	GetDynamicCode (void);
-	static void					SetByteCodePath (const std::string& path);	// Must be set with every compilation.
-	static const std::string&	GetByteCodePath (void);
+	bool				IsCompiling (void) const;
+	void				SetByteCodePath (const std::string& path);	// Must be set with every compilation.
+	const std::string&	GetByteCodePath (void) const;
 
 	// Compilation.
-	static void					AddExternFuncs (UPTR(const char*) funcs);
-	static void					ClearExternFuncs (void);
-	static bool					Compile (const char* inFile, const char* optSymbolicName = (char*) 0);
-	static bool					CompileText (const char* text);
-	static AST::Node*			GetSyntaxTree (void);
+	void				AddExternFuncs (UPTR(const char*) funcs);
+	FuncList*			GetExternFuncs (void) const;
+	void				ClearExternFuncs (void);
+
+	bool				Compile (const char* inFile, const char* optSymbolicName = (const char*) 0);
+	bool				CompileText (const char* text);
+	bool				Translate (const TreeNode* ast);
+
+	AST::Node*			Parse (const char* inFile);
+	AST::Node*			ParseText (const char* text);
+	AST::Node*			ParseQuotedElements (const char* text);
+
+	const std::string	Unparse (const TreeNode* ast) const;
+
+	AST::Node*			GetSyntaxTree (void);
 
 	// Compile flags.
-	static void					SetProductionMode (bool val);
-	static bool					GetProductionMode (void);
+	void				SetProductionMode (bool val);
+	bool				GetProductionMode (void) const;
 
 	// Code emission.
-	static void 				DumpUnparsed (const char* file);
-	static void 				DumpAST (const char* file);
-	static void 				DumpInterCode (const char* file);
-	static void 				DumpTextCode (const char* file);
-	static void					DumpBinaryCode (GenericWriter& writer);
-	static void 				DumpBinaryCode (const char*	file);		// To secondary storage directly.
-	static void* 				DumpBinaryCode (util_ui32* size);		// To a dynamic (util_ui8 array) buffer.
+	void 				DumpUnparsed (const char* file) const;
+	void 				DumpAST (const char* file) const;
+	void 				DumpInterCode (const char* file) const;
+	void 				DumpTextCode (const char* file) const;
+	void				DumpBinaryCode (GenericWriter& writer) const;
+	void 				DumpBinaryCode (const char*	file) const;	// To secondary storage directly.
+	void* 				DumpBinaryCode (util_ui32* size) const;		// To a dynamic (util_ui8 array) buffer.
 	
-	static void 				CleanUp (void);
-	static void 				SingletonCreate (void);
-	static void 				SingletonDestroy (void);
+	void 				CleanUp (void);
+
+	DeltaCompiler (void);
+	~DeltaCompiler ();
 };
 
 ///////////////////////////////////////////////////////////////

@@ -19,11 +19,10 @@ window			= nil;
 base			= nil;
 mostbase		= nil;
 
-treeData 		= [];
+treeData 		= nil;
 map				= [];
 
 Root			= nil;
-isWorking		= false;
 
 
 //======================= Properties =======================//
@@ -143,101 +142,33 @@ function SetProperties
 					);
 					
 	//=====================================
-	//---------- Workspaces ----------//
-	AddColorProperty(
-						"Workspaces bg Color",
-						"Background Color",
-						"The starting color for the output tree Workspace background",
-						CreateColor(255, 255, 255),	//White
-						"Workspaces"
-					);
-					
-	AddColorProperty(
-						"Workspaces fg Color",
-						"Foreground Color",
-						"The starting color for the output tree Workspace foreground",
-						CreateColor(0,0,0),	//Black
-						"Workspaces"
-					);
-	
-	AddFontProperty	(
-						"Workspaces Font", 
-						"Font",
-						"The output tree Workspace font",
-						"Workspaces"
-					);
-					
-	//---------- Projects ----------//
-	AddColorProperty(
-						"Projects bg Color",
-						"Background Color",
-						"The starting color for the output tree Project background",
-						CreateColor(255, 255, 255),	//White
-						"Projects"
-					);
-					
-	AddColorProperty(
-						"Projects fg Color",
-						"Foreground Color",
-						"The starting color for the output tree Project foreground",
-						CreateColor(0,0,0),	//Black
-						"Projects"
-					);
-	
-	AddFontProperty	(
-						"Projects Font", 
-						"Font",
-						"The output tree warning font",
-						"Projects"
-					);
-
-	//---------- Filters ----------//
-	AddColorProperty(
-						"Filters bg Color",
-						"Background Color",
-						"The starting color for the output tree Filter background",
-						CreateColor(255, 255, 255),	//White
-						"Filters"
-					);
-					
-	AddColorProperty(
-						"Filters fg Color",
-						"Foreground Color",
-						"The starting color for the output tree Filter foreground",
-						CreateColor(0,0,0),	//Black
-						"Filters"
-					);
-	
-	AddFontProperty	(
-						"Filters Font", 
-						"Font",
-						"The output tree Filter font",
-						"Filters"
-					);
-					
-	//---------- Scripts ----------//
-	AddColorProperty(
-						"Scripts bg Color",
-						"Background Color",
-						"The starting color for the output tree Script background",
-						CreateColor(255, 255, 255),	//White
-						"Scripts"
-					);
-					
-	AddColorProperty(
-						"Scripts fg Color",
-						"Foreground Color",
-						"The starting color for the output tree Script foreground",
-						CreateColor(0,0,0),	//Black
-						"Scripts"
-					);
-	
-	AddFontProperty	(
-						"Scripts Font", 
-						"Font",
-						"The output tree warning font",
-						"Scripts"
-					);
+	//-------- Workspaces & Items --------//
+	local items = list_new("Workspace", "Project", "AspectProject", "Filter", "Script", "Aspect", "StageSource");
+	foreach(local item, items) {
+		local plural = item + "s";
+		AddColorProperty(
+							plural + " bg Color",
+							"Background Color",
+							"The starting color for the output tree " + item + " background",
+							CreateColor(255, 255, 255),	//White
+							plural
+						);
+						
+		AddColorProperty(
+							plural + " fg Color",
+							"Foreground Color",
+							"The starting color for the output tree " + item + " foreground",
+							CreateColor(0,0,0),	//Black
+							plural
+						);
+		
+		AddFontProperty	(
+							plural + " Font", 
+							"Font",
+							"The output tree " + item + " font",
+							plural
+						);
+	}
 }
 
 //----------------------- Highlight -----------------------//
@@ -288,6 +219,7 @@ function GetParent(list)
 
 function PassUp(index, field)
 {
+	assert treeData;
 	for(local t = treeData[index]; t.Parent != -1; t = treeData[t.Parent])
 		treeData[t.Parent][field]++ ;
 }
@@ -310,6 +242,7 @@ function demical (number, dems)
 
 function Update(index, data)
 {
+	assert treeData;
 	for(local t = treeData[index]; t.Parent != -1; t = treeData[t.Parent]) {
 		local comp;
 	
@@ -337,7 +270,7 @@ function onWorkStarted(invoker, root, task)
 	// With every new run, clear the window.
 	window.Clear();
 	
-	// With every new run, clean the treeData table.
+	// Create the new treeData.
 	treeData = [];
 	
 	// Create table entry.
@@ -370,17 +303,15 @@ function onWorkStarted(invoker, root, task)
 	
 	// Enter TreeKey to table.
 	treeData[""].Key = Root;
-	map[Root] = "";
-	
-	// Hoist the flag.
-	isWorking = true;
-	
+	map[Root] = "";	
 }
 
 //----------------------- onWorkCompleted -----------------------//
 
 function onWorkCompleted(invoker, root, task)
 {
+	assert treeData;
+	
 	// Set finishing time.
 	treeData[""].Finished = currenttime();
 	
@@ -391,19 +322,17 @@ function onWorkCompleted(invoker, root, task)
 	// Update root completion time.
 	window.SetText(Root, 4,  compTime + " secs");
 
-
 	// Update root completion status to "Done".
 	window.SetText(Root, 1, "");
 	window.SetImage(Root, 1, "done");
-	
-	// Lower the flag.
-	isWorking = false;
 }
 
 //----------------------- onWorkCanceled -----------------------//
 
 function onWorkCanceled(invoker, root, task)
 {
+	assert treeData;
+	
 	// Set finishing time.
 	treeData[""].Finished = currenttime();
 	
@@ -419,16 +348,13 @@ function onWorkCanceled(invoker, root, task)
 	window.SetImage(Root, 1, "cancel");
 	
 	//TODO: PASSDOWN CANCEL?
-	
-	// Lower the flag.
-	isWorking = false;
 }
 
 //----------------------- onCompilationMessage -----------------------//
 
 function onCompilationMessage(invoker, buildId, type, content, file, line)
 {
-	if (not isWorking)
+	if (not treeData)
 		return;
 
 	// Create the table index for <workId>
@@ -503,7 +429,7 @@ function onCompilationMessage(invoker, buildId, type, content, file, line)
 		// Update GUI.
 		local updateData = nil;
 		if (type == #Error or type == #Warning)
-			updateData = [.col : (type == #Error ? 2 : 3), .index : type];
+			updateData = [.col : (type == #Error ? 2 : 3), .index : type + "s"];
 		Update(parent, updateData);
 	}
 }
@@ -512,7 +438,7 @@ function onCompilationMessage(invoker, buildId, type, content, file, line)
 
 function onResourceWorkStarted(invoker, task, workId)
 {
-	if (not isWorking)
+	if (not treeData)
 		return;
 		
 	// Set starting time.
@@ -569,7 +495,7 @@ function onResourceWorkStarted(invoker, task, workId)
 
 function onResourceWorkCompleted(invoker, task, workId)
 {
-	if (not isWorking)
+	if (not treeData)
 		return;
 		
 	// Set finishing time.

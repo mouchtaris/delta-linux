@@ -389,12 +389,13 @@ ComponentEntry& ComponentEntry::RemoveUserCommand (const String& path)
 	BOOST_FOREACH(const std::string& derivedClassId, m_derivedClasses)
 		this->getComponentEntry(derivedClassId).RemoveUserCommand(path);
 
+	uint flags = m_userCommands.GetUserCommand(path).GetFlags();
 	m_userCommands.RemoveUserCommand(path);
 
-	util::for_all(m_instances, boost::bind(&Component::RemovedUserCommand, _1, path));
+	util::for_all(m_instances, boost::bind(&Component::RemovedUserCommand, _1, path, flags));
 
 	if (m_attached)
-		ComponentRegistry::Instance().NotifyRemovedUserCommand(m_classId, path);
+		ComponentRegistry::Instance().NotifyRemovedUserCommand(m_classId, path, flags);
 
 	return *this;
 }
@@ -406,12 +407,13 @@ ComponentEntry& ComponentEntry::EnableUserCommand (const String& path)
 	BOOST_FOREACH(const std::string& derivedClassId, m_derivedClasses)
 		this->getComponentEntry(derivedClassId).EnableUserCommand(path);
 
+	uint flags = m_userCommands.GetUserCommand(path).GetFlags();
 	m_userCommands.EnableUserCommand(path);
 
-	util::for_all(m_instances, boost::bind(&Component::EnabledUserCommand, _1, path));
+	util::for_all(m_instances, boost::bind(&Component::EnabledUserCommand, _1, path, flags));
 
 	if (m_attached)
-		ComponentRegistry::Instance().NotifyEnabledUserCommand(m_classId, path);
+		ComponentRegistry::Instance().NotifyEnabledUserCommand(m_classId, path, flags);
 
 	return *this;
 }
@@ -423,12 +425,13 @@ ComponentEntry& ComponentEntry::DisableUserCommand (const String& path)
 	BOOST_FOREACH(const std::string& derivedClassId, m_derivedClasses)
 		this->getComponentEntry(derivedClassId).DisableUserCommand(path);
 
+	uint flags = m_userCommands.GetUserCommand(path).GetFlags();
 	m_userCommands.DisableUserCommand(path);
 
-	util::for_all(m_instances, boost::bind(&Component::DisabledUserCommand, _1, path));
+	util::for_all(m_instances, boost::bind(&Component::DisabledUserCommand, _1, path, flags));
 
 	if (m_attached)
-		ComponentRegistry::Instance().NotifyDisabledUserCommand(m_classId, path);
+		ComponentRegistry::Instance().NotifyDisabledUserCommand(m_classId, path, flags);
 
 	return *this;
 }

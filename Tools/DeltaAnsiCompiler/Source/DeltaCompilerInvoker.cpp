@@ -1,9 +1,10 @@
 #include "DeltaCompilerInvoker.h"
 //
 #include "DeltaCompilerInit.h"
-#include "CompilerAPI.h"
+#include "DeltaMetaCompiler.h"
 #include "DDebug.h"
 #include "uinit.h"
+#include "ustrings.h"
 #include "DeltaStdLibFuncNames.h"
 //
 #include <string>
@@ -502,16 +503,19 @@ struct DeltaCompilerInvokerData {
 	//
 	std::list<CompilationUnit>						units;
 	DeltaCompilerInvokerCommandLineArguments const*	args_ptr;
+	DeltaMetaCompiler*								compiler;
 	
 	
 	DeltaCompilerInvokerData (DeltaCompilerInvokerCommandLineArguments* const _args_ptr):
 		units						(),
 		args_ptr					(DPTR(_args_ptr)),
+		compiler					((DeltaMetaCompiler*) 0),
 		mutableArgs_ptr				(DPTR(_args_ptr)),
 		customFunctionsDescriptions	(),
 		deltaCompilerConfigured		(false),
 		selfConfigured				(false)
 	{
+		unew(compiler);
 		static bool constructed = false;
 		_USER_ASSERT( !constructed )
 		constructed = true;
@@ -528,6 +532,8 @@ struct DeltaCompilerInvokerData {
 				DDELARR(*c_str_ptr);
 			DDELARR(*i);
 		}
+
+		udelete(compiler);
 	}
 
 private:
@@ -569,18 +575,18 @@ void DeltaCompilerInvokerData::ConfigureDeltaCompiler (void) {
 	// Configura compiler from configuration data
 	//
 	// Add Std functions
-	DeltaCompiler::AddExternFuncs(DeltaStdLib_FuncNames());
+	compiler->AddExternFuncs(DeltaStdLib_FuncNames());
 	//
 	// Set production-mode
-	DeltaCompiler::SetProductionMode(DPTR(args_ptr)->productionMode);
+	compiler->SetProductionMode(DPTR(args_ptr)->productionMode);
 	// Add bytecode paths
 	while (DPTR(args_ptr)->HasNextByteCodePath())
-		DeltaCompiler::SetByteCodePath(GetArguments().NextByteCodePath());
+		compiler->SetByteCodePath(GetArguments().NextByteCodePath());
 	// Add functions files
 	{
 		char functionDescriptionBuffer[DELTA_COMPILER_INVOKER__MAX_FUNCTION_DESCRIPTION_LENGTH];
 		while (DPTR(args_ptr)->HasNextFunctionsFile())
-			DeltaCompiler::AddExternFuncs(
+			compiler->AddExternFuncs(
 					LoadLibraryFunctionFromFile(
 							functionDescriptionBuffer,
 							DELTA_COMPILER_INVOKER__MAX_FUNCTION_DESCRIPTION_LENGTH,
@@ -597,7 +603,7 @@ void DeltaCompilerInvokerData::CleanUpDeltaCompiler (void) {
 	_ASSERT( deltaCompilerConfigured )
 	deltaCompilerConfigured = false;
 	
-	DeltaCompiler::CleanUp();
+	compiler->CleanUp();
 }
 
 /////////////////////////////
@@ -616,8 +622,7 @@ DeltaCompilerInvoker::DeltaCompilerInvoker (int const argc, char* const argv[], 
 {
 	// Initialise
 	{
-		DeltaCompilerInit::Initialise();
-		DeltaCompSetErrorCallback(onError);
+		DPTR(DPTR(data)->compiler)->SetErrorCallback(onError);
 	}
 	
 	// Extract command line arguments
@@ -670,11 +675,7 @@ DeltaCompilerInvoker::~DeltaCompilerInvoker (void) {
 	{
 		DPTR(data)->CleanUpDeltaCompiler();
 		DPTR(data)->Deconfigure();
-	}
-	
-	//
-	DeltaCompilerInit::CleanUp();
-	
+	}	
 	//
 	DDELETE(data);
 }
@@ -716,17 +717,18 @@ void DeltaCompilerInvoker::CompileAll (void) const {
 	std::list<CompilationUnit>::const_iterator			i	(DPTR(data)->units.begin());
 	std::list<CompilationUnit>::const_iterator const	end	(DPTR(data)->units.end());
 	
+	DeltaMetaCompiler* compiler = DPTR(data)->compiler;
 	for (; i != end; ++i) {
-		bool const compileOk	= DeltaCompiler::Compile(i->GetInputFilePath().c_str(), i->GetSymbolicName().c_str());
-		bool const noErrors		= !DeltaCompErrorsExist();
+		bool const compileOk	= DPTR(compiler)->Compile(i->GetInputFilePath().c_str(), i->GetSymbolicName().c_str());
+		bool const noErrors		= !DPTR(compiler)->ErrorsExist();
 		if (compileOk && noErrors) {
-			DeltaCompiler::DumpBinaryCode(i->GetBinaryFilePath().c_str());
+			DPTR(compiler)->DumpBinaryCode(i->GetBinaryFilePath().c_str());
 			if (DPTR(DPTR(data)->args_ptr)->intermediateCode)
-				DeltaCompiler::DumpInterCode(i->GetIntemediateCodeFilePath().c_str());
+				DPTR(compiler)->DumpInterCode(i->GetIntemediateCodeFilePath().c_str());
 			if (DPTR(DPTR(data)->args_ptr)->textualOutput)
-				DeltaCompiler::DumpTextCode(i->GetTextFilePath().c_str());
+				DPTR(compiler)->DumpTextCode(i->GetTextFilePath().c_str());
 		}
-		DeltaCompiler::CleanUp();
+		compiler->CleanUp();
 	}
 }
 

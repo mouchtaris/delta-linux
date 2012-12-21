@@ -15,19 +15,20 @@
 
 class  DVMDEBUG_CLASS DeltaDebuggedVMFacade {
 	public:
-	static bool Initialise (int argc, char** argv);
-	static bool	IsInitialised (void);		// For cross dependency preconditions.
+	static bool			Initialise (util_ui32 negotiationPort = 0);
+	static bool			IsInitialised (void);		// For cross dependency preconditions.
 
-	static void CleanUp (void);
-	static void CloseClientConnection (void);
-	static bool	IsClientConnected (void);
-	static bool ClientWasAttached (void);	// If true, attached, else activated on start up.
+	static void			CleanUp (void);
+	static void			CloseClientConnection (void);
+	static bool			IsClientConnected (void);
+	static bool			ClientWasAttached (void);	// If true, attached, else activated on start up.
+	static util_ui32	NegotiationPortFromArguments (int argc, char **argv);
 
 	// In DLLs these callbacks are taken from the pure facade.
-	static void	SetOnBreakPointCallbacks (const std::pair<uvoidvoid_f,uvoidvoid_f>& callbacks);
-	static void	SetOnBreakPointCallbacks (uvoidvoid_f onEnter, uvoidvoid_f onLeave);
-	static void SetOnStopDebuggingCallback (uvoidvoid_f onStop);
-	static void	SetOnStartCallback (uvoidvoid_f onGo);
+	static void			SetOnBreakPointCallbacks (const std::pair<uvoidvoid_f,uvoidvoid_f>& callbacks);
+	static void			SetOnBreakPointCallbacks (uvoidvoid_f onEnter, uvoidvoid_f onLeave);
+	static void			SetOnStopDebuggingCallback (uvoidvoid_f onStop);
+	static void			SetOnStartCallback (uvoidvoid_f onGo);
 };
 
 ////////////////////////////////////////////////////////////////////

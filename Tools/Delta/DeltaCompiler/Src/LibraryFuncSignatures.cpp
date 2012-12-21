@@ -19,11 +19,15 @@ void DeltaLibraryFuncSignatures::AddAllPlausibleReturnTypes (TypeList* typeList)
 
 ///////////////////////////////////////////////////////////
 
-DeltaLibraryFuncSignatures* DeltaLibraryFuncSignatures::New (const std::string& sigsDef, std::string* error) {
-
+DeltaLibraryFuncSignatures* DeltaLibraryFuncSignatures::New (
+	const std::string& sigsDef,
+	std::string* error,
+	DeltaLibraryNamespaceHolder* holder
+) {
 	DeltaLibraryFuncSignatures* sig = DNEW(DeltaLibraryFuncSignatures);
 
 	DeltaLibraryDefsParser parser;
+	parser.SetNamespaceHolder(holder);
 	parser.SetOnNewArg		(&OnNewArg,		sig);
 	parser.SetOnNewSig		(&OnNewSig,		sig);
 	parser.SetOnDoneSig		(&OnDoneSig,	sig);

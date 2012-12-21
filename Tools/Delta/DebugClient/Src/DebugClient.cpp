@@ -823,7 +823,7 @@ bool DeltaDebugClient::GetInfoCurrFunction (
 		util_ui32*		defLine,	
 		util_ui32*		callLine,
 		util_ui32*		scope,
-		std::string*	call	
+		std::string*	call
 	) {
 
 	CHECK_LINK();

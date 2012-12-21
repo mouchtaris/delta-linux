@@ -12,6 +12,7 @@
 #include "ustrings.h"
 #include "ulexutil.h"
 #include "Unparse.h"
+#include "ParseTableConstruction.h"
 
 ///////////////////////////////////////////////////////////////////
 
@@ -147,8 +148,8 @@ void Unparse_UnindexedValue (TableElements* elem, DeltaExpr* e) {
 	DPTR(elem)->SetUnparsed(Unparse_UnindexedValue(DPTR(e)->GetUnparsed()));
 }
 
-void Unparse_IdentIndexElement (TableElements* elem, const char* index, DeltaExpr* e) {
-	ERROR_RET2(elem, e);
+void Unparse_IdentIndexElement (TableElements* elem, const std::string& index, DeltaExpr* e) {
+	ERROR_RET(e);
 	DPTR(elem)->SetUnparsed(Unparse_IdentIndexElement(index, DPTR(e)->GetUnparsed()));
 }
 

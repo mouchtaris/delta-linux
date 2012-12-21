@@ -38,6 +38,19 @@ namespace util
 	//-------------------------------------------------------//
 	//---- class ConsoleHost --------------------------------//
 
+	std::list<ConsoleHost*> ConsoleHost::hosts;
+
+	//-----------------------------------------------------------------------
+
+	ConsoleHost::ConsoleHost(bool single_thread) 
+		: single_thread(single_thread), forceFinish(false), pid(0), onOutput((OnOutput) 0), onFinish((OnFinish) 0)
+	{
+		hosts.push_back(this);
+	}
+	ConsoleHost::~ConsoleHost(void) { hosts.remove(this); }
+
+	//-----------------------------------------------------------------------
+
 	void ConsoleHost::Initialize (void)
 	{
 		CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -68,7 +81,7 @@ namespace util
 			//-- Set up the security attributes struct.
 			sa.nLength= sizeof(SECURITY_ATTRIBUTES);
 			sa.lpSecurityDescriptor = NULL;
-			sa.bInheritHandle = FALSE;
+			sa.bInheritHandle = TRUE;
 
 			//-- Create the child output pipe.
 			if (!CreatePipe(&hOutputReadTmp, &hOutputWrite, &sa, 0))
@@ -136,13 +149,13 @@ namespace util
 				//if (WaitForSingleObject(hThread, INFINITE) == WAIT_FAILED)
 				//	EXECUTION_ERROR("WaitForSingleObject", 0);
 			}
-			return  GetProcessId(hChildProcess);
+			return pid = GetProcessId(hChildProcess);
 		}
 		else
 			if ((hChildProcess = _LaunchChild(this, application, currentDirectory, 0, 0, 0)) == NULL)
 				return 0;
 			else
-				return  GetProcessId(hChildProcess);
+				return pid = GetProcessId(hChildProcess);
 	}
 
 	//-----------------------------------------------------------------------
@@ -159,35 +172,24 @@ namespace util
 
 	//-----------------------------------------------------------------------
 
-	BOOL CALLBACK TerminateAppEnum(HWND hwnd, LPARAM lParam)
-	{
-		DWORD dwID;
-		GetWindowThreadProcessId(hwnd, &dwID);
-		if(dwID == (DWORD)lParam)
-		PostMessage(hwnd, WM_CLOSE, 0, 0);
-		return TRUE;
-	}
-
 	bool ConsoleHost::TerminateProcess(unsigned long pid)
 	{
 		HANDLE hProc;
 
 		// If we can't open the process with PROCESS_TERMINATE rights,
 		// then we give up immediately.
-		if ((hProc = OpenProcess(SYNCHRONIZE|PROCESS_TERMINATE, FALSE, (DWORD) pid)) == NULL)
+		if ((hProc = OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, (DWORD) pid)) == NULL)
 			return false;
 
-		// TerminateAppEnum() posts WM_CLOSE to all windows whose PID
-		// matches your process's.
-		EnumWindows((WNDENUMPROC)TerminateAppEnum, (LPARAM) pid) ;
+		// If we launched the process notify that this is a forced finish
+		for (std::list<ConsoleHost*>::iterator i = hosts.begin(); i != hosts.end(); ++i)
+			if ((*i)->pid == pid) {
+				(*i)->forceFinish = true;
+				break;
+			}
 
-		// Wait on the handle. If it signals, great. If it times out,
-		// then you kill it.
-		bool retval;
-		if(WaitForSingleObject(hProc, INFINITE)!=WAIT_OBJECT_0)
-			retval = ::TerminateProcess(hProc,0) ? true : false;
-		else
-			retval = true;
+		// Kill the process
+		bool retval = ::TerminateProcess(hProc, 0) ? true : false;
 		CloseHandle(hProc);
 		return retval;
 	}
@@ -217,7 +219,7 @@ namespace util
 			{
 				bool success = GetLastError() == ERROR_BROKEN_PIPE;
 				if (onFinish)
-					onFinish(success);
+					onFinish(!forceFinish);
 				if (success)
 					break;
 				else

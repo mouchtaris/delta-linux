@@ -8,27 +8,81 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{c94e97c5-673b-44cf-86ac-24af759d9d99}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{1d8ab25a-42ad-4a57-b685-075f97ceb357}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AST">
+      <UniqueIdentifier>{5a96c251-008e-4023-b248-22b942ee9a4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{09c13d81-b544-4a78-b2ac-37d7bad10c7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AST">
+      <UniqueIdentifier>{d8d09d3a-2961-4c4e-9bae-a6bdb251106d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeNode.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\ASTAlphaRenamer.cpp">
+      <Filter>Source Files\AST</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeToStringVisitor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\ASTInjector.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\ASTValidationVisitor.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\StagedSymbolTable.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeAttribute.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeVisitor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeNode.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DeltaSyntaxTree\Source\TreeToStringVisitor.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeNode.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTAlphaRenamer.h">
+      <Filter>Header Files\AST</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeToStringVisitor.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTInjector.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTMetaTags.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTSanitiseVisitor.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTTags.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\ASTValidationVisitor.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\StagedSymbolTable.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\DeltaSyntaxTreeDefs.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeVisitor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeAttribute.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeNode.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaSyntaxTree\Include\TreeToStringVisitor.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

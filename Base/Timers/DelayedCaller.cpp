@@ -35,12 +35,9 @@ END_EVENT_TABLE();
 
 void DelayedCaller::PostDelayedCall (const Callback& callback)
 {
-	boost::recursive_mutex::scoped_lock lock(m_mutex);
-
-	if (m_duringCall)
-		m_nextRound.push_back(callback);
-	else {
-		m_callbackList.push_back(callback);
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_callbackList.push_back(callback);
+	if (!m_duringCall) {
 		wxCommandEvent event(EVENT_CALL);
 		this->AddPendingEvent(event);
 	}
@@ -50,38 +47,44 @@ void DelayedCaller::PostDelayedCall (const Callback& callback)
 
 void DelayedCaller::CancelAllDelayedCalls (void)
 {
-	boost::recursive_mutex::scoped_lock lock(m_mutex);
-
-	m_nextRound.clear();
-	if (!m_duringCall)
-		m_callbackList.clear();
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_callbackList.clear();
 }
 
 //**********************************************************************
 
 void DelayedCaller::onCallExpired(wxCommandEvent& PORT_UNUSED_PARAM(event))
 {
-	CallbackList copy;
 	{
-		boost::recursive_mutex::scoped_lock lock(m_mutex);
-		if (!m_callbackList.empty())
-			m_callbackList.swap(copy);
+		boost::mutex::scoped_lock lock(m_mutex);
+		m_duringCall = true;
 	}
 
-	if (!copy.empty()) {
-		m_duringCall = true;
-		std::for_each(copy.begin(), copy.end(), Caller<Callback>());
-		m_duringCall = false;
-		copy.clear();
-	}
+
+	CallbackList current;
+
 	{
-		boost::recursive_mutex::scoped_lock lock(m_mutex);
-		if (!m_nextRound.empty()) {
-			assert(m_callbackList.empty());
-			m_callbackList.swap(m_nextRound);
+		boost::mutex::scoped_lock lock(m_mutex);
+		m_callbackList.swap(current);
+	}
+	
+	if (!current.empty()) {
+		try { std::for_each(current.begin(), current.end(), Caller<Callback>()); }
+		catch(...) {}
+		current.clear();
+	}
+
+	{
+		boost::mutex::scoped_lock lock(m_mutex);
+		if (!m_callbackList.empty()) {
 			wxCommandEvent event(EVENT_CALL);
 			this->AddPendingEvent(event);
 		}
+	}
+
+	{
+		boost::mutex::scoped_lock lock(m_mutex);
+		m_duringCall = false;
 	}
 }
 

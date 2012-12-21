@@ -46,11 +46,14 @@ namespace ide
 		DECLARE_EXPORTED_STATIC(void, Initialize, (void));
 		DECLARE_EXPORTED_STATIC(void, CleanUp, (void));
 
+		DECLARE_EXPORTED_FUNCTION(bool, CanDestroy, (void));
+
 		DECLARE_EXPORTED_FUNCTION_(bool, Load, (const String& uri), _("Load workspace from disk"));
 		DECLARE_EXPORTED_FUNCTION_(bool, SaveAs, (const String& uri), _("Save workspace to a new file"));
 		DECLARE_EXPORTED_FUNCTION_(bool, Close, (void), _("Close workspace"));
 
 		DECLARE_EXPORTED_FUNCTION_(void, BuildScript, (void), _("Build Current Script"));
+		DECLARE_EXPORTED_FUNCTION_(void, BuildScriptWithDebugging, (void), _("Build Current Script with Debugging"));
 
 		DECLARE_EXPORTED_FUNCTION_(void, Debug, (void),	_("Debug Workspace"));
 		DECLARE_EXPORTED_FUNCTION_(void, DebugWithConsoleDebugger, (void),	_("Debug Workspace (console)"));
@@ -122,6 +125,7 @@ namespace ide
 		static Handle		debuggerHandle;
 		Handle				m_rootWorkingResource;
 		String				m_task;
+		bool				m_buildingEditorScript;
 	};
 }
 

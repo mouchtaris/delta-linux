@@ -119,6 +119,9 @@ protected:
 	virtual bool VisitEnter (UsingASTNode* node);
 	virtual bool VisitLeave (UsingASTNode* node);
 
+	virtual bool VisitEnter (QuotedElementsASTNode* node);
+	virtual bool VisitLeave (QuotedElementsASTNode* node);
+
 private:
 	inline bool dispatchVisitEnter (DeltaASTNode* node);
 	inline bool dispatchVisitLeave (DeltaASTNode* node);
@@ -168,6 +171,7 @@ protected:
 	virtual void Visit (TableConstKeyASTNode* node);
 	virtual void Visit (OtherStmtASTNode* node);
 	virtual void Visit (UsingASTNode* node);
+	virtual void Visit (QuotedElementsASTNode* node);
 
 private:
 	inline void dispatchVisit (DeltaASTNode* node);

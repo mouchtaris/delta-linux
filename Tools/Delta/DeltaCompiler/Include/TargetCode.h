@@ -1,8 +1,8 @@
 // TargetCode.h
-// Traget code generation for Delta compiler.
+// Target code generation for the Delta compiler.
 // ScriptFighter Project.
 // A. Savidis, October 1999.
-// Revisied many times later.
+// Revised many times later.
 //
 
 #ifndef	TARGETCODE_H
@@ -23,6 +23,8 @@
 
 class DeltaCodeGenerator {
 
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
 	DFRIENDDESTRUCTOR()
 
 	#include "TargetCodeP.h"
@@ -30,11 +32,9 @@ class DeltaCodeGenerator {
 
 	//-------------------------------------------------------------------
 
-	typedef void (*GenerateFunc)(DeltaQuad&, util_ui32);
+	typedef void (DeltaCodeGenerator::*GenerateFunc)(DeltaQuad&, util_ui32);
 
-	static DeltaCodeGenerator*			singletonPtr;
-	static std::list<DeltaStdFuncInfo>*	funcTable;
-
+	std::list<DeltaStdFuncInfo>*		funcTable;
 	DeltaInstruction*					code;
 	std::list<DeltaCodeAddress>			unfinishedJumps;
 	util_ui32							currSize;
@@ -73,7 +73,7 @@ class DeltaCodeGenerator {
 	//////////////////////////////////////////////////////////////////////
 
 	DeltaStdFuncInfo*		GetFuncInfo (util_ui32 serial);
-	static void				ProduceFuncInfo (const DeltaSymbol* func, DeltaStdFuncInfo* info);
+	void					ProduceFuncInfo (const DeltaSymbol* func, DeltaStdFuncInfo* info);
 
 	void					AddUnfinishedJump (DeltaCodeAddress jumpInstr)
 								{ unfinishedJumps.push_back(jumpInstr); }
@@ -113,23 +113,17 @@ class DeltaCodeGenerator {
 
 	////////////////////////////////////////////
 
-	static void				SingletonCreate (void);						
-	static void				SingletonDestroy (void);
-	static DeltaCodeGenerator*	
-							GetPtr (void) 
-								{ DASSERT(singletonPtr); return singletonPtr; }
-
-	private:
 	DeltaCodeGenerator (void);
 	~DeltaCodeGenerator();
 };
 
 ////////////////////////////////////////////
 
-#define	CODEGENERATOR	GetCodeGenerator()
-inline DeltaCodeGenerator& GetCodeGenerator (void) {
-	DASSERT(DeltaCodeGenerator::GetPtr());
-	return *DeltaCodeGenerator::GetPtr();
-}
+#define CODEGENERATOR_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaCodeGenerator)))
+
+#define CODEGENERATOR	CODEGENERATOR_EX(COMPONENT_DIRECTORY())
+
+////////////////////////////////////////////
 
 #endif	// Do not ad stuff beyond this point.

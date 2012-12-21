@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaCompiler\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DeltaSyntaxTree\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;"
+				AdditionalIncludeDirectories="&quot;$(DELTA)\Common\Include&quot;;&quot;$(DELTA)\DebugLib\Include&quot;;&quot;$(DELTA)\DeltaCompiler\Include&quot;;&quot;$(DELTA)\DeltaStdLib\Include&quot;;&quot;$(DELTA)\UtilLib\Include&quot;;&quot;$(DELTA)\DeltaSyntaxTree\Include&quot;;&quot;$(DELTA)\FileReadersLib\Include&quot;;&quot;$(DELTA)\DeltaDebuggedVMFacade\Include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_IMPORT"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

@@ -265,7 +265,7 @@ enum StackMarks {
 	EXPORTED_SLOT_MEMBER(DeltaCallStackView, void, slotTreeItemSymbolicURIChanged,
 		(const Handle& handle, const String& oldUri, const String& newUri), "TreeItemSymbolicURIChanged")
 	{
-		if (handle.GetClassId() == "Script") {
+		if (handle.GetClassId() == "Script" || handle.GetClassId() == "Aspect") {
 			wxListItem info;
 			info.m_col = 7;	//source
 			info.m_mask = wxLIST_MASK_TEXT;

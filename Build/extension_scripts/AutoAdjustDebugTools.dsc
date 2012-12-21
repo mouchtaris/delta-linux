@@ -21,12 +21,14 @@ guiComponents = std::list_new(
 	[{.component : "Monitors"},					{.dock : 4}, {.delta : true},	{.debug : true}],
 	[{.component : "RecentReturnValuesView"},	{.dock : 4}, {.delta : true},	{.debug : true}],
 	[{.component : "VariableView"},				{.dock : 4}, {.delta : true},	{.debug : true}],
-	[{.component : "BuildOrder"},				{.dock : 4}, {.delta : false},	{.debug : false}],
-	[{.component : "BuildTreeListView"},		{.dock : 4}, {.delta : true},	{.debug : false}],
+	//TODO: The following components are used during compilation, so they should not be deactivated
+	//during staged compilation (when the DebugStarted and DebugStopped signals are triggered).
+	//[{.component : "BuildOrder"},				{.dock : 4}, {.delta : false},	{.debug : false}],
+	//[{.component : "BuildOrder"},				{.dock : 4}, {.delta : true},	{.debug : false}],
 	[{.component : "DeltaCallStackView"},		{.dock : 5}, {.delta : false},	{.debug : true}],
 	[{.component : "ErrorList"},				{.dock : 5}, {.delta : false},	{.debug : false}]
 );
-nonGuiComponents = ["DebugTooltips", "QuickWatch"];
+nonGuiComponents = ["DebugTooltips", "QuickWatch", "ASTView"];
 
 //-------------------------------------------------------//
 

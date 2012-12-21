@@ -1,6 +1,6 @@
 // ShMemLibP.h
 // Simple intra-process shared memory class for VMs.
-// ScriptFigher Projetc.
+// ScriptFigher Project.
 // A. Savidis, December 1999.
 //
 

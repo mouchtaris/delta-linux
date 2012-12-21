@@ -512,8 +512,9 @@ EXPORTED_MEMBER(Editor, bool, GotoGlobalDefinition, (const String& id))
 	{ return m_editor->GetLangIface()->GotoGlobalDefinition(util::str2std(id)); }
 
 editor::LanguageModuleIface::GotoDefinitionResult Editor::GotoGlobalDefinitionOfFile (
-		const std::string&	file, 
-		const std::string&	id, 
+		const std::string&	file,
+		const std::string&	id,
+		uint				stage,
 		void*				closure
 	) {
 
@@ -522,11 +523,11 @@ editor::LanguageModuleIface::GotoDefinitionResult Editor::GotoGlobalDefinitionOf
 	if (!currScript)
 		return editor::LanguageModuleIface::GotoDefinitionFailedCurrentFileOutsideWorkspace;
 
-	HandleList	usedScripts	=	Call<const HandleList (const String&)>(
+	HandleList	usedScripts	=	Call<const HandleList (const String&, uint)>(
 										editor, 
 										currScript, 
 										"FindScriptsOfUsedByteCodeFile"
-									)(util::std2str(file));
+									)(util::std2str(file), stage);
 	if (usedScripts.empty())
 		return editor::LanguageModuleIface::GotoDefinitionFailedFileNotFound;
 	else
@@ -823,12 +824,10 @@ void Editor::onDwellStart (wxScintillaEvent& event)
 	uint startPos, endPos;
 	int tokenType;
 	String text;
-	m_editor->GetLangIface()->GetInfoForPosition(event.GetPosition(), &startPos, &endPos, &tokenType, &text);
-	sigEditMouseOnSymbol(this, startPos, endPos, tokenType, text);
-#if	0
-	this->displayDwellInfo((int) startPos, (int) endPos, tokenType, text);
-#endif
-
+	if (m_editor->GetLangIface()->GetInfoForPosition(event.GetPosition(), &startPos, &endPos, &tokenType, &text)) {
+		sigEditMouseOnSymbol(this, startPos, endPos, tokenType, text);
+		this->displayDwellInfo((int) startPos, (int) endPos, tokenType, text);
+	}
 }
 
 //**********************************************************************
@@ -847,8 +846,9 @@ void Editor::onHotspotClicked (wxScintillaEvent& event)
 	uint startPos, endPos;
 	int tokenType;
 	String text;
-	m_editor->GetLangIface()->GetInfoForPosition(event.GetPosition(), &startPos, &endPos, &tokenType, &text);
-	const String id = m_editor->GetTextRange(startPos, endPos);
+	if (m_editor->GetLangIface()->GetInfoForPosition(event.GetPosition(), &startPos, &endPos, &tokenType, &text)) {
+		const String id = m_editor->GetTextRange(startPos, endPos);
+	}
 }
 
 //**********************************************************************
@@ -1030,8 +1030,10 @@ void Editor::OnFileModification (void)
 		m_editor->DecrementInternalSaveCounter();
 	else {
 		boost::mutex::scoped_lock lock(m_reloadMutex);
-		if (!m_reloadPending)
+		if (!m_reloadPending) {
+			m_reloadPending = true;
 			timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Editor::AskForReload, this));
+		}
 	}
 }
 
@@ -1039,10 +1041,7 @@ void Editor::OnFileModification (void)
 
 void Editor::AskForReload (void)
 {
-	{
-		boost::mutex::scoped_lock lock(m_reloadMutex);
-		m_reloadPending = true;
-	}
+	assert(m_reloadPending);
 	const String message = _("This file has been modified outside from the source editor.");
 	const String question = IsModified() ?
 		_T("Do you want to reload it and lose the changes made in the source editor?"):

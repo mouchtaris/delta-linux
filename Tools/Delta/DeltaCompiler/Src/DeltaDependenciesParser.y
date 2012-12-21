@@ -13,33 +13,41 @@
 #include "DDebug.h"
 #include "BuildDependencies.h"
 
+#include "DeltaDependenciesScanner.h"
+#include "DeltaDependenciesParser.h"
+#include "ParsingContext.h"
+
 #ifndef	alloca
 #define alloca malloc
 #endif
 
-#ifdef	YYPURE
-#define	YYLEX_PARAM		&yylval
-#else
-#define	YYPURE
-#endif
+#define YYINCLUDED_STDLIB_H
 
-#define	yyparse		DeltaDependencies_yyparse
-#define yylex		DeltaDependencies_yylex
-#define	yydebug		DeltaDependencies_yydebug
-#define	yyerror		DeltaDependencies_yyerror
+#define BUILDDEPS	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(ctx, DeltaBuildDependencies)))
 
-extern int			DeltaDependencies_yylex (void* yylval);
+extern int DeltaDependencies_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx);
 
-static void DeltaDependencies_yyerror (const char* error)
-	{ DeltaBuildDependencies::SetError(error); }
+static void DeltaDependencies_yyerror (YYLTYPE* yylloc, ParsingContext& ctx, const char* error)
+	{ BUILDDEPS.SetError(error); }
+	
 %}
 
 %union { const std::string* str; const char* id; }
 %start	DeltaCode
 %token	<id>		IDENT
 %token	<str>		STRING_CONST
-%token	USING GLOBAL_SCOPE COLON IDENT STRING_CONST SEMI STRINGIFY OTHER
+%token	USING GLOBAL_SCOPE COLON SEMI STRINGIFY OTHER
 
+%output="DeltaDependenciesParser.cpp"
+%name-prefix="DeltaDependencies_yy"
+%debug
+%defines
+%verbose
+%pure-parser
+%parse-param {ParsingContext& ctx}
+%lex-param   {YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx}
+%locations
+%expect 1
 %%
 
 /**************************************************************************/
@@ -55,9 +63,9 @@ CodeDef:				UsingDirective | Other
 						;
 						
 UsingDirective:			USING 
-							{ DeltaBuildDependencies::EnterUsing(); }
+							{ BUILDDEPS.EnterUsing(); }
 						UsingSpecifications
-							{ DeltaBuildDependencies::ExitUsing(); }
+							{ BUILDDEPS.ExitUsing(); }
 						;
 
 UsingSpecifications:	UsingNamespace | UsingByteCodeLibrary
@@ -67,7 +75,7 @@ UsingNamespace:			NamespacePath IDENT SEMI | IDENT SEMI
 						;
 
 UsingByteCodeLibrary:	STRINGIFY IDENT SEMI
-								{ DeltaBuildDependencies::Handle($2); }
+								{ BUILDDEPS.Handle($2); }
 						;
 						
 Other					: OTHER { return 1; /* stop parsing*/ } | Other OTHER

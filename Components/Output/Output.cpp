@@ -232,8 +232,13 @@ namespace ide
 	EXPORTED_SLOT_MEMBER(Output, void, OnCompilationMessage, (const std::string& caller, const UIntList& buildId,
 		const String& type, const String& content, const String& file, uint line), "CompilationMessage")
 	{
-		const String str = type == _T("Error") || type == _T("Warning") ?
-			String::Format((type + _T(", file '%s', line %d: %s\n")).c_str(), file, line, content) : content;
+		String str;
+		if (type == _T("Error") || type == _T("Warning"))
+			str = String::Format((type + _T(", file '%s', line %d: %s\n")).c_str(), file, line, content);
+		else if (type == _T("See original source"))
+			str = String::Format((type + _T(", file '%s', line %d.\n")).c_str(), file, line);
+		else
+			str = content;
 		AppendOrdered(str, buildId);
 	}
 
@@ -289,7 +294,7 @@ namespace ide
 			String filename;
 			int lineno;
 
-			if (text.StartsWith(_T("Error")) || text.StartsWith(_T("Warning")))
+			if (text.Matches(_T("*Error*")) || text.Matches(_T("*Warning*")) || text.Matches(_T("*See original source*")))
 			{
 				std::vector<String> tokens;
 				util::stringtokenizer(tokens, text, _T(","));	///< initally seperate by commas
@@ -318,7 +323,7 @@ namespace ide
 				filename = tokens[1].substr(source_header_size, tokens[1].size() - source_header_size - 1);
 				lineno = boost::lexical_cast<int>(inner_tokens[0].substr(line_header_size));
 			}
-			else if (text.StartsWith(_T("Stopped at line: ")))
+			else if (text.Matches(_T("*Stopped at line: *")))
 			{
 				std::vector<String> tokens;
 				util::stringtokenizer(tokens, text, _T(","));	///< initally seperate by commas

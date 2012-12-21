@@ -88,10 +88,10 @@ DeltaSymbol* DeltaLibraryNamespace::IssueConst (const std::string& constDef) {
 
 			DPTR(sym)->isLibraryConst = true;
 			if (result == DeltaLibraryDefsParser::ConstNumber)
-				DPTR(sym)->constExpr  = DeltaExpr::Make(num);
+				DPTR(sym)->constExpr  = EXPRFACTORY.Make(num);
 			else {
 				DASSERT(result == DeltaLibraryDefsParser::ConstString);
-				DPTR(sym)->constExpr  = DeltaExpr::MakeConst(str);
+				DPTR(sym)->constExpr  = EXPRFACTORY.MakeConst(str);
 			}
 
 			return functionsAndConsts[constName] = sym;
@@ -112,7 +112,7 @@ DeltaSymbol* DeltaLibraryNamespace::IssueFunction (const std::string& funcProto)
 	DeltaLibraryFuncSignatures* sigs = (DeltaLibraryFuncSignatures*) 0;
 	if (!funcSigs.empty()) {
 		std::string error;
-		if (!(sigs = DeltaLibraryFuncSignatures::New(funcSigs, &error))) {
+		if (!(sigs = DeltaLibraryFuncSignatures::New(funcSigs, &error, &DELTANAMESPACES))) {
 			DASSERT(!error.empty());
 			DELTACOMP_ERROR_LIBFUNC_ILLEGAL_SIG(funcProto, error);
 			return NIL_SYMBOL;
@@ -162,26 +162,6 @@ DeltaSymbol* DeltaLibraryNamespace::LookupFunctionOrConst (const std::string& fu
 
 ///////////////////////////////////////////////////////////
 
-void DeltaLibraryNamespace::OnNewBase (const std::string& name, const StringList& namespacePath, void* closure) {
-
-	DeltaLibraryUserDefinedType* type			= (DeltaLibraryUserDefinedType*) closure;
-	const DeltaLibraryUserDefinedType* baseType	= (DeltaLibraryUserDefinedType*) 0;
-
-	if (namespacePath.empty())
-		baseType = DELTANAMESPACES.LookupType(name);
-	else
-		baseType = DELTANAMESPACES.LookupType(namespacePath, name);
-
-	if (baseType) {
-		if (DPTR(type)->HasBaseType(baseType))
-			DELTACOMP_ERROR_HAS_ALREADY_BASE_TYPE(DPTR(type)->GetName(), DPTR(baseType)->GetFullPath());
-		else
-			DPTR(type)->AddBaseType(baseType);
-	}
-}
-
-///////////////////////////////////////////////////////////
-
 const DeltaLibraryUserDefinedType* DeltaLibraryNamespace::IssueType (const std::string& typeDef) {
 
 	std::string typeName, baseDefs;
@@ -204,7 +184,9 @@ const DeltaLibraryUserDefinedType* DeltaLibraryNamespace::IssueType (const std::
 											(typeName, fullPath)
 										);
 	DeltaLibraryDefsParser parser;
-	parser.SetOnNewBase(&OnNewBase, type);
+	parser.SetNamespaceHolder(&DELTANAMESPACES);
+	std::pair<CompilerComponentDirectory*, DeltaLibraryUserDefinedType*> closure(COMPONENT_DIRECTORY(), type);
+	parser.SetOnNewBase(&OnNewBase, &closure);
 
 	if (!parser.ParseBaseTypes(baseDefs)) {
 		DELTACOMP_ERROR_LIBFUNC_ILLEGAL_BASES_DEFINITION(typeDef, parser.GetError());
@@ -236,6 +218,7 @@ DeltaLibraryNamespace* DeltaLibraryNamespace::NewNamespace (const std::string& n
 		return i->second;
 	else {
 		DeltaLibraryNamespace* ns = DNEWCLASS(DeltaLibraryNamespace, (namespaceName, this));
+		INIT_COMPILER_COMPONENT_DIRECTORY(ns, COMPONENT_DIRECTORY());
 		namespaces[namespaceName] = ns;
 		return ns;
 	}
@@ -270,6 +253,35 @@ const DeltaLibraryNamespace* DeltaLibraryNamespace::LookupNamespace (const NameL
 		if (!(ns = DPTR(ns)->LookupNamespace(*i)))
 			return (DeltaLibraryNamespace*) 0;
 	return ns;
+}
+
+///////////////////////////////////////////////////////////
+
+void DeltaLibraryNamespace::OnNewBase (const std::string& name, const StringList& namespacePath, void* closure) {
+
+#undef DELTANAMESPACES
+#define DELTANAMESPACES DELTANAMESPACES_EX(data->first)
+
+#undef COMPMESSENGER
+#define COMPMESSENGER	COMPMESSENGER_EX(data->first)
+
+	std::pair<CompilerComponentDirectory*, DeltaLibraryUserDefinedType*>* data =
+		(std::pair<CompilerComponentDirectory*, DeltaLibraryUserDefinedType*>*) closure;
+
+	DeltaLibraryUserDefinedType* type			= data->second;
+	const DeltaLibraryUserDefinedType* baseType	= (DeltaLibraryUserDefinedType*) 0;
+
+	if (namespacePath.empty())
+		baseType = DELTANAMESPACES.LookupType(name);
+	else
+		baseType = DELTANAMESPACES.LookupType(namespacePath, name);
+
+	if (baseType) {
+		if (DPTR(type)->HasBaseType(baseType))
+			DELTACOMP_ERROR_HAS_ALREADY_BASE_TYPE(DPTR(type)->GetName(), DPTR(baseType)->GetFullPath());
+		else
+			DPTR(type)->AddBaseType(baseType);
+	}
 }
 
 ///////////////////////////////////////////////////////////

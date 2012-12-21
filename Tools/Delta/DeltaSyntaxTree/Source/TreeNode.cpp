@@ -55,7 +55,6 @@ bool TreeNode::Invariant (void) const
 
 /////////////////////////////////////////////////////////
 
-
 bool TreeNode::IsDescendant (const TreeNode* node) const {
 	return	std::find_if(
 				children.begin(),
@@ -66,9 +65,48 @@ bool TreeNode::IsDescendant (const TreeNode* node) const {
 
 /////////////////////////////////////////////////////////
 
-void* TreeNode::GetAttribute (const std::string& id) {
+bool TreeNode::HasAttribute (const std::string& id) const {
+	Attrs::const_iterator i = attrs.find(id);
+	return i != attrs.end();
+}
+
+//**********************
+
+const TreeAttribute* TreeNode::GetAttribute (const std::string& id) const {
+	Attrs::const_iterator i = attrs.find(id);
+	return i != attrs.end() ? i->second : (const TreeAttribute*) 0;
+}
+
+TreeAttribute* TreeNode::GetAttribute (const std::string& id)
+	{ return const_cast<TreeAttribute*>(static_cast<const TreeNode&>(*this).GetAttribute(id)); }
+
+//**********************
+
+void TreeNode::SetAttribute (const std::string& id, TreeAttribute* attribute) {
+	DASSERT(Invariant());
+	if (TreeAttribute* attr = attrs[id])
+		DDELETE(attr);
+	attrs[id] = attribute;
+}
+
+//**********************
+
+void TreeNode::SetAttribute (const std::string& id, const TreeAttribute& attribute) {
+	DASSERT(Invariant());
+	if (TreeAttribute* attr = attrs[id])
+		*attr = attribute;
+	else
+		attrs[id] = DNEWCLASS (TreeAttribute, (attribute));
+}
+
+//**********************
+
+void TreeNode::RemoveAttribute (const std::string& id) {
 	Attrs::iterator i = attrs.find(id);
-	return i != attrs.end() ? i->second : (void*) 0;
+	if (i != attrs.end()) {
+		DDELETE(i->second);
+		attrs.erase(i);
+	}
 }
 
 /////////////////////////////////////////////////////////
@@ -78,22 +116,55 @@ util_ui32 TreeNode::GetTotalChildren (void) const
 
 //**********************
 
-TreeNode* TreeNode::GetChild (util_ui32 i) {
+const TreeNode* TreeNode::GetChild (util_ui32 i) const {
 	DASSERT(Invariant() && i < GetTotalChildren());
 	return ulistgetbyindex(children, i).second;
 }
 
+TreeNode* TreeNode::GetChild (util_ui32 i)
+	{ return const_cast<TreeNode*>(static_cast<const TreeNode&>(*this).GetChild(i)); }
+
 //**********************
 
-TreeNode* TreeNode::GetChild (const std::string& id) {
+const TreeNode* TreeNode::GetChild (const std::string& id) const {
 	DASSERT(Invariant() && !id.empty());
-	Nodes::iterator i =	std::find_if(
-							children.begin(), 
-							children.end(), 
-							std::bind2nd(MatchesIdPred(), id)
-						);
-	return i != children.end() ? i->second : (TreeNode*) 0;
+	Nodes::const_iterator i = std::find_if(
+								children.begin(), 
+								children.end(), 
+								std::bind2nd(MatchesIdPred(), id)
+							);
+	return i != children.end() ? i->second : (const TreeNode*) 0;
 }
+
+TreeNode* TreeNode::GetChild (const std::string& id)
+	{ return const_cast<TreeNode*>(static_cast<const TreeNode&>(*this).GetChild(id)); }
+
+//**********************
+
+const TreeNode::Index TreeNode::GetChildIndex (const TreeNode* node) const {
+	DASSERT(Invariant() && !children.empty());
+
+	Nodes::const_iterator i =	std::find_if(
+									children.begin(), 
+									children.end(), 
+									std::bind2nd(MatchesInstPred(), node)
+								);
+	DASSERT(i != children.end() && i->second->GetParent() == this);
+	
+	return Index((util_ui32) std::distance(children.begin(), i), i->first);
+}
+
+//**********************
+
+const TreeNode* TreeNode::GetRoot (void) const {
+	const TreeNode* root = this;
+	while (const TreeNode* n = root->GetParent())
+		root = n;
+	return root;
+}
+
+TreeNode* TreeNode::GetRoot (void)
+	{ return const_cast<TreeNode*>(static_cast<const TreeNode&>(*this).GetRoot()); }
 
 /////////////////////////////////////////////////////////
 
@@ -278,6 +349,24 @@ void TreeNode::RemoveFromParent (void) {
 	GetParent()->Remove(this);
 }
 
+//**********************
+
+void TreeNode::Replace (TreeNode* oldNode, TreeNode* newNode) {
+	DASSERT(Invariant() && DPTR(oldNode)->Invariant() && DPTR(newNode)->Invariant());
+
+	Nodes::iterator i =	std::find_if(
+							children.begin(), 
+							children.end(), 
+							std::bind2nd(MatchesInstPred(), oldNode)
+						);
+	DASSERT(i != children.end() && i->second->GetParent() == this);
+	i->second = newNode;
+	if (DPTR(newNode)->GetParent())
+		DPTR(newNode)->RemoveFromParent();
+	newNode->SetParent(this);
+	oldNode->ResetParent();
+}
+
 /////////////////////////////////////////////////////////
 
 bool TreeNode::AcceptPostOrder (TreeVisitor* visitor, const std::string& childId) {
@@ -298,13 +387,31 @@ bool TreeNode::AcceptPreOrder (TreeVisitor* visitor, const std::string& childId)
 			return false;
 
 		case TreeVisitor::VisitContinue:
-			for (Nodes::iterator i = children.begin();  i != children.end() && !visitor->ShouldLeave(); ++i)
+			for (Nodes::iterator i = children.begin();  i != children.end(); /*empty*/)
 				if (!(i->second)->AcceptPreOrder(visitor, i->first))
 					return false;
+				else if (visitor->ShouldLeave())
+					break;
+				else {
+					bool shouldDelete;
+					if (visitor->ShouldPrune(&shouldDelete)) {
+						if (shouldDelete) {
+							i->second->ResetParent();
+							TreeNode::Delete(i->second);
+						}
+						i = children.erase(i);
+						visitor->Continue();
+					}
+					else
+						++i;
+				}
 			break;
 
 		case TreeVisitor::VisitLeave: 
 			{ visitor->Continue(); break; }
+
+		case TreeVisitor::VisitPrune: 
+			return true;	//prune to be handled by parent
 
 		default:
 			DASSERT(false);
@@ -312,5 +419,10 @@ bool TreeNode::AcceptPreOrder (TreeVisitor* visitor, const std::string& childId)
 
 	return visitor->OnVisitLeaving(this, childId) != TreeVisitor::VisitStopped; 
 }
+
+/////////////////////////////////////////////////////////
+
+TreeNode* TreeNode::Clone (void) const
+	{ return Clone(&TreeNode::New); }
 
 /////////////////////////////////////////////////////////

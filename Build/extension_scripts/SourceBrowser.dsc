@@ -9,10 +9,10 @@
 using std;
 using #sparrowlib;
 spw  = sparrowlib::sparrow();
-  
-const nl 			= "\n";
 assert spw;
 
+const logging				= false;
+const nl 					= "\n";
 const classId 				= "SourceBrowser";
 sparrowDir 					= spw::installationdir() + "/";
 window 						= nil;
@@ -447,7 +447,7 @@ function SetProperties {
 }
 	
 function ConfigDataSingleton {
-	if (not static configData)
+	if (isundefined(static configData))
 		configData = [
 			method Refresh { // Get from class properties
 				self.globalsHeaderColor 	= spw::getproperty(::classId, "globalsHeaderColor").value;
@@ -491,7 +491,7 @@ function ConfigDataSingleton {
 //====================================GENERAL UTILITIES==========================================//
 
 function spw_println(...) 
-	{ spw::print(..., nl); }
+	{ if (logging) spw::print(..., nl); }
 
 function strnocaselessthan (s1, s2) 
 	{ return strlower(s1) < strlower(s2); }
@@ -719,7 +719,7 @@ function UnquoteSlotKey (s) {
 //============================================HANDLERS==================================================//
 
 function GetCommonMethods {
-	if (not static methods)
+	if (isundefined(static methods))
 		methods = [
 			method GetValue (node){
 					const elipses = "...";	
@@ -1563,7 +1563,7 @@ function Visualize (handlers) {
 //--------------------------------------------------------------------------------------------------------//
 
 function DataCache {
-	if (not static cache)
+	if (isundefined(static cache))
 		cache = [
 			
 			@class					: #DataCache,
@@ -1684,7 +1684,7 @@ onevent  ComponentAppliedChangedProperties(old , changed) {
 }
 
 function Signals {
-	if (not static signals)
+	if (isundefined(static signals))
 		signals = [
 			@class : #Signals,
 			
@@ -1697,12 +1697,12 @@ function Signals {
 			},
 			
 			@fileOpened : onevent (fileEditor, uri) {
-				if (config and IsDeltaSourceFile(uri))
+				if (config and fileEditor.class_id == "Editor" and IsDeltaSourceFile(uri))
 					{ ::editor = fileEditor; Browse(uri, false); }
 			},
 			
 			@itemDoubleClicked : onevent (invoker, id) {	
-				if (config and (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)) {
+				if (config and (invoker.class_id == mostbase.class_id and invoker.serial == mostbase.serial)) {
 					if (spw.components.EditorManager.serial == 0)	
 						spw.components.Shell.AddComponent("EditorManager", 6);								
 					spw.components.Shell.FocusComponent(spw.components.EditorManager);
@@ -1720,7 +1720,7 @@ function Signals {
 //--------------------------------------------------------------------------------------------------------//
 
 function CommandsClass {
-	if (not static commands)
+	if (isundefined(static commands))
 		commands = [
 			@Configure	: 	function  { spw.components.Shell.ConfigureComponent(classId); },
 			@Refresh 	: 	function {

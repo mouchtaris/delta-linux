@@ -14,19 +14,23 @@
 #include "XMLPropertyVisitor.h"
 
 #include "ComponentRegistry.h"
+#include "ComponentFactory.h"
 #include "ComponentFunctionCallerSafe.h"
 #include "Call.h"
 #include "DelayedCaller.h"
 #include "ConsoleHost.h"
 #include "IDEDialogs.h"
 
+#include <boost/range.hpp>
 #include <boost/foreach.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/thread.hpp>
 
 #include <wx/filename.h>
+#include <wx/utils.h>
 
 #include <assert.h>
 #include <algorithm>
@@ -48,6 +52,7 @@
 
 #define	SCRIPT_TAG							"Script"
 #define	LAST_BUILT_PROPERTIES_TAG			"LastBuildProperties"
+#define	STAGE_SOURCES_PROPERTY_TAG			"StageSource"
 #define	BYTECODE_PATH_PROPERTY_ID			conf::GetByteCodePathPropertyId()
 #define	EMPTY
 
@@ -269,17 +274,24 @@
 
 namespace ide {
 
-	boost::mutex			Script::s_mutex;
-	Script::ScriptPtrList*	Script::s_allScripts				= (ScriptPtrList*) 0;
-	Script::UpToDateMap*	Script::s_upToDate					= (UpToDateMap*) 0;		// Used only upon run, not in normal build
-	Script::VisitMap*		Script::s_visitMap					= (VisitMap*) 0;		// Used only on cyclic reference path detection
-	Script::VisitMap*		Script::s_visitMapProduceCyclicPath	= (VisitMap*) 0;		// Used only on producing the cyclic path
+	boost::mutex			Script::s_componentCallMutex;
+	boost::mutex			Script::s_allScriptsMutex;
+	Script::ScriptPtrList*	Script::s_allScripts					= (ScriptPtrList*) 0;
+	Script::UpToDateMap*	Script::s_upToDate						= (UpToDateMap*) 0;
+	Script::VisitMap*		Script::s_visitMap						= (VisitMap*) 0;		// Used only on cyclic reference path detection
+	Script::VisitMap*		Script::s_visitMapProduceCyclicPath		= (VisitMap*) 0;		// Used only on producing the cyclic path
 
-	unsigned				Script::s_buildNesting	= 0;
-	const Script*			Script::m_cleanStarter	= (Script*) 0;
+	const Script*			Script::s_cleanStarter		= (Script*) 0;
+	unsigned				Script::s_buildNesting		= 0;
+	bool					Script::s_compilerActive	= false;
 
 /////////////////////////////////////////////////////////////////////////
 	
+	EXPORTED_SIGNAL(Script, ScriptSourceAdded, (const Handle& stageSource, const StringList& lineMappings, const String& type, uint index));
+	EXPORTED_STATIC_SIGNAL(Script, CompileFinished, (const Handle& script));
+
+/////////////////////////////////////////////////////////////////////////
+
 Script::Script(void) : 
 	m_buildInitiator				((Script*) 0), 
 	m_buildDepsSucceeded			(false), 
@@ -290,16 +302,24 @@ Script::Script(void) :
 	m_isApplication					(false),
 	m_isCleaned						(false),
 	m_upToDate						(false),
-	m_buildDepsResolved				(false)	{
+	m_debugBuild					(false),
+	m_buildCanceled					(false),
+	m_buildDepsResolved				(false) {
 
 	MakeAllProperties();
-	s_allScripts->push_back(this);
+	{
+		boost::mutex::scoped_lock lock(s_allScriptsMutex);
+		s_allScripts->push_back(this);
+	}
 }
 
 Script::~Script(void) {
 	TerminateAllLaunchedCompilers();
-	DASSERT(std::find(s_allScripts->begin(), s_allScripts->end(), this) != s_allScripts->end());
-	s_allScripts->remove(this);
+	{
+		boost::mutex::scoped_lock lock(s_allScriptsMutex);
+		DASSERT(std::find(s_allScripts->begin(), s_allScripts->end(), this) != s_allScripts->end());
+		s_allScripts->remove(this);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -317,37 +337,60 @@ void Script::MakeAllProperties (void) {
 
 /////////////////////////////////////////////////////////////////////////
 
+static bool FileSystemExists(const std::string& file) {
+	try {
+		const String path = util::std2str(file);
+		return wxFileName::FileExists(path) || wxFileName::DirExists(path);
+	}
+	catch(...) { return false; }
+}
+
+static void RemoveIfExists (const std::string& file) {
+	if (FileSystemExists(file))
+		try { boost::filesystem::remove(file); }
+		catch(...) { /*ignore filesystem errors */ }
+}
+
 static bool CreateDirectory (const std::string& dir) {
-	if (!boost::filesystem::exists(dir)) {
-		boost::filesystem::create_directories(dir);
-		return boost::filesystem::exists(dir);
+	if (!FileSystemExists(dir)) {
+		try { boost::filesystem::create_directories(dir); }
+		catch(...) { /*ignore filesystem errors */ }
+		return FileSystemExists(dir);
 	}
 	else
 		return true;
 }
 
 static bool	CopyDeploymentByteCodeFile (const std::string& from, const std::string& at) {
-	if (!boost::filesystem::exists(at))
-		{ boost::filesystem::copy_file(from, at); return true; }
-	else
-	if (boost::filesystem::last_write_time(from) > boost::filesystem::last_write_time(at)) {
-		boost::filesystem::remove(at);
-		boost::filesystem::copy_file(from, at);
-		return true;
+	try {
+		if (!FileSystemExists(at))
+			{ boost::filesystem::copy_file(from, at); return true; }
+		else
+		if (boost::filesystem::last_write_time(from) > boost::filesystem::last_write_time(at)) {
+			boost::filesystem::remove(at);
+			boost::filesystem::copy_file(from, at);
+			return true;
+		}
+		else
+			return false;
 	}
-	else
-		return false;
+	catch(...) { return false; }	//to catch any filesystem errors
 }
 
 /////////////////////////////////////////////////////////////////////////
 
-void Script::SaveLastBuildProperties (void) const {
+void Script::SaveLastBuildProperties (void) {
 
 	xml::Node root;
 	root.Create(_T(SCRIPT_TAG));
-	conf::XMLValueSaver propertySaver(conf::MAKE_PATHS_RELATIVE, const_cast<Script*>(this)->GetPath());
+	conf::XMLValueSaver propertySaver(conf::MAKE_PATHS_RELATIVE, GetPath());
 	propertySaver.SetParent(root);
-	const_cast<conf::PropertyTable&>(m_lastBuildProperties).Accept(LAST_BUILT_PROPERTIES_TAG, &propertySaver);
+	m_lastBuildProperties.Accept(LAST_BUILT_PROPERTIES_TAG, &propertySaver);
+	
+	uint count = 0;
+	BOOST_FOREACH(conf::PropertyTable& table, m_stageSources)
+		table.Accept(std::string(STAGE_SOURCES_PROPERTY_TAG) + boost::lexical_cast<std::string>(count++), &propertySaver);
+	root.SetProperty(_T("StageSources"), boost::lexical_cast<String>(count));
 
 	wxXmlDocument doc;
 	doc.SetFileEncoding(_T("utf-8"));
@@ -366,19 +409,72 @@ void Script::LoadLastBuildProperties (void) {
 		doc.GetRoot()->GetName() != _T(SCRIPT_TAG))
  		return;
 
+	xml::Node root(doc.GetRoot());
+
 	conf::XMLValueLoader propertyLoader;
-	propertyLoader.SetParent(doc.GetRoot());
+	propertyLoader.SetParent(root);
 	m_lastBuildProperties.Accept(LAST_BUILT_PROPERTIES_TAG, &propertyLoader);
 	m_lastBuildPropertiesInvalid = false;
+
+	const uint stageSources = atoi(util::str2std(root.GetProperty(_T("StageSources"))).c_str());
+	for (uint i = 0; i < stageSources; ++i) {
+		conf::PropertyTable source;
+		conf::AddScriptStageSourceProperties(&source);
+		source.Accept(std::string(STAGE_SOURCES_PROPERTY_TAG) + boost::lexical_cast<std::string>(i), &propertyLoader);
+		const String name = conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
+		const String type = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
+		uint index = conf::get_prop_value<conf::IntProperty>(source.GetProperty("index"));
+		bool final = conf::get_prop_value<conf::BoolProperty>(source.GetProperty("final"));
+
+		StringList lineMappings;
+		conf::AggregateListProperty* prop = static_cast<conf::AggregateListProperty*>(source.GetProperty("lineMappings"));
+		BOOST_FOREACH(conf::AggregateProperty* p, prop->GetPropertyList()) {
+			const String original = wxString::Format(_T("%d"), conf::get_prop_value<conf::IntProperty>(p->GetProperty("original")));
+			const String mapped = conf::get_prop_value<conf::StringListProperty>(p->GetProperty("mapped"));
+			lineMappings.push_back(original + _T(":") + mapped);
+		}
+
+		AddSource(name, lineMappings, StringList(), type, index, final); //source refs not stored in prop file
+	}
+	GenerateFinalLineMappings();
 }
 
 /////////////////////////////////////////////////////////////////////////
 
 EXPORTED_FUNCTION(Script, bool, Load, (const String& uri)) {
 	bool result = GenericFile::Load(uri);
+
+	conf::Property* output = const_cast<conf::Property*>(GetInstanceProperty("output"));
+	if (output && conf::get_prop_value<conf::StringProperty>(output, _T("")).empty()) {
+		String name = GetName();
+		name = name.substr(0, name.find_last_of(_T(".")));
+		conf::set_prop_value<conf::StringProperty>(output, name);
+	}
+
 	RefreshDeploymentPropertyValue();
 	LoadLastBuildProperties();
 	return result;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_FUNCTION(Script, const std::string, GetType, (void)) { return GetClassId(); }
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_FUNCTION(Script, const UIntList, GetWorkId, (void))
+{
+	return m_workId;
+}
+
+EXPORTED_FUNCTION(Script, uint, NextWorkSerial, (void))
+{
+	return ++m_currentWorkSerial;
+}
+
+EXPORTED_FUNCTION(Script, const std::string, GetCurrBuildFunc, (void))
+{
+	return m_debugBuild ? "DebugBuild" : "Build";
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -396,7 +492,7 @@ bool Script::DependsOnRecursion (const Script* from, const Script* to) {
 
 	(*s_visitMap)[const_cast<Script*>(from)] = true;
 
-	for (ScriptPtrList::const_iterator i =  from->m_buildDeps.begin(); i !=  from->m_buildDeps.end(); ++i)
+	for (ScriptPtrSet::const_iterator i =  from->m_buildDeps.begin(); i !=  from->m_buildDeps.end(); ++i)
 		if (s_visitMap->find(*i) == s_visitMap->end() && to->m_buildDepsResolved && DependsOnRecursion(*i, to))
 			return true;
 	return false;
@@ -416,14 +512,48 @@ bool Script::DependsOn (const Script* script) const {
 
 /////////////////////////////////////////////////////////////////////////
 
-EXPORTED_FUNCTION(Script, const HandleList, FindScriptsOfUsedByteCodeFile, (const String& fileName)) {
+EXPORTED_FUNCTION(Script, const HandleList, FindScriptsOfUsedByteCodeFile, (const String& fileName, uint stage)) {
 	
+	String bytecode_path;
+	if (!stage)
+		bytecode_path = GetByteCodeLoadingPathPropertyValue();
+	else {
+		using namespace conf;
+		const AggregateListProperty* stageSourcesOptions = safe_prop_cast<const AggregateListProperty>(
+			GetInstanceProperty("stage_sources_options")
+		);
+		DASSERT(stageSourcesOptions);
+
+		const AggregateProperty* defaultStage = (const AggregateProperty*) 0;
+		bool found = false;
+		BOOST_FOREACH(const AggregateProperty* p, stageSourcesOptions->GetPropertyList()) {
+			const uint s = get_prop_value<IntProperty>(p->GetProperty("stage"));
+			if (!s)
+				defaultStage = p;
+			else if (s == stage) {
+				bytecode_path = get_prop_value<const DirectoryListProperty>(
+					 p->GetProperty(BYTECODE_PATH_PROPERTY_ID),
+					 String()
+				);
+				found = true;
+				break;
+			}
+		}
+		if (!found && defaultStage)
+			bytecode_path = get_prop_value<const DirectoryListProperty>(
+				defaultStage->GetProperty(BYTECODE_PATH_PROPERTY_ID),
+				String()
+			);
+	}
+
 	StringList dirs;
-	util::stringtokenizer(dirs, GetByteCodeLoadingPath(), _T(";"));
+	util::stringtokenizer(dirs, bytecode_path, _T(";"));
 
 	ScriptPtrList scripts;
-	BOOST_FOREACH(const String& dir, dirs)
-		GetAllScriptsProducingByteCodeFileFullPath(util::str2std(dir + _T("/") + fileName), &scripts);
+	BOOST_FOREACH(const String& dir, dirs) {
+		const String fullPath = MakeAbsolutePath(dir, GetPath()) + _T("/") + fileName;
+		GetAllScriptsProducingByteCodeFileFullPath(util::str2std(fullPath), &scripts);
+	}
 	
 	HandleList handles;
 	BOOST_FOREACH(Script* script, scripts)
@@ -445,7 +575,7 @@ const std::string Script::ProcuceCyclicDependencyPathString (const Script* targe
 			return ProcuceCyclicDependencyPathString(start, start);
 		}
 	else {
-		for (ScriptPtrList::const_iterator i = m_buildDeps.begin(); i != m_buildDeps.end(); ++i)
+		for (ScriptPtrSet::const_iterator i = m_buildDeps.begin(); i != m_buildDeps.end(); ++i)
 			if (vs.find(*i) == vs.end() && DependsOnRecursion(*i, target)) {
 				vs[*i] = true;
 				return curr + "->" + (*i)->ProcuceCyclicDependencyPathString(target, start);
@@ -489,8 +619,9 @@ const String Script::GetByteCodeLoadingPath (void) const {
 /////////////////////////////////////////////////////////////////////////
 
 const std::string Script::GetProducedByteCodeFile (void) const {
-	const String name = const_cast<Script*>(this)->GetName();
-	return util::str2std(name.substr(0, name.find_last_of(_T("."))) + _T(".dbc"));
+	const String output = conf::get_prop_value<conf::StringProperty>(GetInstanceProperty("output"), _T(""));
+	DASSERT(!output.empty());
+	return util::str2std(output + _T(".dbc"));
 }
 
 const String Script::GetProducedBuildInfoFileFullPath (void) const {
@@ -498,12 +629,42 @@ const String Script::GetProducedBuildInfoFileFullPath (void) const {
 	return const_cast<Script*>(this)->GetOutputDirectory() + name.substr(0, name.find_last_of(_T("."))) + _T(".dbi");
 }
 
-const std::string Script::GetProducedByteCodeFileFullPath (void) const 
-	{ return util::str2std(const_cast<Script*>(this)->GetOutputDirectory()) + GetProducedByteCodeFile(); }
+EXPORTED_FUNCTION(Script, const std::string, GetProducedByteCodeFileFullPath, (void))
+{
+	return util::str2std(GetOutputDirectory()) + GetProducedByteCodeFile();
+}
+
+EXPORTED_FUNCTION(Script, const std::string, GetTransformedFileFullPath, (uint transformationNo))
+{
+	String name = GetName();
+	name = name.substr(0, name.find_last_of(_T(".")));
+	return util::str2std(GetPath() + name + _T("_aspect_") + boost::lexical_cast<String>(transformationNo) + _T(".dsc"));
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_FUNCTION(Script, const String, GetFinalSourceURI, (void))
+{
+	Script* target = this;
+	Component::List children = GetChildren();
+	while (!children.empty()) {
+		target = static_cast<Script*>(children.back());
+		children = target->GetChildren();
+	}
+	return target->GetURI();
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_FUNCTION(Script, const StringList, GetFinalLineMappings, (void))
+{
+	return m_finalLineMappings;	
+}
 
 /////////////////////////////////////////////////////////////////////////
 // Produces a full path list taking the dbc file and appending it 
-// to every bytecode path, the run working dir and the output dir.
+// to every bytecode path (of the script props), the run working dir and the output dir.
+// This concerns only the dbc that relate to some script entry.
 
 struct PathEqualPredPred : public std::binary_function<String, String, bool> {
 	const String& dbc;
@@ -547,8 +708,9 @@ void Script::GetAllScriptsProducingUnknownUsedByteCodeFile (
 /////////////////////////////////////////////////////////////////////////
 
 void Script::GetAllScriptsProducingByteCodeFileFullPath (const std::string& fullPath, ScriptPtrList* putHere) {
+	boost::mutex::scoped_lock lock(s_allScriptsMutex);
 	for (ScriptPtrList::iterator i = s_allScripts->begin(); i != s_allScripts->end(); ++i)
-		if (wxFileName(util::std2str((*i)->GetProducedByteCodeFileFullPath())).SameAs(util::std2str(fullPath)))
+		if ((*i)->GetClassId() != "StageSource" && wxFileName(util::std2str((*i)->GetProducedByteCodeFileFullPath())).SameAs(util::std2str(fullPath)))
 			putHere->push_back(*i);
 }
 
@@ -570,6 +732,78 @@ Script* Script::GetScriptWithMostRecentSource (const ScriptPtrList& scripts) {
 
 /////////////////////////////////////////////////////////////////////////
 
+void Script::ResolveAspectTransformations (void) {
+	StringVec projects;
+	const conf::Property* p = GetInstanceProperty("aspects");
+	if (!p || (projects = static_cast<const conf::StringListProperty*>(p)->GetValues()).empty())
+		return;
+
+	std::string func;
+	const std::string type = GetType();
+	if (type == "Script" || type == "Aspect")
+		func = "GetPreTransformations";
+	else if (type == "stage")
+		func = "GetInterimTransformations";
+	else if (type == "result")
+		func = "GetPostTransformations";
+	else {
+		DASSERT(type == "aspect");
+		return;
+	}
+
+	const Handle& wsp = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
+	BOOST_FOREACH(const String& project, projects) {
+		const Handle proj = Call<Handle (const String&)>(this, wsp, "GetChild")(project);
+		if (proj && proj.GetClassId() == "AspectProject") {
+			const HandleList aspects = Call<const HandleList (void)>(this, proj, func)();
+			BOOST_FOREACH(const Handle& handle, aspects) {
+				DASSERT(handle.GetClassId() == "Aspect");
+				m_aspectTransformations.insert(static_cast<Script*>(handle.Resolve()));
+			}
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+void Script::BuildSelf (void) {
+	bool upToDate = IsByteCodeUpToDate();
+	if (upToDate && !m_stageSources.empty())
+		BOOST_FOREACH(const Handle& source, CollectChildren(_T("StageSource"))) {
+			Script* s = static_cast<Script*>(source.Resolve());
+			bool shouldCheck =	s->GetType() != "result" && s->GetType() != "aspect" ||
+								conf::get_prop_value<conf::BoolProperty>(s->GetInstanceProperty("final"), false);
+			s_upToDate->clear();
+			if (shouldCheck && !s->IsUpToDateCalculation()) {
+				upToDate = false;
+				break;
+			}
+		}
+	if (!upToDate)
+		BuildSelfImpl();
+	else
+	if (AreSomeDependenciesCompiled()) 
+		{ BUILD_MESSAGE_DEPENDENCIES_RECOMPILED(GetSource());  BuildSelfImpl(); }
+	else
+	if (!AreLastBuildPropertiesSameAsCurrent())
+		{ BUILD_MESSAGE_PROJECT_SETTINGS_CHANGED(GetSource()); BuildSelfImpl(); }
+	else {
+		BUILD_MESSAGE_SCRIPT_IS_UPTODATE(GetSource());
+		SetBuildCompleted(true, false);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+void Script::BuildSelfImpl (void) {
+	if (m_aspectTransformations.empty())
+		LaunchCompiler();
+	else
+		BuildWithTransformations();
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 void Script::LaunchCompiler (void) {
 
 	String options;
@@ -583,15 +817,30 @@ void Script::LaunchCompiler (void) {
 
 	const String output_path = GetOutputDirectory();
 	options += _T(" --output_path=") + util::quotepath(output_path);
+	options += _T(" --stage_output_path=") + util::quotepath(GetDirectoryProperty("stage_output_path"));
+
+	const String output = conf::get_prop_value<conf::StringProperty>(GetInstanceProperty("output"), _T(""));
+	if (!output.empty())
+		options += _T(" --output=") + output;
 
 	String bytecodePath = GetByteCodeLoadingPath();
 
 	if (!bytecodePath.empty())
 		options += _T(" --bytecode_path=") + util::quotepath(bytecodePath);
 
-	options += _T(" --symbolic_names=\"") + GetSymbolicURI() + _T("\"");
+	//Select the first one to place stage sources under the original source 
+	//and the second one to place them under the transformed aspect files.
+	//TODO: for the first to be correct a new original (parent) source is required in the compiler launch
+	//Script* original = GetClassId() == "StageSource" && 
+	//	conf::get_prop_value<conf::EnumStringProperty>(GetInstanceProperty("treeCtrl_icon"), String()) == _T("aspect") ?
+	//	static_cast<Script*>(GetParent().Resolve()) : this;
+	Script* original = this;
 
-	const String directory = Call<const String (void)>(this, TreeItemComponent::GetParent(), "GetPath")();
+	options += _T(" --symbolic_names=\"") + original->GetSymbolicURI() + _T("\"");
+
+	const String directory = GetWorkingDirectory();	// Compiler invocation dir is now the working dir of the script
+	//The following commented line shows the previous behaviour where the invocation dir was that of the container project
+	//const String directory = Call<const String (void)>(this, TreeItemComponent::GetParent(), "GetPath")();
 
 	if (m_workId.empty()) {
 		Call<void (const String&, const String&, const String&)>(this, "DeltaCompiler", "CompileInternal")(
@@ -602,12 +851,25 @@ void Script::LaunchCompiler (void) {
 		timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkCompleted, this, BUILD_TASK_ID, m_workId));
 	}
 	else {
-		boost::mutex::scoped_lock callLock(s_mutex);
+		boost::mutex::scoped_lock callLock(s_componentCallMutex);
 		boost::mutex::scoped_lock compLock(m_compMutex);
-		unsigned long compilerPid  = Call<unsigned long (const String&, const String&, const String&, const UIntList&, const Handle&)>
-			(this, "DeltaCompiler", "Compile")(GetURI(), options, directory, m_workId, this);
+		
+		if (m_debugBuild)
+			while (s_compilerActive)
+				wxMilliSleep(100);
+		s_compilerActive = true;
 
-		SetCompilerPid(compilerPid);
+		std::string comp = m_debugBuild ? "DeltaVM" : "DeltaCompiler";
+		std::string func = m_debugBuild ? "DebugCompilerInvocation" : "Compile";
+		unsigned long compilerPid = Call<unsigned long (const String&, const String&, const String&, const UIntList&, const Handle&)>
+			(this, comp, func)(GetURI(), options, directory, m_workId, this);
+		
+		if (compilerPid) {
+			CleanStageSources();
+			SetCompilerPid(compilerPid);
+		}
+		else
+			SetBuildCompleted(false, false);
 	}
 }
 
@@ -621,14 +883,14 @@ EXPORTED_STATIC_SIGNAL(	//Artificial compilation message
 
 //********************************
 
-void Script::PostBuildOutput(const UIntList& workId, const String& type, const String& content, const String& file) 
+void Script::PostBuildOutput(const UIntList& workId, const String& type, const String& content, const String& file)
 	{ sigCompilationMessage(workId, type, content, file, BEFORE_COMPILATION_LINE_NO); }
 
 //********************************
 
 void Script::PostBuildError (const UIntList& workId, const std::string& error) {
 	timer::DelayedCaller::Instance().PostDelayedCall(
-		boost::bind(PostBuildOutput, workId, _T("Error"), util::std2str(error), GetSymbolicURI())
+		boost::bind(&Script::PostBuildOutput, this, workId, _T("Error"), util::std2str(error), GetSymbolicURI())
 	);
 }
 
@@ -636,7 +898,7 @@ void Script::PostBuildError (const UIntList& workId, const std::string& error) {
 
 void Script::PostBuildMessage (const UIntList& workId, const std::string& message) {
 	timer::DelayedCaller::Instance().PostDelayedCall(
-		boost::bind(PostBuildOutput, workId, _T("Message"), util::std2str(message + "\n"), GetSymbolicURI())
+		boost::bind(&Script::PostBuildOutput, this, workId, _T("Message"), util::std2str(message + "\n"), GetSymbolicURI())
 	);
 }
 
@@ -644,7 +906,7 @@ void Script::PostBuildMessage (const UIntList& workId, const std::string& messag
 
 void Script::PostBuildWarning (const UIntList& workId, const std::string& warning) {
 	timer::DelayedCaller::Instance().PostDelayedCall(
-		boost::bind(PostBuildOutput, workId, _T("Warning"), util::std2str(warning), GetSymbolicURI())
+		boost::bind(&Script::PostBuildOutput, this, workId, _T("Warning"), util::std2str(warning), GetSymbolicURI())
 	);
 }
 
@@ -662,12 +924,12 @@ void Script::TerminateAllLaunchedCompilers (void) {
 		);
 
 		if (!m_buildDeps.empty())						// Has dependencies.
-			for (ScriptPtrList::iterator i = m_buildDeps.begin(); i != m_buildDeps.end(); ++i)
+			for (ScriptPtrSet::iterator i = m_buildDeps.begin(); i != m_buildDeps.end(); ++i)
 				(*i)->TerminateAllLaunchedCompilers();	// Recursive termination of compiler processes.
 		else {											// Script without remaining dependency, thus should kill its compiler thread.
 			DASSERT(m_allBuildPids.size() == ONLY_ONE_COMPILER_LAUNCHED_PIDS);
 			DASSERT(m_allBuildPids.front() != NO_COMPILER_THREAD_PID);
-			util::ConsoleHost().TerminateProcess(m_allBuildPids.front());
+			util::ConsoleHost::TerminateProcess(m_allBuildPids.front());
 		}
 	}
 	else if (m_beingBuilt)
@@ -678,7 +940,7 @@ void Script::TerminateAllLaunchedCompilers (void) {
 
 EXPORTED_FUNCTION(Script, const ScriptDependencies, GetDependencies, (void)) {
 	
-	ScriptPtrList outDeps;
+	ScriptPtrSet outDeps;
 	StdStringList externalDeps;
 	bool ok = ResolveDependencies(ExtractDependencies(), &outDeps, &externalDeps, false);
 
@@ -697,7 +959,7 @@ EXPORTED_FUNCTION(Script, const ScriptDependencies, GetDependencies, (void)) {
 
 bool Script::ResolveDependencies (
 		const StringList&	deps,
-		ScriptPtrList*		outDeps,
+		ScriptPtrSet*		outDeps,
 		StdStringList*		externalDeps,
 		bool				outputErrors
 	) {
@@ -725,11 +987,11 @@ bool Script::ResolveDependencies (
 			if (!producers.empty()) {
 				Script* newDep = (Script*) 0;
 				if (producers.size() > 1) {		// Multiple producers? choose most recent source.
-					outDeps->push_back(newDep = GetScriptWithMostRecentSource(producers));
+					outDeps->insert(newDep = GetScriptWithMostRecentSource(producers));
 					BUILD_WARNING_MULTIPLE_SOURCES(dbc, newDep->GetSource());
 				}
 				else {
-					outDeps->push_back(newDep = producers.front());
+					outDeps->insert(newDep = producers.front());
 					newDep->m_buildDepsResolved = true;
 				}
 
@@ -763,7 +1025,7 @@ void Script::CleanDependencies (const UIntList& workId) {
 
 	if (!m_buildDepsRetained.empty()) {
 		unsigned workSerial = 1;
-		for (ScriptPtrList::iterator i = m_buildDepsRetained.begin(); i != m_buildDepsRetained.end(); ++i, ++workSerial)  {
+		for (ScriptPtrSet::iterator i = m_buildDepsRetained.begin(); i != m_buildDepsRetained.end(); ++i, ++workSerial)  {
 			UIntList newWorkId = workId;
 			newWorkId.push_back(workSerial);
 			(*i)->Clean(newWorkId);		// Synchronous call.
@@ -776,7 +1038,8 @@ void Script::CleanDependencies (const UIntList& workId) {
 
 	if (IsApplication()) {
 		RecursiveDeleteByteCodeFilesFromWorkingDirectory(m_buildDepsRetained, m_externalBuildDepsRetained);
-		DeleteByteCodeFileOfScriptFromWorkingDirectory(this);	// Delete self copy from the wdir.
+		if (GetWorkingDirectory() != GetOutputDirectory())
+			DeleteByteCodeFileOfScriptFromWorkingDirectory(this);	// Delete self copy from the wdir.
 	}
 }
 
@@ -784,15 +1047,16 @@ void Script::CleanDependencies (const UIntList& workId) {
 
 void Script::RecursiveCreateDependencyInformation(void) {
 	ResolveDependencies(ExtractDependencies(), &m_buildDepsRetained, &m_externalBuildDepsRetained, false);
-	for (ScriptPtrList::iterator i = m_buildDepsRetained.begin(); i != m_buildDepsRetained.end(); ++i)
+	for (ScriptPtrSet::iterator i = m_buildDepsRetained.begin(); i != m_buildDepsRetained.end(); ++i)
 		(*i)->RecursiveCreateDependencyInformation();
 }
 
 void Script::RecursiveClearDependencyInformation (void) {
-	for (ScriptPtrList::iterator i = m_buildDepsRetained.begin(); i != m_buildDepsRetained.end(); ++i)
+	for (ScriptPtrSet::iterator i = m_buildDepsRetained.begin(); i != m_buildDepsRetained.end(); ++i)
 		(*i)->RecursiveClearDependencyInformation();
 	m_buildDepsRetained.clear();
 	m_externalBuildDepsRetained.clear();
+
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -812,28 +1076,67 @@ void Script::DeleteCopiedByteCodeFilesFromWorkingDirectory (void) {
 
 /////////////////////////////////////////////////////////////////////////
 
-void Script::BuildWithDependencies (const StringList& deps) {
-	
-	if (!ResolveDependencies(deps, &m_buildDeps, &m_externalBuildDepsRetained, true)) {
+void Script::BuildWithTransformations (void) {
+
+	StringList aspects;
+	DASSERT(!m_aspectTransformations.empty());
+	BOOST_FOREACH(const Script* s, m_aspectTransformations)
+		aspects.push_back(util::std2str(const_cast<Script*>(s)->GetProducedByteCodeFileFullPath()));
+
+	String options;
+	//TODO: need bytecode path and dllimportpath per transformation script
+	//const String bytecodePath = GetByteCodeLoadingPath();
+	//if (!bytecodePath.empty())
+	//	options += _T(" --bytecode_path=") + util::quotepath(bytecodePath);
+	//const String dllimportpath = GetDllImportPath();
+	//if (!dllimportpath.empty())
+	//	options += _T(" --dllimport_path=") + util::quotepath(bytecodePath);
+
+	options += _T(" --symbolic=\"") + GetSymbolicURI() + _T("\"");
+
+	const String directory = Call<const String (void)>(this, TreeItemComponent::GetParent(), "GetPath")();
+
+	bool debug = m_debugBuild || GetClassId() == "StageSource" && static_cast<Script*>(GetParent().Resolve())->m_debugBuild;
+	const std::string comp = debug ? "DeltaVM" : "DeltaCompiler";
+	const std::string func = debug ? "DebugAspectCompilerInvocation" : "AspectTransformation";
+	unsigned long pid = Call<unsigned long (const String&, const StringList&, const String&, const String&, const UIntList&, const Handle&)>
+		(this, comp, func)(GetURI(), aspects, options, directory, m_workId, this);
+	if (pid) {
+		CleanStageSources();
+		SetCompilerPid(pid);
+	}
+	else
+		SetBuildCompleted(false, false);
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
+	boost::mutex::scoped_lock lock(m_buildDepsMutex);
+	if (!ResolveDependencies(usingDeps, &m_buildDeps, &m_externalBuildDepsRetained, true)) {
 		m_externalBuildDepsRetained.clear();
 		BUILD_ERROR_FAILED_TO_RESOLVE_ALL_DEPENDENCIES(GetSource());
 		SetBuildCompleted(false, false);
 		m_upToDate = true;						// We artificially set it up-to-date so that we do not rebuilt in this session.
 	}
-	else {
-		
-		DASSERT(!m_buildDeps.empty());
-		m_buildDepsRetained = m_buildDeps;
+	else 
+		BuildWithScriptDependencies(m_buildDeps);
+}
 
-		unsigned		workSerial = 1;
-		ScriptPtrList	toBuild(m_buildDeps);	// Should copy since during build may asynchronously remove.
-		m_buildDepsSucceeded = true;			// We assume they have all succceeded.
+/////////////////////////////////////////////////////////////////////////
 
-		for (ScriptPtrList::iterator i = toBuild.begin(); i != toBuild.end(); ++i, ++workSerial) {
-			UIntList workId = m_workId;
-			workId.push_back(workSerial);
-			(*i)->BuildImpl(workId, this);
-		}
+void Script::BuildWithScriptDependencies (const ScriptPtrSet& deps) {
+
+	DASSERT(!deps.empty());
+	m_buildDepsRetained = m_buildDeps = deps;
+
+	ScriptPtrSet	toBuild(m_buildDeps);	// Should copy since during build may asynchronously remove.
+	m_buildDepsSucceeded = true;			// We assume they have all succceeded.
+
+	for (ScriptPtrSet::iterator i = toBuild.begin(); i != toBuild.end(); ++i) {
+		UIntList workId = m_workId;
+		workId.push_back(NextWorkSerial());
+		(*i)->BuildImpl(workId, m_debugBuild, this);
 	}
 }
 
@@ -860,13 +1163,26 @@ bool Script::HaveAllDependenciesSucceeded (void) const
 bool Script::AreSomeDependenciesCompiled  (void) const
 	{ return m_someDepsCompiled; }
 
-bool Script::IsByteCodeUpToDate (void) const {
-
+EXPORTED_FUNCTION(Script, bool, IsByteCodeUpToDate, (void))
+{
 	const std::string source = GetSource();
 	const std::string binary = GetProducedByteCodeFileFullPath();
-	return	boost::filesystem::exists(source) &&
-			boost::filesystem::exists(binary) &&
+	return	FileSystemExists(source) &&
+			FileSystemExists(binary) &&
 			boost::filesystem::last_write_time(binary) >= boost::filesystem::last_write_time(source);
+}
+
+EXPORTED_FUNCTION(Script, bool, AreSourceTransformationsUpToDate, (void))
+{
+	if (m_aspectTransformations.empty())
+		return true;
+	else {
+		const std::string source = GetSource();
+		const std::string lastTransformation = GetTransformedFileFullPath(m_aspectTransformations.size());
+		return	FileSystemExists(source) &&
+				FileSystemExists(lastTransformation) &&
+				boost::filesystem::last_write_time(lastTransformation) >= boost::filesystem::last_write_time(source);
+	}
 }
 
 //********************************
@@ -953,12 +1269,14 @@ void Script::ClearBuildInformation (void) {
 	m_buildInitiator		= (Script*) 0;
 	m_buildDepsSucceeded	= false;
 	m_someDepsCompiled		= false;
+	m_debugBuild			= false;
 	m_buildDepsResolved		= false;
 
 	m_workId.clear();
 	m_allBuildPids.clear();
 	m_buildDeps.clear();
 	m_pseudoInitiators.clear();
+	m_aspectTransformations.clear();
 
 	ResetIsBeingBuilt();	// Always last since it may cause parallelism problems.
 }
@@ -969,12 +1287,21 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 	
 	boost::mutex::scoped_lock lock(m_buildDoneMutex);
 
-	if (succeeded && wasCompiled)
+	if (succeeded && GetClassId() == "Script")
+		GenerateFinalLineMappings();
+
+	if (wasCompiled)	//even when compilation fails intermediate files may be generated requiring a clean
 		m_isCleaned = false;
 
+	bool updatedProperties = false;
 	if (succeeded && wasCompiled)
-		if (!IsApplication() || (succeeded = CopyByteCodeFileOfScriptAtWorkingDirectory(this)))	// Copy self at wdir.
+		if (!IsApplication() || (succeeded = CopyByteCodeFileOfScriptAtWorkingDirectory(this)))	{ // Copy self at wdir.
 			UpdateLastBuildProperties();
+			updatedProperties = true;
+		}
+
+	if (!updatedProperties)
+		UpdateLastBuildProperties();
 
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkCompleted, this, BUILD_TASK_ID, m_workId));
 
@@ -1007,38 +1334,35 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 
 void Script::InitialiseNewBuildProcess (const UIntList& workId) {
 	SaveSource();
+	m_currentWorkSerial = 0;
 	m_workId = workId;
 	m_buildDepsRetained.clear();
 	m_externalBuildDepsRetained.clear();
 	m_deploymentDeps.clear();
+	m_buildCanceled = false;
 }
 
 /////////////////////////////////////////////////////////////////////////
 
 void Script::UpdateLastBuildProperties (void) {
 
-	for (const char** p = conf::GetScriptBuildPropertyIds(); *p; ++p) {
+	for (const char** p = conf::GetScriptLastBuildPropertyIds(); *p; ++p) {
 		conf::Property* curr = GetInstancePropertyTable().GetProperty(*p);	// Normal build property.
 		DASSERT(curr);
 		m_lastBuildProperties.AddProperty(*p, curr->Clone());	// Last build property.
 	}
-
-	conf::Property* p = m_lastBuildProperties.GetProperty(BYTECODE_PATH_PROPERTY_ID);
-	DASSERT(p);
-	static_cast<conf::StringProperty*>(p)->SetValue(GetByteCodeLoadingPath());
-
 	m_lastBuildPropertiesInvalid = false;
 	SaveLastBuildProperties();
 }
 
 //********************************
-
+	
 bool Script::AreLastBuildPropertiesSameAsCurrent (void) const {
 
 	if (m_lastBuildPropertiesInvalid)
 		return false;
 	else {
-		for (const char** p = conf::GetScriptBuildPropertyIds(); *p; ++p) {
+		for (const char** p = conf::GetScriptLastBuildPropertyIds(); *p; ++p) {
 
 			conf::Property* curr = GetInstancePropertyTable().GetProperty(*p);	// Normal build property.
 			DASSERT(curr);
@@ -1049,10 +1373,7 @@ bool Script::AreLastBuildPropertiesSameAsCurrent (void) const {
 			if (!curr->Equal(last))
 				return false;
 		}
-
-		conf::Property* p = m_lastBuildProperties.GetProperty(BYTECODE_PATH_PROPERTY_ID);
-		DASSERT(p);
-		return static_cast<conf::StringProperty*>(p)->GetValue() == GetByteCodeLoadingPath();
+		return true;
 	}
 }
 
@@ -1069,7 +1390,8 @@ void Script::SetInitiatedBuildIsCompleted (Script* script, unsigned long pid, bo
 		(!script->IsBuildPseudoInitiator(this) || (i == m_allBuildPids.end()))
 	);
 
-	m_buildDeps.remove(script);
+	m_buildDeps.erase(script);
+
 	if (pid != NO_COMPILER_THREAD_PID) {	// Dependency was actually compiled.
 		if (i != m_allBuildPids.end())
 			m_allBuildPids.erase(i);
@@ -1090,18 +1412,7 @@ void Script::SetInitiatedBuildIsCompleted (Script* script, unsigned long pid, bo
 				SetBuildCompleted(false, false);
 			}
 			else
-			if (!IsByteCodeUpToDate())
-				 LaunchCompiler();
-			else
-			if (AreSomeDependenciesCompiled()) 
-				{ BUILD_MESSAGE_DEPENDENCIES_RECOMPILED(GetSource());  LaunchCompiler(); }
-			else
-			if (!AreLastBuildPropertiesSameAsCurrent()) 
-				{ BUILD_MESSAGE_PROJECT_SETTINGS_CHANGED(GetSource());  LaunchCompiler(); }
-			else {
-				BUILD_MESSAGE_SCRIPT_IS_UPTODATE(GetSource());
-				SetBuildCompleted(true, false);
-			}
+				BuildSelf();
 		else {
 			BUILD_ERROR_FAILED_WHILE_BUILDING_DEPENDENCIES(GetSource());
 			SetBuildCompleted(false, false);
@@ -1112,6 +1423,7 @@ void Script::SetInitiatedBuildIsCompleted (Script* script, unsigned long pid, bo
 /////////////////////////////////////////////////////////////////////////
 
 void Script::ResetUpToDate (void) {
+	boost::mutex::scoped_lock lock(s_allScriptsMutex);
 	for (ScriptPtrList::iterator i = s_allScripts->begin(); i != s_allScripts->end(); ++i)
 		(*i)->m_upToDate = false;
 }
@@ -1126,8 +1438,10 @@ EXPORTED_SLOT_MEMBER(
 		"WorkCanceled"
 	) { 
 	if (caller == "Workspace") {
+		m_buildCanceled = true;
 		TerminateAllLaunchedCompilers(); 
 		ResetUpToDate();
+		m_isCleaned = false;
 		s_buildNesting = 0;
 	}
 }
@@ -1164,22 +1478,62 @@ EXPORTED_SLOT_MEMBER(
 
 /////////////////////////////////////////////////////////////////////////
 
-void Script::OnCompilationMessage(const UIntList& buildId, const String& content, const String& file)
-	{ sigCompilationMessage(buildId, _T("Message"), content, file, BEFORE_COMPILATION_LINE_NO); }
+static bool HaveSameWorkId (const UIntList& id1, const UIntList& id2) {
+	if (id1.size() != id2.size())
+		return false;
+	else {
+		UIntList::const_iterator i, j;
+		for (i = id1.begin(), j = id2.begin(); i != id1.end(); ++i, ++j)
+			if (*i != *j)
+				return false;
+		return true;
+	}
+}
+
+EXPORTED_SLOT_MEMBER(Script, void, OnResourceWorkCompleted, (const Handle& resource,
+	const String& task, const UIntList& workId), "ResourceWorkCompleted")
+{
+	Component *comp = resource.Resolve();
+	if (m_beingBuilt && !m_buildCanceled && comp && task == BUILD_TASK_ID && HaveSameWorkId(workId, m_lastTransformationBuildId)) {
+		m_lastTransformationBuildId.clear();
+		sigCompileFinished(this);
+		SetBuildCompleted(static_cast<Script*>(comp)->IsByteCodeUpToDate(), true);
+	}
+}
 
 /////////////////////////////////////////////////////////////////////////
 
-EXPORTED_SLOT_MEMBER(Script, void, OnCompileFinished, (const std::string& compiler, const Handle& script), "CompileFinished") {
+EXPORTED_SLOT_MEMBER(Script, void, OnCompileFinished, (const std::string& invoker, const Handle& script), "CompileFinished") {
 
-	if (script.Resolve() == this && m_beingBuilt) {	//it may have been canceled
+	if (invoker != s_classId && script.Resolve() == this && !m_buildCanceled) {	//skip notifications from deferred self compilations
 
 		boost::mutex::scoped_lock lock(m_compMutex);
 		DASSERT(!m_workId.empty() && m_allBuildPids.size() == ONLY_ONE_COMPILER_LAUNCHED_PIDS && m_buildDeps.empty());
-		
+
+		s_compilerActive = false;
 		SetBuildCompleted(
 			IsByteCodeUpToDate(),	// When the dbc is up-to-date the compilation finished with no errors.
 			true					// And we have always launched the compiler.
 		);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_SLOT_MEMBER(Script, void, OnTransformationFinished, (const std::string& invoker, const Handle& script), "TransformationFinished") {
+
+	if (script.Resolve() == this && !m_buildCanceled) {
+		if (AreSourceTransformationsUpToDate()) {
+			const Handle lastTransformation = this->GetChildByURI(util::std2str(GetTransformedFileFullPath(m_aspectTransformations.size())));
+			DASSERT(lastTransformation);
+
+			m_lastTransformationBuildId = m_workId;		
+			m_lastTransformationBuildId.push_back(NextWorkSerial());
+			const std::string func = m_debugBuild ? "DebugBuild" : "Build";
+			Call<void (const UIntList&)>(this, lastTransformation, func)(m_lastTransformationBuildId);
+		}
+		else
+			SetBuildCompleted(false, false);
 	}
 }
 
@@ -1210,24 +1564,24 @@ EXPORTED_FUNCTION(Script, unsigned long, Clean, (const UIntList& workId)) {
 
 	if (!m_isCleaned) {
 
-		if (!m_cleanStarter)
-			m_cleanStarter = this;
+		if (!s_cleanStarter)
+			s_cleanStarter = this;
 
 		CleanDependencies(workId);
+		CleanStageSources();
 
-		std::string dbc = GetProducedByteCodeFileFullPath();
-		if (boost::filesystem::exists(dbc)) {
-			boost::mutex::scoped_lock lock(s_mutex);
+		const std::string dbc = GetProducedByteCodeFileFullPath();
+		if (FileSystemExists(dbc)) {
+			boost::mutex::scoped_lock lock(s_componentCallMutex);
 			Call<void (const String&)>(this, "DeltaCompiler", "Clean")(util::std2str(dbc));
 		}
 
-		std::string dbi = util::str2std(GetProducedBuildInfoFileFullPath()); 
-		if (boost::filesystem::exists(dbi))
-			boost::filesystem::remove(dbi);
+		const std::string dbi = util::str2std(GetProducedBuildInfoFileFullPath());
+		RemoveIfExists(dbi);
 
-		if (m_cleanStarter == this) {
+		if (s_cleanStarter == this) {
 			RecursiveClearDependencyInformation();	// Clears across the entire graph.
-			m_cleanStarter = (Script*) 0;
+			s_cleanStarter = (Script*) 0;
 		}
 
 		m_isCleaned = true;
@@ -1239,12 +1593,219 @@ EXPORTED_FUNCTION(Script, unsigned long, Clean, (const UIntList& workId)) {
 
 /////////////////////////////////////////////////////////////////////////
 
+EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const StringList& lineMappings, 
+	const StringList& sourceRefs, const String& type, uint index, bool isFinal))
+{
+	Component* item = ComponentFactory::Instance().CreateComponent("StageSource");
+	DASSERT(item);
+	item->SetParent(this);
+
+	conf::EnumStringProperty* iconProp = static_cast<conf::EnumStringProperty*>(item->GetClassProperty("treeCtrl_icon")->Clone());
+	iconProp->SetValue(type);
+	iconProp->SetVisible(false);
+	item->AddInstanceProperty("treeCtrl_icon", iconProp);
+
+	conf::StringListProperty* p = new conf::StringListProperty(_T("sourceRefs"), _T("Source References"));
+	p->SetValues(StringVec(sourceRefs.begin(), sourceRefs.end()));
+	p->SetVisible(false);
+	item->AddInstanceProperty("sourceRefs", p);
+
+	p = new conf::StringListProperty(_T("lineMappings"), _T("Line Mappings"));
+	p->SetValues(StringVec(lineMappings.begin(), lineMappings.end()));
+	p->SetVisible(false);
+	item->AddInstanceProperty("lineMappings", p);
+
+	conf::BoolProperty* p2 = new conf::BoolProperty(_T("final"), isFinal);
+	p2->SetVisible(false);
+	item->AddInstanceProperty("final", p2);
+
+	conf::PropertyTable source;
+	conf::AddScriptStageSourceProperties(&source);
+	conf::set_prop_value<conf::StringProperty>(source.GetProperty("name"), file);
+	conf::set_prop_value<conf::StringProperty>(source.GetProperty("type"), type);
+	conf::set_prop_value<conf::IntProperty>(source.GetProperty("index"), index);
+	conf::set_prop_value<conf::BoolProperty>(source.GetProperty("final"), isFinal);
+	conf::AggregateListProperty* prop = static_cast<conf::AggregateListProperty*>(source.GetProperty("lineMappings"));
+
+	BOOST_FOREACH(const String& mapping, lineMappings) {
+		StringVec split;
+		util::stringtokenizer(split, mapping, _T(":"));
+		DASSERT(split.size() == 2);
+		conf::AggregateProperty* p = prop->NewProperty();
+		conf::set_prop_value<conf::IntProperty>(p->GetProperty("original"), atoi(util::str2std(split[0]).c_str()));
+		conf::set_prop_value<conf::StringListProperty>(p->GetProperty("mapped"), split[1]);
+	}
+	m_stageSources.push_back(source);
+
+	if (type == _T("stage")) {	//generate stage properties
+		using namespace conf;
+		const AggregateListProperty* stageSourcesOptions = safe_prop_cast<const AggregateListProperty>(
+			GetInstanceProperty("stage_sources_options")
+		);
+		DASSERT(stageSourcesOptions);
+		
+		const AggregateProperty* matchedStage = (const AggregateProperty*) 0;
+		const AggregateProperty* defaultStage = (const AggregateProperty*) 0;
+		BOOST_FOREACH(const AggregateProperty* p, stageSourcesOptions->GetPropertyList()) {
+			const uint s = get_prop_value<IntProperty>(p->GetProperty("stage"));
+			if (!s)
+				defaultStage = p;
+			else if (index == s) {
+				matchedStage = p;
+				break;
+			}
+		}
+
+		if (const AggregateProperty* targetStage = matchedStage ? matchedStage : defaultStage)
+			for (const char** p = conf::GetScriptPropertyIdsForStageSources(); *p; ++p)
+				if (const conf::Property* prop = targetStage->GetProperty(*p))
+					item->AddInstanceProperty(*p, prop->Clone());
+
+		if (const conf::Property* prop = GetInstanceProperty("aspects"))
+			item->AddInstanceProperty("aspects", prop->Clone());
+	}
+	else {	//for stage results and aspect transformations copy script properties
+		for (const char** p = conf::GetProjectBuildPropertyIdsForScripts(); *p; ++p)
+			if (const conf::Property* prop = GetInstanceProperty(*p))
+				item->AddInstanceProperty(*p, prop->Clone());
+		for (const char** p = conf::GetScriptExecutionPropertyIds(); *p; ++p)
+			if (const conf::Property* prop = GetInstanceProperty(*p))
+				item->AddInstanceProperty(*p, prop->Clone());
+		if (const conf::Property* prop = GetInstanceProperty("output"))
+			item->AddInstanceProperty("output", prop->Clone());
+		if (const conf::Property* prop = GetInstanceProperty("aspects"))
+			item->AddInstanceProperty("aspects", prop->Clone());
+	}
+
+	assert(treeview);
+	Call<bool (const Handle&, const Handle&)>(this, treeview, "AddComponent")(this, item);
+	Call<void (const String&)>(this, item, "Load")(GetDirectoryProperty("stage_output_path") + file);
+	Call<void (const String&)>(this, item, "SetSymbolicURI")(file);
+	Call<void (const Handle&)>(this, treeview, "SortChildren")(this);
+
+	sigScriptSourceAdded(this, item, lineMappings, type, index);
+	return Handle(item);
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+Script::ScriptPtrList Script::GetAllIntermediateSources (void) {
+	ScriptPtrList result;
+	BOOST_FOREACH(const conf::PropertyTable& source, m_stageSources) {
+		const String type = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
+		if (type == _T("aspect") || type == _T("result")) {
+			const String symbolic = conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
+			Component* child = GetChildBySymbolicURI(symbolic).Resolve();
+			DASSERT(child && child->GetClassId() == "StageSource");
+			Script *s = static_cast<Script*>(child);
+			result.push_back(s);
+			if (conf::get_prop_value<conf::BoolProperty>(source.GetProperty("final")))
+				result.splice(result.end(), s->GetAllIntermediateSources());
+		}
+	}
+	return result;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+typedef std::map< uint, std::set<uint> > LineMappings;
+static const LineMappings StringVecToLineMappings(const StringVec& encodedMappings) {
+	LineMappings lineMappings;
+	BOOST_FOREACH(const String& str, encodedMappings) {
+		StringVec split;
+		util::stringtokenizer(split, str, _T(":"));
+		DASSERT(split.size() == 2);
+		std::set<uint>& s = lineMappings[atoi(util::str2std(split[0]).c_str())];
+
+		const String mapped = split[1];
+		split.clear();
+		util::stringtokenizer(split, mapped, _T(";"));
+		BOOST_FOREACH(const String& line, split)
+			s.insert(atoi(util::str2std(line).c_str()));
+	}
+	return lineMappings;
+}
+
+static const StringList LineMappingsToStringList(const LineMappings& lineMappings) {
+	StringList result;
+	for (LineMappings::const_iterator i = lineMappings.begin(); i != lineMappings.end(); ++i) {
+		String str = boost::lexical_cast<String>(i->first);
+		for (std::set<uint>::const_iterator j = i->second.begin(); j != i->second.end(); ++j)
+			str += (j == i->second.begin() ? _T(":") : _T(";")) + boost::lexical_cast<String>(*j);
+		result.push_back(str);
+	}
+	return result;
+}
+
+void Script::GenerateFinalLineMappings(void) {
+	LineMappings lineMappings;
+	BOOST_FOREACH(Script* s, GetAllIntermediateSources()) {
+		const conf::StringListProperty* p =
+			static_cast<const conf::StringListProperty *>(s->GetInstanceProperty("lineMappings"));
+		const LineMappings curr = StringVecToLineMappings(p->GetValues());
+		if (lineMappings.empty())
+			lineMappings = curr;
+		else {
+			LineMappings prev = lineMappings;
+			lineMappings.clear();
+			for (LineMappings::const_iterator i = prev.begin(); i != prev.end(); ++i) {
+				std::set<uint>& mapped = lineMappings[i->first];
+				for (std::set<uint>::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
+					LineMappings::const_iterator iter1 = curr.find(*j);
+					if (iter1 != curr.end())
+						for (std::set<uint>::const_iterator iter2 = iter1->second.begin(); iter2 != iter1->second.end(); ++iter2)
+							mapped.insert(*iter2);
+				}
+			}
+		}
+	}
+	m_finalLineMappings = LineMappingsToStringList(lineMappings);
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+void Script::CleanStageSources (void) {
+	BOOST_FOREACH(Component* child, GetChildren()) {
+		Script* script = static_cast<Script*>(child);
+		script->CleanStageSources();
+		const std::string dbi = util::str2std(script->GetProducedBuildInfoFileFullPath()); 
+		RemoveIfExists(dbi);
+	}
+
+	BOOST_FOREACH(const conf::PropertyTable& source, m_stageSources) {
+		const String uri = GetPath() + conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
+		const std::string curi = util::str2std(uri);
+		RemoveIfExists(curi);
+		if (conf::get_prop_value<conf::StringProperty>(source.GetProperty("type")) == _T("stage")) {
+			const std::string binary = curi.substr(0, curi.find_last_of(".")) + ".dbc";
+			RemoveIfExists(binary);
+		}
+
+		timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Script::DestroyStageSource, this, uri));
+	}
+	m_finalLineMappings.clear();
+	m_stageSources.clear();
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+void Script::DestroyStageSource (const String& uri) {
+	Handle child = GetChildByURI(uri);
+	Call<bool (const Handle&)>(this, treeview, "RemoveComponent")(child);
+	child->Destroy();
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 const StringList Script::ExtractDependencies (void) const {
-	boost::mutex::scoped_lock lock(s_mutex);
-	StringList deps = Call<StringList (const String&, const String&)>(const_cast<Script*>(this), "DeltaVM", "ExtractBuildDependencies")(
-		const_cast<Script*>(this)->GetURI(), 
-		GetByteCodeLoadingPath()
-	);
+	StringList deps;
+	{
+		boost::mutex::scoped_lock lock(s_componentCallMutex);
+		deps = Call<StringList (const String&, const String&)>(const_cast<Script*>(this), "DeltaVM", "ExtractBuildDependencies")(
+			const_cast<Script*>(this)->GetURI(), 
+			GetByteCodeLoadingPath()
+		);
+	}
 	DASSERT(deps.size() % 2 == 0);
 	std::set<String> uris;
 	for (StringList::iterator i = deps.begin(); i != deps.end(); /*empty*/)
@@ -1257,6 +1818,22 @@ const StringList Script::ExtractDependencies (void) const {
 			i = deps.erase(i);	//erase uri
 			i = deps.erase(i);	//erase status
 		}
+	return deps;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+const Script::ScriptPtrSet Script::ExtractStageDependencies (void) const {
+	ScriptPtrSet deps;
+	BOOST_FOREACH(const conf::PropertyTable& table, m_stageSources) {
+		const String type = conf::get_prop_value<conf::StringProperty>(table.GetProperty("type"));
+		if (type == _T("stage")) {
+			const String symbolic = conf::get_prop_value<conf::StringProperty>(table.GetProperty("name"));
+			const Handle script = const_cast<Script*>(this)->GetDirectChildBySymbolicURI(symbolic);
+			DASSERT(script);
+			deps.insert(static_cast<Script*>(script.Resolve()));
+		}
+	}
 	return deps;
 }
 
@@ -1296,41 +1873,55 @@ bool Script::IsBuildInProgressQuery (void) {
 }
 
 /////////////////////////////////////////////////////////////////////////
+// It saves the source, resolves deps (again) and recursively
+// calls that every dep is also up-to-date.
 
 bool Script::IsUpToDateCalculation (void) {
-
-	boost::mutex::scoped_lock buildLock(m_buildMutex);
-	DASSERT(!IsBuildInProgressQuery());
 
 	UpToDateMap::iterator i = s_upToDate->find(this);
 	if (i != s_upToDate->end())
 		return i->second;
+	bool result;
+	{
+		boost::mutex::scoped_lock lock(m_buildDepsMutex);
+		DASSERT(m_buildDeps.empty());
 
-	SaveSource();
+		SaveSource();
+		ResolveAspectTransformations();
+	
+		result = m_aspectTransformations.empty() ?
+			IsUpToDateCalculationWithUsingDependencies(ExtractDependencies())	:
+			IsUpToDateCalculationWithScriptDependencies(m_aspectTransformations);
 
-	bool result	=	IsUpToDateCalculationWithDependencies(ExtractDependencies())	&&
-					IsByteCodeUpToDate()											&&
-					AreLastBuildPropertiesSameAsCurrent();
+		result = result && IsByteCodeUpToDate() && AreLastBuildPropertiesSameAsCurrent();
 
+		m_aspectTransformations.clear();
+		m_buildDeps.clear();
+		m_buildDepsResolved = false;
+	}
 	return (*s_upToDate)[this] = result;
 }
 
 /////////////////////////////////////////////////////////////////////////
 
-bool Script::IsUpToDateCalculationWithDependencies (const StringList& deps) {
+bool Script::IsUpToDateCalculationWithUsingDependencies (const StringList& deps) {
 	if (deps.empty())
 		return true;
 	else {
-		ScriptPtrList scripts;
 		StdStringList externalDeps;
-		if (!ResolveDependencies(deps, &scripts, &externalDeps, false))
+		if (!ResolveDependencies(deps, &m_buildDeps, &externalDeps, false))
 			return false;
-		if (!scripts.empty())
-			for (ScriptPtrList::iterator i = scripts.begin(); i != scripts.end(); ++i)
-				if (!(*i)->IsUpToDateCalculation())
-					return false;
-		return true;
+		return IsUpToDateCalculationWithScriptDependencies(m_buildDeps);
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+bool Script::IsUpToDateCalculationWithScriptDependencies (const ScriptPtrSet& deps) {
+	for (ScriptPtrSet::const_iterator i = deps.begin(); i != deps.end(); ++i)
+		if (!(*i)->IsUpToDateCalculation())
+			return false;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -1368,7 +1959,7 @@ void Script::DeleteExternalByteCodeFilesFromWorkingDirectory (const StdStringLis
 			return false;																		\
 		}																						\
 		else {																					\
-			DASSERT(boost::filesystem::exists(at));												\
+			DASSERT(FileSystemExists(at));												\
 			return true;																		\
 		}																						\
 	else {																						\
@@ -1395,15 +1986,15 @@ bool Script::CopyExternalByteCodeFileAtWorkingDirectory (const std::string& from
 
 void Script::DeleteExternalByteCodeFileFromWorkingDirectory (const std::string& from, bool postMessage) {
 
-	std::string name = util::str2std(wxFileName(util::std2str(from)).GetFullName());
-	std::string wdir = util::str2std(GetWorkingDirectory());
-	std::string at	 = wdir + "/" + name;
+	const std::string name	= util::str2std(wxFileName(util::std2str(from)).GetFullName());
+	const std::string wdir	= util::str2std(GetWorkingDirectory());
+	const std::string at	= wdir + "/" + name;
 
 	// Delete only when its original location is not the same as the
 	// working dir of the script.
 
-	if (!wxFileName(util::std2str(from)).SameAs(wxFileName(util::std2str(at))) && boost::filesystem::exists(at)) {
-		boost::filesystem::remove(at);
+	if (!wxFileName(util::std2str(from)).SameAs(wxFileName(util::std2str(at))) && FileSystemExists(at)) {
+		RemoveIfExists(at);
 		if (postMessage)
 			BUILD_MESSAGE_DELETE_EXTERNAL_DEPEDENCY_FROM_WORKING_DIRECTORY(at);
 	}
@@ -1413,7 +2004,7 @@ void Script::DeleteExternalByteCodeFileFromWorkingDirectory (const std::string& 
 
 bool Script::CopyByteCodeFileOfScriptAtWorkingDirectory (const Script* script) {
 
-	std::string from = script->GetProducedByteCodeFileFullPath();
+	std::string from = const_cast<Script*>(script)->GetProducedByteCodeFileFullPath();
 	std::string wdir = util::str2std(GetWorkingDirectory());
 	std::string at	 = wdir + "/" + script->GetProducedByteCodeFile();
 
@@ -1428,8 +2019,8 @@ bool Script::CopyByteCodeFileOfScriptAtWorkingDirectory (const Script* script) {
 
 void Script::DeleteByteCodeFileOfScriptFromWorkingDirectory (const Script* script, bool postMessage) {
 	std::string at = util::str2std(GetWorkingDirectory()) + "/" + script->GetProducedByteCodeFile();
-	if (boost::filesystem::exists(at)) {
-		boost::filesystem::remove(at);
+	if (FileSystemExists(at)) {
+		RemoveIfExists(at);
 		if (script != this && postMessage)
 			BUILD_MESSAGE_DELETE_DEPEDENCY_FROM_WORKING_DIRECTORY(at);
 	}
@@ -1437,7 +2028,7 @@ void Script::DeleteByteCodeFileOfScriptFromWorkingDirectory (const Script* scrip
 
 //******************************
 
-bool Script::RecursiveCopyByteCodeFilesAtWorkingDirectory (const ScriptPtrList& scripts, const StdStringList& externalDeps) {
+bool Script::RecursiveCopyByteCodeFilesAtWorkingDirectory (const ScriptPtrSet& scripts, const StdStringList& externalDeps) {
 	if (!CopyExternalByteCodeFilesAtWorkingDirectory(externalDeps))
 		return false;
 	BOOST_FOREACH(const Script* script, scripts)
@@ -1449,7 +2040,7 @@ bool Script::RecursiveCopyByteCodeFilesAtWorkingDirectory (const ScriptPtrList& 
 
 //******************************
 
-void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrList& scripts, const StdStringList& externalDeps, bool postMessage) {
+void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSet& scripts, const StdStringList& externalDeps, bool postMessage) {
 	DeleteExternalByteCodeFilesFromWorkingDirectory(externalDeps, postMessage);
 	BOOST_FOREACH(const Script* script, scripts) {
 		DeleteByteCodeFileOfScriptFromWorkingDirectory(script, postMessage);
@@ -1459,7 +2050,7 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrLi
 
 /////////////////////////////////////////////////////////////////////////
 
-unsigned long Script::BuildImpl (const UIntList& workId, Script* initiator) {
+unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script* initiator) {
 
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	
@@ -1479,6 +2070,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, Script* initiator) {
 
 	std::string type, dir;
 	if (!(type = "output",  CreateDirectory(dir = util::str2std(GetOutputDirectory()))) || 
+		!(type = "stage output",  CreateDirectory(dir = util::str2std(GetDirectoryProperty("stage_output_path")))) || 
 		!(type = "working", CreateDirectory(dir = util::str2std(GetWorkingDirectory())))) {
 		BUILD_ERROR_DIRECTORY_CREATION_FAILED(GetSource(), type, dir);
 		SetBuildCompleted(false, false);
@@ -1486,21 +2078,23 @@ unsigned long Script::BuildImpl (const UIntList& workId, Script* initiator) {
 	}
 
 	InitialiseNewBuildProcess(workId);
+	m_debugBuild = debugBuild;
 
-	StringList deps = ExtractDependencies();
-	if (!deps.empty())
-		BuildWithDependencies(deps);
-	else
-	if (!IsByteCodeUpToDate())
-		 LaunchCompiler();
-	else
-	if (!AreLastBuildPropertiesSameAsCurrent())
-		{ BUILD_MESSAGE_PROJECT_SETTINGS_CHANGED(GetSource()); LaunchCompiler(); }
+	ResolveAspectTransformations();
+	if (!m_aspectTransformations.empty())
+		BuildWithScriptDependencies(m_aspectTransformations);
 	else {
-		BUILD_MESSAGE_SCRIPT_IS_UPTODATE(GetSource());
-		SetBuildCompleted(true, false);
+		bool continueWithSelfBuild = true;
+		if (m_stageSources.empty()) {
+			const StringList usingDeps = ExtractDependencies();
+			if (!usingDeps.empty()) {
+				BuildWithUsingDependencies(usingDeps);
+				continueWithSelfBuild = false;
+			}
+		}
+		if (continueWithSelfBuild)
+			BuildSelf();
 	}
-
 	return NO_COMPILER_THREAD_PID;
 }
 
@@ -1508,6 +2102,14 @@ unsigned long Script::BuildImpl (const UIntList& workId, Script* initiator) {
 
 EXPORTED_FUNCTION(Script, unsigned long, Build, (const UIntList& workId)) 
 	{ return BuildImpl(workId); }
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_FUNCTION(Script, unsigned long, DebugBuild, (const UIntList& workId)) 
+{
+	boost::thread(boost::bind(&Script::BuildImpl, this, workId, true, (Script*)0));
+	return NO_COMPILER_THREAD_PID;
+}
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -1535,7 +2137,7 @@ void Script::RunCommit (void) {
 	DASSERT(IsRunAutomaticallyAfterBuild() && IsLegalRunFunction(m_runFunction));
 
 	std::string dbc = GetProducedByteCodeFileFullPath();
-	if (boost::filesystem::exists(dbc))
+	if (FileSystemExists(dbc))
 		if (m_runFunction == "RunConsole")
 			Call<void (const String&, const String&, const String&)>(this, "DeltaVM",  "RunConsole")(
 				util::std2str(dbc), 

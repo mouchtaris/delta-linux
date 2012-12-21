@@ -7,8 +7,8 @@
 #ifndef	LIBRARYNAMESPACEHOLDER_H
 #define	LIBRARYNAMESPACEHOLDER_H
 
+#include "CompilerComponentDirectory.h"
 #include "LibraryNamespace.h"
-#include "usingleton.h"
 #include <functional>
 #include <string>
 #include <map>
@@ -18,6 +18,8 @@
 
 class DeltaLibraryNamespaceHolder {	
 	
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
 	friend class DeltaLibraryNamespace;
 
 	public:
@@ -34,9 +36,6 @@ class DeltaLibraryNamespaceHolder {
 	Namespaces				openedNamespaces;							// Those opened (defined via 'using'). Indexed by full name.
 	Namespaces				directlyVisibleNamespaces;					// Those enclosed directly in opened namespaces. Indexed by full name.
 	NamespaceStack			namespaceStack;								// Creation time.
-
-	static DeltaLibraryNamespaceHolder*	
-							singletonPtr;
 
 	const DeltaLibraryNamespace*	
 							GetGlobalNamespace (void) const
@@ -97,19 +96,16 @@ class DeltaLibraryNamespaceHolder {
 	void					Install (const LibrarySpecifications& libs);
 	void					CleanUp (void);
 
-	USINGLETON_APISTYLE_DECLARE_PUBLICSTDMETHODS
-	USINGLETON_APISTYLE_DECLARE_GETTER(DeltaLibraryNamespaceHolder)
-
 	DeltaLibraryNamespaceHolder (void);
 	~DeltaLibraryNamespaceHolder();
 };
 
 ///////////////////////////////////////////////////////////
 
-#define	DELTANAMESPACES	GetDeltaNamespaces()
+#define DELTANAMESPACES_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaLibraryNamespaceHolder)))
 
-inline DeltaLibraryNamespaceHolder& GetDeltaNamespaces (void) 
-	{ return DeltaLibraryNamespaceHolder::GetSingleton(); }
+#define DELTANAMESPACES	DELTANAMESPACES_EX(COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////
 

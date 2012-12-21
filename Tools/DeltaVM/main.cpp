@@ -9,6 +9,10 @@
  *	June 2007
  */
 #include "Delta.h"
+#include "VMCompLib.h"
+#include "DeltaCompilerInit.h"
+#include "DeltaMetaCompiler.h"
+#include "BuildDependencies.h"
 #include "DeltaPureVMFacade.h"
 
 #include <boost/foreach.hpp>
@@ -48,7 +52,7 @@ int main (int argc, char* argv[])
 		("bytecode_path,b",
 			boost::program_options::value<std::string>(),
 			"byte code loading paths (as a single string with semicolon separated values)")
-		("dllimport_path,b",
+		("dllimport_path,d",
 			boost::program_options::value<std::string>(),
 			"additional paths for dllimport (as a single string with semicolon separated values)")
 	;
@@ -74,6 +78,9 @@ int main (int argc, char* argv[])
 		system("pause");
 		return -1;
 	}
+
+	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler);
+	INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
 
 	DeltaPureVMFacade::Initialise();
 	if(vars.count("bytecode_path"))

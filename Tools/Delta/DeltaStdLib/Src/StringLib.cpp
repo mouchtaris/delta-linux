@@ -223,7 +223,7 @@ void strupper_LibFunc (DeltaVirtualMachine* vm) {
 
 #define	GET_ASCII_CODE(reset)																	\
 	DeltaTotalArgsCheck(1, CURR_FUNC, reset);													\
-	DeltaValue* argObj;																		\
+	DeltaValue* argObj;																			\
 	DeltaGetOverloadedArg(argObj, 0, IS_STRING_OR_NUMER, "String or Number", CURR_FUNC, reset)	\
 	util_ui8 index;																				\
 	if (argObj->Type() == DeltaValue_String) {													\

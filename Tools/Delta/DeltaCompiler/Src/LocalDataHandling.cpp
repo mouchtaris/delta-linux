@@ -15,8 +15,6 @@
 #include "DDebug.h"
 #include "LocalDataHandling.h"
 #include "ParseActions.h"
-#include "ParseParms.h"
-#include "InterCode.h"
 #include "Symbol.h"
 #include "ufunctors.h"
 #include <list>
@@ -27,7 +25,6 @@
 
 ////////////////////////////////////////////////////////////////////
 
-class BlockInfo;
 typedef std::list<DeltaSymbol*>		SymList;
 typedef std::list<BlockInfo*>		BlockList;
 
@@ -102,8 +99,6 @@ class BlockInfo {
 
 //******************************
 
-static BlockInfo* currBlock = (BlockInfo*) 0;
-
 #define	ENTER_BLOCK()									\
 	currBlock = DPTR(currBlock)->AddBlock()
 
@@ -132,36 +127,14 @@ static BlockInfo* currBlock = (BlockInfo*) 0;
 
 ////////////////////////////////////////////////////////////////////
 
-static util_ui16					currBlockId			= DELTA_MAIN_BLOCK_VALUE;
-static util_ui16					blockLocals			= 0;	// Num of locals in current block (only in block scope).
-static std::list<util_ui16>*		blockIdStack		= (std::list<util_ui16>*) 0;
-static std::list<util_ui16>*		blockLocalsStack	= (std::list<util_ui16>*) 0;
-static std::list<DeltaQuadAddress>*	blockBeginStack		= (std::list<DeltaQuadAddress>*) 0;
-
 template <class T> T top_and_pop (std::list<T>* s) {
-	DASSERT(DPTR(s)->size());
+	DASSERT(!DPTR(s)->empty());
 	T v = DPTR(s)->front();
 	DPTR(s)->pop_front();
 	return v;
 }
 
 ////////////////////////////////////////////////////////////////////
-
-void LocalDataHandler::SingletonCreate (void) {
-	unew(blockIdStack);
-	unew(blockLocalsStack);
-	unew(blockBeginStack);
-}
-
-//******************************
-
-void LocalDataHandler::SingletonDestroy (void) {
-	udelete(blockIdStack);
-	udelete(blockLocalsStack);
-	udelete(blockBeginStack);
-}
-
-//******************************
 
 void LocalDataHandler::Initialise (void) {
 	currBlockId	= DELTA_MAIN_BLOCK_VALUE;
@@ -181,7 +154,7 @@ void LocalDataHandler::CleanUp (void) {
 
 ////////////////////////////////////////////////////////////////////
 
-static void EmitBlockBegin (util_ui16 blockId, bool isMainProgramBlock) {
+void LocalDataHandler::EmitBlockBegin (util_ui16 blockId, bool isMainProgramBlock) {
 	
 	DPTR(blockLocalsStack)->push_front(blockLocals);
 	blockLocals = 0;
@@ -191,16 +164,16 @@ static void EmitBlockBegin (util_ui16 blockId, bool isMainProgramBlock) {
 	QUADS.Emit(
 		DeltaIC_BLOCKENTER,
 		NIL_EXPR,	// Block locals
-		Translate_ConstValue(isMainProgramBlock),
-		Translate_ConstValue((DeltaNumberValueType) blockId)
+		TRANSLATOR.Translate_ConstValue(isMainProgramBlock),
+		TRANSLATOR.Translate_ConstValue((DeltaNumberValueType) blockId)
 	);
 }
 
 //******************************
 
-static void EmitBlockEnd (util_ui16 blockId, bool isMainProgramBlock) {
+void LocalDataHandler::EmitBlockEnd (util_ui16 blockId, bool isMainProgramBlock) {
 
-	DeltaExpr* totalLocals		= Translate_ConstValue((DeltaNumberValueType) blockLocals);
+	DeltaExpr* totalLocals		= TRANSLATOR.Translate_ConstValue((DeltaNumberValueType) blockLocals);
 	blockLocals					= top_and_pop(blockLocalsStack);
 	DeltaQuadAddress beginQuad	= top_and_pop(blockBeginStack);
 
@@ -226,10 +199,10 @@ void LocalDataHandler::OnBlockBegin (void) {
 	ENTER_BLOCK();
 	DPTR(blockIdStack)->push_front(currBlockId);
 
-	if (DeltaSymbol* f = ParseParms::CurrFunction())
+	if (DeltaSymbol* f = PARSEPARMS.CurrFunction())
 		currBlockId = DPTR(f)->totalBlocks++;
 	else
-		currBlockId = ParseParms::IncGlobalBlocks();	// Returns previous value.	
+		currBlockId = PARSEPARMS.IncGlobalBlocks();	// Returns previous value.	
 
 	EmitBlockBegin(currBlockId, NOT_MAIN_PROGRAM_BLOCK);
 }
@@ -262,7 +235,7 @@ void LocalDataHandler::OnFunctionEnd (void) {
 void LocalDataHandler::OnGlobalBegin (void) {
 	ENTER_MAIN_BLOCK();
 	EmitBlockBegin(
-		currBlockId = ParseParms::IncGlobalBlocks(), 
+		currBlockId = PARSEPARMS.IncGlobalBlocks(), 
 		IS_MAIN_PROGRAM_BLOCK
 	);
 }
@@ -292,5 +265,28 @@ void LocalDataHandler::OnNewLocalVar (DeltaSymbol* sym) {
 
 util_ui16 LocalDataHandler::GetCurrBlockId (void) 
 	{ return currBlockId; }
+
+////////////////////////////////////////////////////////////////////
+
+LocalDataHandler::LocalDataHandler (void) :
+	currBlock((BlockInfo*) 0),
+	currBlockId(DELTA_MAIN_BLOCK_VALUE),
+	blockLocals(0),	// Num of locals in current block (only in block scope).
+	blockIdStack((std::list<util_ui16>*) 0),
+	blockLocalsStack((std::list<util_ui16>*) 0),
+	blockBeginStack((std::list<DeltaQuadAddress>*) 0)
+{
+	unew(blockIdStack);
+	unew(blockLocalsStack);
+	unew(blockBeginStack);
+}
+
+//******************************
+
+LocalDataHandler::~LocalDataHandler (void) {
+	udelete(blockIdStack);
+	udelete(blockLocalsStack);
+	udelete(blockBeginStack);
+}
 
 ////////////////////////////////////////////////////////////////////

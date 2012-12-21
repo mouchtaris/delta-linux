@@ -7,42 +7,54 @@
 #ifndef	SELECTIVESTEPINPREPARATOR_H
 #define	SELECTIVESTEPINPREPARATOR_H
 
+#include "CompilerComponentDirectory.h"
 #include "DeltaUnparsedCallsInStmt.h"
 #include "DeltaUnparsedCallsInStmtHolder.h"
-#include "usingleton.h"
 #include <list>
 
 ///////////////////////////////////////////////////////
 
 class SelectiveStepInPreparator {
 
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
 	private:
-	static std::list<DeltaUnparsedCallsInStmt*>*	stmtStack;
-	static DeltaUnparsedCallsInStmt*				currStmt;
-	static DeltaUnparsedCallsInStmtHolder*			allStmts;
+	std::list<DeltaUnparsedCallsInStmt*>*	stmtStack;
+	DeltaUnparsedCallsInStmt*				currStmt;
+	DeltaUnparsedCallsInStmtHolder*			allStmts;
 
 	///////////////////////////////////////////////////////
 
 	public:
-	USINGLETON_APISTYLE_DECLARE_PUBLICSTDMETHODS
-	static void			Initialise (void);
-	static void			CleanUp (void);
+	void	OnFunctionEnter (void);
+	void	OnFunctionExit (void);
 
-	static void			OnFunctionEnter (void);
-	static void			OnFunctionExit (void);
+	void	OnCallDone (
+				const std::string&	func,
+				const std::string&	args,
+				util_ui32			label
+			);
 
-	static void			OnCallDone (
-							const std::string&	func,
-							const std::string&	args,
-							util_ui32			label
-						);
+	void	OnStmtDone (util_ui32 line);
+	void	OnTargetCodeProduced (void);
 
-	static void			OnStmtDone (util_ui32 line);
-	static void			OnTargetCodeProduced (void);
+	DeltaUnparsedCallsInStmtHolder* GetAllStmts (void);
 
-	static DeltaUnparsedCallsInStmtHolder*
-						GetAllStmts (void);
+	///////////////////////////////////////////////////////
+
+	void	Initialise (void);
+	void	CleanUp (void);
+
+	SelectiveStepInPreparator (void);
+	~SelectiveStepInPreparator();
 };
+
+///////////////////////////////////////////////////////
+
+#define SELECTIVESTEPIN_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), SelectiveStepInPreparator)))
+
+#define SELECTIVESTEPIN	SELECTIVESTEPIN_EX(COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////
 

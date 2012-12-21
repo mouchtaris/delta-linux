@@ -156,7 +156,16 @@ EXPORTED_MEMBER(EditorManager, void, FocusDocument, (const String& uri))
 
 EXPORTED_MEMBER(EditorManager, void, GotoDocument, (const String& uri, int line))
 {
-	const Handle editor = this->OpenDocument(util::normalizepath(uri));
+	Handle editor = this->GetEditor(uri);
+	if (!editor) {	//first try to open the through the workspace so that it gets any proper associations (e.g. readonly file flag)
+		if (Handle script = Call<const Handle& (const String&)>(this, "ProjectManager", "GetResourceByURI")(uri)) {
+			Call<void (void)>(this, script, "Open")();
+			editor = this->GetEditor(uri);
+		}
+	}
+	if (!editor)
+		editor = this->OpenDocument(util::normalizepath(uri));
+	assert(editor);
 	Call<void (int)>(this, editor, "GotoLine")(line);
 	Call<void (int)>(this, editor, "EnsureLineVisible")(line);
 }
@@ -607,10 +616,8 @@ EXPORTED_SLOT_MEMBER(EditorManager, void, OnHitBreakpoint,
 	(const std::string& classId, const String& uri, const String& symbolic, int line),
 	"BreakpointHit")
 {
-	Handle editor = this->GetEditor(uri);
-	if (!editor)
-		editor = this->OpenDocument(uri);
-	if (editor) {
+	GotoDocument(uri, line);
+	if (Handle editor = this->GetEditor(uri)) {
 		Focus();
 		Call<void (int)>(this, editor, "SetBreakpointArrow")(line);
 		FocusEditor(editor);

@@ -1,5 +1,5 @@
 // DebugExprLibraryFunctions.cpp
-// Support the invocation of specific unary lib funcitons.
+// Support the invocation of specific unary lib functions.
 // ScriptFighter Project.
 // A. Savidis, July 2008.
 //

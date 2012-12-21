@@ -15,7 +15,7 @@
 struct DeltaCompilerInvokerData;
 class DeltaCompilerInvoker {
 public:
-	typedef	void	(*OnErrorCallback) (char const* message);
+	typedef	void	(*OnErrorCallback) (char const* message, void*);
 	bool			NeedHelp (void) const;
 	std::ostream&	WriteHelpTo (std::ostream&) const;
 	

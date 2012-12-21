@@ -15,7 +15,7 @@
 // Both TRAPENABLE and TRAPDISABLE instructions are later patched
 // to hold the address of the actual TRAP block.
 
-DeltaQuadAddress Translate_TRY (void) {
+DeltaQuadAddress Translator::Translate_TRY (void) {
 	QUADS.Emit(DeltaIC_TRAPENABLE, NIL_EXPR, NIL_EXPR, NIL_EXPR);
 	return QUADS.CurrQuadNo();
 }
@@ -24,21 +24,21 @@ DeltaQuadAddress Translate_TRY (void) {
 // TRAPDISABLE is the invoked as a fallback to the TRY stmt
 // when no excpetion is thrown.
 
-DeltaQuadAddress Translate_TRAP (void) {
+DeltaQuadAddress Translator::Translate_TRAP (void) {
 	QUADS.Emit(DeltaIC_TRAPDISABLE, NIL_EXPR, NIL_EXPR, NIL_EXPR);
 	return QUADS.CurrQuadNo();
 }
 
 ///////////////////////////////////////////////////
 
-DeltaQuadAddress Translate_TrapJumpOver (void) {
+DeltaQuadAddress Translator::Translate_TrapJumpOver (void) {
 	QUADS.Emit(DeltaIC_JUMP, NIL_EXPR, NIL_EXPR, NIL_EXPR);
 	return QUADS.CurrQuadNo();
 }
 
 ///////////////////////////////////////////////////
 
-void Translate_TrapStart (
+void Translator::Translate_TrapStart (
 		util_ui32	enable, 
 		util_ui32	disable,
 		DeltaExpr*	exceptionVar	
@@ -57,8 +57,8 @@ void Translate_TrapStart (
 	else {
 		QUADS.Emit(
 			DeltaIC_TRAP,
-			DeltaExpr::Make(
-				(DeltaNumberValueType) LocalDataHandler::GetCurrBlockId()
+			EXPRFACTORY.Make(
+				(DeltaNumberValueType) LOCALDATA.GetCurrBlockId()
 			), 
 			NIL_EXPR, 
 			exceptionVar
@@ -81,14 +81,15 @@ void Translate_TrapStart (
 
 ///////////////////////////////////////////////////
 
-void Translate_TrapEnd (util_ui32 jumpOver) {
+void Translator::Translate_TrapEnd (util_ui32 jumpOver) {
+	// This patch no longer concerns a single block but should concern all blocks.
 	// This patch no longer concerns a single block but should concern all blocks.
 	QUADS.Patch(jumpOver, QUADS.NextQuadNo());
 }
 
 ///////////////////////////////////////////////////
 
-Stmt* Translate_THROW (DeltaExpr* expr) {
+Stmt* Translator::Translate_THROW (DeltaExpr* expr) {
 	if (expr)
 		QUADS.Emit(DeltaIC_THROW, NIL_EXPR, NIL_EXPR, DPTR(expr)->AdaptIfBool());
 	return NIL_STMT;

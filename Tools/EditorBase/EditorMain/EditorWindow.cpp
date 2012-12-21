@@ -8,6 +8,7 @@
 #include "EditorWindow.h"
 #include "EditorModuleLoader.h"
 #include "EditorInterfaces/LanguageModuleIface.h"
+#include "Scintilla.h"
 
 #include <iostream>
 #include <fstream>
@@ -346,11 +347,42 @@ bool EditorWindow::IsModified (void)
 
 void EditorWindow::UpdateMatchedBrace (void)
 {
-	static const std::string braceChars("()[]{}<>");	// TODO(AS): why is <> used ?
-
 	int currPos = this->GetCurrentPos();
+	int c = this->GetCharAt(currPos);
 
-	if (braceChars.find(this->GetCharAt(currPos)) == String::npos) {
+	if (c == '<' || c == '>') {	//first check for << >> braces (unfortunately we can only highlight the outer <> pair)
+		int offset = 0;
+		if (currPos > 0 && this->GetCharAt(currPos - 1) == c)
+			offset = -1;
+		else if (currPos < this->GetLength() - 1 && this->GetCharAt(currPos + 1) == c)
+			offset = 1;
+
+		if (offset) {
+			int oppositeBrace = this->BraceMatch(currPos);
+			int otherOppositeBrace = this->BraceMatch(currPos + offset);
+			if (oppositeBrace == -1 || otherOppositeBrace == -1)
+				if (c == '<')
+					this->BraceBadLight(offset > 0 ? currPos : currPos + offset);
+				else
+					this->BraceBadLight(offset > 0 ? currPos + offset: currPos);
+			else {
+				int min, max;
+				if (c == '<') {
+					min = std::min(currPos, currPos + offset);
+					max = std::max(oppositeBrace, otherOppositeBrace);
+				}
+				else {
+					max = std::max(currPos, currPos + offset);
+					min = std::min(oppositeBrace, otherOppositeBrace);
+				}
+				this->BraceHighlight(min, max);
+			}
+			return;
+		}
+	}
+
+	static const std::string braceChars("()[]{}");	//then check for the rest braces
+	if (braceChars.find(c) == String::npos) {
 		if (--currPos < 0 || braceChars.find(this->GetCharAt(currPos)) == std::string::npos) {
 			this->BraceHighlight(-1, -1);
 			this->BraceBadLight(-1);
@@ -359,7 +391,7 @@ void EditorWindow::UpdateMatchedBrace (void)
 	}
 	int oppositeBrace = this->BraceMatch(currPos);
 
-	if (oppositeBrace == -1 /*wxSTC_INVALID_POSITION*/)
+	if (oppositeBrace == INVALID_POSITION)
 		this->BraceBadLight(currPos);
 	else
 		this->BraceHighlight(currPos, oppositeBrace);

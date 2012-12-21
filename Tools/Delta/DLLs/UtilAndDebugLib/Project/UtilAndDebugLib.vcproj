@@ -340,6 +340,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\UtilLib\Include\ucomponentdirectory.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\UtilLib\Include\ucrosscast.h"
 					>
 				</File>

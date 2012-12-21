@@ -7,7 +7,6 @@
 
 #include "DDebug.h"
 #include "Symbol.h"
-#include "ParseParms.h"
 #include "ParseActions.h"
 #include "DeltaCompErrorMsg.h"
 #include "LocalDataHandling.h"
@@ -20,19 +19,17 @@
 
 //------------------------------------------------------------------
 
-DeltaSymbol::DeltaSymbol (const std::string& _name, DeltaSymbolType type) {
-
-	new (this) DeltaSymbol;											// Default construction needed to initialise all fields
+void DeltaSymbol::Initialise (const std::string& _name, DeltaSymbolType type) {
 
 	name	= _name;
-	scope	= ParseParms::CurrScope().value();
-	line	= ParseParms::CurrLine();
-	myFunc	= ParseParms::CurrFunction();
+	scope	= PARSEPARMS.CurrScope().value();
+	line	= PARSEPARMS.GetLine();
+	myFunc	= PARSEPARMS.CurrFunction();
 
 	if (type == DeltaSymbol_StaticVar)
 		isStatic = true;
 	else
-		isFormal = ParseParms::InFormalArgs();
+		isFormal = PARSEPARMS.InFormalArgs();
 
 	if (DELTA_SYMBOL_TYPE_IS_VARIABLE(type)) {
 		if (GetMyFunction() && type != DeltaSymbol_StaticVar) {		// Function formal or local
@@ -43,15 +40,15 @@ DeltaSymbol::DeltaSymbol (const std::string& _name, DeltaSymbolType type) {
 				DPTR(GetMyFunction())->AddFormal(name);
 			}
 			else {													// Block local
-				blockId	= LocalDataHandler::GetCurrBlockId();
-				LocalDataHandler::OnNewLocalVar(this);
+				blockId	= LOCALDATA.GetCurrBlockId();
+				LOCALDATA.OnNewLocalVar(this);
 			}
 		}
 		else {														// Global or static var
-			blockId	= LocalDataHandler::GetCurrBlockId();
+			blockId	= LOCALDATA.GetCurrBlockId();
 			if (!isStatic) {
 				DASSERT(!GetMyFunction());							// Globals are always outside functions
-				LocalDataHandler::OnNewLocalVar(this);
+				LOCALDATA.OnNewLocalVar(this);
 			}
 		}
 	}
@@ -76,7 +73,6 @@ void DeltaSymbol::FuncAccess::RecordInnerUse (DeltaExpr* funcExpr, DeltaSymbol* 
 
 	DASSERT(!DPTR(func)->HasClosure() && DPTR(funcExpr)->sym == func);
 	DASSERT(DPTR(clientFunc)->IsInnerFunctionOf(func));
-	DASSERT(clientFunc == ParseParms::CurrFunction());
 
 	DASSERT(
 		std::find_if(
@@ -91,24 +87,10 @@ void DeltaSymbol::FuncAccess::RecordInnerUse (DeltaExpr* funcExpr, DeltaSymbol* 
 	);
 }
 
-//**************************
-
-void DeltaSymbol::FuncAccess::CreateFunctionVar (void) {
-	DASSERT(!funcVar);
-	DASSERT(ParseParms::CurrScope().value() == func->GetScope());	// We should be at the same scope as the function.
-	funcVar =	DELTASYMBOLS.NewSymbol(
-					uconstructstr(
-						"%s%s", 
-						DELTA_HIDDENCONSTVAR_NAME_PREFIX, 
-						func->GetName().c_str()), 
-						true
-					);
-}
-
 /////////////////////////////////////////////////////////////////////
 
 void DeltaSymbol::SetScope (util_ui16 _scope) {
-	DASSERT(_scope < ParseParms::CurrScope().value());
+	DASSERT(_scope < PARSEPARMS.CurrScope().value());
 	scope = _scope;
 }
 
@@ -144,7 +126,7 @@ const std::string DeltaSymbol::GetFunctionReadableName (void) const {
 		if (methodName.empty())
 			return "method" + GetName();
 		else
-		if (ParseParms::IsOperator(methodName))
+			if (ParseParms::IsOperator(methodName))
 			return "@operator" + methodName;
 		else
 			return "method_" + methodName;
@@ -167,14 +149,6 @@ const std::string DeltaSymbol::GetTypeDescription (void) const {
 
 //------------------------------------------------------------------
 
-DeltaSymbolTable* DeltaSymbolTable::singletonPtr = (DeltaSymbolTable*) 0;
-
-void DeltaSymbolTable::SingletonCreate (void) 
-	{ unew(singletonPtr); }
-
-void DeltaSymbolTable::SingletonDestroy (void) 
-	{ udelete(singletonPtr); }
-
 DeltaSymbolTable::DeltaSymbolTable (void) {
 	tempCount		=
 	tempFuncCount	= 0;
@@ -188,15 +162,25 @@ DeltaSymbolTable::~DeltaSymbolTable()
 	{ CleanUp(); }
 
 ///////////////////////////////////////////////////////////////////
+
+DeltaSymbol* DeltaSymbolTable::NewSymbol(const std::string& name, DeltaSymbolType type) {
+	DeltaSymbol* sym = DNEW(DeltaSymbol);
+	INIT_COMPILER_COMPONENT_DIRECTORY(DPTR(sym), COMPONENT_DIRECTORY());
+	DPTR(sym)->Initialise(name, type);
+	return sym;
+}
+
+///////////////////////////////////////////////////////////////////
 // Storage is not needed in case functions are defined, since, their
 // address, is explicitly taken within a variable.
 //
-DeltaSymbol* DeltaSymbolTable::NewSymbol (const std::string& name, bool storage) {
+DeltaSymbol* DeltaSymbolTable::NewSymbol (const std::string& name, bool storage, bool install) {
 
 	DASSERT(!IsTempVar(name));
 
-	DeltaSymbol* sym = DNEWCLASS(DeltaSymbol, (name, storage ? DeltaSymbol_VarInCurrScope  : DeltaSymbol_NotAVar));
-	Install(sym);
+	DeltaSymbol* sym = NewSymbol(name, storage ? DeltaSymbol_VarInCurrScope  : DeltaSymbol_NotAVar);
+	if (install)
+		Install(sym);
 
 	return sym;
 }
@@ -214,7 +198,7 @@ DeltaSymbol* DeltaSymbolTable::NewStatic (const std::string& name) {
 	// generation, statics are assigned to block 0, while their
 	// block id is appended to their name (uniqueness).
 
-	DeltaSymbol* sym = DNEWCLASS(DeltaSymbol, (name, DeltaSymbol_StaticVar));
+	DeltaSymbol* sym = NewSymbol(name, DeltaSymbol_StaticVar);
 	DPTR(sym)->blockId = (util_ui16) staticVars.size();
 	staticVars.push_back(sym);
 	Install(sym);
@@ -242,10 +226,10 @@ void DeltaSymbolTable::ResetFuncTemp (void)
 DeltaSymbol* DeltaSymbolTable::NewTemp (bool storage) {
 
 	std::string		name	= NewTempName();
-	DeltaSymbol*	tmp		= Lookup(name, ParseParms::CurrScope().value());
+	DeltaSymbol*	tmp		= Lookup(name, PARSEPARMS.CurrScope().value());
 
 	if (!tmp) {
-		tmp = DNEWCLASS(DeltaSymbol, (name, storage ? DeltaSymbol_VarInCurrScope  : DeltaSymbol_NotAVar));
+		tmp = NewSymbol(name, storage ? DeltaSymbol_VarInCurrScope  : DeltaSymbol_NotAVar);
 		tmp->SetInitialised();	// Temps assumed directly as initialised.
 		Install(tmp);
 	}
@@ -292,7 +276,7 @@ void DeltaSymbolTable::Install (DeltaSymbol* sym, bool installAtOuterScope) {
 
 	if (!error) {
 
-		DASSERT(installAtOuterScope || DPTR(sym)->GetScope() <= ParseParms::CurrScope().value());
+		DASSERT(installAtOuterScope || DPTR(sym)->GetScope() <= PARSEPARMS.CurrScope().value());
 
 		util_ui32 pos = uhash(sym->GetName(), DELTA_SYMBOL_TABLE_HASH_SIZE);
 		DeltaSymbol* bucket = Table[pos];

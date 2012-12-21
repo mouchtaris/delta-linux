@@ -7,16 +7,22 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 #include "DDebug.h"
 #include "DeltaStdDefs.h"
 #include "ASTNode.h"
 #include "ASTTags.h"
+#include "ASTMetaTags.h"
 #include "ASTCreationActions.h"
-#include "CompilerAPI.h"
 #include "DescriptiveParseErrorHandler.h"
 #include "LibraryNamespace.h"
+#include "ParseParms.h"
+#include "CompilerStringHolder.h"
+#include "ParsingContext.h"
+
+#include "DeltaSyntax.h"
 
 using namespace AST;
 
@@ -24,38 +30,55 @@ using namespace AST;
 #define alloca malloc
 #endif
 
-#ifdef	YYPURE
-#define	YYLEX_PARAM		&yylval
-#else
-#define	YYPURE
-#endif
+#define YYINCLUDED_STDLIB_H
 
-#define	yyparse		DeltaSyntax_yyparse
-#define yylex		DeltaSyntax_yylex
-#define	yydebug		DeltaSyntax_yydebug
-#define	yyerror		DeltaSyntax_yyerror
+extern int DeltaSyntax_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx);
 
-extern int			DeltaSyntax_yylex (void* yylval);
+///////////////////////////////////////////////////////////
 
-static void DeltaSyntax_yyerror (const char* unused) 
-	{ DescriptiveParseErrorHandler::HandleSyntaxError(); }
+#undef DESCRIPTIVE_ERROR_HANDLER
+#define DESCRIPTIVE_ERROR_HANDLER	DESCRIPTIVE_ERROR_HANDLER_EX(&ctx)
+
+#undef ASTCREATOR
+#define ASTCREATOR					ASTCREATOR_EX(&ctx)
+
+#undef PARSEPARMS
+#define PARSEPARMS					PARSEPARMS_EX(&ctx)
+
+#undef STRINGHOLDER
+#define STRINGHOLDER				STRINGHOLDER_EX(&ctx)
+
+///////////////////////////////////////////////////////////
+
+static void DeltaSyntax_yyerror (YYLTYPE* yylloc, ParsingContext& ctx, const char* unused)
+	{ DESCRIPTIVE_ERROR_HANDLER.HandleSyntaxError(); }
 
 #define	DYNAMIC_STRING(s) \
-	MakeNode_StringWithLateDestruction(ucopystr(s))
+	STRINGHOLDER.StringWithLateDestruction(ucopystr(s))
+void SET_LOCATION(AST::Node* node, const YYLTYPE& start, const YYLTYPE& end) {
+	AST::Node::Location location(start.first_line, end.last_line, start.first_column, end.last_column);
+	DPTR(node)->SetLocation(location);
+}
 
-#define	MAKE_FUNCTION_EXPR(_p, _pp)				\
-	if (true) {									\
-		PE(S_FUNC_(GetFuncClass(_p)));			\
-		_pp = MakeNode_FunctionExpression(_p);	\
-	} else
-%}
+void SET_LOCATION(YYLTYPE& pos, const YYLTYPE& start, const YYLTYPE& end) {
+	pos.first_line = start.first_line;
+	pos.last_line = end.last_line;
+	pos.first_column = start.first_column;
+	pos.last_column = end.last_column;
+}
+
+#define	MAKE_FUNCTION_EXPR(_p, _pp)							\
+	if (true) {												\
+		PE(S_FUNC_(GetFuncClass(_p)));						\
+		_pp = ASTCREATOR.MakeNode_FunctionExpression(_p);	\
+	} else%}
 
 %union {
 	double				numberConst;
 	util_ui32			line;
+	util_ui32			count;
 	char*				dynamicStr;
 	const char*			constStr;
-	AST::IdList*		idList;
 	AST::NodeList*		nodeList;
 	AST::Node*			node;
 }
@@ -63,26 +86,30 @@ static void DeltaSyntax_yyerror (const char* unused)
 %start	DeltaCode
 %type	<node>			ConstValue Lvalue TableContent Expression TablePrefix  ExceptionVar
 %type	<node>			Primary FunctionCall TableConstructor Term TableContentDot TableContentBracket
-%type	<node>			FunctionCallObject FunctionAndTableObject  ActualArgument BasicExprStmt
-%type	<node>			TableContentBoundedDot TableContentBoundedBracket TableObject BasicNonExprStmt
-%type	<node>			FunctionName Function IndexedValues TableElement UnindexedValue ReturnValue
+%type	<node>			FunctionCallObject FunctionAndTableObject ActualArgument ReturnValue
+%type	<node>			TableContentBoundedDot TableContentBoundedBracket TableObject BasicExprStmt BasicNonExprStmt
+%type	<node>			FunctionName Function FormalArgsNode IndexedValues TableIndices TableValues QuotedIndexedValues TableElement UnindexedValue
 %type	<node>			ArithmeticExpression AssignExpression BooleanExpression RelationalExpression
 %type	<node>			Condition ForCondition DottedIdent  IndexContent IndexExpression 
 %type	<node>			TernaryExpression TernaryCondition TernarySelection1 TernarySelection2
-%type	<node>			NewAttribute AttributeSet AttributeGet ConstDefExpression ForeachCont ForeachValue 
-%type	<node>			Stmt IfStmt Compound  ExceptionStmt ThrowStmt ForStmt WhileStmt ForSuffix ForInitList
+%type	<node>			NewAttribute AttributeSet AttributeGet ConstDefExpression ForeachCont ForeachValue
+%type	<node>			Stmt BasicStmt QuotedStmt NoContextStmt NonFunctionQuotedStmt MiscStmt
+%type	<node>			IfStmt Compound  ExceptionStmt ThrowStmt ForStmt WhileStmt ForSuffix ForInitList
 %type	<node>			AssertStmt Assertion BreakStmt ContinueStmt ReturnStmt ExpressionListStmt
-%type	<node>			ForeachStmt OperatorIndex Stmts StringConstUsed FunctionElement OptionalStmts
+%type	<node>			ForeachStmt OperatorIndex Stmts QuotedStmts NonEmptyStmts StringConstUsed FunctionElement
 %type	<node>			UsingNamespace UsingByteCodeLibrary UsingSpecifications UsingDirective
 %type	<node>			StringConst StringifyDottedIdents StringifyNamespaceIdent DotIndex SpecialDotIndex BracketIndex
-%type	<node>			LambdaFunction LambdaCode LambdaStmt ContentExpression IdentIndexElement
-%type	<idList>		IdentList NamespacePath FormalArgs
-%type	<nodeList>		ExpressionList TableElements NonEmptyActualArgumentsList ContentList
-%type	<nodeList>		ActualArgumentsList ActualArguments IndexedList CodeDefs UsingDirectives
-%type	<constStr>		IDENT ATTRIBUTE_IDENT  FunctionClass FormalArgsSuffix FuncLinkage
-%type	<constStr>		StringIdent OperatorMethod OpString DottedOpString KwdIdent AttributeIdent
-%type	<dynamicStr>	ConstId AttributeId IdentIndex
-%type	<line>			LN FunctionNameSuffix
+%type	<node>			LambdaFunction LambdaCode LambdaStmt ContentExpression IdentIndexElement QuotedIdentIndexElement
+%type	<nodeList>		IdentList NamespacePath FormalArgs
+%type	<nodeList>		ExpressionList QuotedExpressionList QuotedElementList QuotedElements TableElements NonEmptyActualArgumentsList ContentList
+%type	<nodeList>		ActualArgumentsList ActualArguments IndexedList QuotedIndexedList
+%type	<constStr>		IDENT ATTRIBUTE_IDENT FunctionClass FuncLinkage
+%type	<constStr>		StringIdent OperatorMethod OpString DottedOpString KwdIdent
+%type	<line>			LN
+%type	<count>			MultipleEscapes
+%type	<node>			QuasiQuoted NonExprQuotedElement MetaExpression MetaGeneratedCode MetaStmt Ident AttributeId
+%type	<node>			ConstAttributeId IdentIndex QuotedIdentIndex AttributeIdent FormalArgsSuffix
+
 %token	<numberConst>	NUMBER_CONST
 %token	<dynamicStr>	STRING_CONST
 
@@ -98,7 +125,12 @@ static void DeltaSyntax_yyerror (const char* unused)
 %token		ADD_POSTFIX SUB_POSTFIX MUL_POSTFIX DIV_POSTFIX MOD_POSTFIX
 %token		GT_POSTFIX LT_POSTFIX NE_POSTFIX EQ_POSTFIX GE_POSTFIX LE_POSTFIX
 %token		PARENTHESIS SQUARE_BRACKETS
+%token		META_LSHIFT META_RSHIFT META_ESCAPE META_INLINE META_EXECUTE META_RENAME
 
+// Pseudo-tokens for parsing specific grammar elements
+%token		PARSE_QUOTED_ELEMENTS
+
+// Priorities
 %right		ASSIGN ADD_A SUB_A MUL_A DIV_A MOD_A
 %left		OR 
 %left		AND
@@ -108,37 +140,51 @@ static void DeltaSyntax_yyerror (const char* unused)
 %left		MUL DIV MOD
 %right		NOT PLUSPLUS MINUSMINUS UMINUS
 %nonassoc	DOT_ASSIGN
+%right		META_ESCAPE
 %left		DOT
 %left		SQUARE_BRACKETS
 %left		PARENTHESIS
 
+%output="DeltaSyntax.cpp"
+%name-prefix="DeltaSyntax_yy"
+%debug
+%defines
+%verbose
+%pure-parser
+%parse-param {ParsingContext& ctx}
+%lex-param   {YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx}
+%locations
+%expect 2
 %%
 
 /**************************************************************************/
 /* PROGRAM*/
 
 
-DeltaCode:				CodeDefs	{ SetSyntaxTree(MakeNode_Program($1)); }
-						;
-
-CodeDefs:					/* Empty code allowed. */		{ $$ = NIL_NODELIST; }
-						|	Stmts							{ $$ = MakeNode_CodeDefs(NIL_NODELIST, $1); }
-						|	UsingDirectives OptionalStmts	{ $$ = MakeNode_CodeDefs($1, $2); }
-							;
-
-OptionalStmts:				Stmts							{ $$ = $1; }
-						|									{ $$ = NIL_NODE; }
-						;
-						
-UsingDirectives:			UsingDirectives UsingDirective	{ $$ = MakeNode_CodeDefs($1, $2); }
-						|	UsingDirective					{ $$ = MakeNode_CodeDefs(NIL_NODELIST, $1); }
+DeltaCode:					Stmts	{
+								Node* program = ASTCREATOR.MakeNode_Program($1);
+								if ($1)
+									SET_LOCATION(program, @1, @1);
+								ASTCREATOR.SetSyntaxTree(program);
+							}
+						|	PARSE_QUOTED_ELEMENTS QuasiQuoted { ASTCREATOR.SetSyntaxTree($2); }
 						;
 										
-Stmts:						Stmts Stmt			{ $$ = MakeNode_Stmts($1, $2);	}
-						|	Stmt				{ $$ = MakeNode_Stmts(NIL_NODE, $1); }
+Stmts:						Stmts Stmt		{
+								$$ = ASTCREATOR.MakeNode_Stmts($1, $2);
+								if ($1) {
+									SET_LOCATION($$, @1, @2);
+									SET_LOCATION(@$, @1, @2);
+								}
+								else {
+									SET_LOCATION($$, @2, @2);
+									SET_LOCATION(@$, @2, @2);								
+								}
+							}
+						|	/*no stmts*/	{ $$ = NIL_NODE; }
 						;
 						
-LN:						{ $$ = DeltaCompiler::GetLine(); }	
+LN:						{ $$ = PARSEPARMS.GetLine(); }
 						;
 
 /**************************************************************************/
@@ -146,10 +192,17 @@ LN:						{ $$ = DeltaCompiler::GetLine(); }
 
 Function:				FunctionClass 
 							{ SM(S_FUNC_($1)); PE2(T_FUNC_($1), T_LOCAL_OR_FUNCNAME); }
-						FuncLinkage FunctionName FormalArgs 
+						FuncLinkage FunctionName
+							{ PE(T_LPAR); SG(S_FARGS); }
+						FormalArgsNode 
 							{ SG(S_BLOCK); }
-						Compound
-							{ EG(S_BLOCK); EM(S_FUNC_($1)); $$ = MakeNode_Function($1, $4, $3, $5, $7); }
+						Compound LN {
+							EG(S_BLOCK);
+							EM(S_FUNC_($1));
+							$$ = ASTCREATOR.MakeNode_Function($1, $4, $3, $6, $8);
+							DPTR($$)->SetLine($9);
+							SET_LOCATION($$, @1, @8);
+						}
 						;
 
 FuncLinkage:				LOCAL	{ $$ = AST_VALUE_FUNCLINKAGE_NO_EXPORT;			}
@@ -164,18 +217,20 @@ FunctionClass:				FUNCTION
 								{ $$ = AST_VALUE_FUNCCLASS_METHOD;			}			
 						;
 
-FunctionNameSuffix:		LN
-							{ PE(T_LPAR); SG(S_FARGS); $$ = $1; }
+Ident:						META_RENAME IDENT	{ $$ = ASTCREATOR.MakeNode_Name($2, true);	SET_LOCATION($$, @1, @2); }
+						|	IDENT				{ $$ = ASTCREATOR.MakeNode_Name($1);		SET_LOCATION($$, @1, @1); }
+						|	MetaGeneratedCode	{ $$ = $1; }
 						;
-						
-FunctionName:				IDENT FunctionNameSuffix						
-								{ $$ = MakeNode_FunctionName($1); DPTR($$)->SetLine($2); }
-						|	OPERATOR OperatorMethod	FunctionNameSuffix
-								{ $$ = MakeNode_FunctionName($2); DPTR($$)->SetLine($3); }
-						|	ATTRIBUTE FunctionNameSuffix
-								{ $$ = MakeNode_FunctionName(AST_VALUE_TOSTRING_SYMBOLIC_NAME); DPTR($$)->SetLine($2); }
+
+FunctionName:				Ident
+								{ $$ = $1; }
+						|	OPERATOR OperatorMethod
+								{ $$ = ASTCREATOR.MakeNode_Name($2); SET_LOCATION($$, @1, @2); }
+						|	ATTRIBUTE {
+								$$ = ASTCREATOR.MakeNode_Name(AST_VALUE_TOSTRING_SYMBOLIC_NAME);
+								SET_LOCATION($$, @1, @1);
+							}
 						|	/* anonymous function */	
-							FunctionNameSuffix
 								{ unullify($$); }
 						;
 
@@ -183,13 +238,13 @@ OperatorMethod:				OpString		{ $$ = $1;							}
 						|	DOT				{ $$ = DELTA_OPERATOR_OBJECT_GET;	}
 						|	DOT_ASSIGN		{ $$ = DELTA_OPERATOR_OBJECT_SET;	}
 						;
-			
+
 IdentList:					IdentList ',' 
 								{ PE2(T_COMMA, T_IDENT); } 
-							IDENT
-								{ $$ = MakeNode_IdentList($1, $4); }
-						|	IDENT
-								{ PE(T_IDENT); $$ = MakeNode_IdentList(NIL_IDLIST, $1); }
+							Ident
+								{ $$ = ASTCREATOR.MakeNode_List($1, $4); }
+						|	Ident
+								{ PE(T_IDENT); $$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $1); }
 						|	/* no formal arguments */
 								{ unullify($$); }
 						;
@@ -198,78 +253,91 @@ FormalArgsSuffix:			')'
 								{ EG(S_FARGS); PE(T_RPAR); unullify($$); }
 						|	TRIPLE_DOT
 								{ EG(S_FARGS); PE2(T_TDOT, T_RPAR); }
-							')'
-								{  $$ = AST_VALUE_VARARGS_FORMAL_NAME; }
+							')' { 
+								$$ = ASTCREATOR.MakeNode_Name(AST_VALUE_VARARGS_FORMAL_NAME);
+								SET_LOCATION($$, @1, @1);
+							}
 						;
-									
+
+FormalArgsNode:				FormalArgs {
+								$$ = ASTCREATOR.MakeNode_FormalArgs($1);
+								SET_LOCATION($$, @1, @1);
+							}
+						;
+
 FormalArgs:					CALL	
 								{ EG(S_FARGS); PE(T_RPAR); unullify($$); }
 						|	'('	IdentList 
 								{ OE(T_LPAR_OR_TDOT); }
-							FormalArgsSuffix	
-								{ $$ = MakeNode_IdentList($2, $4); }
+							FormalArgsSuffix
+								{ $$ = $4 ? ASTCREATOR.MakeNode_List($2, $4) : $2; }
 						|	/* empty, arg signature can be skipped */
 								{ EG(S_FARGS); PE(T_RPAR); unullify($$); }
 						;
 
-CompoundOpening:		'{'	 { PE(T_LBC); } 
+CompoundOpening:		'{'	 { PE(T_LBC); SET_LOCATION(@$, @1, @1); }
 						;
 						
-Compound :					CompoundOpening Stmts
-								{ PE(T_RBC); } 
-							'}'
-								{  $$ = MakeNode_Compound($2); }
-							
-						|	CompoundOpening '}'
-								{ PE(T_RBC); $$ = MakeNode_Compound(); }
+Compound:				CompoundOpening Stmts { PE(T_RBC); } '}'
+							{  $$ = ASTCREATOR.MakeNode_Compound($2); SET_LOCATION($$, @1, @4); SET_LOCATION(@$, @1, @4); }
 						;
 
-LambdaFunction:			LambdaPrefix FormalArgs
+LambdaFunction:			LambdaPrefix FormalArgsNode
 							{ PE(T_LBC); }
-						LambdaCode
-							{ EM(S_FUNC_(AST_VALUE_FUNCCLASS_PROGRAMFUNCTION)); $$ = MakeNode_LambdaFunction($2, $4); }
+						LambdaCode {
+							EM(S_FUNC_(AST_VALUE_FUNCCLASS_PROGRAMFUNCTION));
+							$$ = ASTCREATOR.MakeNode_LambdaFunction($2, $4);
+							SET_LOCATION($$, @1, @4);
+						}
 						;
 						
-LambdaPrefix:			LAMBDA
-							{	SM(S_FUNC_(AST_VALUE_FUNCCLASS_PROGRAMFUNCTION)); 
-								PE2(T_LAMBDA, T_LPAR); 
-								SG(S_FARGS); }
+LambdaPrefix:			LAMBDA {
+							SM(S_FUNC_(AST_VALUE_FUNCCLASS_PROGRAMFUNCTION)); 
+							PE2(T_LAMBDA, T_LPAR); 
+							SG(S_FARGS);
+						}
 						;
 
-LambdaCode:				'{' 
-							{ PE(S_EXPR); }
-						LambdaStmt '}'
-							{ $$ = $3; }
+LambdaCode:				'{' { PE(S_EXPR); } LambdaStmt '}' { $$ = $3; }
 						;
 						
-LambdaStmt:				LN Expression
-							{ PE(T_RBC); $$ = $2; $$->SetLine($1); }
+LambdaStmt:				LN Expression { PE(T_RBC); $$ = $2; DPTR($$)->SetLine($1); SET_LOCATION(@$, @2, @2); }
 						;	
 								
 /**************************************************************************/
 /* STMTS */
 
 Semi:						{ PE(T_SEMI); }	
-						SEMI		
+						SEMI
+							{ SET_LOCATION(@$, @2, @2); }
 						;
 	
-ExpressionListStmt:			{ SM(S_STMT); }	
-						ExpressionList Semi 
-							{ $$ =	MakeNode_ExpressionListStmt($2); } 
+ExpressionListStmt:			{ SM(S_STMT); }
+						ExpressionList Semi
+							{ $$ = ASTCREATOR.MakeNode_ExpressionListStmt($2); SET_LOCATION($$, @2, @3); SET_LOCATION(@$, @2, @3); }
 						;
 
-Stmt:						LN BasicExprStmt		{ $$ = MakeNode_BasicExprStmt($2);		$$->SetLine($1); } 
-						|	LN BasicNonExprStmt		{ $$ = MakeNode_BasicNonExprStmt($2);	$$->SetLine($1); } 
+Stmt:						LN BasicStmt			{
+								$$ = ASTCREATOR.MakeNode_BasicStmt($2);  DPTR($$)->SetLine($1);
+								SET_LOCATION($$, @2, @2); SET_LOCATION(@$, @2, @2);
+							}
 						|	Compound				{ $$ = $1; }
-						|	Function				{ $$ = MakeNode_FunctionStmt($1); }
-						|	SEMI					{ $$ = MakeNode_EmptyStmt();  }
+						|	Function				{ $$ = ASTCREATOR.MakeNode_FunctionStmt($1); SET_LOCATION($$, @1, @1); }
+						|	SEMI					{ $$ = ASTCREATOR.MakeNode_EmptyStmt();  SET_LOCATION($$, @1, @1);}
+						|	UsingDirective			{ $$ = $1; }
+						|	MetaStmt				{ $$ = $1; }
 						;
-		
+
+BasicStmt:					BasicExprStmt		{ $$ = $1; }
+						|	BasicNonExprStmt	{ $$ = $1; }
+						;
+
 BasicExprStmt:				ExpressionListStmt	{ EM(S_STMT); $$ = $1; }
 						|	AssertStmt			{ EM(S_STMT); $$ = $1; }
-						|	ReturnStmt			{ $$ = $1;}
+						|	ReturnStmt			{ $$ = $1; }
 						;
-				
+
+
 BasicNonExprStmt:			WhileStmt			{ $$ = $1;}
 						|	ForStmt				{ $$ = $1;}
 						|	ForeachStmt			{ $$ = $1; }
@@ -279,17 +347,22 @@ BasicNonExprStmt:			WhileStmt			{ $$ = $1;}
 						|	ExceptionStmt		{ $$ = $1; }
 						|	ThrowStmt			{ $$ = $1; }
 						;
-								
+
 /* ASSERT*******************/
 
 Assertion:				ASSERT
 							{ SM(S_ASSRT); SG(S_EXPR); }
-						Expression
-							{ EG(S_EXPR); PE(S_EXPR); EM(S_ASSRT); $$ = MakeNode_AssertStmt($3); }
+						Expression {
+							EG(S_EXPR);
+							PE(S_EXPR);
+							EM(S_ASSRT);
+							$$ = ASTCREATOR.MakeNode_AssertStmt($3);
+							SET_LOCATION($$, @1, @3);
+						}
 
 AssertStmt:					{ SM(S_STMT); PE(S_ASSRT);	}	
-						Assertion Semi	
-							{ $$ = $2; }	
+						Assertion Semi
+							{ $$ = $2; SET_LOCATION(@$, @2, @3); }
 						;
 
 /* RETURN*******************/
@@ -298,163 +371,219 @@ ReturnPrefix:			RETURN
 							{ SM(S_RET); }	
 						;
 ReturnValue:				Expression Semi
-								{ $$ = MakeNode_Return($1); }
+								{ $$ = ASTCREATOR.MakeNode_Return($1); }
 						|	Function
-								{ MAKE_FUNCTION_EXPR($1, $$); $$ = MakeNode_Return($$); }
+								{ MAKE_FUNCTION_EXPR($1, $$); $$ = ASTCREATOR.MakeNode_Return($$); }
 						;
 
 ReturnStmt:					ReturnPrefix
 								{ PE2(T_RET, S_EXPR); } 
 							ReturnValue
-								{ EM(S_RET); $$ = $3; }
+								{ EM(S_RET); $$ = $3; SET_LOCATION($$, @1, @3); }
 						|	ReturnPrefix Semi
-								{ EM(S_RET); $$ = MakeNode_Return(); }
+								{ EM(S_RET); $$ = ASTCREATOR.MakeNode_Return(); SET_LOCATION($$, @1, @2); }
 						;
 
 /* USING********************/
 
-UsingDirective:			USING UsingSpecifications
-							{ $$ = $2; }
+UsingDirective:			USING UsingSpecifications	{ $$ = $2; SET_LOCATION($$, @1, @2); }
 						;
 
 UsingSpecifications:		UsingNamespace			{ $$ = $1; }
 						|	UsingByteCodeLibrary	{ $$ = $1; }
 						;
 				
-UsingNamespace:				NamespacePath IDENT SEMI
-								{ $$ = MakeNode_UsingNamespace($1, $2); }
-						|	IDENT SEMI
-								{ $$ = MakeNode_UsingNamespace($1); }
+UsingNamespace:				NamespacePath Ident SEMI
+								{ $$ = ASTCREATOR.MakeNode_UsingNamespace($1, $2); }
+						|	Ident SEMI
+								{ $$ = ASTCREATOR.MakeNode_UsingNamespace(NIL_NODELIST, $1); }
 						;
 
 UsingByteCodeLibrary:		
-						STRINGIFY IDENT SEMI LN
-							{ $$ = MakeNode_UsingByteCodeLibrary($2); DPTR($$)->SetLine($4); }
+						STRINGIFY Ident SEMI LN 
+							{ $$ = ASTCREATOR.MakeNode_UsingByteCodeLibrary($2); DPTR($$)->SetLine($4); SET_LOCATION(@$, @1, @3); }
 						;
 
 /**************************************************************************/
 /* EXPRESSIONS */
-
-Expression:					AssignExpression		{ $$ = $1; }
-						|	ConstDefExpression		{ $$ = $1; }
-						|	RelationalExpression	{ $$ = $1; }
-						|	BooleanExpression		{ $$ = $1; }
-						|	ArithmeticExpression	{ $$ = $1; }
-						|	TernaryExpression		{ $$ = $1; }
-						|	Term					{ $$ = $1; }
-						;
 							
-ConstId:				IDENT
-							{ $$ = DYNAMIC_STRING($1); }
-						;
-
+Expression:		AssignExpression		{ $$ = $1; }
+			|	ConstDefExpression		{ $$ = $1; }
+			|	RelationalExpression	{ $$ = $1; }
+			|	BooleanExpression		{ $$ = $1; }
+			|	ArithmeticExpression	{ $$ = $1; }
+			|	TernaryExpression		{ $$ = $1; }
+			|	Term					{ $$ = $1; }
+			;
+							
 ConstDefExpression:		CONST		{ SM(S_CONST); PE(T_IDENT); } 
-						ConstId		{ PE(T_ASSIGN); }
+						Ident		{ PE(T_ASSIGN); }
 						ASSIGN		{ PE(S_EXPR); } 
-						Expression	{ EM(S_CONST); $$ = MakeNode_ConstDefExpression($3, $7); }
+						Expression	{
+							EM(S_CONST);
+							$$ = ASTCREATOR.MakeNode_ConstDefExpression($3, $7);
+							SET_LOCATION($$, @1, @7);
+						}
 						;
 
 AssignExpression:			Lvalue ASSIGN	
 								{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_ASSIGN, S_EXPR); }	
-							Expression
-								{ EM(S_ASSIGNEXPR);  $$ = MakeNode_AssignExpr($1, $4); }
+							Expression {
+								EM(S_ASSIGNEXPR);
+								$$ = ASTCREATOR.MakeNode_AssignExpr($1, $4);
+								SET_LOCATION($$, @1, @4);
+							}
 									
 						|	Lvalue ADD_A	
 								{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_ADDA, S_EXPR); }		
-							Expression
-								{ EM(S_ASSIGNEXPR); $$ = MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_ADD_ASSIGN); }
+							Expression {
+								EM(S_ASSIGNEXPR);
+								$$ = ASTCREATOR.MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_ADD_ASSIGN);
+								SET_LOCATION($$, @1, @4);
+							}
 									
 						|	Lvalue MUL_A	
 								{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_MULA, S_EXPR); }		
-							Expression
-								{ EM(S_ASSIGNEXPR); $$ = MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_MUL_ASSIGN); }
+							Expression {
+								EM(S_ASSIGNEXPR);
+								$$ = ASTCREATOR.MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_MUL_ASSIGN);
+								SET_LOCATION($$, @1, @4);
+							}
 									
 						|	Lvalue SUB_A	
 								{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_SUBA, S_EXPR); }		
-							Expression
-								{ EM(S_ASSIGNEXPR); $$ = MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_SUB_ASSIGN); }
+							Expression {
+								EM(S_ASSIGNEXPR);
+								$$ = ASTCREATOR.MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_SUB_ASSIGN);
+								SET_LOCATION($$, @1, @4);
+							}
 									
 						|	Lvalue DIV_A	
 								{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_DIVA, S_EXPR); }		
-							Expression
-								{ EM(S_ASSIGNEXPR); $$ = MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_DIV_ASSIGN); }
+							Expression {
+								EM(S_ASSIGNEXPR);
+								$$ = ASTCREATOR.MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_DIV_ASSIGN);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Lvalue MOD_A	
 								{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_MODA, S_EXPR); }	
-							Expression
-								{ EM(S_ASSIGNEXPR); $$ = MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_MOD_ASSIGN); }
+							Expression {
+								EM(S_ASSIGNEXPR);
+								$$ = ASTCREATOR.MakeNode_AssignArithExpr($1, $4, AST_TAG_OP_MOD_ASSIGN);
+								SET_LOCATION($$, @1, @4);
+							}
 						;
 
 RelationalExpression:		Expression GT 
 								{ SM(S_RELAT); PE3(S_EXPR, T_GT, S_EXPR); } 
-							Expression
-								{ EM(S_RELAT); $$ = MakeNode_RelationalExpr($1, $4, AST_TAG_OP_GT); }
+							Expression {
+								EM(S_RELAT);
+								$$ = ASTCREATOR.MakeNode_RelationalExpr($1, $4, AST_TAG_OP_GT);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression LT 
 								{ SM(S_RELAT); PE3(S_EXPR, T_LT, S_EXPR); } 
-							Expression
-								{ EM(S_RELAT); $$ = MakeNode_RelationalExpr($1, $4, AST_TAG_OP_LT); }
+							Expression {
+								EM(S_RELAT);
+								$$ = ASTCREATOR.MakeNode_RelationalExpr($1, $4, AST_TAG_OP_LT);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression GE 
 								{ SM(S_RELAT); PE3(S_EXPR, T_GE, S_EXPR); } 
-							Expression
-								{ EM(S_RELAT); $$ = MakeNode_RelationalExpr($1, $4,AST_TAG_OP_GE); }
+							Expression {
+								EM(S_RELAT);
+								$$ = ASTCREATOR.MakeNode_RelationalExpr($1, $4,AST_TAG_OP_GE);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression LE 
 								{ SM(S_RELAT); PE3(S_EXPR, T_LE, S_EXPR); } 
-							Expression
-								{ EM(S_RELAT); $$ = MakeNode_RelationalExpr($1, $4, AST_TAG_OP_LE); }
+							Expression {
+								EM(S_RELAT);
+								$$ = ASTCREATOR.MakeNode_RelationalExpr($1, $4, AST_TAG_OP_LE);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression EQ 
 								{ SM(S_RELAT); PE3(S_EXPR, T_EQ, S_EXPR); } 
-							Expression
-								{ EM(S_RELAT); $$ = MakeNode_RelationalExpr($1, $4, AST_TAG_OP_EQ); }
+							Expression {
+								EM(S_RELAT);
+								$$ = ASTCREATOR.MakeNode_RelationalExpr($1, $4, AST_TAG_OP_EQ);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression NE 
 								{ SM(S_RELAT); PE3(S_EXPR, T_NE, S_EXPR); } 
-							Expression
-								{ EM(S_RELAT); $$ = MakeNode_RelationalExpr($1, $4, AST_TAG_OP_NE); }
+							Expression {
+								EM(S_RELAT);
+								$$ = ASTCREATOR.MakeNode_RelationalExpr($1, $4, AST_TAG_OP_NE);
+								SET_LOCATION($$, @1, @4);
+							}
 						;
 
 BooleanExpression:			Expression AND
 								{ SM(S_LOGICAL); PE3(S_EXPR, T_AND, S_EXPR); }
-							Expression
-								{ EM(S_LOGICAL); $$ = MakeNode_ExprANDExpr($1, $4); }
+							Expression {
+								EM(S_LOGICAL);
+								$$ = ASTCREATOR.MakeNode_ExprANDExpr($1, $4);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression OR
 								{ SM(S_LOGICAL); PE3(S_EXPR, T_OR, S_EXPR); }
-							Expression
-								{ EM(S_LOGICAL); $$ = MakeNode_ExprORExpr($1, $4); }
+							Expression {
+								EM(S_LOGICAL);
+								$$ = ASTCREATOR.MakeNode_ExprORExpr($1, $4);
+								SET_LOCATION($$, @1, @4);
+							}
 						;
 							
 ArithmeticExpression:		Expression ADD 
 								{ SM(S_ARITH); PE3(S_EXPR, T_ADD, S_EXPR); } 
-							Expression
-								{ EM(S_ARITH); $$ = MakeNode_ArithmeticExpression($1, $4, AST_TAG_OP_ADD); }
+							Expression {
+								EM(S_ARITH);
+								$$ = ASTCREATOR.MakeNode_ArithmeticExpression($1, $4, AST_TAG_OP_ADD);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression SUB 
 								{ SM(S_ARITH); PE3(S_EXPR, T_SUB, S_EXPR); } 
-							Expression
-								{ EM(S_ARITH); $$ = MakeNode_ArithmeticExpression($1, $4, AST_TAG_OP_SUB); }
+							Expression {
+								EM(S_ARITH);
+								$$ = ASTCREATOR.MakeNode_ArithmeticExpression($1, $4, AST_TAG_OP_SUB);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression DIV 
 								{ SM(S_ARITH); PE3(S_EXPR, T_DIV, S_EXPR); } 
-							Expression
-								{ EM(S_ARITH); $$ = MakeNode_ArithmeticExpression($1, $4,AST_TAG_OP_DIV); }
+							Expression {
+								EM(S_ARITH);
+								$$ = ASTCREATOR.MakeNode_ArithmeticExpression($1, $4,AST_TAG_OP_DIV);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression MUL 
 								{ SM(S_ARITH); PE3(S_EXPR, T_MUL, S_EXPR); } 
-							Expression
-								{ EM(S_ARITH); $$ = MakeNode_ArithmeticExpression($1,  $4, AST_TAG_OP_MUL); }
+							Expression {
+								EM(S_ARITH);
+								$$ = ASTCREATOR.MakeNode_ArithmeticExpression($1,  $4, AST_TAG_OP_MUL);
+								SET_LOCATION($$, @1, @4);
+							}
 								
 						|	Expression MOD 
 								{ SM(S_ARITH); PE3(S_EXPR, T_MOD, S_EXPR); } 
-							Expression
-								{ EM(S_ARITH); $$ = MakeNode_ArithmeticExpression($1, $4, AST_TAG_OP_MOD); }
+							Expression {
+								EM(S_ARITH);
+								$$ = ASTCREATOR.MakeNode_ArithmeticExpression($1, $4, AST_TAG_OP_MOD);
+								SET_LOCATION($$, @1, @4);
+							}
 						;
 
 TernaryExpression:		'(' TernaryCondition TernarySelection1 ':' TernarySelection2 ')' %prec ASSIGN
-							{	EM(S_TERNARY); $$ = MakeNode_Ternary($2, $3, $5); }
+							{ EM(S_TERNARY); $$ = ASTCREATOR.MakeNode_Ternary($2, $3, $5); SET_LOCATION($$, @1, @6); }
 						;
 
 TernaryCondition:		Expression '?'
@@ -467,48 +596,67 @@ TernarySelection1:		Expression
 						
 TernarySelection2:			{ PE(S_EXPR); } 
 						Expression
-							{ PE(T_RPAR); $$ = $2; }
+							{ PE(T_RPAR); $$ = $2; SET_LOCATION(@$, @2, @2); }
 						;
 					
-Term:						Lvalue PLUSPLUS
-								{ $$ = MakeNode_TermLvalueArith($1, AST_LVALUE_PLUSPLUS); }
+Term:						Lvalue PLUSPLUS {
+								$$ = ASTCREATOR.MakeNode_TermLvalueArith($1, AST_LVALUE_PLUSPLUS);
+								SET_LOCATION($$, @1, @2);
+							}
 								
-						|	PLUSPLUS 
+						|	PLUSPLUS
 								{ SM(S_EXPR); PE2(T_PLUSPLUS, S_LVAL); } 
-							Lvalue
-								{ EM(S_EXPR); $$ = MakeNode_TermLvalueArith($3, AST_PLUSPLUS_LVALUE); }
+							Lvalue {
+								EM(S_EXPR);
+								$$ = ASTCREATOR.MakeNode_TermLvalueArith($3, AST_PLUSPLUS_LVALUE);
+								SET_LOCATION($$, @1, @3);
+							}
 								
-						|	Lvalue MINUSMINUS
-								{ $$ = MakeNode_TermLvalueArith($1, AST_LVALUE_MINUSMINUS); }
+						|	Lvalue MINUSMINUS {
+								$$ = ASTCREATOR.MakeNode_TermLvalueArith($1, AST_LVALUE_MINUSMINUS);
+								SET_LOCATION($$, @1, @2);
+							}
 								
-						|	MINUSMINUS 
+						|	MINUSMINUS
 								{ SM(S_EXPR); PE2(T_MINUSMINUS, S_LVAL); } 
-							Lvalue
-								{ EM(S_EXPR); $$ = MakeNode_TermLvalueArith($3, AST_MINUSMINUS_LVALUE); }
+							Lvalue {
+								EM(S_EXPR);
+								$$ = ASTCREATOR.MakeNode_TermLvalueArith($3, AST_MINUSMINUS_LVALUE);
+								SET_LOCATION($$, @1, @3);
+							}
 								
-						|	SUB 
-								{ SM(S_EXPR); PE2(T_SUB, S_EXPR); } 
-							Expression %prec UMINUS
-								{ EM(S_EXPR); $$ = MakeNode_UMINUSExpression($3); }
+						|	SUB
+								{ SM(S_EXPR); PE2(T_SUB, S_EXPR); }
+							Expression %prec UMINUS {
+								EM(S_EXPR);
+								$$ = ASTCREATOR.MakeNode_UMINUSExpression($3);
+								SET_LOCATION($$, @1, @3);
+							}
 								
 						|	NOT 
 								{ SM(S_EXPR); PE2(T_NOT, S_EXPR); } 
-							Expression
-								{ EM(S_EXPR); $$ = MakeNode_NOTExpression($3); }
+							Expression {
+								EM(S_EXPR);
+								$$ = ASTCREATOR.MakeNode_NOTExpression($3);
+								SET_LOCATION($$, @1, @3);
+							}
 						
 						|	Primary				
+								{ $$ = ASTCREATOR.MakeNode_PrimaryExpression($1); SET_LOCATION($$, @1, @1); }
+
+						|	MetaExpression
 								{ $$ = $1; }
 						;
 
-Primary:					FunctionAndTableObject	{ $$ = MakeNode_PrimaryFunctionAndTableObject($1);	}
-						|	ConstValue				{ $$ = MakeNode_PrimaryConstValue($1);				}
-						|	LambdaFunction			{ $$ = MakeNode_PrimaryLambdaFunction($1);			}						
+Primary:					FunctionCallObject		{ $$ = $1; }
+						|	ConstValue				{ $$ = $1; SET_LOCATION($$, @1, @1); }
+						|	LambdaFunction			{ $$ = $1; }
 						;
 
-ConstValue:					NUMBER_CONST	{ $$ = MakeNode_ConstValue($1);		}
-						|	NIL				{ $$ = MakeNode_ConstValue();		}
-						|	TRUE			{ $$ = MakeNode_ConstValue(true);	}
-						|	FALSE			{ $$ = MakeNode_ConstValue(false);	}
+ConstValue:					NUMBER_CONST	{ $$ = ASTCREATOR.MakeNode_ConstValue($1);		}
+						|	NIL				{ $$ = ASTCREATOR.MakeNode_ConstValue();		}
+						|	TRUE			{ $$ = ASTCREATOR.MakeNode_ConstValue(true);	}
+						|	FALSE			{ $$ = ASTCREATOR.MakeNode_ConstValue(false);	}
 						;
 
 OpString:					ADD				{ $$ = "+";			}
@@ -568,9 +716,9 @@ KwdIdent:					IF				{ $$ = "if";		}
 						;
 				
 StringConst:				StringConst STRING_CONST
-								{ $$ = MakeNode_StringConst($1, $2); }
+								{ $$ = ASTCREATOR.MakeNode_StringConst($1, $2); SET_LOCATION($$, @1, @2); }
 						|	STRING_CONST
-								{ $$ = MakeNode_StringConst($1); }
+								{ $$ = ASTCREATOR.MakeNode_StringConst($1); SET_LOCATION($$, @1, @1); }
 						;
 
 Stringify:					STRINGIFY 
@@ -582,15 +730,19 @@ StringIdent:				IDENT		{ $$ = $1; }
 						;
 
 StringifyDottedIdents:		Stringify StringIdent
-								{ PE(T_IDENT); $$ = MakeNode_StringifyDottedIdents($2); }
+								{ PE(T_IDENT); $$ = ASTCREATOR.MakeNode_StringifyDottedIdents($2); }
 						|	StringifyDottedIdents DOT 
 								{ PE2(T_DOT, T_IDENT); }
 							StringIdent
-								{ $$ = MakeNode_StringifyDottedIdents($1, $4); }
+								{ $$ = ASTCREATOR.MakeNode_StringifyDottedIdents($1, $4); }
 						;
 						
-StringifyNamespaceIdent:	Stringify NamespacePath IDENT
-								{ EG(S_NAMESPACE); PE(T_IDENT); $$ = MakeNode_StringifyNamespaceIdent($2, $3); }
+StringifyNamespaceIdent:	Stringify NamespacePath Ident {
+								EG(S_NAMESPACE);
+								PE(T_IDENT);
+								$$ = ASTCREATOR.MakeNode_StringifyNamespaceIdent($2, $3);
+								SET_LOCATION($$, @1, @3);
+							}
 						;
 
 StringConstUsed:			StringConst 
@@ -604,30 +756,42 @@ StringConstUsed:			StringConst
 /**************************************************************************/
 /* FUNCTION CALLS */
 				
-FunctionAndTableObject:		SELF 				
-								{ EI(S_EXPR); PE(T_SELF); $$ = MakeNode_SELF(); }
-						|	LAMBDA_REF
-								{ EI(S_EXPR); PE(T_LAMBDA_REF); $$ = MakeNode_LAMBDA_REF(); }								
-						|	NEWSELF
-								{ EI(S_EXPR); PE(T_NEWSELF); $$ = MakeNode_NEWSELF(); }
-						|	StringConstUsed		
-								{ EI(S_EXPR); $$ = $1; }
-						|	ARGUMENTS 			
-								{ EI(S_EXPR); PE(T_ARGUMENTS); $$ = MakeNode_ARGUMENTS(); }
-						|	Lvalue				
-								{ $$ = $1; }
+FunctionAndTableObject:		SELF {
+								EI(S_EXPR); PE(T_SELF);
+								$$ = ASTCREATOR.MakeNode_SELF();
+								SET_LOCATION($$, @1, @1);
+							}
+						|	LAMBDA_REF {
+								EI(S_EXPR); PE(T_LAMBDA_REF);
+								$$ = ASTCREATOR.MakeNode_LAMBDA_REF();
+								SET_LOCATION($$, @1, @1);
+							}
+						|	NEWSELF {
+								EI(S_EXPR); PE(T_NEWSELF);
+								$$ = ASTCREATOR.MakeNode_NEWSELF();
+								SET_LOCATION($$, @1, @1);
+							}
+						|	ARGUMENTS {
+								EI(S_EXPR); PE(T_ARGUMENTS);
+								$$ = ASTCREATOR.MakeNode_ARGUMENTS();
+								SET_LOCATION($$, @1, @1);
+							}
+						|	Lvalue { $$ = $1; }
 						|	TableConstructor	
 								{ PE(S_TABLE); $$ = $1; }
 						|	'(' Expression		
 								{ PE3(T_LPAR, S_EXPR, T_RPAR); } 
 							')'					
-								{ $$ = MakeNode_ParenthesisedExpr($2); }
+								{ $$ = ASTCREATOR.MakeNode_ParenthesisedExpr($2); SET_LOCATION($$, @1, @3); }
 						|	FunctionCall		
 								{ PE(S_CALL); $$ = $1; }
 						|	'(' Function		
 								{ SM(S_EXPR); PE3(T_LPAR, S_FUNC, T_RPAR); }  
-							')'					
-								{ EM(S_EXPR); $$ = MakeNode_FunctionParenthesisForm($2); }
+							')' {
+								EM(S_EXPR);
+								$$ = ASTCREATOR.MakeNode_FunctionParenthesisForm($2);
+								SET_LOCATION($$, @1, @4);
+							}
 						;
 
 /*ACTUAL ARGUMENTS***********/
@@ -642,93 +806,109 @@ NonEmptyActualArgumentsList:
 							NonEmptyActualArgumentsList ','		
 								{ PE(T_COMMA); }  
 							ActualArgument						
-								{ $$ = MakeNode_ExpressionList($1, $4); }
+								{ $$ = ASTCREATOR.MakeNode_List($1, $4); }
 						|	ActualArgument						
-								{ $$ = MakeNode_ExpressionList(NIL_NODELIST, $1); }
+								{ $$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $1); }
 						;
 
 ActualArguments:			'('						
 								{ SM(S_CALL); PE2(S_EXPR, T_LPAR); SG(S_AARGS); }
 							ActualArgumentsList		
 								{ PE(T_RPAR); }
-							')'	%prec PARENTHESIS	
+							')'	%prec PARENTHESIS
 								{ EG(S_AARGS); EM(S_CALL); $$ = $3; }
 						|	CALL					
 								{ PE2(T_LPAR, T_RPAR); unullify($$); }
 						;
 					
-ActualArgument:					{ PE(S_EXPR); } 
-							Expression	
-								{ $$ = MakeNode_Argument($2); }						
-						|	'|'			
-								{ PE2(T_BAR, S_EXPR); } 
-							Expression	
-								{ PE(T_BAR); } 
-							'|'			
-								{ $$ = MakeNode_LateBoundArgument($3); }
-						|	TRIPLE_DOT	
-								{ PE(T_TDOT); $$ = MakeNode_TRIPLE_DOT(); }
+ActualArgument:					{ PE(S_EXPR); }
+							Expression
+								{ $$ = ASTCREATOR.MakeNode_Argument($2); SET_LOCATION($$, @1, @2); SET_LOCATION(@$, @2, @2); }
+						|	'|'
+								{ PE2(T_BAR, S_EXPR); }
+							Expression
+								{ PE(T_BAR); }
+							'|'
+								{ $$ = ASTCREATOR.MakeNode_LateBoundArgument($3); SET_LOCATION($$, @1, @5); }
+						|	TRIPLE_DOT
+								{ PE(T_TDOT); $$ = ASTCREATOR.MakeNode_TRIPLE_DOT(); SET_LOCATION($$, @1, @1); }
 						|	Function
-								{ MAKE_FUNCTION_EXPR($1, $$); }
+								{ MAKE_FUNCTION_EXPR($1, $$); SET_LOCATION($$, @1, @1); }
 						;
-				
+
 /*FUNCTION CALL EXPRESSION***/
 
-FunctionCall:			FunctionCallObject ActualArguments
-							{ $$ = MakeNode_FunctionCall($1, $2); }
+FunctionCallObject:			FunctionAndTableObject	{ $$ = $1; }
+						|	StringConstUsed			{ EI(S_EXPR); $$ = $1; }
 						;
 
-ExpressionList:				ExpressionList ',' LN Expression 
-								{ $$ = MakeNode_ExpressionList($1, $4); DPTR($4)->SetLine($3); }
-						|	LN Expression 
-								{ $$ = MakeNode_ExpressionList(NIL_NODELIST, $2); DPTR($2)->SetLine($1); }
+FunctionCall:			FunctionCallObject ActualArguments {
+							Node* actuals = ASTCREATOR.MakeNode_ActualArguments($2);
+							SET_LOCATION(actuals, @2, @2);
+							$$ = ASTCREATOR.MakeNode_FunctionCall($1, actuals);
+							SET_LOCATION($$, @1, @2);
+						}
+						;
+
+ExpressionList:				ExpressionList ',' LN Expression
+								{ $$ = ASTCREATOR.MakeNode_List($1, $4); DPTR($4)->SetLine($3); }
+						|	LN Expression {
+								$$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $2); DPTR($2)->SetLine($1);
+								SET_LOCATION(@$, @2, @2);
+							}
 						;
 
 /**************************************************************************/
 /* LVALUES */
 
-				
-NamespacePath:				GLOBAL_SCOPE
-								{ EI(S_EXPR); SG(S_NAMESPACE); PE2(T_GLOBAL, T_IDENT); 
-								  $$ = MakeNode_NamespacePath(NIL_IDLIST, DELTA_LIBRARYNAMESPACE_SEPARATOR); }
-						|	IDENT GLOBAL_SCOPE
-								{ EI(S_EXPR); SG(S_NAMESPACE); PE3(T_IDENT, T_GLOBAL, T_IDENT); 
-								  $$ = MakeNode_NamespacePath(NIL_IDLIST, $1); }
-						|	NamespacePath IDENT GLOBAL_SCOPE
-								{ PE2(T_GLOBAL, T_IDENT); $$ = MakeNode_NamespacePath($1, $2); }
+NamespacePath:				GLOBAL_SCOPE {
+								EI(S_EXPR); SG(S_NAMESPACE); PE2(T_GLOBAL, T_IDENT);
+								Node* global = ASTCREATOR.MakeNode_Name(DELTA_LIBRARYNAMESPACE_SEPARATOR);
+								SET_LOCATION(global, @1, @1);
+								$$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, global);
+							}
+						|	Ident GLOBAL_SCOPE {
+								EI(S_EXPR); SG(S_NAMESPACE); PE3(T_IDENT, T_GLOBAL, T_IDENT);
+								$$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $1);
+							}
+						|	NamespacePath Ident GLOBAL_SCOPE {
+								PE2(T_GLOBAL, T_IDENT);
+								$$ = ASTCREATOR.MakeNode_List($1, $2);
+							}
 						;
-		
-Lvalue:						IDENT
-								{ EI(S_EXPR); PE(T_IDENT); $$ = MakeNode_Lvalue($1); }
-								  
-						|	NamespacePath IDENT
-								{ EG(S_NAMESPACE); $$ = MakeNode_NamespaceLvalue($1, $2); }
-								  
-						|	AttributeId
-								{ $$ = MakeNode_AttrLvalue($1); }
-								
+
+Lvalue:						Ident {
+								EI(S_EXPR); PE(T_IDENT);
+								$$ = ASTCREATOR.MakeNode_Lvalue($1);
+								SET_LOCATION($$, @1, @1);
+							}
+
+						|	NamespacePath Ident {
+								EG(S_NAMESPACE);
+								$$ = ASTCREATOR.MakeNode_NamespaceLvalue($1, $2);
+								SET_LOCATION($$, @1, @2);
+							}
+
+						|	ConstAttributeId
+								{ $$ = ASTCREATOR.MakeNode_AttrLvalue($1); SET_LOCATION($$, @1, @1); }
+
 						|	STATIC 
 								{ EI(S_EXPR); PE2(T_STATIC, T_IDENT); } 
-							IDENT
-								{ $$ = MakeNode_StaticLvalue($3); }
-								
+							Ident
+								{ $$ = ASTCREATOR.MakeNode_StaticLvalue($3); SET_LOCATION($$, @1, @3); }
+
 						|	LOCAL 
 								{ EI(S_EXPR); PE2(T_LOCAL, T_IDENT); } 
-							IDENT
-								{ $$ = MakeNode_LocalLvalue($3); }
+							Ident
+								{ $$ = ASTCREATOR.MakeNode_LocalLvalue($3); SET_LOCATION($$, @1, @3); }
 																					
 						|	TableContent
 								{ $$ = $1; }
 						;
 
-TableObject:			FunctionAndTableObject 
-							{ $$ = MakeNode_TableObject($1); }	
+TableObject:				FunctionAndTableObject { $$ = $1; }	
 						;
-						
-FunctionCallObject:		FunctionAndTableObject 
-							{ $$ = $1; }		
-						;
-
+									
 TableContentDot:		TableObject DOT			
 							{ PE(T_DOT); OE(S_DOTINDEX); $$ = $1; }
 						;
@@ -754,48 +934,52 @@ DottedOpString			:	DOT_ASSIGN		{ $$ = ".=";	}
 						;
 						
 DotIndex:					IDENT	
-								{ $$ = MakeNode_DotIndexIdent($1); }
+								{ $$ = ASTCREATOR.MakeNode_DotIndexIdent($1); SET_LOCATION($$, @1, @1); }
 						|	KwdIdent	
-								{ $$ = MakeNode_DotIndexIdent($1); }
+								{ $$ = ASTCREATOR.MakeNode_DotIndexIdent($1); SET_LOCATION($$, @1, @1); }
 						|	OpString
-								{ $$ = MakeNode_DotIndexOpString($1); }
+								{ $$ = ASTCREATOR.MakeNode_DotIndexOpString($1); SET_LOCATION($$, @1, @1); }
 						|	StringConstUsed
-								{ $$ = MakeNode_DotIndexStringConst($1); }
+								{ $$ = ASTCREATOR.MakeNode_DotIndexStringConst($1); SET_LOCATION($$, @1, @1); }
 						;
 
 SpecialDotIndex:		DottedOpString
-							{ $$ = MakeNode_DotIndexOpString($1+1); }	
+							{ $$ = ASTCREATOR.MakeNode_DotIndexOpString($1+1); SET_LOCATION($$, @1, @1);  }	
 						;
 						
 BracketIndex:				Expression
 								{ $$ = $1; }
 						|	OperatorMethod
-								{ $$ = MakeNode_BracketIndexOperatorMethod($1); }
+								{ $$ = ASTCREATOR.MakeNode_BracketIndexOperatorMethod($1); SET_LOCATION($$, @1, @1);  }
 						;
 												
 /*TABLECONTENT**************/
 
-TableContent:				TableContentDot DotIndex
-								{	PE(S_DOTINDEX_(DPTR($2)->GetTag())); 
-									$$ = MakeNode_TableContentDot($1, $2); }
-						|
-							TableObject SpecialDotIndex
-								{	PE(S_DOTINDEX_(DPTR($2)->GetTag())); 
-									$$ = MakeNode_TableContentDot($1, $2); }
-											
-						|	TableContentBoundedDot DotIndex
-								{	PE(S_DOTINDEX_(DPTR($2)->GetTag())); 
-									$$ = MakeNode_BoundedTableContentDot($1, $2); }
-																
+TableContent:				TableContentDot DotIndex {
+								PE(S_DOTINDEX_(DPTR($2)->GetTag())); 
+								$$ = ASTCREATOR.MakeNode_TableContentDot($1, $2);
+								SET_LOCATION($$, @1, @2);
+							}
+						|	TableObject SpecialDotIndex {
+								PE(S_DOTINDEX_(DPTR($2)->GetTag())); 
+								$$ = ASTCREATOR.MakeNode_TableContentDot($1, $2);
+								SET_LOCATION($$, @1, @2);
+							}
+						|	TableContentBoundedDot DotIndex {
+								PE(S_DOTINDEX_(DPTR($2)->GetTag())); 
+								$$ = ASTCREATOR.MakeNode_BoundedTableContentDot($1, $2);
+								SET_LOCATION($$, @1, @2);
+							}
 						|	TableContentBracket BracketIndex 
 								{ PE2(S_BRACKET_INDEX_(DPTR($2)->GetTag()), T_RB); } 
 							']'	%prec SQUARE_BRACKETS
-								{ $$ = MakeNode_TableContentBracket($1, $2); }
-																
+								{ $$ = ASTCREATOR.MakeNode_TableContentBracket($1, $2); SET_LOCATION($$, @1, @4); }
 						|	TableContentBoundedBracket BracketIndex 
 								{ PE2(S_BRACKET_INDEX_(DPTR($2)->GetTag()), T_DRB); } 
-							DOUBLE_RB %prec SQUARE_BRACKETS
-								{ $$ = MakeNode_BoundedTableContentBracket($1, $2); }
+							DOUBLE_RB %prec SQUARE_BRACKETS {
+								$$ = ASTCREATOR.MakeNode_BoundedTableContentBracket($1, $2);
+								SET_LOCATION($$, @1, @4);
+							}
 						;
 
 /**************************************************************************/
@@ -809,53 +993,49 @@ TableSuffix:				{ PE(T_RB); }
 						']' 
 							{ EM(S_TABLE); }
 						;
-				
+
 TableConstructor:			TablePrefix	TableElements TableSuffix
-								{ $$ = MakeNode_TableConstructor($2); }
+								{ $$ = ASTCREATOR.MakeNode_TableConstructor($2); SET_LOCATION($$, @1, @3); }
 									
 						|	TablePrefix TableSuffix
-								{ $$ = MakeNode_TableConstructor(); }
+								{ $$ = ASTCREATOR.MakeNode_TableConstructor(); SET_LOCATION($$, @1, @2); }
 						;
 
 TableElements:				TableElements ',' 
 								{ PE(T_COMMA); } 
 							TableElement
-								{ $$ = MakeNode_TableElements($1, $4); }
+								{ $$ = ASTCREATOR.MakeNode_TableElements($1, $4); }
 						|	TableElement
-								{ $$ = MakeNode_TableElements(NIL_NODELIST, $1); }
+								{ $$ = ASTCREATOR.MakeNode_TableElements(NIL_NODELIST, $1); }
 						;
 
 UnindexedValue:				Expression
-								{ $$ = MakeNode_UnindexedValue($1); }
+								{ $$ = ASTCREATOR.MakeNode_UnindexedValue($1); SET_LOCATION($$, @1, @1); }
 						|	FunctionElement
-								{ $$ = MakeNode_UnindexedValue($1); }
+								{ $$ = ASTCREATOR.MakeNode_UnindexedValue($1); SET_LOCATION($$, @1, @1); }
 						;
 						
 FunctionElement:			Function
-								{ MAKE_FUNCTION_EXPR($1, $$); }
+								{ MAKE_FUNCTION_EXPR($1, $$); SET_LOCATION($$, @1, @1); }
 						;
 
 PE_elem:				{ OE(T_TABLE_ELEM); }						
 						;
 						
-TableElement:				PE_elem UnindexedValue LN
-								{ $$ = $2; DPTR($$)->SetLine($3); }
-						|	PE_elem IndexedValues
-								{ $$ = $2; }
-						|   PE_elem NewAttribute
-								{ $$ = $2; }
-						|	PE_elem IdentIndexElement
-								{ $$ = $2; }
+TableElement:				PE_elem UnindexedValue LN	{ $$ = $2; DPTR($$)->SetLine($3); SET_LOCATION(@$, @2, @2); }
+						|	PE_elem IndexedValues		{ $$ = $2; SET_LOCATION(@$, @2, @2); }
+						|   PE_elem NewAttribute		{ $$ = $2; SET_LOCATION(@$, @2, @2); }
+						|	PE_elem IdentIndexElement   { $$ = $2; SET_LOCATION(@$, @2, @2); }
 						;
 									
-DottedIdent:			DOT 
-							{ PE2(T_DOT, T_IDENT); } 
-						StringIdent 
-							{ $$ = MakeNode_DottedIdent($3); }
+DottedIdent:			DOT
+							{ PE2(T_DOT, T_IDENT); }
+						StringIdent
+							{ $$ = ASTCREATOR.MakeNode_DottedIdent($3); SET_LOCATION($$, @1, @3); }
 						;
 
 OperatorIndex:			OpString 
-							{ PE(T_OPINDEX); $$ = MakeNode_OperatorIndex($1); }
+							{ PE(T_OPINDEX); $$ = ASTCREATOR.MakeNode_OperatorIndex($1); SET_LOCATION($$, @1, @1); }
 						;
 
 IndexContent:				Expression		{ $$ = $1; }
@@ -865,27 +1045,33 @@ IndexContent:				Expression		{ $$ = $1; }
 
 IndexExpression:			{ PE(S_INDEXEXPR); } 
 						IndexContent 
-							{ $$ = $2; }
+							{ $$ = $2; SET_LOCATION(@$, @2, @2); }
 						;
 
 IndexedList:				IndexedList 
 								{ PE(T_COMMA); } 
 							',' IndexExpression LN
-								{ $$ = MakeNode_ExpressionList($1, $4); DPTR($4)->SetLine($5); }
+								{ $$ = ASTCREATOR.MakeNode_List($1, $4); DPTR($4)->SetLine($5); SET_LOCATION(@$, @1, @4); }
 						|	IndexExpression LN
-								{ $$ = MakeNode_ExpressionList(NIL_NODELIST, $1); DPTR($1)->SetLine($2); }
+								{ $$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $1); DPTR($1)->SetLine($2); SET_LOCATION(@$, @1, @1); }
+						;
+
+TableIndices:				IndexedList { $$ = ASTCREATOR.MakeNode_TableIndices($1); SET_LOCATION($$, @1, @1); }
+						;
+
+TableValues:				ContentList { $$ = ASTCREATOR.MakeNode_TableValues($1); SET_LOCATION($$, @1, @1); }
 						;
 
 IndexedValues:			'{' 
 							{ PE(T_LBC); SG(N_EMPTY); } 
-						IndexedList 
+						TableIndices 
 							{ EG(N_EMPTY); PE2(S_INDICES, T_COLON); } 
 						':' 
 							{ SG(S_ELIST); } 
-						ContentList 
+						TableValues 
 							{ EG(S_ELIST); PE2(S_ELIST, T_RBC); } 
 						'}'
-							{ $$ = MakeNode_IndexedValues($3, $7); }
+							{ $$ = ASTCREATOR.MakeNode_IndexedValues($3, $7); SET_LOCATION($$, @1, @9); }
 						;
 
 IdentIndex:					AttributeId	':'
@@ -893,19 +1079,25 @@ IdentIndex:					AttributeId	':'
 						|	DOT 
 								{ PE(T_DOT); OE(T_IDENT_OR_KWDIDENT); } 
 							AttributeIdent ':'
-								{ $$ = DYNAMIC_STRING($3); PE(T_COLON); }
+								{ $$ = $3; PE(T_COLON); }
 						;
 
 IdentIndexElement:		IdentIndex
 							{ SG(S_EXPR); }
-						ContentExpression LN
-							{ EG(S_EXPR); PE(S_EXPR); $$ = MakeNode_IdentIndexElement($1, $3); DPTR($$)->SetLine($4); }
+						ContentExpression LN {
+							EG(S_EXPR); PE(S_EXPR);
+							$$ = ASTCREATOR.MakeNode_IdentIndexElement($1, $3);
+							DPTR($$)->SetLine($4);
+							SET_LOCATION($$, @1, @3);
+						}
 						;
 
-ContentList:				ExpressionList ',' LN ContentExpression 
-								{ $$ = MakeNode_ExpressionList($1, $4); DPTR($4)->SetLine($3); }
-						|	LN ContentExpression 
-								{ $$ = MakeNode_ExpressionList(NIL_NODELIST, $2); DPTR($2)->SetLine($1); }
+ContentList:				ContentList ',' LN ContentExpression 
+								{ $$ = ASTCREATOR.MakeNode_List($1, $4); DPTR($4)->SetLine($3); }
+						|	LN ContentExpression {
+								$$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $2); DPTR($2)->SetLine($1);
+								SET_LOCATION(@$, @2, @2);
+							}
 						;
 
 ContentExpression:			Expression		{ $$ = $1; }
@@ -915,21 +1107,35 @@ ContentExpression:			Expression		{ $$ = $1; }
 /**************************************************************************/
 /* ATTRIBUTES */
 
-AttributeIdent:				IDENT			{ PE(T_IDENT);		$$ = $1; }
-						|	KwdIdent		{ PE(T_KWDIDENT);	$$ = $1; }
+AttributeIdent:				IDENT	{
+								PE(T_IDENT);
+								$$ = ASTCREATOR.MakeNode_Name($1);
+								SET_LOCATION($$, @1, @1);
+							}
+						|	KwdIdent	{
+								PE(T_KWDIDENT);
+								$$ = ASTCREATOR.MakeNode_Name($1);
+								SET_LOCATION($$, @1, @1);
+							}
 						;
 						
-AttributeId:				ATTRIBUTE_IDENT 
-								{ PE(T_ATTRIBUTEID); OE(T_LBC_OR_COLON); $$ = DYNAMIC_STRING($1 + 1); }
+ConstAttributeId:			ATTRIBUTE_IDENT {
+								PE(T_ATTRIBUTEID); OE(T_LBC_OR_COLON);
+								$$ = ASTCREATOR.MakeNode_Name($1 + 1);
+								SET_LOCATION($$, @1, @1);
+							}
 						|	ATTRIBUTE 
 								{ PE(T_ATTRIBUTE); OE(T_IDENT_OR_KWDIDENT); }
 							AttributeIdent
-								{ $$ = DYNAMIC_STRING($3); }
+								{ $$ = $3; }
 						;
 
+AttributeId:				ConstAttributeId			{ $$ = $1; }
+						|	ATTRIBUTE MetaGeneratedCode	{ $$ = $2; }
+						;
 				
 NewAttribute:			AttributeId AttributeSet AttributeGet
-							{ $$ = MakeNode_NewAttribute($1, $2, $3); }
+							{ $$ = ASTCREATOR.MakeNode_NewAttribute($1, $2, $3); SET_LOCATION($$, @1, @3); }
 						;
 						
 AttributeSet:			'{'	
@@ -937,9 +1143,9 @@ AttributeSet:			'{'
 						SET 				
 							{ SG(S_EXPR); } 
 						ContentExpression LN
-							{ EG(S_EXPR); PE2(S_EXPR, T_GET); $$ = $5; DPTR($$)->SetLine($6); }
+							{ EG(S_EXPR); PE2(S_EXPR, T_GET); $$ = $5; DPTR($$)->SetLine($6); SET_LOCATION(@$, @1, @5); }
 						;
-				
+
 AttributeGet:			GET
 							{ SG(S_EXPR); }
 						ContentExpression LN
@@ -953,12 +1159,12 @@ AttributeGet:			GET
 
 BreakStmt:					{ SM(S_STMT); PE(T_BREAK);	}	
 						BREAK Semi	
-							{ $$ = MakeNode_BREAK(); }
+							{ $$ = ASTCREATOR.MakeNode_BREAK(); SET_LOCATION($$, @1, @2); SET_LOCATION(@$, @2, @3); }
 						;
 						
 ContinueStmt:				{ SM(S_STMT); PE(T_CONT);	}	
 						CONTINUE Semi	
-							{ $$ = MakeNode_CONTINUE(); }
+							{ $$ = ASTCREATOR.MakeNode_CONTINUE(); SET_LOCATION($$, @1, @2); SET_LOCATION(@$, @2, @3); }
 						;
 
 Condition:				'('				{ SG(S_EXPR); } 
@@ -972,9 +1178,12 @@ IfPrefix:				IF		{ SM(S_IF); PE2(T_IF, T_LPAR);  }		;
 ElsePrefix:				ELSE	{ EM(S_IF); SM(S_ELSE); PE(T_ELSE); }	;
 		
 IfStmt:						IfPrefix Condition Stmt
-								{ EM(S_IF);   $$ = MakeNode_IfStmt($2, $3); }
-						|	IfPrefix Condition Stmt ElsePrefix Stmt
-								{ EM(S_ELSE); $$ = MakeNode_IfElseStmt($2, $3, $5); }
+								{ EM(S_IF);   $$ = ASTCREATOR.MakeNode_IfStmt($2, $3); SET_LOCATION($$, @1, @3); }
+						|	IfPrefix Condition Stmt ElsePrefix Stmt {
+								EM(S_ELSE);
+								$$ = ASTCREATOR.MakeNode_IfElseStmt($2, $3, $5);
+								SET_LOCATION($$, @1, @5);
+							}
 						;
 
 /* WHILE*********************/
@@ -983,14 +1192,21 @@ WhilePrefix:			WHILE
 							{ SM(S_WHILE); PE2(T_WHILE, T_LPAR); }	
 						;
 
-WhileStmt:				WhilePrefix Condition LN Stmt
-							{ EM(S_WHILE); $$ = MakeNode_WhileStmt($2, $4); DPTR($4)->SetLine($3); }
+WhileStmt:				WhilePrefix Condition LN Stmt {
+							EM(S_WHILE);
+							$$ = ASTCREATOR.MakeNode_WhileStmt($2, $4);
+							DPTR($4)->SetLine($3);
+							SET_LOCATION($$, @1, @4);
+						}
 						;
 
 /* FOR***********************/
 
-ForStmt:				ForPrefix ForInitList ForCondition ForSuffix Stmt
-							{ EM(S_FOR); $$ = MakeNode_ForStmt($2, $3, $4, $5); }
+ForStmt:				ForPrefix ForInitList ForCondition ForSuffix Stmt {
+							EM(S_FOR);
+							$$ = ASTCREATOR.MakeNode_ForStmt($2, $3, $4, $5);
+							SET_LOCATION($$, @1, @5);
+						}
 						;
 
 ForPrefix:				FOR		
@@ -999,31 +1215,41 @@ ForPrefix:				FOR
 							{ PE(S_ELIST); } 
 						;
 						
-ForInitList	:				LN ExpressionList Semi
-								{ $$ = MakeNode_ForInit($2); DPTR($$)->SetLine($1); }
-						|	LN Semi
-								{ EI(S_ELIST); $$ = MakeNode_ForInit(NIL_NODELIST); DPTR($$)->SetLine($1); }
+ForInitList	:				LN ExpressionList Semi {
+								$$ = ASTCREATOR.MakeNode_ForInit($2); DPTR($$)->SetLine($1);
+								SET_LOCATION($$, @2, @2); SET_LOCATION(@$, @2, @3);
+							}
+						|	LN Semi {
+								EI(S_ELIST);
+								$$ = ASTCREATOR.MakeNode_ForInit(NIL_NODELIST); DPTR($$)->SetLine($1);
+								SET_LOCATION($$, @2, @2); SET_LOCATION(@$, @2, @2);
+							}
 						;
 
 ForCondition:				{ PE(S_EXPR); }		
 						 Expression LN Semi
-							{ $$ = $2; DPTR($$)->SetLine($3); }
+							{ $$ = $2; DPTR($$)->SetLine($3); SET_LOCATION(@$, @2, @4); }
 						;
-			
+
 ForSuffix:						{ PE(S_ELIST); } 
-							LN ExpressionList ForEnd
-								{ $$ = MakeNode_ForSuffix($3); DPTR($$)->SetLine($2); }
-						|	LN ForEnd
-								{ $$ = MakeNode_ForSuffix(NIL_NODELIST); DPTR($$)->SetLine($1); }
+							LN ExpressionList ForEnd {
+								$$ = ASTCREATOR.MakeNode_ForSuffix($3); DPTR($$)->SetLine($2);
+								SET_LOCATION($$, @3, @4); SET_LOCATION(@$, @3, @4);
+							}
+						|	LN ForEnd {
+								$$ = ASTCREATOR.MakeNode_ForSuffix(NIL_NODELIST); DPTR($$)->SetLine($1);
+								SET_LOCATION($$, @2, @2); SET_LOCATION(@$, @2, @2);
+							}
 						;
 
 ForEnd:							{ PE(T_RPAR); } 
 							')'	
+								{ SET_LOCATION(@$, @2, @2); }
 						;
 
 /* FOREACH*******************/
 
-ForeachCont:			LN Expression	{ $$ = $2; DPTR($$)->SetLine($1); }
+ForeachCont:			LN Expression	{ $$ = $2; DPTR($$)->SetLine($1); SET_LOCATION(@$, @2, @2); }
 						;
 
 ForeachValue:				':'				{	PE(S_LVAL);		}
@@ -1039,10 +1265,11 @@ ForeachStmt:			FOREACH			{	SM(S_FOREACH); PE2(T_FOREACH, T_LPAR);	}
 						ForeachCont		{	PE(T_RPAR);				}
 						')'				{	PE(S_STMT);				}						
 						LN Stmt			{	if ($7)
-												$$ = MakeNode_ForeachStmt($7, $5, $9, $14); 
+												$$ = ASTCREATOR.MakeNode_ForeachStmt($7, $5, $9, $14); 
 											else
-												$$ = MakeNode_ForeachStmt($5, NIL_NODE, $9, $14); 
+												$$ = ASTCREATOR.MakeNode_ForeachStmt($5, NIL_NODE, $9, $14); 
 											DPTR($$)->SetLine($13);
+											SET_LOCATION($$, @1, @14);
 											EM(S_FOREACH);	}
 						;
 
@@ -1052,19 +1279,174 @@ ForeachStmt:			FOREACH			{	SM(S_FOREACH); PE2(T_FOREACH, T_LPAR);	}
 ThrowStmt:				THROW 
 							{ SM(S_THROW); PE2(T_THROW, S_EXPR); } 
 						Expression Semi
-							{ EM(S_THROW); $$ = MakeNode_THROW($3); }
+							{ EM(S_THROW); $$ = ASTCREATOR.MakeNode_THROW($3); SET_LOCATION($$, @1, @4); }
 						;
 
-ExceptionVar:			IDENT	{ PE(S_STMT); $$ = MakeNode_ExceptionVar($1); }
+ExceptionVar:			Ident	{ PE(S_STMT); $$ = ASTCREATOR.MakeNode_ExceptionVar($1); SET_LOCATION($$, @1, @1); }
 						;
 						
 ExceptionStmt:			TRY		{ SM(S_TRY); PE2(T_TRY, S_STMT); }
 						Stmt	{ PE(T_TRAP); }
 						TRAP	{ PE(T_IDENT); }
 						ExceptionVar
-						Stmt	{ EM(S_TRY); $$ = MakeNode_Exception($3, $7, $8); } 
-						;			
+						Stmt	{
+							EM(S_TRY);
+							$$ = ASTCREATOR.MakeNode_Exception($3, $7, $8);
+							SET_LOCATION($$, @1, @8);
+						}
+						;
 				
 /**************************************************************************/
+/* METAPROGRAMMING SUPPORT */
 
-%%
+MultipleEscapes:		MultipleEscapes META_ESCAPE	{ $$ = $1 + 1; }
+					|	META_ESCAPE					{ $$ = 1; }
+					;
+
+MetaGeneratedCode:		 MultipleEscapes '(' LN Expression ')' {
+							$$ = ASTCREATOR.MakeNode_ChildExpr(AST_TAG_ESCAPE, $4);
+							$$->SetAttribute(AST_ATTRIBUTE_CARDINALITY, $1);
+							$$->SetLine($3);
+							SET_LOCATION($$, @1, @5);
+						}
+					|	MultipleEscapes LN IDENT {
+							$$ = ASTCREATOR.MakeNode_Name($3);				SET_LOCATION($$, @3, @3);
+							$$ = ASTCREATOR.MakeNode_Lvalue($$);			SET_LOCATION($$, @3, @3);
+							$$ = ASTCREATOR.MakeNode_PrimaryExpression($$); SET_LOCATION($$, @3, @3);
+							
+							$$ = ASTCREATOR.MakeNode_ChildExpr(AST_TAG_ESCAPE, $$);
+							$$->SetAttribute(AST_ATTRIBUTE_CARDINALITY, $1);
+							$$->SetLine($2);
+							SET_LOCATION($$, @1, @3);
+						}
+					|	META_INLINE '(' LN Expression ')' {
+							$$ = ASTCREATOR.MakeNode_ChildExpr(AST_TAG_INLINE, $4);
+							$$->SetLine($3);
+							SET_LOCATION($$, @1, @5);
+						}
+					;
+
+QuotedExpressionList:		QuotedExpressionList ',' Expression
+								{ $$ = ASTCREATOR.MakeNode_List($1, $3); }
+						|	Expression
+								{ $$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $1); }
+						;
+
+QuotedIndexedList:			QuotedIndexedList ',' IndexContent	{ $$ = ASTCREATOR.MakeNode_List($1, $3); }
+						|	IndexContent						{ $$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $1); }
+						;
+
+QuotedIndexedValues:	'{'  QuotedIndexedList ':'
+							{ SG(S_ELIST); } 
+						ContentList 
+							{ EG(S_ELIST); PE2(S_ELIST, T_RBC); } 
+						'}'	{
+							Node* indices = ASTCREATOR.MakeNode_TableIndices($2); SET_LOCATION(indices, @2, @2);
+							Node* values = ASTCREATOR.MakeNode_TableValues($5); SET_LOCATION(values, @5, @5);
+							$$ = ASTCREATOR.MakeNode_IndexedValues(indices, values); SET_LOCATION($$, @1, @7);
+						}
+					;
+
+QuotedIdentIndex:			AttributeId	':' 		{ $$ = $1; }
+						|	DOT AttributeIdent ':'	{ $$ = $2; PE(T_COLON); }
+						;
+
+QuotedIdentIndexElement:	QuotedIdentIndex
+								{ SG(S_EXPR); }
+							ContentExpression LN {
+								EG(S_EXPR); PE(S_EXPR);
+								$$ = ASTCREATOR.MakeNode_IdentIndexElement($1, $3);
+								DPTR($$)->SetLine($4);
+								SET_LOCATION($$, @1, @4);
+								SET_LOCATION(@$, @1, @3);
+							}
+							;
+
+NonExprQuotedElement:		Function				{ $$ = $1; }
+						|	QuotedIndexedValues		{ $$ = $1; }
+						|	NewAttribute			{ $$ = $1; }
+						|	QuotedIdentIndexElement	{ $$ = $1; }
+						|	DOT StringIdent 		{ $$ = ASTCREATOR.MakeNode_DottedIdent($2); SET_LOCATION($$, @1, @2); }
+						|	OperatorIndex			{ $$ = $1; }
+						|	'|'
+								{ PE2(T_BAR, S_EXPR); }
+							Expression
+								{ PE(T_BAR); }
+							'|'
+								{ $$ = ASTCREATOR.MakeNode_LateBoundArgument($3); SET_LOCATION($$, @1, @5); }
+						|	TRIPLE_DOT	{ PE(T_TDOT); $$ = ASTCREATOR.MakeNode_TRIPLE_DOT(); SET_LOCATION($$, @1, @1); }
+						;
+
+QuotedElementList:		QuotedExpressionList ',' NonExprQuotedElement	{ $$ = ASTCREATOR.MakeNode_List($1, $3); }
+					|	QuotedElementList ',' NonExprQuotedElement		{ $$ = ASTCREATOR.MakeNode_List($1, $3); }
+					|	QuotedElementList ',' Expression				{ $$ = ASTCREATOR.MakeNode_List($1, $3); }
+					|	NonExprQuotedElement							{ $$ = ASTCREATOR.MakeNode_List(NIL_NODELIST, $1); }
+					;
+
+QuotedElements:		QuotedElementList		{ $$ = $1; }
+				|	QuotedExpressionList	{ $$ = $1; }
+				;
+
+MiscStmt:			Assertion Semi			{ $$ = ASTCREATOR.MakeNode_BasicStmt($1); SET_LOCATION($$, @1, @2); }
+				|	ReturnStmt				{ $$ = ASTCREATOR.MakeNode_BasicStmt($1); SET_LOCATION($$, @1, @1); }
+				|	BasicNonExprStmt		{ $$ = ASTCREATOR.MakeNode_BasicStmt($1); SET_LOCATION($$, @1, @1); }
+				|	SEMI					{ $$ = ASTCREATOR.MakeNode_EmptyStmt();	  SET_LOCATION($$, @1, @1); }
+				|	UsingDirective			{ $$ = $1; }
+				|	MetaStmt				{ $$ = $1; }
+				;
+
+NoContextStmt:		QuotedIndexedList Semi {
+						Node* elist = ASTCREATOR.MakeNode_ExpressionListStmt($1);
+						SET_LOCATION(elist, @1, @1);
+						$$ = ASTCREATOR.MakeNode_BasicStmt(elist);
+						SET_LOCATION($$, @1, @2);
+					}
+				|	Compound	{ $$ = $1; }
+				|	Function	{ $$ = ASTCREATOR.MakeNode_FunctionStmt($1); SET_LOCATION($$, @1, @1); }
+				|	MiscStmt	{ $$ = $1; }
+				;
+
+NonEmptyStmts:		NonEmptyStmts NoContextStmt
+						{ $$ = ASTCREATOR.MakeNode_Stmts($1, $2); SET_LOCATION($$, @1, @2); }
+				|	NoContextStmt
+						{ $$ = ASTCREATOR.MakeNode_Stmts(NIL_NODE, $1); SET_LOCATION($$, @1, @1); }
+				;
+
+QuotedStmt:			NonFunctionQuotedStmt	{ $$ = $1; }
+				|	Function				{ $$ = ASTCREATOR.MakeNode_FunctionStmt($1); SET_LOCATION($$, @1, @1); }
+				;
+
+NonFunctionQuotedStmt:		QuotedExpressionList Semi {
+								Node* elist = ASTCREATOR.MakeNode_ExpressionListStmt($1);
+								SET_LOCATION(elist, @1, @1);
+								$$ = ASTCREATOR.MakeNode_BasicStmt(elist);
+								SET_LOCATION($$, @1, @2);
+							}
+						|	'{' NonEmptyStmts { PE(T_RBC); } '}'
+								{ $$ = ASTCREATOR.MakeNode_Compound($2); SET_LOCATION($$, @1, @4); }
+						|	'{' '}' 
+								{ $$ = ASTCREATOR.MakeNode_Compound(); SET_LOCATION($$, @1, @2); }
+						|	MiscStmt
+								{ $$ = $1; }
+						;
+
+QuotedStmts:		QuotedStmts QuotedStmt 	{ $$ = ASTCREATOR.MakeNode_Stmts($1, $2); SET_LOCATION($$, @1, @2); }
+				|	QuotedStmt QuotedStmt	{
+						$$ = ASTCREATOR.MakeNode_Stmts(NIL_NODE, $1);
+						$$ = ASTCREATOR.MakeNode_Stmts($$, $2);
+						SET_LOCATION($$, @1, @2);
+					}
+				;
+
+QuasiQuoted:		QuotedElements			{ $$ = ASTCREATOR.MakeNode_FromList(AST_TAG_QUOTED_ELEMENTS, $1); SET_LOCATION($$, @1, @1); }
+				|	NonFunctionQuotedStmt	{ $$ = ASTCREATOR.MakeNode_Stmts(NIL_NODE, $1); SET_LOCATION($$, @1, @1); }
+				|	QuotedStmts				{ $$ = $1; }
+				;
+
+MetaExpression:		META_LSHIFT QuasiQuoted META_RSHIFT
+						{ $$ = ASTCREATOR.MakeNode_ChildExpr(AST_TAG_QUASI_QUOTES, $2);	SET_LOCATION($$, @1, @3); }
+				;
+
+MetaStmt:			META_EXECUTE Stmt
+						{ $$ = ASTCREATOR.MakeNode_ChildExpr(AST_TAG_EXECUTE, $2); SET_LOCATION($$, @1, @2); }
+				;

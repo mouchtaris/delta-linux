@@ -20,11 +20,11 @@
 //------------------------------------------------------------------
 // BACKPATCHING. LOGICAL OPERATORS.
 
-DeltaExpr* Translate_ExprORExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExpr* e2) {
+DeltaExpr* Translator::Translate_ExprORExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExpr* e2) {
 	
 	NULL_EXPR_PAIR_CHECK(e1, e2);
 
-	if (!TypeCheck_UseAsBoolean(e1) || !TypeCheck_UseAsBoolean(e2))
+	if (!TYPECHECKER.Check_UseAsBoolean(e1) || !TYPECHECKER.Check_UseAsBoolean(e2))
 		return NIL_EXPR;
 
 	DASSERT(DPTR(e1)->type  == DeltaExprLogical || DPTR(e1)->type  == DeltaExprBoolean);
@@ -32,7 +32,7 @@ DeltaExpr* Translate_ExprORExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExp
 	DPTR(e2)->PreEvaluateIfConstBool();
 
 	QUADS.Backpatch(DPTR(e1)->falseList, Mquad);
-	DeltaExpr* result = DNEW(DeltaExpr);
+	DeltaExpr* result = EXPRFACTORY.New();
 
 	if (DPTR(e1)->type == DeltaExprBoolean && DPTR(e2)->type == DeltaExprBoolean)
 		DPTR(result)->SetBoolean(e1->boolConst || e2->boolConst);
@@ -41,7 +41,7 @@ DeltaExpr* Translate_ExprORExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExp
 
 	if (DPTR(e2)->type  != DeltaExprLogical) {
 		DASSERT(!e2->trueList && !e2->falseList);
-		DELTA_EXPR_EMIT_BOOL_TEST(e2, result, true);
+		TRANSLATOR.DELTA_EXPR_EMIT_BOOL_TEST(e2, result, true);
 		result->trueList = QUADS.Merge(e1->trueList, result->trueList);
 	}
 	else {
@@ -55,11 +55,11 @@ DeltaExpr* Translate_ExprORExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExp
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_ExprANDExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExpr* e2) {
+DeltaExpr* Translator::Translate_ExprANDExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaExpr* e2) {
 
 	NULL_EXPR_PAIR_CHECK(e1, e2);
 
-	if (!TypeCheck_UseAsBoolean(e1) || !TypeCheck_UseAsBoolean(e2))
+	if (!TYPECHECKER.Check_UseAsBoolean(e1) || !TYPECHECKER.Check_UseAsBoolean(e2))
 		return NIL_EXPR;
 
 	DASSERT(DPTR(e1)->type  == DeltaExprLogical || DPTR(e1)->type  == DeltaExprBoolean);
@@ -67,7 +67,7 @@ DeltaExpr* Translate_ExprANDExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaEx
 	DPTR(e2)->PreEvaluateIfConstBool();
 
 	QUADS.Backpatch(DPTR(e1)->trueList, Mquad);
-	DeltaExpr* result = DNEW(DeltaExpr);
+	DeltaExpr* result = EXPRFACTORY.New();
 
 	if (DPTR(e1)->type == DeltaExprBoolean && DPTR(e2)->type == DeltaExprBoolean)
 		DPTR(result)->SetBoolean(e1->boolConst && e2->boolConst);
@@ -76,7 +76,7 @@ DeltaExpr* Translate_ExprANDExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaEx
 
 	if (DPTR(e2)->type != DeltaExprLogical) {
 		DASSERT(!e2->trueList && !e2->falseList);
-		DELTA_EXPR_EMIT_BOOL_TEST(e2, result, true);
+		TRANSLATOR.DELTA_EXPR_EMIT_BOOL_TEST(e2, result, true);
 		result->falseList =	QUADS.Merge(e1->falseList, result->falseList);
 	}
 	else {
@@ -90,7 +90,7 @@ DeltaExpr* Translate_ExprANDExpr (DeltaExpr* e1, DeltaQuadAddress Mquad, DeltaEx
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr*	Translate_RelationalExpr (
+DeltaExpr*	Translator::Translate_RelationalExpr (
 		DeltaExpr*		e1, 
 		DeltaExpr*		e2, 
 		DeltaICOpcode	relOp, 
@@ -99,17 +99,17 @@ DeltaExpr*	Translate_RelationalExpr (
 
 	NULL_EXPR_PAIR_CHECK(e1, e2);
 
-	if (!TypeCheck_InRelational(e1, relOp == DeltaIC_JEQ || relOp == DeltaIC_JNE)) {
+	if (!TYPECHECKER.Check_InRelational(e1, relOp == DeltaIC_JEQ || relOp == DeltaIC_JNE)) {
 		DELTACOMP_ERROR_ILLEGAL_OPERAND_IN_RELATIONAL(opStr, "LHS");
 		return NIL_EXPR;
 	}
 	else
-	if (!TypeCheck_InRelational(e2, relOp == DeltaIC_JEQ || relOp == DeltaIC_JNE)) {
+	if (!TYPECHECKER.Check_InRelational(e2, relOp == DeltaIC_JEQ || relOp == DeltaIC_JNE)) {
 		DELTACOMP_ERROR_ILLEGAL_OPERAND_IN_RELATIONAL(opStr, "RHS");
 		return NIL_EXPR;
 	}
 	else
-	if (!TypeCheck_InRelational(e1, e2, relOp)) {
+	if (!TYPECHECKER.Check_InRelational(e1, e2, relOp)) {
 		DELTACOMP_ERROR_INCOMPATIBLE_OPERANDS_IN_RELATIONAL(opStr);
 		return NIL_EXPR;
 	}
@@ -117,7 +117,7 @@ DeltaExpr*	Translate_RelationalExpr (
 	DPTR(e1)->CheckUninitialised();
 	DPTR(e2)->CheckUninitialised();
 
-	DeltaExpr* result	= DNEW(DeltaExpr);
+	DeltaExpr* result	= EXPRFACTORY.New();
 	DPTR(result)->type	= DeltaExprLogical;
 	
 	// If the expressions are invariant compile-time values, then the
@@ -248,16 +248,16 @@ DeltaExpr*	Translate_RelationalExpr (
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_NOTExpression (DeltaExpr* expr) {
+DeltaExpr* Translator::Translate_NOTExpression (DeltaExpr* expr) {
 
 	NULL_EXPR_CHECK(expr);
 
-	if (!TypeCheck_UseAsBoolean(expr))
+	if (!TYPECHECKER.Check_UseAsBoolean(expr))
 		return (DeltaExpr*) 0;
 
 	DPTR(expr)->CheckUninitialised();
 
-	DeltaExpr* result	= DNEW(DeltaExpr);
+	DeltaExpr* result	= EXPRFACTORY.New();
 	DPTR(result)->type	= DeltaExprLogical;
 
 	if (DPTR(expr)->IsComputableBoolean()) {
@@ -267,7 +267,7 @@ DeltaExpr* Translate_NOTExpression (DeltaExpr* expr) {
 	else {
 		if (DPTR(expr)->type != DeltaExprLogical) {
 			result->sym = expr->IsTemp() ? expr->sym : DELTASYMBOLS.NewTemp();
-			DELTA_EXPR_EMIT_BOOL_TEST(expr, result, false);
+			TRANSLATOR.DELTA_EXPR_EMIT_BOOL_TEST(expr, result, false);
 		}
 		else {
 			result->trueList  = expr->falseList;

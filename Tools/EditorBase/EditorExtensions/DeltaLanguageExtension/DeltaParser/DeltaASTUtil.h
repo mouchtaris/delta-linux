@@ -69,11 +69,24 @@ T* CreateBinaryNode(
 		YYLTYPE&					start,
 		YYLTYPE&					end,
 		typename T::LeftValueType*	v1,
-		typename T::RightValueType* v2
+		typename T::RightValueType*	v2
 	)
 {
 	T* result = new T(Range(start.first_column, end.last_column), v1, v2);
 	return result;
+}
+
+//**********************************************************************
+
+template<class T>
+T* CreateList(YYLTYPE& start, YYLTYPE& end,	T* l, typename T::ValueType* value)
+{
+	if (l)
+		l->GetRange().right = end.last_column;
+	else
+		l = CreateNode<T>(start, end);
+	l->AppendChild(value);
+	return l;
 }
 
 ////////////////////////////////////////////////////////////////////////

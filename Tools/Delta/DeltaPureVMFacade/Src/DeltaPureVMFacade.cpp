@@ -28,7 +28,9 @@
 typedef DeltaPureVMFacade::CleanUpCallback CleanUpCallback;
 typedef std::list< ucallbackwithclosure<CleanUpCallback> > CleanUpCallbackList;
 
-static bool 				isInitialised		= false;
+static util_ui32			initCounter			= 0;
+static bool					initialising		= false;
+static bool					cleaningup			= false;
 static bool 				cppAsserting		= false;
 static CleanUpCallbackList*	cleanupCallbacks	= (CleanUpCallbackList*) 0;
 
@@ -161,26 +163,30 @@ static void ErrorDefenseCallback (const char* msg) {
 
 void DeltaPureVMFacade::Initialise (bool errorInvalidatesAll) {
 
-	DASSERT(!IsInitialised());
+	if (initialising)
+		return;
+	
+	initialising = true;
+	if (!initCounter++) {
+		dinit(ErrorDefenseCallback);
+		dsetassertfunc(CPPAssertCallback);
 
-	dinit(ErrorDefenseCallback);
-	dsetassertfunc(CPPAssertCallback);
+		UtilPackage::Initialise();
+		VirtualMachinePackage::Initialise();
+		ResourceLoader::SingletonCreate();
+		Install_StdLib();
 
-	UtilPackage::Initialise();
-	VirtualMachinePackage::Initialise();
-	ResourceLoader::SingletonCreate();
-	Install_StdLib();
+		DeltaVirtualMachine::SetAnyErrorInvalidatesAll(errorInvalidatesAll);
+		DeltaAssertExtensions::SetAbortCallback(DeltaAbortCallback);
+		DeltaAssertExtensions::SetAssertInterfaceCallback(DeltaAssertInterfaceCallback);
 
-	DeltaVirtualMachine::SetAnyErrorInvalidatesAll(errorInvalidatesAll);
-	DeltaAssertExtensions::SetAbortCallback(DeltaAbortCallback);
-	DeltaAssertExtensions::SetAssertInterfaceCallback(DeltaAssertInterfaceCallback);
-
-	isInitialised = true;
-	unew(cleanupCallbacks);
+		unew(cleanupCallbacks);
+	}
+	initialising = false;
 }
 
 bool DeltaPureVMFacade::IsInitialised (void) 
-	{ return isInitialised; }
+	{ return initCounter; }
 
 void DeltaPureVMFacade::SetByteCodeLoadingPath(const std::string& path, bool prioritised) 
 	{ DASSERT(IsInitialised()); SetByteCodeLoadingPath_StdLib(path, prioritised); }
@@ -197,23 +203,28 @@ void DeltaPureVMFacade::WriteProfileReport (const std::string& path)
 
 void DeltaPureVMFacade::CleanUp (void) {
 
-	DASSERT(isInitialised);
+	if (cleaningup)
+		return;
 
-	if (DeltaDebugDynamicActivator::GetSingleton().HasLoaded())
-		DeltaDebugDynamicActivator::GetSingleton().Unload();
+	cleaningup = true;
+	DASSERT(IsInitialised());
+	if (!--initCounter) {
 
-	InvokeCleanUpCallbacks();
-	udelete(cleanupCallbacks);
+		if (DeltaDebugDynamicActivator::GetSingleton().HasLoaded())
+			DeltaDebugDynamicActivator::GetSingleton().Unload();
 
-	isInitialised = false;
+		InvokeCleanUpCallbacks();
+		udelete(cleanupCallbacks);
 
-	CleanUp_StdLib();
-	VirtualMachinePackage::CleanUp();
+		CleanUp_StdLib();
+		VirtualMachinePackage::CleanUp();
 
-	UtilPackage::CleanUp();
-	ResourceLoader::SingletonDestroy();
-	
-	dclose();
+		UtilPackage::CleanUp();
+		ResourceLoader::SingletonDestroy();
+		
+		dclose();
+	}
+	cleaningup = false;
 }
 
 ////////////////////////////////////////////////////////////////////

@@ -20,11 +20,12 @@
 #include "SelectiveStepInPreparator.h"
 #include "FunctionValueReturnChecker.h"
 #include "DeltaCompErrorDefs.h"
-#include "ParseParms.h"
+#include "CompileOptions.h"
+#include "Optimizer.h"
 #include "CompilerAPI.h"
 #include "Optimizer.h"
 
-#define	RETVAL_EXPR					DPTR(DeltaExpr::GetReturnValue())
+#define	RETVAL_EXPR					DPTR(EXPRFACTORY.GetReturnValue())
 #define	DELTA_ISUNDEFINED_LIBFUNC	"std::isundefined"
 
 //------------------------------------------------------------------
@@ -35,10 +36,10 @@
 // as formal arguments, they will put as |en|en-1|...|e2|e1|<-TOS in the
 // stack, being the correct placement.
 //
-DeltaExpr* Translate_ExpressionListItem (DeltaExpr* expr)
+DeltaExpr* Translator::Translate_ExpressionListItem (DeltaExpr* expr)
 	{ return DNPTR(expr)->AdaptIfBool(); }
 
-DeltaExpr* Translate_ExpressionList (DeltaExpr* elist, DeltaExpr* expr) {
+DeltaExpr* Translator::Translate_ExpressionList (DeltaExpr* elist, DeltaExpr* expr) {
 	if (!expr)
 		return elist;
 	else {
@@ -68,11 +69,11 @@ static void AddArgumentInSignature (CallSig& sig, DeltaExpr* arg) {
 
 //******************************
 
-DeltaExpr* Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs) {
+DeltaExpr* Translator::Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs, DeltaSymbol* explicitTemp) {
 
 	NULL_EXPR_CHECK(func);
 
-	if (!TypeCheck_FunctionCall(func))
+	if (!TYPECHECKER.Check_FunctionCall(func))
 		return NIL_EXPR;
 
 	if (func->type == DeltaExprString) {
@@ -85,23 +86,24 @@ DeltaExpr* Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs) {
 	else
 	if (DPTR(func)->GetType() == DeltaExprTableElement && DPTR(func)->IsAttribute())
 		func = DPTR(func)->AdaptIfTableContent();
-		
-	// Take a temporary symbol from actualArgs if
+	
+	// Use the explicit temp given, or take a temporary symbol from actualArgs if
 	// available. This is necessary for the result expression.
 	//
-	DeltaSymbol* tmp = NIL_SYMBOL;
-	if (DPTR(func)->IsTemp())					// Reuse function temp symbol.
-		tmp = func->sym;
-	else
-	for (DeltaExpr* p = actualArgs; p; p = p->next)
-		if (DPTR(p)->IsTemp()) {				// Find one of the actual arguments' temp.
-			tmp = p->sym;
-			break;
-		}
+	DeltaSymbol* tmp = explicitTemp;
+	if (!tmp)
+		if (DPTR(func)->IsTemp())					// Reuse function temp symbol.
+			tmp = func->sym;
+		else
+		for (DeltaExpr* p = actualArgs; p; p = p->next)
+			if (DPTR(p)->IsTemp()) {			// Find one of the actual arguments' temp.
+				tmp = p->sym;
+				break;
+			}
 	if (!tmp)
 		tmp = DELTASYMBOLS.NewTemp();
 
-	DeltaExpr* resultExpr	= DNEW(DeltaExpr);
+	DeltaExpr* resultExpr	= EXPRFACTORY.New();
 	resultExpr->type		= DeltaExprCall;
 	resultExpr->userData	= func;	// Store callee for future reference.
 	DPTR(resultExpr)->sym	= DPTR(tmp);
@@ -111,7 +113,7 @@ DeltaExpr* Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs) {
 		++extraArgs;							// Reserved 'self' formal.
 	util_ui32 totalArgs = 0;
 
-	SelectiveStepInPreparator::OnCallDone(		// Selective step-in activities.
+	SELECTIVESTEPIN.OnCallDone(		// Selective step-in activities.
 		DPTR(func)->GetUnparsed(),
 		Unparse_ExprList(actualArgs),
 		QUADS.NextQuadNo()
@@ -163,7 +165,7 @@ DeltaExpr* Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs) {
 		else {
 			hasLateBoundsArgs = true;
 
-			if (!TypeCheck_LateBoundArg(actualArgs))
+			if (!TYPECHECKER.Check_LateBoundArg(actualArgs))
 				return NIL_EXPR;
 
 			if (checkUndefined) 
@@ -190,14 +192,14 @@ DeltaExpr* Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs) {
 					totalArgs
 				);
 			if (DPTR(funcSym)->GetTotalFormals() > (totalArgs + extraArgs))	// Less actuals than formals.
-				TypeCheck_ProgramFunctionExactMissingArguments(funcSym, totalArgs + extraArgs);
+				TYPECHECKER.Check_ProgramFunctionExactMissingArguments(funcSym, totalArgs + extraArgs);
 		}
 		else
 		if (DPTR(func)->type == DeltaExprLibraryFunction && funcSym)	// Known library function
-			TypeCheck_NumberOfLibraryFunctionActualArguments(funcSym, totalArgs);
+			TYPECHECKER.Check_NumberOfLibraryFunctionActualArguments(funcSym, totalArgs);
 	}
 
-	TypeCheck_LibFunctionArguments(funcSym, sig);	
+	TYPECHECKER.Check_LibFunctionArguments(funcSym, sig);	
 	
 	if (func->GetType() == DeltaExprTableElement) 
 		QUADS.Emit(
@@ -214,9 +216,9 @@ DeltaExpr* Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs) {
 			func
 		);
 
-		if ((funcSym && funcSym == ParseParms::CurrFunction()) || func->GetType() == DeltaExprLambda)
+		if ((funcSym && funcSym == PARSEPARMS.CurrFunction()) || func->GetType() == DeltaExprLambda)
 			QUADS.GetQuad(QUADS.CurrQuadNo()).SetUserData(
-				ParseParms::CurrFunction()->IsMethod() ? 
+				PARSEPARMS.CurrFunction()->IsMethod() ? 
 					(void*) DELTA_RECURSIVE_METHODFUNC_USERDATA : 
 					(void*) DELTA_RECURSIVE_PROGRAMFUNC_USERDATA
 			);
@@ -230,42 +232,49 @@ DeltaExpr* Translate_FunctionCall (DeltaExpr* func, DeltaExpr* actualArgs) {
 
 ///////////////////////////////////////////////////////////////////
 
-void Translate_IdentList (const char* id) {
-	DASSERT(ParseParms::InFormalArgs());
+void Translator::Translate_IdentList (const char* id) {
+	DASSERT(PARSEPARMS.InFormalArgs());
 	DELTASYMBOLS.NewSymbol(id);
 }
 
-void Translate_VarArgs (void) 
-	{ DPTR(ParseParms::CurrFunction())->SetHasVarArgs(); }
+void Translator::Translate_VarArgs (void) 
+	{ DPTR(PARSEPARMS.CurrFunction())->SetHasVarArgs(); }
 
 ///////////////////////////////////////////////////////////////////
 
-static void Translate_HandleCreateFunctionVar (DeltaSymbol* func) {
+void Translator::Translate_HandleCreateFunctionVar (DeltaSymbol* func) {
 
 	DASSERT(!DPTR(func)->GetFunctionAccess());
 
 	if (!DPTR(func)->IsAnonymousFunction()) {
-		DPTR(func)->funcAccess = DNEWCLASS(DeltaSymbol::FuncAccess, (func));
-		DPTR(func)->funcAccess->CreateFunctionVar();
+		DASSERT(PARSEPARMS.CurrScope().value() == DPTR(func)->GetScope());	// We should be at the same scope as the function.
+		const std::string name = uconstructstr(
+			"%s%s%s",
+			DELTA_HIDDEN_SYMBOL_ID_PREFIX,
+			DELTA_HIDDEN_SYMBOL_ID_PREFIX,
+			func->GetName().c_str()
+		);
+		DeltaSymbol* symbol = DELTASYMBOLS.NewSymbol(name, true);
+		DPTR(func)->funcAccess = DNEWCLASS(DeltaSymbol::FuncAccess, (func, symbol));
 	}
 }
 
 //****************************
 
-static void Translate_HandleAssignFunctionVar (DeltaSymbol* func) {
+void Translator::Translate_HandleAssignFunctionVar (DeltaSymbol* func) {
 
 	if (!DPTR(func)->IsAnonymousFunction()) {
 	
 		DPTR(func)->funcAccess = DNULLCHECK(DPTR(func)->GetFunctionAccess());
-		DeltaExpr* funcExpr		= DNEW(DeltaExpr);
+		DeltaExpr* funcExpr		= EXPRFACTORY.New();
 		DPTR(funcExpr)->sym		= DPTR(func);
 		DPTR(funcExpr)->type	= DeltaExprProgramFunction;
 
-		DeltaExpr* funcVarExpr	= DNEW(DeltaExpr);
+		DeltaExpr* funcVarExpr	= EXPRFACTORY.New();
 		DPTR(funcVarExpr)->sym	= DPTR(DPTR(func)->funcAccess)->GetFunctionVar();
 		DPTR(funcVarExpr)->SetInitialised();
 
-		if (!DeltaCompiler::GetProductionMode())						// Except when we are in debug mode.
+		if (!COMPOPTIONS.GetProductionMode())							// Except when we are in debug mode.
 			OPTIMIZER.ExcludeFromTempElimination(QUADS.CurrQuadNo());	// To ensure optimization will not strip it off.
 		else
 			QUADS.GetQuad(QUADS.CurrQuadNo()).MarkAsDropped();			// Else we drop it directly
@@ -280,7 +289,7 @@ static void Translate_HandleAssignFunctionVar (DeltaSymbol* func) {
 // If the function name begins with an underscore, it means it
 // is a temporary function name, for un-named defined functions.
 //
-DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 linkage) {
+DeltaSymbol* Translator::Translate_Function (const char* id, util_ui8 funcClass, util_ui8 linkage) {
 
 	DASSERT(
 		funcClass == DELTA_FUNCCLASS_METHOD		||
@@ -293,9 +302,9 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 	);
 
 	if (funcClass == DELTA_FUNCCLASS_METHOD) {
-		if (!ParseParms::InTableExpr().inside()) {
+		if (!PARSEPARMS.InTableExpr().inside()) {
 
-			if (id && ParseParms::IsOperator(id)) {
+			if (id && PARSEPARMS.IsOperator(id)) {
 				DELTACOMP_ERROR_OPERATOR_MUST_INSIDE_OBJECT_CONSTRUCTOR(id);
 				return NIL_SYMBOL;
 			}
@@ -305,7 +314,7 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 
 			DeltaExpr* methodVar;
 			if (id) {
-				methodVar = ParseParms::CurrScope().value() == DELTA_GLOBAL_SCOPE ? 
+				methodVar = PARSEPARMS.CurrScope().value() == DELTA_GLOBAL_SCOPE ? 
 							Translate_Lvalue(id) : Translate_Lvalue(id, DELTA_LOCAL_SCOPEOFFSET);
 
 				if (!methodVar)
@@ -319,7 +328,7 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 				unullify(id);
 			}
 			else
-				methodVar = DeltaExpr::MakeTempVar();
+				methodVar = EXPRFACTORY.MakeTempVar();
 		
 			DPTR(methodVar)->SetInitialised();
 
@@ -331,7 +340,7 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 		}
 	}
 	else 
-	if (id && ParseParms::IsOperator(id)) {
+	if (id && PARSEPARMS.IsOperator(id)) {
 		DELTACOMP_ERROR_OPERATOR_MUST_BE_METHOD(id);
 		return NIL_SYMBOL;
 	}
@@ -345,7 +354,7 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 	DeltaSymbol* sym = DELTASYMBOLS.NewSymbol(funcName, false);
 	DPTR(sym)->isUserDefinedFunc	= true;
 	DPTR(sym)->funcClass			= funcClass;
-	DPTR(sym)->serial				= ParseParms::CurrFuncSerial();
+	DPTR(sym)->serial				= PARSEPARMS.CurrFuncSerial();
 	DPTR(sym)->funcSig				= DNEWCLASS(
 										DeltaSymbol::FuncSig,
 										(
@@ -358,7 +367,7 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 
 	Translate_HandleCreateFunctionVar(sym);
 
-	if (linkage == DELTA_FUNCTION_NO_EXPORT && (funcClass == DELTA_FUNCCLASS_METHOD || !id || !ParseParms::InGlobalScope()))
+	if (linkage == DELTA_FUNCTION_NO_EXPORT && (funcClass == DELTA_FUNCCLASS_METHOD || !id || !PARSEPARMS.InGlobalScope()))
 		DELTACOMP_WARNING_REDUNDANT_LOCAL_IN_NON_EXPORTABLE_FUNCTION(sym);
 
 	DPTR(sym)->IncludeReturnType(DeltaLibraryTypeInfo(TagVoid));
@@ -370,11 +379,11 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 			DPTR(sym)->methodName = id;
 	}
 
-	ParseParms::IncFuncSerial();
-	ParseParms::PushFunction(sym);
-	ParseParms::CurrScope().enter();
-	ParseParms::SetInFormalArgs(true);
-	SelectiveStepInPreparator::OnFunctionEnter();
+	PARSEPARMS.IncFuncSerial();
+	PARSEPARMS.PushFunction(sym);
+	PARSEPARMS.CurrScope().enter();
+	PARSEPARMS.SetInFormalArgs(true);
+	SELECTIVESTEPIN.OnFunctionEnter();
 
 	// For member functions, the first formal agrument is the 
 	// SELF pointer.
@@ -385,7 +394,7 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 	// the 'arguments' table.
 	DELTASYMBOLS.NewSymbol(DELTA_ARGUMENTS_POINTER_ID, true);
 
-	DeltaExpr* expr		= DNEW(DeltaExpr);						// Making an expression for the function.
+	DeltaExpr* expr		= EXPRFACTORY.New();						// Making an expression for the function.
 	DPTR(expr)->type	= DeltaExprProgramFunction;
 	expr->sym			= sym;
 
@@ -397,37 +406,35 @@ DeltaSymbol* Translate_Function (const char* id, util_ui8 funcClass, util_ui8 li
 
 ///////////////////////////////////////////////////////////////////
 
-void Translate_FunctionHeader (DeltaSymbol* func) {
+void Translator::Translate_FunctionHeader (DeltaSymbol* func) {
 	if (func) {
-		ParseParms::SetInFormalArgs(false);
-		ParseParms::CurrScope().exit();
-		LocalDataHandler::OnFunctionBegin();
+		PARSEPARMS.SetInFormalArgs(false);
+		PARSEPARMS.CurrScope().exit();
+		LOCALDATA.OnFunctionBegin();
 	}
 }
 
 ///////////////////////////////////////////////////////////////////
 
-static DeltaQuadAddress Translate_FunctionEnd (DeltaSymbol* func, util_ui32 startQuad);
-
-DeltaSymbol* Translate_Function (DeltaSymbol* func, Stmt* block, util_ui32 skipFunctionQuad) {
+DeltaSymbol* Translator::Translate_Function (DeltaSymbol* func, Stmt* block, util_ui32 skipFunctionQuad, util_ui32 orphanMethodLine) {
 
 	if (!func)
 		return NIL_SYMBOL;
 
 	// For orphan method we have extra preceeding quads.
-	if (DPTR(func)->IsMethod() && DPTR(ParseParms::GetCurrConstructedTable())->IsAutoTableConstruction()) {
+	if (DPTR(func)->IsMethod() && DPTR(PARSEPARMS.GetCurrConstructedTable())->IsAutoTableConstruction()) {
 		skipFunctionQuad += DELTA_ORPHAN_METHOD_FUNCENTER_OFFSET;
 		DASSERT(QUADS.GetQuad(skipFunctionQuad).opcode == DeltaIC_JUMP);
 		DASSERT(QUADS.GetQuad(skipFunctionQuad + 1).opcode == DeltaIC_FUNCENTER);
 	}
 
-	LocalDataHandler::OnFunctionEnd();
-	DASSERT(ParseParms::CurrFunction() == func);
+	LOCALDATA.OnFunctionEnd();
+	DASSERT(PARSEPARMS.CurrFunction() == func);
 
-	DeltaQuadAddress skipJumpPos = Translate_FunctionEnd(ParseParms::CurrFunction(), skipFunctionQuad + 1);
+	DeltaQuadAddress skipJumpPos = Translate_FunctionEnd(PARSEPARMS.CurrFunction(), skipFunctionQuad + 1);
 
-	ParseParms::PopFunction();
-	SelectiveStepInPreparator::OnFunctionExit();
+	PARSEPARMS.PopFunction();
+	SELECTIVESTEPIN.OnFunctionExit();
 	QUADS.Patch(skipFunctionQuad, skipJumpPos);	// Patch the function skip jump.
 
 	DELTASYMBOLS.PopAndRestoreTempCounter();
@@ -436,13 +443,13 @@ DeltaSymbol* Translate_Function (DeltaSymbol* func, Stmt* block, util_ui32 skipF
 
 	if (DPTR(func)->IsMethod()) {
 
-		DeltaExpr* table = ParseParms::GetCurrConstructedTable();
+		DeltaExpr* table = PARSEPARMS.GetCurrConstructedTable();
 		DASSERT(table);
 
 		if (DPTR(table)->IsAutoTableConstruction()) {		
 
 			// Make a normal function expression to be added in the table.
-			DeltaExpr* methodExpr	= DNEW(DeltaExpr);
+			DeltaExpr* methodExpr	= EXPRFACTORY.New();
 			DPTR(methodExpr)->type	= DeltaExprProgramFunction;
 			DPTR(methodExpr)->sym	= DPTR(func);
 
@@ -450,12 +457,12 @@ DeltaSymbol* Translate_Function (DeltaSymbol* func, Stmt* block, util_ui32 skipF
 
 			// Add it as an auto indexed element in the auto table and
 			// finish the auto table construction.
-			Translate_UnindexedValue(methodExpr, skipFunctionQuad, ParseParms::CurrLine());
+			Translate_UnindexedValue(methodExpr, skipFunctionQuad, orphanMethodLine);
 			Translate_TableConstructor(table);
 
 			// Assign its first element [0] to the method var (if any, else temp var).
 			DeltaExpr* methodVar = DPTR(table)->methodVar;
-			table = Translate_TableContent(table, DeltaExpr::Make(0));	// Makes a table item
+			table = Translate_TableContent(table, EXPRFACTORY.Make(0));	// Makes a table item
 			Translate_AssignExpr(methodVar, DPTR(table)->AdaptIfTableContent());
 
 			DPTR(methodVar)->SetTypeTag(TagMethod);
@@ -472,7 +479,7 @@ DeltaSymbol* Translate_Function (DeltaSymbol* func, Stmt* block, util_ui32 skipF
 
 ///////////////////////////////////////////////////////////////////
 
-static void Translate_HandleAllInnerUses (DeltaSymbol* func) {
+void Translator::Translate_HandleAllInnerUses (DeltaSymbol* func) {
 
 	DeltaSymbol::FuncAccess* funcAccess = DPTR(func)->GetFunctionAccess();
 	if (DPTR(func)->IsAnonymousFunction())
@@ -529,11 +536,11 @@ static void Translate_HandleAllInnerUses (DeltaSymbol* func) {
 
 ///////////////////////////////////////////////////////////////////
 
-static DeltaQuadAddress Translate_FunctionEnd (DeltaSymbol* func, util_ui32 startQuad) {
+DeltaQuadAddress Translator::Translate_FunctionEnd (DeltaSymbol* func, util_ui32 startQuad) {
 
 	DASSERT(func);
 
-	DeltaExpr* expr		= DNEW(DeltaExpr);
+	DeltaExpr* expr		= EXPRFACTORY.New();
 	DPTR(expr)->type	= DeltaExprProgramFunction;
 	expr->sym			= DPTR(func);
 
@@ -582,7 +589,7 @@ static DeltaQuadAddress Translate_FunctionEnd (DeltaSymbol* func, util_ui32 star
 // real address will be taken. For orphan methods we return
 // the method var directly.
 //
-DeltaExpr* Translate_FunctionParenthesisForm (DeltaSymbol* func) {
+DeltaExpr* Translator::Translate_FunctionParenthesisForm (DeltaSymbol* func) {
 
 	if (!func)
 		return NIL_EXPR;
@@ -590,7 +597,7 @@ DeltaExpr* Translate_FunctionParenthesisForm (DeltaSymbol* func) {
 	if (DPTR(func)->IsOrphanMethod())
 		return DPTR(func)->GetMethodVar();
 	else {
-		DeltaExpr* expr		= DNEW(DeltaExpr);
+		DeltaExpr* expr		= EXPRFACTORY.New();
 		DPTR(expr)->type	= DeltaExprProgramFunction;
 		expr->sym			= DPTR(func);
 
@@ -601,7 +608,7 @@ DeltaExpr* Translate_FunctionParenthesisForm (DeltaSymbol* func) {
 ///////////////////////////////////////////////////////////////////
 // When allowing direct use of a function as an expression.
 //
-DeltaExpr* Translate_FunctionExpresssion (DeltaSymbol* func) {
+DeltaExpr* Translator::Translate_FunctionExpresssion (DeltaSymbol* func) {
 	DeltaExpr* result = Translate_FunctionParenthesisForm(func);
 	Unparse_FunctionDef(result, func);
 	return result;
@@ -609,9 +616,9 @@ DeltaExpr* Translate_FunctionExpresssion (DeltaSymbol* func) {
 
 ///////////////////////////////////////////////////////////////////
 
-Stmt* Translate_RETURN (DeltaExpr* expr) {
+Stmt* Translator::Translate_RETURN (DeltaExpr* expr) {
 	
-	if (!ParseParms::InFunction()) {
+	if (!PARSEPARMS.InFunction()) {
 		DELTACOMP_ERROR_RETURN_OUTSIDE_FUNCTION();
 		return NIL_STMT;
 	}
@@ -620,12 +627,12 @@ Stmt* Translate_RETURN (DeltaExpr* expr) {
 		DeltaExpr* retVal = DPTR(expr)->AdaptIfBool();
 		DPTR(retVal)->CheckUninitialised();
 		QUADS.Emit(DeltaIC_RETURNVAL, NIL_EXPR, NIL_EXPR, retVal);
-		DPTR(ParseParms::CurrFunction())->IncludeReturnType(DPTR(retVal)->GetTypeInfo());
+		DPTR(PARSEPARMS.CurrFunction())->IncludeReturnType(DPTR(retVal)->GetTypeInfo());
 	}
 	else
 		QUADS.Emit(DeltaIC_RETURN, NIL_EXPR, NIL_EXPR, NIL_EXPR);
 
-	return DNEW(Stmt);
+	return NEW_STMT;
 }
 
 //------------------------------------------------------------------

@@ -24,17 +24,21 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 #include "DDebug.h"
 #include "Symbol.h"
 #include "Expr.h"
 #include "ParseActions.h"
+#include "ParseTableConstruction.h"
 #include "Unparsable.h"
-#include "ParseParms.h"
 #include "DescriptiveParseErrorHandler.h"
 #include "LibraryNamespace.h"
-#include "CompilerAPI.h"
+#include "CompilerStringHolder.h"
+#include "ParsingContext.h"
+
+#include "DeltaParser.h"
 
 // Bison assumes alloca is the memory allocation
 // function.
@@ -43,25 +47,37 @@
 #define alloca malloc
 #endif
 
-// We want the yylval to be passed as a parameter to yylex,
-// not being a global variable. This is why we define YYPURE
-// or else define YYLEX_PARAM.
-//
-#ifdef	YYPURE
-#define	YYLEX_PARAM		&yylval
-#else
-#define	YYPURE
-#endif
+#define YYINCLUDED_STDLIB_H
 
-#define	yyparse		DeltaCompiler_yyparse
-#define yylex		DeltaCompiler_yylex
-#define	yydebug		DeltaCompiler_yydebug
-#define	yyerror		DeltaCompiler_yyerror
+extern int DeltaCompiler_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx);
 
-extern int			DeltaCompiler_yylex (void* yylval);
+///////////////////////////////////////////////////////////
 
-static void DeltaCompiler_yyerror (const char* s) 
-	{ DescriptiveParseErrorHandler::HandleSyntaxError(); }
+#undef DESCRIPTIVE_ERROR_HANDLER
+#define DESCRIPTIVE_ERROR_HANDLER	DESCRIPTIVE_ERROR_HANDLER_EX(&ctx)
+
+#undef PARSEPARMS
+#define PARSEPARMS					PARSEPARMS_EX(&ctx)
+
+#undef DELTASYMBOLS
+#define DELTASYMBOLS				DELTASYMBOLS_EX(&ctx)
+
+#undef TRANSLATOR
+#define TRANSLATOR					TRANSLATOR_EX(&ctx)
+
+#undef QUADS
+#define QUADS						QUADS_EX(&ctx)
+
+#undef STMTFACTORY
+#define STMTFACTORY					STMTFACTORY_EX(&ctx)
+
+#undef STRINGHOLDER
+#define STRINGHOLDER				STRINGHOLDER_EX(&ctx)
+
+///////////////////////////////////////////////////////////
+
+static void DeltaCompiler_yyerror (YYLTYPE* yylloc, ParsingContext& ctx, const char* unused)
+	{ DESCRIPTIVE_ERROR_HANDLER.HandleSyntaxError(); }
 
 %}
 
@@ -94,7 +110,7 @@ static void DeltaCompiler_yyerror (const char* s)
 %type	<expr>			NewAttribute AttributeSet AttributeGet ExceptionVar ConstAssignExpression
 %type	<stmt>			Stmts Stmt IfStmt Compound  ExceptionStmt ThrowStmt ForStmt WhileStmt ForRepeatList
 %type	<stmt>			ExpressionStmt  ForInitList ForPrefix ForSuffix ReturnStmt
-%type	<stmt>			BasicExprStmt BasicNonExprStmt AssertStmt Assertion BreakStmt ContinueStmt
+%type	<stmt>			BasicExprStmt BasicNonExprStmt AssertStmt Assertion
 %type	<stmt>			ForeachPrefix ForeachStmt LambdaStmt LambdaCode
 %type	<id>			FunctionName  OperatorMethod OpString KwdIdent StringIdent DottedOpString AttributeIdent
 %token	<id>			IDENT ATTRIBUTE_IDENT 
@@ -105,8 +121,8 @@ static void DeltaCompiler_yyerror (const char* s)
 %token	AND NOT OR LAMBDA TRY TRAP THROW USING ASSERT
 %token	TRUE FALSE BREAK CONTINUE STATIC CONST METHOD SELF ARGUMENTS 
 %token	ASSIGN ADD_A SUB_A MUL_A DIV_A MOD_A DOUBLE_LB DOUBLE_RB SEMI UMINUS MINUSMINUS
-%token	LT GT LE GE EQ NE DOT DOUBLE_DOT TRIPLE_DOT DOT_ASSIGN GLOBAL_SCOPE IDENT
-%token	ADD SUB MUL DIV MOD ATTRIBUTE ATTRIBUTE_IDENT STRINGIFY PLUSPLUS  
+%token	LT GT LE GE EQ NE DOT DOUBLE_DOT TRIPLE_DOT DOT_ASSIGN GLOBAL_SCOPE
+%token	ADD SUB MUL DIV MOD ATTRIBUTE STRINGIFY PLUSPLUS  
 %token	'(' ')' '[' ']' '{' '}' '?' ':' ','
 %token	PARENTHESIS SQUARE_BRACKETS CALL CAST DOT_EQUAL DOT_CAST DOT_EQUAL_RHS
 %token	ADD_POSTFIX SUB_POSTFIX MUL_POSTFIX DIV_POSTFIX MOD_POSTFIX
@@ -126,6 +142,16 @@ static void DeltaCompiler_yyerror (const char* s)
 %left		SQUARE_BRACKETS
 %left		PARENTHESIS
 
+%output="DeltaParser.cpp"
+%name-prefix="DeltaCompiler_yy"
+%debug
+%defines
+%verbose
+%pure-parser
+%parse-param {ParsingContext& ctx}
+%lex-param   {YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx}
+%locations
+%expect 2
 %%
 
 /**************************************************************************/
@@ -147,22 +173,22 @@ OptionalStmts:		Stmts
 Stmts:				Stmts Stmt
 						{	UNPARSABLE_GET(Unparse_Stmts($1, $2));
 							DELTASYMBOLS.ResetTemp();
-							$$ = Translate_Stmts($1, $2); 
+							$$ = TRANSLATOR.Translate_Stmts($1, $2); 
 							UNPARSABLE_SET($$);	}
 				|	Stmt
-						{ $$ = Translate_Stmts($1); }
+						{ $$ = TRANSLATOR.Translate_Stmts($1); }
 				;
 
 /**************************************************************************/
 /* FUNCTIONS AND METHODS */
 
 Function:		M FunctionPrefix FormalArgs
-					{	Translate_FunctionHeader($2); 
+					{	TRANSLATOR.Translate_FunctionHeader($2); 
 						DELTASYMBOLS.PushAndResetTempCounter(); SG(S_BLOCK); }
-				Compound
+				Compound LN
 					{	EG(S_BLOCK); EM(S_FUNC_($2)); 
 						UNPARSABLE_GET(Unparse_Function($2, $5));
-						if ($$ = Translate_Function($2, $5, $1))
+						if ($$ = TRANSLATOR.Translate_Function($2, $5, $1, $6))
 							DPTR($$)->SetSourceCode(unparsed);
 					}
 				;
@@ -182,7 +208,7 @@ FuncLinkage:		LOCAL	{ $$ = DELTA_FUNCTION_NO_EXPORT; }
 FunctionPrefix:  FuncClass
 					{ SM(S_FUNC_($1)); PE2(T_FUNC_($1), T_LOCAL_OR_FUNCNAME); }
 				 FuncLinkage FunctionName
-					{ PE(T_LPAR); SG(S_FARGS); $$ = Translate_Function($4, $1, $3); }
+					{ PE(T_LPAR); SG(S_FARGS); $$ = TRANSLATOR.Translate_Function($4, $1, $3); }
 				;
 			 
 FunctionName:	IDENT
@@ -203,9 +229,9 @@ OperatorMethod:		OpString		{ $$ = $1;		}
 IdentList:		IdentList ',' 
 					{ PE2(T_COMMA, T_IDENT); } 
 				IDENT
-					{ Translate_IdentList($4); }
+					{ TRANSLATOR.Translate_IdentList($4); }
 			|	IDENT
-					{ PE(T_IDENT); Translate_IdentList($1); }
+					{ PE(T_IDENT); TRANSLATOR.Translate_IdentList($1); }
 			|	/* no formal arguments */
 			;
 
@@ -215,7 +241,7 @@ FormalArgsSuffix:
 			|	TRIPLE_DOT
 					{ EG(S_FARGS); PE2(T_TDOT, T_RPAR); }
 				')'
-					{  Translate_VarArgs(); }
+					{  TRANSLATOR.Translate_VarArgs(); }
 			;
 									
 FormalArgs:		CALL	
@@ -227,59 +253,59 @@ FormalArgs:		CALL
 			;
 			
 Compound :		'{' 
-					{ Translate_CompoundBegin(); PE(T_LBC); }
+					{ TRANSLATOR.Translate_CompoundBegin(); PE(T_LBC); }
 				Stmts 
 					{ PE(T_RBC); } 
 				'}'
-					{  Unparse_Compound($$ = $3); Translate_CompoundEnd(); }
+					{  Unparse_Compound($$ = $3); TRANSLATOR.Translate_CompoundEnd(); }
 				
 			|	'{' 
 					{ PE(T_LBC); }  
 				'}'
-					{  PE(T_RBC); Unparse_Compound($$ = NEW_STMT); Translate_EmptyCompound(); }
+					{  PE(T_RBC); Unparse_Compound($$ = NEW_STMT); TRANSLATOR.Translate_EmptyCompound(); }
 			;
-			
+
 LambdaFunction:		M LambdaPrefix FormalArgs
-						{	Translate_FunctionHeader($2); 
+						{	TRANSLATOR.Translate_FunctionHeader($2); 
 							DELTASYMBOLS.PushAndResetTempCounter(); 
 							PE(T_LBC); }
 					LambdaCode
 						{	EM(S_FUNC_($2)); 
 							UNPARSABLE_GET(Unparse_LambdaFunction($2, $5));
-							if ($$ = Translate_Function($2, $5, $1))
+							if ($$ = TRANSLATOR.Translate_Function($2, $5, $1, 0))
 								DPTR($$)->SetSourceCode(unparsed);
 							DELTASYMBOLS.PopAndRestoreTempCounter(); }
 					;
 					
 LambdaPrefix:		LAMBDA
 						{	SM(S_FUNC_(DELTA_FUNCCLASS_PROGRAMFUNCTION)); PE2(T_LAMBDA, T_LPAR); SG(S_FARGS); 
-							$$ = Translate_Function((char*) 0, DELTA_FUNCCLASS_PROGRAMFUNCTION); }
+							$$ = TRANSLATOR.Translate_Function((char*) 0, DELTA_FUNCCLASS_PROGRAMFUNCTION); }
 					;
 
 LambdaCode:			'{' 
-						{ Translate_CompoundBegin(); PE(S_EXPR); }
+						{ TRANSLATOR.Translate_CompoundBegin(); PE(S_EXPR); }
 					LN M LambdaStmt '}'
-						{ $$ = $5; Translate_CompoundEnd(); QUADS.SetQuadLine($4, $3, true); }
+						{ $$ = $5; TRANSLATOR.Translate_CompoundEnd(); QUADS.SetQuadLine($4, $3, true); }
 					;
 					
 LambdaStmt:			Expression
-						{ $$ = Translate_RETURN($1); Unparse_LambdaStmt($$, $1); PE(T_RBC); }
+						{ $$ = TRANSLATOR.Translate_RETURN($1); Unparse_LambdaStmt($$, $1); PE(T_RBC); }
 					;
 							
 /**************************************************************************/
 /* STMTS */
 
-LN:		{ $$ = DeltaCompiler::GetLine(); }	;
+LN:		{ $$ = PARSEPARMS.GetLine(); }	;
 M:		{ $$ = QUADS.NextQuadNo(); }		;
 Semi:	{ PE(T_SEMI); }	SEMI				;
 	
 ExpressionStmt:			{ SM(S_STMT); }	
 					ExpressionList Semi 
-						{ $$ =	Translate_ExprListStmt($2); Unparse_ExprListStmt($$, $2); } 
+						{ $$ =	TRANSLATOR.Translate_ExprListStmt($2); Unparse_ExprListStmt($$, $2); } 
 					;
 					
-Stmt:		LN M BasicExprStmt		{ $$ = $3; QUADS.SetQuadLine($2, $1, true);  Translate_BasicStmt($1); } 
-		|	LN M BasicNonExprStmt	{ $$ = $3; QUADS.SetQuadLine($2, $1);  Translate_BasicStmt($1); } 
+Stmt:		LN M BasicExprStmt		{ $$ = $3; QUADS.SetQuadLine($2, $1, true);  TRANSLATOR.Translate_BasicStmt($1); } 
+		|	LN M BasicNonExprStmt	{ $$ = $3; QUADS.SetQuadLine($2, $1);  TRANSLATOR.Translate_BasicStmt($1); } 
 		|	Compound				{ $$ = $1; }
 		|	Function				{ $$ = NEW_STMT; Unparse_FunctionDef($$, $1); }
 		|	SEMI					{ $$ = NEW_STMT; $$->SetUnparsed(";"); }
@@ -294,8 +320,8 @@ BasicNonExprStmt:	WhileStmt			{ $$ = $1;}
 				|	ForStmt				{ $$ = $1;}
 				|	ForeachStmt			{ $$ = $1; }
 				|	IfStmt				{ $$ = $1;}
-				|	BreakStmt			{ EM(S_STMT); $$ = Translate_BREAK(); Unparse_BuiltInStmt($$, BREAK); }
-				|	ContinueStmt		{ EM(S_STMT); $$ = Translate_CONTINUE(); Unparse_BuiltInStmt($$, CONTINUE); }
+				|	BreakStmt			{ EM(S_STMT); $$ = TRANSLATOR.Translate_BREAK(); Unparse_BuiltInStmt($$, BREAK); }
+				|	ContinueStmt		{ EM(S_STMT); $$ = TRANSLATOR.Translate_CONTINUE(); Unparse_BuiltInStmt($$, CONTINUE); }
 				|	ExceptionStmt		{ $$ = $1; }
 				|	ThrowStmt			{ $$ = $1; }
 				;
@@ -304,11 +330,11 @@ BasicNonExprStmt:	WhileStmt			{ $$ = $1;}
 
 Assertion:		ASSERT
 					{	SM(S_ASSRT); SG(S_EXPR); 
-						ParseParms::InAssertStmt().enter(); }
+						PARSEPARMS.InAssertStmt().enter(); }
 				Expression
 					{	EG(S_EXPR); PE(S_EXPR); EM(S_ASSRT); 
-						Translate_ASSERT($3); 
-						ParseParms::InAssertStmt().exit(); 
+						TRANSLATOR.Translate_ASSERT($3); 
+						PARSEPARMS.InAssertStmt().exit(); 
 						Unparse_ExprStmt($$ = NEW_STMT, ASSERT, $3); }
 				;
 				
@@ -325,11 +351,11 @@ ReturnStmt:		ReturnPrefix
 					{ PE2(T_RET, S_EXPR); } 
 				Expression Semi
 					{	EM(S_RET); 
-						$$ = Translate_RETURN($3); 
+						$$ = TRANSLATOR.Translate_RETURN($3); 
 						Unparse_ExprStmt($$, RETURN, $3); }
 			|	ReturnPrefix Semi
 					{	EM(S_RET); 
-						$$ = Translate_RETURN(); 
+						$$ = TRANSLATOR.Translate_RETURN(); 
 						Unparse_BuiltInStmt($$, RETURN); }
 			;
 
@@ -343,13 +369,13 @@ UsingSpecifications:		UsingNamespace
 						;
 				
 UsingNamespace:				NamespacePath IDENT SEMI
-								{ Translate_UsingNamespace($2, true); }
+								{ TRANSLATOR.Translate_UsingNamespace($2, true); }
 						|	IDENT SEMI
-								{ Translate_UsingNamespace($1, false); }
+								{ TRANSLATOR.Translate_UsingNamespace($1, false); }
 						;
 
 UsingByteCodeLibrary:	STRINGIFY IDENT SEMI LN
-							{ Translate_UsingByteCodeLibrary($2, $4); }
+							{ TRANSLATOR.Translate_UsingByteCodeLibrary($2, $4); }
 						;
 
 /**************************************************************************/
@@ -365,148 +391,148 @@ Expression:			AssignExpression		{ $$ = $1; }
 				;
 
 ConstId	:	IDENT
-				{ $$ = Translate_StringWithLateDestruction(ucopystr($1)); }
+				{ $$ = STRINGHOLDER.StringWithLateDestruction(ucopystr($1)); }
 			;
 
 ConstAssignExpression:	CONST	{ SM(S_CONST); PE(T_IDENT); } 
 						ConstId	{ PE(T_ASSIGN); }
 						ASSIGN	{ PE(S_EXPR); } 
 						Expression
-							{ EM(S_CONST); $$ = Translate_ConstAssignExpression($3, $7); }
+							{ EM(S_CONST); $$ = TRANSLATOR.Translate_ConstAssignExpression($3, $7); }
 						;
 
 AssignExpression:		Lvalue ASSIGN	
 							{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_ASSIGN, S_EXPR); }	
 						Expression
 							{	EM(S_ASSIGNEXPR); 
-								$$ = Translate_AssignExpr($1, $4); $1->SetInitialised(); 
+								$$ = TRANSLATOR.Translate_AssignExpr($1, $4); $1->SetInitialised(); 
 								Unparse_BinaryOp($$, $1, ASSIGN, $4);	}
 								
 					|	Lvalue ADD_A	
 							{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_ADDA, S_EXPR); }		
 						Expression
 							{	EM(S_ASSIGNEXPR); 
-								$$ = Translate_AssignArithExpr($1, $4, DeltaIC_ADD, "+="); 
+								$$ = TRANSLATOR.Translate_AssignArithExpr($1, $4, DeltaIC_ADD, "+="); 
 								Unparse_BinaryOp($$, $1, ADD_A, $4);	}
 								
 					|	Lvalue MUL_A	
 							{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_MULA, S_EXPR); }		
 						Expression
 							{	EM(S_ASSIGNEXPR); 
-								$$ = Translate_AssignArithExpr($1, $4, DeltaIC_MUL, "*="); 
+								$$ = TRANSLATOR.Translate_AssignArithExpr($1, $4, DeltaIC_MUL, "*="); 
 								Unparse_BinaryOp($$, $1, MUL_A, $4);	}
 								
 					|	Lvalue SUB_A	
 							{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_SUBA, S_EXPR); }		
 						Expression
 							{	EM(S_ASSIGNEXPR); 
-								$$ = Translate_AssignArithExpr($1, $4, DeltaIC_SUB, "-="); 
+								$$ = TRANSLATOR.Translate_AssignArithExpr($1, $4, DeltaIC_SUB, "-="); 
 								Unparse_BinaryOp($$, $1, SUB_A, $4);	}
 								
 					|	Lvalue DIV_A	
 							{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_DIVA, S_EXPR); }		
 						Expression
 							{	EM(S_ASSIGNEXPR); 
-								$$ = Translate_AssignArithExpr($1, $4, DeltaIC_DIV, "/="); 
+								$$ = TRANSLATOR.Translate_AssignArithExpr($1, $4, DeltaIC_DIV, "/="); 
 								Unparse_BinaryOp($$, $1, DIV_A, $4);	}
 							
 					|	Lvalue MOD_A	
 							{ SM(S_ASSIGNEXPR); PE3(S_LVAL, T_MODA, S_EXPR); }	
 						Expression
 							{	EM(S_ASSIGNEXPR); 
-								$$ = Translate_AssignArithExpr($1, $4, DeltaIC_MOD, "%="); 
+								$$ = TRANSLATOR.Translate_AssignArithExpr($1, $4, DeltaIC_MOD, "%="); 
 								Unparse_BinaryOp($$, $1, MOD_A, $4);	}
 					;
 
 RelationalExpression:		Expression GT 
 								{ SM(S_RELAT); PE3(S_EXPR, T_GT, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_RELAT); $$ = Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JGT, ">"); 
+								{	EM(S_RELAT); $$ = TRANSLATOR.Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JGT, ">"); 
 									Unparse_BinaryOp($$, $1, GT, $4);	}
 								
 						|	Expression LT 
 								{ SM(S_RELAT); PE3(S_EXPR, T_LT, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_RELAT); $$ = Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JLT, "<"); 
+								{	EM(S_RELAT); $$ = TRANSLATOR.Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JLT, "<"); 
 									Unparse_BinaryOp($$, $1, LT, $4);	}
 								
 						|	Expression GE 
 								{ SM(S_RELAT); PE3(S_EXPR, T_GE, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_RELAT); $$ = Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JGE, ">="); 
+								{	EM(S_RELAT); $$ = TRANSLATOR.Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JGE, ">="); 
 									Unparse_BinaryOp($$, $1, GE, $4);	}
 								
 						|	Expression LE 
 								{ SM(S_RELAT); PE3(S_EXPR, T_LE, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_RELAT); $$ = Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JLE, "<="); 
+								{	EM(S_RELAT); $$ = TRANSLATOR.Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JLE, "<="); 
 									Unparse_BinaryOp($$, $1, LE, $4);	}
 								
 						|	Expression EQ 
 								{ SM(S_RELAT); PE3(S_EXPR, T_EQ, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_RELAT); $$ = Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JEQ, "=="); 
+								{	EM(S_RELAT); $$ = TRANSLATOR.Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JEQ, "=="); 
 									Unparse_BinaryOp($$, $1, EQ, $4);	}
 								
 						|	Expression NE 
 								{ SM(S_RELAT); PE3(S_EXPR, T_NE, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_RELAT); $$ = Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JNE, "!="); 
+								{	EM(S_RELAT); $$ = TRANSLATOR.Translate_RelationalExpr($1, $4->AdaptIfBool(), DeltaIC_JNE, "!="); 
 									Unparse_BinaryOp($$, $1, NE, $4);	}
 						;
 
 BooleanExpression:			Expression AND
 								{ SM(S_LOGICAL); PE3(S_EXPR, T_AND, S_EXPR); DNPTR($1)->AdaptToBool(); }
 							M Expression
-								{	EM(S_LOGICAL); $$ = Translate_ExprANDExpr($1, $4, $5); 
+								{	EM(S_LOGICAL); $$ = TRANSLATOR.Translate_ExprANDExpr($1, $4, $5); 
 									Unparse_BinaryOp($$, $1, AND, $5);	}
 								
 						|	Expression OR
 								{ SM(S_LOGICAL); PE3(S_EXPR, T_OR, S_EXPR); DNPTR($1)->AdaptToBool(); }
 							M Expression
-								{	EM(S_LOGICAL); $$ = Translate_ExprORExpr($1, $4, $5); 
+								{	EM(S_LOGICAL); $$ = TRANSLATOR.Translate_ExprORExpr($1, $4, $5); 
 									Unparse_BinaryOp($$, $1, OR, $5);	}
 						;
 							
 ArithmeticExpression:		Expression ADD 
 								{ SM(S_ARITH); PE3(S_EXPR, T_ADD, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_ARITH); $$ = Translate_ArithmeticExpression($1, DeltaIC_ADD, $4->AdaptIfBool(), "+"); 
+								{	EM(S_ARITH); $$ = TRANSLATOR.Translate_ArithmeticExpression($1, DeltaIC_ADD, $4->AdaptIfBool(), "+"); 
 									Unparse_BinaryOp($$, $1, ADD, $4);	}
 								
 						|	Expression SUB 
 								{ SM(S_ARITH); PE3(S_EXPR, T_SUB, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_ARITH); $$ = Translate_ArithmeticExpression($1, DeltaIC_SUB, $4->AdaptIfBool(), "-"); 
+								{	EM(S_ARITH); $$ = TRANSLATOR.Translate_ArithmeticExpression($1, DeltaIC_SUB, $4->AdaptIfBool(), "-"); 
 									Unparse_BinaryOp($$, $1, SUB, $4);	}
 								
 						|	Expression DIV 
 								{ SM(S_ARITH); PE3(S_EXPR, T_DIV, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_ARITH); $$ = Translate_ArithmeticExpression($1, DeltaIC_DIV, $4->AdaptIfBool(), "/"); 
+								{	EM(S_ARITH); $$ = TRANSLATOR.Translate_ArithmeticExpression($1, DeltaIC_DIV, $4->AdaptIfBool(), "/"); 
 									Unparse_BinaryOp($$, $1, DIV, $4);	}
 								
 						|	Expression MUL 
 								{ SM(S_ARITH); PE3(S_EXPR, T_MUL, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_ARITH); $$ = Translate_ArithmeticExpression($1, DeltaIC_MUL, $4->AdaptIfBool(), "*"); 
+								{	EM(S_ARITH); $$ = TRANSLATOR.Translate_ArithmeticExpression($1, DeltaIC_MUL, $4->AdaptIfBool(), "*"); 
 									Unparse_BinaryOp($$, $1, MUL, $4);	}
 								
 						|	Expression MOD 
 								{ SM(S_ARITH); PE3(S_EXPR, T_MOD, S_EXPR); $1->SelfAdaptIfBool(); } 
 							Expression
-								{	EM(S_ARITH); $$ = Translate_ArithmeticExpression($1, DeltaIC_MOD, $4->AdaptIfBool(), "%"); 
+								{	EM(S_ARITH); $$ = TRANSLATOR.Translate_ArithmeticExpression($1, DeltaIC_MOD, $4->AdaptIfBool(), "%"); 
 									Unparse_BinaryOp($$, $1, MOD, $4);	}
 						;
 
 TernaryExpression:	'(' TernaryCondition M TernarySelection1 ':' N M TernarySelection2 ')' %prec ASSIGN
-						{	EM(S_TERNARY); $$ = Translate_Ternary($2, $4, $8, $3, $7, $6); 
+						{	EM(S_TERNARY); $$ = TRANSLATOR.Translate_Ternary($2, $4, $8, $3, $7, $6); 
 							Unparse_TernaryOp($$, $2, $4, $8);	}
 					;
 
 TernaryCondition:	Expression '?'
 						{	SM(S_TERNARY); PE3(S_EXPR, T_QMARK, S_EXPR); 
-							$$ = Translate_Condition($1); }
+							$$ = TRANSLATOR.Translate_Condition($1); }
 					;
 
 TernarySelection1:	Expression
@@ -519,36 +545,36 @@ TernarySelection2:		{ PE(S_EXPR); }
 					;
 					
 Term:		Lvalue PLUSPLUS
-				{	$$ = Translate_TermLvalue($1, true, DeltaIC_ADD); 
+				{	$$ = TRANSLATOR.Translate_TermLvalue($1, true, DeltaIC_ADD); 
 					Unparse_UnaryIncDec($$, PLUSPLUS, $1, true);	}
 				
 		|	PLUSPLUS 
 				{ SM(S_EXPR); PE2(T_PLUSPLUS, S_LVAL); } 
 			Lvalue
 				{	EM(S_EXPR); 
-					$$ = Translate_TermLvalue($3, false, DeltaIC_ADD); 
+					$$ = TRANSLATOR.Translate_TermLvalue($3, false, DeltaIC_ADD); 
 					Unparse_UnaryIncDec($$, PLUSPLUS, $3, false);	}
 				
 		|	Lvalue MINUSMINUS
-				{	$$ = Translate_TermLvalue($1, true, DeltaIC_SUB); 
+				{	$$ = TRANSLATOR.Translate_TermLvalue($1, true, DeltaIC_SUB); 
 					Unparse_UnaryIncDec($$, MINUSMINUS, $1, true);	}
 				
 		|	MINUSMINUS 
 				{ SM(S_EXPR); PE2(T_MINUSMINUS, S_LVAL); } 
 			Lvalue
 				{	EM(S_EXPR); 
-					$$ = Translate_TermLvalue($3, false, DeltaIC_SUB); 
+					$$ = TRANSLATOR.Translate_TermLvalue($3, false, DeltaIC_SUB); 
 					Unparse_UnaryIncDec($$, MINUSMINUS, $3, false); }
 				
 		|	SUB 
 				{ SM(S_EXPR); PE2(T_SUB, S_EXPR); } 
 			Expression %prec UMINUS
-				{ EM(S_EXPR); $$ = Translate_UMINUSExpression($3); Unparse_UnaryOp($$, SUB, $3); }
+				{ EM(S_EXPR); $$ = TRANSLATOR.Translate_UMINUSExpression($3); Unparse_UnaryOp($$, SUB, $3); }
 				
 		|	NOT 
 				{ SM(S_EXPR); PE2(T_NOT, S_EXPR); } 
 			Expression
-				{ EM(S_EXPR); $$ = Translate_NOTExpression($3); Unparse_UnaryOp($$, NOT, $3); }
+				{ EM(S_EXPR); $$ = TRANSLATOR.Translate_NOTExpression($3); Unparse_UnaryOp($$, NOT, $3); }
 		
 		|	Primary				
 				{ $$ = $1; }
@@ -556,13 +582,13 @@ Term:		Lvalue PLUSPLUS
 
 Primary:		FunctionAndTableObject	{ $$ = DNPTR($1)->AdaptIfTableContent(); }
 			|	ConstValue				{ $$ = $1; Unparse_ConstValue($$); }
-			|	LambdaFunction			{ $$ = Translate_FunctionExpresssion($1); }
+			|	LambdaFunction			{ $$ = TRANSLATOR.Translate_FunctionExpresssion($1); }
 			;
 
-ConstValue:		NUMBER_CONST	{ $$ = Translate_ConstValue($1);	}
-			|	NIL				{ $$ = Translate_ConstValue();		}
-			|	TRUE			{ $$ = Translate_ConstValue(true);	}
-			|	FALSE			{ $$ = Translate_ConstValue(false);}
+ConstValue:		NUMBER_CONST	{ $$ = TRANSLATOR.Translate_ConstValue($1);	}
+			|	NIL				{ $$ = TRANSLATOR.Translate_ConstValue();		}
+			|	TRUE			{ $$ = TRANSLATOR.Translate_ConstValue(true);	}
+			|	FALSE			{ $$ = TRANSLATOR.Translate_ConstValue(false);}
 			;
 
 OpString:		ADD				{ $$ = "+";		}
@@ -623,9 +649,9 @@ KwdIdent:			IF			{ $$ = "if"; }
 				;
 				
 StringConst:				StringConst STRING_CONST
-								{ $$ = Translate_StringConst($2, $1); }
+								{ $$ = TRANSLATOR.Translate_StringConst($2, $1); }
 						|	STRING_CONST
-								{ $$ = Translate_StringConst($1); }
+								{ $$ = TRANSLATOR.Translate_StringConst($1); }
 						;
 
 Stringify:					STRINGIFY 
@@ -637,15 +663,15 @@ StringIdent:				IDENT		{ $$ = $1; }
 						;
 						
 StringifyDottedIdents:		Stringify StringIdent
-								{ PE(T_IDENT); $$ = Translate_StringifyDottedIdents($2); }
+								{ PE(T_IDENT); $$ = TRANSLATOR.Translate_StringifyDottedIdents($2); }
 						|	StringifyDottedIdents DOT 
 								{ PE2(T_DOT, T_IDENT); }
 							StringIdent
-								{ $$ = Translate_StringifyDottedIdents($4, $1); }
+								{ $$ = TRANSLATOR.Translate_StringifyDottedIdents($4, $1); }
 						;
 						
 StringifyNamespaceIdent:	Stringify NamespacePath IDENT
-								{ EG(S_NAMESPACE); PE(T_IDENT); $$ = Translate_StringifyNamespaceIdent($3); }
+								{ EG(S_NAMESPACE); PE(T_IDENT); $$ = TRANSLATOR.Translate_StringifyNamespaceIdent($3); }
 						;
 
 StringConstUsed:			StringConst 
@@ -661,15 +687,15 @@ StringConstUsed:			StringConst
 				
 FunctionAndTableObject:	
 			SELF 
-				{ EI(S_EXPR); PE(T_SELF); Unparse_BuiltIn($$ = Translate_SELF(), SELF); }
+				{ EI(S_EXPR); PE(T_SELF); Unparse_BuiltIn($$ = TRANSLATOR.Translate_SELF(), SELF); }
 		|	LAMBDA_REF
-				{ EI(S_EXPR); PE(T_LAMBDA_REF); Unparse_BuiltIn($$ = Translate_LAMBDA_REF(), LAMBDA_REF); }		
+				{ EI(S_EXPR); PE(T_LAMBDA_REF); Unparse_BuiltIn($$ = TRANSLATOR.Translate_LAMBDA_REF(), LAMBDA_REF); }		
 		|	NEWSELF
-				{ EI(S_EXPR); PE(T_NEWSELF); Unparse_BuiltIn($$ = Translate_NEWSELF(), NEWSELF); }
+				{ EI(S_EXPR); PE(T_NEWSELF); Unparse_BuiltIn($$ = TRANSLATOR.Translate_NEWSELF(), NEWSELF); }
 		|	StringConstUsed		
 				{ EI(S_EXPR); $$ = $1; }
 		|	ARGUMENTS 			
-				{ EI(S_EXPR); PE(T_ARGUMENTS); $$ = Translate_ARGUMENTS(); Unparse_BuiltIn($$, ARGUMENTS); }
+				{ EI(S_EXPR); PE(T_ARGUMENTS); $$ = TRANSLATOR.Translate_ARGUMENTS(); Unparse_BuiltIn($$, ARGUMENTS); }
 		|	Lvalue				
 				{ $$ = $1; }
 		|	TableConstructor	
@@ -686,7 +712,7 @@ FunctionAndTableObject:
 		|	'(' Function		
 				{ SM(S_EXPR); PE3(T_LPAR, S_FUNC_($2), T_RPAR); }  
 			')'					
-				{	EM(S_EXPR); $$ = Translate_FunctionParenthesisForm($2); 
+				{	EM(S_EXPR); $$ = TRANSLATOR.Translate_FunctionParenthesisForm($2); 
 					Unparse_FunctionParenthesisForm($$, $2);	}
 		;
 
@@ -702,9 +728,9 @@ NonEmptyActualArgumentsList:
 						NonEmptyActualArgumentsList ','		
 							{ PE(T_COMMA); }  
 						ActualArgument						
-							{ $$ = Translate_ExpressionList($1, Translate_ExpressionListItem($4)); }						
+							{ $$ = TRANSLATOR.Translate_ExpressionList($1, TRANSLATOR.Translate_ExpressionListItem($4)); }						
 					|	ActualArgument						
-							{ $$ = Translate_ExpressionList(NIL_EXPR, Translate_ExpressionListItem($1)); }
+							{ $$ = TRANSLATOR.Translate_ExpressionList(NIL_EXPR, TRANSLATOR.Translate_ExpressionListItem($1)); }
 					;
 
 ActualArguments:		'('						
@@ -729,24 +755,24 @@ ActualArgument:				{ PE(S_EXPR); }
 								DNPTR($$)->SetLateBound(); 
 								Unparse_LateBound($$, $3);	}					
 					|	TRIPLE_DOT	
-							{ PE(T_TDOT); Unparse_BuiltIn($$ = Translate_TRIPLE_DOT(), TRIPLE_DOT); }
+							{ PE(T_TDOT); Unparse_BuiltIn($$ = TRANSLATOR.Translate_TRIPLE_DOT(), TRIPLE_DOT); }
 					|	Function 
-							{ $$ = Translate_FunctionExpresssion($1); }
+							{ $$ = TRANSLATOR.Translate_FunctionExpresssion($1); }
 					;
 				
 /*FUNCTION CALL EXPRESSION***/
 
 FunctionCall:		FunctionCallObject ActualArguments			
 						{	UNPARSABLE_GET(Unparse_FunctionCall($1, $2));
-							$$ = Translate_FunctionCall($1->CheckUninitialised(), $2); 
+							$$ = TRANSLATOR.Translate_FunctionCall($1->CheckUninitialised(), $2); 
 							UNPARSABLE_SET($$);		}
 					;
 
 ExpressionList:			ExpressionList ',' LN M Expression 
-							{	$$ = Translate_ExpressionList($1, Translate_ExpressionListItem($5)); 
+							{	$$ = TRANSLATOR.Translate_ExpressionList($1, TRANSLATOR.Translate_ExpressionListItem($5)); 
 								QUADS.SetQuadLine($4, $3);	}
 					|	LN M Expression 
-							{	$$ = Translate_ExpressionList(NIL_EXPR, Translate_ExpressionListItem($3)); 
+							{	$$ = TRANSLATOR.Translate_ExpressionList(NIL_EXPR, TRANSLATOR.Translate_ExpressionListItem($3)); 
 								QUADS.SetQuadLine($2, $1);	}
 					;
 
@@ -756,35 +782,35 @@ ExpressionList:			ExpressionList ',' LN M Expression
 				
 NamespacePath:		GLOBAL_SCOPE
 						{ EI(S_EXPR); SG(S_NAMESPACE); PE2(T_GLOBAL, T_IDENT); 
-						  ParseParms::AppendToNamespacePath(DELTA_LIBRARYNAMESPACE_SEPARATOR); }
+						  PARSEPARMS.AppendToNamespacePath(DELTA_LIBRARYNAMESPACE_SEPARATOR); }
 				|	IDENT GLOBAL_SCOPE
 						{ EI(S_EXPR); SG(S_NAMESPACE); PE3(T_IDENT, T_GLOBAL, T_IDENT); 
-						  ParseParms::AppendToNamespacePath($1); }
+						  PARSEPARMS.AppendToNamespacePath($1); }
 				|	NamespacePath IDENT GLOBAL_SCOPE
 						{ PE2(T_GLOBAL, T_IDENT); 
-						  ParseParms::AppendToNamespacePath($2); }
+						  PARSEPARMS.AppendToNamespacePath($2); }
 				;
 		
 Lvalue:				IDENT
 						{ EI(S_EXPR); PE(T_IDENT); 
-						  $$ = Translate_Lvalue($1); Unparse_Var($$, $1); }
+						  $$ = TRANSLATOR.Translate_Lvalue($1); Unparse_Var($$, $1); }
 						  
 				|	NamespacePath IDENT
 						{ EG(S_NAMESPACE); std::string ns;
-						  $$ = Translate_NamespaceLvalue($2, &ns); Unparse_Var($$, ns); }
+						  $$ = TRANSLATOR.Translate_NamespaceLvalue($2, &ns); Unparse_Var($$, ns); }
 						  
 				|	AttributeId
-						{ $$ = Translate_AttrLvalue($1); Unparse_Var($$, $1, ATTRIBUTE); }
+						{ $$ = TRANSLATOR.Translate_AttrLvalue($1); Unparse_Var($$, $1, ATTRIBUTE); }
 						
 				|	STATIC 
 						{ EI(S_EXPR); PE2(T_STATIC, T_IDENT); } 
 					IDENT
-						{ $$ = Translate_StaticLvalue($3); Unparse_Var($$, $3, STATIC); }
+						{ $$ = TRANSLATOR.Translate_StaticLvalue($3); Unparse_Var($$, $3, STATIC); }
 						
 				|	LOCAL 
 						{ EI(S_EXPR); PE2(T_LOCAL, T_IDENT); } 
 					IDENT
-						{ $$ = Translate_Lvalue($3, 0); Unparse_Var($$, $3, LOCAL); }
+						{ $$ = TRANSLATOR.Translate_Lvalue($3, 0); Unparse_Var($$, $3, LOCAL); }
 													
 				|	TableContent
 						{ $$ = $1; }
@@ -814,65 +840,65 @@ TableContentBoundedBracket:	TableObject DOUBLE_LB
 								{ PE2(T_DLB, S_EXPR); $$ = $1; }
 							;
 
-DottedOpString				:	DOT_ASSIGN		{ $$ = ".=";	}
+DottedOpString:					DOT_ASSIGN		{ $$ = ".=";	}
 							|	DOT_EQUAL		{ $$ = ".==";	}
 							|	DOT_CAST		{ $$ = ".=()";	}
 							|	DOT_EQUAL_RHS	{ $$ = ".==_";	}
 							;
 								
 DotIndex:						IDENT	
-									{ $$ = Translate_StringConst(Translate_StringWithLateDestruction(ucopystr($1))); }
+									{ $$ = TRANSLATOR.Translate_StringConst(STRINGHOLDER.StringWithLateDestruction(ucopystr($1))); }
 							|	KwdIdent	
-									{ $$ = Translate_StringConst($1); }
+									{ $$ = TRANSLATOR.Translate_StringConst($1); }
 							|	OpString
-									{ $$ = Translate_StringConst($1); }
+									{ $$ = TRANSLATOR.Translate_StringConst($1); }
 							|	StringConstUsed
 									{ $$ = $1; }
 							;
 							
 SpecialDotIndex:			DottedOpString
-								{ $$ = Translate_StringConst($1); }	
+								{ $$ = TRANSLATOR.Translate_StringConst($1); }	
 							;
 
 /*TABLECONTENT**************/
 
 TableContent:		TableContentDot DotIndex
 						{	EG(S_DOTINDEX); PE(S_DOTINDEX); 
-							$$ = Translate_TableContent($1->CheckUninitialised(), $2); 
+							$$ = TRANSLATOR.Translate_TableContent($1->CheckUninitialised(), $2); 
 							Unparse_TableContentDot($$, $1, $2->strConst.c_str()); }
 							
 				|	TableObject SpecialDotIndex
 						{	EG(S_DOTINDEX); PE(S_DOTINDEX); 
-							$$ = Translate_TableContent($1->CheckUninitialised(), $2); 
+							$$ = TRANSLATOR.Translate_TableContent($1->CheckUninitialised(), $2); 
 							Unparse_TableContentDot($$, $1, $2->strConst.c_str()); }		
 																								
 				|	TableContentBoundedDot DotIndex
 						{	EG(S_DOTINDEX); PE(S_DOTINDEX);
-							$$ = Translate_BoundedTableContent($1->CheckUninitialised(), $2); 
+							$$ = TRANSLATOR.Translate_BoundedTableContent($1->CheckUninitialised(), $2); 
 							Unparse_TableContentDoubleDot($$, $1, $2->strConst.c_str()); }
 						
 				|	TableContentBracket Expression 
 						{ PE(T_RB); } 
 					']'	%prec SQUARE_BRACKETS
-						{	$$ = Translate_TableContent($1->CheckUninitialised(), $2->CheckUninitialised()); 
+						{	$$ = TRANSLATOR.Translate_TableContent($1->CheckUninitialised(), $2->CheckUninitialised()); 
 							Unparse_TableContentBracket($$, $1, $2);	}
 						
 				|	TableContentBracket OperatorMethod 
 						{ PE(T_RB); } 
 					']'	%prec SQUARE_BRACKETS
-						{	$$ = Translate_TableContent($1->CheckUninitialised(), $2); 
+						{	$$ = TRANSLATOR.Translate_TableContent($1->CheckUninitialised(), $2); 
 							Unparse_TableContentBracket($$, $1, $2);	}
 							
 				|	TableContentBoundedBracket Expression 
 						{ PE(T_DRB); } 
 					DOUBLE_RB %prec SQUARE_BRACKETS
-						 {	$$ = Translate_BoundedTableContent($1->CheckUninitialised(), $2->CheckUninitialised()); 
+						 {	$$ = TRANSLATOR.Translate_BoundedTableContent($1->CheckUninitialised(), $2->CheckUninitialised()); 
 							Unparse_TableContentDoubleBracket($$, $1, $2);	}				
 
 				|	TableContentBoundedBracket OperatorMethod 
 						{ PE(T_DRB); } 
 					DOUBLE_RB %prec SQUARE_BRACKETS
-						 {	$$ = Translate_BoundedTableContent($1->CheckUninitialised(), $2); 
+						 {	$$ = TRANSLATOR.Translate_BoundedTableContent($1->CheckUninitialised(), $2); 
 							Unparse_TableContentDoubleBracket($$, $1, $2);	}				
 				;
 
@@ -881,7 +907,7 @@ TableContent:		TableContentDot DotIndex
 
 TablePrefix:		'['
 						{	SM(S_TABLE); PE2(T_LB, S_TABLIST); 
-							ParseParms::InTableExpr().enter(); $$ = Translate_TablePrefix(); }
+							PARSEPARMS.InTableExpr().enter(); $$ = TRANSLATOR.Translate_TablePrefix(); }
 					;
 
 TableSuffix:			{ PE(T_RB); }  
@@ -890,28 +916,28 @@ TableSuffix:			{ PE(T_RB); }
 					;
 				
 TableConstructor:		TablePrefix	TableElements TableSuffix
-							{	ParseParms::InTableExpr().exit();
+							{	PARSEPARMS.InTableExpr().exit();
 								UNPARSABLE_GET(Unparse_TableConstructor($2)); 
-								$$ = Translate_TableConstructor($1, $2); 
+								$$ = TRANSLATOR.Translate_TableConstructor($1, $2); 
 								UNPARSABLE_SET($$); }
 								
 					|	TablePrefix TableSuffix
-							{	ParseParms::InTableExpr().exit();
+							{	PARSEPARMS.InTableExpr().exit();
 								UNPARSABLE_GET(Unparse_TableConstructor()); 
-								$$ = Translate_TableConstructor($1); 
+								$$ = TRANSLATOR.Translate_TableConstructor($1); 
 								UNPARSABLE_SET($$); }
 					;
 
 TableElements:			TableElements ',' { PE(T_COMMA); } TableElement
 							{	UNPARSABLE_GET(Unparse_TableElements($1, $4));
-								$$ = Translate_TableElements($1, $4); 
+								$$ = TRANSLATOR.Translate_TableElements($1, $4); 
 								UNPARSABLE_SET($$); }
 					|	TableElement
 							{ $$ = $1; }
 					;
 
 FunctionElement:	Function
-						{ PE(S_FUNC_($1)); $$ = Translate_FunctionExpresssion($1); }
+						{ PE(S_FUNC_($1)); $$ = TRANSLATOR.Translate_FunctionExpresssion($1); }
 					;
 
 /* 
@@ -921,9 +947,9 @@ FunctionElement:	Function
 */
 
 UnindexedValue:			Expression LN
-							{ $$ = Translate_UnindexedValue($1, $<quadNo>-1, $2); }
+							{ $$ = TRANSLATOR.Translate_UnindexedValue($1, $<quadNo>-1, $2); }
 					|	FunctionElement LN
-							{ $$ = Translate_UnindexedValue($1, $<quadNo>-1, $2); }
+							{ $$ = TRANSLATOR.Translate_UnindexedValue($1, $<quadNo>-1, $2); }
 					;
 
 M_elem:				M { OE(T_TABLE_ELEM); $$ = $1; }
@@ -934,7 +960,7 @@ TableElement:			M_elem UnindexedValue
 					|	M_elem IndexedValues
 							{ Unparse_IndexedValues($$ = $2); }
 					|   M_elem NewAttribute
-							{ Unparse_UnindexedValue($$ = Translate_TableElement($2), $2); }
+							{ Unparse_UnindexedValue($$ = TRANSLATOR.Translate_TableElement($2), $2); }
 					|	M_elem IdentIndexElement
 							{ $$ = $2; }
 					;
@@ -942,12 +968,12 @@ TableElement:			M_elem UnindexedValue
 DottedIdent:		DOT 
 						{ PE2(T_DOT, T_IDENT); } 
 					StringIdent
-						{ Unparse_DottedIdent($$ = Translate_ConstValue($3), $3); }
+						{ Unparse_DottedIdent($$ = TRANSLATOR.Translate_ConstValue($3), $3); }
 					;
 
 OperatorIndex:		OpString 
 						{	PE(T_OPINDEX); 
-							$$ = Translate_ConstValue($1); 
+							$$ = TRANSLATOR.Translate_ConstValue($1); 
 							Unparse_OperatorIndex($$, $1);	}
 					;
 
@@ -964,10 +990,10 @@ IndexExpression:		{ PE(S_INDEXEXPR); }
 IndexedList:		IndexedList 
 							{ PE(T_COMMA); } 
 					','  M IndexExpression LN
-							{	$$ = Translate_ExpressionList($1, Translate_ExpressionListItem($5->AdaptAsArgumentVariable())); 
+							{	$$ = TRANSLATOR.Translate_ExpressionList($1, TRANSLATOR.Translate_ExpressionListItem($5->AdaptAsArgumentVariable()));
 								QUADS.SetQuadLine($4, $6);	}
 					| M IndexExpression LN
-							{	$$ = Translate_ExpressionList(NIL_EXPR, Translate_ExpressionListItem($2->AdaptAsArgumentVariable())); 
+							{	$$ = TRANSLATOR.Translate_ExpressionList(NIL_EXPR, TRANSLATOR.Translate_ExpressionListItem($2->AdaptAsArgumentVariable()));
 								QUADS.SetQuadLine($1, $3);	}
 					;
 
@@ -980,7 +1006,7 @@ IndexedValues:		'{'
 					ContentList 
 						{ EG(S_ELIST); PE2(S_ELIST, T_RBC); } 
 					'}'
-						{ $$ = Translate_IndexedValues($3, $7); }
+						{ $$ = TRANSLATOR.Translate_IndexedValues($3, $7); }
 					;
 
 IdentIndex:				AttributeId	
@@ -988,25 +1014,25 @@ IdentIndex:				AttributeId
 					|	DOT 
 							{ PE(T_DOT); OE(T_IDENT_OR_KWDIDENT); } 
 						AttributeIdent
-							{ $$ = Translate_StringWithLateDestruction(ucopystr($3)); }
+							{ $$ = STRINGHOLDER.StringWithLateDestruction(ucopystr($3)); }
 					;
 					
 IdentIndexElement:	IdentIndex ':'
 						{ PE(T_COLON); SG(S_EXPR); }
 					M ContentExpression LN
-						{ EG(S_EXPR); PE(S_EXPR); $$ = Translate_IdentIndexElement($1, $5, $4, $6); }
+						{ EG(S_EXPR); PE(S_EXPR); $$ = TRANSLATOR.Translate_IdentIndexElement($1, $5, $4, $6); }
 					;
 					
 ContentList:			ContentList ',' LN M ContentExpression 
-							{	$$ = Translate_ExpressionList($1, Translate_ExpressionListItem($5)); 
+							{	$$ = TRANSLATOR.Translate_ExpressionList($1, TRANSLATOR.Translate_ExpressionListItem($5));
 								QUADS.SetQuadLine($4, $3);	}
 					|	LN M ContentExpression 
-							{	$$ = Translate_ExpressionList(NIL_EXPR, Translate_ExpressionListItem($3)); 
+							{	$$ = TRANSLATOR.Translate_ExpressionList(NIL_EXPR, TRANSLATOR.Translate_ExpressionListItem($3));
 								QUADS.SetQuadLine($2, $1);	}
 					;
 
 ContentExpression:		Expression		{ $$ = $1; }
-					|	Function		{ PE(S_FUNC_($1)); $$ = Translate_FunctionExpresssion($1); }
+					|	Function		{ PE(S_FUNC_($1)); $$ = TRANSLATOR.Translate_FunctionExpresssion($1); }
 					;
 					
 /**************************************************************************/
@@ -1018,15 +1044,15 @@ AttributeIdent:			IDENT			{ PE(T_IDENT); $$ = $1; }
 						
 AttributeId:			ATTRIBUTE_IDENT 
 							{	PE(T_ATTRIBUTEID); OE(T_LBC_OR_COLON); 
-								$$ = Translate_StringWithLateDestruction(ucopystr($1 + 1)); }
+								$$ = STRINGHOLDER.StringWithLateDestruction(ucopystr($1 + 1)); }
 					|	ATTRIBUTE 
 								{ PE(T_ATTRIBUTE); OE(T_IDENT_OR_KWDIDENT); }
 						AttributeIdent
-								{ $$ = Translate_StringWithLateDestruction(ucopystr($3)); }
+								{ $$ = STRINGHOLDER.StringWithLateDestruction(ucopystr($3)); }
 					;
 				
 NewAttribute:	AttributeId AttributeSet AttributeGet
-					{ $$ = Translate_NewAttribute($1, $2, $3); }
+					{ $$ = TRANSLATOR.Translate_NewAttribute($1, $2, $3); }
 			;
 				
 AttributeSet:	'{'	
@@ -1036,7 +1062,7 @@ AttributeSet:	'{'
 				M ContentExpression LN		
 					{	EG(S_EXPR); 
 						PE2(S_EXPR, T_GET); 
-						$$ = Translate_AttributeMethod($6, $5, $7); }
+						$$ = TRANSLATOR.Translate_AttributeMethod($6, $5, $7); }
 				;
 				
 AttributeGet:	GET					
@@ -1045,7 +1071,7 @@ AttributeGet:	GET
 					{ EG(S_EXPR); PE2(S_EXPR, T_RBC); }
 				'}'	
 					{	 
-						$$ = Translate_AttributeMethod($4, $3, $5); }
+						$$ = TRANSLATOR.Translate_AttributeMethod($4, $3, $5); }
 				;
 
 /**************************************************************************/
@@ -1056,41 +1082,41 @@ ContinueStmt:	{ SM(S_STMT); PE(T_CONT);	}	CONTINUE	Semi
 
 Condition:		'('				{ SG(S_EXPR); } 
 				LN Expression	{ EG(S_EXPR); PE2(S_EXPR, T_RPAR); } 
-				')'				{  $$ = Translate_Condition($4); Translate_BasicStmt($3);	}	
+				')'				{  $$ = TRANSLATOR.Translate_Condition($4); TRANSLATOR.Translate_BasicStmt($3);	}	
 				;
 
-N:				{ $$ = Translate_N(); }					
+N:				{ $$ = TRANSLATOR.Translate_N(); }					
 				;
 
 /* WHILE*********************/
 
 WhilePrefix:	WHILE	
-					{ SM(S_WHILE); PE2(T_WHILE, T_LPAR); Translate_WhilePrefix(); }	
+					{ SM(S_WHILE); PE2(T_WHILE, T_LPAR); TRANSLATOR.Translate_WhilePrefix(); }	
 				;
 
 WhileStmt:		WhilePrefix M Condition LN M Stmt
 					{	EM(S_WHILE); 
 						UNPARSABLE_GET(Unparse_While($3, $6));
-						$$ = Translate_WhileStmt($3, $2, $5, $6, $4); 
+						$$ = TRANSLATOR.Translate_WhileStmt($3, $2, $5, $6, $4); 
 						UNPARSABLE_SET($$); }
 				;
 
 /* IF************************/
 
-IfPrefix:		IF		{ SM(S_IF); PE2(T_IF, T_LPAR);  }								;
-ElsePrefix:		ELSE	{ EM(S_IF); SM(S_ELSE); PE(T_ELSE); Translate_ElseStmtPrefix(); }	;
-M_If:			M		{ Translate_IfStmtPrefix(); $$ = $1; }								;
+IfPrefix:		IF		{ SM(S_IF); PE2(T_IF, T_LPAR);  }												;
+ElsePrefix:		ELSE	{ EM(S_IF); SM(S_ELSE); PE(T_ELSE); TRANSLATOR.Translate_ElseStmtPrefix(); }	;
+M_If:			M		{ TRANSLATOR.Translate_IfStmtPrefix(); $$ = $1; }								;
 		
 IfStmt:				IfPrefix Condition M_If Stmt
 						{	EM(S_IF);
-							Translate_IfStmt($2, $3);
+							TRANSLATOR.Translate_IfStmt($2, $3);
 							Unparse_If($$ = $4, $2, $4); }
 				|	IfPrefix Condition M_If Stmt ElsePrefix N M Stmt
 						{	EM(S_ELSE);
-							Translate_IfElseStmt($2, $3, $6, $7);
+							TRANSLATOR.Translate_IfElseStmt($2, $3, $6, $7);
 							UNPARSABLE_GET(Unparse_IfElse($2, $4, $8));
 							DELTASYMBOLS.ResetTemp();
-							$$ = Translate_Stmts($4, $8); 
+							$$ = TRANSLATOR.Translate_Stmts($4, $8); 
 							UNPARSABLE_SET($$);	}
 				;
 
@@ -1099,18 +1125,18 @@ IfStmt:				IfPrefix Condition M_If Stmt
 ForStmt:		ForPrefix M ForCondition M ForSuffix N M Stmt
 					{	EM(S_FOR); 
 						UNPARSABLE_GET(Unparse_For($1, $3, $5, $8));
-						$$ = Translate_ForStmt($3, $2, $4, $7, $6, $8); 
+						$$ = TRANSLATOR.Translate_ForStmt($3, $2, $4, $7, $6, $8); 
 						UNPARSABLE_SET($$); }
 				;
 
 ForOpening:		FOR		
 					{ SM(S_FOR); PE2(T_FOR, T_LPAR); } 
 				'('		
-					{ PE(S_ELIST); Translate_ForOpening(); } 
+					{ PE(S_ELIST); TRANSLATOR.Translate_ForOpening(); } 
 				;
 				
 ForPrefix:		ForOpening M LN ForInitList  
-					{ Translate_ForPrefix($2, $3);  $$ = $4; Translate_BasicStmt($3); }
+					{ TRANSLATOR.Translate_ForPrefix($2, $3);  $$ = $4; TRANSLATOR.Translate_BasicStmt($3); }
 				;
 
 ForInitList	:		ExpressionList Semi
@@ -1121,9 +1147,9 @@ ForInitList	:		ExpressionList Semi
 
 ForCondition:		{ PE(S_EXPR); }		
 				 M Expression LN Semi
-					{	$$ = Translate_Condition($3); 
+					{	$$ = TRANSLATOR.Translate_Condition($3); 
 						QUADS.SetQuadLine($2, $4, true); 
-						Translate_BasicStmt($4); }
+						TRANSLATOR.Translate_BasicStmt($4); }
 				;
 			
 ForRepeatList:			{ PE(S_ELIST); } 
@@ -1131,7 +1157,7 @@ ForRepeatList:			{ PE(S_ELIST); }
 						{	$$ = NEW_STMT; 
 							UNPARSABLE_GET(Unparse_ExprList($2));
 							UNPARSABLE_SET($$); 
-							Translate_BasicStmt($3); }
+							TRANSLATOR.Translate_BasicStmt($3); }
 				|	ForEnd
 						{ $$ = NEW_STMT; }
 				;
@@ -1158,16 +1184,16 @@ ForeachPrefix:	FOREACH					{	SM(S_FOREACH); PE2(T_FOREACH, T_LPAR);	}
 				ForeachValue			{	PE(S_EXPR);				}
 				LN M Expression	')'		{	UNPARSABLE_GET(Unparse_ForeachPrefix($5, $7, $11)); 
 											if ($7)
-												$$ = Translate_ForeachPrefix($7, $5, $11); 
+												$$ = TRANSLATOR.Translate_ForeachPrefix($7, $5, $11); 
 											else
-												$$ = Translate_ForeachPrefix($5, NIL_EXPR, $11); 
+												$$ = TRANSLATOR.Translate_ForeachPrefix($5, NIL_EXPR, $11); 
 											QUADS.SetQuadLine($10, $9);
 											UNPARSABLE_SET($$);		}
 				;
 
 ForeachStmt:	ForeachPrefix M			{	PE(S_STMT);		}
 				Stmt					{	UNPARSABLE_GET(Unparse_ForeachStmt($1, $4));
-											$$ = Translate_ForeachStmt($1, $4, $2);
+											$$ = TRANSLATOR.Translate_ForeachStmt($1, $4, $2);
 											UNPARSABLE_SET($$);	
 											EM(S_FOREACH);	}
 				;
@@ -1179,25 +1205,25 @@ ThrowStmt:		THROW
 					{ SM(S_THROW); PE2(T_THROW, S_EXPR); } 
 				Expression Semi
 					{	EM(S_THROW); 
-						$$ = Translate_THROW($3); 
+						$$ = TRANSLATOR.Translate_THROW($3); 
 						Unparse_ExprStmt($$, THROW, $3); }
 				;
 
-TryHeader:		TRY		{ SM(S_TRY); PE2(T_TRY, S_STMT); $$ = Translate_TRY(); }			;
-TrapHeader:		TRAP	{ PE(T_IDENT); $$ = Translate_TRAP(); }								;
-ExceptionVar:	IDENT	{ $$ = Translate_Lvalue($1); if ($$) DPTR($$)->SetInitialised(); }	;
-TrapJumpOver:			{ $$ = Translate_TrapJumpOver(); }									;
+TryHeader:		TRY		{ SM(S_TRY); PE2(T_TRY, S_STMT); $$ = TRANSLATOR.Translate_TRY(); }				;
+TrapHeader:		TRAP	{ PE(T_IDENT); $$ = TRANSLATOR.Translate_TRAP(); }								;
+ExceptionVar:	IDENT	{ $$ = TRANSLATOR.Translate_Lvalue($1); if ($$) DPTR($$)->SetInitialised(); }	;
+TrapJumpOver:			{ $$ = TRANSLATOR.Translate_TrapJumpOver(); }									;
 
 ExceptionStmt:	TryHeader Stmt 
 					{ PE(T_TRAP); }
 				TrapHeader TrapJumpOver ExceptionVar
-					{ Translate_TrapStart($1, $4, $6); }
+					{ TRANSLATOR.Translate_TrapStart($1, $4, $6); }
 				Stmt
-					{	EM(S_TRY); 
-						Translate_TrapEnd($5); 
+					{	EM(S_TRY);
+						TRANSLATOR.Translate_TrapEnd($5);
 						UNPARSABLE_GET(Unparse_TryTrap($2, $8, $6));
 						DELTASYMBOLS.ResetTemp();
-						$$ = Translate_Stmts($2, $8); 
+						$$ = TRANSLATOR.Translate_Stmts($2, $8); 
 						UNPARSABLE_SET($$);		}
 				;			
 				

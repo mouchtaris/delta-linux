@@ -16,6 +16,8 @@
 #include <list>
 #include <algorithm>
 
+class DeltaLibraryNamespaceHolder;
+
 ///////////////////////////////////////////////////////////
 
 class DeltaLibraryFuncSignatures {
@@ -93,7 +95,7 @@ class DeltaLibraryFuncSignatures {
 	void				Append (const DeltaLibraryFuncSignatures& extraSigs)
 							{ DASSERT(this != &extraSigs); ulistcopy(extraSigs.sigs, sigs); }
 	static DeltaLibraryFuncSignatures*	
-						New (const std::string&	sigsDef, std::string* error);
+						New (const std::string&	sigsDef, std::string* error, DeltaLibraryNamespaceHolder* holder);
 
 	~DeltaLibraryFuncSignatures(){}
 

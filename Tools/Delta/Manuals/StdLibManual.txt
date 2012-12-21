@@ -330,7 +330,7 @@ Number		abs(x)
 Number		max(x1,...,xn)
 Number		min(x1,...,xn)
 Number		random(n)						In 0,...,n-1
-Number		randomise()
+			randomise()
 Number		power(x, exp)					x ^ exp
 Number		pi()
 Number		fractionalpart(x)

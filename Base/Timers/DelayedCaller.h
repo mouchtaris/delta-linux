@@ -12,7 +12,7 @@
 #include "LibraryAPIDecls.h"
 #include "Singleton.h"
 
-#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
 #include <wx/event.h>
 
@@ -38,10 +38,9 @@ private:
 	DelayedCaller (void) : m_duringCall(false) {}
 	~DelayedCaller (void) {}
 
-	volatile bool			m_duringCall;
-	CallbackList			m_callbackList;
-	CallbackList			m_nextRound;
-	boost::recursive_mutex	m_mutex;
+	volatile bool	m_duringCall;
+	CallbackList	m_callbackList;
+	boost::mutex	m_mutex;
 };
 
 ////////////////////////////////////////////////////////////////////////

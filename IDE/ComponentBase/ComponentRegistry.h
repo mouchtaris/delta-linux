@@ -42,7 +42,7 @@ public:
 	typedef boost::signal<void (const std::string&, const ComponentFuncEntry&)>			Signal5;
 	typedef boost::signal<void (Component*, Component*)>								Signal6;
 	typedef boost::signal<void (const std::string&, const String&, const UserCommand&)>	Signal7;
-	typedef boost::signal<void (const std::string&, const String&)>						Signal8;
+	typedef boost::signal<void (const std::string&, const String&, uint)>				Signal8;
 	typedef boost::signal<void (const std::string&, const std::string&, Property*)>		Signal9;
 	typedef boost::signal<void (const std::string&, const UserCommand&)>				Signal10;
 	typedef boost::signal<void (const std::string&, const std::string&, bool, bool)>	Signal11;
@@ -130,9 +130,9 @@ protected:
 	void NotifyRemovedDynamicFunction (Component* instance, const std::string& funcId, bool isSlot);
 
 	void NotifyAddedUserCommand (const std::string& compId, const String& path, const UserCommand& cmd);
-	void NotifyRemovedUserCommand (const std::string& compId, const String& path);
-	void NotifyEnabledUserCommand (const std::string& compId, const String& path);
-	void NotifyDisabledUserCommand (const std::string& compId, const String& path);
+	void NotifyRemovedUserCommand (const std::string& compId, const String& path, uint flags);
+	void NotifyEnabledUserCommand (const std::string& compId, const String& path, uint flags);
+	void NotifyDisabledUserCommand (const std::string& compId, const String& path, uint flags);
 
 	void NotifyMergedUserCommands (const std::string& compId, const UserCommand& cmds);
 	void NotifyUnMergedUserCommands (const std::string& compId, const UserCommand& cmds);

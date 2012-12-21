@@ -15,10 +15,14 @@
 
 ///////////////////////////////////////////////////////////////
 
+class ParsingContext;
+
+///////////////////////////////////////////////////////////////
+
 class DCOMPLIB_CLASS DeltaBuildDependencies {
 
-	friend int	DeltaDependencies_yyparse (void);
-	friend int	DeltaDependencies_yylex (void* yylval);
+	friend int DeltaDependencies_yyparse (ParsingContext& ctx);
+	friend class DeltaDependenciesFlexLexer;
 
 	public:
 	enum ResolutionType {
@@ -31,28 +35,30 @@ class DCOMPLIB_CLASS DeltaBuildDependencies {
 
 	private:
 	typedef std::list<std::string*>	DynamicStrings;
-	static DynamicStrings*			dynamicStrings;
-	static bool						hasError;
-	static Dependencies*			deps;
-	static std::string*				path;
-	static bool						inUsing;
+	DynamicStrings*					dynamicStrings;
+	bool							hasError;
+	Dependencies*					deps;
+	std::string*					path;
+	bool							inUsing;
 	
-	static void						CleanUp (void);
-	static void						Handle (const std::string& id);
-	static void						EnterUsing (void);
-	static void						ExitUsing (void);
-	static bool						InUsing (void);
-	static const std::string*		NewString (const std::string& str);
+	void							CleanUp (void);
+	void							Handle (const std::string& id);
+	void							EnterUsing (void);
+	void							ExitUsing (void);
+	bool							InUsing (void);
+	const std::string*				NewString (const std::string& str);
 
 	///////////////////////////////////////////////////////////////
 
 	public:
-	static void						SetError (const char* unused,...);
-	static bool						Extract (		// false returned on parse error.
+	void							SetError (const char* unused,...);
+	bool							Extract (		// false returned on parse error.
 										const std::string&	byteCodePath,
 										const std::string&	sourceFile, 
 										Dependencies*		outDeps
-									);	
+									);
+	DeltaBuildDependencies (void);
+	~DeltaBuildDependencies () {}
 };
 
 ///////////////////////////////////////////////////////////////

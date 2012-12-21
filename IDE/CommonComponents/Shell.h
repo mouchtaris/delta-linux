@@ -125,9 +125,9 @@ namespace ide
 		virtual void ChildAddedAsFirstOfItsKind(Component* component);
 		virtual void ChildRemovedAsLastOfItsKind(Component* component);
 		virtual void ChildAddedUserCommand(Component* component, const String& path, const UserCommand& cmd);
-		virtual void ChildRemovedUserCommand(Component* component, const String& path);
-		virtual void ChildEnabledUserCommand(Component* component, const String& path);
-		virtual void ChildDisabledUserCommand(Component* component, const String& path);
+		virtual void ChildRemovedUserCommand(Component* component, const String& path, uint flags);
+		virtual void ChildEnabledUserCommand(Component* component, const String& path, uint flags);
+		virtual void ChildDisabledUserCommand(Component* component, const String& path, uint flags);
 		virtual void ChildMergedUserCommands(Component* component, const UserCommand& cmds);
 		virtual void ChildUnMergedUserCommands(Component* component, const UserCommand& cmds);
 
@@ -148,9 +148,9 @@ namespace ide
 		void LastInstanceDestroyed(Component* component);
 
 		void ClassAddedUserCommand(const std::string& classId, const String& path, const UserCommand& cmd);
-		void ClassRemovedUserCommand(const std::string& classId, const String& path);
-		void ClassEnabledUserCommand(const std::string& classId, const String& path);
-		void ClassDisabledUserCommand(const std::string& classId, const String& path);
+		void ClassRemovedUserCommand(const std::string& classId, const String& path, uint flags);
+		void ClassEnabledUserCommand(const std::string& classId, const String& path, uint flags);
+		void ClassDisabledUserCommand(const std::string& classId, const String& path, uint flags);
 		void ClassMergedUserCommands(const std::string& classId, const UserCommand& cmds);
 		void ClassUnMergedUserCommands(const std::string& classId, const UserCommand& cmds);
 

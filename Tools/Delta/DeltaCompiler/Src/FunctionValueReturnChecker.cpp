@@ -13,11 +13,9 @@
 #include "Expr.h"
 #include "DeltaCompErrorDefs.h"
 
-USINGLETON_INSTANCE(usingleton<FunctionValueReturnCheckerClass>)
-
 /////////////////////////////////////////////////////////////
 
-bool FunctionValueReturnCheckerClass::Check (DeltaCodeAddress i) {
+bool FunctionValueReturnChecker::Check (DeltaCodeAddress i) {
 	
 	while (true) {
 
@@ -62,7 +60,7 @@ bool FunctionValueReturnCheckerClass::Check (DeltaCodeAddress i) {
 	
 /////////////////////////////////////////////////////////////
 
-void FunctionValueReturnCheckerClass::CheckFunction (DeltaCodeAddress startQuad) {
+void FunctionValueReturnChecker::CheckFunction (DeltaCodeAddress startQuad) {
 	
 	DASSERT(QUADS.GetQuad(startQuad).opcode == DeltaIC_FUNCENTER);
 

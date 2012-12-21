@@ -64,138 +64,145 @@ attr		@
 
 %%
 
-"/*"					{
-							int c = 0, prevc, count = 1, token = COMMENT;
-							while (true) {
+"/*"				{
+						int c = 0, prevc, count = 1, token = COMMENT;
+						while (true) {
+							prevc = c;
+							while (++yypos && (c = yyinput()) != '/' && c != EOF)
 								prevc = c;
-								while (++yypos && (c = yyinput()) != '/' && c != EOF)
-									prevc = c;
-								if (c == EOF) {
-									token = INCOMPLETE_COMMENT;
-									--yypos;
+							if (c == EOF) {
+								token = INCOMPLETE_COMMENT;
+								--yypos;
+								break;
+							}
+							else if (prevc == '*') {
+								if (!--count)
 									break;
-								}
-								else if (prevc == '*') {
-									if (!--count)
-										break;
-								}
-								else if (++yypos && (c = yyinput()) == '*')
-									++count;
 							}
-							yylloc->last_line = yylineno;
-							yylloc->last_column = yypos;
-							return token;
+							else if (++yypos && (c = yyinput()) == '*')
+								++count;
 						}
+						yylloc->last_line = yylineno;
+						yylloc->last_column = yypos;
+						return token;
+					}
 
-"//".*					return COMMENT;
+"//".*				return COMMENT;
 
-\"						{
-							std::string s;
-							int c, token = STRING_CONST;
-							while (++yypos && (c = yyinput()) != EOF) {
-								if (c == '"') {
-									if (s.empty())
+\"					{
+						std::string s;
+						int c, token = STRING_CONST;
+						while (++yypos && (c = yyinput()) != EOF) {
+							if (c == '"') {
+								if (s.empty())
+									break;
+								else {
+									bool evenNumOfBackSlashes = true;
+									for (	std::string::reverse_iterator i = s.rbegin();
+											i != s.rend() && *i == '\\';
+											++i, evenNumOfBackSlashes = !evenNumOfBackSlashes	)
+											;
+									if (evenNumOfBackSlashes)	// Quote is normal end.
 										break;
-									else {
-										bool evenNumOfBackSlashes = true;
-										for (	std::string::reverse_iterator i = s.rbegin();
-												i != s.rend() && *i == '\\';
-												++i, evenNumOfBackSlashes = !evenNumOfBackSlashes	)
-												;
-										if (evenNumOfBackSlashes)	// Quote is normal end.
-											break;
-										else
-											s.push_back(c);
-									}
+									else
+										s.push_back(c);
 								}
-								else
-									s.push_back(c);
 							}
-							yylloc->last_line = yylineno;
-							yylloc->last_column = yypos;
-							return c == EOF ? INCOMPLETE_STRING : STRING_CONST;
+							else
+								s.push_back(c);
 						}
+						yylloc->last_line = yylineno;
+						yylloc->last_column = yypos;
+						return c == EOF ? INCOMPLETE_STRING : STRING_CONST;
+					}
 
-function				LITERAL(FUNCTION, "function");
-return					LITERAL(RETURN, "return");
-assert					LITERAL(ASSERT, "assert");
-lambda					LITERAL(LAMBDA, "lambda");
-@lambda					LITERAL(LAMBDA_REF, "@lambda");
-onevent					LITERAL(ONEVENT, "onevent");
-method					LITERAL(METHOD, "method");
-self					LITERAL(SELF, "self");
-arguments				LITERAL(ARGUMENTS, "arguments");
-static					LITERAL(STATIC, "static");
-const					LITERAL(CONST, "const");
-if						LITERAL(KWD_IF, "if");
-else					LITERAL(ELSE, "else");
-while					LITERAL(WHILE, "while");
-for						LITERAL(FOR, "for");
-foreach					LITERAL(FOREACH, "foreach");
-nil						LITERAL(NIL, "nil");
-and						LITERAL(AND, "and");
-not						LITERAL(NOT, "not");
-or						LITERAL(OR, "or");
-true					LITERAL(TRUE, "true");
-false					LITERAL(FALSE, "false");
-break					LITERAL(BREAK, "break");
-continue				LITERAL(CONTINUE, "continue");
-local					LITERAL(LOCAL, "local");
-try						LITERAL(TRY, "try");
-trap					LITERAL(TRAP, "trap");
-throw					LITERAL(THROW, "throw");
-using					LITERAL(USING, "using");
-@set					LITERAL(SET, "@set");
-@get					LITERAL(GET, "@get");
-@operator				LITERAL(OPERATOR, "@operator");
-@self					LITERAL(NEWSELF, "@self");
+function			LITERAL(FUNCTION, "function");
+return				LITERAL(RETURN, "return");
+assert				LITERAL(ASSERT, "assert");
+lambda				LITERAL(LAMBDA, "lambda");
+@lambda				LITERAL(LAMBDA_REF, "@lambda");
+onevent				LITERAL(ONEVENT, "onevent");
+method				LITERAL(METHOD, "method");
+self				LITERAL(SELF, "self");
+arguments			LITERAL(ARGUMENTS, "arguments");
+static				LITERAL(STATIC, "static");
+const				LITERAL(CONST, "const");
+if					LITERAL(KWD_IF, "if");
+else				LITERAL(ELSE, "else");
+while				LITERAL(WHILE, "while");
+for					LITERAL(FOR, "for");
+foreach				LITERAL(FOREACH, "foreach");
+nil					LITERAL(NIL, "nil");
+and					LITERAL(AND, "and");
+not					LITERAL(NOT, "not");
+or					LITERAL(OR, "or");
+true				LITERAL(TRUE, "true");
+false				LITERAL(FALSE, "false");
+break				LITERAL(BREAK, "break");
+continue			LITERAL(CONTINUE, "continue");
+local				LITERAL(LOCAL, "local");
+try					LITERAL(TRY, "try");
+trap				LITERAL(TRAP, "trap");
+throw				LITERAL(THROW, "throw");
+using				LITERAL(USING, "using");
+@set				LITERAL(SET, "@set");
+@get				LITERAL(GET, "@get");
+@operator			LITERAL(OPERATOR, "@operator");
+@self				LITERAL(NEWSELF, "@self");
 
-"@"						LITERAL(ATTRIBUTE, "@");
-"#"						LITERAL(STRINGIFICATION, "#");
-"+"						LITERAL(ADD, "+");
-"-"						LITERAL(SUB, "-");
-"*"						LITERAL(MUL, "*");
-"/"						LITERAL(DIV, "/");
-"%"						LITERAL(MOD, "%");
-">"						LITERAL(GT, ">");
-"<"						LITERAL(LT, "<");
-"!="					LITERAL(NE, "!=");
-"=="					LITERAL(EQ, "==");
-">="					LITERAL(GE, ">=");
-"<="					LITERAL(LE, "<=");
-"="						LITERAL(ASSIGN, "=");
-"()"					LITERAL(CALL, "()");
-"=()"					LITERAL(CAST, "=()");
+"@"					LITERAL(ATTRIBUTE, "@");
+"#"					LITERAL(STRINGIFICATION, "#");
+"+"					LITERAL(ADD, "+");
+"-"					LITERAL(SUB, "-");
+"*"					LITERAL(MUL, "*");
+"/"					LITERAL(DIV, "/");
+"%"					LITERAL(MOD, "%");
+">"					LITERAL(GT, ">");
+"<"					LITERAL(LT, "<");
+"!="				LITERAL(NE, "!=");
+"=="				LITERAL(EQ, "==");
+">="				LITERAL(GE, ">=");
+"<="				LITERAL(LE, "<=");
+"="					LITERAL(ASSIGN, "=");
+"()"				LITERAL(CALL, "()");
+"=()"				LITERAL(CAST, "=()");
 
-"+_"					LITERAL(ADD_POSTFIX, "+_");
-"-_"					LITERAL(SUB_POSTFIX, "-_");
-"*_"					LITERAL(MUL_POSTFIX, "*_");
-"/_"					LITERAL(DIV_POSTFIX, "/_");
-"%_"					LITERAL(MOD_POSTFIX, "%_");
-">_"					LITERAL(GT_POSTFIX, ">_");
-"<_"					LITERAL(LT_POSTFIX, "<_");
-"!=_"					LITERAL(NE_POSTFIX, "!=_");
-"==_"					LITERAL(EQ_POSTFIX, "==_");
-">=_"					LITERAL(GE_POSTFIX, ">=_");
-"<=_"					LITERAL(LE_POSTFIX, "<=_");
+"+_"				LITERAL(ADD_POSTFIX, "+_");
+"-_"				LITERAL(SUB_POSTFIX, "-_");
+"*_"				LITERAL(MUL_POSTFIX, "*_");
+"/_"				LITERAL(DIV_POSTFIX, "/_");
+"%_"				LITERAL(MOD_POSTFIX, "%_");
+">_"				LITERAL(GT_POSTFIX, ">_");
+"<_"				LITERAL(LT_POSTFIX, "<_");
+"!=_"				LITERAL(NE_POSTFIX, "!=_");
+"==_"				LITERAL(EQ_POSTFIX, "==_");
+">=_"				LITERAL(GE_POSTFIX, ">=_");
+"<=_"				LITERAL(LE_POSTFIX, "<=_");
 
-"::"					LITERAL(GLOBAL_SCOPE, "::");
-"++"					LITERAL(PLUSPLUS, "++");
-"--"					LITERAL(MINUSMINUS, "--");
-"."						LITERAL(DOT, ".");
-".="					LITERAL(DOT_ASSIGN, ".=");
-".."					LITERAL(DOUBLE_DOT, "..");
-"..."					LITERAL(TRIPLE_DOT, "...");
-"[["					LITERAL(DOUBLE_LB, "[[");
-"]]"					LITERAL(DOUBLE_RB, "]]");
-"+="					LITERAL(ADD_A, "+=");
-"-="					LITERAL(SUB_A, "-=");
-"*="					LITERAL(MUL_A, "*=");
-"/="					LITERAL(DIV_A, "/=");
-"%="					LITERAL(MOD_A, "%=");
-".=="					LITERAL(DOT_EQUAL, ".==");
-".=()"					LITERAL(DOT_CAST, ".=()");
-".==_"					LITERAL(DOT_EQUAL_RHS, ".==_");
+"::"				LITERAL(GLOBAL_SCOPE, "::");
+"++"				LITERAL(PLUSPLUS, "++");
+"--"				LITERAL(MINUSMINUS, "--");
+"."					LITERAL(DOT, ".");
+".="				LITERAL(DOT_ASSIGN, ".=");
+".."				LITERAL(DOUBLE_DOT, "..");
+"..."				LITERAL(TRIPLE_DOT, "...");
+"[["				LITERAL(DOUBLE_LB, "[[");
+"]]"				LITERAL(DOUBLE_RB, "]]");
+"+="				LITERAL(ADD_A, "+=");
+"-="				LITERAL(SUB_A, "-=");
+"*="				LITERAL(MUL_A, "*=");
+"/="				LITERAL(DIV_A, "/=");
+"%="				LITERAL(MOD_A, "%=");
+".=="				LITERAL(DOT_EQUAL, ".==");
+".=()"				LITERAL(DOT_CAST, ".=()");
+".==_"				LITERAL(DOT_EQUAL_RHS, ".==_");
+
+"<<"				LITERAL(META_LSHIFT, "<<");
+">>"				LITERAL(META_RSHIFT, ">>");
+"~"					LITERAL(META_ESCAPE, "~");
+"!"					LITERAL(META_INLINE, "!");
+"&"					LITERAL(META_EXECUTE, "&");
+"$"					LITERAL(META_RENAME, "$");
 
 {newline}+			yylineno += yyleng;
 {ws}+
@@ -358,19 +365,25 @@ static int s_tokenTypes[TOKEN_LAST - TOKEN_FIRST - 1] = {
 	BinaryOpASTNode::Type,		// DOT_EQUAL 332
 	BinaryOpASTNode::Type,		// DOT_CAST 333
 	BinaryOpASTNode::Type,		// DOT_EQUAL_RHS 334
-	ConstASTNode::Type,			// NUMBER_CONST 335
-	ConstASTNode::Type,			// STRING_CONST 336
-	VariableASTNode::Type,		// IDENT 337
-	VariableASTNode::Type,		// ATTRIBUTE_IDENT 338
-	UnaryKwdASTNode::Type,		// OPERATOR 339
-	0,							// PARENTHESIS 340
-	0,							// SQUARE_BRACKETS 341
-	CommentsASTNodeType,		// COMMENT 342
-	CommentsASTNodeType,		// INCOMPLETE_COMMENT 343
-	ConstASTNode::Type,			// INCOMPLETE_STRING 344
-	CppASTNodeType,				// CPP 345
-	0,							// PARSE_STMT 346
-	0,							// PARSE_FUNCTION_CALL_OBJECT 347
-	0,							// PARSE_TABLE_OBJECT 348
-	0,							// PARSE_NAMESPACE 349
+	LeafKwdASTNode::Type,		// META_LSHIFT 335
+	LeafKwdASTNode::Type,		// META_RSHIFT 336
+	UnaryKwdASTNode::Type,		// META_ESCAPE 337
+	UnaryKwdASTNode::Type,		// META_INLINE 338
+	UnaryKwdASTNode::Type,		// META_EXECUTE 339
+	UnaryKwdASTNode::Type,		// META_RENAME 340
+	ConstASTNode::Type,			// NUMBER_CONST 341
+	ConstASTNode::Type,			// STRING_CONST 342
+	VariableASTNode::Type,		// IDENT 343
+	VariableASTNode::Type,		// ATTRIBUTE_IDENT 344
+	UnaryKwdASTNode::Type,		// OPERATOR 345
+	0,							// PARENTHESIS 346
+	0,							// SQUARE_BRACKETS 347
+	CommentsASTNodeType,		// COMMENT 348
+	CommentsASTNodeType,		// INCOMPLETE_COMMENT 349
+	ConstASTNode::Type,			// INCOMPLETE_STRING 350
+	CppASTNodeType,				// CPP 351
+	0,							// PARSE_STMT 352
+	0,							// PARSE_FUNCTION_CALL_OBJECT 353
+	0,							// PARSE_TABLE_OBJECT 354
+	0,							// PARSE_NAMESPACE 355
 };

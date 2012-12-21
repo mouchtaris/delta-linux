@@ -233,6 +233,8 @@ bool DeltaASTStyler::VisitEnter (UsingASTNode* node)
 
 IMPLEMENT_EMPTY_VISIT_LEAVE(UsingASTNode)
 
+IMPLEMENT_EMPTY_VISIT_ENTER_AND_LEAVE(QuotedElementsASTNode)
+
 //**********************************************************************
 
 void DeltaASTStyler::highlight (DeltaASTNode* node)

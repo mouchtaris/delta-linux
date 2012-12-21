@@ -31,7 +31,7 @@ class DeltaGotoDefinition {
 	static EditorPosVector*		editorPositions;	
 	static util_ui32			refCounter;	
 	static util_ui32			currPosition;
-	static int					possiblePos;
+	static DeltaASTNode::Range	possibleRange;
 	static int					triedStartPos;
 	static int					targetEditorPos;
 	static void*				targetLangModule;
@@ -71,7 +71,8 @@ class DeltaGotoDefinition {
 									EditorWindow*		editor,
 									DeltaASTNode*		parent,
 									DeltaASTNode*		node,
-									int					startPos
+									int					startPos,
+									bool				searchingInParent = false
 								);
 
 	static bool					SearchDownDefinition (
@@ -85,6 +86,7 @@ class DeltaGotoDefinition {
 									const std::string&	id, 
 									EditorWindow*		editor,
 									DeltaASTNode*		node,
+									bool				includeFormals = true,
 									bool				doNotPositionAtVars = true
 								);
 
@@ -101,6 +103,8 @@ class DeltaGotoDefinition {
 									int					startPos
 								);
 	static int					ParseAround_Ident (EditorWindow* editor, int* pos);
+
+	static void					GotoEditorPos(EditorWindow* editor, const DeltaASTNode::Range& range);
 
 	///////////////////////////////////////////////////////////////////////////////
 

@@ -231,4 +231,12 @@ namespace ide {
 		}
 	}
 
+	//-----------------------------------------------------------------------
+
+	EXPORTED_SLOT_STATIC(FindAndReplace, void, OnAllEditorsClosed, (const std::string& invokerId), "AllEditorsClosed")
+	{
+		if (communi)
+			communi->ChangeEditor(true);
+	}
+
 } // namespace ide

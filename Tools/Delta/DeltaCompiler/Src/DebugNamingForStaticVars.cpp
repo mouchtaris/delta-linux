@@ -4,26 +4,9 @@
 //
 
 #include "DebugNamingForStaticVars.h"
-#include "TargetCode.h"
 #include "ustrings.h"
 
 /////////////////////////////////////////////////////////////////
-
-DebugNamingForStaticVars*	DebugNamingForStaticVars::singletonPtr =
-								(DebugNamingForStaticVars*) 0;
-
-void DebugNamingForStaticVars::SingletonCreate (void) {
-	DASSERT(!singletonPtr);
-	singletonPtr = DNEW(DebugNamingForStaticVars);
-}
-
-void DebugNamingForStaticVars::SingletonDestroy (void) {
-	DASSERT(singletonPtr);
-	DDELETE(singletonPtr);
-	singletonPtr = (DebugNamingForStaticVars*) 0;
-}
-
-//*****************************
 	
 DebugNamingForStaticVars::DebugNamingForStaticVars (void) {
 	haveProducedNames = false; 

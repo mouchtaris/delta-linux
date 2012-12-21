@@ -171,19 +171,19 @@ void ComponentRegistry::NotifyAddedUserCommand (
 	sigAddedUserCommand(compId, path, userCommand);
 }
 
-void ComponentRegistry::NotifyRemovedUserCommand (const std::string& compId, const String& path)
+void ComponentRegistry::NotifyRemovedUserCommand (const std::string& compId, const String& path, uint flags)
 {
-	sigRemovedUserCommand(compId, path);
+	sigRemovedUserCommand(compId, path, flags);
 }
 
-void ComponentRegistry::NotifyEnabledUserCommand (const std::string& compId, const String& path)
+void ComponentRegistry::NotifyEnabledUserCommand (const std::string& compId, const String& path, uint flags)
 {
-	sigEnabledUserCommand(compId, path);
+	sigEnabledUserCommand(compId, path, flags);
 }
 
-void ComponentRegistry::NotifyDisabledUserCommand (const std::string& compId, const String& path)
+void ComponentRegistry::NotifyDisabledUserCommand (const std::string& compId, const String& path, uint flags)
 {
-	sigDisabledUserCommand(compId, path);
+	sigDisabledUserCommand(compId, path, flags);
 }
 
 //**********************************************************************

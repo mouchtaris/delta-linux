@@ -12,9 +12,10 @@
 
 #include "DDebug.h"
 #include "Symbol.h"
+#include "CompileOptions.h"
 #include "DeltaByteCodeTypes.h"
 #include "InterCode.h"
-#include "ParseParms.h"
+#include "ParseActions.h"
 #include "DeltaCompErrorMsg.h"
 #include "ufunctors.h"
 
@@ -97,27 +98,9 @@ void DeltaQuad::WriteText (util_ui32 quadNo, FILE* fp) {
 
 //------------------------------------------------------------------
 
-DeltaQuadManager* DeltaQuadManager::singletonPtr = (DeltaQuadManager*) 0;
-
-void DeltaQuadManager::SingletonCreate (void) {
-	if (!singletonPtr)
-		singletonPtr = DNEW(DeltaQuadManager);
-}
-
-void DeltaQuadManager::SingletonDestroy (void) {
-	if (singletonPtr) {
-		DDELETE(singletonPtr);
-		singletonPtr = (DeltaQuadManager*) 0;
-	}
-}
-
-//------------------------------------------------------------------
-
-DeltaQuadManager::DeltaQuadManager (void) {
-
+DeltaQuadManager::DeltaQuadManager (void) : quads((DeltaQuad*) 0) {
 	Reset();
-	size	= (allocationsMade = 1) * DELTA_QUAD_ALLOCATION_SIZE;
-	quads	= (DeltaQuad*) DNEWARR(DeltaQuad, size);
+	DASSERT(quads);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -131,6 +114,10 @@ DeltaQuadManager::~DeltaQuadManager () {
 ////////////////////////////////////////////////////////////////
 
 void DeltaQuadManager::Reset (void) {
+	if (quads)
+		DDELARR(quads);
+	size			= (allocationsMade = 1) * DELTA_QUAD_ALLOCATION_SIZE;
+	quads			= (DeltaQuad*) DNEWARR(DeltaQuad, size);
 	currQuad		= DELTA_START_QUAD;
 	iterCounter		= 0;
 	quadsEmitted	= false;
@@ -219,8 +206,8 @@ void DeltaQuadManager::Emit (
 	quad.result		= result;
 	quad.label		= label;
 	quad.line		= 0;
-	quad.dropped	= ParseParms::InProductionMode() && ParseParms::InAssertStmt().inside();
-	quad.funcSerial = ParseParms::InsideFuncSerial();
+	quad.dropped	= COMPOPTIONS.GetProductionMode() && PARSEPARMS.InAssertStmt().inside();
+	quad.funcSerial = PARSEPARMS.InsideFuncSerial();
 	
 	Append(quad);
 }
@@ -305,7 +292,7 @@ void DeltaQuadManager::BackpatchBlockExits (
 				(*onBlockEnterFunc)(&blockExitCounter);
 
 		DASSERT(blockExitCounter >= 0);
-		quads[qlist].result = DeltaExpr::Make(blockExitCounter);
+		quads[qlist].result = EXPRFACTORY.Make(blockExitCounter);
 		qlist				= quads[qlist].label;
 	}
 }
@@ -367,7 +354,7 @@ void DeltaQuadManager::BackpatchExplicitTrapDisables (
 
 		DASSERT(tryOpenedCounter >= 0);
 		if (tryOpenedCounter > 0)
-			quads[qlist].arg1 = DeltaExpr::Make(tryOpenedCounter);			// store in operand the trap disable calls needed
+			quads[qlist].arg1 = EXPRFACTORY.Make(tryOpenedCounter);			// store in operand the trap disable calls needed
 		qlist = quads[qlist].label;
 	}
 }
@@ -427,7 +414,7 @@ void DeltaQuadManager::WriteText (const char* file) {
 		fclose(fp);	
 	}
 	else
-		DeltaCompMsg(
+		COMPMESSENGER.Msg(
 			DELTA_COMPILER_FAILED_PREFIX " to open file '%s' for writing intermediate code (%s).\n", 
 			file, 
 			strerror(errno)
@@ -504,10 +491,10 @@ void DeltaQuadManager::AfterOptimizationValidation (void) const {
 		// Retval as an rvalue should be used exclusively as 'temp = retval'.
 		DASSERT(
 			!q.arg1 ||
-			(	q.arg1 != DeltaExpr::GetReturnValue() || 
+			(	q.arg1 != TRANSLATOR.GetReturnValue() || 
 				(DPTR(q.result)->IsTemp() && q.opcode == DeltaIC_ASSIGN)	)
 		);
-		DASSERT(!q.arg2 || q.arg2 != DeltaExpr::GetReturnValue());
+		DASSERT(!q.arg2 || q.arg2 != TRANSLATOR.GetReturnValue());
 
 		if (q.opcode == DeltaIC_OBJNEW)
 			++objCreation;

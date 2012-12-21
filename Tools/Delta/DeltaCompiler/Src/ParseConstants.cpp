@@ -15,15 +15,24 @@
 #include "LibraryNamespaceHolder.h"
 #include "DeltaCompErrorMsg.h"
 
+///////////////////////////////////////////////////////////////////
+
+void Translator::DELTA_EXPR_EMIT_BOOL_TEST (DeltaExpr* expr, DeltaExpr* result, bool trueTest) {
+	QUADS.Emit(trueTest ? DeltaIC_JTRUETEST : DeltaIC_JFALSETEST, expr, NIL_EXPR, NIL_EXPR);
+	DPTR(result)->trueList = QUADS.MakeList(QUADS.CurrQuadNo());
+	QUADS.Emit(DeltaIC_JUMP, NIL_EXPR, NIL_EXPR, NIL_EXPR);
+	DPTR(result)->falseList = QUADS.MakeList(QUADS.CurrQuadNo());
+}
+
 //------------------------------------------------------------------
 // CONSTANT EXPRESSIONS.
 
 // The expression is actually the first argument, and the string const the
 // second one.
 
-DeltaExpr* Translate_StringConst (const char* str_2nd, DeltaExpr* e_1st){
+DeltaExpr* Translator::Translate_StringConst (const std::string& str_2nd, DeltaExpr* e_1st){
 	if (!e_1st)
-		return DeltaExpr::MakeConst(str_2nd);
+		return EXPRFACTORY.MakeConst(str_2nd);
 	else {
 		DPTR(e_1st)->strConst.append(str_2nd);	// Reuse e_1st
 		return e_1st;
@@ -32,9 +41,9 @@ DeltaExpr* Translate_StringConst (const char* str_2nd, DeltaExpr* e_1st){
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_StringifyDottedIdents (const char* id, DeltaExpr* prefix) {
+DeltaExpr* Translator::Translate_StringifyDottedIdents (const std::string& id, DeltaExpr* prefix) {
 	if (!prefix)
-		return DeltaExpr::MakeStringifiedConst(id);
+		return EXPRFACTORY.MakeStringifiedConst(id);
 	else {
 		DASSERT(DPTR(prefix)->IsStringified());
 		DPTR(prefix)->strConst.append(std::string(".") + id);	// Reuse prefix.
@@ -44,44 +53,44 @@ DeltaExpr* Translate_StringifyDottedIdents (const char* id, DeltaExpr* prefix) {
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_StringifyNamespaceIdent (const NameList& namespacePath) 
-	{ return DeltaExpr::MakeStringifiedConst(DELTANAMESPACES.MakeFullyQualifiedName(namespacePath)); }
+DeltaExpr* Translator::Translate_StringifyNamespaceIdent (const NameList& namespacePath) 
+	{ return EXPRFACTORY.MakeStringifiedConst(DELTANAMESPACES.MakeFullyQualifiedName(namespacePath)); }
 
-DeltaExpr* Translate_StringifyNamespaceIdent (const char* id) {
-	DeltaExpr* result = DeltaExpr::MakeStringifiedConst(
-							DELTANAMESPACES.MakeFullyQualifiedName(ParseParms::GetNamespacePath()) + 
+DeltaExpr* Translator::Translate_StringifyNamespaceIdent (const std::string& id) {
+	DeltaExpr* result = EXPRFACTORY.MakeStringifiedConst(
+							DELTANAMESPACES.MakeFullyQualifiedName(PARSEPARMS.GetNamespacePath()) + 
 							DELTA_LIBRARYNAMESPACE_SEPARATOR +
 							id
 						);
-	ParseParms::ClearNamespacePath();
+	PARSEPARMS.ClearNamespacePath();
 	return result;
 }
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_ConstValue (const std::string& s) {
-	DeltaExpr* expr = DNEW(DeltaExpr);
+DeltaExpr* Translator::Translate_ConstValue (const std::string& s) {
+	DeltaExpr* expr = EXPRFACTORY.New();
 	DPTR(expr)->SetString(s);
 	return expr;
 }
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_ConstValue (DeltaNumberValueType num) {
-	DeltaExpr* expr = DNEW(DeltaExpr);
+DeltaExpr* Translator::Translate_ConstValue (DeltaNumberValueType num) {
+	DeltaExpr* expr = EXPRFACTORY.New();
 	DPTR(expr)->SetNumber(num);
 	return expr;
 }
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_ConstValue (bool val) 
-	{ return DeltaExpr::MakeBool(val); }
+DeltaExpr* Translator::Translate_ConstValue (bool val) 
+	{ return EXPRFACTORY.MakeBool(val); }
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaExpr* Translate_ConstValue (void) {
-	DeltaExpr* expr = DNEW(DeltaExpr);
+DeltaExpr* Translator::Translate_ConstValue (void) {
+	DeltaExpr* expr = EXPRFACTORY.New();
 	DPTR(expr)->SetNil();
 	return expr;
 }

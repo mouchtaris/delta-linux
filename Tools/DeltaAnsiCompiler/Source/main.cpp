@@ -8,22 +8,19 @@
 
 //
 #include "DeltaCompilerInvoker.h"
-#include "DDebug.h"
-#include "uinit.h"
+#include "DeltaCompilerInit.h"
 //
 #include <iostream>
 
 /////////////////////////////
 
-static void onError (char const* const error) {
+static void onError (char const* const error, void*) {
 	std::cerr << error;
 	std::cerr.flush();
 }
 
 int main(int argc, char* argv[]) {
-	dinit(onError);
-	UtilPackage::Initialise();
-	//
+	DeltaCompilerInit::Initialise();
 	{
 		DeltaCompilerInvoker dcomp(argc, argv, onError);
 
@@ -34,8 +31,6 @@ int main(int argc, char* argv[]) {
 
 	}
 
-	UtilPackage::CleanUp();
-	dclose();
-
+	DeltaCompilerInit::CleanUp();
 	return 0;
 }

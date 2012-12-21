@@ -10,6 +10,7 @@
  *  Changes, addition and extensions by JL and latter by AS.
  *  Extension to support selective parsing of partial code segments, 
  *  Anthony Savidis, July 2010.
+ *  Added metaprogramming support, Yannis Lilis, August 2011.
  */
 
 #include "Common.h"
@@ -70,6 +71,18 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 	return node;
 }
 
+////////////////////////////////////////////////////////////////////////
+
+QuotedElementsASTNode* ExpressionListToQuotedElementList (ExpressionListASTNode* node)
+{
+	assert(node);
+	QuotedElementsASTNode* result = new QuotedElementsASTNode(node->GetRange());
+	for (ExpressionListASTNode::Iterator i = node->Begin(); i != node->End(); ++i)
+		result->AppendChild((*i)->Clone());
+	delete node;
+	return result;
+}
+
 //**********************************************************************
 
 #define YYERROR_VERBOSE 1
@@ -108,7 +121,6 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 	delta::TrapASTNode*				trapValue;
 
 	delta::FunctionASTNode*			funcValue;
-	delta::FunctionNameASTNode*		funcNameValue;
 
 	delta::TernaryOpASTNode*		ternaryOpValue;
 	delta::PrefixOpASTNode*			prefixOpValue;
@@ -127,9 +139,11 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 	delta::NewAttributeASTNode*		newAttributeValue;
 	delta::TableElemASTNode*		tableElemValue;
 	delta::TableElemsASTNode*		tableElemsValue;
-	delta::TableIndexListASTNode*	tableIListVlaue;
+	delta::TableIndexListASTNode*	tableIListValue;
 	delta::TableConstructASTNode*	tableCtorValue;
 	delta::UsingASTNode*			usingValue;
+	
+	delta::QuotedElementsASTNode*	elementsValue;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -143,21 +157,31 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 
 ////////////////////////////////////////////////////////////////////////
 
-%type	<nodeValue>			Lvalue Primary Term Stmt Expression ContentExpression FunctionAndTableObject AttributeId StringConstUsed LambdaCode
-%type	<nodeValue>			FunctionCallObject ActualArgument TableObject IndexExpression DotIndex DottedOpString IdentIndex
+%type	<nodeValue>			Lvalue Primary Term Stmt ExpressionListStmt Expression NonExprListCompoundOrFunctionStmt
+%type	<nodeValue>			ContentExpression FunctionAndTableObject AttributeId StringConstUsed LambdaCode
+%type	<nodeValue>			FunctionCallObject ActualArgument NonExpressionActualArgument TableObject IndexExpression
+%type	<nodeValue>			FunctionName FormalArg DotIndex DottedOpString IdentIndex DottedIdent 
+%type	<nodeValue>			SpecialExprListStmt QuotedStmt NonFunctionQuotedStmt NonExpressionElement
+%type	<nodeValue>			MetaStmt MetaExpression MetaGeneratedCode QuasiQuoted Ident
 %type	<nodeValue>			QualifiedId PureQualifiedId NonGlobalQualifiedId GlobalQualifiedId AttrFunction ForeachOpt
 %type	<exprListValue>		ExpressionList ContentList ForInitList ForRepeatList ActualArguments
-%type	<argListValue>		FormalArgs IdentList
+%type	<elementsValue>		QuotedElements QuotedElementList
+%type	<argListValue>		FormalArgs FormalArgList
 
-%destructor { delete $$; }	Lvalue ForeachOpt Primary Term Stmt Expression FunctionAndTableObject AttributeId StringConstUsed
-%destructor { delete $$; }	FunctionCallObject ActualArgument TableObject IndexExpression DotIndex DottedOpString
-%destructor { delete $$; }	QualifiedId PureQualifiedId NonGlobalQualifiedId GlobalQualifiedId
-%destructor { delete $$; }	ExpressionList ForInitList ForRepeatList ActualArguments
-%destructor { delete $$; }	FormalArgs IdentList
+%destructor { delete $$; }	Lvalue Primary Term Stmt ExpressionListStmt Expression NonExprListCompoundOrFunctionStmt
+%destructor { delete $$; }	ContentExpression FunctionAndTableObject AttributeId StringConstUsed LambdaCode
+%destructor { delete $$; }	FunctionCallObject ActualArgument NonExpressionActualArgument TableObject IndexExpression
+%destructor { delete $$; }	FunctionName FormalArg DotIndex DottedOpString IdentIndex DottedIdent 
+%destructor { delete $$; }	SpecialExprListStmt QuotedStmt NonFunctionQuotedStmt NonExpressionElement
+%destructor { delete $$; }	MetaStmt MetaExpression MetaGeneratedCode QuasiQuoted Ident
+%destructor { delete $$; }	QualifiedId PureQualifiedId NonGlobalQualifiedId GlobalQualifiedId AttrFunction ForeachOpt
+%destructor { delete $$; }	ExpressionList ContentList ForInitList ForRepeatList ActualArguments
+%destructor { delete $$; }	QuotedElements QuotedElementList
+%destructor { delete $$; }	FormalArgs FormalArgList
 
-%type	<stmtsValue>		Stmts CodeDefs UsingDirectives UsingDirectivesStmts
+%type	<stmtsValue>		Stmts CodeDefs TwoOrMoreQuotedStmts SpecialExprListStmts
 %type	<unaryKwdValue>		AssertStmt ReturnStmt ThrowStmt AttributeSet AttributeGet FunctionLinkage
-%type	<usingValue>		UsingNamespace
+%type	<usingValue>		UsingDirective
 %type	<argValue>			FormalArgsSuffix
 %type	<leafKwdValue>		LoopCtrlStmt
 %type	<whileValue>		WhileStmt
@@ -167,13 +191,14 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 %type	<elseValue>			ElseStmt
 %type	<compValue>			Compound
 %type	<funcValue>			Function LambdaFunction 
-%type	<funcNameValue>		FunctionName
 %type	<ternaryOpValue>	TernaryExpression
 %type	<tryValue>			TryStmt
 %type	<trapValue>			TrapStmt
 
-%destructor { delete $$; }	Stmts CodeDefs
-%destructor { delete $$; }	AssertStmt ReturnStmt ThrowStmt AttributeSet AttributeGet
+%destructor { delete $$; }	Stmts CodeDefs TwoOrMoreQuotedStmts SpecialExprListStmts
+%destructor { delete $$; }	AssertStmt ReturnStmt ThrowStmt AttributeSet AttributeGet FunctionLinkage
+%destructor { delete $$; }	UsingDirective
+%destructor { delete $$; }	FormalArgsSuffix
 %destructor { delete $$; }	LoopCtrlStmt
 %destructor { delete $$; }	WhileStmt
 %destructor { delete $$; }	ForStmt
@@ -181,8 +206,7 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 %destructor { delete $$; }	IfStmt
 %destructor { delete $$; }	ElseStmt
 %destructor { delete $$; }	Compound
-%destructor { delete $$; }	Function
-%destructor { delete $$; }	FunctionName
+%destructor { delete $$; }	Function LambdaFunction
 %destructor { delete $$; }	TernaryExpression
 %destructor { delete $$; }	TryStmt
 %destructor { delete $$; }	TrapStmt
@@ -198,18 +222,18 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 %destructor { delete $$; }	ConstValueExceptString
 
 %type	<newAttributeValue>	NewAttribute
-%type	<tableElemValue>	TableElement IdentIndexElement
+%type	<tableElemValue>	TableElement IdentIndexElement IndexedValues
 %type	<tableElemsValue>	TableElements
-%type	<tableIListVlaue>	IndexedList
+%type	<tableIListValue>	IndexedList
 %type	<tableCtorValue>	TableConstructor
 
 %destructor { delete $$; }	NewAttribute
-%destructor { delete $$; }	TableElement
+%destructor { delete $$; }	TableElement IdentIndexElement IndexedValues
 %destructor { delete $$; }	TableElements
 %destructor { delete $$; }	IndexedList
 %destructor { delete $$; }	TableConstructor
 
-%type	<literalValue>	OpString FuncClass
+%type	<literalValue>	OpString FuncClass MultipleEscapes
 %token	<literalValue>	FUNCTION RETURN ASSERT LAMBDA LAMBDA_REF ONEVENT METHOD SELF ARGUMENTS STATIC CONST KWD_IF
 %token	<literalValue>	ELSE WHILE FOR FOREACH NIL AND NOT OR TRUE FALSE BREAK CONTINUE LOCAL TRY TRAP THROW USING
 %token	<literalValue>	ADD SUB MUL DIV MOD GT LT NE EQ GE LE ASSIGN
@@ -219,6 +243,7 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 %token	<literalValue>	ADD_A SUB_A MUL_A DIV_A MOD_A
 %token	<literalValue>	SET GET ATTRIBUTE STRINGIFICATION NEWSELF
 %token	<literalValue>	DOT_EQUAL DOT_CAST DOT_EQUAL_RHS
+%token	<literalValue>	META_LSHIFT META_RSHIFT META_ESCAPE META_INLINE META_EXECUTE META_RENAME
 
 ////////////////////////////////////////////////////////////////////////
 // Untyped tokens
@@ -245,7 +270,7 @@ DeltaASTNode* ExpressionToConstKey (YYLTYPE& pos, DeltaASTNode* node)
 %nonassoc	GE LE GT LT
 %left		ADD SUB
 %left		MUL DIV MOD
-%right		NOT PLUSPLUS MINUSMINUS UMINUS
+%right		NOT PLUSPLUS MINUSMINUS UMINUS META_ESCAPE META_INLINE
 %nonassoc	DOT_ASSIGN
 %left		DOT
 %left		SQUARE_BRACKETS
@@ -282,42 +307,17 @@ DeltaCode	:	CodeDefs															{ ctx.GetProgramDesc().SetAST($1);	}
 			|	PARSE_NAMESPACE					NullifyTree	QualifiedId				{ ctx.GetProgramDesc().SetNamespaceAST($3);	}
 			;
 
-CodeDefs:					/* Empty code allowed. */	{ $$ = 0; }
-						|	Stmts						{ $$ = $1; }
-						|	UsingDirectivesStmts		{ $$ = $1; }
-						;
-						
-UsingDirectivesStmts:		UsingDirectives
-								{ $$ = $1; }
-						|	UsingDirectivesStmts Stmt
-								{	$$ = $1; 
-									$$->AppendChild($2); 
-									$$->GetRange().right = @2.last_column; 
-								}
-						;
+CodeDefs	:	Stmts		{ $$ = $1;	}
+			|	/* Empty */ { $$ = 0;	}
+			;
+			
+Stmts	:	Stmts Stmt	{ $$ = CreateList<StmtsASTNode>(@1, @2, $1, $2); }
+		|	Stmt		{ $$ = CreateList<StmtsASTNode>(@1, @1, 0, $1);	 }
+		;
 
-UsingDirectives:			UsingDirectives UsingNamespace	
-							{  
-								$$ = $1;
-								$$->AppendChild($2);
-								$$->GetRange().right = @2.last_column;
-							}
-						|	UsingNamespace	
-							{
-								$$ = CreateNode<StmtsASTNode>(@1, @1);
-								$$->AppendChild($1);
-							}
-						;
-
-Stmts	:	Stmts Stmt {
-				$$ = $1;
-				$$->AppendChild($2);
-				$$->GetRange().right = @2.last_column;
-			}
-		|	Stmt {
-				$$ = CreateNode<StmtsASTNode>(@1, @1);
-				$$->AppendChild($1);
-			}
+Ident	:	META_RENAME IDENT	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @2, CreateNode<VariableASTNode>(@2, @2), $1); }
+		|	IDENT				{ $$ = CreateNode<VariableASTNode>(@1, @1); }
+		|	MetaGeneratedCode	{ $$ = $1; }
 		;
 
 ////////////////////////////////////////////////////////////////////////
@@ -328,11 +328,13 @@ FuncClass	:	FUNCTION	{ $$ = $1; }
 			|	METHOD		{ $$ = $1; }
 			;
 
-FunctionLinkage:		LOCAL		{ $$ = $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @1, 0, $1);  }
-					|				{ $$ = 0;  }
+FunctionLinkage:		LOCAL		{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @1, 0, $1);  }
+					|	/* Empty */	{ $$ = 0;  }
 					;
 			
-FunctionName:	IDENT					{ $$ = CreateNode<FunctionNameASTNode>(@1, @1); }
+FunctionName:	META_RENAME IDENT		{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @2, CreateNode<FunctionNameASTNode>(@2, @2), $1); }
+			|	IDENT					{ $$ = CreateNode<FunctionNameASTNode>(@1, @1); }
+			|	MetaGeneratedCode		{ $$ = $1; }
 			|	OPERATOR OperatorMethod	{ $$ = CreateNode<FunctionNameASTNode>(@1, @2); }
 			|	ATTRIBUTE				{ $$ = CreateNode<FunctionNameASTNode>(@1, @1); }
 			|	/* Empty */				{ $$ = 0; }
@@ -343,7 +345,7 @@ OperatorMethod	:	OpString
 				|	DOT_ASSIGN
 				;
 
-FormalArgs	:	'(' IdentList FormalArgsSuffix	{
+FormalArgs	:	'(' FormalArgList FormalArgsSuffix	{
 					$$ = $2;
 					if ($3) {
 						$$->AppendChild($3);
@@ -369,15 +371,13 @@ FormalArgsSuffix:	')'				{ $$ = 0; }
 				;
 
 
-IdentList	:	IdentList ',' IDENT {
-					$$ = $1;
-					$$->AppendChild(CreateNode<ArgASTNode>(@3, @3));
-					$$->GetRange().right = @3.last_column;
-				}
-			|	IDENT {
-					$$ = CreateNode<ArgListASTNode>(@1, @1);
-					$$->AppendChild(CreateNode<ArgASTNode>(@1, @1));
-				}
+FormalArgList	:	FormalArgList ',' FormalArg	{ $$ = CreateList<ArgListASTNode>(@1, @3, $1, $3);	}
+				|	FormalArg					{ $$ = CreateList<ArgListASTNode>(@1, @1, 0, $1);	}
+				;
+
+FormalArg	:	META_RENAME IDENT	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @2, CreateNode<ArgASTNode>(@2, @2), $1); }
+			|	IDENT				{ $$ = CreateNode<ArgASTNode>(@1, @1); }
+			|	MetaGeneratedCode	{ $$ = $1; }
 			;
 
 Function	:	FuncClass FunctionLinkage FunctionName FormalArgs Compound {
@@ -403,15 +403,19 @@ LambdaCode	:	'{' Expression '}' { $$ = $2; }
 ////////////////////////////////////////////////////////////////////////
 // Attributes
 //
-AttributeId	:		ATTRIBUTE_IDENT		{ $$ = CreateNode<AttributeASTNode>(@1, @1); }
-				|	ATTRIBUTE IDENT		{ $$ = CreateNode<AttributeASTNode>(@1, @2); }
-				|	ATTRIBUTE KwdIdent	{ $$ = CreateNode<AttributeASTNode>(@1, @2); }
-				;
+AttributeId	:	ATTRIBUTE_IDENT				{ $$ = CreateNode<AttributeASTNode>(@1, @1); }
+			|	ATTRIBUTE IDENT				{ $$ = CreateNode<AttributeASTNode>(@1, @2); }
+			|	ATTRIBUTE MetaGeneratedCode	{ $$ = $2; }
+			|	ATTRIBUTE KwdIdent			{ $$ = CreateNode<AttributeASTNode>(@1, @2); }
+			;
 
-IdentIndex:			AttributeId
-				|	DOT StringIdent		{ $$ = CreateNode<TableConstKeyASTNode>(@1, @2, CONST_KEY_DOTID); }
-				;
-				
+DottedIdent	:	DOT StringIdent		{ $$ = CreateNode<TableConstKeyASTNode>(@1, @2, CONST_KEY_DOTID); }
+			;
+
+IdentIndex	:	AttributeId { $$ = $1; }
+			|	DottedIdent { $$ = $1; }
+			;
+
 IdentIndexElement:	IdentIndex ':' AttrFunction {
 						$$ =	CreateBinaryNode<TableElemASTNode>(
 									@1, 
@@ -419,6 +423,7 @@ IdentIndexElement:	IdentIndex ':' AttrFunction {
 									CreateNode<ConstASTNode>(@1, @1, CONST_STRING), 
 									$3
 								);
+						delete $1;
 					}
 					;
 						
@@ -440,36 +445,42 @@ AttributeSet:	SET AttrFunction	{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, $
 AttributeGet:	GET AttrFunction	{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, $2, $1); }
 			;
 
-
-
 ////////////////////////////////////////////////////////////////////////
 // Statements support
 //
-Stmt:	ExpressionList ';'	{ $$ = CreateUnaryNode<OtherStmtASTNode>(@1, @2, $1); }
-	|	AssertStmt			{ $$ = $1; }
-	|	WhileStmt			{ $$ = $1; }
-	|	ForStmt				{ $$ = $1; }
-	|	ForeachStmt			{ $$ = $1; }
-	|	IfStmt				{ $$ = $1; }
-	|	ReturnStmt 			{ $$ = $1; }
-	|	Compound			{ $$ = $1; }
-	|	LoopCtrlStmt ';'	{ $$ = CreateUnaryNode<OtherStmtASTNode>(@1, @2, $1); }
-	|	TryStmt				{ $$ = $1; }
-	|	ThrowStmt 			{ $$ = $1; }
-	|	Function			{ $$ = $1; }
-	|	';'					{ $$ = CreateUnaryNode<OtherStmtASTNode>(@1, @1, 0); }
-	|	error {
-			$$ = 0;
-			ctx.GetProgramDesc().AddNotParsed(Range(@1.first_column, @1.last_column));
-		}
+Stmt:	NonExprListCompoundOrFunctionStmt	{ $$ = $1; }
+	|	ExpressionListStmt					{ $$ = $1; }
+	|	Compound							{ $$ = $1; }
+	|	Function							{ $$ = $1; }
 	;
+
+ExpressionListStmt	:	ExpressionList ';'	{ $$ = CreateUnaryNode<OtherStmtASTNode>(@1, @2, $1); }
+					;
+
+NonExprListCompoundOrFunctionStmt	:	AssertStmt			{ $$ = $1; }
+									|	WhileStmt			{ $$ = $1; }
+									|	ForStmt				{ $$ = $1; }
+									|	ForeachStmt			{ $$ = $1; }
+									|	IfStmt				{ $$ = $1; }
+									|	ReturnStmt 			{ $$ = $1; }	
+									|	LoopCtrlStmt ';'	{ $$ = CreateUnaryNode<OtherStmtASTNode>(@1, @2, $1); }
+									|	TryStmt				{ $$ = $1; }
+									|	ThrowStmt 			{ $$ = $1; }
+									|	';'					{ $$ = CreateUnaryNode<OtherStmtASTNode>(@1, @1, 0); }
+									|	UsingDirective		{ $$ = $1; }
+									|	MetaStmt			{ $$ = $1; }
+									|	error {
+											$$ = 0;
+											ctx.GetProgramDesc().AddNotParsed(Range(@1.first_column, @1.last_column));
+										}
+									;
 
 LoopCtrlStmt:	BREAK		{ $$ = CreateNode<LeafKwdASTNode>(@1, @1, $1); }
 			|	CONTINUE	{ $$ = CreateNode<LeafKwdASTNode>(@1, @1, $1); }
 			;
 
 Compound:	'{' Stmts '}'	{ $$ = CreateUnaryNode<CompoundASTNode>(@1, @3, $2); }
-		|	'{' '}'			{ $$ = CreateUnaryNode<CompoundASTNode>(@1, @2, 0); }
+		|	'{' '}'			{ $$ = CreateUnaryNode<CompoundASTNode>(@1, @2, 0);	 }
 		;
 
 AssertStmt	:	ASSERT Expression ';' { $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @3, $2, $1); }
@@ -539,9 +550,9 @@ TryStmt	:	TRY Stmt TrapStmt {
 			}
 		;
 
-TrapStmt:	TRAP IDENT Stmt {
+TrapStmt:	TRAP Ident Stmt {
 				$$ = CreateNode<TrapASTNode>(@1, @3);
-				$$->SetChild<0>(CreateNode<ArgASTNode>(@2, @2));
+				$$->SetChild<0>($2);
 				$$->SetChild<1>($3);
 			}
 		;
@@ -549,7 +560,7 @@ TrapStmt:	TRAP IDENT Stmt {
 ////////////////////////////////////////////////////////////////////////
 // Namespaces
 //
-UsingNamespace	:	USING QualifiedId ';' {
+UsingDirective	:	USING QualifiedId ';' {
 						$$ = CreateNode<UsingASTNode>(@1, @3, $1);
 						$$->SetChild<0>($2);
 					}
@@ -557,18 +568,22 @@ UsingNamespace	:	USING QualifiedId ';' {
 						$$ = CreateNode<UsingASTNode>(@1, @4, $1);
 						$$->SetChild<1>(CreateNode<StringifiedIdASTNode>(@2, @3));
 					}
+				|	USING STRINGIFICATION MetaGeneratedCode ';' {
+						$$ = CreateNode<UsingASTNode>(@1, @4, $1);
+						$$->SetChild<1>($3);
+					}
 				;
 
 QualifiedId	:	NonGlobalQualifiedId	{ $$ = $1; }
 			|	GlobalQualifiedId		{ $$ = $1; }
 			;
 
-PureQualifiedId	:	NonGlobalQualifiedId GLOBAL_SCOPE IDENT
-						{ $$ = CreateBinaryNode<BinaryOpASTNode>(@1, @3, $1, CreateNode<VariableASTNode>(@3, @3), $2); }
+PureQualifiedId	:	NonGlobalQualifiedId GLOBAL_SCOPE Ident
+						{ $$ = CreateBinaryNode<BinaryOpASTNode>(@1, @3, $1, $3, $2); }
 				;
 
 NonGlobalQualifiedId:	PureQualifiedId	{ $$ = $1; }
-					|	IDENT			{ $$ = CreateNode<VariableASTNode>(@1, @1); }
+					|	Ident			{ $$ = $1; }
 					;
 
 GlobalQualifiedId	:	GLOBAL_SCOPE NonGlobalQualifiedId { $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @2, $2, $1); }
@@ -586,9 +601,8 @@ Expression	:	AssignExpression		{ $$ = $1; }
 			|	Term					{ $$ = $1; }
 			;
 
-ConstAssignExpression	:	CONST IDENT ASSIGN Expression {
-								UnaryKwdASTNode* kwd =
-									CreateUnaryNode<UnaryKwdASTNode>(@1, @2, CreateNode<VariableASTNode>(@2, @2), $1);
+ConstAssignExpression	:	CONST Ident ASSIGN Expression {
+								UnaryKwdASTNode* kwd = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, $2, $1);
 								$$ = CreateBinaryNode<BinaryOpASTNode>(@1, @4, kwd, $4, $3); 
 							}
 						;
@@ -648,9 +662,10 @@ Term:	Lvalue PLUSPLUS				{ $$ = CreateUnaryNode<SuffixOpASTNode>(@1, @2, $1, $2)
 	|	SUB Expression %prec UMINUS { $$ = CreateUnaryNode<PrefixOpASTNode>(@1, @2, $2, $1); }
 	|	NOT Expression				{ $$ = CreateUnaryNode<PrefixOpASTNode>(@1, @2, $2, $1); }
 	|	Primary						{ $$ = $1; }
+	|	MetaExpression				{ $$ = $1; }
 	;
 
-Primary	:	FunctionAndTableObject	{ $$ = $1; }
+Primary	:	FunctionCallObject		{ $$ = $1; }
 		|	ConstValueExceptString	{ $$ = $1; }
 		|	LambdaFunction			{ $$ = $1; }
 		;
@@ -660,7 +675,6 @@ FunctionAndTableObject	:	Lvalue				{ $$ = $1; }
 						|	TableConstructor	{ $$ = $1; }
 						|	'(' Function ')'	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @3, $2, "()"); }
 						|	'(' Expression ')'	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @3, $2, "()"); }
-						|	StringConstUsed		{ $$ = $1; }
 						|	SELF				{ $$ = CreateNode<LeafKwdASTNode>(@1, @1, $1); }
 						|	ARGUMENTS			{ $$ = CreateNode<LeafKwdASTNode>(@1, @1, $1); }
 						|	LAMBDA_REF			{ $$ = CreateNode<LeafKwdASTNode>(@1, @1, $1); }
@@ -677,33 +691,33 @@ StringConst	:				StringConst STRING_CONST
 						|	STRING_CONST
 						;
 
-KwdIdent:					KWD_IF				
-						|	ELSE			
-						|	FUNCTION		
-						|	RETURN			
-						|	ONEVENT			
-						|	WHILE			
-						|	FOR				
-						|	FOREACH			
-						|	NIL				
-						|	LOCAL			
-						|	AND				
-						|	NOT				
-						|	OR				
-						|	LAMBDA			
-						|	TRY				
-						|	TRAP			
-						|	THROW			
-						|	USING			
-						|	ASSERT			
-						|	TRUE			
-						|	FALSE			
-						|	BREAK			
-						|	CONTINUE		
-						|	STATIC			
-						|	CONST			
-						|	METHOD			
-						|	SELF			
+KwdIdent:					KWD_IF
+						|	ELSE
+						|	FUNCTION
+						|	RETURN
+						|	ONEVENT
+						|	WHILE
+						|	FOR
+						|	FOREACH
+						|	NIL
+						|	LOCAL
+						|	AND
+						|	NOT
+						|	OR
+						|	LAMBDA
+						|	TRY
+						|	TRAP
+						|	THROW
+						|	USING
+						|	ASSERT
+						|	TRUE
+						|	FALSE
+						|	BREAK
+						|	CONTINUE
+						|	STATIC
+						|	CONST
+						|	METHOD
+						|	SELF
 						|	ARGUMENTS
 						;
 						
@@ -715,8 +729,8 @@ StringifyDottedIdents	:	STRINGIFICATION StringIdent
 						|	StringifyDottedIdents DOT StringIdent
 						;
 
-StringifyNamespaceIdent	:	STRINGIFICATION PureQualifiedId
-						|	STRINGIFICATION GlobalQualifiedId
+StringifyNamespaceIdent	:	STRINGIFICATION PureQualifiedId		{ delete $2; }
+						|	STRINGIFICATION GlobalQualifiedId	{ delete $2; }
 						;
 
 StringConstUsed	:	StringConst				{ $$ = CreateNode<ConstASTNode>(@1, @1, CONST_STRING); }
@@ -755,24 +769,21 @@ OpString:	ADD
 // Calls
 //
 FunctionCallObject	:	FunctionAndTableObject	{ $$ = $1; }
+					|	StringConstUsed			{ $$ = $1; }
 					;
 
-ActualArguments	:	ActualArguments ',' ActualArgument {
-						$$ = $1;
-						$$->AppendChild($3);
-						$$->GetRange().right = @3.last_column;
-					}
-				|	ActualArgument {
-						$$ = CreateNode<ExpressionListASTNode>(@1, @1);
-						$$->AppendChild($1);
-					}
+ActualArguments	:	ActualArguments ',' ActualArgument	{ $$ = CreateList<ExpressionListASTNode>(@1, @3, $1, $3);	}
+				|	ActualArgument						{ $$ = CreateList<ExpressionListASTNode>(@1, @1, 0, $1);	}
 				;
 
-ActualArgument	:	Expression			{ $$ = $1; }
-				|	'|' Expression '|'	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @3, $2, "||"); }
-				|	TRIPLE_DOT			{ $$ = CreateNode<LeafKwdASTNode>(@1, @1, $1); }
-				|	Function			{ $$ = $1; }
+ActualArgument	:	Expression					{ $$ = $1; }
+				|	NonExpressionActualArgument	{ $$ = $1; }
 				;
+				
+NonExpressionActualArgument	:	'|' Expression '|'	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @3, $2, "||"); }
+							|	TRIPLE_DOT			{ $$ = CreateNode<LeafKwdASTNode>(@1, @1, $1); }
+							|	Function			{ $$ = $1; }
+							;
 
 FunctionCall	:	FunctionCallObject '(' ActualArguments ')' %prec PARENTHESIS {
 						$$ = CreateNode<CallASTNode>(@1, @4);
@@ -789,25 +800,18 @@ FunctionCall	:	FunctionCallObject '(' ActualArguments ')' %prec PARENTHESIS {
 					}
 				;
 
-ExpressionList	:	ExpressionList ',' Expression {
-						$$ = $1;
-						$$->AppendChild($3);
-						$$->GetRange().right = @3.last_column;
-					}
-				|	Expression {
-						$$ = CreateNode<ExpressionListASTNode>(@1, @1);
-						$$->AppendChild($1);
-					}
+ExpressionList	:	ExpressionList ',' Expression	{ $$ = CreateList<ExpressionListASTNode>(@1, @3, $1, $3);	}
+				|	Expression						{ $$ = CreateList<ExpressionListASTNode>(@1, @1, 0, $1);	}
 				;
 
 ////////////////////////////////////////////////////////////////////////
 // Lvalues
 //
-Lvalue	:	QualifiedId			{ $$ = $1; }
-		|	ATTRIBUTE_IDENT		{ $$ = CreateNode<AttributeASTNode>(@1, @1); }
-		|	STATIC IDENT		{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, CreateNode<VariableASTNode>(@2, @2), $1); }
-		|	LOCAL IDENT 		{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, CreateNode<VariableASTNode>(@2, @2), $1); }
-		|	TableContent		{ $$ = $1; }
+Lvalue	:	QualifiedId		{ $$ = $1; }
+		|	AttributeId		{ $$ = $1; }
+		|	STATIC Ident	{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, $2, $1); }
+		|	LOCAL Ident 	{ $$ = CreateUnaryNode<UnaryKwdASTNode>(@1, @2, $2, $1); }
+		|	TableContent	{ $$ = $1; }
 		;
 
 ////////////////////////////////////////////////////////////////////////
@@ -850,52 +854,105 @@ TableConstructor:	'[' TableElements ']'	{ $$ = CreateUnaryNode<TableConstructAST
 				|	'[' ']'					{ $$ = CreateUnaryNode<TableConstructASTNode>(@1, @2, 0); }
 				;
 
-TableElements	:	TableElements ',' TableElement {
-						$$ = $1;
-						$$->AppendChild($3);
-						$$->GetRange().right = @3.last_column;
-					}
-				|	TableElement {
-						$$ = CreateNode<TableElemsASTNode>(@1, @1);
-						$$->AppendChild($1);
-					}
+TableElements	:	TableElements ',' TableElement	{ $$ = CreateList<TableElemsASTNode>(@1, @3, $1, $3);	}
+				|	TableElement					{ $$ = CreateList<TableElemsASTNode>(@1, @1, 0, $1);	}
 				;
 
 TableElement:	Expression								{ $$ = CreateBinaryNode<TableElemASTNode>(@1, @1, 0, $1);	}
 			|	Function								{ $$ = CreateBinaryNode<TableElemASTNode>(@1, @1, 0, $1);	}
-			|	'{' IndexedList ':' ContentList '}'		{ $$ = CreateBinaryNode<TableElemASTNode>(@1, @5, $2, $4);	}
+			|	IndexedValues							{ $$ = $1; }
 			|   NewAttribute							{ $$ = CreateBinaryNode<TableElemASTNode>(@1, @1, 0, $1);	}
 			|	IdentIndexElement						{ $$ = $1;}
 			;
 
-ContentList:		ContentList ',' ContentExpression {
-						$$ = $1;
-						$$->AppendChild($3);
-						$$->GetRange().right = @3.last_column;
-					}
-				|	ContentExpression {
-						$$ = CreateNode<ExpressionListASTNode>(@1, @1);
-						$$->AppendChild($1);
-					}
+ContentList:		ContentList ',' ContentExpression	{ $$ = CreateList<ExpressionListASTNode>(@1, @3, $1, $3);	}
+				|	ContentExpression					{ $$ = CreateList<ExpressionListASTNode>(@1, @1, 0, $1);	}
 				;
 
 ContentExpression:		Expression		{ $$ = $1; }
 					|	Function		{ $$ = $1; }
 						;
 
-IndexExpression	:	Expression			{ $$ = ExpressionToConstKey(@1, $1); }
-				|	DOT StringIdent		{ $$ = CreateNode<TableConstKeyASTNode>(@1, @2, CONST_KEY_DOTID); }
-				|	OpString			{ $$ = CreateNode<TableConstKeyASTNode>(@1, @1, CONST_KEY_OPSTRING); }
+IndexExpression	:	Expression		{ $$ = ExpressionToConstKey(@1, $1); }
+				|	DottedIdent		{ $$ = $1; }
+				|	OpString		{ $$ = CreateNode<TableConstKeyASTNode>(@1, @1, CONST_KEY_OPSTRING); }
 				;
 
-IndexedList	:	IndexedList ',' IndexExpression {
-					$$ = $1;
-					$$->AppendChild($3);
-					$$->GetRange().right = @3.last_column;
-				}
-			|	IndexExpression {
-					$$ = CreateNode<TableIndexListASTNode>(@1, @1);
-					$$->AppendChild($1);
-				}
+IndexedList	:	IndexedList ',' IndexExpression	{ $$ = CreateList<TableIndexListASTNode>(@1, @3, $1, $3);	}
+			|	IndexExpression					{ $$ = CreateList<TableIndexListASTNode>(@1, @1, 0, $1);	}
 			;
-%%
+
+IndexedValues	:	'{' IndexedList ':' ContentList '}'	{ $$ = CreateBinaryNode<TableElemASTNode>(@1, @5, $2, $4);	}
+				;
+
+////////////////////////////////////////////////////////////////////////
+// Metaprogramming
+//
+MultipleEscapes	:	MultipleEscapes META_ESCAPE	{ $$ = $1; }
+				|	META_ESCAPE					{ $$ = $1; }
+				;
+
+MetaGeneratedCode	:	MultipleEscapes '(' Expression ')'	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @4, $3, $1);	}
+					|	MultipleEscapes IDENT
+							{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @2, CreateNode<VariableASTNode>(@2, @2), $1); }
+					|	META_INLINE		'(' Expression ')'	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @4, $3, $1); }
+					;
+
+NonExpressionElement	:	IndexedValues				{ $$ = $1; }
+						|	NewAttribute				{ $$ = $1; }
+						|	IdentIndexElement			{ $$ = $1; }
+						|	DottedIdent		 			{ $$ = $1; }
+						|	OpString					{ $$ = CreateNode<TableConstKeyASTNode>(@1, @1, CONST_KEY_OPSTRING); }
+						|	NonExpressionActualArgument	{ $$ = $1; }
+						;
+
+QuotedElementList	:	ExpressionList ',' NonExpressionElement
+							{ $$ = CreateList<QuotedElementsASTNode>(@1, @3, ExpressionListToQuotedElementList($1), $3); }
+					|	QuotedElementList ',' NonExpressionElement
+							{ $$ = CreateList<QuotedElementsASTNode>(@1, @3, $1, $3);	}
+					|	QuotedElementList ',' Expression
+							{ $$ = CreateList<QuotedElementsASTNode>(@1, @3, $1, $3);	}
+					|	NonExpressionElement	{ $$ = CreateList<QuotedElementsASTNode>(@1, @1, 0, $1); }
+					;
+					
+QuotedElements	:	QuotedElementList	{ $$ = $1; }
+				|	ExpressionList		{ $$ = ExpressionListToQuotedElementList($1); }
+				;
+
+SpecialExprListStmt	:	NonExprListCompoundOrFunctionStmt	{ $$ = $1; }
+					|	IndexedList ';'						{ $$ = $1; }
+					|	Compound							{ $$ = $1; }
+					|	Function							{ $$ = $1; }
+					;
+
+SpecialExprListStmts:	SpecialExprListStmts SpecialExprListStmt	{ $$ = CreateList<StmtsASTNode>(@1, @2, $1, $2); }
+					|	SpecialExprListStmt							{ $$ = CreateList<StmtsASTNode>(@1, @1, 0, $1);	 }
+					;
+
+NonFunctionQuotedStmt	:	NonExprListCompoundOrFunctionStmt	{ $$ = $1; }
+						|	ExpressionListStmt					{ $$ = $1; }
+						|	'{' SpecialExprListStmts '}'		{ $$ = CreateUnaryNode<CompoundASTNode>(@1, @3, $2); }
+						|	'{' '}'								{ $$ = CreateUnaryNode<CompoundASTNode>(@1, @2, 0);	 }
+						;
+
+QuotedStmt	:	NonFunctionQuotedStmt	{ $$ = $1; }
+			|	Function				{ $$ = $1; }
+			;
+				
+TwoOrMoreQuotedStmts	:	TwoOrMoreQuotedStmts QuotedStmt	{ $$ = CreateList<StmtsASTNode>(@1, @2, $1, $2); }
+						|	QuotedStmt QuotedStmt {
+								$$ = CreateList<StmtsASTNode>(@1, @2, 0, $1);
+								$$->AppendChild($2);
+							}
+						;
+
+QuasiQuoted	:	QuotedElements			{ $$ = $1; }
+			|	NonFunctionQuotedStmt	{ $$ = CreateList<StmtsASTNode>(@1, @1, 0, $1); }
+			|	TwoOrMoreQuotedStmts	{ $$ = $1; }
+			;
+
+MetaExpression	:	META_LSHIFT QuasiQuoted META_RSHIFT	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @3, $2, "<<>>"); }
+				;
+
+MetaStmt:	META_EXECUTE Stmt	{ $$ = CreateUnaryNode<UnaryOpASTNode>(@1, @2, $2, $1); }
+		;

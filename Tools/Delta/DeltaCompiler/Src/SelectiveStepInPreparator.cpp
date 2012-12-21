@@ -10,19 +10,15 @@
 #include <list>
 #include <algorithm>
 
-std::list<DeltaUnparsedCallsInStmt*>*		
-						SelectiveStepInPreparator::stmtStack = (std::list<DeltaUnparsedCallsInStmt*>*) 0;
-DeltaUnparsedCallsInStmt*			
-						SelectiveStepInPreparator::currStmt	= (DeltaUnparsedCallsInStmt*) 0;
-DeltaUnparsedCallsInStmtHolder*		
-						SelectiveStepInPreparator::allStmts	= (DeltaUnparsedCallsInStmtHolder*) 0;
-
 ///////////////////////////////////////////////////////
 
-void SelectiveStepInPreparator::SingletonCreate (void)
-	{ unew(stmtStack); unew(allStmts); }
+SelectiveStepInPreparator::SelectiveStepInPreparator(void) : currStmt((DeltaUnparsedCallsInStmt*) 0)
+{
+	stmtStack = DNEW(std::list<DeltaUnparsedCallsInStmt*>);
+	allStmts = DNEW(DeltaUnparsedCallsInStmtHolder);
+}
 
-void SelectiveStepInPreparator::SingletonDestroy (void)
+SelectiveStepInPreparator::~SelectiveStepInPreparator()
 	{ udelete(stmtStack); udelete(allStmts); }
 
 DeltaUnparsedCallsInStmtHolder* SelectiveStepInPreparator:: GetAllStmts (void)

@@ -10,6 +10,7 @@
 #include "DeltaStdDefs.h"
 #include "LibraryTypes.h"
 #include "Symbol.h"
+#include "CompilerComponentDirectory.h"
 #include <functional>
 #include <string>
 #include <map>
@@ -19,6 +20,8 @@
 ///////////////////////////////////////////////////////////
 
 class DeltaLibraryNamespace {
+
+	USE_COMPILER_COMPONENT_DIRECTORY();
 
 	public:
 	typedef std::map<std::string, DeltaSymbol*>							Symbols;
@@ -72,7 +75,7 @@ class DeltaLibraryNamespace {
 	void					Clear (void);
 
 	DeltaLibraryNamespace (
-		const std::string&		_name, 
+		const std::string& _name, 
 		const DeltaLibraryNamespace* _parent = (DeltaLibraryNamespace*) 0
 	);
 	~DeltaLibraryNamespace();

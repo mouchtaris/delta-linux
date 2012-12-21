@@ -2,7 +2,7 @@
  *	ProjectManagerCommon.cpp
  *	Common stuff across project manager files.
  *	Anthony Savidis, November 2010
- *  Functionality moved here from opriginal code from Yannis Lilis.
+ *  Functionality moved here from original code from Yannis Lilis.
  */
 #include "ProjectManagerCommon.h"
 #include "ComponentHandle.h"
@@ -14,6 +14,7 @@
 using namespace ide;
 
 #define	BYTECODE_PATH_PROPERTY_ID			"bytecode_path"
+#define	DLLIMPORT_PATH_PROPERTY_ID			"dllimport_path"
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -29,6 +30,28 @@ namespace conf {
 		MultiChoiceProperty* p = new MultiChoiceProperty(_("Libraries"), choices, _("External libraries used"), _("Compilation"));
 		p->SetAllowExtraSelections(true);
 		return p;
+	}
+
+	///////////////////////////////////////////////////////////////////////
+
+	_PROJECT_MANAGER_API Property* GenerateLineMappingsProperty (void) {
+		AggregateProperty *listType = new AggregateProperty(_("Stage Source Options"), _("Single stage source option"));
+		listType->AddProperty("original", new IntProperty(_("Original Line")));
+		listType->AddProperty("mapped", new StringListProperty(_("Mapped Lines")));
+		return new AggregateListProperty(_T("Line Mappings"), listType);
+	}
+
+	///////////////////////////////////////////////////////////////////////
+
+	_PROJECT_MANAGER_API Property* GenerateStageSourcesProperty (void) {
+		AggregateProperty *listType = new AggregateProperty(_("Stage Source Options"), _("Single stage source option"));
+		listType->AddProperty("stage", new IntProperty(_("Stage")));
+		listType->AddProperty(BYTECODE_PATH_PROPERTY_ID, new DirectoryListProperty(_("Additional Bytecode Paths"),
+			_("Additional bytecode loading paths"), _("Execution")));
+		listType->AddProperty(DLLIMPORT_PATH_PROPERTY_ID, new DirectoryListProperty(_("Additional Dllimport Paths"),
+			_("Additional dll loading paths"), _("Execution")));
+		listType->AddProperty("libs", GenerateLibraryProperty());
+		return new AggregateListProperty(_T("Stage Source Options"), listType, _T("Compilation options for stage metaprograms"));
 	}
 
 	///////////////////////////////////////////////////////////////////////
@@ -67,11 +90,22 @@ namespace conf {
 		comp->AddInstanceProperty("text", new BoolProperty(_("Text"), false,
 			_("produce target code text file"), _("Compilation"))
 		);
+
+		comp->AddInstanceProperty("stage_output_path", new DirectoryProperty(_("Stage Output Path"), _T("./"),
+			_("Target directory for the stage output files"), _("Compilation"))
+		);
 	}
 
 	_PROJECT_MANAGER_API void AddScriptBuildProperties (ide::Component* comp) {
 		AddProjectBuildProperties(comp);
-		comp->AddInstanceProperty(conf::GetDeploymentPropertyId(), conf::GenerateScriptDeploymentProperty());
+		comp->AddInstanceProperty("output", new StringProperty(_("Target name"), _T(""),
+			_("Target name for the output files"), _("Compilation"))
+		);
+		comp->AddInstanceProperty(GetDeploymentPropertyId(), GenerateScriptDeploymentProperty());
+		comp->AddInstanceProperty("stage_sources_options", GenerateStageSourcesProperty());
+		comp->AddInstanceProperty("aspects", new FileListProperty(_("Aspect Transformations"),
+			_("Aspect transformation script binaries"), _("Compilation"))
+		);
 	}
 
 	///////////////////////////////////////////////////////////////////////
@@ -91,16 +125,29 @@ namespace conf {
 		props->AddProperty("text", new BoolProperty(_("Text"), false,
 			_("produce target code text file"), _("Compilation"))
 		);
-		props->AddProperty(conf::GetDeploymentPropertyId(), conf::GenerateScriptDeploymentProperty());
+		props->AddProperty("stage_output_path", new DirectoryProperty(_("Stage Output Path"), _T("./"),
+			_("Target directory for the stage output files"), _("Compilation"))
+		);
+		props->AddProperty(GetDeploymentPropertyId(), GenerateScriptDeploymentProperty());
 		props->AddProperty(
-			conf::GetByteCodePathPropertyId(), 
-			new conf::StringProperty(
-				util::std2str(conf::GetByteCodePathPropertyId()), 
-				_(""),
+			GetByteCodePathPropertyId(), 
+			new DirectoryListProperty(
+				util::std2str(GetByteCodePathPropertyId()), 
 				_("produce debug symbols"), 
 				_("Compilation")
 			)
 		);
+		props->AddProperty("aspects", new FileListProperty(_("Aspect Transformations"),
+			_("Aspect transformation script binaries"), _("Compilation"))
+		);
+	}
+
+	_PROJECT_MANAGER_API void AddScriptStageSourceProperties (PropertyTable* props) {
+		props->AddProperty("name", new StringProperty(_("name")));
+		props->AddProperty("index", new IntProperty(_("index")));
+		props->AddProperty("type", new StringProperty(_("type")));
+		props->AddProperty("final", new BoolProperty(_("final")));
+		props->AddProperty("lineMappings", GenerateLineMappingsProperty());
 	}
 
 	_PROJECT_MANAGER_API void AddScriptExecutionProperties (ide::Component* comp) {
@@ -111,19 +158,32 @@ namespace conf {
 		comp->AddInstanceProperty(BYTECODE_PATH_PROPERTY_ID, new DirectoryListProperty(_("Additional Bytecode Paths"),
 			_("Additional bytecode loading paths"), _("Execution"))
 		);
+		comp->AddInstanceProperty(DLLIMPORT_PATH_PROPERTY_ID, new DirectoryListProperty(_("Additional Dllimport Paths"),
+			_("Additional dll loading paths"), _("Execution"))
+		);
+	}
+
+	_PROJECT_MANAGER_API const char ** GetScriptPropertyIdsForStageSources (void) {
+		static const char *buildPropertyIds[] = { BYTECODE_PATH_PROPERTY_ID, DLLIMPORT_PATH_PROPERTY_ID, "libs", (char*) 0 };
+		return buildPropertyIds;
 	}
 
 	_PROJECT_MANAGER_API const char ** GetProjectBuildPropertyIdsForScripts (void) {
-		static const char *buildPropertyIds[] = { "output_path", "libs", "debug", "icode", "text", (char*) 0 };
+		static const char *buildPropertyIds[] = { "output_path", "libs", "debug", "icode", "text", "stage_output_path", (char*) 0 };
 		return buildPropertyIds;
 	}
 	_PROJECT_MANAGER_API const char ** GetScriptBuildPropertyIds (void) {
-		static const char *buildPropertyIds[] = { "output_path", "libs", "debug", "icode", "text", "deployment", (char*) 0 };
+		static const char *buildPropertyIds[] = { "output_path", "libs", "debug", "icode", "text", "stage_output_path", "deployment", "aspects", (char*) 0 };
 		return buildPropertyIds;
 	}
 
+	_PROJECT_MANAGER_API const char ** GetScriptLastBuildPropertyIds (void) {
+		static const char *lastBuildPropertyIds[] = { "output_path", "libs", "debug", "icode", "text", "stage_output_path", "deployment", "aspects", BYTECODE_PATH_PROPERTY_ID, (char*) 0 };
+		return lastBuildPropertyIds;
+	}
+
 	_PROJECT_MANAGER_API const char ** GetScriptExecutionPropertyIds (void) {
-		static const char *buildPropertyIds[] = { "working_directory", BYTECODE_PATH_PROPERTY_ID, (char*) 0 };
+		static const char *buildPropertyIds[] = { "working_directory", BYTECODE_PATH_PROPERTY_ID, DLLIMPORT_PATH_PROPERTY_ID, (char*) 0 };
 		return buildPropertyIds;
 	}
 

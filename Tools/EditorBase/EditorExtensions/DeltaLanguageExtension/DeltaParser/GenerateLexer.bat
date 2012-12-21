@@ -1,8 +1,8 @@
 @ECHO OFF
 REM lexical analyzer generator
 
-set exe="C:\Program Files\GnuWin32\Bin\flex.exe"
-set sed="C:\Program Files\GnuWin32\Bin\sed.exe"
+set exe="C:\Progra~1\GnuWin32\Bin\flex.exe"
+set sed="C:\Progra~1\GnuWin32\Bin\sed.exe"
 
 setlocal
 

@@ -407,6 +407,7 @@ IMPLEMENT_DEFAULT_VISIT(TableConstKeyASTNode, "Const key")
 
 IMPLEMENT_DEFAULT_VISIT_ENTER_AND_LEAVE(OtherStmtASTNode, "Other statement")
 IMPLEMENT_DEFAULT_VISIT_ENTER_AND_LEAVE(UsingASTNode, "Using")
+IMPLEMENT_DEFAULT_VISIT_ENTER_AND_LEAVE(QuotedElementsASTNode, "Quoted Elements")
 
 //**********************************************************************
 

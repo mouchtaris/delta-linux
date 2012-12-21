@@ -12,7 +12,7 @@
 #include "DeltaByteCodeTypes.h"
 #include "DeltaCompErrorMsg.h"
 #include "DDebug.h"
-#include "usingleton.h"
+#include "CompilerComponentDirectory.h"
 #include "utypes.h"
 #include "LibraryFuncSignatures.h"
 #include "LibraryTypes.h"
@@ -50,10 +50,17 @@ enum DeltaSymbolType {
 
 struct DeltaExpr;
 class DeltaLibraryNamespace;
+class LocalDataHandler;
 typedef std::list<DeltaLibraryTypeInfo> DeltaLibraryTypeInfoList;
 
 struct DeltaSymbol {
 
+	DFRIENDDESTRUCTOR()
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
+	friend class DeltaSymbolTable;
+
+	public:
 	struct MatchByName : public std::binary_function<DeltaSymbol*, std::string, bool> {
 		bool operator()(DeltaSymbol* sym, const std::string& name) const
 			{ return DPTR(sym)->GetName() == name; }
@@ -217,7 +224,6 @@ struct DeltaSymbol {
 		void						ClearInnerUses (void)	
 										{ innerUses.clear(); }
 
-		void						CreateFunctionVar (void);
 		DeltaSymbol*				GetFunctionVar (void) 
 										{ return DNULLCHECK(funcVar); }
 		void						SetFunctionVarUsed (void) 
@@ -229,9 +235,9 @@ struct DeltaSymbol {
 		util_ui32					GetAssignQuadNo (void) const
 										{ return assignQuadNo; }
 
-		FuncAccess (DeltaSymbol* _func) :
+		FuncAccess (DeltaSymbol* _func, DeltaSymbol* _funcVar) :
 			func			(_func),
-			funcVar			((DeltaSymbol*) 0),
+			funcVar			(_funcVar),
 			isUsed			(false),
 			assignQuadNo	(0)
 			{}
@@ -437,7 +443,7 @@ struct DeltaSymbol {
 									{ return scope < _scope; }
 	bool						IsOfSameOrOuterScopeThan (util_ui16 _scope) const
 									{ return scope <= _scope; }
-	
+	private:
 	DeltaSymbol (void) :
 		scope					(0),
 		line					(DELTA_CANTBE_A_SOURCE_LINE),
@@ -469,8 +475,8 @@ struct DeltaSymbol {
 		isClosureVarAccess		(false),
 		closureVarAccessed		((DeltaSymbol*) 0) {}
 
-		DeltaSymbol (const std::string& name, DeltaSymbolType type);
-		~DeltaSymbol();
+	void Initialise (const std::string& name, DeltaSymbolType type);
+	~DeltaSymbol();
 };
 
 typedef std::list<DeltaSymbol*> DeltaSymboList;
@@ -478,6 +484,8 @@ typedef std::list<DeltaSymbol*> DeltaSymboList;
 //------------------------------------------------------------------
 
 class DeltaSymbolTable {
+
+	USE_COMPILER_COMPONENT_DIRECTORY();
 
 	friend class DeltaCodeGenerator;
 
@@ -487,7 +495,6 @@ class DeltaSymbolTable {
 			{ var->SetOffset((*offset)++); return true; }
 	};
 
-	static DeltaSymbolTable*	singletonPtr;
 	DeltaSymbol*				Table[DELTA_SYMBOL_TABLE_HASH_SIZE];
 	DeltaSymboList				allSymbols;		// All symbols.
 	DeltaSymboList				staticVars;		// Only static variables.
@@ -504,10 +511,12 @@ class DeltaSymbolTable {
 	bool				IsTempVar (const std::string& id) const
 							{ return ustrprefix(DELTA_TEMPVAR_NAME_PREFIX, id); }
 
+	DeltaSymbol*		NewSymbol(const std::string& name, DeltaSymbolType type);
+
 	///////////////////////////////////////////////////////////////////
 
 	public:
-	DeltaSymbol*		NewSymbol (const std::string& name, bool storage = true);
+	DeltaSymbol*		NewSymbol (const std::string& name, bool storage = true, bool install = true);
 	DeltaSymbol*		NewStatic (const std::string& name);
 	DeltaSymbol*		NewTemp (bool storage = true);
 
@@ -541,23 +550,17 @@ class DeltaSymbolTable {
 
 	////////////////////////////////////////////
 
-	USINGLETON_APISTYLE_DECLARE_PUBLICSTDMETHODS
-
-	static DeltaSymbolTable*	
-						GetPtr (void) 
-							{ DASSERT(singletonPtr); return singletonPtr; }
-
 	DeltaSymbolTable (void);
 	~DeltaSymbolTable();
 };
 
 ////////////////////////////////////////////
 
-#define	DELTASYMBOLS	GetDeltaSymbols()
+#define DELTASYMBOLS_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaSymbolTable)))
 
-inline DeltaSymbolTable& GetDeltaSymbols (void) {
-	DASSERT(DeltaSymbolTable::GetPtr());
-	return *DeltaSymbolTable::GetPtr();
-}
+#define DELTASYMBOLS	DELTASYMBOLS_EX(COMPONENT_DIRECTORY())
+
+////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

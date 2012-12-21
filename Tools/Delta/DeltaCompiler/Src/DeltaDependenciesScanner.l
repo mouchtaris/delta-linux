@@ -8,6 +8,7 @@
 #include "ulexutil.h"
 #include "DeltaDependenciesParser.h"
 #include "BuildDependencies.h"
+#include "ParsingContext.h"
 
 #define	YY_SKIP_YYWRAP
 #define YY_USE_PROTOS
@@ -15,18 +16,10 @@
 
 // The yylex() must be re-entrant, so it takes
 // yylval as a formal parameter.
-
-#define YY_DECL		int DeltaDependencies_yylex (void* yylval)
-#define	STACKVAL	((YYSTYPE*) yylval)
-#define	yywrap		DeltaDependencies_yywrap
-
-// Lexical analysis helpers.
-
-static void					IgnoreCStyleComments (void);
-static void					IgnoreCPPStyleComments (void);
-static const std::string	ReadQuotedString (void);
-
-extern int DeltaDependencies_yywrap(void);
+//
+#define YY_DECL		int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
+#define	STACKVAL	yylval
+#define BUILDDEPS	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*context(), DeltaBuildDependencies)))
 
 %}
 
@@ -39,22 +32,28 @@ ident			{letter}({letter}|{decdigit}|{underscore})*
 flag			{ws}+{decdigit}
 cpp				#{ws}+{decdigit}+{ws}+\"[^"]+{flag}?
 
+%option c++
+%option prefix="DeltaDependencies"
+%option outfile="DeltaDependenciesScanner.cpp"
+%option verbose
+%option noyywrap
+
 %%
 
 using			return	USING;
-"::"			return	DeltaBuildDependencies::InUsing() ? GLOBAL_SCOPE	: OTHER;
-":"				return	DeltaBuildDependencies::InUsing() ? COLON			: OTHER;
-";"				return	DeltaBuildDependencies::InUsing() ? SEMI			: OTHER;
-"#"				return	DeltaBuildDependencies::InUsing() ? STRINGIFY		: OTHER;
+"::"			return	BUILDDEPS.InUsing() ? GLOBAL_SCOPE	: OTHER;
+":"				return	BUILDDEPS.InUsing() ? COLON			: OTHER;
+";"				return	BUILDDEPS.InUsing() ? SEMI			: OTHER;
+"#"				return	BUILDDEPS.InUsing() ? STRINGIFY		: OTHER;
 {ws}*			{}
 {ident}			{
-					STACKVAL->id = usaveidstr(yytext); return 
-					DeltaBuildDependencies::InUsing() ? IDENT : OTHER;
+					STACKVAL->id = usaveidstr(yytext, &yy_id_buffer); return 
+					BUILDDEPS.InUsing() ? IDENT : OTHER;
 				}
 {cpp}			while (yyinput() != '\n'){} /* Read until end of line. */
 \"				{	
-					STACKVAL->str = DeltaBuildDependencies::NewString(ReadQuotedString());
-					return DeltaBuildDependencies::InUsing() ? STRING_CONST : OTHER;
+					STACKVAL->str = BUILDDEPS.NewString(ReadQuotedString());
+					return BUILDDEPS.InUsing() ? STRING_CONST : OTHER;
 				}
 \/\* 			IgnoreCStyleComments();
 \/\/			IgnoreCPPStyleComments();
@@ -64,27 +63,40 @@ using			return	USING;
 
 //------------------------------------------------------------------
 
-int		DeltaDependencies_yywrap (void)			{ return 1; }
-void	DeltaDependencies_ResetLex (FILE* fp)	{ yyrestart(fp); }
+int DeltaDependencies_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx)
+	{ return ctx.GetLexer().yylex(yylval, yylloc); }
 
-static char input_wrapper (void)	{ return yyinput(); }
-static void unput_wrapper (char c)	{ unput(c); }
+char yyFlexLexer::yyinput_wrapper(void* closure) { return ((yyFlexLexer*) closure)->yyinput(); }
 
-static void IgnoreCStyleComments (void)  {
-	util_ui32 line;
-	uignoreCcomments(input_wrapper, unput_wrapper, &line, &DeltaBuildDependencies::SetError);
+void yyFlexLexer::yyunput_wrapper(char c, void *closure) {
+	yyFlexLexer* lexer = (yyFlexLexer*) closure;
+	lexer->yyunput(c, lexer->yytext_ptr);
 }
 
-static void IgnoreCPPStyleComments (void) {
-	util_ui32 line;
-	uignoreCPPcomments(input_wrapper, &line);
-}
+void yyFlexLexer::IgnoreCStyleComments (void)  {
+	util_ui32 line;	//unused
+	std::string error;
+	bool result = uignoreCcomments(
+		umakecallback(yyinput_wrapper, this),
+		umakecallback(yyunput_wrapper, this),
+		&line,
+		&error
+	);
+	if (!result)
+		BUILDDEPS.SetError(error.c_str());
+} 
 
-static const std::string ReadQuotedString (void) {
-	util_ui32 line;
+void yyFlexLexer::IgnoreCPPStyleComments (void)
+	{ uignoreCPPcomments(umakecallback(yyinput_wrapper, this)); }
+
+const std::string yyFlexLexer::ReadQuotedString (void) {
+	util_ui32 line; //unused
 	std::string s;
-	ureadquotedstring(s, input_wrapper, &line, &DeltaBuildDependencies::SetError);
+	std::string error;
+	if (!ureadquotedstring(s, umakecallback(yyinput_wrapper, this), &line, &error))
+		BUILDDEPS.SetError(error.c_str());
 	return uextendescapesequences(s.c_str());
 }
+
 
 //------------------------------------------------------------------

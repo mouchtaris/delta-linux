@@ -38,8 +38,14 @@ inline const String _Id2XMLTag (const std::string& id)
 inline const String ConvertPath(const String& path, PathPolicy policy, const String& basepath)
 {
 	wxFileName filename(path);
-	if (policy == MAKE_PATHS_RELATIVE && filename.IsAbsolute())
-		filename.MakeRelativeTo(basepath);
+	if (policy == MAKE_PATHS_RELATIVE && filename.IsAbsolute()) {
+		if (wxFileName::DirExists(path))
+			filename.AssignDir(path);
+		if (filename.SameAs(basepath))
+			return _T("./");
+		else
+			filename.MakeRelativeTo(basepath);
+	}
 	else if (policy == MAKE_PATHS_ABSOLUTE && filename.IsRelative())
 		filename.MakeAbsolute(basepath);
 	return util::normalizeslashes(filename.GetFullPath());

@@ -183,6 +183,7 @@ IMPLEMENT_EMPTY_VISIT_LEAVE(TableIndexListASTNode)
 
 IMPLEMENT_EMPTY_VISIT_ENTER_AND_LEAVE(TableConstructASTNode)
 IMPLEMENT_EMPTY_VISIT_ENTER_AND_LEAVE(UsingASTNode)
+IMPLEMENT_EMPTY_VISIT_ENTER_AND_LEAVE(QuotedElementsASTNode)
 
 //**********************************************************************
 

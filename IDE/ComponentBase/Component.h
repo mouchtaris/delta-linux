@@ -50,8 +50,13 @@ public:
 	bool operator== (uint serial) const { return this->GetSerial() == serial; }
 	bool operator!= (uint serial) const { return this->GetSerial() != serial; }
 
-	virtual const std::string&	GetClassId (void) const = 0;
-	uint						GetSerial (void) const { return m_serial; }
+	virtual const std::string&	GetClassId	(void) const = 0;
+	uint						GetSerial	(void) const { return m_serial; }
+
+	//******************************************************************
+
+	const std::string&			GetDerivedClassId (void) const;
+	void						SetDerivedClassId (const std::string& classId) { m_derivedClassId = classId; }
 
 	//******************************************************************
 
@@ -70,8 +75,8 @@ public:
 	void		GetParentsRecursively (List& parents) const;
 	void		SetParent (Component* parent);
 
-	const List&	GetChildren (void) const { return m_children; }
-	void		GetChildrenRecursively (List& children) const;
+	virtual const List&	GetChildren (void) const { return m_children; }
+	void				GetChildrenRecursively (List& children) const;
 
 	//******************************************************************
 	// Component GUI support
@@ -149,9 +154,9 @@ private:
 	void RemovedDynamicFunction (const std::string& id);
 
 	void AddedUserCommand (const String& path, const UserCommand& cmd);
-	void RemovedUserCommand (const String& path);
-	void EnabledUserCommand (const String& path);
-	void DisabledUserCommand (const String& path);
+	void RemovedUserCommand (const String& path, uint flags);
+	void EnabledUserCommand (const String& path, uint flags);
+	void DisabledUserCommand (const String& path, uint flags);
 
 	void MergedUserCommands (const UserCommand& cmds);
 	void UnMergedUserCommands (const UserCommand& cmds);
@@ -196,9 +201,9 @@ protected:
 	virtual void ComponentRemovedDynamicFunction (const std::string& PORT_UNUSED_PARAM(id)) {}
 
 	virtual void ComponentAddedUserCommand (const String& PORT_UNUSED_PARAM(path), const UserCommand& PORT_UNUSED_PARAM(cmd)) {}
-	virtual void ComponentRemovedUserCommand (const String& PORT_UNUSED_PARAM(path)) {}
-	virtual void ComponentEnabledUserCommand (const String& PORT_UNUSED_PARAM(path)) {}
-	virtual void ComponentDisabledUserCommand (const String& PORT_UNUSED_PARAM(path)) {}
+	virtual void ComponentRemovedUserCommand (const String& PORT_UNUSED_PARAM(path), uint PORT_UNUSED_PARAM(flags)) {}
+	virtual void ComponentEnabledUserCommand (const String& PORT_UNUSED_PARAM(path), uint PORT_UNUSED_PARAM(flags)) {}
+	virtual void ComponentDisabledUserCommand (const String& PORT_UNUSED_PARAM(path), uint PORT_UNUSED_PARAM(flags)) {}
 
 	virtual void ComponentMergedUserCommands (const UserCommand& PORT_UNUSED_PARAM(cmds)) {}
 	virtual void ComponentUnMergedUserCommands (const UserCommand& PORT_UNUSED_PARAM(cmds)) {}
@@ -232,9 +237,9 @@ protected:
 	virtual void ChildRemovedDynamicFunction (Component* PORT_UNUSED_PARAM(component), const std::string& PORT_UNUSED_PARAM(id)) {}
 
 	virtual void ChildAddedUserCommand (Component* PORT_UNUSED_PARAM(component), const String& PORT_UNUSED_PARAM(path), const UserCommand& PORT_UNUSED_PARAM(cmd)) {}
-	virtual void ChildRemovedUserCommand (Component* PORT_UNUSED_PARAM(component), const String& PORT_UNUSED_PARAM(path)) {}
-	virtual void ChildEnabledUserCommand (Component* PORT_UNUSED_PARAM(component), const String& PORT_UNUSED_PARAM(path)) {}
-	virtual void ChildDisabledUserCommand (Component* PORT_UNUSED_PARAM(component), const String& PORT_UNUSED_PARAM(path)) {}
+	virtual void ChildRemovedUserCommand (Component* PORT_UNUSED_PARAM(component), const String& PORT_UNUSED_PARAM(path), uint PORT_UNUSED_PARAM(flags)) {}
+	virtual void ChildEnabledUserCommand (Component* PORT_UNUSED_PARAM(component), const String& PORT_UNUSED_PARAM(path), uint PORT_UNUSED_PARAM(flags)) {}
+	virtual void ChildDisabledUserCommand (Component* PORT_UNUSED_PARAM(component), const String& PORT_UNUSED_PARAM(path), uint PORT_UNUSED_PARAM(flags)) {}
 
 	virtual void ChildMergedUserCommands (Component* PORT_UNUSED_PARAM(component), const UserCommand& PORT_UNUSED_PARAM(cmds)) {}
 	virtual void ChildUnMergedUserCommands (Component* PORT_UNUSED_PARAM(component), const UserCommand& PORT_UNUSED_PARAM(cmds)) {}
@@ -255,6 +260,8 @@ private:
 	List				m_children;
 
 	bool				m_inDestruction;
+
+	std::string			m_derivedClassId;
 };
 
 ////////////////////////////////////////////////////////////////////////

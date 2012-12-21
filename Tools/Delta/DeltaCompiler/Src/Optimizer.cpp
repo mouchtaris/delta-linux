@@ -6,7 +6,8 @@
 
 #include "Optimizer.h"
 #include "InterCode.h"
-#include "CompilerAPI.h"
+#include "CompileOptions.h"
+#include "ParseActions.h"
 
 //	#define	OPTIMIZER_DUMP_OUTPUT
 
@@ -21,28 +22,12 @@
 #define	OPT_SAFE_FPRINTF	if (fp) fprintf
 #define	OPT_SAFE_FCLOSE		if (fp) fclose
 
-static const std::string OptimizerOutput (void) {
-	std::string s = DeltaCompiler::GetSourceFile();
+const std::string Optimizer::OptimizerOutput (void) const {
+	const std::string s = COMPOPTIONS.GetSourceFile();
 	return s.substr(0, s.length() - 4) + ".opt";
 }
 
 #define	OPTIMIZER_OUTPUT	OptimizerOutput().c_str()
-
-///////////////////////////////////////////////////////////////////
-
-Optimizer* Optimizer::singletonPtr = (Optimizer*) 0;
-
-void Optimizer::SingletonCreate (void) {
-	if (!singletonPtr)
-		singletonPtr = DNEW(Optimizer);
-}
-
-void Optimizer::SingletonDestroy (void) {
-	if (singletonPtr) {
-		DDELETE(singletonPtr);
-		singletonPtr = (Optimizer*) 0;
-	}
-}
 
 ///////////////////////////////////////////////////////////////////
 
@@ -289,7 +274,7 @@ DeltaExpr* Optimizer::CopyPropagate (DeltaExpr* expr, util_ui32 quadNo, FILE* fp
 				DPTR(expr->sym)->GetName().c_str(),
 				DPTR(i->second)->GetName().c_str()
 			));
-			return DeltaExpr::MakeInternalVar(i->second);
+			return EXPRFACTORY.MakeInternalVar(i->second);
 		}
 		else
 			return expr;
@@ -316,8 +301,8 @@ void Optimizer::HandleBlockExit (util_ui32 blockId) {
 void  Optimizer::HandleAssign (DeltaSymbol* lvalue, DeltaSymbol* rvalue, util_ui32 quadNo) {
 
 	DASSERT(
-		lvalue != DeltaExpr::GetReturnValue()->sym && 
-		rvalue != DeltaExpr::GetReturnValue()->sym
+		lvalue != TRANSLATOR.GetReturnValue()->sym && 
+		rvalue != TRANSLATOR.GetReturnValue()->sym
 	);
 
 	// Since lvalue is assigned, it is no longer carried

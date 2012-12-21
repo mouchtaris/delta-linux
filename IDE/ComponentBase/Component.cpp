@@ -31,6 +31,13 @@ Component::~Component (void)
 
 //**********************************************************************
 
+const std::string& Component::GetDerivedClassId	(void) const
+{
+	return m_derivedClassId.empty() ? GetClassId() : m_derivedClassId;
+}
+
+//**********************************************************************
+
 const String& Component::GetName (void) const
 {
 	return this->getComponentEntry().GetMetadata().name;
@@ -386,25 +393,25 @@ void Component::AddedUserCommand (const String& path, const UserCommand& cmd)
 }
 
 
-void Component::RemovedUserCommand (const String& path)
+void Component::RemovedUserCommand (const String& path, uint flags)
 {
-	this->ComponentRemovedUserCommand(path);
+	this->ComponentRemovedUserCommand(path, flags);
 	if (m_parent)
-		m_parent->ChildRemovedUserCommand(this, path);
+		m_parent->ChildRemovedUserCommand(this, path, flags);
 }
 
-void Component::EnabledUserCommand (const String& path)
+void Component::EnabledUserCommand (const String& path, uint flags)
 {
-	this->ComponentEnabledUserCommand(path);
+	this->ComponentEnabledUserCommand(path, flags);
 	if (m_parent)
-		m_parent->ChildEnabledUserCommand(this, path);
+		m_parent->ChildEnabledUserCommand(this, path, flags);
 }
 
-void Component::DisabledUserCommand (const String& path)
+void Component::DisabledUserCommand (const String& path, uint flags)
 {
-	this->ComponentDisabledUserCommand(path);
+	this->ComponentDisabledUserCommand(path, flags);
 	if (m_parent)
-		m_parent->ChildDisabledUserCommand(this, path);
+		m_parent->ChildDisabledUserCommand(this, path, flags);
 }
 
 //**********************************************************************

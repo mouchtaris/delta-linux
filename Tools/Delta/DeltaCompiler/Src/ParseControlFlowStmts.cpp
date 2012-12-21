@@ -26,11 +26,11 @@
 // some.
 //
 
-DeltaExpr* Translate_Condition (DeltaExpr* cond) {
+DeltaExpr* Translator::Translate_Condition (DeltaExpr* cond) {
 
 	NULL_EXPR_CHECK(cond);
 
-	if (!TypeCheck_UseAsBoolean(cond))
+	if (!TYPECHECKER.Check_UseAsBoolean(cond))
 		return (DeltaExpr*) 0;
 
 	DPTR(cond)->CheckUninitialised();
@@ -40,7 +40,7 @@ DeltaExpr* Translate_Condition (DeltaExpr* cond) {
 	//
 	if (DPTR(cond)->IsComputableBoolean()) {
 
-		DeltaExpr* result	= DNEW(DeltaExpr);
+		DeltaExpr* result	= EXPRFACTORY.New();
 		DPTR(result)->type	= DeltaExprBoolean;
 
 		// Since true condition leads to the execution of the statement in code
@@ -58,11 +58,11 @@ DeltaExpr* Translate_Condition (DeltaExpr* cond) {
 	else
 	if (DPTR(cond)->type != DeltaExprLogical) { // Used now as a logical expression.
 
-		DeltaExpr* result = DNEW(DeltaExpr);
+		DeltaExpr* result = EXPRFACTORY.New();
 		DPTR(result)->type = DeltaExprLogical;
 		result->sym = cond->IsTemp() ? cond->sym : DELTASYMBOLS.NewTemp();
 
-		DELTA_EXPR_EMIT_BOOL_TEST(cond, result, true);
+		TRANSLATOR.DELTA_EXPR_EMIT_BOOL_TEST(cond, result, true);
 
 		DPTR(result)->SetUnparsed(DPTR(cond)->GetUnparsed());
 		return result;
@@ -73,22 +73,22 @@ DeltaExpr* Translate_Condition (DeltaExpr* cond) {
 
 ///////////////////////////////////////////////////////////////////
 
-DeltaQuadAddress Translate_N (void) {
+DeltaQuadAddress Translator::Translate_N (void) {
 	QUADS.Emit(DeltaIC_JUMP, NIL_EXPR, NIL_EXPR, NIL_EXPR);
 	return QUADS.CurrQuadNo();
 }
 
 ///////////////////////////////////////////////////////////////////
 
-void Translate_IfStmtPrefix (void) 
-	{ ParseParms::EnteringIf(); }
+void Translator::Translate_IfStmtPrefix (void) 
+	{ PARSEPARMS.EnteringIf(); }
 
-void Translate_ElseStmtPrefix (void)
-	{  ParseParms::ExitingIfFollowedByElse(); ParseParms::EnteringElse(); }
+void Translator::Translate_ElseStmtPrefix (void)
+	{  PARSEPARMS.ExitingIfFollowedByElse(); PARSEPARMS.EnteringElse(); }
 
 ///////////////////////////////////////////////////////////////////
 
-void Translate_IfStmt (DeltaExpr* cond, DeltaQuadAddress Mquad) {
+void Translator::Translate_IfStmt (DeltaExpr* cond, DeltaQuadAddress Mquad) {
 
 	ParseParms::ConditionValue condValue = ParseParms::CondCantTell;
 
@@ -107,12 +107,12 @@ void Translate_IfStmt (DeltaExpr* cond, DeltaQuadAddress Mquad) {
 		QUADS.Backpatch(cond->falseList, QUADS.NextQuadNo());
 	}
 
-	ParseParms::ExitingIf(condValue);
+	PARSEPARMS.ExitingIf(condValue);
 }
 
 ///////////////////////////////////////////////////////////////////
 
-void Translate_IfElseStmt (
+void Translator::Translate_IfElseStmt (
 		DeltaExpr*			cond, 
 		DeltaQuadAddress	M1quad, 
 		DeltaQuadAddress	Nquad,
@@ -137,12 +137,12 @@ void Translate_IfElseStmt (
 		QUADS.Backpatch(QUADS.MakeList(Nquad), QUADS.NextQuadNo());
 	}
 
-	ParseParms::ExitingElse(condValue);
+	PARSEPARMS.ExitingElse(condValue);
 }
 
 ///////////////////////////////////////////////////////////////////
 
-static void BackpatchLoop (Stmt* stmt, DeltaQuadAddress contQuad, DeltaQuadAddress breakQuad, DeltaQuadAddress stmtBegin) {
+void Translator::BackpatchLoop (Stmt* stmt, DeltaQuadAddress contQuad, DeltaQuadAddress breakQuad, DeltaQuadAddress stmtBegin) {
 
 	if (stmt) {
 
@@ -160,10 +160,10 @@ static void BackpatchLoop (Stmt* stmt, DeltaQuadAddress contQuad, DeltaQuadAddre
 
 ///////////////////////////////////////////////////////////////////
 
-void Translate_WhilePrefix (void) 
-	{ ParseParms::EnteringLoop(); }
+void Translator::Translate_WhilePrefix (void) 
+	{ PARSEPARMS.EnteringLoop(); }
 
-Stmt* Translate_WhileStmt (
+Stmt* Translator::Translate_WhileStmt (
 		DeltaExpr*			cond, 
 		DeltaQuadAddress	M1quad,	// Before while condition.
 		DeltaQuadAddress	M2quad,	// Before while stmt (while stmt start)
@@ -192,7 +192,7 @@ Stmt* Translate_WhileStmt (
 		BackpatchLoop(stmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo(), M2quad);
 	}
 
-	ParseParms::ExitingLoop(condValue);
+	PARSEPARMS.ExitingLoop(condValue);
 	QUADS.SetQuadLine(M2quad, stmtLine);
 
 	return NEW_STMT;
@@ -200,17 +200,17 @@ Stmt* Translate_WhileStmt (
 
 ///////////////////////////////////////////////////////////////////
 
-void Translate_ForOpening (void) 
+void Translator::Translate_ForOpening (void) 
 	{}
 
-void Translate_ForPrefix (DeltaQuadAddress	initListQuad, util_ui32	initListLine) {
-	ParseParms::EnteringLoop(); 
+void Translator::Translate_ForPrefix (DeltaQuadAddress	initListQuad, util_ui32	initListLine) {
+	PARSEPARMS.EnteringLoop(); 
 	QUADS.SetQuadLine(initListQuad,initListLine, true);
 }
 
 //*****************************
 
-Stmt*	Translate_ForStmt (
+Stmt*	Translator::Translate_ForStmt (
 		DeltaExpr*			cond, 
 		DeltaQuadAddress	M1quad,	// Evaluate for condition.
 		DeltaQuadAddress	M2quad,	// Evaluate for closure.
@@ -247,24 +247,24 @@ Stmt*	Translate_ForStmt (
 		BackpatchLoop(stmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo(), M3quad);
 	}
 
-	ParseParms::ExitingLoop(condValue);
+	PARSEPARMS.ExitingLoop(condValue);
 	return NEW_STMT;
 }
 
 ///////////////////////////////////////////////////////////////////
 
-Stmt* Translate_ForeachPrefix (DeltaExpr* foreachVar, DeltaExpr* foreachIndex, DeltaExpr* foreachContainer) {
+Stmt* Translator::Translate_ForeachPrefix (DeltaExpr* foreachVar, DeltaExpr* foreachIndex, DeltaExpr* foreachContainer) {
 
 	if (!foreachVar || !foreachContainer)
 		return NIL_STMT;
 
-	if (!TypeCheck_ForeachContainer(foreachContainer))
+	if (!TYPECHECKER.Check_ForeachContainer(foreachContainer))
 		return NIL_STMT;
 
-	ParseParms::EnteringLoop(); 
+	PARSEPARMS.EnteringLoop(); 
 
-	DeltaExpr*		iterExpr	= DeltaExpr::MakeInternalVar(DELTASYMBOLS.NewTemp());
-	DeltaExpr*		valueExpr	= DeltaExpr::MakeInternalVar(DELTASYMBOLS.NewTemp());
+	DeltaExpr*		iterExpr	= EXPRFACTORY.MakeInternalVar(DELTASYMBOLS.NewTemp());
+	DeltaExpr*		valueExpr	= EXPRFACTORY.MakeInternalVar(DELTASYMBOLS.NewTemp());
 	Stmt*			stmt		= NEW_STMT;
 
 	DPTR(stmt)->userData = iterExpr;	// We store it here as we need this in code gen.
@@ -277,7 +277,7 @@ Stmt* Translate_ForeachPrefix (DeltaExpr* foreachVar, DeltaExpr* foreachIndex, D
 	Translate_AssignExpr(foreachVar, valueExpr);
 
 	if (foreachIndex) {
-		DeltaExpr* indexExpr = DeltaExpr::MakeInternalVar(DELTASYMBOLS.NewTemp());
+		DeltaExpr* indexExpr = EXPRFACTORY.MakeInternalVar(DELTASYMBOLS.NewTemp());
 		QUADS.Emit(DeltaIC_FOREACHGETINDEX, iterExpr, NIL_EXPR, indexExpr);
 		Translate_AssignExpr(foreachIndex, indexExpr);
 		DPTR(foreachIndex)->SetInitialised();
@@ -288,7 +288,7 @@ Stmt* Translate_ForeachPrefix (DeltaExpr* foreachVar, DeltaExpr* foreachIndex, D
 
 //*****************************
 
-Stmt* Translate_ForeachStmt (
+Stmt* Translator::Translate_ForeachStmt (
 		Stmt*				foreachPrefix, 
 		Stmt*				foreachStmt, 
 		DeltaQuadAddress	Mquad	//	first quad of stmt
@@ -310,7 +310,7 @@ Stmt* Translate_ForeachStmt (
 	BackpatchLoop(foreachStmt, QUADS.CurrQuadNo(), QUADS.NextQuadNo(), stmtStart);
 	QUADS.Emit(DeltaIC_FOREACHEND, DNULLCHECK((DeltaExpr*) foreachPrefix->userData), NIL_EXPR, NIL_EXPR);
 
-	ParseParms::ExitingLoop(); 
+	PARSEPARMS.ExitingLoop(); 
 	return NEW_STMT;
 }
 

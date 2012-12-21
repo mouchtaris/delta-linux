@@ -171,6 +171,18 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Source\ASTInjector.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Source\ASTValidationVisitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Source\TreeAttribute.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\DeltaSyntaxTree\Source\TreeNode.cpp"
 				>
 			</File>
@@ -186,6 +198,34 @@
 		<Filter
 			Name="Header Files"
 			>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Include\ASTInjector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Include\ASTMetaTags.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Include\ASTSanitiseVisitor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Include\ASTTags.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Include\ASTValidationVisitor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Include\DeltaSyntaxTreeDefs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\DeltaSyntaxTree\Include\TreeAttribute.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\..\DeltaSyntaxTree\Include\TreeNode.h"
 				>

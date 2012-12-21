@@ -92,8 +92,17 @@ void Unparse_SingletonCreate (void) {
 
 	ADD_TOKEN(AND,			"and");
 	ADD_TOKEN(OR,			"or");
-	ADD_TOKEN(NOT,			"not ");
+	ADD_TOKEN(NOT,			"not");
 	ADD_TOKEN(TRIPLE_DOT,	"...");
+
+#ifdef	TRANSLATE_SYNTAX_TREE
+	ADD_TOKEN(META_LSHIFT,	"<<");
+	ADD_TOKEN(META_RSHIFT,	">>");
+	ADD_TOKEN(META_ESCAPE,	"~");
+	ADD_TOKEN(META_INLINE,	"!");
+	ADD_TOKEN(META_EXECUTE,	"&");
+	ADD_TOKEN(META_RENAME,	"$");
+#endif
 }
 
 void Unparse_SingletonDestroy (void)
@@ -105,6 +114,9 @@ const std::string Unparse_Token (util_ui32 t) {
 	DASSERT(i != DPTR(tokenStrings)->end());
 	return i->second;
 }
+
+static const std::string HandleDoubleBrackets(const std::string& text)
+	{ return text.empty() || text.front() != '[' && text.back() != ']' ? text : " " + text + " "; }
 
 //////////////////////////////////////////////////////
 
@@ -212,7 +224,7 @@ _CS_ Unparse_TableElementsPrettyPrint (_CS_& elems, _CS_& elem)
 	{ return elems + SCHAR(",\n") + elem; }
 
 _CS_ Unparse_TableConstructor (_CS_& elems)
-	{ return SCHAR("[") + elems + SCHAR("]"); }
+	{ return SCHAR("[") + HandleDoubleBrackets(elems) + SCHAR("]"); }
 
 _CS_ Unparse_TableConstructorPrettyPrint (_CS_& elems, util_ui16 tabs)
 	{ return elems.empty() ? "[]" : SCHAR("[\n") + elems + SCHAR("\n") + utabstops(tabs) + "]"; }
@@ -233,10 +245,10 @@ _CS_ Unparse_TableContentDoubleDot (_CS_& t, _CS_& index)
 	{ return t + SCHAR("..") + index; }
 
 _CS_ Unparse_TableContentBracket (_CS_& t, _CS_& index)
-	{ return t + SCHAR("[") + index + SCHAR("]"); }
+	{ return t + SCHAR("[") + HandleDoubleBrackets(index) + SCHAR("]"); }
 
 _CS_ Unparse_TableContentDoubleBracket (_CS_& t, _CS_& index)
-	{ return t + SCHAR("[[") + index + SCHAR("]]"); }
+	{ return t + SCHAR("[[") + HandleDoubleBrackets(index) + SCHAR("]]"); }
 
 //////////////////////////////////////////////////////
 
@@ -317,18 +329,18 @@ _CS_ Unparse_ForInitList (_CS_& el)
 	{ return el + SCHAR(";"); }
 
 _CS_ Unparse_For(_CS_& initSection,_CS_& cond, _CS_& suffixSection, _CS_& stmt) {
-	return	Unparse_Token(FOR)				+ SPACE + 
-			SCHAR("(") + initSection		+ SPACE +
-			cond + SCHAR(";")				+ SPACE +
-			suffixSection + SCHAR(")")		+ SPACE +
+	return	Unparse_Token(FOR)						+ SPACE + 
+			SCHAR("(") + initSection + SCHAR(";")	+ SPACE +
+			cond + SCHAR(";")						+ SPACE +
+			suffixSection + SCHAR(")")				+ SPACE +
 			stmt;
 }
 
 _CS_ Unparse_ForPrettyPrint (_CS_& initSection,_CS_& cond, _CS_& suffixSection, _CS_& stmt, util_ui16 tabs) {
-	return	Unparse_Token(FOR)				+ SPACE + 
-			SCHAR("(") + initSection		+ SPACE +
-			cond + SCHAR(";")				+ SPACE +
-			suffixSection + SCHAR(")\n")	+ utabstops(tabs) +
+	return	Unparse_Token(FOR)						+ SPACE + 
+			SCHAR("(") + initSection + SCHAR(";")	+ SPACE +
+			cond + SCHAR(";")						+ SPACE +
+			suffixSection + SCHAR(")\n")			+ utabstops(tabs) +
 			stmt;
 }
 
@@ -428,10 +440,25 @@ _CS_ Unparse_UsingNamespace (const std::list<std::string>& namespacePath)
 _CS_ Unparse_UsingNamespace (_CS_& ns) 
 	{ return Unparse_Token(USING) + SPACE + ns + SCHAR(";"); }
 
-_CS_ Unparse_UsingByteCodeLibrary (_CS_& file, _CS_& id)
-	{ return Unparse_Token(USING) + SPACE + QUOTE(file) + SCHAR(":") + id; }
-
 _CS_ Unparse_UsingByteCodeLibrary (_CS_& id)
-	{ return Unparse_Token(USING) + SPACE + Unparse_Token(STRINGIFY)+ id; }
+	{ return Unparse_Token(USING) + SPACE + Unparse_Token(STRINGIFY)+ id + SCHAR(";"); }
+
+//////////////////////////////////////////////////////
+
+_CS_ Unparse_Escape (util_ui32 cardinality, _CS_& expr) {
+	std::string s;
+	for(util_ui32 i = 0; i < cardinality; ++i)
+		s += Unparse_Token(META_ESCAPE);
+	return s + SCHAR("(") + expr + SCHAR(")");
+}
+
+_CS_ Unparse_QuotedElements (_CS_& elems, _CS_& elem)
+	{ return elems + SCHAR(", ") + elem; }
+
+_CS_ Unparse_QuasiQuotes (_CS_& prefix, _CS_& value, _CS_& suffix)
+	{ return Unparse_Token(META_LSHIFT) + prefix + value + suffix + Unparse_Token(META_RSHIFT); }
+
+_CS_ Unparse_Inline (_CS_& expr)
+	{ return Unparse_Token(META_INLINE) + SCHAR("(") + expr + SCHAR(")"); }
 
 //////////////////////////////////////////////////////

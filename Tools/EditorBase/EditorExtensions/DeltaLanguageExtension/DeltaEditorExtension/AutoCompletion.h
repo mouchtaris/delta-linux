@@ -230,6 +230,8 @@ class DeltaAutoCompletion {
 									NameList*			l
 								);
 
+	static uint					GetStagingDepth (const DeltaASTNode* node);
+
 	//**************************
 	// Bytecode libraries.
 

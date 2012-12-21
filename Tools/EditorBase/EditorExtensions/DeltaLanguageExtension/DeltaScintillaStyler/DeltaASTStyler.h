@@ -116,6 +116,8 @@ protected:
 	virtual bool VisitEnter (UsingASTNode* node);
 	virtual bool VisitLeave (UsingASTNode* node);
 
+	virtual bool VisitEnter (QuotedElementsASTNode* node);
+	virtual bool VisitLeave (QuotedElementsASTNode* node);
 private:
 	inline void highlight (DeltaASTNode* node);
 	inline void highlight (uint start, uint len, DeltaASTNode* node);

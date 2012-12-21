@@ -1,5 +1,5 @@
 // TargetCode.cpp
-// Traget code generation for Delta compiler.
+// Target code generation for the Delta compiler.
 // ScriptFighter Project.
 // A. Savidis, October 1999 (original version).
 // Latest editing May 2009.
@@ -12,8 +12,8 @@
 
 #include "DDebug.h"
 #include "Symbol.h"
+#include "CompileOptions.h"
 #include "DeltaByteCodeTypes.h"
-#include "ParseParms.h"
 #include "ParseActions.h"
 #include "InterCode.h"
 #include "TargetCode.h"
@@ -21,7 +21,6 @@
 #include "ustrings.h"
 #include "ExprCleaner.h"
 #include "DebugNamingForStaticVars.h"
-#include "CompilerAPI.h"
 #include "DeltaVersionDefs.h"
 #include "ufiles.h"
 #include "SelectiveStepInPreparator.h"
@@ -40,83 +39,68 @@
 
 //-----------------------------------------------------------------
 
-std::list<DeltaStdFuncInfo>*		DeltaCodeGenerator::funcTable = (std::list<DeltaStdFuncInfo>*) 0;
-DeltaCodeGenerator*					DeltaCodeGenerator::singletonPtr = (DeltaCodeGenerator*) 0;
-
-void DeltaCodeGenerator::SingletonCreate (void) {
-	unew(funcTable);
-	DASSERT(!singletonPtr);
-	singletonPtr = DNEW(DeltaCodeGenerator);
-}
-
-void DeltaCodeGenerator::SingletonDestroy (void) {
-	udelete(singletonPtr);
-	udelete(funcTable);
-}
-
-/////////////////////////////////////////////
-
 DeltaCodeGenerator::DeltaCodeGenerator (void) {
-
+	
+	funcTable = DNEW(std::list<DeltaStdFuncInfo>);
 	code = (DeltaInstruction*) 0;
 
-	generateFuncs[DeltaIC_ADD]						= &Generate_ADD;
-	generateFuncs[DeltaIC_OBJGET]					= &Generate_OBJGET;
-	generateFuncs[DeltaIC_OBJNEW]					= &Generate_OBJNEW;
-	generateFuncs[DeltaIC_OBJNEWSET]				= &Generate_OBJNEWSET;
-	generateFuncs[DeltaIC_OBJNEWEMPTY]				= &Generate_OBJNEWEMPTY;
-	generateFuncs[DeltaIC_OBJSET]					= &Generate_OBJSET;
-	generateFuncs[DeltaIC_ASSIGN]					= &Generate_ASSIGN;
-	generateFuncs[DeltaIC_ASSIGNTEMPVAR]			= &Generate_ASSIGNTEMPVAR;
-	generateFuncs[DeltaIC_CALLEXTFUNC]				= &Generate_CALLEXTFUNC;
-	generateFuncs[DeltaIC_CALLFUNC]					= &Generate_CALLFUNC;
-	generateFuncs[DeltaIC_CALLOBJGETMETHOD]			= &Generate_CALLOBJGETMETHOD;
-	generateFuncs[DeltaIC_CALLOBJBOUNDEDGETMETHOD]	= &Generate_CALLOBJBOUNDEDGETMETHOD;
+	generateFuncs[DeltaIC_ADD]						= &DeltaCodeGenerator::Generate_ADD;
+	generateFuncs[DeltaIC_OBJGET]					= &DeltaCodeGenerator::Generate_OBJGET;
+	generateFuncs[DeltaIC_OBJNEW]					= &DeltaCodeGenerator::Generate_OBJNEW;
+	generateFuncs[DeltaIC_OBJNEWSET]				= &DeltaCodeGenerator::Generate_OBJNEWSET;
+	generateFuncs[DeltaIC_OBJNEWEMPTY]				= &DeltaCodeGenerator::Generate_OBJNEWEMPTY;
+	generateFuncs[DeltaIC_OBJSET]					= &DeltaCodeGenerator::Generate_OBJSET;
+	generateFuncs[DeltaIC_ASSIGN]					= &DeltaCodeGenerator::Generate_ASSIGN;
+	generateFuncs[DeltaIC_ASSIGNTEMPVAR]			= &DeltaCodeGenerator::Generate_ASSIGNTEMPVAR;
+	generateFuncs[DeltaIC_CALLEXTFUNC]				= &DeltaCodeGenerator::Generate_CALLEXTFUNC;
+	generateFuncs[DeltaIC_CALLFUNC]					= &DeltaCodeGenerator::Generate_CALLFUNC;
+	generateFuncs[DeltaIC_CALLOBJGETMETHOD]			= &DeltaCodeGenerator::Generate_CALLOBJGETMETHOD;
+	generateFuncs[DeltaIC_CALLOBJBOUNDEDGETMETHOD]	= &DeltaCodeGenerator::Generate_CALLOBJBOUNDEDGETMETHOD;
 
-	generateFuncs[DeltaIC_DIV]						= &Generate_DIV;
-	generateFuncs[DeltaIC_FUNCRET]					= &Generate_FUNCRET;
-	generateFuncs[DeltaIC_FUNCENTER]				= &Generate_FUNCENTER;
-	generateFuncs[DeltaIC_JUMP]						= &Generate_JUMP;
-	generateFuncs[DeltaIC_JEQ]						= &Generate_JEQ;
-	generateFuncs[DeltaIC_JNE]						= &Generate_JNE;
-	generateFuncs[DeltaIC_JGE]						= &Generate_JGE;
-	generateFuncs[DeltaIC_JGT]						= &Generate_JGT;
-	generateFuncs[DeltaIC_JLE]						= &Generate_JLE;
-	generateFuncs[DeltaIC_JLT]						= &Generate_JLT;
-	generateFuncs[DeltaIC_JTRUETEST]				= &Generate_JTRUETEST;
-	generateFuncs[DeltaIC_JFALSETEST]				= &Generate_JFALSETEST;
+	generateFuncs[DeltaIC_DIV]						= &DeltaCodeGenerator::Generate_DIV;
+	generateFuncs[DeltaIC_FUNCRET]					= &DeltaCodeGenerator::Generate_FUNCRET;
+	generateFuncs[DeltaIC_FUNCENTER]				= &DeltaCodeGenerator::Generate_FUNCENTER;
+	generateFuncs[DeltaIC_JUMP]						= &DeltaCodeGenerator::Generate_JUMP;
+	generateFuncs[DeltaIC_JEQ]						= &DeltaCodeGenerator::Generate_JEQ;
+	generateFuncs[DeltaIC_JNE]						= &DeltaCodeGenerator::Generate_JNE;
+	generateFuncs[DeltaIC_JGE]						= &DeltaCodeGenerator::Generate_JGE;
+	generateFuncs[DeltaIC_JGT]						= &DeltaCodeGenerator::Generate_JGT;
+	generateFuncs[DeltaIC_JLE]						= &DeltaCodeGenerator::Generate_JLE;
+	generateFuncs[DeltaIC_JLT]						= &DeltaCodeGenerator::Generate_JLT;
+	generateFuncs[DeltaIC_JTRUETEST]				= &DeltaCodeGenerator::Generate_JTRUETEST;
+	generateFuncs[DeltaIC_JFALSETEST]				= &DeltaCodeGenerator::Generate_JFALSETEST;
 
-	generateFuncs[DeltaIC_MOD]						= &Generate_MOD;
-	generateFuncs[DeltaIC_MUL]						= &Generate_MUL;
-	generateFuncs[DeltaIC_PUSHARG]					= &Generate_PUSHARG;
-	generateFuncs[DeltaIC_SUB]						= &Generate_SUB;
-	generateFuncs[DeltaIC_OBJDONE]					= &Generate_OBJDONE;
-	generateFuncs[DeltaIC_PUSHLATEBOUNDARG]			= &Generate_PUSHLATEBOUNDARG;
-	generateFuncs[DeltaIC_BLOCKENTER]				= &Generate_BLOCKENTER;
-	generateFuncs[DeltaIC_BLOCKEXIT]				= &Generate_BLOCKEXIT;
-	generateFuncs[DeltaIC_BOUNDEDOBJGET]			= &Generate_BOUNDEDOBJGET;
-	generateFuncs[DeltaIC_BOUNDEDOBJSET]			= &Generate_BOUNDEDOBJSET;
-	generateFuncs[DeltaIC_ASSERT]					= &Generate_ASSERT;
-	generateFuncs[DeltaIC_TRAPENABLE]				= &Generate_TRAPENABLE;
-	generateFuncs[DeltaIC_TRAPDISABLE]				= &Generate_TRAPDISABLE;
-	generateFuncs[DeltaIC_TRAP]						= &Generate_TRAP;
-	generateFuncs[DeltaIC_THROW]					= &Generate_THROW;
+	generateFuncs[DeltaIC_MOD]						= &DeltaCodeGenerator::Generate_MOD;
+	generateFuncs[DeltaIC_MUL]						= &DeltaCodeGenerator::Generate_MUL;
+	generateFuncs[DeltaIC_PUSHARG]					= &DeltaCodeGenerator::Generate_PUSHARG;
+	generateFuncs[DeltaIC_SUB]						= &DeltaCodeGenerator::Generate_SUB;
+	generateFuncs[DeltaIC_OBJDONE]					= &DeltaCodeGenerator::Generate_OBJDONE;
+	generateFuncs[DeltaIC_PUSHLATEBOUNDARG]			= &DeltaCodeGenerator::Generate_PUSHLATEBOUNDARG;
+	generateFuncs[DeltaIC_BLOCKENTER]				= &DeltaCodeGenerator::Generate_BLOCKENTER;
+	generateFuncs[DeltaIC_BLOCKEXIT]				= &DeltaCodeGenerator::Generate_BLOCKEXIT;
+	generateFuncs[DeltaIC_BOUNDEDOBJGET]			= &DeltaCodeGenerator::Generate_BOUNDEDOBJGET;
+	generateFuncs[DeltaIC_BOUNDEDOBJSET]			= &DeltaCodeGenerator::Generate_BOUNDEDOBJSET;
+	generateFuncs[DeltaIC_ASSERT]					= &DeltaCodeGenerator::Generate_ASSERT;
+	generateFuncs[DeltaIC_TRAPENABLE]				= &DeltaCodeGenerator::Generate_TRAPENABLE;
+	generateFuncs[DeltaIC_TRAPDISABLE]				= &DeltaCodeGenerator::Generate_TRAPDISABLE;
+	generateFuncs[DeltaIC_TRAP]						= &DeltaCodeGenerator::Generate_TRAP;
+	generateFuncs[DeltaIC_THROW]					= &DeltaCodeGenerator::Generate_THROW;
 
-	generateFuncs[DeltaIC_OBJNEWATTR]				= &Generate_OBJNEWATTR;
-	generateFuncs[DeltaIC_OBJSETATTR]				= &Generate_OBJSETATTR;
-	generateFuncs[DeltaIC_OBJGETATTR]				= &Generate_OBJGETATTR;
+	generateFuncs[DeltaIC_OBJNEWATTR]				= &DeltaCodeGenerator::Generate_OBJNEWATTR;
+	generateFuncs[DeltaIC_OBJSETATTR]				= &DeltaCodeGenerator::Generate_OBJSETATTR;
+	generateFuncs[DeltaIC_OBJGETATTR]				= &DeltaCodeGenerator::Generate_OBJGETATTR;
 
-	generateFuncs[DeltaIC_FOREACHBEGIN]				= &Generate_FOREACHBEGIN;	
-	generateFuncs[DeltaIC_FOREACHCHECKEND]			= &Generate_FOREACHCHECKEND;	
-	generateFuncs[DeltaIC_FOREACHGETVAL]			= &Generate_FOREACHGETVAL;	
-	generateFuncs[DeltaIC_FOREACHGETINDEX]			= &Generate_FOREACHGETINDEX;	
-	generateFuncs[DeltaIC_FOREACHFWD]				= &Generate_FOREACHFWD;		
-	generateFuncs[DeltaIC_FOREACHEND]				= &Generate_FOREACHEND;	
-	generateFuncs[DeltaIC_RETURNVAL]				= &Generate_RETURNVAL;		
-	generateFuncs[DeltaIC_RETURN]					= &Generate_RETURN;		
-	generateFuncs[DeltaIC_GETRETVAL]				= &Generate_GETRETVAL;	
+	generateFuncs[DeltaIC_FOREACHBEGIN]				= &DeltaCodeGenerator::Generate_FOREACHBEGIN;	
+	generateFuncs[DeltaIC_FOREACHCHECKEND]			= &DeltaCodeGenerator::Generate_FOREACHCHECKEND;	
+	generateFuncs[DeltaIC_FOREACHGETVAL]			= &DeltaCodeGenerator::Generate_FOREACHGETVAL;	
+	generateFuncs[DeltaIC_FOREACHGETINDEX]			= &DeltaCodeGenerator::Generate_FOREACHGETINDEX;	
+	generateFuncs[DeltaIC_FOREACHFWD]				= &DeltaCodeGenerator::Generate_FOREACHFWD;		
+	generateFuncs[DeltaIC_FOREACHEND]				= &DeltaCodeGenerator::Generate_FOREACHEND;	
+	generateFuncs[DeltaIC_RETURNVAL]				= &DeltaCodeGenerator::Generate_RETURNVAL;		
+	generateFuncs[DeltaIC_RETURN]					= &DeltaCodeGenerator::Generate_RETURN;		
+	generateFuncs[DeltaIC_GETRETVAL]				= &DeltaCodeGenerator::Generate_GETRETVAL;	
 	
-	generateFuncs[DeltaIC_NOP]						= &Generate_NOP;
+	generateFuncs[DeltaIC_NOP]						= &DeltaCodeGenerator::Generate_NOP;
 
 	Reset();
 }
@@ -127,6 +111,7 @@ DeltaCodeGenerator::~DeltaCodeGenerator () {
 	if (code)
 		DDELARR(code);
 	unfinishedJumps.clear();
+	DDELETE(funcTable);
 }
 
 /////////////////////////////////////////////
@@ -155,6 +140,11 @@ void DeltaCodeGenerator::Generate_Instruction (
 // reset to be ready for new code entrance.
 //
 void DeltaCodeGenerator::Reset (void) {
+
+	if (code) {
+		DDELARR(code);
+		code = (DeltaInstruction*) 0;
+	}
 
 	currInstr				= 0;
 	currSize				= 0;
@@ -684,7 +674,7 @@ void DeltaCodeGenerator::ExpandCode (void) {
 void DeltaCodeGenerator::Emit (DeltaInstruction* instr) {
 
 	if (currInstr >= DELTA_MAXINSTR_INDEX) {
-		DeltaCompError(
+		COMPMESSENGER.Error(
 			"Source is too large (max #instructions %u exceeded): split in more files)!",
 			DELTA_MAXINSTR_INDEX
 		);
@@ -893,12 +883,12 @@ bool DeltaCodeGenerator::WriteBinaryCode (GenericWriter& writer, bool includeDeb
 		return false;
 
 	DeltaWriteVersionInformation(writer);
-	if (DeltaCompiler::IsDynamicCode())
+	if (COMPOPTIONS.IsDynamicCode())
 		writer.write(DBG_DYNAMIC_SOURCE);
 	else
-		writer.write(DeltaCompiler::GetSourceFile());
+		writer.write(COMPOPTIONS.GetSourceFile());
 	WriteFunctionTable(writer);
-	writer.write((util_ui16) ParseParms::GlobalDataSize());
+	writer.write((util_ui16) PARSEPARMS.GlobalDataSize());
 	constArrays.Write(writer);
 	WriteDebugInfo(writer, includeDebugInfo);
 	WriteInstructions(writer);
@@ -914,7 +904,7 @@ void DeltaCodeGenerator::GenerateCode (void) {
 	// shift all globals (execept the retval) after the static vars.
 
 	if (DELTASYMBOLS.GetTotalStaticVars()) {
-		DELTASYMBOLS.GiveOffsetsToStaticVariables(ParseParms::GlobalDataSize());
+		DELTASYMBOLS.GiveOffsetsToStaticVariables(PARSEPARMS.GlobalDataSize());
 		DELTASYMBOLS.ShiftOffsetsOfGlobalVariablesAfterStatics();
 	}
 
@@ -962,9 +952,9 @@ void DeltaCodeGenerator::GenerateCode (void) {
 		// In each quad, we keep information regarding the current
 		// quad line and function serial. This is put in the debug info.
 
-		(*generateFuncs[quad.opcode])(quad, quadNo);
+		(this->*generateFuncs[quad.opcode])(quad, quadNo);
 
-		if (DeltaCompErrorsExist())
+		if (COMPMESSENGER.ErrorsExist())
 			return;
 
 		if (quad.line)
@@ -973,12 +963,12 @@ void DeltaCodeGenerator::GenerateCode (void) {
 
 	DASSERT(
 		quadNo == QUADS.Total() || 	// Either we passed all instructions.
-		(quadNo == DELTA_START_QUAD && QUADS.CurrQuadNo() == DELTA_START_QUAD)	// O rhave no instructions
+		(quadNo == DELTA_START_QUAD && QUADS.CurrQuadNo() == DELTA_START_QUAD)	// Or have no instructions
 	);
 
 	EmitProgramEndInstruction();
 	PatchUnfinishedJumps();
-	SelectiveStepInPreparator::OnTargetCodeProduced();
+	SELECTIVESTEPIN.OnTargetCodeProduced();
 }
 
 //-----------------------------------------------------------------
@@ -1212,10 +1202,10 @@ void DeltaCodeGenerator::ProduceDebugInfoForSymbols (void) {
 			if (sym->IsStatic())											// STATIC VAR
 				ProduceDebugInfoForStaticVar(sym);
 			else
-			if (!sym->GetMyFunction()) {									
+			if (!sym->GetMyFunction()) {
 				if (!sym->IsUserDefinedConst() && !sym->IsLibraryConst())	// GLOBAL VAR
 					ProduceDebugInfoForGlobalVar(sym);
-				else											
+				else
 					NO_DEBUG_INFORMATION_IS_PRODUCED(sym);					// NAMED CONSTANT
 			}
 			else
@@ -1240,17 +1230,17 @@ void DeltaCodeGenerator::ProduceDebugInfoForOpenedNamespaces(void) {
 
 void DeltaCodeGenerator::ProduceDebugInfo (void) {
 
-	if (DeltaCompiler::IsDynamicCode())
-		debugInfo.SetDynamicCode(DeltaCompiler::GetDynamicCode());
+	if (COMPOPTIONS.IsDynamicCode())
+		debugInfo.SetDynamicCode(COMPOPTIONS.GetDynamicCode());
 
-	debugInfo.GetGlobals().SetTotalBlocks(ParseParms::GetTotalGlobalBlocks());
-	debugInfo.SetTotalFuncs(ParseParms::CurrFuncSerial());
+	debugInfo.GetGlobals().SetTotalBlocks(PARSEPARMS.GetTotalGlobalBlocks());
+	debugInfo.SetTotalFuncs(PARSEPARMS.CurrFuncSerial());
 
 	ProduceDebugInfoForOpenedNamespaces();
 	ProduceDebugInfoForUsedLibraryConsts();
 	ProduceDebugInfoForSymbols();
 	ProduceDebugInfoForCodeLineChunks();
-	debugInfo.SetCalls(*DPTR(SelectiveStepInPreparator::GetAllStmts()));
+	debugInfo.SetCalls(*DPTR(SELECTIVESTEPIN.GetAllStmts()));
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -1375,13 +1365,13 @@ bool DeltaCodeGenerator::WriteTextCode (const char* file) {
 
 	FILE* fp = fopen(file, "wt");
 	if (!fp) {
-		DeltaCompMsg(DELTA_COMPILER_FAILED_PREFIX  " to open file '%s' to write target code in text format (%s)", file, strerror(errno));
+		COMPMESSENGER.Msg(DELTA_COMPILER_FAILED_PREFIX  " to open file '%s' to write target code in text format (%s)", file, strerror(errno));
 		return false;
 	}
 
-	fprintf(fp, "***SOURCE FILE***\n%s\n", DeltaCompiler::GetSourceFile());
+	fprintf(fp, "***SOURCE FILE***\n%s\n", ucstringarg(COMPOPTIONS.GetSourceFile()));
 	fprintf(fp, "\n***TOTAL GLOBALS***\n");
-	fprintf(fp, "%d\n", ParseParms::GlobalDataSize());
+	fprintf(fp, "%d\n", PARSEPARMS.GlobalDataSize());
 	
 	if (DPTR(funcTable)->size()) {
 		fprintf(fp,"\n***FUNCTION TABLE***\n");

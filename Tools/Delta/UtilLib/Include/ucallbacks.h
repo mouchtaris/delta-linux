@@ -64,6 +64,12 @@ template <class Tfun> class ucallbackwithclosure {
 	template <class C1, class C2, class C3, class C4> 
 	R					operator()(C1 a1, C2 a2, C3 a3, C4 a4) const  
 							{ return (*func)(a1, a2, a3, a4, closure); }
+	template <class C1, class C2, class C3, class C4, class C5> 
+	R					operator()(C1 a1, C2 a2, C3 a3, C4 a4, C5 a5) const  
+							{ return (*func)(a1, a2, a3, a4, a5, closure); }
+	template <class C1, class C2, class C3, class C4, class C5, class C6> 
+	R					operator()(C1 a1, C2 a2, C3 a3, C4 a4, C5 a5, C6 a6) const  
+							{ return (*func)(a1, a2, a3, a4, a5, a6, closure); }
 
 	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(ucallbackwithclosure)
 
@@ -105,6 +111,12 @@ template <class Tfun> class ucallbackalone {
 	ucallbackalone (void) : func((Tfun) 0) {}
 	~ucallbackalone(){}
 };
+
+/////////////////////////////////////////////////////////////////
+// Utility callback creators
+//
+template <class Tfun> ucallbackwithclosure<Tfun> umakecallback(Tfun func, void* closure)
+	{ return ucallbackwithclosure<Tfun>(func, closure); }
 
 /////////////////////////////////////////////////////////////////
 // This template class provides a generic callback registration

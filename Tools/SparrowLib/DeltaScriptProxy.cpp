@@ -18,6 +18,7 @@
 #include "ComponentFactory.h"
 #include "ComponentSignalRegistry.h"
 #include "ComponentFunctionCallerSafe.h"
+#include "DelayedCaller.h"
 
 #include "Streams.h"
 #include "Adaptors.h"
@@ -29,6 +30,7 @@
 
 #include "DDebug.h"
 #include "DeltaVirtualMachine.h"
+#include "DeltaExceptionHandling.h"
 #include "DeltaVMRegistry.h"
 #include "DeltaStdLib.h"
 #include "VMInit.h"
@@ -55,6 +57,7 @@ namespace ide
 	const std::string DeltaScriptProxy::s_classId = "DeltaScriptProxy";
 	DeltaScriptProxy::ScriptInstanceHolder DeltaScriptProxy::scriptInstances;
 	DeltaScriptProxy::ClassVMMap DeltaScriptProxy::classVMs;
+	DeltaScriptProxy::ComponentMap DeltaScriptProxy::derivedInstances;
 
 	//-------------------------------------------------------//
 	//---- class DeltaScriptProxy --------------------------//
@@ -93,7 +96,17 @@ namespace ide
 		DeltaVirtualMachine* vm = VMRegistry().Get(classId.c_str());
 		DASSERT(util::str2std(id) == classId && vm && classVMs.find(classId) == classVMs.end());
 		classVMs[classId] = ClassVMInfo(vm);
-		Call<bool (const String&, const String&)>(s_classId, "DeltaVM", "CallGlobalFunc")(id, _T("ClassLoad"));
+
+		DELTA_EXCEPTIONS_NATIVE_TRY
+			Call<bool (const String&, const String&)>(s_classId, "DeltaVM", "CallGlobalFunc")(id, _T("ClassLoad"));
+		DELTA_EXCEPTIONS_NATIVE_TRAP(runtimeException) 
+			UPRIMARYERROR(runtimeException.ToString());
+
+		if (DPTR(vm)->HasProducedError() && DELTA_NO_VM_CALLER_FAILED)
+			DeltaVirtualMachine::ResetRunTimeErrors();
+		if (UERROR_ISRAISED())
+			HandleVMError(classId);
+
 		return true;
 	}
 
@@ -107,8 +120,15 @@ namespace ide
 		ClassVMMap::iterator i = classVMs.find(classId);
 		assert(i != classVMs.end());
 		const String vmId = util::std2str(DPTR(i->second.vm)->Id());
-		if (Call<bool (const String&, const String&)>(s_classId, "DeltaVM", "CallGlobalFunc")(vmId, _T("ClassUnload")))
-			Call<bool (const String&)>(s_classId, "DeltaVM", "DeleteVM")(vmId);
+		DELTA_EXCEPTIONS_NATIVE_TRY
+			if (Call<bool (const String&, const String&)>(s_classId, "DeltaVM", "CallGlobalFunc")(vmId, _T("ClassUnload")))
+				Call<bool (const String&)>(s_classId, "DeltaVM", "DeleteVM")(vmId);
+		DELTA_EXCEPTIONS_NATIVE_TRAP(runtimeException) 
+			UPRIMARYERROR(runtimeException.ToString());
+
+		if (UERROR_ISRAISED())
+			HandleVMError(classId);
+
 		classVMs.erase(i);
 		return true;
 	}
@@ -657,7 +677,7 @@ namespace ide
 		else {
 			if ((fit = (*it)->functions.find(funcName)) == (*it)->functions.end()) {
 				bool status = false;
-				if ((*it)->base) {	//-- Check if there is a base class with this function
+				if ((*it)->base && (*it)->IsBaseValid()) {	//-- Check if there is a valid base class with this function
 					const ComponentEntry& compEntry = ComponentRegistry::Instance().GetComponentEntry((*it)->base->GetClassId());
 					const ComponentFuncEntry& funcEntry = compEntry.GetFuncEntry(funcName);
 					if (funcEntry.IsMemberFunc())
@@ -691,8 +711,14 @@ namespace ide
 		if (!function.IsCallable())
 			return false;
 
-		uint savedSerial = instance->GetSerial();
-		function(deltaArgs, &retval);
+		uint	savedSerial = instance->GetSerial();
+		bool	hasError = false;
+
+		DELTA_EXCEPTIONS_NATIVE_TRY
+			function(deltaArgs, &retval);
+		DELTA_EXCEPTIONS_NATIVE_TRAP(runtimeException) 
+			UPRIMARYERROR(runtimeException.ToString());
+
 		if(!ComponentRegistry::Instance().IsValidInstance(instance, savedSerial))
 			return true;
 
@@ -701,7 +727,11 @@ namespace ide
 
 		if (UERROR_ISRAISED()) {
 			HandleVMError(instance->GetClassId());
-			ComponentFactory::Instance().DestroyComponent(*it);
+			ComponentMap::iterator i = derivedInstances.find(*it);
+			Component* component = i == derivedInstances.end() ? *it : i->second;
+			timer::DelayedCaller::Instance().PostDelayedCall(
+				boost::bind(&ComponentFactory::DestroyComponent, boost::ref(ComponentFactory::Instance()), component)
+			);
 			return true;
 		}
 
@@ -1027,6 +1057,8 @@ namespace ide
 		//-- Create new Component
 		ScriptInstanceProxy* script = new ScriptInstanceProxy(entry.GetClassId(), vm, base);
 		scriptInstances.get<by_Instance>().insert(script);
+		if (base)
+			derivedInstances[base] = script;
 
 		// Do NOT call the script instance initialization here, as the component doesn't have a handle
 		// yet and therefore can't invoke any base class functions. The initialization function is called
@@ -1054,7 +1086,8 @@ namespace ide
 		//-- Get error condition
 		if (UERROR_ISRAISED())
 			HandleVMError(instance->GetClassId());
-
+		if ((*it)->base)
+			derivedInstances.erase((*it)->base);
 		delete *it;
 		scriptInstances.get<by_Instance>().erase(it);
 	}

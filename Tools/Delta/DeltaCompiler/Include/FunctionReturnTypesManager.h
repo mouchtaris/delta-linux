@@ -8,9 +8,9 @@
 #ifndef	FUNCTIONRETURNTYPESMANAGER_H
 #define	FUNCTIONRETURNTYPESMANAGER_H
 
-#include "usingleton.h"
 #include "LibraryTypes.h"
 #include "DeltaByteCodeTypes.h"
+#include "CompilerComponentDirectory.h"
 #include <map>
 #include <string>
 #include <list>
@@ -18,8 +18,10 @@
 ///////////////////////////////////////////////////////////
 
 class DeltaFunctionReturnTypesManager {
+
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
 	private:
-	static DeltaFunctionReturnTypesManager* singletonPtr;
 	typedef std::map<std::string, const DeltaLibraryUserDefinedType*> TypeMap;
 	TypeMap unresolvedTypes;
 
@@ -46,19 +48,16 @@ class DeltaFunctionReturnTypesManager {
 	void									Initialise (void);
 	void									CleanUp (void);
 
-	USINGLETON_APISTYLE_DECLARE_PUBLICSTDMETHODS
-	USINGLETON_APISTYLE_DECLARE_GETTER(DeltaFunctionReturnTypesManager)
-
 	DeltaFunctionReturnTypesManager (void);
 	~DeltaFunctionReturnTypesManager();
 };
 
 ///////////////////////////////////////////////////////////
 
-#define	DELTARETURNTYPES	GetReturnTypes()
+#define DELTARETURNTYPES_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaFunctionReturnTypesManager)))
 
-inline DeltaFunctionReturnTypesManager& GetReturnTypes (void) 
-	{  return DeltaFunctionReturnTypesManager::GetSingleton(); }
+#define DELTARETURNTYPES	DELTARETURNTYPES_EX(COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////
 

@@ -13,6 +13,7 @@
 #ifndef	TYPECHECK_H
 #define	TYPECHECK_H
 
+#include "CompilerComponentDirectory.h"
 #include "InterCode.h"
 #include "TypeTag.h"
 #include "LibraryTypes.h"
@@ -25,18 +26,35 @@ typedef std::list<DeltaLibraryTypeInfo> CallSig;
 typedef std::list<DeltaLibraryTypeInfo> DefSig;
 typedef	std::list<std::string>			IdSig;
 
-extern void TypeCheck_ProgramFunctionExactMissingArguments (DeltaSymbol* func,  util_ui32 n);
-extern void TypeCheck_NumberOfLibraryFunctionActualArguments (DeltaSymbol* func, util_ui32 n);
-extern bool TypeCheck_LibFunctionArguments (DeltaSymbol* func, const CallSig& c_sig);
-extern bool	TypeCheck_FunctionCall (DeltaExpr* func);
-extern bool	TypeCheck_Table (DeltaExpr* table);
-extern bool	TypeCheck_LateBoundArg (DeltaExpr* table);
-extern bool	TypeCheck_TableIndex (DeltaExpr* index);
-extern bool	TypeCheck_UseAsBoolean (DeltaExpr* expr);
-extern bool	TypeCheck_InRelational (DeltaExpr* expr, bool onlyEquality);
-extern bool	TypeCheck_InRelational (DeltaExpr* e1, DeltaExpr* e2, DeltaICOpcode relOp);
-extern bool	TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode relOp, const char* opStr, bool alwaysError = true);
-extern bool TypeCheck_Assign (DeltaExpr* lvalue);
-extern bool TypeCheck_ForeachContainer (DeltaExpr* container);
+/////////////////////////////////////////////////////////////
+
+class TypeChecker {
+
+	USE_COMPILER_COMPONENT_DIRECTORY();
+
+	public:
+	void	Check_ProgramFunctionExactMissingArguments (DeltaSymbol* func,  util_ui32 n);
+	void	Check_NumberOfLibraryFunctionActualArguments (DeltaSymbol* func, util_ui32 n);
+	bool	Check_LibFunctionArguments (DeltaSymbol* func, const CallSig& c_sig);
+	bool	Check_FunctionCall (DeltaExpr* func);
+	bool	Check_Table (DeltaExpr* table);
+	bool	Check_LateBoundArg (DeltaExpr* table);
+	bool	Check_TableIndex (DeltaExpr* index);
+	bool	Check_UseAsBoolean (DeltaExpr* expr);
+	bool	Check_InRelational (DeltaExpr* expr, bool onlyEquality);
+	bool	Check_InRelational (DeltaExpr* e1, DeltaExpr* e2, DeltaICOpcode relOp);
+	bool	Check_InArithmetic (DeltaExpr* expr, DeltaICOpcode relOp, const char* opStr, bool alwaysError = true);
+	bool	Check_Assign (DeltaExpr* lvalue);
+	bool	Check_ForeachContainer (DeltaExpr* container);
+};
+
+/////////////////////////////////////////////////////////////
+
+#define TYPECHECKER_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), TypeChecker)))
+
+#define TYPECHECKER	TYPECHECKER_EX(COMPONENT_DIRECTORY())
+
+/////////////////////////////////////////////////////////////
 
 #endif	// Do not ad stuff beyond this point.

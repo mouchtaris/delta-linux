@@ -12,45 +12,26 @@
  *  Added support for console debugger invocation, AS, August 2009. 
  */
 #include "Project.h"
-#include "NewItemDialog.h"
 #include "IDEDialogs.h"
 
 #include "ConsoleHost.h"
 #include "StringUtils.h"
 #include "ComponentEntry.h"
-#include "ComponentFactory.h"
-#include "ComponentRegistry.h"
 #include "ComponentFunctionCallerSafe.h"
 #include "Call.h"
 
 #include "BitmapRegistry.h"
 #include "ComponentConfigurationDialog.h"
-#include "Algorithms.h"
-#include "DelayedCaller.h"
-#include "FileChangeWatcher.h"
-#include "GenericDialogs.h"
-#include "PropertyUtils.h"
-#include "XMLPropertyVisitor.h"
 #include "ProjectManagerCommon.h"
 
-#include "xml.h"
-#include <wx/xml/xml.h>
 #include <wx/filename.h>
-
-#include <boost/range.hpp>
 #include <boost/foreach.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 
 #include "Icons/run_script.xpm"
 #include "Icons/debug_script.xpm"
 #include "Icons/debug_script_console.xpm"
 #include "Icons/build.xpm"
-#include "Icons/add_new_item.xpm"
-#include "Icons/add_existing_item.xpm"
-#include "Icons/add_filter.xpm"
 #include "Icons/delete.xpm"
-#include "Icons/properties.xpm"
 
 namespace ide
 {
@@ -350,6 +331,13 @@ namespace ide
 					child->AddInstanceProperty(conf::GetDeploymentPropertyId(), prop->Clone());
 					delete prop;
 				}
+
+				conf::Property* output = const_cast<conf::Property*>(child->GetInstanceProperty("output"));
+				if (output && conf::get_prop_value<conf::StringProperty>(output, _T("")).empty()) {
+					String name = Call<const String& (void)>(this, child, "GetName")();
+					name = name.substr(0, name.find_last_of(_T(".")));
+					conf::set_prop_value<conf::StringProperty>(output, name);
+				}
 			}
 		}
 	}
@@ -358,7 +346,7 @@ namespace ide
 
 	EXPORTED_FUNCTION(Project, int, OnCompareItems, (const Handle& handle1, const Handle& handle2))
 	{
-		char *priorities[] = { "Filter", "Project", "Script", "TextFile", "GenericFile" };
+		char *priorities[] = { "Filter", "Script", "TextFile", "GenericFile" };
 		assert(handle1.Resolve() && handle2.Resolve());
 		if (handle1->GetClassId() != handle2->GetClassId()) {
 			char **pos1 = std::find(priorities, priorities + SIZEOF_ARRAY(priorities), handle1->GetClassId());
@@ -444,7 +432,7 @@ namespace ide
 		for(unsigned i = 0; iter->second[i]; ++i)
 			const_cast<Property*>(GetInstanceProperty(iter->second[i]))->SetVisible(true);
 		
-		HandleList scripts = CollectChildren(_("Script"));
+		const HandleList scripts = CollectChildren(_("Script"));
 		if (deployment == DELTA_APPLICATION) {
 			BOOST_FOREACH(const Handle& script, scripts)
 				if (Component* child = script.Resolve())

@@ -48,15 +48,15 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;SYNTAXTREELIB_IMPORT;DCOMPLIB_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Include;$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaCompiler\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DeltaSyntaxTree\Include;$(DELTA)\FileReadersLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <OpenMPSupport>false</OpenMPSupport>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
       <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
@@ -67,8 +67,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -76,6 +75,7 @@
       <AdditionalIncludeDirectories>..\Include;$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DeltaCompiler\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\DeltaSyntaxTree\Include;$(DELTA)\FileReadersLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -89,10 +89,10 @@
     <ClCompile Include="..\Source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Delta\DLLs\CompilerComponents\Project\CompilerComponents.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\CompilerComponents\Project\CompilerComponents.vcxproj">
       <Project>{56a22761-a765-45ce-8448-60c1c15b9c78}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\Delta\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
+    <ProjectReference Include="$(DELTA)\DLLs\UtilAndDebugLib\Project\UtilAndDebugLib.vcxproj">
       <Project>{f2d735a6-3645-4a06-b368-bcc38d42efee}</Project>
     </ProjectReference>
   </ItemGroup>

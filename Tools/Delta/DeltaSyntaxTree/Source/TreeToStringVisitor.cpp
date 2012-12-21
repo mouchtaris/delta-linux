@@ -14,9 +14,9 @@ void AttributeStringifier::SetHandler (const std::string& nodeTag, Handler f, vo
 	{ handlers[nodeTag].set(f, c); }
 
 const std::string AttributeStringifier::operator()(
-		const std::string&	nodeTag, 
-		const std::string&	attr, 
-		void*				data
+		const std::string&		nodeTag, 
+		const std::string&		attr, 
+		const TreeAttribute*	data
 	) const {
 
 	Handlers::const_iterator i = handlers.find(nodeTag);
@@ -28,7 +28,7 @@ const std::string AttributeStringifier::operator()(
 	if (defaultHandler.f())
 		defaultHandler(attr, data, &result);
 	else
-		result = uconstructstr("0x%x", (util_ui32) data);
+		result = data->toString();
 	return result;
 }
 

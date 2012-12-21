@@ -154,7 +154,8 @@ namespace ide
 
 	EXPORTED_MEMBER(IDEComponent, void, RemoveInstanceCommand, (const String& path))
 	{
-		ComponentRemovedUserCommand(path);
+		const UserCommandDesc desc = this->GetCommand(path);
+		ComponentRemovedUserCommand(path, desc.GetFlags());
 	}
 
 	//-----------------------------------------------------------------------

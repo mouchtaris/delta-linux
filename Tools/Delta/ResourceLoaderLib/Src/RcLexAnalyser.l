@@ -41,7 +41,6 @@ void RcLoaderCleanUpScannerFromString (void) {
 // The yylex() must be reentrant, so it takes yylval as a formal parameter.
 //
 #define YY_DECL		int ResourceLoader_yylex (void* yylval)
-#define	yywrap		ResourceLoader_yywrap
 #define	STACKVAL	((YYSTYPE*) yylval)
 
 //////////////////////////////////////////////////////////////
@@ -50,8 +49,6 @@ void RcLoaderCleanUpScannerFromString (void) {
 static void					IgnoreCStyleComments (void);
 static void					IgnoreCPPStyleComments (void);
 static const std::string	ReadQuotedString (void);
-
-extern int ResourceLoader_yywrap(void);
 
 %}
 
@@ -66,6 +63,11 @@ real		{decdigit}+"."{decdigit}+
 hex			0x{hexdigit}+
 flag		{ws}+{decdigit}
 cpp			#{ws}+{decdigit}+{ws}+\"[^"]+{flag}?
+
+%option prefix="ResourceLoader_yy"
+%option outfile="RcLexAnalyser.cpp"
+%option verbose
+%option noyywrap
 
 %%
 
@@ -113,29 +115,31 @@ cpp			#{ws}+{decdigit}+{ws}+\"[^"]+{flag}?
 
 //------------------------------------------------------------------
 
-int					ResourceLoader_yywrap (void)	{ return 1; }
 static char			input_wrapper (void)			{ return yyinput(); }
 static void			unput_wrapper (char c)			{ unput(c); }
 const std::string	ResourceLoader_GetText (void)	{ return yytext; }
 
 static void IgnoreCStyleComments (void)  {
 	util_ui32 line = ResourceLoader::GetLine();
-	uignoreCcomments(input_wrapper, unput_wrapper, &line, &ResourceLoaderError);
+	std::string error;
+	if (!uignoreCcomments(input_wrapper, unput_wrapper, &line, &error))
+		ResourceLoaderError(error.c_str());
 	ResourceLoader::SetLine(line);
 } 
 
 static const std::string ReadQuotedString (void) {
 	util_ui32 line = ResourceLoader::GetLine();
 	std::string s;
-	ureadquotedstring(s, input_wrapper, &line, &ResourceLoaderError);
+	std::string error;
+	if (!ureadquotedstring(s, input_wrapper, &line, &error))
+		ResourceLoaderError(error.c_str());
 	ResourceLoader::SetLine(line);
 	return uextendescapesequences(s.c_str());
 }
 
 static void IgnoreCPPStyleComments (void) {
-	util_ui32 line = ResourceLoader::GetLine();
-	uignoreCPPcomments(input_wrapper, &line);
-	ResourceLoader::SetLine(line);
+	if (uignoreCPPcomments(input_wrapper))
+		ResourceLoader::NextLine();
 }
 
 void ResourceLoader_ResetLex (FILE* fp) 

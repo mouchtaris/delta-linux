@@ -85,7 +85,7 @@ public:
 	virtual const std::string GetCursorFocusInformation (void) const { return "no focus information"; }
 
 	virtual void CharacterAdded (int keyCode) {}
-	virtual void GetInfoForPosition (uint, uint*, uint*, int*, String*) {}
+	virtual bool GetInfoForPosition (uint, uint*, uint*, int*, String*) { return false; }
 	virtual void CancelDisplayedInfo (void) {}
 	virtual void SetExtraLibraryDefinitions (const StringList&) {}
 	virtual void SetByteCodeLoadingPath (const std::string& path) {}

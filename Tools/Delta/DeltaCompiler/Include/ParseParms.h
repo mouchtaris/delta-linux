@@ -11,72 +11,87 @@
 #include "Symbol.h"
 #include "ParseParmsP.h"
 
+//////////////////////////////////////////////////////
+
 #define	DELTA_GLOBAL_SCOPE				0
 #define	DELTA_TOSTRING_SYMBOLIC_NAME	"@"
 
+//////////////////////////////////////////////////////
+
 class ParseParms {
+	private:
+	PRIVATE_ParseParms_MEMBERS
 
 	public:
-	static util_ui16		CurrLine (void);
+	util_ui32		GetLine (void);
+	util_ui32		SetLine (util_ui32 line);
+	void			NextLine (void);
 
-	static bool				InGlobalScope (void)	{ return !currScope.inside(); }
-	static NestedState&		CurrScope (void)		{ return currScope; }
-	static NestedState&		InAssertStmt (void)		{ return inAssertStmt; }
-	static NestedState&		InTableExpr(void)		{ return inTableExpr; }
+	bool			InGlobalScope	(void) const	{ return !currScope.inside(); }
+	NestedState&	CurrScope		(void)			{ return currScope; }
+	NestedState&	InAssertStmt	(void)			{ return inAssertStmt; }
+	NestedState&	InTableExpr		(void)			{ return inTableExpr; }
 
-	static util_ui16		CurrFuncSerial (void);
-	static util_ui16		InsideFuncSerial(void);
-	static void				IncFuncSerial (void);
+	util_ui16		CurrFuncSerial (void) const;
+	util_ui16		InsideFuncSerial(void) const;
+	void			IncFuncSerial (void);
 
-	static void				PushFunction (DeltaSymbol* func);
-	static void				PopFunction (void);
-	static DeltaSymbol*		CurrFunction (void);
-	static bool				IsOuterFunction (DeltaSymbol* func);
-	static bool				InFunction (void);
-	static bool				InMethod (void);
-	static bool				IsOperator (const std::string& id);
+	void			PushFunction (DeltaSymbol* func);
+	void			PopFunction (void);
+	DeltaSymbol*	CurrFunction (void) const;
+	bool			IsOuterFunction (DeltaSymbol* func) const;
+	bool			InFunction (void) const;
+	bool			InMethod (void) const;
+	static bool		IsOperator (const std::string& id);
 
-	static util_ui16		GlobalDataSize (void);
-	static void				SetGlobalDataSize (util_ui16 n);
-	static util_ui16		IncGlobalBlocks (void);
-	static util_ui16		GetTotalGlobalBlocks (void);
+	util_ui16		GlobalDataSize (void) const;
+	void			SetGlobalDataSize (util_ui16 n);
+	util_ui16		IncGlobalBlocks (void);
+	util_ui16		GetTotalGlobalBlocks (void) const;
 
-	static bool				InFormalArgs (void);
-	static void				SetInFormalArgs (bool val);
-
-	static bool				InProductionMode (void);
-	static void				SetInProductionMode (bool val);
+	bool			InFormalArgs (void) const;
+	void			SetInFormalArgs (bool val);
 
 	enum ConditionValue { CondFalse = 1, CondTrue = 0, CondCantTell = 2 };
 
-	static bool				InLoop (void);
-	static void				EnteringLoop (void);
-	static void				ExitingLoop (ConditionValue condValue = CondCantTell);
+	bool			InLoop (void) const;
+	void			EnteringLoop (void);
+	void			ExitingLoop (ConditionValue condValue = CondCantTell);
 
-	static void				EnteringIf (void);
-	static void				ExitingIf (ConditionValue cond);
-	static void				ExitingIfFollowedByElse (void);
-	static void				EnteringElse (void);
-	static void				ExitingElse (ConditionValue cond);
+	void			EnteringIf (void);
+	void			ExitingIf (ConditionValue cond);
+	void			ExitingIfFollowedByElse (void);
+	void			EnteringElse (void);
+	void			ExitingElse (ConditionValue cond);
 
-	static void				AssumeToBeInitialised (DeltaSymbol* var);
+	void			AssumeToBeInitialised (DeltaSymbol* var);
 
-	static void				IncUnindexedElementOrder (void);
-	static util_ui32		GetUnindexedElementOrder (void);
-	static void				EnteringTableConstructor (DeltaExpr* table);
-	static void				ExitingTableConstructor (void);
-	static DeltaExpr*		GetCurrConstructedTable (void);
+	void			IncUnindexedElementOrder (void);
+	util_ui32		GetUnindexedElementOrder (void);
+	void			EnteringTableConstructor (DeltaExpr* table);
+	void			ExitingTableConstructor (void);
+	DeltaExpr*		GetCurrConstructedTable (void) const;
 
 	typedef std::list<std::string> NameList;
-	static void				AppendToNamespacePath (const std::string& id);
-	static void				ClearNamespacePath (void);
-	static const NameList&	GetNamespacePath (void);
+	void			AppendToNamespacePath (const std::string& id);
+	void			ClearNamespacePath (void);
+	const NameList&	GetNamespacePath (void) const;
 
-	static void				Initialise (void);
-	static void				CleanUp (void);
+	void			Initialise (void);
+	void			CleanUp (void);
 
-	private:
-	PRIVATE_ParseParms_MEMBERS
+	ParseParms(void);
+	~ParseParms();
+
 };
+
+//////////////////////////////////////////////////////
+
+#define PARSEPARMS_EX(component_directory)	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), ParseParms)))
+
+#define PARSEPARMS	PARSEPARMS_EX(COMPONENT_DIRECTORY())
+
+//////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

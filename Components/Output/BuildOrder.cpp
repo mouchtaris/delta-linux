@@ -273,8 +273,13 @@ namespace ide
 	EXPORTED_SLOT_MEMBER(BuildOrder, void, OnCompilationMessage, (const std::string& caller, const UIntList& buildId,
 		const String& type, const String& content, const String& file, uint line), "CompilationMessage")
 	{
-		const String str = type == _T("Error") || type == _T("Warning") ?
-			String::Format((type + _T(", file '%s', line %d: %s\n")).c_str(), file, line, content) : content;
+		String str;
+		if (type == _T("Error") || type == _T("Warning"))
+			str = String::Format((type + _T(", file '%s', line %d: %s\n")).c_str(), file, line, content);
+		else if (type == _T("See original source"))
+			str = String::Format((type + _T(", file '%s', line %d.\n")).c_str(), file, line);
+		else
+			str = content;
 		AppendOrdered(str, buildId);
 	}
 

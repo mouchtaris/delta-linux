@@ -62,9 +62,10 @@ static void LOGMSG (const char* format, ...) {
 	uvsprintf(result, format, args);
 	va_end(args);
 
-	FILE* fp = fopen(LOGNAME,"at");
-	fputs(result.c_str(), fp);
-	fclose(fp);
+	if (FILE* fp = fopen(LOGNAME,"at")) {
+		fputs(result.c_str(), fp);
+		fclose(fp);
+	}
 #endif
 }
 

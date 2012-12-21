@@ -32,6 +32,7 @@ typedef	double DeltaNumberValueType;
 //-----------------------------------------------------------
 
 #define	DELTA_MAXNESTED_FUNCTIONS				32
+#define	DELTA_MAXNESTED_QUASI_QUOTES			32
 #define	DELTA_FUNCSERIAL_OF_GLOBAL_CODE			0
 #define	DELTA_MAX_STRING_CONSTS					1024
 #define	DELTA_MAX_EXTERN_FUNCS					1024
@@ -218,7 +219,7 @@ struct	DeltaSymbol;
 #define	DBG_NO_ACTUAL_VALUE_FOR_FORMAL			"_<NO ACTUAL VALUE>_"
 
 //-----------------------------------------------------------
-// VM and debugger backend exporting.
+// VM, StdLib and debugger backend exporting.
 
 #if defined(DVM_EXPORT) && defined(DVM_IMPORT)
 #error "Can't define both DVM_EXPORT and DVM_IMPORT!"

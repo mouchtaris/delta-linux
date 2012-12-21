@@ -11,25 +11,24 @@
 
 #include "DDebug.h"
 #include "ParseActions.h"
+#include "CompileOptions.h"
 #include "DeltaByteCodeTypes.h"
 #include "DeltaCompErrorMsg.h"
 #include "Symbol.h"
 #include "Optimizer.h"
 #include "TypeCheck.h"
 #include "DeltaCompErrorDefs.h"
-#include "CompilerAPI.h"
 
 //------------------------------------------------------------------
 // ASSIGNMENTS.
 
 // The constant is created in current scope, hence, we check for
-// name conflict only in the current scope. Also, the 'id' here
-// is dynamic and must be deleted.
+// name conflict only in the current scope.
 //
-DeltaExpr* Translate_ConstAssignExpression (const char* id, DeltaExpr* expr) {
+DeltaExpr* Translator::Translate_ConstAssignExpression (const std::string& id, DeltaExpr* expr) {
 
 	NULL_EXPR_CHECK(expr);
-	DeltaSymbol* sym = DELTASYMBOLS.Lookup(id, ParseParms::CurrScope().value());
+	DeltaSymbol* sym = DELTASYMBOLS.Lookup(id, PARSEPARMS.CurrScope().value());
 
 	if (!sym) {
 		
@@ -41,9 +40,9 @@ DeltaExpr* Translate_ConstAssignExpression (const char* id, DeltaExpr* expr) {
 		// it as far as it uses the special prefix when a name is not
 		// resolved otherwise.
 
-		if (!DeltaCompiler::GetProductionMode()) {	// Except when we are in debug mode.
+		if (!COMPOPTIONS.GetProductionMode()) {	// Except when we are in debug mode.
 			DeltaSymbol* var	= DELTASYMBOLS.NewSymbol(std::string(DELTA_HIDDENCONSTVAR_NAME_PREFIX) + id, true);
-			DeltaExpr*	 result	= DNEW(DeltaExpr);
+			DeltaExpr*	 result	= EXPRFACTORY.New();
 			result->sym = var;
 			QUADS.Emit(DeltaIC_ASSIGN, expr, NIL_EXPR, result);
 			OPTIMIZER.ExcludeFromTempElimination(QUADS.CurrQuadNo());	// To ensure optimization will not strip it off.
@@ -60,7 +59,7 @@ DeltaExpr* Translate_ConstAssignExpression (const char* id, DeltaExpr* expr) {
 	}
 
 	DPTR(sym)->isUserDefinedConst = true;
-	DPTR(sym)->constExpr = DPTR(expr)->Copy();
+	DPTR(sym)->constExpr = EXPRFACTORY.Copy(DPTR(expr));
 	DPTR(sym)->SetInitialised();
 
 	Unparse_ConstDef(sym, expr);
@@ -71,9 +70,12 @@ DeltaExpr* Translate_ConstAssignExpression (const char* id, DeltaExpr* expr) {
 // Assignments are the only case where we do not explicitly adapt the
 // table content, since it is now explicitly used as an l-value.
 //
-DeltaExpr* Translate_AssignExpr (DeltaExpr* lvalue, DeltaExpr* expr) {
+DeltaExpr* Translator::Translate_AssignExpr (DeltaExpr* lvalue, DeltaExpr* expr) {
 
 	NULL_EXPR_PAIR_CHECK(lvalue, expr);
+
+	if (!TYPECHECKER.Check_Assign(lvalue))
+		return NIL_EXPR;
 
 	if (DPTR(lvalue->sym)->IsImportedLibVar()) {
 		DELTACOMP_ERROR_BYTECODE_LIBRARY_VAR_IMMUTABLE(
@@ -83,13 +85,10 @@ DeltaExpr* Translate_AssignExpr (DeltaExpr* lvalue, DeltaExpr* expr) {
 		return NIL_EXPR;
 	}
 
-	if (!TypeCheck_Assign(lvalue))
-		return NIL_EXPR;
-
 	expr = DPTR(expr)->AdaptIfBool();
 	DPTR(expr)->CheckUninitialised();
 
-	DeltaExpr* result = DNEW(DeltaExpr);
+	DeltaExpr* result = EXPRFACTORY.New();
 	if (lvalue->IsVarDeclaration())
 		DPTR(result)->userData	= expr;	// Store r-value for future reference.
 	DPTR(result)->sym = DELTASYMBOLS.NewTemp();
@@ -156,7 +155,7 @@ DeltaExpr* Translate_AssignExpr (DeltaExpr* lvalue, DeltaExpr* expr) {
 // In this type of arithmetic expressions, we cannot compute the result
 // at compile time without optimization techniques (i.e. constant propagation).
 //
-DeltaExpr* Translate_AssignArithExpr (DeltaExpr* lvalue, DeltaExpr* expr, DeltaICOpcode arithOp, const char* opStr) {
+DeltaExpr* Translator::Translate_AssignArithExpr (DeltaExpr* lvalue, DeltaExpr* expr, DeltaICOpcode arithOp, const char* opStr) {
 
 	NULL_EXPR_PAIR_CHECK(lvalue, expr);
 
@@ -168,9 +167,9 @@ DeltaExpr* Translate_AssignArithExpr (DeltaExpr* lvalue, DeltaExpr* expr, DeltaI
 		return NIL_EXPR; 
 	}
 
-	if (!TypeCheck_Assign(lvalue)						||
-		!TypeCheck_InArithmetic(lvalue, arithOp, opStr)	||
-		!TypeCheck_InArithmetic(expr, arithOp, opStr))
+	if (!TYPECHECKER.Check_Assign(lvalue)						||
+		!TYPECHECKER.Check_InArithmetic(lvalue, arithOp, opStr)	||
+		!TYPECHECKER.Check_InArithmetic(expr, arithOp, opStr))
 		return NIL_EXPR;
 
 	// Can never be actually a temporary variable, unless we 
@@ -188,7 +187,7 @@ DeltaExpr* Translate_AssignArithExpr (DeltaExpr* lvalue, DeltaExpr* expr, DeltaI
 	//
 	if (DPTR(lvalue)->type == DeltaExprTableElement) {
 
-		DeltaExpr* result = DNEW(DeltaExpr);
+		DeltaExpr* result = EXPRFACTORY.New();
 		DPTR(result)->sym = DELTASYMBOLS.NewTemp();
 
 		// Used also as an r-value, so a temporary will be created
@@ -218,7 +217,7 @@ DeltaExpr* Translate_AssignArithExpr (DeltaExpr* lvalue, DeltaExpr* expr, DeltaI
 	}
 	else {
 
-		DeltaExpr* result = DNEW(DeltaExpr);
+		DeltaExpr* result = EXPRFACTORY.New();
 		DPTR(result)->sym = lvalue->sym;
 
 		QUADS.Emit(

@@ -44,7 +44,7 @@ static util_ui8 callAllowance[TOTAL_TYPE_TAGS] = {
 /*	Nil			*/	0
 };
 
-bool TypeCheck_FunctionCall (DeltaExpr* func) {
+bool TypeChecker::Check_FunctionCall (DeltaExpr* func) {
 
 	DASSERT(func);
 
@@ -73,7 +73,7 @@ bool TypeCheck_FunctionCall (DeltaExpr* func) {
 
 ////////////////////////////////////////////////////////////
 
-void TypeCheck_ProgramFunctionExactMissingArguments (DeltaSymbol* func,  util_ui32 n) {
+void TypeChecker::Check_ProgramFunctionExactMissingArguments (DeltaSymbol* func,  util_ui32 n) {
 
 	std::list<std::string>& formals = DPTR(func)->GetFormals();
 	DASSERT(n < formals.size());
@@ -94,16 +94,16 @@ void TypeCheck_ProgramFunctionExactMissingArguments (DeltaSymbol* func,  util_ui
 
 ////////////////////////////////////////////////////////////
 
-void TypeCheck_NumberOfLibraryFunctionActualArguments (DeltaSymbol* func, util_ui32 n) {
+void TypeChecker::Check_NumberOfLibraryFunctionActualArguments (DeltaSymbol* func, util_ui32 n) {
 
 	if (DeltaLibraryFuncSignatures*	sigsObj = DPTR(func)->GetLibraryFuncSignatures()) {
 
 		typedef DeltaLibraryFuncSignatures::Sigs	Sigs;
 		typedef DeltaLibraryFuncSignatures::Sig		Sig;
 
-		void(*handler)(const char*,...) = &DeltaCompWarning;
+		void (DeltaCompilerMessenger::*handler)(const char*,...) = &DeltaCompilerMessenger::Warning;
 		if (sigsObj->ShouldPostErrorOnTypeConflict())
-			handler = &DeltaCompError;
+			handler = &DeltaCompilerMessenger::Error;
 
 		const Sigs& sigs =  DPTR(sigsObj)->GetSignatures();
 		DASSERT(!sigs.empty());
@@ -198,7 +198,7 @@ static bool MatchSignatures (
 				error->append(std::string("'") + *i + "'");
 			}
 
-			error->append(atLeastTwo ? " arguments" : "argument");
+			error->append(atLeastTwo ? " arguments" : " argument");
 			return false;
 		}
 		else {
@@ -236,7 +236,7 @@ static bool MatchSignatures (
 
 //*******************************
 
-bool TypeCheck_LibFunctionArguments (DeltaSymbol* func, const CallSig& c_sig) {
+bool TypeChecker::Check_LibFunctionArguments (DeltaSymbol* func, const CallSig& c_sig) {
 	if (!func)
 		return true;	// This is the case to invoke a string not known to be a lif func.
 	else
@@ -266,9 +266,9 @@ bool TypeCheck_LibFunctionArguments (DeltaSymbol* func, const CallSig& c_sig) {
 		}
 		
 		// Fallback case means no libfunc signatures matched.
-		void(*handler)(const char*,...) = &DeltaCompWarning;
+		void (DeltaCompilerMessenger::*handler)(const char*,...) = &DeltaCompilerMessenger::Warning;
 		if (sigsObj->ShouldPostErrorOnTypeConflict())
-			handler = &DeltaCompError;
+			handler = &DeltaCompilerMessenger::Error;
 
 		if (sigs.size() == 1)
 			DELTACOMP_HANDLER_CALL_LIBFUNC_SIG_DOES_NOT_MATCH(func->GetName(), error, handler);
@@ -318,7 +318,7 @@ static util_ui8 lateBoundArgAllowanceByTypeTag[TOTAL_TYPE_TAGS] = {
 /*	Nil			*/	0
 };
 
-bool TypeCheck_LateBoundArg (DeltaExpr* arg) {
+bool TypeChecker::Check_LateBoundArg (DeltaExpr* arg) {
 
 	DASSERT(arg && uarraysize(lateBoundArgAllowance) == TOTAL_EXPR_TYPES);
 	if (!lateBoundArgAllowance[arg->GetType()]) {
@@ -358,7 +358,7 @@ static bool tableAllowance[TOTAL_EXPR_TYPES] = {
 
 #define	tableBoundArgAllowanceByTypeTag lateBoundArgAllowanceByTypeTag
 
-bool TypeCheck_Table (DeltaExpr* t) {
+bool TypeChecker::Check_Table (DeltaExpr* t) {
 	
 	DASSERT(t && uarraysize(tableAllowance) == TOTAL_EXPR_TYPES);
 	
@@ -381,13 +381,13 @@ bool TypeCheck_Table (DeltaExpr* t) {
 // As a table index, we can use virtually anything now.
 // Hence, constants, tables, and functions are all legal.
 //
-bool TypeCheck_TableIndex (DeltaExpr* index) 
+bool TypeChecker::Check_TableIndex (DeltaExpr* index) 
 	{ return true; }
 
 ////////////////////////////////////////////////////////////
 // Everything is convertible to boolean.
 //
-bool TypeCheck_UseAsBoolean (DeltaExpr* expr) 
+bool TypeChecker::Check_UseAsBoolean (DeltaExpr* expr) 
 	{ return true; }
 
 ////////////////////////////////////////////////////////////
@@ -413,7 +413,7 @@ static bool orderingAllowance[TOTAL_EXPR_TYPES] = {
 /*	Call */		true
 };
 
-bool TypeCheck_InRelational (DeltaExpr* expr, bool onlyEquality) {
+bool TypeChecker::Check_InRelational (DeltaExpr* expr, bool onlyEquality) {
 	if (onlyEquality)
 		return true;
 	else {
@@ -424,7 +424,7 @@ bool TypeCheck_InRelational (DeltaExpr* expr, bool onlyEquality) {
 
 ////////////////////////////////////////////////////////////
 
-bool TypeCheck_InRelational (DeltaExpr* e1, DeltaExpr* e2, DeltaICOpcode relOp) {
+bool TypeChecker::Check_InRelational (DeltaExpr* e1, DeltaExpr* e2, DeltaICOpcode relOp) {
 
 	if (relOp == DeltaIC_JEQ || relOp == DeltaIC_JNE)
 		return true;						// All types can be compared this way.
@@ -432,7 +432,7 @@ bool TypeCheck_InRelational (DeltaExpr* e1, DeltaExpr* e2, DeltaICOpcode relOp) 
 	if (e1->GetType() == DeltaExprString || e2->GetType() == DeltaExprString) // Ordering comparison of string consts only between them.
 		return e1->GetType() == DeltaExprString && e2->GetType() == DeltaExprString;
 	else {
-		DASSERT(TypeCheck_InRelational(e1, false) && TypeCheck_InRelational(e2, false));
+		DASSERT(TypeChecker::Check_InRelational(e1, false) && TypeChecker::Check_InRelational(e2, false));
 		return true;
 	}
 }
@@ -457,7 +457,7 @@ static bool arihtmeticAllowance[TOTAL_EXPR_TYPES] = {
 /*	Call */		true
 };
 
-bool TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode arithOp, const char* opStr, bool alwaysError) {
+bool TypeChecker::Check_InArithmetic (DeltaExpr* expr, DeltaICOpcode arithOp, const char* opStr, bool alwaysError) {
 	
 	if (arihtmeticAllowance[(util_ui8) DPTR(expr)->GetType()])
 		return true;
@@ -480,7 +480,7 @@ bool TypeCheck_InArithmetic (DeltaExpr* expr, DeltaICOpcode arithOp, const char*
 // External / local functions are not allowed to be assigned
 // values, although born in the grammar via lvalues. 
 //
-bool TypeCheck_Assign (DeltaExpr* lvalue) {
+bool TypeChecker::Check_Assign (DeltaExpr* lvalue) {
 	if (DPTR(lvalue)->IsInvariantValue()) {
 		DELTACOMP_ERROR_ASSIGNMENT(lvalue);
 		return false;
@@ -526,7 +526,7 @@ static util_ui8 foreachContainerAllowanceByTypeTag[TOTAL_TYPE_TAGS] = {
 /*	Nil			*/	0
 };
 
-bool TypeCheck_ForeachContainer (DeltaExpr* container) {
+bool TypeChecker::Check_ForeachContainer (DeltaExpr* container) {
 
 	DASSERT(uarraysize(foreachContainerAllowance) == TOTAL_EXPR_TYPES);
 

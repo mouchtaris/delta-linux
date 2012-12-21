@@ -1233,31 +1233,37 @@ void DeltaAutoCompletion::ExtractUsedByteCodeLibaries (
 	if (!root)
 		return;
 
-	DASSERT(root->GetType() == StmtsASTNodeType);
 	DeltaASTNodeList l;
 	root->GetChildren(l);
 
-	for (DeltaASTNodeList::iterator i = l.begin(); i != l.end() && (*i)->GetType() == UsingASTNodeType; ++i) {
+	//iterate all childern to include staged using directives that may appear after normal code
+	for (DeltaASTNodeList::iterator i = l.begin(); i != l.end(); ++i)
+		switch((*i)->GetType()) {
+			case UsingASTNodeType: {
+				UsingASTNode* node = static_cast<UsingASTNode*>((*i));
 
-		UsingASTNode* node = static_cast<UsingASTNode*>((*i));
+				if (node->GetChild<0>() && !node->GetChild<1>())			// it is 'using <namespace>' form
+					;
+				else {
+					DASSERT(!node->GetChild<0>() && node->GetChild<1>());	// it is 'using #<ident>' form
+					DASSERT(node->GetChild<1>()->GetType() == StringifiedIdASTNodeType);
 
-		if (node->GetChild<0>() && !node->GetChild<1>())			// it is 'using <namespace>' form
-			;
-		else {
-			DASSERT(!node->GetChild<0>() && node->GetChild<1>());	// it is 'using #<ident>' form
-			DASSERT(node->GetChild<1>()->GetType() == StringifiedIdASTNodeType);
-
-			std::string libName = GetText(editor, node->GetChild<1>());
-			DASSERT(libName[0] == '#');
-			libName = libName.substr(1);
-			byteCodeLibs->push_back(
-				NamePair(
-					libName + ".dbc",
-					libName
-				)
-			);
+					std::string libName = GetText(editor, node->GetChild<1>());
+					DASSERT(libName[0] == '#');
+					libName = libName.substr(1);
+					byteCodeLibs->push_back(
+						NamePair(
+							libName + ".dbc",
+							libName
+						)
+					);
+				}
+				break;
+			}
+			case UnaryOpASTNodeType:	if (((UnaryOpASTNode*) *i)->GetValueStr() == "<<>>")
+											break;	//skip quoted code else continue with default
+			default: ExtractUsedByteCodeLibaries(editor, *i, byteCodeLibs); break;
 		}
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1334,6 +1340,22 @@ void DeltaAutoCompletion::ExtractGlobalFunctionsAndVariablesRecursion (
 				ExtractGlobalFunctionsAndVariablesRecursion(editor, *i, group, funcsAndVars, vars, funcs);
 		}
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+uint DeltaAutoCompletion::GetStagingDepth(const DeltaASTNode* node) {
+	uint counter = 0;
+	for (const DeltaASTNode* current = node; current; current = current->GetParent())
+		if (current->GetType() == UnaryOpASTNodeType) {
+			const std::string op = ((UnaryOpASTNode*) current)->GetValueStr();
+			if (op == "<<>>")
+				counter = 0;
+			else if (op == "!" || op == "&")
+				++counter;
+			//TODO: need to handle escapes as well
+		}
+	return counter;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

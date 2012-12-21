@@ -85,6 +85,7 @@ IMPLEMENT_VISITOR_VISIT(TableConstKeyASTNode)
 
 IMPLEMENT_VISITOR_VISIT_ENTER_AND_LEAVE(OtherStmtASTNode)
 IMPLEMENT_VISITOR_VISIT_ENTER_AND_LEAVE(UsingASTNode)
+IMPLEMENT_VISITOR_VISIT_ENTER_AND_LEAVE(QuotedElementsASTNode)
 
 //**********************************************************************
 
@@ -140,6 +141,7 @@ IMPLEMENT_NODE_VISITOR_VISIT(TableConstructASTNode)
 IMPLEMENT_NODE_VISITOR_VISIT(TableConstKeyASTNode)
 IMPLEMENT_NODE_VISITOR_VISIT(OtherStmtASTNode)
 IMPLEMENT_NODE_VISITOR_VISIT(UsingASTNode)
+IMPLEMENT_NODE_VISITOR_VISIT(QuotedElementsASTNode)
 
 //**********************************************************************
 
