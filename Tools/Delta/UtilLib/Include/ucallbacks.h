@@ -115,7 +115,7 @@ template <class Tfun> class ucallbackalone {
 /////////////////////////////////////////////////////////////////
 // Utility callback creators
 //
-template <class Tfun> ucallbackwithclosure<Tfun> umakecallback(Tfun func, void* closure)
+template <class Tfun> const ucallbackwithclosure<Tfun> umakecallback(Tfun func, void* closure)
 	{ return ucallbackwithclosure<Tfun>(func, closure); }
 
 /////////////////////////////////////////////////////////////////

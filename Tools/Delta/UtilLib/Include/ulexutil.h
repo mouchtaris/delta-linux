@@ -29,17 +29,17 @@ UTILLIB_FUNC	bool				uignoreCcomments (
 										std::string*	error = (std::string*) 0
 									);
 UTILLIB_FUNC	bool				uignoreCcomments (
-										ucallbackwithclosure<char (*)(void*)>		input,
-										ucallbackwithclosure<void (*)(char, void*)> unput,
-										util_ui32*									line,
-										std::string*								error = (std::string*) 0
+										const ucallbackwithclosure<char (*)(void*)>&		input,
+										const ucallbackwithclosure<void (*)(char, void*)>&	unput,
+										util_ui32*											line,
+										std::string*										error = (std::string*) 0
 									);
 
 UTILLIB_FUNC	bool				ureadquotedstring (
-										std::string&							s,
-										ucallbackwithclosure<char (*)(void*)>	input, 
-										util_ui32*								line,
-										std::string*							error = (std::string*) 0
+										std::string&									s,
+										const ucallbackwithclosure<char (*)(void*)>&	input, 
+										util_ui32*										line,
+										std::string*									error = (std::string*) 0
 									);
 UTILLIB_FUNC	bool				ureadquotedstring (
 										std::string&	s,
@@ -48,7 +48,7 @@ UTILLIB_FUNC	bool				ureadquotedstring (
 										std::string*	error = (std::string*) 0
 									);
 
-UTILLIB_FUNC	bool				uignoreCPPcomments (ucallbackwithclosure<char (*)(void*)> input);
+UTILLIB_FUNC	bool				uignoreCPPcomments (const ucallbackwithclosure<char (*)(void*)>& input);
 UTILLIB_FUNC	bool				uignoreCPPcomments (char (*input)(void));
 
 typedef	udestroyablewrapper<

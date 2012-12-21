@@ -177,10 +177,10 @@ UTILLIB_FUNC bool uignoreCcomments (
 }
 
 UTILLIB_FUNC bool uignoreCcomments (
-		ucallbackwithclosure<char (*)(void*)>		input,
-		ucallbackwithclosure<void (*)(char, void*)> unput,
-		util_ui32*									line,
-		std::string*								error
+		const ucallbackwithclosure<char (*)(void*)>&		input,
+		const ucallbackwithclosure<void (*)(char, void*)>&	unput,
+		util_ui32*											line,
+		std::string*										error
 	){
 
 	util_ui16 stack = 1;
@@ -229,10 +229,10 @@ UTILLIB_FUNC bool ureadquotedstring (
 	return ureadquotedstring(s, umakecallback(&input_wrapper, input), line, error);
 }
 UTILLIB_FUNC bool ureadquotedstring (
-		std::string&							s,
-		ucallbackwithclosure<char (*)(void*)>	input,
-		util_ui32*								line,
-		std::string*							error
+		std::string&									s,
+		const ucallbackwithclosure<char (*)(void*)>&	input,
+		util_ui32*										line,
+		std::string*									error
 	){
 
 	while (true) {
@@ -272,7 +272,7 @@ UTILLIB_FUNC bool ureadquotedstring (
 UTILLIB_FUNC bool uignoreCPPcomments (char (*input)(void))
 	{ return uignoreCPPcomments(umakecallback(&input_wrapper, input)); }
 
-UTILLIB_FUNC bool uignoreCPPcomments (ucallbackwithclosure<char (*)(void*)>	input) {
+UTILLIB_FUNC bool uignoreCPPcomments (const ucallbackwithclosure<char (*)(void*)>& input) {
 	while (true) {
 		char c = input();
 		if (c == '\n') 
