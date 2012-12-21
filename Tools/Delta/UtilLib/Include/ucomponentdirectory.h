@@ -30,10 +30,17 @@ class ucomponentdirectory {
 		components.erase(i);
 	}
 
-	void* Get (const std::string& name) {
-		ComponentMap::iterator i = components.find(name);
+	void* Get (const std::string& name) const {
+		ComponentMap::const_iterator i = components.find(name);
 		DASSERT(i != components.end());
 		return i->second;
+	}
+	template <typename T>
+	T*	GetEx (const std::string& name) const {
+		if (void* compoent = Get(name))
+			return (T*) component;
+		else
+			return (T*) 0;
 	}
 
 	void Clear (void) { components.clear(); }

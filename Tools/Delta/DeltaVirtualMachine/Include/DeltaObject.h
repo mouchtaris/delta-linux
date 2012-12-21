@@ -5,8 +5,8 @@
 // A. Savidis, December 2005.
 //
 
-#ifndef	DELTAPROTOTYPE_H
-#define	DELTAPROTOTYPE_H
+#ifndef	DELTA_OBJECT_H
+#define	DELTA_OBJECT_H
 
 #include "DeltaTable.h"
 #include "DeltaObjectValidator.h"
