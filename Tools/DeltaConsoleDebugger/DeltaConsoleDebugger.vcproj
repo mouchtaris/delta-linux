@@ -182,11 +182,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\Delta\DeltaConsoleDebugger\Src\DebugWatchValueRcDecoder.cpp"
+				RelativePath="$(DELTA)\DeltaConsoleDebugger\Src\DebugWatchValueRcDecoder.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\Delta\DeltaConsoleDebugger\Src\DeltaConsoleDebugger.cpp"
+				RelativePath="$(DELTA)\DeltaConsoleDebugger\Src\DeltaConsoleDebugger.cpp"
 				>
 			</File>
 		</Filter>
