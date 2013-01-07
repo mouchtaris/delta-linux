@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <iostream>
 using namespace std;
+#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -237,7 +238,7 @@ typedef unsigned char YY_CHAR;
 #define yytext_ptr yytext
 #define YY_INTERACTIVE
 
-#include <FlexLexer.h>
+#include "DeltaLexAnalyser.h"
 
 
 /* Done after the current pattern has been matched and before the
@@ -1807,7 +1808,7 @@ int yyFlexLexer::yy_top_state()
 void yyFlexLexer::LexerError( yyconst char msg[] )
 	{
 	cerr << msg << '\n';
-	throw std::exception(msg);
+	exit( YY_EXIT_FAILURE );
 	}
 
 

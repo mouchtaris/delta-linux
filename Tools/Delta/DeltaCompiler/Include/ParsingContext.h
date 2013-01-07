@@ -11,20 +11,22 @@
 
 ////////////////////////////////////////////////////////////////////////
 
-class FlexLexer;
+template <typename Tlexer>
+class ucomponentdirectory_with_lexer : public ucomponentdirectory {
+	protected:
+	Tlexer&		lexer;
+
+	public:
+	Tlexer&		GetLexer (void) { return lexer; }
+
+	ucomponentdirectory_with_lexer (Tlexer& _lexer) : lexer(_lexer) {}
+	virtual ~ucomponentdirectory_with_lexer() {}
+};
 
 ////////////////////////////////////////////////////////////////////////
 
-class ParsingContext : public ucomponentdirectory {
-	private:
-	FlexLexer& lexer;
-
-	public:
-	FlexLexer& GetLexer (void) { return lexer; }
-
-	ParsingContext (FlexLexer& lexer) : lexer(lexer) {}
-	~ParsingContext (void) {}
-};
+class FlexLexer;
+typedef ucomponentdirectory_with_lexer<FlexLexer> ParsingContext;	// FlexLexerWithComponentDirectory
 
 ////////////////////////////////////////////////////////////////////////
 

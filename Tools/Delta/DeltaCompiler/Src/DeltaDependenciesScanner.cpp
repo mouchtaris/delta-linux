@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <iostream>
 using namespace std;
+#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -1339,7 +1340,7 @@ int yyFlexLexer::yy_top_state()
 void yyFlexLexer::LexerError( yyconst char msg[] )
 	{
 	cerr << msg << '\n';
-	throw std::exception(msg);
+	exit( YY_EXIT_FAILURE );
 	}
 
 

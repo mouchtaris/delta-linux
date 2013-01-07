@@ -196,7 +196,7 @@ bool DeltaCompiler::SyntaxAnalysisAndIntermediateCode (void) {
 	context.Register("DeltaQuadManager",				&QUADS);
 	context.Register("DeltaStmtFactory",				&STMTFACTORY);	
 	
-	if (!PureSyntaxAnalysis(DeltaSyntaxParser(lexer, context, &DeltaCompiler_yyparse)))
+	if (!PureSyntaxAnalysis(DeltaSyntaxParser(context, &DeltaCompiler_yyparse)))
 		return false;
 
 	if (!COMPMESSENGER.ErrorsExist())
@@ -231,7 +231,7 @@ bool DeltaCompiler::SyntaxAnalysis (const std::list<int>& tokens) {
 	context.Register("DescriptiveParseErrorHandler",	&DESCRIPTIVE_ERROR_HANDLER);
 	context.Register("AST::Creator",					&ASTCREATOR);
 
-	if (!PureSyntaxAnalysis(DeltaSyntaxParser(lexer, context, &DeltaSyntax_yyparse)))
+	if (!PureSyntaxAnalysis(DeltaSyntaxParser(context, &DeltaSyntax_yyparse)))
 		return false;
 
 	PARSEPARMS.SetLine(1);
@@ -541,7 +541,8 @@ DeltaCompiler::DeltaCompiler (void) :
 	INIT_COMPILER_COMPONENT_DIRECTORY(this, DNEW(CompilerComponentDirectory));
 
 #define CREATE_COMPONENT(type)	\
-	COMPONENT_DIRECTORY()->Register(#type, DNEW(type));
+	COMPONENT_DIRECTORY()->Register(#type, DNEW(type))
+
 	CREATE_COMPONENT(CompileOptions);
 	CREATE_COMPONENT(CompilerStringHolder);
 	CREATE_COMPONENT(LocalDataHandler);

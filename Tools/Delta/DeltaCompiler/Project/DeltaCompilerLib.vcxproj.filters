@@ -69,6 +69,9 @@
     <Filter Include="Header Files\Dependencies">
       <UniqueIdentifier>{02590c37-77e8-4ae9-8804-93864bc59d9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scanner">
+      <UniqueIdentifier>{3380df2d-f9a2-4ec4-a18d-e75db141a8c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\AutoCollection.cpp">
@@ -227,6 +230,9 @@
     <ClCompile Include="..\Src\DeltaDependenciesScanner.cpp">
       <Filter>Source Files\Dependencies</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\DeltaSyntaxParser.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Src\DeltaLexAnalyser.l">
@@ -309,9 +315,6 @@
     <ClInclude Include="..\Include\DeltaParser.h">
       <Filter>Header Files\API</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\DeltaSyntax.h">
-      <Filter>Header Files\API</Filter>
-    </ClInclude>
     <ClInclude Include="..\Include\unistd.h">
       <Filter>Header Files\API</Filter>
     </ClInclude>
@@ -386,6 +389,18 @@
     </ClInclude>
     <ClInclude Include="..\Include\DeltaDependenciesParser.h">
       <Filter>Header Files\Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaSyntax.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaSyntaxParser.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ParsingContext.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\FlexLexer.h">
+      <Filter>Header Files\Scanner</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -85,8 +85,6 @@ class DCOMPLIB_CLASS Node : public TreeNode, public AutoCollectable {
 	typedef std::pair<std::string, util_ui32>	SourceInfo;
 	typedef std::list<SourceInfo>				SourceInfoReferences;
 
-	private:
-	Node*						New (const std::string& tag) const;
 
 	protected:
 	virtual void				Delete (void) { DDELETE(this); }
@@ -122,6 +120,7 @@ class DCOMPLIB_CLASS Node : public TreeNode, public AutoCollectable {
 	virtual TreeNode*	Clone	(void) const;
 
 	private:
+	Node*				New (const std::string& tag) const;
 	Node (const std::string& tag);
 	virtual ~Node(){}
 };

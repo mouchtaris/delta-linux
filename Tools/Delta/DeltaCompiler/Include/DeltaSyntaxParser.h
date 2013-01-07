@@ -9,24 +9,20 @@
 
 #include <iostream>
 #include "ucallbacks.h"
-
-////////////////////////////////////////////////////////////////////////
-
-class ParsingContext;
-class FlexLexer;
+#include "ParsingContext.h"
 
 ////////////////////////////////////////////////////////////////////////
 
 class DeltaSyntaxParser {
-	private:
-	FlexLexer&		lexer;
-	ParsingContext& context;
 
-	typedef int (*ParseFunc)(ParsingContext&);
-	ParseFunc parser;
-
+	public:
+	typedef util_i32 (*ParseFunc)(ParsingContext&);
 	typedef ucallbackwithclosure<void (*)(bool, void*)> ParseStartCallback;
-	ParseStartCallback onParseStarted;
+
+	private:
+	ParsingContext&		context;
+	ParseFunc			parser;
+	ParseStartCallback	onParseStarted;
 
 	public:
 	bool 				ParseFile (const std::string& file);
@@ -34,13 +30,15 @@ class DeltaSyntaxParser {
 	bool 				ParseStream (std::istream& input);
 
 	const std::string	GetTokenText (void) const;
-	void				SetParseStartCallback (ParseStartCallback cb) { onParseStarted = cb; }
+	void				SetParseStartCallback (const ParseStartCallback& f) 
+							{ onParseStarted = f; }
 
-	DeltaSyntaxParser (FlexLexer& lexer, ParsingContext& context, ParseFunc parser) :
-		lexer		(lexer),
-		context		(context),
-		parser		(parser) {}
-	~DeltaSyntaxParser () {}
+	DeltaSyntaxParser (ParsingContext& context, ParseFunc parser) :
+		context	(context),
+		parser	(parser) 
+		{}
+	~DeltaSyntaxParser() 
+		{}
 };
 
 ////////////////////////////////////////////////////////////////////////

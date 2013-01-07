@@ -1,0 +1,87 @@
+[1, ucomponentdirectoryclient.h]
+class ucomponentdirectoryclient {
+	-	comp dir member
+	-	get / set methods
+	ucomponentdirectoryclient (ucomponentdirectory* dir);	// never null
+};
+
+all client components (including those participating in a dir too)
+are derivatives
+
+
+[2,CompilerComponentDirectory.h]
+
+-	drop USE_COMPILER_COMPONENT_DIRECTORY and CTOR_INIT_COMPONENT_DIRECTORY
+-	adapt the macros
+		INIT_COMPILER_COMPONENT_DIRECTORY	-> SET_COMPONENT_DIRECTORY
+		COMPONENT_DIRECTORY					-> GET_COMPONENT_DIRECTORY
+
+#define	COMPONENT_CLIENT_CTOR_ARGS_1(_arg, _dir) (_arg, DNULLCHECK(_dir))
+.....
+
+[3, ulexutil.h]
+
+typedef int yy_state_type;
+template <
+	struct	yy_buffer_state,
+	union	YYSTYPE,
+	struct	YYLTYPE
+>
+class uflexlexersuper : public ucomponentdirectoryclient {
+
+-	drop
+		ParsingContext* context (void) const { return yyctx; }
+		void set_context(ParsingContext* ctx) { yyctx = ctx; }
+		ParsingContext* yyctx;
+-	use set / get of super class
+};
+
+#define	UFLEX_LEXER_SUBCLASS_DEF(_state, _union, _type, _name, _pub, _prot) \
+class _name : public uflexlexersuper<_state, _union, _type> {
+	all std protected members
+	_prot
+	all std public members
+	_pub
+};
+
+[4, DeltaLexAnalyser.h]
+
+#ifndef DELTALEXANALYSER_H
+#define DELTALEXANALYSER_H
+
+#include "ulexutil.h"
+
+#define	yyFlexLexerPublicUserDefs								\
+	virtual int LexerInput( char* buf, int max_size );			\
+	virtual void LexerOutput( const char* buf, int size );		\
+	virtual void LexerError( const char* msg );					\
+	void IgnoreCStyleComments (void);							\
+	void IgnoreCPPStyleComments (void);							\
+	const std::string ReadQuotedString (void);					\
+	static char yyinput_wrapper(void* closure);					\
+	static void yyunput_wrapper(char c, void *closure);
+
+UFLEX_LEXER_CLASS_DEF(
+	DeltaLexAnalyser, 
+	yy_buffer_state, 
+	YYSTYPE, 
+	YYLTYPE, 
+	DeltaLexAnalyserFlexLexer, 
+	yyFlexLexerPublicUserDefs, 
+	UMEPTY
+)
+
+#undef	yyFlexLexerPublicUserDefs
+
+#endif	// Do not add stuff beyond this point.
+
+
+[5, CompilerAPI.cpp]
+
+class DCOMPLIB_CLASS DeltaCompiler {
+	ucomponentdirectory	comps;
+	...
+};
+
+#define CREATE_COMPONENT(type)	\
+	comps.Register(#type, DNEWCLASS(type, &comps)))

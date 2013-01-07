@@ -90,7 +90,7 @@ bool DeltaBuildDependencies::Extract (
 	DeltaDependenciesFlexLexer lexer;
 	ParsingContext context(lexer);
 	context.Register("DeltaBuildDependencies", this);
-	DeltaSyntaxParser parser(lexer, context, &DeltaDependencies_yyparse);
+	DeltaSyntaxParser parser(context, &DeltaDependencies_yyparse);
 	parser.ParseFile(sourceFile);
 
 	CleanUp();

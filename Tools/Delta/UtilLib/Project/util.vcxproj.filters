@@ -126,6 +126,9 @@
     <ClInclude Include="..\Include\uvirtualclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Include\ucomponentdirectory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\ubinaryio.cpp">

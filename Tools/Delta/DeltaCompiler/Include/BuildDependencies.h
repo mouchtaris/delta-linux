@@ -9,13 +9,10 @@
 
 #include "DDebug.h"
 #include "DeltaCompilerDefs.h"
+#include "ParsingContext.h"
 #include "utypes.h"
 #include <list>
 #include <string>
-
-///////////////////////////////////////////////////////////////
-
-class ParsingContext;
 
 ///////////////////////////////////////////////////////////////
 

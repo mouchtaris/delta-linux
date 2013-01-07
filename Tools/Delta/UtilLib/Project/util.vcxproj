@@ -115,6 +115,7 @@
     <ClInclude Include="..\Include\ubinaryio.h" />
     <ClInclude Include="..\Include\ucachememory.h" />
     <ClInclude Include="..\Include\ucallbacks.h" />
+    <ClInclude Include="..\Include\ucomponentdirectory.h" />
     <ClInclude Include="..\Include\ucrosscast.h" />
     <ClInclude Include="..\Include\ucycliceval.h" />
     <ClInclude Include="..\Include\udebugsupport.h" />

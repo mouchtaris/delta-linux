@@ -51,7 +51,7 @@ class SYNTAXTREELIB_CLASS TreeNode {
 	struct DefaultCreator { TreeNode* operator()(const std::string& tag) const { return TreeNode::New(tag); } };
 
 	template <typename Creator>
-	TreeNode*			Clone (Creator creator) const {	// Everything but the parent
+	TreeNode*			Clone (const Creator& creator) const {	// Everything but the parent
 		TreeNode* node = creator(tag);
 		for (Attrs::const_iterator i = attrs.begin(); i != attrs.end(); ++i)
 			node->SetAttribute(i->first, *i->second);

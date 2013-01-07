@@ -51,7 +51,10 @@ extern "C++" {
 
 ////////////////////////////////////////////////////////////////////////
 
-class ParsingContext;
+#include "ParsingContext.h"
+
+////////////////////////////////////////////////////////////////////////
+
 struct yy_buffer_state;
 typedef int yy_state_type;
 union YYSTYPE;
@@ -85,7 +88,7 @@ public:
 	// indicates "keep the current one".
 	virtual void switch_streams(std::istream* new_in = 0, std::ostream* new_out = 0) = 0;
 
-	int lineno (void) const { return yylineno; }
+//	int lineno (void) const { return yylineno; }
 
 	int debug (void) const { return yy_flex_debug; }
 	void set_debug (int flag) { yy_flex_debug = flag; }

@@ -30,25 +30,25 @@
 //
 
 #define	SM(id)	\
-	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_main_symbol)
+	GET_DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_main_symbol)
 
 #define	EM(id)	\
-	DESCRIPTIVE_ERROR_HANDLER.PopTill(id, DescriptiveParseErrorHandler::role_main_symbol)
+	GET_DESCRIPTIVE_ERROR_HANDLER.PopTill(id, DescriptiveParseErrorHandler::role_main_symbol)
 
 #define	SG(id)	\
-	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_group_symbol)
+	GET_DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_group_symbol)
 
 #define	EG(id)	\
-	DESCRIPTIVE_ERROR_HANDLER.PopTill(id, DescriptiveParseErrorHandler::role_group_symbol)
+	GET_DESCRIPTIVE_ERROR_HANDLER.PopTill(id, DescriptiveParseErrorHandler::role_group_symbol)
 
 #define	PE(id)	\
-	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
+	GET_DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
 
 #define	OE(id)	\
-	DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_any_expected_temp_symbol)
+	GET_DESCRIPTIVE_ERROR_HANDLER.Push(id, DescriptiveParseErrorHandler::role_any_expected_temp_symbol)
 
 #define	EI(id)	\
-	DESCRIPTIVE_ERROR_HANDLER.PopIf(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
+	GET_DESCRIPTIVE_ERROR_HANDLER.PopIf(id, DescriptiveParseErrorHandler::role_any_expected_symbol)
 
 #define	PE2(id1,id2) \
 		PE(id1); PE(id2)

@@ -32,6 +32,7 @@ bool DeltaSyntaxParser::ParseStream (std::istream& input) {
 	else {
 		if (onParseStarted)
 			onParseStarted(true);
+		FlexLexer& lexer (context.GetLexer());
 		lexer.switch_streams(&input, 0);
 		lexer.set_position(0);
 		lexer.set_context(&context);
@@ -42,6 +43,6 @@ bool DeltaSyntaxParser::ParseStream (std::istream& input) {
 ////////////////////////////////////////////////////////////////////////
 
 const std::string DeltaSyntaxParser::GetTokenText (void) const
-	{ return lexer.YYText(); }
+	{ return context.GetLexer().YYText(); }
 
 ////////////////////////////////////////////////////////////////////////

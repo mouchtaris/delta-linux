@@ -121,6 +121,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\Src\DeltaSyntaxParser.cpp" />
     <ClCompile Include="..\Src\ExceptionHandlingActions.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -308,16 +309,19 @@
   <ItemGroup>
     <ClInclude Include="..\Include\DeltaCompErrorDefs.h" />
     <ClInclude Include="..\Include\DeltaCompErrorMsg.h" />
+    <ClInclude Include="..\Include\DeltaSyntaxParser.h" />
     <ClInclude Include="..\Include\DescriptiveParseErrorHandler.h" />
     <ClInclude Include="..\Include\AutoCollection.h" />
     <ClInclude Include="..\Include\DebugNamingForStaticVars.h" />
     <ClInclude Include="..\Include\Expr.h" />
+    <ClInclude Include="..\Include\FlexLexer.h" />
     <ClInclude Include="..\Include\GlobalData.h" />
     <ClInclude Include="..\Include\LocalDataHandling.h" />
     <ClInclude Include="..\Include\ParseActions.h" />
     <ClInclude Include="..\Include\ParseParms.h" />
     <ClInclude Include="..\Include\ParseParmsP.h" />
     <ClInclude Include="..\Include\ParseTableConstruction.h" />
+    <ClInclude Include="..\Include\ParsingContext.h" />
     <ClInclude Include="..\Include\SelectiveStepInPreparator.h" />
     <ClInclude Include="..\Include\TypeCheck.h" />
     <ClInclude Include="..\Include\Unparsable.h" />
