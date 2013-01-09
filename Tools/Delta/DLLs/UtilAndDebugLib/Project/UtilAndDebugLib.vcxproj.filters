@@ -240,6 +240,9 @@
     <ClInclude Include="..\..\..\UtilLib\Include\uinstanceidgenerator.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\ucomponentdirectory.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Deps.txt" />

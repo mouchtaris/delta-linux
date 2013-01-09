@@ -17,8 +17,10 @@
 // The default expression type created is a storage
 // variable.
 //
-DeltaExpr::DeltaExpr (void) :	typeTag (TagAnyValue),
-								typeInfo(TagAnyValue) {
+DeltaExpr::DeltaExpr (ucomponentdirectory* directory) :	ucomponentdirectoryclient(directory),
+														AutoCollectable(&AUTOCOLLECTOR),
+														typeTag (TagAnyValue),
+														typeInfo(TagAnyValue) {
 	
 	type			= DeltaExprVar;
 	trueList		= 
@@ -438,11 +440,8 @@ void ExprList::Append (ExprList* elist) {
 
 //-----------------------------------------------------------------
 
-DeltaExpr* DeltaExprFactory::New (void) const {
-	DeltaExpr* expr = AutoCollectableFactory::New();
-	INIT_COMPILER_COMPONENT_DIRECTORY(expr, COMPONENT_DIRECTORY());
-	return expr;
-}
+DeltaExpr* DeltaExprFactory::New (void) const
+	{ return DNEWCLASS(DeltaExpr, (const_cast<ucomponentdirectory*>(GET_COMPONENT_DIRECTORY()))); }
 
 void DeltaExprFactory::Delete (DeltaExpr* expr) const { DDELETE(expr); }
 
@@ -457,7 +456,7 @@ DeltaExpr* DeltaExprFactory::Copy (DeltaExpr* expr) const {
 	copy->sym			= expr->sym;		
 	copy->strConst		= expr->strConst;
 	copy->numConst		= expr->numConst;
-	copy->boolConst 	= expr->boolConst;
+	copy->boolConst		= expr->boolConst;
 	copy->lateBindArg	= expr->lateBindArg;
 	copy->index			= expr->index;
 	copy->tableItem		= expr->tableItem;

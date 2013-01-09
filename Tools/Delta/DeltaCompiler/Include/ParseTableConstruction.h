@@ -17,45 +17,40 @@
 
 //////////////////////////////////////////////////////
 
-class NamedMethodEmitter  {
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class NamedMethodEmitter : public ucomponentdirectoryclient {
 	private:
 	DeltaExpr* method;
 
 	public:
 	void Emit (DeltaExpr* table) const;
-	NamedMethodEmitter (DeltaExpr* _method) : 
-		method(_method){}
+	NamedMethodEmitter (ucomponentdirectory* directory, DeltaExpr* _method) : 
+		ucomponentdirectoryclient(directory), method(_method) {}
 };
 
 //////////////////////////////////////////////////////
 
-class IndexedElemEmitter  {
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class IndexedElemEmitter : public ucomponentdirectoryclient {
 	private:
 	DeltaExpr*	index;
 	DeltaExpr*	content;
 
 	public:
 	void Emit(DeltaExpr* table) const;
-	IndexedElemEmitter (DeltaExpr*	_index, DeltaExpr* _content) : 
-		index(_index), 
-		content(_content){}
+	IndexedElemEmitter (ucomponentdirectory* directory, DeltaExpr* _index, DeltaExpr* _content) : 
+		ucomponentdirectoryclient(directory), index(_index), content(_content) {}
 };
 
 //////////////////////////////////////////////////////
 
-class UnindexedElemEmitter  {
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class UnindexedElemEmitter : public ucomponentdirectoryclient {
 	private:
 	util_ui32	order;
 	DeltaExpr*	content;
 
 	public:
 	void Emit (DeltaExpr* table) const;
-	UnindexedElemEmitter (util_ui32	_order, DeltaExpr* _content) : 
-		order(_order), 
-		content(_content){}
+	UnindexedElemEmitter (ucomponentdirectory* directory, util_ui32	_order, DeltaExpr* _content) :
+		ucomponentdirectoryclient(directory), order(_order), content(_content) {}
 };
 
 //////////////////////////////////////////////////////
@@ -64,7 +59,7 @@ struct TableElements :	public AutoCollectable,
 						public Unparsable {
 
 	DFRIENDDESTRUCTOR()
-	friend class Translator;
+	friend class Translator;	//Instantiated only from Translator::CreateTableElements
 	
 	ExprList*	unindexedValues;
 	ExprList*	indexedValues;
@@ -85,8 +80,6 @@ struct TableElements :	public AutoCollectable,
 		}
 	}
 };
-
-typedef AutoCollectableFactory<TableElements> TableElementsFactory;
 
 #define	NIL_ELEMS (TableElements*) 0
 

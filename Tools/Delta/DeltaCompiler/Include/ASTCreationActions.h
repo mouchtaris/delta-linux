@@ -24,10 +24,8 @@ extern util_ui8	GetFuncLinkage	(Node* func);
 
 /////////////////////////////////////////////////////////
 
-class Creator {
+class Creator : public ucomponentdirectoryclient {
 	
-	USE_COMPILER_COMPONENT_DIRECTORY();
-
 	private:
 	Node* ast;
 
@@ -126,7 +124,7 @@ class Creator {
 	void		SetSyntaxTree (Node* ast);
 	Node*		GetSyntaxTree (void);
 
-	Creator (void);
+	Creator (ucomponentdirectory* directory);
 	~Creator ();
 
 };
@@ -138,7 +136,7 @@ class Creator {
 #define ASTCREATOR_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), AST::Creator)))
 
-#define ASTCREATOR	ASTCREATOR_EX(COMPONENT_DIRECTORY())
+#define ASTCREATOR	ASTCREATOR_EX(GET_COMPONENT_DIRECTORY())
 
 /////////////////////////////////////////////////////////
 

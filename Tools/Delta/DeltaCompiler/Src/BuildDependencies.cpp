@@ -7,8 +7,7 @@
 #include "DeltaStdDefs.h"
 #include "BuildDependencies.h"
 #include "DeltaDependenciesScanner.h"
-#include "DeltaSyntaxParser.h"
-#include "ParsingContext.h"
+#include "ParserWrapper.h"
 #include "ufunctors.h"
 #include "ustrings.h"
 #include "ufiles.h"
@@ -87,10 +86,13 @@ bool DeltaBuildDependencies::Extract (
 	hasError	= false;
 	inUsing		= false;
 
+	ucomponentdirectory directory;
+	directory.Register("DeltaBuildDependencies", this);
+
 	DeltaDependenciesFlexLexer lexer;
-	ParsingContext context(lexer);
-	context.Register("DeltaBuildDependencies", this);
-	DeltaSyntaxParser parser(context, &DeltaDependencies_yyparse);
+	lexer.SetDirectory(&directory);
+
+	ParserWrapper<DeltaDependenciesFlexLexer> parser(lexer, &DeltaDependencies_yyparse);
 	parser.ParseFile(sourceFile);
 
 	CleanUp();

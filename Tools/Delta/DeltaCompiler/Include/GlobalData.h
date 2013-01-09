@@ -12,8 +12,7 @@
 
 ///////////////////////////////////////////////////////////
 
-class GlobalData {
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class GlobalData : public ucomponentdirectoryclient {
 	public:
 	void	Start (void) {
 				LOCALDATA.OnGlobalBegin(); 
@@ -25,6 +24,9 @@ class GlobalData {
 					LOCALDATA.OnGlobalEnd()
 				);
 			}
+
+	GlobalData (ucomponentdirectory* directory) : ucomponentdirectoryclient(directory) {}
+	~GlobalData() {}
 };
 
 ///////////////////////////////////////////////////////////
@@ -32,7 +34,7 @@ class GlobalData {
 #define GLOBALDATA_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), GlobalData)))
 
-#define GLOBALDATA	GLOBALDATA_EX(COMPONENT_DIRECTORY())
+#define GLOBALDATA	GLOBALDATA_EX(GET_COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////
 

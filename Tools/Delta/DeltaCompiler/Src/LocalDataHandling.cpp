@@ -268,13 +268,14 @@ util_ui16 LocalDataHandler::GetCurrBlockId (void)
 
 ////////////////////////////////////////////////////////////////////
 
-LocalDataHandler::LocalDataHandler (void) :
-	currBlock((BlockInfo*) 0),
-	currBlockId(DELTA_MAIN_BLOCK_VALUE),
-	blockLocals(0),	// Num of locals in current block (only in block scope).
-	blockIdStack((std::list<util_ui16>*) 0),
-	blockLocalsStack((std::list<util_ui16>*) 0),
-	blockBeginStack((std::list<DeltaQuadAddress>*) 0)
+LocalDataHandler::LocalDataHandler (ucomponentdirectory* directory) :
+	ucomponentdirectoryclient	(directory),
+	currBlock					((BlockInfo*) 0),
+	currBlockId					(DELTA_MAIN_BLOCK_VALUE),
+	blockLocals					(0),	// Num of locals in current block (only in block scope).
+	blockIdStack				((std::list<util_ui16>*) 0),
+	blockLocalsStack			((std::list<util_ui16>*) 0),
+	blockBeginStack				((std::list<DeltaQuadAddress>*) 0)
 {
 	unew(blockIdStack);
 	unew(blockLocalsStack);

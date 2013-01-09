@@ -51,11 +51,7 @@ void UnindexedElemEmitter::Emit (DeltaExpr* table) const {
 //------------------------------------------------------------------
 // TABLE CONSTRUCTOR.
 
-TableElements* Translator::CreateTableElements (void) const {
-	AutoCollector* collector = UCOMPONENT_DIRECTORY_GET(*COMPONENT_DIRECTORY(), AutoCollector);
-	TableElements* t = DNEWCLASS(TableElements, (collector));
-	return t;
-}
+TableElements* Translator::CreateTableElements (void) const { return DNEWCLASS(TableElements, (&AUTOCOLLECTOR)); }
 
 // In case more indices than values exist, the last value is copied
 // to the remaining extra indices.
@@ -83,12 +79,10 @@ TableElements* Translator::Translate_IndexedValues (DeltaExpr* indices, DeltaExp
 			copyValue = true;				// When we run out of values, we copy the last value.
 
 		if (DPTR(value)->IsNamedMethod()) {	// An explicit name is preserved even if the method is indexed.
-			NamedMethodEmitter emitter(value);
-			INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+			NamedMethodEmitter emitter(COMPONENT_CLIENT_CTOR_ARGS_1(value));
 			emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
 		}
-		IndexedElemEmitter emitter(indices, value);
-		INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+		IndexedElemEmitter emitter(COMPONENT_CLIENT_CTOR_ARGS_2(indices, value));
 		emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
 	}
 
@@ -128,13 +122,11 @@ TableElements* Translator::Translate_TableElement (DeltaExpr* expr) {
 
 		if (expr->GetType() != DeltaExprNewAttribute) {
 			if (DPTR(expr)->IsNamedMethod()) {
-				NamedMethodEmitter emitter(expr);
-				INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+				NamedMethodEmitter emitter(COMPONENT_CLIENT_CTOR_ARGS_1(expr));
 				emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
 			}
 			else {
-				UnindexedElemEmitter emitter(PARSEPARMS.GetUnindexedElementOrder(), expr);
-				INIT_COMPILER_COMPONENT_DIRECTORY(&emitter, COMPONENT_DIRECTORY());
+				UnindexedElemEmitter emitter(COMPONENT_CLIENT_CTOR_ARGS_2(PARSEPARMS.GetUnindexedElementOrder(), expr));
 				emitter.Emit(PARSEPARMS.GetCurrConstructedTable());
 				PARSEPARMS.IncUnindexedElementOrder();
 			}

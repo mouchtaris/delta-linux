@@ -21,9 +21,7 @@
 #define	DELTA_CODE_ALLOCATION_SIZE	4096
 #define	DELTA_JUMP_ALLOCATION_SIZE	1024
 
-class DeltaCodeGenerator {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DeltaCodeGenerator : public ucomponentdirectoryclient {
 
 	DFRIENDDESTRUCTOR()
 
@@ -113,7 +111,7 @@ class DeltaCodeGenerator {
 
 	////////////////////////////////////////////
 
-	DeltaCodeGenerator (void);
+	DeltaCodeGenerator (ucomponentdirectory* directory);
 	~DeltaCodeGenerator();
 };
 
@@ -122,7 +120,7 @@ class DeltaCodeGenerator {
 #define CODEGENERATOR_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaCodeGenerator)))
 
-#define CODEGENERATOR	CODEGENERATOR_EX(COMPONENT_DIRECTORY())
+#define CODEGENERATOR	CODEGENERATOR_EX(GET_COMPONENT_DIRECTORY())
 
 ////////////////////////////////////////////
 

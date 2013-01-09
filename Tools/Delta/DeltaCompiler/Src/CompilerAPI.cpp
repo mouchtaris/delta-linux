@@ -43,29 +43,27 @@
 #include "DeltaScanner.h"
 #include "DeltaSyntax.h"
 #include "DeltaLexAnalyser.h"
-#include "DeltaSyntaxParser.h"
-#include "ParsingContext.h"
+#include "ParserWrapper.h"
+#include "ulexutil.h"
 
 #include "TypeCheck.h"
 #include "CompilerStringHolder.h"
 
 #define	TRANSLATE_SYNTAX_TREE
 
-#define AUTOCOLLECTOR	\
-	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*COMPONENT_DIRECTORY(), AutoCollector)))
-
 ////////////////////////////////////////////////////////
 
 extern int	DeltaCompiler_yydebug;
-extern int	DeltaCompiler_yyparse (ParsingContext& ctx);
+extern int	DeltaCompiler_yyparse (DeltaLexAnalyserFlexLexer& lexer);
 
 extern int	DeltaSyntax_yydebug;
-extern int	DeltaSyntax_yyparse (ParsingContext& ctx);
+extern int	DeltaSyntax_yyparse (DeltaScannerFlexLexer& ctx);
 
 ////////////////////////////////////////////////////////
 
-static const std::string getTokenTextWrapper(void *closure)
-	{ return ((DeltaSyntaxParser*)closure)->GetTokenText(); }
+template<typename Lexer>
+const std::string getTokenTextWrapper(void *closure)
+	{ return ((ParserWrapper<Lexer>*)closure)->GetTokenText(); }
 
 ////////////////////////////////////////////////////////
 
@@ -148,7 +146,7 @@ void DeltaCompiler::Initialise (void) {
 
 void DeltaCompiler::OnParseStarted (bool success, void* closure) {
 	DeltaCompiler* compiler = (DeltaCompiler*) closure;
-	CompilerComponentDirectory* directory = compiler->COMPONENT_DIRECTORY();
+	ucomponentdirectory* directory = compiler->GET_COMPONENT_DIRECTORY();
 	const char* file = ucstringarg(COMPOPTIONS_EX(directory).GetSourceFile());
 	if (!compiler->parseOnly)
 		if (success)
@@ -169,9 +167,10 @@ void DeltaCompiler::PreInitialise (void) {
 
 ////////////////////////////////////////////////////////
 
-bool DeltaCompiler::PureSyntaxAnalysis (DeltaSyntaxParser& parser) {
+template<typename Lexer>
+bool DeltaCompiler::PureSyntaxAnalysis (ParserWrapper<Lexer>& parser) {
 	parser.SetParseStartCallback(umakecallback(&DeltaCompiler::OnParseStarted, this));
-	DESCRIPTIVE_ERROR_HANDLER.SetGetTokenText(umakecallback(&getTokenTextWrapper, &parser));
+	DESCRIPTIVE_ERROR_HANDLER.SetGetTokenText(umakecallback(&getTokenTextWrapper<Lexer>, &parser));
 
 	if (COMPOPTIONS.IsDynamicCode())
 		return parser.ParseText(COMPOPTIONS.GetDynamicCode());
@@ -185,18 +184,20 @@ bool DeltaCompiler::SyntaxAnalysisAndIntermediateCode (void) {
 
 	GLOBALDATA.Start();
 
+	ucomponentdirectory directory;
+	directory.Register("DeltaCompilerMessenger",		&COMPMESSENGER);
+	directory.Register("ParseParms",					&PARSEPARMS);
+	directory.Register("CompilerStringHolder",			&STRINGHOLDER);
+	directory.Register("DescriptiveParseErrorHandler",	&DESCRIPTIVE_ERROR_HANDLER);
+	directory.Register("DeltaSymbolTable",				&DELTASYMBOLS);
+	directory.Register("Translator",					&TRANSLATOR);
+	directory.Register("DeltaQuadManager",				&QUADS);
+	directory.Register("DeltaStmtFactory",				&STMTFACTORY);	
+
 	DeltaLexAnalyserFlexLexer lexer;
-	ParsingContext context(lexer);
-	context.Register("DeltaCompilerMessenger",			&COMPMESSENGER);
-	context.Register("ParseParms",						&PARSEPARMS);
-	context.Register("CompilerStringHolder",			&STRINGHOLDER);
-	context.Register("DescriptiveParseErrorHandler",	&DESCRIPTIVE_ERROR_HANDLER);
-	context.Register("DeltaSymbolTable",				&DELTASYMBOLS);
-	context.Register("Translator",						&TRANSLATOR);
-	context.Register("DeltaQuadManager",				&QUADS);
-	context.Register("DeltaStmtFactory",				&STMTFACTORY);	
+	lexer.SetDirectory(&directory);
 	
-	if (!PureSyntaxAnalysis(DeltaSyntaxParser(context, &DeltaCompiler_yyparse)))
+	if (!PureSyntaxAnalysis(ParserWrapper<DeltaLexAnalyserFlexLexer>(lexer, &DeltaCompiler_yyparse)))
 		return false;
 
 	if (!COMPMESSENGER.ErrorsExist())
@@ -223,15 +224,17 @@ class Lexer : public DeltaScannerFlexLexer {
 
 bool DeltaCompiler::SyntaxAnalysis (const std::list<int>& tokens) {
 
-	Lexer lexer(tokens);
-	ParsingContext context(lexer);
-	context.Register("DeltaCompilerMessenger",			&COMPMESSENGER);
-	context.Register("ParseParms",						&PARSEPARMS);
-	context.Register("CompilerStringHolder",			&STRINGHOLDER);
-	context.Register("DescriptiveParseErrorHandler",	&DESCRIPTIVE_ERROR_HANDLER);
-	context.Register("AST::Creator",					&ASTCREATOR);
+	ucomponentdirectory directory;
+	directory.Register("DeltaCompilerMessenger",		&COMPMESSENGER);
+	directory.Register("ParseParms",					&PARSEPARMS);
+	directory.Register("CompilerStringHolder",			&STRINGHOLDER);
+	directory.Register("DescriptiveParseErrorHandler",	&DESCRIPTIVE_ERROR_HANDLER);
+	directory.Register("AST::Creator",					&ASTCREATOR);
 
-	if (!PureSyntaxAnalysis(DeltaSyntaxParser(context, &DeltaSyntax_yyparse)))
+	Lexer lexer(tokens);
+	lexer.SetDirectory(&directory);
+
+	if (!PureSyntaxAnalysis(ParserWrapper<DeltaScannerFlexLexer>(lexer, &DeltaSyntax_yyparse)))
 		return false;
 
 	PARSEPARMS.SetLine(1);
@@ -266,9 +269,7 @@ AST::Node* DeltaCompiler::GetSyntaxTree (void)
 
 bool DeltaCompiler::IntermediateCode (void) {
 	if (!COMPMESSENGER.ErrorsExist()) {
-		AST::TranslationVisitor visitor;
-		INIT_COMPILER_COMPONENT_DIRECTORY(&visitor, COMPONENT_DIRECTORY());
-		visitor(GetSyntaxTree());
+		(AST::TranslationVisitor(GET_COMPONENT_DIRECTORY()))(GetSyntaxTree());
 		return true;
 	}
 	else
@@ -529,6 +530,7 @@ void DeltaCompiler::CleanUp (void) {
 ////////////////////////////////////////////////////////
 
 DeltaCompiler::DeltaCompiler (void) :
+	comps					((ucomponentdirectory*) 0),
 	phaseCleaned			(true),
 	sourceSuccessfullyOpened(false),
 	parseOnly				(false),
@@ -537,60 +539,42 @@ DeltaCompiler::DeltaCompiler (void) :
 	isCompiling				(false),
 	ast						((AST::Node*) 0)
 {
+	unew(comps);
 
-	INIT_COMPILER_COMPONENT_DIRECTORY(this, DNEW(CompilerComponentDirectory));
+	//Custom handling for items requiring only auto collection
+	AutoCollector* collector = DNEW(AutoCollector);
+	comps->Register("AutoCollector", collector);
+
+	comps->Register("DeltaStmtFactory",	DNEWCLASS(DeltaStmtFactory, (DPTR(collector))));
+	comps->Register("AST::Factory",		DNEWCLASS(AST::Factory, (DPTR(collector))));
 
 #define CREATE_COMPONENT(type)	\
-	COMPONENT_DIRECTORY()->Register(#type, DNEW(type))
+	comps->Register(#type, DNEW(type))
+
+#define CREATE_CLIENT_COMPONENT(type)	\
+	comps->Register(#type, DNEWCLASS(type, (comps)))
 
 	CREATE_COMPONENT(CompileOptions);
 	CREATE_COMPONENT(CompilerStringHolder);
-	CREATE_COMPONENT(LocalDataHandler);
 	CREATE_COMPONENT(DebugNamingForStaticVars);
-	CREATE_COMPONENT(GlobalData);
-	CREATE_COMPONENT(DeltaSymbolTable);
-	CREATE_COMPONENT(Optimizer);
-	CREATE_COMPONENT(DeltaCodeGenerator);
-	CREATE_COMPONENT(DeltaQuadManager);
-	CREATE_COMPONENT(DeltaLibraryNamespaceHolder);
-	CREATE_COMPONENT(DeltaFunctionReturnTypesManager);
-	CREATE_COMPONENT(AutoCollector);
 	CREATE_COMPONENT(ParseParms);
-	CREATE_COMPONENT(DeltaExprFactory);
-	CREATE_COMPONENT(DeltaStmtFactory);
-	CREATE_COMPONENT(AST::Factory);
-	CREATE_COMPONENT(Translator);
-	CREATE_COMPONENT(TypeChecker);
-	CREATE_COMPONENT(FunctionValueReturnChecker);
-	CREATE_COMPONENT(SelectiveStepInPreparator);
-	CREATE_COMPONENT(AST::Creator);
-	CREATE_COMPONENT(DescriptiveParseErrorHandler);
-	CREATE_COMPONENT(DeltaCompilerMessenger);
 
-#define INIT_COMPONENT(c)	\
-	INIT_COMPILER_COMPONENT_DIRECTORY(c, COMPONENT_DIRECTORY());
-
-	INIT_COMPONENT(&LOCALDATA);
-	INIT_COMPONENT(&GLOBALDATA);
-	INIT_COMPONENT(&DELTASYMBOLS);
-	INIT_COMPONENT(&OPTIMIZER);
-	INIT_COMPONENT(&CODEGENERATOR);
-	INIT_COMPONENT(&QUADS);
-	INIT_COMPONENT(&DELTANAMESPACES);
-	INIT_COMPONENT(&DELTARETURNTYPES);
-	INIT_COMPONENT(&EXPRFACTORY);
-	INIT_COMPONENT(&TYPECHECKER);
-	INIT_COMPONENT(&TRANSLATOR);
-	INIT_COMPONENT(&RETVALCHECKER);
-	INIT_COMPONENT(&SELECTIVESTEPIN);
-	INIT_COMPONENT(&ASTCREATOR);
-	INIT_COMPONENT(&DESCRIPTIVE_ERROR_HANDLER);
-	INIT_COMPONENT(&COMPMESSENGER);
-	
-	AutoCollector* autoCollector = &AUTOCOLLECTOR;
-	EXPRFACTORY.SetAutoCollector(autoCollector);
-	STMTFACTORY.SetAutoCollector(autoCollector);
-	ASTFACTORY.SetAutoCollector(autoCollector);
+	CREATE_CLIENT_COMPONENT(LocalDataHandler);
+	CREATE_CLIENT_COMPONENT(GlobalData);
+	CREATE_CLIENT_COMPONENT(DeltaSymbolTable);
+	CREATE_CLIENT_COMPONENT(Optimizer);
+	CREATE_CLIENT_COMPONENT(DeltaCodeGenerator);
+	CREATE_CLIENT_COMPONENT(DeltaQuadManager);
+	CREATE_CLIENT_COMPONENT(DeltaLibraryNamespaceHolder);
+	CREATE_CLIENT_COMPONENT(DeltaFunctionReturnTypesManager);
+	CREATE_CLIENT_COMPONENT(DeltaExprFactory);
+	CREATE_CLIENT_COMPONENT(Translator);
+	CREATE_CLIENT_COMPONENT(TypeChecker);
+	CREATE_CLIENT_COMPONENT(FunctionValueReturnChecker);
+	CREATE_CLIENT_COMPONENT(SelectiveStepInPreparator);
+	CREATE_CLIENT_COMPONENT(AST::Creator);
+	CREATE_CLIENT_COMPONENT(DescriptiveParseErrorHandler);
+	CREATE_CLIENT_COMPONENT(DeltaCompilerMessenger);
 
 	unew(errorCallbacks);
 	DESCRIPTIVE_ERROR_HANDLER.Initialise();
@@ -628,5 +612,6 @@ DeltaCompiler::~DeltaCompiler () {
 	DDELETE(&ASTCREATOR);
 	DDELETE(&DESCRIPTIVE_ERROR_HANDLER);
 	DDELETE(&COMPMESSENGER);
-	DDELETE(COMPONENT_DIRECTORY());
+	
+	udelete(comps);
 }

@@ -50,7 +50,7 @@ class DebugNamingForStaticVars {
 #define DEBUGSTATICS_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DebugNamingForStaticVars)))
 
-#define DEBUGSTATICS	DEBUGSTATICS_EX(COMPONENT_DIRECTORY())
+#define DEBUGSTATICS	DEBUGSTATICS_EX(GET_COMPONENT_DIRECTORY())
 	
 /////////////////////////////////////////////////////////////
 

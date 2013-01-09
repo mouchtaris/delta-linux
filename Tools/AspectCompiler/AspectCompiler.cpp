@@ -75,8 +75,7 @@ bool AspectCompiler::ApplyTransformations(const StringList& aspects) {
 	DASSERT(tree);
 
 	AutoCollector* autoCollector = DNEW(AutoCollector);
-	AST::Factory* factory = DNEW(AST::Factory);
-	DPTR(factory)->SetAutoCollector(DPTR(autoCollector));
+	AST::Factory* factory = DNEWCLASS(AST::Factory, (DPTR(autoCollector)));
 
 	unsigned count = 0;
 	for(StringList::const_iterator i = aspects.begin(); i != aspects.end(); ++i) {

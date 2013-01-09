@@ -50,14 +50,12 @@ enum DeltaExprType {
 
 // DeltaExpr instances are always dynamic and created via DeltaExprFactory.
 //
-struct DeltaExpr :	public AutoCollectable, 
+struct DeltaExpr :	public ucomponentdirectoryclient,
+					public AutoCollectable, 
 					public Unparsable {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
-
 	public:
 	DFRIENDDESTRUCTOR()
-	friend class AutoCollectableFactory<DeltaExpr>;
+	friend class DeltaExprFactory;
 
 	typedef std::list<DeltaLibraryTypeInfo> TypeList;
 
@@ -251,7 +249,7 @@ struct DeltaExpr :	public AutoCollectable,
 	void						AddAllPlausibleReturnTypes (TypeList* typeList) const;
 
 	private:
-	DeltaExpr (void);
+	DeltaExpr (ucomponentdirectory* directory);
 	~DeltaExpr();
 };
 
@@ -279,10 +277,7 @@ struct ExprList : public AutoCollectable {
 
 //-----------------------------------------------------------------
 
-class DeltaExprFactory : public AutoCollectableFactory<DeltaExpr> {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
-
+class DeltaExprFactory : public ucomponentdirectoryclient {
 	public:
 	DeltaExpr*	New (void) const;
 	DeltaExpr*	Copy (DeltaExpr* expr) const;
@@ -301,7 +296,7 @@ class DeltaExprFactory : public AutoCollectableFactory<DeltaExpr> {
 
 	void		Delete (DeltaExpr* expr) const;
 
-	DeltaExprFactory (void) {}
+	DeltaExprFactory (ucomponentdirectory *directory) : ucomponentdirectoryclient(directory) {}
 	~DeltaExprFactory() {}
 };
 
@@ -310,7 +305,7 @@ class DeltaExprFactory : public AutoCollectableFactory<DeltaExpr> {
 #define EXPRFACTORY_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaExprFactory)))
 
-#define EXPRFACTORY	EXPRFACTORY_EX(COMPONENT_DIRECTORY())
+#define EXPRFACTORY	EXPRFACTORY_EX(GET_COMPONENT_DIRECTORY())
 
 #define	TRUE_EXPR	EXPRFACTORY.MakeBool(true)
 #define	FALSE_EXPR	EXPRFACTORY.MakeBool(false)

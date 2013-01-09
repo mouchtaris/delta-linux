@@ -146,7 +146,7 @@ DeltaVirtualMachine* StagedCompilationHandler::OnStageSource (
 		}
 	}
 	if (!error.empty()) {
-		DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(compiler->COMPONENT_DIRECTORY());
+		DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(compiler->GET_COMPONENT_DIRECTORY());
 		messenger.SetSourceReferences();
 		messenger.Error("Stage execution failed: %s", error.c_str());
 	}
@@ -176,7 +176,7 @@ bool StagedCompilationHandler::OnStageResult(
 				error = "There were build errors in the final program compilation";
 		}
 		if (!error.empty()) {
-			DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(((DeltaMetaCompiler*) closure)->COMPONENT_DIRECTORY());
+			DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(((DeltaMetaCompiler*) closure)->GET_COMPONENT_DIRECTORY());
 			messenger.SetSourceReferences();
 			messenger.Error(error.c_str());
 		}

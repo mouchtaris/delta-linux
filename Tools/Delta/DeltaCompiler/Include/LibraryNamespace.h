@@ -19,9 +19,7 @@
 
 ///////////////////////////////////////////////////////////
 
-class DeltaLibraryNamespace {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DeltaLibraryNamespace : public ucomponentdirectoryclient {
 
 	public:
 	typedef std::map<std::string, DeltaSymbol*>							Symbols;
@@ -75,6 +73,7 @@ class DeltaLibraryNamespace {
 	void					Clear (void);
 
 	DeltaLibraryNamespace (
+		ucomponentdirectory* directory,
 		const std::string& _name, 
 		const DeltaLibraryNamespace* _parent = (DeltaLibraryNamespace*) 0
 	);

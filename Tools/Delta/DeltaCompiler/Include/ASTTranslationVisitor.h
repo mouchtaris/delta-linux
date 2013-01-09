@@ -22,8 +22,8 @@
 
 namespace AST {
 
-class TranslationVisitor : public TreeVisitor {
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class TranslationVisitor :	public ucomponentdirectoryclient,
+							public TreeVisitor {
 	private:
 
 	/////////////////////////////////////////////////////////
@@ -205,7 +205,7 @@ class TranslationVisitor : public TreeVisitor {
 
 	EvaluationStack& GetEvalStack (void) { return evalStack; }
 
-	TranslationVisitor (void);
+	TranslationVisitor (ucomponentdirectory* directory);
 	~TranslationVisitor(){}
 };
 

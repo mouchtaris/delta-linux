@@ -17,9 +17,7 @@
 
 ///////////////////////////////////////////////////////////
 
-class DeltaFunctionReturnTypesManager {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DeltaFunctionReturnTypesManager : public ucomponentdirectoryclient {
 
 	private:
 	typedef std::map<std::string, const DeltaLibraryUserDefinedType*> TypeMap;
@@ -48,7 +46,7 @@ class DeltaFunctionReturnTypesManager {
 	void									Initialise (void);
 	void									CleanUp (void);
 
-	DeltaFunctionReturnTypesManager (void);
+	DeltaFunctionReturnTypesManager (ucomponentdirectory* directory);
 	~DeltaFunctionReturnTypesManager();
 };
 
@@ -57,7 +55,7 @@ class DeltaFunctionReturnTypesManager {
 #define DELTARETURNTYPES_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaFunctionReturnTypesManager)))
 
-#define DELTARETURNTYPES	DELTARETURNTYPES_EX(COMPONENT_DIRECTORY())
+#define DELTARETURNTYPES	DELTARETURNTYPES_EX(GET_COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////
 

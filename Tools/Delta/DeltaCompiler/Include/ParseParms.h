@@ -90,7 +90,7 @@ class ParseParms {
 #define PARSEPARMS_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), ParseParms)))
 
-#define PARSEPARMS	PARSEPARMS_EX(COMPONENT_DIRECTORY())
+#define PARSEPARMS	PARSEPARMS_EX(GET_COMPONENT_DIRECTORY())
 
 //////////////////////////////////////////////////////
 

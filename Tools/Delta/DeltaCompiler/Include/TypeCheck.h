@@ -28,9 +28,7 @@ typedef	std::list<std::string>			IdSig;
 
 /////////////////////////////////////////////////////////////
 
-class TypeChecker {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class TypeChecker : public ucomponentdirectoryclient {
 
 	public:
 	void	Check_ProgramFunctionExactMissingArguments (DeltaSymbol* func,  util_ui32 n);
@@ -46,6 +44,9 @@ class TypeChecker {
 	bool	Check_InArithmetic (DeltaExpr* expr, DeltaICOpcode relOp, const char* opStr, bool alwaysError = true);
 	bool	Check_Assign (DeltaExpr* lvalue);
 	bool	Check_ForeachContainer (DeltaExpr* container);
+
+	TypeChecker (ucomponentdirectory* directory) : ucomponentdirectoryclient(directory) {}
+	~TypeChecker() {}
 };
 
 /////////////////////////////////////////////////////////////
@@ -53,7 +54,7 @@ class TypeChecker {
 #define TYPECHECKER_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), TypeChecker)))
 
-#define TYPECHECKER	TYPECHECKER_EX(COMPONENT_DIRECTORY())
+#define TYPECHECKER	TYPECHECKER_EX(GET_COMPONENT_DIRECTORY())
 
 /////////////////////////////////////////////////////////////
 

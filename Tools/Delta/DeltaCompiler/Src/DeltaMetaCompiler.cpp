@@ -81,8 +81,7 @@ bool DeltaMetaCompiler::ToAST(DeltaValue* value, AST::Node** node) {
 /////////////////////////////////////////////////////////
 
 AST::Node* DeltaMetaCompiler::AssembleStage (AST::Node* ast, unsigned depth) {
-	AST::StageAssembler assembler;
-	INIT_COMPILER_COMPONENT_DIRECTORY(&assembler, COMPONENT_DIRECTORY());
+	AST::StageAssembler assembler(GET_COMPONENT_DIRECTORY());
 	AST::Node* stage = assembler(ast, depth);
 	if (COMPMESSENGER.ErrorsExist())
 		return (AST::Node*) 0;
@@ -295,7 +294,7 @@ void DeltaMetaCompiler::DumpSource(const std::string& source, const std::string&
 /////////////////////////////////////////////////////////
 
 static TreeNode* CreateASTNode(const std::string& tag, void* closure)
-	{ return ASTFACTORY_EX(((DeltaMetaCompiler*)closure)->COMPONENT_DIRECTORY()).NewNode(tag); }
+	{ return ASTFACTORY_EX(((DeltaMetaCompiler*)closure)->GET_COMPONENT_DIRECTORY()).NewNode(tag); }
 
 static bool DefaultStageResultCallback(
 	const std::string&							source,
@@ -307,10 +306,10 @@ static bool DefaultStageResultCallback(
 	void*										closure
 ) {
 	DeltaMetaCompiler* compiler = (DeltaMetaCompiler*) closure;
-	if (!COMPOPTIONS_EX(DPTR(compiler)->COMPONENT_DIRECTORY()).IsDynamicCode())
+	if (!COMPOPTIONS_EX(DPTR(compiler)->GET_COMPONENT_DIRECTORY()).IsDynamicCode())
 		DeltaMetaCompiler::DumpSource(source, text);
 	else if (final)	// For the final version of a dynamic source replace the original text with the final
-		COMPOPTIONS_EX(DPTR(compiler)->COMPONENT_DIRECTORY()).InitialiseForText(text.c_str());
+		COMPOPTIONS_EX(DPTR(compiler)->GET_COMPONENT_DIRECTORY()).InitialiseForText(text.c_str());
 	return true;
 }
 
@@ -323,7 +322,7 @@ static DeltaVirtualMachine* DefaultStageCallback(
 	void*										closure
 ) {
 	DeltaMetaCompiler::DumpSource(stageSource, stageText);
-	CompilerComponentDirectory* directory = DPTR((DeltaMetaCompiler*) closure)->COMPONENT_DIRECTORY();
+	ucomponentdirectory* directory = DPTR((DeltaMetaCompiler*) closure)->GET_COMPONENT_DIRECTORY();
 
 	DeltaCompiler* compiler = DNEW(DeltaCompiler);	//stage source has no meta tags, so no need for a metacompiler
 	DPTR(compiler)->SetErrorCallback(DPTR((DeltaMetaCompiler*) closure)->GetErrorCallback());
@@ -366,7 +365,7 @@ static DeltaVirtualMachine* DefaultStageCallback(
 		}
 	}
 	if (!error.empty()) {
-		DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(compiler->COMPONENT_DIRECTORY());
+		DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(compiler->GET_COMPONENT_DIRECTORY());
 		messenger.SetSourceReferences();
 		messenger.Error("Stage execution failed: %s", error.c_str());
 	}

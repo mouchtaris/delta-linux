@@ -18,8 +18,8 @@
 
 namespace AST {
 
-class StageAssembler : public TreeVisitor {
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class StageAssembler :	public ucomponentdirectoryclient,
+						public TreeVisitor {
 	private:
 
 	static void OnImpureCrossStageAccess(Symbol* symbol, util_ui32 stage, void* closure);
@@ -70,7 +70,7 @@ class StageAssembler : public TreeVisitor {
 	const InlineReferences& GetInlineReferences (void) const
 		{ return inlineReferences; }
 
-	StageAssembler (void);
+	StageAssembler (ucomponentdirectory* directory);
 	~StageAssembler(){}
 };
 

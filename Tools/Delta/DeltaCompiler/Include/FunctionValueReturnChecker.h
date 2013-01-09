@@ -14,9 +14,7 @@
 
 /////////////////////////////////////////////////////////////
 
-class FunctionValueReturnChecker {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class FunctionValueReturnChecker : public ucomponentdirectoryclient {
 
 	private:
 	typedef std::list<DeltaQuadAddress>			MarkedList;
@@ -54,7 +52,8 @@ class FunctionValueReturnChecker {
 	public:
 	void				CheckFunction (DeltaCodeAddress end);
 
-	FunctionValueReturnChecker (void) : returnExprFound(false){}
+	FunctionValueReturnChecker (ucomponentdirectory* directory) :
+		ucomponentdirectoryclient(directory), returnExprFound(false) {}
 	~FunctionValueReturnChecker(){}
 };
 
@@ -63,7 +62,7 @@ class FunctionValueReturnChecker {
 #define RETVALCHECKER_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), FunctionValueReturnChecker)))
 
-#define RETVALCHECKER	RETVALCHECKER_EX(COMPONENT_DIRECTORY())
+#define RETVALCHECKER	RETVALCHECKER_EX(GET_COMPONENT_DIRECTORY())
 
 /////////////////////////////////////////////////////////////
 

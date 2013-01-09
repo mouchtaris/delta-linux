@@ -31,7 +31,9 @@ const std::string Optimizer::OptimizerOutput (void) const {
 
 ///////////////////////////////////////////////////////////////////
 
-Optimizer::Optimizer (void): isLeaderTable((bool*) 0){}
+Optimizer::Optimizer (ucomponentdirectory* directory) :
+	ucomponentdirectoryclient(directory), isLeaderTable((bool*) 0) {}
+
 Optimizer::~Optimizer() {}
 
 ///////////////////////////////////////////////////////////////////

@@ -74,6 +74,12 @@
     <Filter Include="Source Files\Meta">
       <UniqueIdentifier>{764f8262-a6a6-4b12-9916-5ef0fd38b8e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scanner">
+      <UniqueIdentifier>{3de9f9ff-a104-4722-abe2-7d4aed45a2bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parser">
+      <UniqueIdentifier>{a8278de8-562a-4cc5-bf46-a5e630896f27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\DeltaCompiler\Src\AutoCollection.cpp">
@@ -250,9 +256,6 @@
     <ClCompile Include="..\..\..\DeltaCompiler\Src\CompileOptions.cpp">
       <Filter>Source Files\API</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\DeltaCompiler\Src\DeltaSyntaxParser.cpp">
-      <Filter>Source Files\API</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\DeltaCompiler\Src\DeltaParser.y">
@@ -328,12 +331,6 @@
       <Filter>Header Files\API</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaCompilerInit.h">
-      <Filter>Header Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaParser.h">
-      <Filter>Header Files\API</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaSyntax.h">
       <Filter>Header Files\API</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\DeltaCompiler\Include\unistd.h">
@@ -426,11 +423,35 @@
     <ClInclude Include="..\..\..\DeltaCompiler\Include\CompileOptions.h">
       <Filter>Header Files\API</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaSyntaxParser.h">
-      <Filter>Header Files\API</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTUtilVisitors.h">
       <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\CompilerComponentDirectory.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\FunctionReturnTypesManager.h">
+      <Filter>Header Files\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\CompilerStringHolder.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaLexAnalyser.h">
+      <Filter>Header Files\Scanner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaScanner.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaSyntax.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaParser.h">
+      <Filter>Header Files\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\DeltaDependenciesScanner.h">
+      <Filter>Header Files\Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ParserWrapper.h">
+      <Filter>Header Files\API</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

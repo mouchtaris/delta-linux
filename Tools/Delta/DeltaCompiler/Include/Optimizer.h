@@ -18,10 +18,8 @@
 #include <functional>
 #include <map>
 
-class Optimizer {
+class Optimizer : public ucomponentdirectoryclient {
 	
-	USE_COMPILER_COMPONENT_DIRECTORY();
-
 	private:
 	////////////////////////////////////////////////////
 
@@ -100,7 +98,7 @@ class Optimizer {
 
 	////////////////////////////////////////////////////
 
-	Optimizer (void);
+	Optimizer (ucomponentdirectory* directory);
 	~Optimizer();
 };
 
@@ -109,7 +107,7 @@ class Optimizer {
 #define OPTIMIZER_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), Optimizer)))
 
-#define OPTIMIZER	OPTIMIZER_EX(COMPONENT_DIRECTORY())
+#define OPTIMIZER	OPTIMIZER_EX(GET_COMPONENT_DIRECTORY())
 
 ////////////////////////////////////////////
 

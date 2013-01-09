@@ -138,28 +138,20 @@ TreeNode* AST::Node::Clone (void) const
 
 /////////////////////////////////////////////////////////
 
-AST::Node* AST::Node::New (const std::string& tag) const {
-	Node* node = DNEWCLASS(Node, (tag));
-	node->SetAutoCollector(DPTR(collector));
-	return node;
-}
+AST::Node* AST::Node::New (const std::string& tag) const
+	{ return DNEWCLASS(Node, (tag, DPTR(collector))); }
 
 /////////////////////////////////////////////////////////
 
-AST::Node::Node (const std::string& tag) : TreeNode(tag) {}
+AST::Node::Node (const std::string& tag, AutoCollector* collector) :
+	TreeNode(tag), AutoCollectable(collector) {}
 
 /////////////////////////////////////////////////////////
 
-AST::NodeList* AST::Factory::NewNodeList (void) const {
-	AutoCollectableFactory<NodeList> factory;
-	factory.SetAutoCollector(DPTR(collector));
-	return factory.New();
-}
+AST::NodeList* AST::Factory::NewNodeList (void) const
+	{ return AutoCollectableFactory<NodeList>(DPTR(collector)).New(); }
 
-AST::Node* AST::Factory::NewNode (const std::string& tag) const {
-	Node* node = DNEWCLASS(Node, (tag));
-	node->SetAutoCollector(DPTR(collector));
-	return node;
-}
+AST::Node* AST::Factory::NewNode (const std::string& tag) const
+	{ return DNEWCLASS(Node, (tag, DPTR(collector))); }
 
 /////////////////////////////////////////////////////////

@@ -14,9 +14,7 @@
 
 ///////////////////////////////////////////////////////
 
-class SelectiveStepInPreparator {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class SelectiveStepInPreparator : public ucomponentdirectoryclient {
 
 	private:
 	std::list<DeltaUnparsedCallsInStmt*>*	stmtStack;
@@ -45,7 +43,7 @@ class SelectiveStepInPreparator {
 	void	Initialise (void);
 	void	CleanUp (void);
 
-	SelectiveStepInPreparator (void);
+	SelectiveStepInPreparator (ucomponentdirectory *directory);
 	~SelectiveStepInPreparator();
 };
 
@@ -54,7 +52,7 @@ class SelectiveStepInPreparator {
 #define SELECTIVESTEPIN_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), SelectiveStepInPreparator)))
 
-#define SELECTIVESTEPIN	SELECTIVESTEPIN_EX(COMPONENT_DIRECTORY())
+#define SELECTIVESTEPIN	SELECTIVESTEPIN_EX(GET_COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////
 

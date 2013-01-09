@@ -31,7 +31,7 @@ class CompilerStringHolder :
 #define STRINGHOLDER_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), CompilerStringHolder)))
 
-#define STRINGHOLDER	STRINGHOLDER_EX(COMPONENT_DIRECTORY())
+#define STRINGHOLDER	STRINGHOLDER_EX(GET_COMPONENT_DIRECTORY())
 
 ////////////////////////////////////////////////////////////////////////
 

@@ -47,7 +47,7 @@ struct NodeList : public AutoCollectable {
 	void Add (Node* x) { l.push_back(x); }
 
 	private:
-	NodeList (void) {}
+	NodeList (AutoCollector *collector) : AutoCollectable(collector) {}
 	~NodeList(){}
 };
 
@@ -121,7 +121,7 @@ class DCOMPLIB_CLASS Node : public TreeNode, public AutoCollectable {
 
 	private:
 	Node*				New (const std::string& tag) const;
-	Node (const std::string& tag);
+	Node (const std::string& tag, AutoCollector* collector);
 	virtual ~Node(){}
 };
 
@@ -137,7 +137,7 @@ class DCOMPLIB_CLASS Factory {
 	NodeList*	NewNodeList	(void) const;
 	Node*		NewNode		(const std::string& tag) const;
 
-	Factory (void) : collector((AutoCollector*) 0) {}
+	Factory (AutoCollector* _collector) : collector(_collector) {}
 	~Factory() {}
 };
 
@@ -150,7 +150,7 @@ class DCOMPLIB_CLASS Factory {
 #define ASTFACTORY_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), AST::Factory)))
 
-#define ASTFACTORY	ASTFACTORY_EX(COMPONENT_DIRECTORY())
+#define ASTFACTORY	ASTFACTORY_EX(GET_COMPONENT_DIRECTORY())
 
 /////////////////////////////////////////////////////////
 

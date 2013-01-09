@@ -34,7 +34,7 @@ struct Stmt :	public AutoCollectable,
 	void*				userData;	// Anything extra we may carry as part of a stmt.
 
 	private:
-	Stmt (void) {
+	Stmt (AutoCollector* collector) : AutoCollectable(collector) {
 		breakList	=  contList	= DELTA_NIL_QUAD_LABEL;
 		unullify(userData);
 	}
@@ -48,7 +48,7 @@ typedef AutoCollectableFactory<Stmt> DeltaStmtFactory;
 #define STMTFACTORY_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaStmtFactory)))
 
-#define STMTFACTORY	STMTFACTORY_EX(COMPONENT_DIRECTORY())
+#define STMTFACTORY	STMTFACTORY_EX(GET_COMPONENT_DIRECTORY())
 
 //////////////////////////////////////////////////////
 
@@ -70,9 +70,7 @@ typedef std::list<std::string>	NameList;
 class LocalDataHandler;
 struct TableElements;
 
-class Translator {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class Translator : public ucomponentdirectoryclient {
 
 	private:
 
@@ -287,7 +285,8 @@ class Translator {
 
 	//////////////////////////////////////////////////////
 
-	Translator (void) : retValueExpr((DeltaExpr*) 0), lambdaValueExpr((DeltaExpr*) 0) {}
+	Translator (ucomponentdirectory* directory) :
+		ucomponentdirectoryclient(directory), retValueExpr((DeltaExpr*) 0), lambdaValueExpr((DeltaExpr*) 0) {}
 	~Translator () {}
 };
 
@@ -296,7 +295,7 @@ class Translator {
 #define TRANSLATOR_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), Translator)))
 
-#define TRANSLATOR	TRANSLATOR_EX(COMPONENT_DIRECTORY())
+#define TRANSLATOR	TRANSLATOR_EX(GET_COMPONENT_DIRECTORY())
 
 //////////////////////////////////////////////////////
 

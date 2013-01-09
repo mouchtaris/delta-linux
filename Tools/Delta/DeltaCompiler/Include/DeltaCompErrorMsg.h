@@ -14,9 +14,7 @@
 
 ///////////////////////////////////////////////////////////////
 
-class DCOMPLIB_CLASS DeltaCompilerMessenger {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DCOMPLIB_CLASS DeltaCompilerMessenger : public ucomponentdirectoryclient {
 
 	public:
 	typedef ucallbackwithclosure<void (*)(const char*, void*)>	ErrorCallback;
@@ -50,10 +48,11 @@ class DCOMPLIB_CLASS DeltaCompilerMessenger {
 
 	static const std::string ReferencesStr (const SourceReferenceList& srcReferences);
 
-	DeltaCompilerMessenger (void) : 
-		errors		(0),
-		warnings	(0),
-		nodeId		(0) {}
+	DeltaCompilerMessenger (ucomponentdirectory* directory) : 
+		ucomponentdirectoryclient	(directory),
+		errors						(0),
+		warnings					(0),
+		nodeId						(0) {}
 	~DeltaCompilerMessenger() {}
 };
 
@@ -62,7 +61,7 @@ class DCOMPLIB_CLASS DeltaCompilerMessenger {
 #define COMPMESSENGER_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaCompilerMessenger)))
 
-#define COMPMESSENGER	COMPMESSENGER_EX(COMPONENT_DIRECTORY())
+#define COMPMESSENGER	COMPMESSENGER_EX(GET_COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////////
 

@@ -48,18 +48,12 @@ class DCOMPLIB_CLASS AutoCollectable  {
 		void operator()(AutoCollectable* p) { p = DPTR(p); } // statement used
 	};
 
-	void			SetAutoCollector(AutoCollector* c) {
-						DASSERT(!collector && c);
-						DPTR(collector = c)->add(this);
-					}
 	bool			UnderAutoCollection (void) const
 						{ return DPTR(collector)->IsCommitting(); }
 	virtual void	Delete (void) // Refine per derived class.
 						{ DDELETE(this); }
 
-	//If no auto-collector provided, it should be explicitly set after construction
-	AutoCollectable (AutoCollector* c = (AutoCollector*) 0) :
-		collector(c) { if (c) DPTR(collector)->add(this); }
+	AutoCollectable (AutoCollector* _collector) : collector(_collector) { DPTR(collector)->add(this); }
 	virtual ~AutoCollectable() { DPTR(collector)->remove(this); }
 };
 
@@ -68,20 +62,20 @@ class DCOMPLIB_CLASS AutoCollectable  {
 // that are  aware of their collector.
 //
 template<class T> class AutoCollectableFactory {
-	private:
-		AutoCollector* collector;
+	protected:
+	AutoCollector* collector;
+	
 	public:
-	void SetAutoCollector(AutoCollector* c) { collector = c; }
+	virtual T* New (void) const { return DNEWCLASS(T, (DPTR(collector))); }
 
-	virtual T* New (void) const {
-		T* t = DNEW(T);
-		t->SetAutoCollector(DPTR(collector));
-		return t;
-	}
-
-	AutoCollectableFactory (void) : collector((AutoCollector*) 0) {}
+	AutoCollectableFactory (AutoCollector* _collector) : collector(DPTR(_collector)) {}
 	virtual ~AutoCollectableFactory() {}
 };
+
+/////////////////////////////////////////////////////////////////
+
+#define AUTOCOLLECTOR	\
+	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*GET_COMPONENT_DIRECTORY(), AutoCollector)))
 
 /////////////////////////////////////////////////////////////////
 

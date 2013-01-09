@@ -15,9 +15,7 @@ class BlockInfo;
 
 //////////////////////////////////////////////////////
 
-class LocalDataHandler {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class LocalDataHandler : public ucomponentdirectoryclient {
 
 private:
 	BlockInfo*						currBlock;
@@ -47,7 +45,7 @@ public:
 	void		OnNewLocalVar (DeltaSymbol* sym);
 	util_ui16	GetCurrBlockId (void);	// Gets the unique (to curr function) block id.
 
-	LocalDataHandler();
+	LocalDataHandler(ucomponentdirectory* directory);
 	~LocalDataHandler();
 };
 
@@ -56,7 +54,7 @@ public:
 #define LOCALDATA_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), LocalDataHandler)))
 
-#define LOCALDATA	LOCALDATA_EX(COMPONENT_DIRECTORY())
+#define LOCALDATA	LOCALDATA_EX(GET_COMPONENT_DIRECTORY())
 
 //////////////////////////////////////////////////////
 

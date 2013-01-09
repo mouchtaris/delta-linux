@@ -316,7 +316,8 @@ void DescriptiveParseErrorHandler::CleanUp (void) {
 
 /////////////////////////////////////////////////////
 
-DescriptiveParseErrorHandler::DescriptiveParseErrorHandler (void) : 
+DescriptiveParseErrorHandler::DescriptiveParseErrorHandler (ucomponentdirectory* directory) : 
+	ucomponentdirectoryclient	(directory),
 	parseStack					((std::stack<StackItem>*) 0),
 	symbolMessages				((SymbolMessageMap*) 0),
 	isMainAddedAutomatically	(false)

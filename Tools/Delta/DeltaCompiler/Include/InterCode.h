@@ -209,9 +209,7 @@ struct DeltaQuad {
 
 ////////////////////////////////////////////
 
-class DeltaQuadManager {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DeltaQuadManager : public ucomponentdirectoryclient {
 
 	////////////////////////////////////////////////////
 
@@ -372,7 +370,7 @@ class DeltaQuadManager {
 
 	////////////////////////////////////////////////////
 
-	DeltaQuadManager (void);
+	DeltaQuadManager (ucomponentdirectory* directory);
 	~DeltaQuadManager();
 };
 
@@ -381,7 +379,7 @@ class DeltaQuadManager {
 #define QUADS_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaQuadManager)))
 
-#define QUADS	QUADS_EX(COMPONENT_DIRECTORY())
+#define QUADS	QUADS_EX(GET_COMPONENT_DIRECTORY())
 
 ////////////////////////////////////////////
 

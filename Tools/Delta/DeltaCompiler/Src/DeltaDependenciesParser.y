@@ -15,7 +15,8 @@
 
 #include "DeltaDependenciesScanner.h"
 #include "DeltaDependenciesParser.h"
-#include "ParsingContext.h"
+
+#define yyFlexLexer DeltaDependenciesFlexLexer
 
 #ifndef	alloca
 #define alloca malloc
@@ -23,11 +24,11 @@
 
 #define YYINCLUDED_STDLIB_H
 
-#define BUILDDEPS	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(ctx, DeltaBuildDependencies)))
+#define BUILDDEPS	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*lexer.GetDirectory(), DeltaBuildDependencies)))
 
-extern int DeltaDependencies_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx);
+extern int DeltaDependencies_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, yyFlexLexer& lexer);
 
-static void DeltaDependencies_yyerror (YYLTYPE* yylloc, ParsingContext& ctx, const char* error)
+static void DeltaDependencies_yyerror (YYLTYPE* yylloc, yyFlexLexer& lexer, const char* error)
 	{ BUILDDEPS.SetError(error); }
 	
 %}
@@ -44,8 +45,8 @@ static void DeltaDependencies_yyerror (YYLTYPE* yylloc, ParsingContext& ctx, con
 %defines
 %verbose
 %pure-parser
-%parse-param {ParsingContext& ctx}
-%lex-param   {YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx}
+%parse-param {yyFlexLexer& lexer}
+%lex-param   {YYSTYPE* yylval, YYLTYPE* yylloc, yyFlexLexer& lexer}
 %locations
 %expect 1
 %%

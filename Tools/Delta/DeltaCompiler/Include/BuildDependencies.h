@@ -9,7 +9,6 @@
 
 #include "DDebug.h"
 #include "DeltaCompilerDefs.h"
-#include "ParsingContext.h"
 #include "utypes.h"
 #include <list>
 #include <string>
@@ -18,8 +17,8 @@
 
 class DCOMPLIB_CLASS DeltaBuildDependencies {
 
-	friend int DeltaDependencies_yyparse (ParsingContext& ctx);
 	friend class DeltaDependenciesFlexLexer;
+	friend int DeltaDependencies_yyparse (DeltaDependenciesFlexLexer& lexer);
 
 	public:
 	enum ResolutionType {

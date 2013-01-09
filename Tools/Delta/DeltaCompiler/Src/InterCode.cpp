@@ -98,7 +98,9 @@ void DeltaQuad::WriteText (util_ui32 quadNo, FILE* fp) {
 
 //------------------------------------------------------------------
 
-DeltaQuadManager::DeltaQuadManager (void) : quads((DeltaQuad*) 0) {
+DeltaQuadManager::DeltaQuadManager (ucomponentdirectory* directory) :
+	ucomponentdirectoryclient(directory), quads((DeltaQuad*) 0)
+{
 	Reset();
 	DASSERT(quads);
 }

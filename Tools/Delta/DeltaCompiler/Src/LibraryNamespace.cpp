@@ -16,9 +16,10 @@
 ///////////////////////////////////////////////////////////
 
 DeltaLibraryNamespace::DeltaLibraryNamespace (
+		ucomponentdirectory*			directory,
 		const std::string&				_name, 
 		const DeltaLibraryNamespace*	_parent
-	) : parent(_parent), name(_name) {
+	) : ucomponentdirectoryclient(directory), parent(_parent), name(_name) {
 	if (parent && parent->parent) 
 		fullyQualifiedName = parent->GetFullyQualifiedName() + DELTA_LIBRARYNAMESPACE_SEPARATOR + name;
 	else
@@ -185,7 +186,7 @@ const DeltaLibraryUserDefinedType* DeltaLibraryNamespace::IssueType (const std::
 										);
 	DeltaLibraryDefsParser parser;
 	parser.SetNamespaceHolder(&DELTANAMESPACES);
-	std::pair<CompilerComponentDirectory*, DeltaLibraryUserDefinedType*> closure(COMPONENT_DIRECTORY(), type);
+	std::pair<ucomponentdirectory*, DeltaLibraryUserDefinedType*> closure(GET_COMPONENT_DIRECTORY(), type);
 	parser.SetOnNewBase(&OnNewBase, &closure);
 
 	if (!parser.ParseBaseTypes(baseDefs)) {
@@ -217,8 +218,7 @@ DeltaLibraryNamespace* DeltaLibraryNamespace::NewNamespace (const std::string& n
 	if (i != namespaces.end())
 		return i->second;
 	else {
-		DeltaLibraryNamespace* ns = DNEWCLASS(DeltaLibraryNamespace, (namespaceName, this));
-		INIT_COMPILER_COMPONENT_DIRECTORY(ns, COMPONENT_DIRECTORY());
+		DeltaLibraryNamespace* ns = DNEWCLASS(DeltaLibraryNamespace, (COMPONENT_CLIENT_CTOR_ARGS_2(namespaceName, this)));
 		namespaces[namespaceName] = ns;
 		return ns;
 	}
@@ -265,8 +265,8 @@ void DeltaLibraryNamespace::OnNewBase (const std::string& name, const StringList
 #undef COMPMESSENGER
 #define COMPMESSENGER	COMPMESSENGER_EX(data->first)
 
-	std::pair<CompilerComponentDirectory*, DeltaLibraryUserDefinedType*>* data =
-		(std::pair<CompilerComponentDirectory*, DeltaLibraryUserDefinedType*>*) closure;
+	std::pair<ucomponentdirectory*, DeltaLibraryUserDefinedType*>* data =
+		(std::pair<ucomponentdirectory*, DeltaLibraryUserDefinedType*>*) closure;
 
 	DeltaLibraryUserDefinedType* type			= data->second;
 	const DeltaLibraryUserDefinedType* baseType	= (DeltaLibraryUserDefinedType*) 0;

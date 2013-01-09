@@ -39,7 +39,7 @@
 
 //-----------------------------------------------------------------
 
-DeltaCodeGenerator::DeltaCodeGenerator (void) {
+DeltaCodeGenerator::DeltaCodeGenerator (ucomponentdirectory* directory) : ucomponentdirectoryclient(directory) {
 	
 	funcTable = DNEW(std::list<DeltaStdFuncInfo>);
 	code = (DeltaInstruction*) 0;

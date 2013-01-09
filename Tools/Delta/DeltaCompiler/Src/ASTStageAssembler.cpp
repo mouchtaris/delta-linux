@@ -20,13 +20,13 @@
 #define SYMBOLS					(VISITOR->symbols)
 
 #undef PARSEPARMS
-#define PARSEPARMS				PARSEPARMS_EX(VISITOR->COMPONENT_DIRECTORY())
+#define PARSEPARMS				PARSEPARMS_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef COMPMESSENGER
-#define COMPMESSENGER			COMPMESSENGER_EX(VISITOR->COMPONENT_DIRECTORY())
+#define COMPMESSENGER			COMPMESSENGER_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef ASTCREATOR
-#define ASTCREATOR				ASTCREATOR_EX(VISITOR->COMPONENT_DIRECTORY())
+#define ASTCREATOR				ASTCREATOR_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #define STARTLINE(node)			((AST::Node*)node)->GetStartLine()
 #define	yysetsourceinfo()		SetSourceInfo(AST_VISITOR_ACTUALS)
@@ -41,7 +41,7 @@
 
 ///////////////////////////////////////////////////////////
 
-AST::StageAssembler::StageAssembler (void) {
+AST::StageAssembler::StageAssembler (ucomponentdirectory* directory) : ucomponentdirectoryclient(directory) {
 
 	// Context independent handlers.
 	_H(Function,						AST_TAG_FUNCTION);
@@ -100,7 +100,7 @@ AST::Node* AST::StageAssembler::operator()(AST::Node* root, unsigned depth) {
 			DPTR(last)->GetEndPos()
 		);
 		DPTR(stmts)->SetLocation(location);
-		ast = ASTCREATOR_EX(COMPONENT_DIRECTORY()).MakeNode_Program(stmts);
+		ast = ASTCREATOR_EX(GET_COMPONENT_DIRECTORY()).MakeNode_Program(stmts);
 		DPTR(ast)->SetLocation(location);
 		CleanUp();
 	}
@@ -350,7 +350,7 @@ static AST::Node* AddSourceInfo (AST::Node* to, AST::Node* from) {
 
 AST::Node* AST::StageAssembler::GenerateInlineCode(AST::Node* target, AST::Node* original) {
 	using namespace AST;
-	AST::Creator& creator = ASTCREATOR_EX(COMPONENT_DIRECTORY());
+	AST::Creator& creator = ASTCREATOR_EX(GET_COMPONENT_DIRECTORY());
 	NodeList* std = creator.MakeNode_List(
 		NIL_NODELIST,
 		AddSourceInfo(creator.MakeNode_Name(DELTA_STDLIB_NAMESPACE), original)

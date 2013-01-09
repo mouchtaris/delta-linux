@@ -13,6 +13,7 @@
 #include "DeltaCompilerDefs.h"
 #include "ASTNode.h"
 #include "CompilerComponentDirectory.h"
+#include "ParserWrapper.h"
 #include <list>
 #include <string>
 #include <stack>
@@ -20,7 +21,6 @@
 ///////////////////////////////////////////////////////////////
 
 class GenericWriter;
-class DeltaSyntaxParser;
 
 namespace AST {
 	class ValidationVisitor;
@@ -30,12 +30,19 @@ namespace AST {
 
 class DCOMPLIB_CLASS DeltaCompiler {
 
-	USE_COMPILER_COMPONENT_DIRECTORY();
-
 	public:
 	typedef std::list<UPTR(const char*)> FuncList;
 	typedef DeltaCompilerMessenger::ErrorCallback ErrorCallback;
 	typedef ucallbackwithclosure<void (*)(AST::Node*, void*)> ParseCallback;
+
+	protected:
+	ucomponentdirectory*		comps;
+
+	//Apart from owning the directory, it also a client, so emulate its get functionality.
+	public:
+	ucomponentdirectory*		GET_COMPONENT_DIRECTORY() { return comps; }
+	const ucomponentdirectory*	GET_COMPONENT_DIRECTORY() const { return comps; }
+
 	private:
 
 	///////////////////////////////////////////////////////////////
@@ -52,7 +59,9 @@ class DCOMPLIB_CLASS DeltaCompiler {
 	static void			OnParseStarted	(bool success, void* closure);
 
 	void				PreInitialise (void);
-	bool				PureSyntaxAnalysis (DeltaSyntaxParser& parser);
+	
+	template<typename Lexer>
+	bool				PureSyntaxAnalysis (ParserWrapper<Lexer>& parser);
 
 	bool				SyntaxAnalysis (const std::list<int>& tokens = std::list<int>());
 	bool				SyntaxAnalysisAndIntermediateCode (void);

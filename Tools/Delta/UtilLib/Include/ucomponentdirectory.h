@@ -55,4 +55,20 @@ class ucomponentdirectory {
 
 //---------------------------------------------------------------
 
+class ucomponentdirectoryclient {
+	protected:
+	ucomponentdirectory* directory;
+
+	public:
+	ucomponentdirectory*		GetDirectory (void)
+									{ return DNULLCHECK(directory); }
+	const ucomponentdirectory*	GetDirectory (void) const
+									{ return DNULLCHECK(directory); }
+	void						SetDirectory (ucomponentdirectory* directory)
+									{ this->directory = DNULLCHECK(directory); }
+
+	ucomponentdirectoryclient (ucomponentdirectory* _directory = (ucomponentdirectory*) 0) : directory(_directory) {}
+	virtual ~ucomponentdirectoryclient() {}
+};
+
 #endif	// Do not ad stuff beyond this point.

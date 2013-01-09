@@ -12,8 +12,8 @@
 
 ///////////////////////////////////////////////////////////
 
-DeltaFunctionReturnTypesManager::DeltaFunctionReturnTypesManager (void)
-	{}
+DeltaFunctionReturnTypesManager::DeltaFunctionReturnTypesManager (ucomponentdirectory* directory) :
+	ucomponentdirectoryclient(directory) {}
 DeltaFunctionReturnTypesManager::~DeltaFunctionReturnTypesManager () 
 	{ CleanUp(); }
 

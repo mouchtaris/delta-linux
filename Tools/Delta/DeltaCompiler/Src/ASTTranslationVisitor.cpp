@@ -30,25 +30,25 @@
 #define VISITOR			DNULLCHECK((AST::TranslationVisitor*) closure)
 
 #undef COMPMESSENGER
-#define COMPMESSENGER	COMPMESSENGER_EX(VISITOR->COMPONENT_DIRECTORY())
+#define COMPMESSENGER	COMPMESSENGER_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef GLOBALDATA
-#define GLOBALDATA		GLOBALDATA_EX(VISITOR->COMPONENT_DIRECTORY())
+#define GLOBALDATA		GLOBALDATA_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef PARSEPARMS
-#define PARSEPARMS		PARSEPARMS_EX(VISITOR->COMPONENT_DIRECTORY())
+#define PARSEPARMS		PARSEPARMS_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef TRANSLATOR
-#define TRANSLATOR		TRANSLATOR_EX(VISITOR->COMPONENT_DIRECTORY())
+#define TRANSLATOR		TRANSLATOR_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef DELTASYMBOLS
-#define DELTASYMBOLS	DELTASYMBOLS_EX(VISITOR->COMPONENT_DIRECTORY())
+#define DELTASYMBOLS	DELTASYMBOLS_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef QUADS
-#define QUADS			QUADS_EX(VISITOR->COMPONENT_DIRECTORY())
+#define QUADS			QUADS_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 #undef STMTFACTORY
-#define STMTFACTORY		STMTFACTORY_EX(VISITOR->COMPONENT_DIRECTORY())
+#define STMTFACTORY		STMTFACTORY_EX(VISITOR->GET_COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////
 
@@ -82,7 +82,7 @@
 
 ///////////////////////////////////////////////////////////
 
-AST::TranslationVisitor::TranslationVisitor (void) {
+AST::TranslationVisitor::TranslationVisitor (ucomponentdirectory* directory) : ucomponentdirectoryclient(directory) {
 
 	// Context independent handlers.
 	_H(Program,							AST_TAG_PROGRAM);
@@ -252,7 +252,7 @@ AST::TranslationVisitor::TranslationVisitor (void) {
 void AST::TranslationVisitor::operator()(AST::Node* root){
 	if (root) {
 		DPTR(root)->AcceptPreOrder(this);
-		COMPMESSENGER_EX(COMPONENT_DIRECTORY()).SetSourceReferences();
+		COMPMESSENGER_EX(GET_COMPONENT_DIRECTORY()).SetSourceReferences();
 	}
 }
 
@@ -1704,8 +1704,7 @@ void AST::TranslationVisitor::Handle_QuasiQuotes (AST_VISITOR_ARGS){
 
 		yv = translator.Translate_FunctionCall(func, args);
 
-		EscapeTranslationVisitor visitor;
-		INIT_COMPILER_COMPONENT_DIRECTORY(&visitor, VISITOR->COMPONENT_DIRECTORY());
+		EscapeTranslationVisitor visitor(VISITOR->GET_COMPONENT_DIRECTORY());
 		bool hasEscapes = visitor(child);
 		EvaluationStack::StackValues& values = visitor.GetEvalStack().GetValues();
 		for (EvaluationStack::StackValues::reverse_iterator i = values.rbegin(); i != values.rend(); ++i) {

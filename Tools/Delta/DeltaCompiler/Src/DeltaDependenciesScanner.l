@@ -8,18 +8,13 @@
 #include "ulexutil.h"
 #include "DeltaDependenciesParser.h"
 #include "BuildDependencies.h"
-#include "ParsingContext.h"
 
 #define	YY_SKIP_YYWRAP
 #define YY_USE_PROTOS
 #define	YY_NEVER_INTERACTIVE 1
 
-// The yylex() must be re-entrant, so it takes
-// yylval as a formal parameter.
-//
 #define YY_DECL		int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
-#define	STACKVAL	yylval
-#define BUILDDEPS	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*context(), DeltaBuildDependencies)))
+#define BUILDDEPS	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*GetDirectory(), DeltaBuildDependencies)))
 
 %}
 
@@ -47,12 +42,12 @@ using			return	USING;
 "#"				return	BUILDDEPS.InUsing() ? STRINGIFY		: OTHER;
 {ws}*			{}
 {ident}			{
-					STACKVAL->id = usaveidstr(yytext, &yy_id_buffer); return 
+					yylval->id = usaveidstr(yytext, &yy_id_buffer); return 
 					BUILDDEPS.InUsing() ? IDENT : OTHER;
 				}
 {cpp}			while (yyinput() != '\n'){} /* Read until end of line. */
 \"				{	
-					STACKVAL->str = BUILDDEPS.NewString(ReadQuotedString());
+					yylval->str = BUILDDEPS.NewString(ReadQuotedString());
 					return BUILDDEPS.InUsing() ? STRING_CONST : OTHER;
 				}
 \/\* 			IgnoreCStyleComments();
@@ -63,8 +58,8 @@ using			return	USING;
 
 //------------------------------------------------------------------
 
-int DeltaDependencies_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx)
-	{ return ctx.GetLexer().yylex(yylval, yylloc); }
+int DeltaDependencies_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, yyFlexLexer& lexer)
+	{ return lexer.yylex(yylval, yylloc); }
 
 char yyFlexLexer::yyinput_wrapper(void* closure) { return ((yyFlexLexer*) closure)->yyinput(); }
 

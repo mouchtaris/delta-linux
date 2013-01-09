@@ -20,9 +20,10 @@
 #include "LibraryNamespace.h"
 #include "ParseParms.h"
 #include "CompilerStringHolder.h"
-#include "ParsingContext.h"
-
+#include "DeltaScanner.h"
 #include "DeltaSyntax.h"
+
+#define yyFlexLexer DeltaScannerFlexLexer
 
 using namespace AST;
 
@@ -32,24 +33,26 @@ using namespace AST;
 
 #define YYINCLUDED_STDLIB_H
 
-extern int DeltaSyntax_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx);
+extern int DeltaSyntax_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, yyFlexLexer& lexer);
 
 ///////////////////////////////////////////////////////////
-// Helper macros to get specific components from the 'ctx'
+// Helper macros to get specific components from the lexer
 // component directory.
+#define DIRECTORY								(lexer.GetDirectory())
 
-#define GET_DESCRIPTIVE_ERROR_HANDLER			DESCRIPTIVE_ERROR_HANDLER_EX(&ctx)
-#define ASTCREATOR_BY_CONTEXT					ASTCREATOR_EX(&ctx)
-#define PARSEPARMS_BY_CONTEXT					PARSEPARMS_EX(&ctx)
-#define STRINGHOLDER_BY_CONTEXT					STRINGHOLDER_EX(&ctx)
+#define GET_DESCRIPTIVE_ERROR_HANDLER			DESCRIPTIVE_ERROR_HANDLER_EX(DIRECTORY)
+#define ASTCREATOR_BY_CONTEXT					ASTCREATOR_EX(DIRECTORY)
+#define PARSEPARMS_BY_CONTEXT					PARSEPARMS_EX(DIRECTORY)
+#define STRINGHOLDER_BY_CONTEXT					STRINGHOLDER_EX(DIRECTORY)
 
 ///////////////////////////////////////////////////////////
 
-static void DeltaSyntax_yyerror (YYLTYPE* yylloc, ParsingContext& ctx, const char* unused)
+static void DeltaSyntax_yyerror (YYLTYPE* yylloc, yyFlexLexer& lexer, const char* unused)
 	{ GET_DESCRIPTIVE_ERROR_HANDLER.HandleSyntaxError(); }
 
 #define	DYNAMIC_STRING(s) \
 	STRINGHOLDER_BY_CONTEXT.StringWithLateDestruction(ucopystr(s))
+
 void SET_LOCATION(AST::Node* node, const YYLTYPE& start, const YYLTYPE& end) {
 	AST::Node::Location location(start.first_line, end.last_line, start.first_column, end.last_column);
 	DPTR(node)->SetLocation(location);
@@ -146,8 +149,8 @@ void SET_LOCATION(YYLTYPE& pos, const YYLTYPE& start, const YYLTYPE& end) {
 %defines
 %verbose
 %pure-parser
-%parse-param {ParsingContext& ctx}
-%lex-param   {YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx}
+%parse-param {yyFlexLexer& lexer}
+%lex-param   {YYSTYPE* yylval, YYLTYPE* yylloc, yyFlexLexer& lexer}
 %locations
 %%
 

@@ -53,10 +53,9 @@ class DeltaLibraryNamespace;
 class LocalDataHandler;
 typedef std::list<DeltaLibraryTypeInfo> DeltaLibraryTypeInfoList;
 
-struct DeltaSymbol {
+struct DeltaSymbol : public ucomponentdirectoryclient {
 
 	DFRIENDDESTRUCTOR()
-	USE_COMPILER_COMPONENT_DIRECTORY();
 
 	friend class DeltaSymbolTable;
 
@@ -444,36 +443,37 @@ struct DeltaSymbol {
 	bool						IsOfSameOrOuterScopeThan (util_ui16 _scope) const
 									{ return scope <= _scope; }
 	private:
-	DeltaSymbol (void) :
-		scope					(0),
-		line					(DELTA_CANTBE_A_SOURCE_LINE),
-		blockId					(0),
-		myFunc					(NIL_SYMBOL),
-		isStatic				(false),
-		next					(NIL_SYMBOL),
-		offset					(0),
-		isFormal				(false),
-		initialisedCounter		(0),
-		possiblyUninitialised	(false),
-		funcVarInfo				((ImportedFuncVarInfo*) 0),
-		libVarInfo				((ImportedByteCodeLibInfo*) 0),
-		isUserDefinedFunc		(false),
-		funcClass				(DELTA_FUNCCLASS_NOTAFUNCTION),
-		funcSig					((FuncSig*) 0),
-		funcAccess				((FuncAccess*) 0),
-		isLibraryFunc			(false),
-		isOrphanMethod			(false),
-		methodVar				((DeltaExpr*) 0),
-		libFuncSigs				((DeltaLibraryFuncSignatures*) 0),
-		serial					(0),
-		totalBlocks				(0),
-		addr					(DELTA_CANTBE_A_FUNCTION_ADDRESS),
-		closureInfo				((ClosureInfo*)0),
-		isLibraryConst			(false),
-		isUserDefinedConst		(false),
-		constExpr				((DeltaExpr*) 0),
-		isClosureVarAccess		(false),
-		closureVarAccessed		((DeltaSymbol*) 0) {}
+	DeltaSymbol (ucomponentdirectory* directory) :
+		ucomponentdirectoryclient	(directory),
+		scope						(0),
+		line						(DELTA_CANTBE_A_SOURCE_LINE),
+		blockId						(0),
+		myFunc						(NIL_SYMBOL),
+		isStatic					(false),
+		next						(NIL_SYMBOL),
+		offset						(0),
+		isFormal					(false),
+		initialisedCounter			(0),
+		possiblyUninitialised		(false),
+		funcVarInfo					((ImportedFuncVarInfo*) 0),
+		libVarInfo					((ImportedByteCodeLibInfo*) 0),
+		isUserDefinedFunc			(false),
+		funcClass					(DELTA_FUNCCLASS_NOTAFUNCTION),
+		funcSig						((FuncSig*) 0),
+		funcAccess					((FuncAccess*) 0),
+		isLibraryFunc				(false),
+		isOrphanMethod				(false),
+		methodVar					((DeltaExpr*) 0),
+		libFuncSigs					((DeltaLibraryFuncSignatures*) 0),
+		serial						(0),
+		totalBlocks					(0),
+		addr						(DELTA_CANTBE_A_FUNCTION_ADDRESS),
+		closureInfo					((ClosureInfo*)0),
+		isLibraryConst				(false),
+		isUserDefinedConst			(false),
+		constExpr					((DeltaExpr*) 0),
+		isClosureVarAccess			(false),
+		closureVarAccessed			((DeltaSymbol*) 0) {}
 
 	void Initialise (const std::string& name, DeltaSymbolType type);
 	~DeltaSymbol();
@@ -483,9 +483,7 @@ typedef std::list<DeltaSymbol*> DeltaSymboList;
 
 //------------------------------------------------------------------
 
-class DeltaSymbolTable {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DeltaSymbolTable : public ucomponentdirectoryclient {
 
 	friend class DeltaCodeGenerator;
 
@@ -550,7 +548,7 @@ class DeltaSymbolTable {
 
 	////////////////////////////////////////////
 
-	DeltaSymbolTable (void);
+	DeltaSymbolTable (ucomponentdirectory* directory);
 	~DeltaSymbolTable();
 };
 
@@ -559,7 +557,7 @@ class DeltaSymbolTable {
 #define DELTASYMBOLS_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaSymbolTable)))
 
-#define DELTASYMBOLS	DELTASYMBOLS_EX(COMPONENT_DIRECTORY())
+#define DELTASYMBOLS	DELTASYMBOLS_EX(GET_COMPONENT_DIRECTORY())
 
 ////////////////////////////////////////////
 

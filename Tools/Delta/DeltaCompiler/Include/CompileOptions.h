@@ -68,7 +68,7 @@ class CompileOptions {
 #define COMPOPTIONS_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), CompileOptions)))
 
-#define COMPOPTIONS	COMPOPTIONS_EX(COMPONENT_DIRECTORY())
+#define COMPOPTIONS	COMPOPTIONS_EX(GET_COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////////
 

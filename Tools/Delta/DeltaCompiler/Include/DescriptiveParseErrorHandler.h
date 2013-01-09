@@ -202,9 +202,7 @@ extern util_ui32 S_BRACKET_INDEX_ (const std::string& tag);
 
 //////////////////////////////////////////////////////
 
-class DescriptiveParseErrorHandler {
-
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DescriptiveParseErrorHandler : public ucomponentdirectoryclient {
 
 	public:
 	typedef util_ui32 grammar_symbol_t;
@@ -265,7 +263,7 @@ class DescriptiveParseErrorHandler {
 	void				Initialise (void);
 	void				CleanUp (void);
 
-	DescriptiveParseErrorHandler (void);
+	DescriptiveParseErrorHandler (ucomponentdirectory* directory);
 	~DescriptiveParseErrorHandler () {}
 };
 
@@ -274,7 +272,7 @@ class DescriptiveParseErrorHandler {
 #define DESCRIPTIVE_ERROR_HANDLER_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DescriptiveParseErrorHandler)))
 
-#define DESCRIPTIVE_ERROR_HANDLER	DESCRIPTIVE_ERROR_HANDLER_EX(COMPONENT_DIRECTORY())
+#define DESCRIPTIVE_ERROR_HANDLER	DESCRIPTIVE_ERROR_HANDLER_EX(GET_COMPONENT_DIRECTORY())
 
 //////////////////////////////////////////////////////
 

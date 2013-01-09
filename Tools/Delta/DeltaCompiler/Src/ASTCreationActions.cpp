@@ -48,7 +48,8 @@ util_ui8 AST::GetFuncLinkage (AST::Node* func) {
 }
 /////////////////////////////////////////////////////////////
 
-AST::Creator::Creator (void) : ast((AST::Node*) 0) {}
+AST::Creator::Creator (ucomponentdirectory* directory) : 
+	ucomponentdirectoryclient(directory), ast((AST::Node*) 0) {}
 
 AST::Creator::~Creator () {}
 

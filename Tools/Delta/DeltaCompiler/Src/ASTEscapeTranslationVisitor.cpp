@@ -22,7 +22,9 @@
 
 ///////////////////////////////////////////////////////////
 
-AST::EscapeTranslationVisitor::EscapeTranslationVisitor (void) : hasEscapes(false) {
+AST::EscapeTranslationVisitor::EscapeTranslationVisitor (ucomponentdirectory* directory) :
+	ucomponentdirectoryclient(directory), hasEscapes(false)
+{
 	SetHandler(AST_TAG_ESCAPE, &Handle_Escape, this);
 	GetEvalStack().Initialise();
 }
@@ -45,8 +47,7 @@ void AST::EscapeTranslationVisitor::Handle_Escape (AST_VISITOR_ARGS) {
 	VISITOR->hasEscapes = true;
 	if (entering && CARDINALITY(node) == 1) {
 		yyrule;
-		TranslationVisitor visitor;
-		INIT_COMPILER_COMPONENT_DIRECTORY(&visitor, VISITOR->COMPONENT_DIRECTORY());
+		TranslationVisitor visitor(VISITOR->GET_COMPONENT_DIRECTORY());
 		visitor((Node *) node->GetChild(AST_CHILD_EXPR));
 		yypush(visitor.GetEvalStack().Top());
 		((AST::EscapeTranslationVisitor *) closure)->Leave();

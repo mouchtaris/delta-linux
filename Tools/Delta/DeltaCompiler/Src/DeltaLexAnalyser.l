@@ -21,29 +21,21 @@
 #include "DeltaParser.h"
 #include "ParseParms.h"
 #include "CompilerStringHolder.h"
-#include "ParsingContext.h"
 #include "ufunctors.h"
 
 #define	YY_SKIP_YYWRAP
 #define YY_USE_PROTOS
 #define	YY_NEVER_INTERACTIVE 1
 
-// The yylex() must be re-entrant, so it takes
-// yylval as a formal parameter.
-//
-#define YY_DECL		int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
-#define	STACKVAL	yylval
+#define YY_DECL	int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
 
 ///////////////////////////////////////////////////////////
+// Helper macros to get specific components from the lexer
+// component directory.
 
-#undef COMPMESSENGER
-#define COMPMESSENGER	COMPMESSENGER_EX(context())
-
-#undef PARSEPARMS
-#define PARSEPARMS		PARSEPARMS_EX(context())
-
-#undef STRINGHOLDER
-#define STRINGHOLDER	STRINGHOLDER_EX(context())
+#define GET_COMPMESSENGER	COMPMESSENGER_EX(GetDirectory())
+#define GET_PARSEPARMS		PARSEPARMS_EX(GetDirectory())
+#define GET_STRINGHOLDER	STRINGHOLDER_EX(GetDirectory())
 
 %}
 
@@ -118,7 +110,7 @@ using			return	USING;
 "()"			return	CALL;
 "=()"			return	CAST;
 "+_"			return	ADD_POSTFIX;
-"-_"			return	SUB_POSTFIX;
+"-_"				return	SUB_POSTFIX;
 "*_"			return	MUL_POSTFIX;
 "/_"			return	DIV_POSTFIX;
 "%_"			return	MOD_POSTFIX;
@@ -131,7 +123,7 @@ using			return	USING;
 
 "::"			return	GLOBAL_SCOPE;
 "++"			return	PLUSPLUS;
-"--"			return	MINUSMINUS;
+"--"				return	MINUSMINUS;
 "."				return	DOT;
 ".."			return	DOUBLE_DOT;
 "..."			return	TRIPLE_DOT;
@@ -142,7 +134,7 @@ using			return	USING;
 "[["			return	DOUBLE_LB;
 "]]"			return	DOUBLE_RB;
 "+="			return	ADD_A;
-"-="			return	SUB_A;
+"-="				return	SUB_A;
 "*="			return	MUL_A;
 "/="			return	DIV_A;
 "%="			return	MOD_A;
@@ -150,36 +142,36 @@ using			return	USING;
 
 {ws}*			{}
 
-{line}			{	PARSEPARMS.NextLine(); }
+{line}			{	GET_PARSEPARMS.NextLine(); }
 
-{decdigit}+		{	ucastassign(STACKVAL->numberConst, ustrdectodouble(yytext));
+{decdigit}+		{	ucastassign(yylval->numberConst, ustrdectodouble(yytext));
 					return NUMBER_CONST;
 				}
 
-{ident}			{	STACKVAL->id = usaveidstr(yytext, &yy_id_buffer);
+{ident}			{	yylval->id = usaveidstr(yytext, &yy_id_buffer);
 					return IDENT;
 				}
 
-{attr}{ident}	{	STACKVAL->id = usaveidstr(yytext, &yy_id_buffer);
+{attr}{ident}	{	yylval->id = usaveidstr(yytext, &yy_id_buffer);
 					return ATTRIBUTE_IDENT;
 				}
 				
-{real}			{	ucastassign(STACKVAL->numberConst, ustrfracttodouble(yytext));
+{real}			{	ucastassign(yylval->numberConst, ustrfracttodouble(yytext));
 					return NUMBER_CONST;
 				}
 
-{hex}			{	ucastassign(STACKVAL->numberConst, ustrtohex(yytext + 2));
+{hex}			{	ucastassign(yylval->numberConst, ustrtohex(yytext + 2));
 					return NUMBER_CONST;
 				}
 
 {cpp}			{	util_ui32 line;
 					sscanf(yytext + 1, "%u", &line);
-					PARSEPARMS.SetLine(line);
-					COMPMESSENGER.SetCurrentFile(DNULLCHECK(strchr(yytext, '\"')) + 1);
+					GET_PARSEPARMS.SetLine(line);
+					GET_COMPMESSENGER.SetCurrentFile(DNULLCHECK(strchr(yytext, '\"')) + 1);
 					while (yyinput() != '\n'){} // Read until end of line.
 				}
 
-\"				{	STACKVAL->strConst = STRINGHOLDER.StringWithLateDestruction(ucopystr(ReadQuotedString()));
+\"				{	yylval->strConst = GET_STRINGHOLDER.StringWithLateDestruction(ucopystr(ReadQuotedString()));
 					return STRING_CONST;
 				}
 
@@ -192,8 +184,8 @@ using			return	USING;
 
 //------------------------------------------------------------------
 
-int DeltaCompiler_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, ParsingContext& ctx)
-	{ return ctx.GetLexer().yylex(yylval, yylloc); }
+int DeltaCompiler_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, yyFlexLexer& lexer)
+	{ return lexer.yylex(yylval, yylloc); }
 
 char yyFlexLexer::yyinput_wrapper(void* closure) { return ((yyFlexLexer*) closure)->yyinput(); }
 
@@ -203,7 +195,7 @@ void yyFlexLexer::yyunput_wrapper(char c, void *closure) {
 }
 
 void yyFlexLexer::IgnoreCStyleComments (void)  {
-	util_ui32 line = PARSEPARMS.GetLine();
+	util_ui32 line = GET_PARSEPARMS.GetLine();
 	std::string error;
 	bool result = uignoreCcomments(
 		umakecallback(yyinput_wrapper, this),
@@ -212,22 +204,22 @@ void yyFlexLexer::IgnoreCStyleComments (void)  {
 		&error
 	);
 	if (!result)
-		COMPMESSENGER.Error(error.c_str());
-	PARSEPARMS.SetLine(line);
+		GET_COMPMESSENGER.Error(error.c_str());
+	GET_PARSEPARMS.SetLine(line);
 } 
 
 void yyFlexLexer::IgnoreCPPStyleComments (void) {
 	if (uignoreCPPcomments(umakecallback(yyinput_wrapper, this)))
-		PARSEPARMS.NextLine();
+		GET_PARSEPARMS.NextLine();
 }
 
 const std::string yyFlexLexer::ReadQuotedString (void) {
-	util_ui32 line = PARSEPARMS.GetLine();
+	util_ui32 line = GET_PARSEPARMS.GetLine();
 	std::string s;
 	std::string error;
 	if (!ureadquotedstring(s, umakecallback(yyinput_wrapper, this), &line, &error))
-		COMPMESSENGER.Error(error.c_str());
-	PARSEPARMS.SetLine(line);
+		GET_COMPMESSENGER.Error(error.c_str());
+	GET_PARSEPARMS.SetLine(line);
 	return uextendescapesequences(s.c_str());
 }
 

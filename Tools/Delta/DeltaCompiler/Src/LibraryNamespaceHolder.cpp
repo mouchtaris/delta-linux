@@ -8,15 +8,17 @@
 #include "DeltaCompErrorDefs.h"
 #include "LibraryDefsParser.h"
 
-DeltaLibraryNamespaceHolder::DeltaLibraryNamespaceHolder (void) 
-	{ unullify(globalNamespace); }
+DeltaLibraryNamespaceHolder::DeltaLibraryNamespaceHolder (ucomponentdirectory* directory) :
+	ucomponentdirectoryclient(directory)
+{
+	unullify(globalNamespace);
+}
 
 DeltaLibraryNamespaceHolder::~DeltaLibraryNamespaceHolder() 
 	{ udeleteunlessnull(globalNamespace); }
 
 void DeltaLibraryNamespaceHolder::Initialise (void) {
-	globalNamespace = DNEWCLASS(DeltaLibraryNamespace, (DELTA_LIBRARYNAMESPACE_GLOBAL));
-	INIT_COMPILER_COMPONENT_DIRECTORY(globalNamespace, COMPONENT_DIRECTORY());
+	globalNamespace = DNEWCLASS(DeltaLibraryNamespace, (COMPONENT_CLIENT_CTOR_ARGS_1(DELTA_LIBRARYNAMESPACE_GLOBAL)));
 	namespaceStack.push_front(globalNamespace);
 	openedNamespaces[DELTA_LIBRARYNAMESPACE_GLOBAL] = globalNamespace;
 }

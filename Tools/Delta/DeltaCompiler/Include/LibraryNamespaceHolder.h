@@ -16,9 +16,7 @@
 
 ///////////////////////////////////////////////////////////
 
-class DeltaLibraryNamespaceHolder {	
-	
-	USE_COMPILER_COMPONENT_DIRECTORY();
+class DeltaLibraryNamespaceHolder : public ucomponentdirectoryclient {
 
 	friend class DeltaLibraryNamespace;
 
@@ -96,7 +94,7 @@ class DeltaLibraryNamespaceHolder {
 	void					Install (const LibrarySpecifications& libs);
 	void					CleanUp (void);
 
-	DeltaLibraryNamespaceHolder (void);
+	DeltaLibraryNamespaceHolder (ucomponentdirectory* direcory);
 	~DeltaLibraryNamespaceHolder();
 };
 
@@ -105,7 +103,7 @@ class DeltaLibraryNamespaceHolder {
 #define DELTANAMESPACES_EX(component_directory)	\
 	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*(component_directory), DeltaLibraryNamespaceHolder)))
 
-#define DELTANAMESPACES	DELTANAMESPACES_EX(COMPONENT_DIRECTORY())
+#define DELTANAMESPACES	DELTANAMESPACES_EX(GET_COMPONENT_DIRECTORY())
 
 ///////////////////////////////////////////////////////////
 

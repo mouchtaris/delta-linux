@@ -12,7 +12,8 @@
 
 ///////////////////////////////////////////////////////
 
-SelectiveStepInPreparator::SelectiveStepInPreparator(void) : currStmt((DeltaUnparsedCallsInStmt*) 0)
+SelectiveStepInPreparator::SelectiveStepInPreparator(ucomponentdirectory* directory) :
+	ucomponentdirectoryclient(directory), currStmt((DeltaUnparsedCallsInStmt*) 0)
 {
 	stmtStack = DNEW(std::list<DeltaUnparsedCallsInStmt*>);
 	allStmts = DNEW(DeltaUnparsedCallsInStmtHolder);

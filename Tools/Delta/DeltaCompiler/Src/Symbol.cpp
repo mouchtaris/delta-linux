@@ -149,7 +149,8 @@ const std::string DeltaSymbol::GetTypeDescription (void) const {
 
 //------------------------------------------------------------------
 
-DeltaSymbolTable::DeltaSymbolTable (void) {
+DeltaSymbolTable::DeltaSymbolTable (ucomponentdirectory* directory) : ucomponentdirectoryclient(directory)
+{
 	tempCount		=
 	tempFuncCount	= 0;
 	unullify(inactiveHead);
@@ -164,8 +165,7 @@ DeltaSymbolTable::~DeltaSymbolTable()
 ///////////////////////////////////////////////////////////////////
 
 DeltaSymbol* DeltaSymbolTable::NewSymbol(const std::string& name, DeltaSymbolType type) {
-	DeltaSymbol* sym = DNEW(DeltaSymbol);
-	INIT_COMPILER_COMPONENT_DIRECTORY(DPTR(sym), COMPONENT_DIRECTORY());
+	DeltaSymbol* sym = DNEWCLASS(DeltaSymbol, (GET_COMPONENT_DIRECTORY()));
 	DPTR(sym)->Initialise(name, type);
 	return sym;
 }
