@@ -15,7 +15,7 @@
 
 class ucomponentdirectory {
 	protected:
-	typedef std::map<std::string, void *> ComponentMap;
+	typedef std::map<std::string, void*> ComponentMap;
 	ComponentMap components;
 
 	public:
@@ -36,17 +36,13 @@ class ucomponentdirectory {
 		return i->second;
 	}
 	template <typename T>
-	T*	GetEx (const std::string& name) const {
-		if (void* compoent = Get(name))
-			return (T*) component;
-		else
-			return (T*) 0;
-	}
+	T*	GetEx (const std::string& name) const 
+		{ return (T*) Get(name); }
 
 	void Clear (void) { components.clear(); }
 
-	ucomponentdirectory (void) {}
-	virtual ~ucomponentdirectory () { Clear(); }
+	ucomponentdirectory (void){}
+	virtual ~ucomponentdirectory() { Clear(); }
 };
 
 //---------------------------------------------------------------
@@ -57,18 +53,18 @@ class ucomponentdirectory {
 
 class ucomponentdirectoryclient {
 	protected:
-	ucomponentdirectory* directory;
+	ucomponentdirectory*		directory;
 
 	public:
 	ucomponentdirectory*		GetDirectory (void)
 									{ return DNULLCHECK(directory); }
 	const ucomponentdirectory*	GetDirectory (void) const
 									{ return DNULLCHECK(directory); }
-	void						SetDirectory (ucomponentdirectory* directory)
-									{ this->directory = DNULLCHECK(directory); }
+	void						SetDirectory (ucomponentdirectory* _directory)
+									{ directory = DNULLCHECK(_directory); }
 
 	ucomponentdirectoryclient (ucomponentdirectory* _directory = (ucomponentdirectory*) 0) : directory(_directory) {}
-	virtual ~ucomponentdirectoryclient() {}
+	virtual ~ucomponentdirectoryclient(){}
 };
 
 #endif	// Do not ad stuff beyond this point.
