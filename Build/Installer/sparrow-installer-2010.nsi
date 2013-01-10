@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Sparrow"
-!define PRODUCT_VERSION "1.0-rev-404"
+!define PRODUCT_VERSION "1.0-rev-423"
 !define PRODUCT_WEB_SITE "http://www.ics.forth.gr/hci/files/plang/Delta/Delta.html"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Sparrow.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -111,6 +111,7 @@ Section "Delta Support" SEC03
   SetOverwrite ifnewer
 
   SetOutPath "$INSTDIR"
+  File "..\AspectCompiler.exe"
   File "..\DeltaCompiler.exe"
   File "..\DeltaVM.exe"
   File "..\DeltaVMDebug.exe"
@@ -369,6 +370,15 @@ Section "Test Workspaces" SEC06
   FileWrite $0 `<PropertyTable>$\n`
   FileWrite $0 `$\t<vm>$\n$\t$\t<libdefs>$\n`
 
+  FileWrite $0 `$\t$\t$\t<value5>$\n$\t$\t$\t$\t`
+  StrCpy $1 "$INSTDIR\DeltaExtraLibraries\JSONParserLibFuncs.txt"
+  Push $1
+  Push "\"
+  Call StrSlash
+  Pop $1
+  FileWrite $0 "<path>$1</path>$\n"
+  FileWrite $0 `$\t$\t$\t$\t<name>json</name>$\n$\t$\t$\t</value5>$\n`
+
   FileWrite $0 `$\t$\t$\t<value4>$\n$\t$\t$\t$\t`
   StrCpy $1 "$INSTDIR\DeltaExtraLibraries\XMLParserLibFuncs.txt"
   Push $1
@@ -472,7 +482,6 @@ Section Uninstall
   RMDir /r "$INSTDIR\profiles"
   RMDir /r "$INSTDIR\resources"
   RMDir /r "$INSTDIR\scripts"
-  RMDir /r "$INSTDIR\xdf"
   RMDir /r "$INSTDIR\xdf"
   RMDir /r "$INSTDIR\DeltaExtraLibraries"
   RMDir /r "$INSTDIR\RemoteDeployment"

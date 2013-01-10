@@ -1,0 +1,10 @@
+@enter
+json
+@const
+DLL						"JSONParser.dll"
+load					(file : String, retainNull : Bool)	: Object
+parse					(doc  : String, retainNull : Bool)	: Object
+loadgeterror			()									: String
+store					(docObject : Object, file : String)	: Bool
+null					()									: ExternId
+@exit

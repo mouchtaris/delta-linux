@@ -1,0 +1,4 @@
+VirtualMachineComponents	DVM_IMPORT	// Only this import flag suffices.
+UtilAndDefensiveHeap		UTILLIB_IMPORT DDEBUG_IMPORT
+
+To use the DLL:				DJSONPARSER_IMPORT
