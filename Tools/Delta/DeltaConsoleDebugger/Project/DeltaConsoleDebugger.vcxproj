@@ -158,10 +158,6 @@
       <Project>{df1f3a2d-1cc9-4899-a202-e024308cbb4d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\DebugWatchValueInfo\Project\DebugWatchValueInfo.vcxproj">
-      <Project>{6efc82bf-5b45-4275-b13a-5b3a1de55abc}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\DeltaDebugMessageEncoding\Project\DeltaDebugMessageEncoding.vcxproj">
       <Project>{844d68cf-44e1-4073-8322-29d104ddcb39}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

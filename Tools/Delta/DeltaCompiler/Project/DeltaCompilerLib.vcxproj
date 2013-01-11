@@ -53,7 +53,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\Include;..\..\Common\Include;..\..\LexUtilLib\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\FileReadersLib\Include;..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Common\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\FileReadersLib\Include;..\..\DeltaCompiler\Include;..\..\DeltaSyntaxTree\Include;..\..\DeltaVirtualMachine\Include;..\..\DebugServer\Include;..\..\DeltaPureVMFacade\Include;..\..\DeltaDebuggedVMFacade\Include;..\..\DebugBreakPointHolder\Include;..\..\DebugClient\Include;..\..\DeltaVirtualMachineDebugExtensions\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -82,7 +82,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\Include;..\..\Common\Include;..\..\LexUtilLib\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\FileReadersLib\Include;..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Common\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\FileReadersLib\Include;..\..\DeltaCompiler\Include;..\..\DeltaSyntaxTree\Include;..\..\DeltaVirtualMachine\Include;..\..\DebugServer\Include;..\..\DeltaPureVMFacade\Include;..\..\DeltaDebuggedVMFacade\Include;..\..\DebugBreakPointHolder\Include;..\..\DebugClient\Include;..\..\DeltaVirtualMachineDebugExtensions\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -109,19 +109,23 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Src\ASTEscapeTranslationVisitor.cpp" />
+    <ClCompile Include="..\Src\ASTStageAssembler.cpp" />
+    <ClCompile Include="..\Src\ASTStageDepthCalculator.cpp" />
     <ClCompile Include="..\Src\AutoCollection.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\Src\CompileOptions.cpp" />
     <ClCompile Include="..\Src\DebugNamingForStaticVars.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\Src\DeltaSyntaxParser.cpp" />
+    <ClCompile Include="..\Src\DeltaMetaCompiler.cpp" />
     <ClCompile Include="..\Src\ExceptionHandlingActions.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -140,6 +144,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\Src\MetaCompilerLib.cpp" />
     <ClCompile Include="..\Src\ParseActions.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -307,21 +312,31 @@
     <None Include="..\Src\DeltaDependenciesScanner.l" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\ASTEscapeTranslationVisitor.h" />
+    <ClInclude Include="..\Include\ASTStageAssembler.h" />
+    <ClInclude Include="..\Include\ASTStageDepthCalculator.h" />
+    <ClInclude Include="..\Include\ASTUtilVisitors.h" />
+    <ClInclude Include="..\Include\CompileOptions.h" />
+    <ClInclude Include="..\Include\CompilerComponentDirectory.h" />
+    <ClInclude Include="..\Include\CompilerStringHolder.h" />
     <ClInclude Include="..\Include\DeltaCompErrorDefs.h" />
     <ClInclude Include="..\Include\DeltaCompErrorMsg.h" />
-    <ClInclude Include="..\Include\DeltaSyntaxParser.h" />
+    <ClInclude Include="..\Include\DeltaDependenciesScanner.h" />
+    <ClInclude Include="..\Include\DeltaLexAnalyser.h" />
+    <ClInclude Include="..\Include\DeltaMetaCompiler.h" />
+    <ClInclude Include="..\Include\DeltaScanner.h" />
     <ClInclude Include="..\Include\DescriptiveParseErrorHandler.h" />
     <ClInclude Include="..\Include\AutoCollection.h" />
     <ClInclude Include="..\Include\DebugNamingForStaticVars.h" />
     <ClInclude Include="..\Include\Expr.h" />
-    <ClInclude Include="..\Include\FlexLexer.h" />
     <ClInclude Include="..\Include\GlobalData.h" />
     <ClInclude Include="..\Include\LocalDataHandling.h" />
+    <ClInclude Include="..\Include\MetaCompilerLib.h" />
     <ClInclude Include="..\Include\ParseActions.h" />
     <ClInclude Include="..\Include\ParseParms.h" />
     <ClInclude Include="..\Include\ParseParmsP.h" />
+    <ClInclude Include="..\Include\ParserWrapper.h" />
     <ClInclude Include="..\Include\ParseTableConstruction.h" />
-    <ClInclude Include="..\Include\ParsingContext.h" />
     <ClInclude Include="..\Include\SelectiveStepInPreparator.h" />
     <ClInclude Include="..\Include\TypeCheck.h" />
     <ClInclude Include="..\Include\Unparsable.h" />
@@ -351,7 +366,6 @@
     <ClInclude Include="..\Include\ASTCreationActions.h" />
     <ClInclude Include="..\Include\ASTEvaluationHelpers.h" />
     <ClInclude Include="..\Include\ASTNode.h" />
-    <ClInclude Include="..\Include\ASTTags.h" />
     <ClInclude Include="..\Include\ASTTranslationVisitor.h" />
     <ClInclude Include="..\Include\ASTUnparseVisitor.h" />
     <ClInclude Include="..\Include\BuildDependencies.h" />

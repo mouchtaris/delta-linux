@@ -77,7 +77,7 @@
       <Culture>0x0408</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\./DeltaCompilerTest.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,7 +117,7 @@
       <Culture>0x0408</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\Release/DeltaCompilerTest.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\Release/DeltaCompilerTest.pdb</ProgramDatabaseFile>
@@ -141,17 +141,50 @@
       <Project>{570e4d57-2a96-4fa7-971b-7f1125607e3e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\..\DebugBreakPointHolder\Project\DebugBreakPointHolder.vcxproj">
+      <Project>{62c8c9db-c1db-4ee3-98c7-4c2e688d497f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DebugExprEvaluator\Project\DebugExprEvaluator.vcxproj">
+      <Project>{a2210af5-49a3-460d-8a74-5eaa5cb5a76b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\DebugLib\Project\Ddebug.vcxproj">
       <Project>{df1f3a2d-1cc9-4899-a202-e024308cbb4d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DebugServer\Project\DebugServer.vcxproj">
+      <Project>{bddbb729-52f6-4732-8a9f-82d7f2759586}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaDebuggedVMFacade\Project\DeltaDebuggedVMFacade.vcxproj">
+      <Project>{2169dece-04a6-4430-82a4-47ed39d0881d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaDebugMessageEncoding\Project\DeltaDebugMessageEncoding.vcxproj">
+      <Project>{844d68cf-44e1-4073-8322-29d104ddcb39}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaPureVMFacade\Project\DeltaPureVMFacade.vcxproj">
+      <Project>{d2934de0-4ca1-436c-95bc-126ef49e6835}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaStdLib\Project\DeltaStdLib.vcxproj">
+      <Project>{89040490-058c-438b-9bb2-8b22a8fe33b2}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\DeltaSyntaxTree\Project\DeltaSyntaxTreeLib.vcxproj">
       <Project>{ca8a1c20-ef6a-45df-9038-cb5e040fa3ba}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\..\DeltaVirtualMachineDebugExtensions\Project\DeltaDebugExtensions.vcxproj">
+      <Project>{7d024914-6dba-4b0b-9cfc-9fd926c2cd6c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaVirtualMachine\Project\DeltaVirtualMachineLib.vcxproj">
+      <Project>{e9f8238d-6563-411c-9e22-92b8b95ae3ff}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\FileReadersLib\Project\FileReadersLib.vcxproj">
       <Project>{cab59061-0667-4a29-a33d-29df8cabc10c}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ResourceLoaderLib\Project\ResourceLoaderLib.vcxproj">
+      <Project>{1945941a-e5e2-4c7f-b731-7f04c8c66863}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SocketLib\Project\SocketLib.vcxproj">
+      <Project>{5a11fd2a-a91d-41d9-b480-b227e4bb12e7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\UtilLib\Project\util.vcxproj">
       <Project>{4323c0fc-fb9f-4889-808b-90d9cd108f77}</Project>

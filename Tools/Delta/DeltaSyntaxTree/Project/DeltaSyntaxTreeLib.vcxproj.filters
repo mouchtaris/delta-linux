@@ -9,27 +9,81 @@
       <UniqueIdentifier>{d45087b7-7d61-4661-bfea-8e342c6c9228}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
+    <Filter Include="Header Files\AST">
+      <UniqueIdentifier>{39aaf6f3-86dc-4c72-afed-3588fc392413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{d292d82e-e14d-41b6-9a75-45db5a4db16c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AST">
+      <UniqueIdentifier>{7213bd6f-16cd-45ed-aa48-894d5400c336}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{6b2f65d6-576f-4f48-858e-635f67eda925}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\TreeNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\TreeToStringVisitor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\TreeVisitor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\TreeToStringVisitor.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\TreeAttribute.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ASTAlphaRenamer.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\StagedSymbolTable.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ASTInjector.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\ASTValidationVisitor.cpp">
+      <Filter>Source Files\AST</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\TreeNode.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Include\ASTAlphaRenamer.h">
+      <Filter>Header Files\AST</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\TreeToStringVisitor.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Include\StagedSymbolTable.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTInjector.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTMetaTags.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTSanitiseVisitor.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTTags.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTValidationVisitor.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaSyntaxTreeDefs.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\TreeVisitor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\TreeAttribute.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\TreeNode.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\TreeToStringVisitor.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

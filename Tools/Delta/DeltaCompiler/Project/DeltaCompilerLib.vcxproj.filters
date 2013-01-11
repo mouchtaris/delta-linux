@@ -72,6 +72,15 @@
     <Filter Include="Header Files\Scanner">
       <UniqueIdentifier>{3380df2d-f9a2-4ec4-a18d-e75db141a8c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Parser">
+      <UniqueIdentifier>{8375cb34-dab0-4f17-9373-fe0c0c329334}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Meta">
+      <UniqueIdentifier>{f121a266-c5a5-4a9b-b682-ce7a6844fd37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Meta">
+      <UniqueIdentifier>{f3d75f32-29db-4d18-ad11-bd8a38ad4049}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\AutoCollection.cpp">
@@ -230,8 +239,23 @@
     <ClCompile Include="..\Src\DeltaDependenciesScanner.cpp">
       <Filter>Source Files\Dependencies</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DeltaSyntaxParser.cpp">
-      <Filter>Source Files\AST</Filter>
+    <ClCompile Include="..\Src\CompileOptions.cpp">
+      <Filter>Source Files\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ASTEscapeTranslationVisitor.cpp">
+      <Filter>Source Files\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MetaCompilerLib.cpp">
+      <Filter>Source Files\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ASTStageAssembler.cpp">
+      <Filter>Source Files\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\ASTStageDepthCalculator.cpp">
+      <Filter>Source Files\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\DeltaMetaCompiler.cpp">
+      <Filter>Source Files\Meta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -312,9 +336,6 @@
     <ClInclude Include="..\Include\DeltaCompilerInit.h">
       <Filter>Header Files\API</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\DeltaParser.h">
-      <Filter>Header Files\API</Filter>
-    </ClInclude>
     <ClInclude Include="..\Include\unistd.h">
       <Filter>Header Files\API</Filter>
     </ClInclude>
@@ -375,9 +396,6 @@
     <ClInclude Include="..\Include\ASTNode.h">
       <Filter>Header Files\AST</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\ASTTags.h">
-      <Filter>Header Files\AST</Filter>
-    </ClInclude>
     <ClInclude Include="..\Include\ASTTranslationVisitor.h">
       <Filter>Header Files\AST</Filter>
     </ClInclude>
@@ -393,13 +411,46 @@
     <ClInclude Include="..\Include\DeltaSyntax.h">
       <Filter>Header Files\AST</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\DeltaSyntaxParser.h">
+    <ClInclude Include="..\Include\CompileOptions.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\CompilerComponentDirectory.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\CompilerStringHolder.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaParser.h">
+      <Filter>Header Files\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ParserWrapper.h">
+      <Filter>Header Files\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTUtilVisitors.h">
       <Filter>Header Files\AST</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\ParsingContext.h">
+    <ClInclude Include="..\Include\DeltaScanner.h">
       <Filter>Header Files\AST</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\FlexLexer.h">
+    <ClInclude Include="..\Include\DeltaDependenciesScanner.h">
+      <Filter>Header Files\Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTEscapeTranslationVisitor.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\MetaCompilerLib.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTStageAssembler.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\ASTStageDepthCalculator.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaMetaCompiler.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaLexAnalyser.h">
       <Filter>Header Files\Scanner</Filter>
     </ClInclude>
   </ItemGroup>

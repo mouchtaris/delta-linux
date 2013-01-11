@@ -53,7 +53,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\Common\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -82,7 +82,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\Common\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -109,11 +109,25 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\ASTAlphaRenamer.cpp" />
+    <ClCompile Include="..\Source\ASTInjector.cpp" />
+    <ClCompile Include="..\Source\ASTValidationVisitor.cpp" />
+    <ClCompile Include="..\Source\StagedSymbolTable.cpp" />
+    <ClCompile Include="..\Source\TreeAttribute.cpp" />
     <ClCompile Include="..\Source\TreeNode.cpp" />
     <ClCompile Include="..\Source\TreeToStringVisitor.cpp" />
     <ClCompile Include="..\Source\TreeVisitor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\ASTAlphaRenamer.h" />
+    <ClInclude Include="..\Include\ASTInjector.h" />
+    <ClInclude Include="..\Include\ASTMetaTags.h" />
+    <ClInclude Include="..\Include\ASTSanitiseVisitor.h" />
+    <ClInclude Include="..\Include\ASTTags.h" />
+    <ClInclude Include="..\Include\ASTValidationVisitor.h" />
+    <ClInclude Include="..\Include\DeltaSyntaxTreeDefs.h" />
+    <ClInclude Include="..\Include\StagedSymbolTable.h" />
+    <ClInclude Include="..\Include\TreeAttribute.h" />
     <ClInclude Include="..\Include\TreeNode.h" />
     <ClInclude Include="..\Include\TreeToStringVisitor.h" />
     <ClInclude Include="..\Include\TreeVisitor.h" />

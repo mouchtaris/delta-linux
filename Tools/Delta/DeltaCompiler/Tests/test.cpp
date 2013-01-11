@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "CompilerAPI.h"
+#include "DeltaMetaCompiler.h"
 #include "BuildDependencies.h"
 #include "DeltaStdLibFuncNames.h"
 #include "DeltaCompilerInit.h"
@@ -17,7 +17,7 @@
 #define	ICODE		FILENAME(".idc")
 #define	UNP			FILENAME(".unp")
 
-static void onerror (const char* error) {
+static void onerror (const char* error, void*) {
 	fprintf(stderr, "%s", error);
 	fflush(stderr);
 }
@@ -26,24 +26,24 @@ int main (int argc, char* argv[]) {
 
 	if (argc != 2)
 		return 0;
-	dinit(onerror);
-	UtilPackage::Initialise();
 	DeltaCompilerInit::Initialise();
 
-	DeltaCompiler::SetErrorCallback(onerror);
+	DeltaCompiler* compiler = DNEW(DeltaMetaCompiler);
+	DPTR(compiler)->SetErrorCallback(onerror);
 
-	DeltaCompiler::AddExternFuncs(DeltaStdLib_FuncNames());
+	DPTR(compiler)->AddExternFuncs(DeltaStdLib_FuncNames());
 
-	if (DeltaCompiler::Compile(SRC) && !DeltaCompErrorsExist()) {
-		DeltaCompiler::DumpBinaryCode(BIN);
-		DeltaCompiler::DumpInterCode(ICODE);
-		DeltaCompiler::DumpTextCode(TXT);
-		DeltaCompiler::DumpUnparsed(UNP);
+	if (DPTR(compiler)->Compile(SRC) && !DPTR(compiler)->ErrorsExist()) {
+		DPTR(compiler)->DumpBinaryCode(BIN);
+		DPTR(compiler)->DumpInterCode(ICODE);
+		DPTR(compiler)->DumpTextCode(TXT);
+		DPTR(compiler)->DumpUnparsed(UNP);
 	}
 
 	typedef DeltaBuildDependencies::Dependencies Deps;
+	DeltaBuildDependencies dependencies;
 	Deps deps;
-	if (!DeltaBuildDependencies::Extract("", SRC, &deps))
+	if (!dependencies.Extract("", SRC, &deps))
 		printf("Parse error in dependencies.\n");
 	else
 		for (Deps::iterator i = deps.begin(); i != deps.end(); ++i)
@@ -54,11 +54,9 @@ int main (int argc, char* argv[]) {
 				i->second == DeltaBuildDependencies::OneFound ? "one file found; resolved" :
 				"many files; ambiguous"
 			);
-	DeltaCompiler::CleanUp();
+	DPTR(compiler)->CleanUp();
+	DDELETE(compiler);
 
 	DeltaCompilerInit::CleanUp();
-
-	UtilPackage::CleanUp();
-	dclose();
 	return 0;
 }

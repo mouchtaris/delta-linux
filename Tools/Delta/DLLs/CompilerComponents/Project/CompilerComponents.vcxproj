@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DebugServer\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DebugClient\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DebugServer\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DebugClient\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DVM_IMPORT;DVMDEBUG_IMPORT;DCOMPLIB_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -69,7 +69,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\LexUtilLib\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DebugServer\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DebugClient\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaStdLib\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaCompiler\Include;..\..\..\DeltaSyntaxTree\Include;..\..\..\DeltaVirtualMachine\Include;..\..\..\DebugServer\Include;..\..\..\DeltaPureVMFacade\Include;..\..\..\DeltaDebuggedVMFacade\Include;..\..\..\DebugBreakPointHolder\Include;..\..\..\DebugClient\Include;..\..\..\DeltaVirtualMachineDebugExtensions\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;UTILLIB_IMPORT;DDEBUG_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;SYNTAXTREELIB_IMPORT;DVM_IMPORT;DVMDEBUG_IMPORT;DCOMPLIB_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>

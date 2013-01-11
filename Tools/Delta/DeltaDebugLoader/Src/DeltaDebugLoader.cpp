@@ -53,7 +53,7 @@ int main (int argc, char** argv) {
 	DeltaPureVMFacade::Initialise();
 	dseterrorcallback(onerror);
 
-	if (DeltaDebuggedVMFacade::Initialise(argc, argv)) {
+	if (DeltaDebuggedVMFacade::Initialise(DeltaDebuggedVMFacade::NegotiationPortFromArguments(argc, argv))) {
 
 		DeltaDebuggedVMFacade::SetOnStartCallback(OnStartRequested);
 		DeltaDebuggedVMFacade::SetOnStopDebuggingCallback(OnStopRequested);

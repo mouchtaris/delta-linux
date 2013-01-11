@@ -111,6 +111,8 @@
   <ItemGroup>
     <ClInclude Include="..\Include\AlgorithmLib.h" />
     <ClInclude Include="..\Include\ArgCheck.h" />
+    <ClInclude Include="..\Include\ASTLib.h" />
+    <ClInclude Include="..\Include\ASTVisitorLib.h" />
     <ClInclude Include="..\Include\BitOpLib.h" />
     <ClInclude Include="..\Include\BufferLib.h" />
     <ClInclude Include="..\Include\ContainerAdapter.h" />
@@ -143,6 +145,7 @@
     <ClInclude Include="..\Include\VectorIterLib.h" />
     <ClInclude Include="..\Include\VectorLib.h" />
     <ClInclude Include="..\Include\VectorLibP.h" />
+    <ClInclude Include="..\Include\VMCompLib.h" />
     <ClInclude Include="..\Include\VMRegLib.h" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +156,8 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\Src\ASTLib.cpp" />
+    <ClCompile Include="..\Src\ASTVisitorLib.cpp" />
     <ClCompile Include="..\Src\BitOpLib.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -221,6 +226,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\Src\VMCompLib.cpp" />
     <ClCompile Include="..\Src\VMRegLib.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
