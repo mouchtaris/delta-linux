@@ -1,0 +1,21 @@
+1) 	All non-terminals follow the FirstCapitalRule naming convention
+
+2) 	std::string stringtext(yytext);
+	yylval.stringValue = DNEWCLASS(std::string, (stringtext.substr(1, stringtext.length() - 2)));
+	->
+	std::string s(yytext);
+	yylval.stringValue = usaveidstr(s.substr(1, s.length() - 2).c_str());
+
+3)	std::string*	stringValue;
+	->
+	const char*		stringValue;
+
+4)	DBLDOT -> COLON
+
+5)	manage_membersPairs	-> Manage_MembersPairs style applied to all
+	similar functions
+
+6)	DASSERT(v) when v is arg and expected not to be null
+
+
+When done this file will be self destroyed...
