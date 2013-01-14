@@ -17,5 +17,7 @@
 
 6)	DASSERT(v) when v is arg and expected not to be null
 
+7)	Use a ubag for storing the objects created during parsing so they can be 
+	gracefully destoyed upon a parse error. 
 
 When done this file will be self destroyed...

@@ -8,6 +8,7 @@ DeltaObject * JsonParserLoaderActions::manage_objectEmpty()
 DeltaObject * JsonParserLoaderActions::manage_membersPairs(DeltaObject * obj1, DeltaObject * obj2){
 	DPTR(obj1)->Extend(DPTR(obj2));
 	DeltaObject::NativeCodeHelpers::GiveUp(DPTR(obj2));
+	// TODO: remove from ubag obj2
 	
 	return obj1;
 }
@@ -58,11 +59,15 @@ DeltaValue * JsonParserLoaderActions::manage_valueString(std::string * str){
 	return DPTR(retValue);
 }
 
-DeltaValue * JsonParserLoaderActions::manage_valueObject(DeltaObject * obj)
-	{ return DNEWCLASS(DeltaValue, (obj)); }
+DeltaValue * JsonParserLoaderActions::manage_valueObject(DeltaObject * obj) {
+	return DNEWCLASS(DeltaValue, (obj));
+	// TODO: give up and remove from ubag
+}
 
-DeltaValue * JsonParserLoaderActions::manage_valueArray(DeltaObject * obj)
-	{ return DNEWCLASS(DeltaValue, (obj)); }
+DeltaValue * JsonParserLoaderActions::manage_valueArray(DeltaObject * obj) {
+	return DNEWCLASS(DeltaValue, (obj));
+	// TODO: give up and remove from ubag
+}
 
 DeltaValue * JsonParserLoaderActions::manage_valueTrue()
 	{ return DNEWCLASS(DeltaValue, (true)); }
