@@ -14,35 +14,41 @@
 ///////////////////////////////////////////////////////////////////
 
 const std::string uinstanceidgenerator::NewNamedId (const std::string& name) const 
-	{ return std::string() + namedPrefix + name;  }
+	{ return namedPrefix + name;  }
 
 ///////////////////////////////////////////////////////////////////
 
-const std::string uinstanceidgenerator::NewAutoId (void) const {
-	std::string id;
-	while (find(id = uconstructstr("%c%u", autoPrefix, autoIdSerial++)))
-		;
-	return id;
+const std::string uinstanceidgenerator::NewAutoId (void) const 
+	{ DASSERT(!autoPrefix.empty()); return NewId(autoPrefix); }
+
+const std::string uinstanceidgenerator::NewId (const std::string& prefix) const {
+	
+	std::string result;	
+	do
+		result = uconstructstr("%s%u", prefix.c_str(), autoIdSerial++);
+	while (find(result));
+	return result;
 }
 
 ///////////////////////////////////////////////////////////////////
 
 const std::string uinstanceidgenerator::NewCopiedId (const std::string& _id) const {
+	DASSERT(!copiedPrefix.empty() && copiedSeparator && maxCopies); 
 	std::string id(_id);
 	if (IsNamedId(id) || IsAutoId(id))
-		id = uconstructstr("%c%s%c0", copiedPrefix, _id.c_str(), copiedSeparator);
+		id = uconstructstr("%s%s%c0", copiedPrefix.c_str(), _id.c_str(), copiedSeparator);
 	else {
 		DASSERT(IsCopiedId(id));
 
 		util_ui32 separatorPos = (util_ui32) id.length() - 1;				// stops where the separator is met
 
 		for (	std::string::reverse_iterator i = id.rbegin(); 
-				i != id.rend() && *i == copiedSeparator; 
+				i != id.rend() && *i != copiedSeparator; 
 				++i, --separatorPos	)
 				DASSERT(isdigit(*i));
 
 		DASSERT(separatorPos >= 2);											// should have a correct separator
-		id = std::string() + copiedPrefix + id.substr(1, separatorPos - 1);	// drop '<prefix>' and '<separator><i>' suffix
+		id = copiedPrefix + id.substr(1, separatorPos - 1);					// drop '<prefix>' and '<separator><i>' suffix
 	}
 
 	std::string suffix;

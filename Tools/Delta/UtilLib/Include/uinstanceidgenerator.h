@@ -15,6 +15,8 @@
 #include "utypes.h"
 #include "ufunctors.h"
 #include "ucallbacks.h"
+#include "ustrings.h"
+#include <string>
 
 ///////////////////////////////////////////////////////////////////
 
@@ -24,30 +26,31 @@ class UTILLIB_CLASS uinstanceidgenerator {
 
 	private:
 	mutable util_ui32					autoIdSerial;
-	char								namedPrefix;
-	char								autoPrefix;
-	char								copiedPrefix;
+	std::string							namedPrefix;
+	std::string							autoPrefix;
+	std::string							copiedPrefix;
 	char								copiedSeparator;
 	util_ui32							maxCopies;
 	std::string							invalidId;
 	ucallbackwithclosure<FindCallback>	find;
 
 	bool								IsNamedId (const std::string& id) const 
-											{ DASSERT(!id.empty()); return id[0] == namedPrefix; }
+											{ DASSERT(!id.empty()); return ustrprefix(namedPrefix, id); }
 	bool								IsAutoId (const std::string& id) const
-											{ DASSERT(!id.empty()); return id[0] == autoPrefix; }
+											{ DASSERT(!id.empty()); return ustrprefix(autoPrefix, id); }
 	bool								IsCopiedId (const std::string& id) const
-											{ DASSERT(!id.empty()); return id[0] == copiedPrefix; }
+											{ DASSERT(!id.empty()); return ustrprefix(copiedPrefix, id); }
 
 	public:
 	const std::string					NewNamedId (const std::string& name) const;
 	const std::string					NewAutoId (void) const;
 	const std::string					NewCopiedId (const std::string& id) const;
+	const std::string					NewId (const std::string& prefix) const;
 
 	uinstanceidgenerator (
-		char				_namedPrefix,
-		char				_autoPrefix,
-		char				_copiedPrefix,
+		const std::string&	_namedPrefix,
+		const std::string&	_autoPrefix,
+		const std::string&	_copiedPrefix,
 		char				_copiedSeparator,
 		util_ui32			_maxCopies,
 		const std::string&	_invalidId,
@@ -60,6 +63,13 @@ class UTILLIB_CLASS uinstanceidgenerator {
 		copiedSeparator	(_copiedSeparator),
 		maxCopies		(_maxCopies),
 		invalidId		(_invalidId)
+		{ find.set(_f, _c); }
+	uinstanceidgenerator (
+		FindCallback		_f, 
+		void*				_c = (void*) 0
+	):	autoIdSerial	(0),
+		copiedSeparator	('\0'),
+		maxCopies		(0)
 		{ find.set(_f, _c); }
 	~uinstanceidgenerator()
 		{}
