@@ -74,6 +74,8 @@
 #pragma warning (disable : 4661)	//  no suitable definition provided for explicit template instantiation request
 #pragma warning (disable : 4312)	// conversion from '<this>' to '<that>' of greater size
 #pragma warning (disable : 4275)	// non dll-interface struct '<this>' used as base for dll-interface struct '<that>'
+#pragma warning (disable : 4355)	// 'this' : used in base member initializer list
+
 #endif
 
 //---------------------------------------------------------------
