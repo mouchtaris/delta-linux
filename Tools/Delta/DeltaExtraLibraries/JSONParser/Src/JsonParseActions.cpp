@@ -1,6 +1,9 @@
 #include "JsonParseActions.h"
 #include "JsonLoaderAPI.h"
 #include "uptr.h"
+// DeltaValue* undeletedValue = (DeltaValue*) 0;
+// TODO: udeleteunlessnull(undeletedValue);
+// TODO: in every NewObject add in ubag<DeltaObject*> objectsToGiveUp.
 
 DeltaObject * JsonParserLoaderActions::manage_objectEmpty()
 	{ return DeltaObject::NativeCodeHelpers::NewObject(); }
@@ -8,7 +11,7 @@ DeltaObject * JsonParserLoaderActions::manage_objectEmpty()
 DeltaObject * JsonParserLoaderActions::manage_membersPairs(DeltaObject * obj1, DeltaObject * obj2){
 	DPTR(obj1)->Extend(DPTR(obj2));
 	DeltaObject::NativeCodeHelpers::GiveUp(DPTR(obj2));
-	// TODO: remove from ubag obj2
+	// TODO: objectsToGiveUp.remove(obj2);
 	
 	return obj1;
 }
@@ -35,6 +38,8 @@ DeltaObject * JsonParserLoaderActions::manage_elementsValue(DeltaValue * val){
 
 	if (val) {
 		DPTR(obj)->Set((DeltaNumberValueType) 0, *DPTR(val));
+		// DASSERT(undeletedValue == val);
+		// udelete(undeletedValue);
 		DDELETE(val);
 	}
 
@@ -45,6 +50,8 @@ DeltaObject * JsonParserLoaderActions::manage_elementsValues(DeltaValue * val, D
 
 	if (val) {
 		vals->Set((DeltaNumberValueType)vals->Total(), *DPTR(val));
+		// DASSERT(undeletedValue == val);
+		// udelete(undeletedValue);
 		DDELETE(val);
 	}
 		
@@ -61,15 +68,26 @@ DeltaValue * JsonParserLoaderActions::manage_valueString(std::string * str){
 
 DeltaValue * JsonParserLoaderActions::manage_valueObject(DeltaObject * obj) {
 	return DNEWCLASS(DeltaValue, (obj));
-	// TODO: give up and remove from ubag
+	/* TODO:
+	DeltaValue* result = DNEWCLASS(DeltaValue, (obj));
+	DeltaObject::NativeCodeHelpers::GiveUp(DPTR(obj));
+	objectsToGiveUp.remove(obj);
+	return result;
+	*/
 }
 
 DeltaValue * JsonParserLoaderActions::manage_valueArray(DeltaObject * obj) {
 	return DNEWCLASS(DeltaValue, (obj));
-	// TODO: give up and remove from ubag
+	/* TODO:
+	DeltaValue* result = DNEWCLASS(DeltaValue, (obj));
+	DeltaObject::NativeCodeHelpers::GiveUp(DPTR(obj));
+	objectsToGiveUp.remove(obj);
+	return result;
+	*/
 }
 
 DeltaValue * JsonParserLoaderActions::manage_valueTrue()
+//	{ DASSERT(!undeletedValue); return undeletedValue = DNEWCLASS(DeltaValue, (true)); }
 	{ return DNEWCLASS(DeltaValue, (true)); }
 
 DeltaValue * JsonParserLoaderActions::manage_valueFalse()
