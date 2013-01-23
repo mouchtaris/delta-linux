@@ -8,6 +8,7 @@
 #ifndef	UGEOMETRY_H
 #define	UGEOMETRY_H
 
+#include "DDebug.h"
 #include "utypes.h"
 #include <math.h>
 
@@ -429,6 +430,12 @@ const T& utrim (T* val, const T& left, const T& right) {
 		return *val = right;
 	return *val;
 }
+
+inline util_ui32 unextindex (util_ui32 i, util_ui32 n) 
+	{ DASSERT(i < n); return (i + 1) % n; }
+
+inline util_ui32 uprevindex (util_ui32 i, util_ui32 n) 
+	{ DASSERT(i < n); return !i ? n - 1 : i - 1; }
 
 /////////////////////////////////////////////////////////////////
 // This function decides if a point is close to a rectangle, based 
