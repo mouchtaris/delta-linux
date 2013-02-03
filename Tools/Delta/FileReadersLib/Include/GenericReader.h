@@ -143,15 +143,15 @@ template <typename T> class uloaders_registry {
 							{ writer.write(classId); }
 
 	T*					Load (GenericReader& reader, const std::string& classId) const {
-							Loaders::const_iterator i = loaders.find(classId);
+							typename Loaders::const_iterator i = loaders.find(classId);
 							DASSERT(i != loaders.end());
 							return (*i->second)(reader);
 						}
 
 	T*					Load (GenericReader& reader) const {
 							
-							std::string				classId("<unknown class>");
-							Loaders::const_iterator i = loaders.end();
+							std::string	classId("<unknown class>");
+							typename Loaders::const_iterator i = loaders.end();
 							UCHECK_ERROR_FORMAT_DEFINE(
 								uconstructstr("Loading %s: error in reading '%%s'!", classId.c_str())
 							);

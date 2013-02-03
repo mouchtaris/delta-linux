@@ -14,6 +14,7 @@
 #include "utypes.h"
 #include "ustrings.h"
 #include "ulexutil.h"
+#include "ucallbacks.h"
 
 //------------------------------------------------------------------
 
