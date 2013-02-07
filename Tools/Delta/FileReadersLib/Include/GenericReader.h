@@ -213,7 +213,12 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 #define ULOADERS_SERIALISABLE_SUPER_PUBLIC_DEFS(_super_class)						\
 	UCLASSID_STD_ABSTRACT_METHOD													\
 	virtual const std::string	ToString (void) const = 0;							\
-	virtual void				Write (GenericWriter& writer) const = 0;			\
+	virtual void				Write (GenericWriter& writer) const {				\
+									_super_class##LoadersGet().WriteClassId(		\
+										writer,										\
+										GetClassId()								\
+									);												\
+								}													\
 	void						WriteText (FILE* fp) const							\
 									{ fprintf(fp, "%s\n", ToString().c_str()); }	\
 	static _super_class*		Load (GenericReader& reader);						\
@@ -221,6 +226,7 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 	virtual ~_super_class(){}
 
 #define	ULOADERS_SERIALISABLE_REGISTRY_DEFS(_super_class)							\
+	class _super_class;																\
 	ULOADERS_REGISTRY_SINGLETON_DEF(												\
 		_super_class##Loaders,														\
 		_super_class																\
