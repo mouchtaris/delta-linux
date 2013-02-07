@@ -120,7 +120,7 @@ class GenericReader {
 template <typename T> class uloaders_registry {
 	public:
 	typedef T*			(*Loader)(GenericReader& reader);
-	typedef T			LoaderRetunType;
+	typedef T			LoaderReturnType;
 
 	protected:
 	typedef std::map<std::string, Loader> Loaders;
@@ -199,12 +199,58 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 										_classid										\
 									);													\
 								}														\
-	static _loaders::LoaderRetunType*													\
+	static _loaders::LoaderReturnType*													\
 								_load (GenericReader& reader);
 
 #define	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON(_class,_loaders,_load,_classid)			\
 	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON_NO_WRITE(_class,_loaders,_load,_classid)		\
 	virtual void				Write (GenericWriter& writer) const;
+
+///////////////////////////////////////////////////////////
+// Common serialiable API with a registry of loader static constructors.
+// Requires subclasses to implement: Read(), Write() and ToString().
+
+#define ULOADERS_SERIALISABLE_SUPER_PUBLIC_DEFS(_super_class)						\
+	UCLASSID_STD_ABSTRACT_METHOD													\
+	virtual const std::string	ToString (void) const = 0;							\
+	virtual void				Write (GenericWriter& writer) const = 0;			\
+	void						WriteText (FILE* fp) const							\
+									{ fprintf(fp, "%s\n", ToString().c_str()); }	\
+	static _super_class*		Load (GenericReader& reader);						\
+	virtual _super_class*		Clone (void) const = 0;								\
+	virtual ~_super_class(){}
+
+#define	ULOADERS_SERIALISABLE_REGISTRY_DEFS(_super_class)							\
+	ULOADERS_REGISTRY_SINGLETON_DEF(												\
+		_super_class##Loaders,														\
+		_super_class																\
+	)
+
+#define	ULOADERS_SERIALISABLE_REGISTRY_IMPL(_super_class)							\
+	ULOADERS_REGISTRY_SINGLETON_IMPL(_super_class##Loaders)
+
+#define	ULOADERS_SERIALISABLE_SUPER_LOAD_IMPL(_super_class)							\
+	_super_class* _super_class::Load (GenericReader& reader)						\
+		{ return _super_class##Loaders##Get().Load(reader); }
+
+#define	ULOADERS_SERIALISABLE_DERIVED_PUBLIC_DEFS(_class,_classid,_loaders)			\
+	typedef _loaders::LoaderReturnType SuperType;									\
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)									\
+	UCLONE_VIRTUAL_VIA_COPY_CONSTRUCTOR(_class, Clone)								\
+	ULOADERS_DERIVED_CLASS_PUBLIC_COMMON(											\
+		_class, _loaders, Load, _classid											\
+	)																				\
+	virtual bool				Read (GenericReader& reader);						\
+	virtual const std::string	ToString (void) const;
+
+#define	ULOADERS_SERIALISABLE_DERIVED_LOAD_IMPL(_class)								\
+	_class::SuperType* _class::Load (GenericReader& reader) {						\
+		_class* inst = DNEW(_class);												\
+		if (DPTR(inst)->Read(reader))												\
+			return inst;															\
+		else 																		\
+			{ DDELETE(inst); return (_class*) 0; }									\
+	}
 
 ///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
