@@ -43,6 +43,7 @@ UTILLIB_FUNC void				ustorestr (FILE* fp, const std::string& s);
 UTILLIB_FUNC char*				udeleoln (char* s);	// Returns original pointer.
 UTILLIB_FUNC const std::string 	unum2string (double val);	// Only the characters needed!
 UTILLIB_FUNC const std::string 	uint2hexstring (util_ui32 val);
+UTILLIB_FUNC void				usupresswhitespace (const std::string& inputPath);
 
 // Leaves a "..." after the 'n' characters.
 UTILLIB_FUNC const std::string	ucopymaxwithsuffix (const std::string& s, util_ui32 n);

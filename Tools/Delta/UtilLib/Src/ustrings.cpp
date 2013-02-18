@@ -171,6 +171,53 @@ UTILLIB_FUNC const std::string uint2hexstring (util_ui32 n) {
 
 //------------------------------------------------------------------
 
+UTILLIB_FUNC void usupresswhitespace (const std::string& inputPath) {
+
+	std::string in;
+	bool result = uloadtextfile(inputPath, &in);
+	DASSERT(result);
+
+	FILE* out = fopen(inputPath.c_str(), "wt");
+	std::string ws;
+	util_ui32	lines = 0;
+	bool		firstTime = true;
+
+	for (std::string::iterator i = in.begin(); i != in.end(); ++i) {
+		char c = *i;
+		if (!isspace(c)) {
+
+			if (lines && !firstTime) {
+
+				// add one new line
+				fputc('\n', out);
+
+				// supress all extra empty lines to one
+				if (lines > 1)
+					fputc('\n', out);
+			}
+
+			if (!ws.empty()) {
+				fprintf(out, "%s%c", ws.c_str(), c);
+				ws.clear();
+			}
+			else
+				fputc(c, out);
+
+			firstTime = false;
+			lines = 0;		
+		}
+		else
+		if (c == '\n') 
+			{ ++lines; ws.clear(); }
+		else
+			ws += c;
+	}
+
+	fclose(out);
+}
+
+//------------------------------------------------------------------
+
 UTILLIB_FUNC const std::string unum2string (double val) {
 
 	static char buffer[256];
