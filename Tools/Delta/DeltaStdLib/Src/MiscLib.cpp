@@ -192,16 +192,19 @@ static void DestroyValidatableDll (const std::pair<ValidatableDll*, bool>& p) {
 	DDELETE(p.first);
 }
 
-typedef ubag<ValidatableDll*> DllMap;
-typedef std::list<std::string>	DllPaths;
+typedef std::pair<ValidatableDll*, util_ui32>	DllEntry;
+typedef std::map<std::string, DllEntry>			DllPathMap;
+typedef ubag<ValidatableDll*>					DllMap;
 
 static DllMap*			allDlls				= (DllMap*) 0; 
+static DllPathMap*		dllPaths			= (DllPathMap*) 0; 
 static upathmanager*	pathManager			= (upathmanager*) 0;
 
 static void AddEnvironmentLoadingPaths (void);
 
 static void Initialise (void)	{
 	unew(allDlls);
+	unew(dllPaths);
 	unew(pathManager);
 	AddEnvironmentLoadingPaths();
 }
@@ -212,6 +215,7 @@ static void CleanUp (void) {
 		DPTR(allDlls)->end(),
 		&DestroyValidatableDll
 	);
+	udelete(dllPaths);
 	udelete(allDlls); 
 	udelete(pathManager);
 }
@@ -263,7 +267,9 @@ static const std::string MakeLoadingPath (void)
 	udynamiclibloader* dll = vdll->GetValue();									\
 	DASSERT(allDlls);															\
 	DllMap::iterator dllIter = DPTR(allDlls)->find(vdll);						\
-	DASSERT(dllIter != DPTR(allDlls)->end());
+	DllPathMap::iterator pathIter = DPTR(dllPaths)->find(DPTR(dll)->GetPath());	\
+	DASSERT(dllIter != DPTR(allDlls)->end());									\
+	DASSERT(pathIter != DPTR(dllPaths)->end());
 
 //------------------------------------------------------------------
 // udynamiclibloader class to be used for dll libfuncs.
@@ -750,48 +756,70 @@ static void dllimport_handler (DeltaVirtualMachine* vm, const char* funcName, bo
 	if (!ok)
 		return;
 
-	udynamiclibloader* dll = DNEWCLASS(udynamiclibloader, (fullPath));
+	DllPathMap::iterator i = DPTR(dllPaths)->find(fullPath);
 
-	if (!*dll) {
-		DPTR(vm)->Warning(
-			"in '%s(%s,%s)': %s!",
-			CURR_FUNC,
-			path.c_str(), 
-			func.c_str(),
-			dll->GetError().c_str()
-		);
-		DDELETE(dll);
-		RESET_NIL_RETURNVALUE;
-	}
+	if (i != DPTR(dllPaths)->end()) {
 
-	udynamiclibloader::ResultType result = DPTR(dll)->Call(func);
-	if(result.first != UTIL_DLLFUNC_TRUSTED && result.first != UTIL_DLLFUNC_TRUSTED_SETCLEANUP) {
-		DDELETE(dll);
-		DPTR(vm)->PrimaryError(
-			"in '%s(path %s, func %s)': %s!",
-			CURR_FUNC,
-			path.c_str(),
-			func.c_str(),
-			DNULLCHECK(udynamiclibloader::GetErrorString(result.first))
-		);
-		RESET_NIL_RETURNVALUE;
-	}
+		DllEntry& pathEntry (i->second);
+		DASSERT(pathEntry.second);
 
-	ValidatableDll* vdll = DNEWCLASS(ValidatableDll, (dll));
-	DPTR(allDlls)->insert(vdll);
+		ValidatableDll* vdll = DPTR(pathEntry.first);
+		++pathEntry.second;	// inc ref counter
 
-	// Check if the result is also an inquiry to set a cleanup function.
-	if (result.first == UTIL_DLLFUNC_TRUSTED_SETCLEANUP)
-		dll->SetCleanUp(result.second);
-
-	IF_DELTA_DLL_ERROR_ELSE("path %s", path.c_str())
 		DPTR(vm)->GetReturnValue().FromExternId(
 			(void*) DPTR(vdll)->GetSerialNo(),	// Handle.
 			DeltaExternId_NonCollectable,
 			Dll2String,
 			DLL_TYPE_STR,
 			DELTA_EXTERNID_NO_FIELD_GETTER
-	);
+		);
+	}
+	else {
+
+		udynamiclibloader* dll = DNEWCLASS(udynamiclibloader, (fullPath));
+
+		if (!*dll) {
+			DPTR(vm)->Warning(
+				"in '%s(%s,%s)': %s!",
+				CURR_FUNC,
+				path.c_str(), 
+				func.c_str(),
+				dll->GetError().c_str()
+			);
+			DDELETE(dll);
+			RESET_NIL_RETURNVALUE;
+		}
+
+		udynamiclibloader::ResultType result = DPTR(dll)->Call(func);
+		if(result.first != UTIL_DLLFUNC_TRUSTED && result.first != UTIL_DLLFUNC_TRUSTED_SETCLEANUP) {
+			DDELETE(dll);
+			DPTR(vm)->PrimaryError(
+				"in '%s(path %s, func %s)': %s!",
+				CURR_FUNC,
+				path.c_str(),
+				func.c_str(),
+				DNULLCHECK(udynamiclibloader::GetErrorString(result.first))
+			);
+			RESET_NIL_RETURNVALUE;
+		}
+
+		ValidatableDll* vdll = DNEWCLASS(ValidatableDll, (dll));
+		DPTR(allDlls)->insert(vdll);
+		(*DPTR(dllPaths))[fullPath] = DllEntry(vdll, 1);
+
+		// Check if the result is also an inquiry to set a cleanup function.
+		if (result.first == UTIL_DLLFUNC_TRUSTED_SETCLEANUP)
+			dll->SetCleanUp(result.second);
+
+		IF_DELTA_DLL_ERROR_ELSE("path %s", path.c_str())
+			DPTR(vm)->GetReturnValue().FromExternId(
+				(void*) DPTR(vdll)->GetSerialNo(),	// Handle.
+				DeltaExternId_NonCollectable,
+				Dll2String,
+				DLL_TYPE_STR,
+				DELTA_EXTERNID_NO_FIELD_GETTER
+			);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -866,15 +894,27 @@ static void dllhasfunction_LibFunc (DeltaVirtualMachine* vm) {
 // dllunimport(dll)
 // dll is a udynamiclibloader* carried as an externid type.
 //
+
+#define	UNIMPORT_IMPL(_handler)								\
+	if (true) {												\
+	DllEntry& pathEntry (pathIter->second);					\
+	DASSERT(pathEntry.second);	/* positive ref counter */	\
+	if (!--pathEntry.second) {								\
+		_handler;											\
+		DPTR(allDlls)->remove(dllIter);						\
+		DPTR(dllPaths)->erase(pathIter);					\
+		DDELETE(dll);										\
+		DDELETE(vdll);										\
+	}														\
+	} else		
+
 static void dllunimport_LibFunc (DeltaVirtualMachine* vm) {
 
 	ISSUE_FUNC("dllunimport");
 	DeltaTotalArgsCheck(1, CURR_FUNC, RESET_EMPTY);
 	GET_DLL(0, RESET_EMPTY, CURR_FUNC);
 
-	DPTR(allDlls)->remove(vdll);
-	DDELETE(dll);
-	DDELETE(vdll);
+	UNIMPORT_IMPL(UEMPTY);
 }
 
 //------------------------------------------------------------------
@@ -887,11 +927,7 @@ static void dllunimportdeltalib_LibFunc (DeltaVirtualMachine* vm) {
 	DeltaTotalArgsCheck(1, CURR_FUNC, RESET_EMPTY);
 	GET_DLL(0, RESET_EMPTY, CURR_FUNC);
 
-	dll_invoke_handler(vm, dll, DELTA_DLLIMPORT_CLEANUP_NAME, CURR_FUNC);
-
-	DPTR(allDlls)->remove(vdll);
-	DDELETE(dll);
-	DDELETE(vdll);
+	UNIMPORT_IMPL(dll_invoke_handler(vm, dll, DELTA_DLLIMPORT_CLEANUP_NAME, CURR_FUNC));
 }
 
 DLIB_FUNC_START(dllimportaddpath, 1, Empty)
