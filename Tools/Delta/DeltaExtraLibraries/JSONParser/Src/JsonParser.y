@@ -1,29 +1,37 @@
 %{
-	#include "JsonParseActions.h"
-	#include "JsonLoaderErrorMsg.h"
-    #include "JsonParser.h"
-	#include "DeltaObject.h"
-	#include "DeltaValue.h"
 
-	using namespace JsonParserLoaderActions;
+// Json parser for Delta, syntax directed parsing file, 
+// using Bison parser generator. I collect all the variables 
+// that i reserve memory for better performance 
+// and for avoiding memory leaks in case of syntax error
+// Giannhs Apostolidhs, january 2013 (original full version).
+//
 
-	#define yylex JsonLex_yylex
-	#define	yyparse	JsonLex_yyparse
-	#define yytext JsonLex_yytext
+#include "JsonParseActions.h"
+#include "JsonLoaderErrorMsg.h"
+#include "JsonParser.h"
+#include "DeltaObject.h"
+#include "DeltaValue.h"
 
-	extern char *yytext;
-	extern int yylex();
-	extern int yylineno;
+using namespace JsonParserLoaderActions;
 
-	int yyerror (DeltaObject **return_value, bool retainNull, std::string yaccProvidedMessage);
+#define yylex JsonLex_yylex
+#define	yyparse	JsonLex_yyparse
+#define yytext JsonLex_yytext
+
+extern char *yytext;
+extern int yylex();
+extern int yylineno;
+
+int yyerror (DeltaObject **returnValue, bool retainNull, std::string yaccProvidedMessage);
 
 %}
 
-%parse-param {DeltaObject **return_value}
+%parse-param {DeltaObject **returnValue}
 %parse-param {bool retainNull}
 
 %union {  
-  std::string*	stringValue;
+  const char*	stringValue;
   double		numberValue;
   DeltaValue*	deltaValue;
   DeltaObject*	deltaObject;
@@ -32,78 +40,84 @@
 %start document
 
 %type <deltaValue> number value
-%type <deltaObject> object elements array pair members 
+%type <deltaObject> object array 
 
-%token <stringValue>	STRING
+%token <stringValue>	STRING EXPINTEGER EXPFLOAT
 %token <numberValue> 	INTEGER FLOAT
-%token <stringValue> 	EXPINTEGER EXPFLOAT
 
 %token BLOCK_L BLOCK_R BRACKET_L BRACKET_R COMMA
-%token DBLDOT TRUE FALSE NIL QUOTE
+%token COLON TRUE FALSE NIL
 
 %%
 
 document:	object 
-				{ *return_value = $1; }
+				{ *returnValue = $1; }
 			;
 		
 object:		BLOCK_L BLOCK_R 
-				{ $$ = manage_objectEmpty(); }	  
-		|	BLOCK_L members BLOCK_R 
-				{ $$ = $2;}
+				{ $$ = Manage_ObjectEmpty(); }	  
+		|	BLOCK_L
+				{ Manage_PushNewObject(); }
+			members BLOCK_R 
+				{ $$ = Manage_PopObject(); }
 		;
-	
-members:	pair 
-				{ $$ = $1;}
-		|	pair COMMA members 
-				{ $$ = manage_membersPairs($1, $3); }
+
+members:	pair COMMA members
+		|	pair 
+
 		;
 	 
-pair:		STRING DBLDOT value 
-				{ $$ = manage_pair($1, $3);	}
+pair:		STRING COLON
+				{ Manage_PairIndex($1); }
+			value 
+				{ Manage_PairValue($4);	}
 		;
 	
 array:		BRACKET_L BRACKET_R 
-				{ $$ = manage_emptyArray();	}
-		|	BRACKET_L elements BRACKET_R 
-				{ $$ = $2; }
+				{ $$ = Manage_EmptyArray();	}
+		|	BRACKET_L 
+				{ Manage_PushNewArray(); }
+			elements BRACKET_R 
+				{ $$ = Manage_PopArray(); }
 		;
+
+elementsValue:	value 
+					{ Manage_ElementsValue($1); }
+				;
 	
-elements:	value 
-				{ $$ = manage_elementsValue($1); }
-		|	value COMMA elements 
-				{ $$ = manage_elementsValues($1, $3); }
+elements:	elementsValue COMMA elements
+		|	elementsValue
 		;
 		
 value:		STRING
-				{ $$ = manage_valueString($1); }
+				{ $$ = Manage_ValueString($1); }
 		|	number 
 				{  $$ = $1; }
 		|	object 
-				{ $$ = manage_valueObject($1); } 
+				{ $$ = Manage_ValueObject($1); } 
 		|	array 
-				{ $$ = manage_valueArray($1); }
+				{ $$ = Manage_ValueArray($1); }
 		|	TRUE 
-				{ $$ = manage_valueTrue(); }
+				{ $$ = Manage_ValueTrue(); }
 		|	FALSE 
-				{ $$ = manage_valueFalse(); } 
+				{ $$ = Manage_ValueFalse(); } 
 		|	NIL 
-				{ $$ = manage_valueNil(retainNull); }
+				{ $$ = Manage_ValueNil(retainNull); }
 		;
 		
 number:		INTEGER 
-				{ $$ = manage_numberInteger($1); }  
+				{ $$ = Manage_NumberInteger($1); }  
 		|	FLOAT 
-				{ $$ = manage_numberFloat($1); }	  
+				{ $$ = Manage_NumberFloat($1); }	  
 		|	EXPINTEGER 
-				{ $$ = manage_numberExpInteger($1); }	      
+				{ $$ = Manage_NumberExpInteger($1); }	      
 		|	EXPFLOAT 
-				{ $$ = manage_numberExpFloat($1); }
+				{ $$ = Manage_NumberExpFloat($1); }
 		;
 	
 %%
 
-int yyerror (DeltaObject **return_value, bool retainNull, std::string yaccProvidedMessage)
+int yyerror (DeltaObject **returnValue, bool retainNull, std::string yaccProvidedMessage)
 {
 	JsonParserLoaderErrorMsg::JsonLoaderError("%s before token %s", yaccProvidedMessage.c_str(), JsonLex_yytext);
 	return -1;

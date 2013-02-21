@@ -1,109 +1,189 @@
+// JsonParserActions.cpp
+// Translation schemes for the json format.
+// Giannhs Apostolidhs, january 2013.
+//
+
 #include "JsonParseActions.h"
 #include "JsonLoaderAPI.h"
 #include "uptr.h"
-// DeltaValue* undeletedValue = (DeltaValue*) 0;
-// TODO: udeleteunlessnull(undeletedValue);
-// TODO: in every NewObject add in ubag<DeltaObject*> objectsToGiveUp.
+#include <list>
+#include <algorithm>
 
-DeltaObject * JsonParserLoaderActions::manage_objectEmpty()
+static char* 							undeletedString = (char*) 0;
+static DeltaValue*						undeletedValue = (DeltaValue*) 0;
+static std::list<std::string>			indexHolder;
+static std::list<DeltaObject*>			objectHolder;
+static std::list<DeltaObject*>			arrayHolder;
+
+namespace JsonObjectDeleter{
+	struct ObjectDeleter{
+		void operator()(DeltaObject* deltaObj){
+			DeltaObject::NativeCodeHelpers::Delete( deltaObj );
+		}
+	};
+}
+
+void JsonParserLoaderActions::Manage_Init(void){
+	DASSERT(	indexHolder.empty()		&&
+				objectHolder.empty()	&& 
+				arrayHolder.empty()		&&
+				!undeletedValue			&& 
+				!undeletedString		
+			);
+}
+
+void JsonParserLoaderActions::Manage_Clear(void){
+	udeleteunlessnull( undeletedValue );
+	udeleteasarrayunlessnull( undeletedString );
+
+	std::for_each(
+		arrayHolder.begin(), 
+		arrayHolder.end(), 
+		JsonObjectDeleter::ObjectDeleter()
+	);
+	arrayHolder.clear();
+
+	std::for_each(
+		objectHolder.begin(), 
+		objectHolder.end(), 
+		JsonObjectDeleter::ObjectDeleter()
+	);
+	objectHolder.clear();
+	indexHolder.clear();
+}
+
+void JsonParserLoaderActions::Manage_SetUndeletedString( char* str ){
+	DASSERT(!undeletedString);
+	undeletedString = str;
+}
+
+////////////////////////////////////object
+
+DeltaObject* JsonParserLoaderActions::Manage_ObjectEmpty()
 	{ return DeltaObject::NativeCodeHelpers::NewObject(); }
 
-DeltaObject * JsonParserLoaderActions::manage_membersPairs(DeltaObject * obj1, DeltaObject * obj2){
-	DPTR(obj1)->Extend(DPTR(obj2));
-	DeltaObject::NativeCodeHelpers::GiveUp(DPTR(obj2));
-	// TODO: objectsToGiveUp.remove(obj2);
-	
-	return obj1;
+
+void JsonParserLoaderActions::Manage_PushNewObject(void)
+	{ objectHolder.push_front( DeltaObject::NativeCodeHelpers::NewObject() ); }
+
+DeltaObject* JsonParserLoaderActions::Manage_PopObject(void){
+	DASSERT( objectHolder.size()>0 );
+	DeltaObject* topObj = objectHolder.front();
+	objectHolder.pop_front();
+
+	return topObj;
 }
 
-DeltaObject * JsonParserLoaderActions::manage_pair(std::string * key, DeltaValue * val){
-
-	 DeltaObject* obj = DeltaObject::NativeCodeHelpers::NewObject();
-
-	 if (val) {
-		 DPTR(obj)->Set(*DPTR(key), *DPTR(val));
-		 DDELETE(val);
-	 }
-	 udelete(key);
-
-	 return obj;
+void JsonParserLoaderActions::Manage_PairIndex(const char* key){
+	DASSERT( objectHolder.size()>0 );
+	DASSERT( key );
+	indexHolder.push_front(key);
+	DASSERT(undeletedString == key);
+	udeleteasarray(undeletedString);
 }
 
-DeltaObject * JsonParserLoaderActions::manage_emptyArray()
-	{ return DeltaObject::NativeCodeHelpers::NewObject(); }
+void JsonParserLoaderActions::Manage_PairValue(DeltaValue* val){
+	DASSERT( objectHolder.size()>0 );
+	DASSERT( indexHolder.size()>0 );
+	if (val) {
+		DPTR(objectHolder.front())->Set( indexHolder.front(), *DPTR( val ) );
+		DASSERT(undeletedValue == val);
+		udelete(undeletedValue);
+	}
+	indexHolder.pop_front();
+}
 
-DeltaObject * JsonParserLoaderActions::manage_elementsValue(DeltaValue * val){
+/////////////////////////////////array
 
-	DeltaObject* obj = DeltaObject::NativeCodeHelpers::NewObject();
+DeltaObject* JsonParserLoaderActions::Manage_EmptyArray(){ 
+	DASSERT( objectHolder.size()>0 ); 
+	return DeltaObject::NativeCodeHelpers::NewObject(); 
+}
+
+void JsonParserLoaderActions::Manage_PushNewArray(){
+	DASSERT( objectHolder.size()>0 ); 
+	arrayHolder.push_front( DeltaObject::NativeCodeHelpers::NewObject() );
+}
+
+DeltaObject* JsonParserLoaderActions::Manage_PopArray(){
+	DASSERT( arrayHolder.size()>0 );
+	DASSERT( objectHolder.size()>0 );
+	DeltaObject* topObj = arrayHolder.front();
+	arrayHolder.pop_front();
+
+	return topObj;
+}
+
+void JsonParserLoaderActions::Manage_ElementsValue(DeltaValue* val){
+	DASSERT( arrayHolder.size()>0 );
+	DASSERT( objectHolder.size()>0 );
 
 	if (val) {
-		DPTR(obj)->Set((DeltaNumberValueType) 0, *DPTR(val));
-		// DASSERT(undeletedValue == val);
-		// udelete(undeletedValue);
-		DDELETE(val);
+		DeltaObject* topArr = arrayHolder.front();
+		DPTR(topArr)->Set((DeltaNumberValueType)DPTR(topArr)->Total(), *DPTR(val));
+		DASSERT(undeletedValue == val);
+		udelete(undeletedValue);
 	}
-
-	return DPTR(obj);
 }
 
-DeltaObject * JsonParserLoaderActions::manage_elementsValues(DeltaValue * val, DeltaObject * vals){
+////////////////////////////////////// values
 
-	if (val) {
-		vals->Set((DeltaNumberValueType)vals->Total(), *DPTR(val));
-		// DASSERT(undeletedValue == val);
-		// udelete(undeletedValue);
-		DDELETE(val);
-	}
-		
-	return vals;
+DeltaValue* JsonParserLoaderActions::Manage_ValueString(const char* str){
+	DASSERT(str && !undeletedValue);
+	DeltaValue* retValue = DNEWCLASS(DeltaValue, (DPTR(str)));
+
+	DASSERT(undeletedString == str);
+	udeleteasarray(undeletedString);
+
+	return undeletedValue = DPTR(retValue);
 }
 
-DeltaValue * JsonParserLoaderActions::manage_valueString(std::string * str){
-	
-	DeltaValue* retValue = DNEWCLASS(DeltaValue, (*DPTR(str)));
-	udelete(str);
-
-	return DPTR(retValue);
+static DeltaValue* MakeNewValueFromObject(DeltaObject* obj){
+	DASSERT( obj && !undeletedValue );
+	undeletedValue = DNEWCLASS( DeltaValue, (obj) );
+	DeltaObject::NativeCodeHelpers::Delete( DPTR(obj) );
+	return undeletedValue;
 }
 
-DeltaValue * JsonParserLoaderActions::manage_valueObject(DeltaObject * obj) {
-	return DNEWCLASS(DeltaValue, (obj));
-	/* TODO:
-	DeltaValue* result = DNEWCLASS(DeltaValue, (obj));
-	DeltaObject::NativeCodeHelpers::GiveUp(DPTR(obj));
-	objectsToGiveUp.remove(obj);
-	return result;
-	*/
+DeltaValue* JsonParserLoaderActions::Manage_ValueObject(DeltaObject* obj)
+	{ return MakeNewValueFromObject(obj); }
+
+DeltaValue* JsonParserLoaderActions::Manage_ValueArray(DeltaObject* obj)
+	{ return MakeNewValueFromObject(obj); }
+
+DeltaValue* JsonParserLoaderActions::Manage_ValueTrue(){ 
+	DASSERT(!undeletedValue); 
+	return undeletedValue = DNEWCLASS(DeltaValue, (true)); 
 }
 
-DeltaValue * JsonParserLoaderActions::manage_valueArray(DeltaObject * obj) {
-	return DNEWCLASS(DeltaValue, (obj));
-	/* TODO:
-	DeltaValue* result = DNEWCLASS(DeltaValue, (obj));
-	DeltaObject::NativeCodeHelpers::GiveUp(DPTR(obj));
-	objectsToGiveUp.remove(obj);
-	return result;
-	*/
+DeltaValue* JsonParserLoaderActions::Manage_ValueFalse(){ 
+	DASSERT(!undeletedValue); 
+	return undeletedValue = DNEWCLASS(DeltaValue, (false)); 
 }
 
-DeltaValue * JsonParserLoaderActions::manage_valueTrue()
-//	{ DASSERT(!undeletedValue); return undeletedValue = DNEWCLASS(DeltaValue, (true)); }
-	{ return DNEWCLASS(DeltaValue, (true)); }
+DeltaValue* JsonParserLoaderActions::Manage_ValueNil(bool retainNull){ 
+	DASSERT(!undeletedValue); 
+	return retainNull ?
+		undeletedValue = DNEWCLASS(DeltaValue, (JsonLoaderAPI::Null())) :
+		(DeltaValue*) 0; 
+}
 
-DeltaValue * JsonParserLoaderActions::manage_valueFalse()
-	{ return DNEWCLASS(DeltaValue, (false)); }
+DeltaValue* JsonParserLoaderActions::Manage_NumberInteger(double val){ 
+	DASSERT(!undeletedValue); 
+	return undeletedValue = DNEWCLASS(DeltaValue, ((DeltaNumberValueType)val)); 
+}
 
-DeltaValue * JsonParserLoaderActions::manage_valueNil(bool retainNull)
-	{ return retainNull ? DNEWCLASS(DeltaValue, (JsonLoaderAPI::Null())) : (DeltaValue*) 0; }
+DeltaValue* JsonParserLoaderActions::Manage_NumberFloat(double val){ 
+	DASSERT(!undeletedValue); 
+	return undeletedValue = DNEWCLASS(DeltaValue, ((DeltaNumberValueType)val)); 
+}
 
-DeltaValue * JsonParserLoaderActions::manage_numberInteger(double val)
-	{ return DNEWCLASS(DeltaValue, ((DeltaNumberValueType)val)); }
+DeltaValue* JsonParserLoaderActions::Manage_NumberExpInteger(const char* val){ 
+	DASSERT( val && !undeletedValue ); 
+	return undeletedValue = JsonParserLoaderActions::Manage_ValueString(val); 
+}
 
-DeltaValue * JsonParserLoaderActions::manage_numberFloat(double val)
-	{ return DNEWCLASS(DeltaValue, ((DeltaNumberValueType)val)); }
-
-DeltaValue * JsonParserLoaderActions::manage_numberExpInteger(std::string *val)
-	{ return JsonParserLoaderActions::manage_valueString(val); }
-
-DeltaValue * JsonParserLoaderActions::manage_numberExpFloat(std::string *val)
-	{ return JsonParserLoaderActions::manage_valueString(val); }
+DeltaValue* JsonParserLoaderActions::Manage_NumberExpFloat(const char* val){ 
+	DASSERT( val && !undeletedValue ); 
+	return undeletedValue = JsonParserLoaderActions::Manage_ValueString(val); 
+}

@@ -40,20 +40,19 @@
       know about them.  */
    enum yytokentype {
      STRING = 258,
-     INTEGER = 259,
-     FLOAT = 260,
-     EXPINTEGER = 261,
-     EXPFLOAT = 262,
+     EXPINTEGER = 259,
+     EXPFLOAT = 260,
+     INTEGER = 261,
+     FLOAT = 262,
      BLOCK_L = 263,
      BLOCK_R = 264,
      BRACKET_L = 265,
      BRACKET_R = 266,
      COMMA = 267,
-     DBLDOT = 268,
+     COLON = 268,
      TRUE = 269,
      FALSE = 270,
-     NIL = 271,
-     QUOTE = 272
+     NIL = 271
    };
 #endif
 
@@ -64,9 +63,9 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 25 "..\\JsonParser.y"
+#line 33 "..\\JsonParser.y"
   
-  std::string*	stringValue;
+  const char*	stringValue;
   double		numberValue;
   DeltaValue*	deltaValue;
   DeltaObject*	deltaObject;
@@ -74,7 +73,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 78 "JsonParser.tab.h"
+#line 77 "JsonParser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

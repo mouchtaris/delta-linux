@@ -1,3 +1,8 @@
+// JsonLoaderErrorMsg.cpp
+// Collecting all the error messages
+// Giannhs Apostolidhs, january 2013.
+//
+
 #include "JsonLoaderErrorMsg.h"
 #include "utypes.h"
 #include <stdarg.h>
@@ -9,9 +14,9 @@
 static char						errorText1[256];
 static std::list<std::string>	errorsList;
 
-static void (*notifyError) (const char*)=0;
-static void (*notifyMsg) (const char*)=0;
-static util_ui32 errors = 0;
+static void						(*notifyError) (const char*)=0;
+static void						(*notifyMsg) (const char*)=0;
+static util_ui32				errors = 0;
 
 void JsonParserLoaderErrorMsg::JsonLoaderSetErrorCallback (void (*callback)(const char*))
 {

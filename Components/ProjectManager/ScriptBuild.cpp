@@ -1084,7 +1084,10 @@ void Script::BuildWithTransformations (void) {
 		aspects.push_back(util::std2str(const_cast<Script*>(s)->GetProducedByteCodeFileFullPath()));
 
 	String options;
-	//TODO: need bytecode path and dllimportpath per transformation script
+	//TODO: need to have single invocations per transformation script
+	//This means that we can use all aspect script properties in the AspectCompiler invocation
+	//(e.g. working dir, bytecode and dllimport paths)
+	//
 	//const String bytecodePath = GetByteCodeLoadingPath();
 	//if (!bytecodePath.empty())
 	//	options += _T(" --bytecode_path=") + util::quotepath(bytecodePath);
@@ -1136,7 +1139,9 @@ void Script::BuildWithScriptDependencies (const ScriptPtrSet& deps) {
 	for (ScriptPtrSet::iterator i = toBuild.begin(); i != toBuild.end(); ++i) {
 		UIntList workId = m_workId;
 		workId.push_back(NextWorkSerial());
-		(*i)->BuildImpl(workId, m_debugBuild, this);
+
+		boost::thread(boost::bind(&Script::BuildImpl, *i, workId, m_debugBuild, this));
+		//(*i)->BuildImpl(workId, m_debugBuild, this);
 	}
 }
 
@@ -1887,17 +1892,33 @@ bool Script::IsUpToDateCalculation (void) {
 		DASSERT(m_buildDeps.empty());
 
 		SaveSource();
-		ResolveAspectTransformations();
-	
-		result = m_aspectTransformations.empty() ?
-			IsUpToDateCalculationWithUsingDependencies(ExtractDependencies())	:
-			IsUpToDateCalculationWithScriptDependencies(m_aspectTransformations);
 
-		result = result && IsByteCodeUpToDate() && AreLastBuildPropertiesSameAsCurrent();
+		if (!IsByteCodeUpToDate() || !AreLastBuildPropertiesSameAsCurrent())
+			result = false;
+		else {
+			std::time_t lastBinWrite = boost::filesystem::last_write_time(GetProducedByteCodeFileFullPath());
 
-		m_aspectTransformations.clear();
-		m_buildDeps.clear();
-		m_buildDepsResolved = false;
+			if (GetType() == "stage" && !AreExternalDependenciesUpToDate(lastBinWrite))
+				result = false;
+			else {
+				ResolveAspectTransformations();
+
+				if (m_aspectTransformations.empty())
+					result = IsUpToDateCalculationWithUsingDependencies(ExtractDependencies());
+				else {
+					result = true;
+					BOOST_FOREACH(Script* aspect, m_aspectTransformations)
+					 if (!aspect->AreExternalDependenciesUpToDate(lastBinWrite)) {
+						result = false;
+						break;
+					}
+				}
+
+				m_aspectTransformations.clear();
+				m_buildDeps.clear();
+				m_buildDepsResolved = false;
+			}
+		}
 	}
 	return (*s_upToDate)[this] = result;
 }
@@ -1921,6 +1942,19 @@ bool Script::IsUpToDateCalculationWithScriptDependencies (const ScriptPtrSet& de
 	for (ScriptPtrSet::const_iterator i = deps.begin(); i != deps.end(); ++i)
 		if (!(*i)->IsUpToDateCalculation())
 			return false;
+	return true;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+bool Script::AreExternalDependenciesUpToDate(std::time_t timestamp) {
+	if (const conf::FileListProperty* p = conf::safe_prop_cast<const conf::FileListProperty>(GetInstanceProperty("extra_deps"))) {
+		BOOST_FOREACH(const String& dep, p->GetValues()) {
+			const std::string fullPath = util::str2std(MakeAbsolutePath(dep, GetWorkingDirectory()));
+			if (!FileSystemExists(fullPath) || timestamp < boost::filesystem::last_write_time(fullPath))	//bin less recent that dep
+				return false;
+		}
+	}
 	return true;
 }
 
@@ -1959,7 +1993,7 @@ void Script::DeleteExternalByteCodeFilesFromWorkingDirectory (const StdStringLis
 			return false;																		\
 		}																						\
 		else {																					\
-			DASSERT(FileSystemExists(at));												\
+			DASSERT(FileSystemExists(at));														\
 			return true;																		\
 		}																						\
 	else {																						\
@@ -2054,6 +2088,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	
+
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
 	if (m_upToDate) {
@@ -2067,6 +2102,21 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 
 	if (IsBuildInProgressHandler(workId, initiator))
 		return NO_COMPILER_THREAD_PID;
+
+	//TODO: This should not be called if the script is up-to-date.
+	//However, m_upToDate is cleared across builds.
+	//Maybe it should be a part of BuildSelfImpl so that it is only invoked upon actuall compilation of THIS script.
+	//The following code is to implement the PreBuildEvents.
+	//
+	//const std::string application = "ECHO hello;ECHO hello;";
+	//util::ConsoleHost console(true);
+	//console(application, util::str2std(GetPath()), boost::bind(&Script::PostBuildMessage, this, workId, _1));
+
+	//if (!console.Succeeded()) {
+	//	SetBuildCompleted(false, false);
+	//	return NO_COMPILER_THREAD_PID;
+	//}
+	//
 
 	std::string type, dir;
 	if (!(type = "output",  CreateDirectory(dir = util::str2std(GetOutputDirectory()))) || 

@@ -1,3 +1,8 @@
+// JsonParserActions.h
+// Translation schemes for the json format.
+// Giannhs Apostolidhs, january 2013.
+//
+
 #ifndef	JSONPARSEACTIONS_H
 #define	JSONPARSEACTIONS_H
 
@@ -6,28 +11,32 @@
 
 namespace JsonParserLoaderActions {
 
-extern DeltaObject *	manage_objectEmpty();
+extern void Manage_Init(void);
+extern void Manage_Clear(void);
+extern void Manage_SetUndeletedString( char* str );
 
-extern DeltaObject *	manage_membersPairs(DeltaObject * obj1, DeltaObject * obj2);
-extern DeltaObject *	manage_pair(std::string * key, DeltaValue * val);
+extern DeltaObject*		Manage_ObjectEmpty(void);
+extern void				Manage_PushNewObject(void);
+extern DeltaObject*		Manage_PopObject(void);
+extern void				Manage_PairIndex(const char* key);
+extern void				Manage_PairValue(DeltaValue* val);
 
-extern DeltaObject *	manage_emptyArray();
+extern DeltaObject*		Manage_EmptyArray();
+extern void				Manage_PushNewArray();
+extern DeltaObject*		Manage_PopArray();
+extern void				Manage_ElementsValue(DeltaValue* val);
 
-extern DeltaObject *	manage_elementsValue(DeltaValue * val);
-extern DeltaObject *	manage_elementsValues(DeltaValue * val, DeltaObject * vals);
+extern DeltaValue*		Manage_ValueString(const char* str);
+extern DeltaValue*		Manage_ValueObject(DeltaObject* obj);
+extern DeltaValue*		Manage_ValueArray(DeltaObject* obj);
+extern DeltaValue*		Manage_ValueTrue(void);
+extern DeltaValue*		Manage_ValueFalse(void);
+extern DeltaValue*		Manage_ValueNil(bool retainNull);
 
-extern DeltaValue *		manage_valueString(std::string * str);
-extern DeltaValue *		manage_valueObject(DeltaObject * obj);
-extern DeltaValue *		manage_valueArray(DeltaObject * obj);
-extern DeltaValue *		manage_valueTrue();
-extern DeltaValue *		manage_valueFalse();
-
-extern DeltaValue *		manage_valueNil(bool retainNull);
-
-extern DeltaValue *		manage_numberInteger(double val);
-extern DeltaValue *		manage_numberFloat(double val);
-extern DeltaValue *		manage_numberExpInteger(std::string *val);
-extern DeltaValue *		manage_numberExpFloat(std::string *val);
+extern DeltaValue*		Manage_NumberInteger(double val);
+extern DeltaValue*		Manage_NumberFloat(double val);
+extern DeltaValue*		Manage_NumberExpInteger(const char* val);
+extern DeltaValue*		Manage_NumberExpFloat(const char* val);
 
 }
 

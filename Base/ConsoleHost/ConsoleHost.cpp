@@ -67,7 +67,7 @@ namespace util
 	unsigned long ConsoleHost::Execute(const std::string& application, const std::string& currentDirectory,
 		OnOutput onOutput, OnFinish onFinish)
 	{
-		HANDLE hChildProcess;
+		//HANDLE hChildProcess;
 
 		if (onOutput) {
 			this->onOutput = onOutput;
@@ -189,7 +189,7 @@ namespace util
 			}
 
 		// Kill the process
-		bool retval = ::TerminateProcess(hProc, 0) ? true : false;
+		bool retval = ::TerminateProcess(hProc, EXIT_FAILURE) ? true : false;
 		CloseHandle(hProc);
 		return retval;
 	}
@@ -238,6 +238,15 @@ namespace util
 
 	//-----------------------------------------------------------------------
 
+	bool ConsoleHost::Succeeded(void) const
+	{
+		assert(hChildProcess);
+		DWORD result;
+		if (GetExitCodeProcess(hChildProcess, &result))
+			return result == EXIT_SUCCESS;
+		else
+			EXECUTION_ERROR("GetExitCodeProcess", false);
+	}
 
 	//-------------------------------------------------------//
 	//---- static free functions ----------------------------//

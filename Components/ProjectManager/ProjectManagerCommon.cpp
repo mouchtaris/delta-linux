@@ -46,6 +46,8 @@ namespace conf {
 	_PROJECT_MANAGER_API Property* GenerateStageSourcesProperty (void) {
 		AggregateProperty *listType = new AggregateProperty(_("Stage Source Options"), _("Single stage source option"));
 		listType->AddProperty("stage", new IntProperty(_("Stage")));
+		listType->AddProperty("extra_deps", new FileListProperty(_("External Dependencies"),
+			_("Runtime files dependencies for stage"), _("Compilation")));
 		listType->AddProperty(BYTECODE_PATH_PROPERTY_ID, new DirectoryListProperty(_("Additional Bytecode Paths"),
 			_("Additional bytecode loading paths"), _("Execution")));
 		listType->AddProperty(DLLIMPORT_PATH_PROPERTY_ID, new DirectoryListProperty(_("Additional Dllimport Paths"),
@@ -106,6 +108,11 @@ namespace conf {
 		comp->AddInstanceProperty("aspects", new FileListProperty(_("Aspect Transformations"),
 			_("Aspect transformation script binaries"), _("Compilation"))
 		);
+
+		Property* p = new FileListProperty(_("External Dependencies"),
+			_("Files dependencies for transformation scripts (stages or aspects)"), _("Compilation"));
+		p->SetEnabled(comp->GetClassId() == "Aspect");	//editable only for aspects; for stages are set programmatically
+		comp->AddInstanceProperty("extra_deps", p);
 	}
 
 	///////////////////////////////////////////////////////////////////////
@@ -164,7 +171,7 @@ namespace conf {
 	}
 
 	_PROJECT_MANAGER_API const char ** GetScriptPropertyIdsForStageSources (void) {
-		static const char *buildPropertyIds[] = { BYTECODE_PATH_PROPERTY_ID, DLLIMPORT_PATH_PROPERTY_ID, "libs", (char*) 0 };
+		static const char *buildPropertyIds[] = { BYTECODE_PATH_PROPERTY_ID, DLLIMPORT_PATH_PROPERTY_ID, "libs", "extra_deps", (char*) 0 };
 		return buildPropertyIds;
 	}
 

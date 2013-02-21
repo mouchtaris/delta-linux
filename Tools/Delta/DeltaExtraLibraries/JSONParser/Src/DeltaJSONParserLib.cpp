@@ -1,3 +1,9 @@
+// DeltaJsonParserLib.cpp
+// Handling export and import dll  
+// for the entire jsonParser.dll.
+// Giannhs Apostolidhs, january 2013.
+//
+
 #include "DeltaJSONParserLib.h"
 #include "DDebug.h"
 #include "DeltaVirtualMachine.h"

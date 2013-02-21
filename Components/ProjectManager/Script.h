@@ -259,6 +259,7 @@ namespace ide
 		bool								IsUpToDateCalculation (void);
 		bool								IsUpToDateCalculationWithUsingDependencies (const StringList& deps);
 		bool								IsUpToDateCalculationWithScriptDependencies (const ScriptPtrSet& deps);
+		bool								AreExternalDependenciesUpToDate(std::time_t timestamp);
 		void								SetBuildCompleted (bool succeeded, bool wasCompiled);
 		void								InitialiseNewBuildProcess (const UIntList& workId);
 		void								SaveSource (void);

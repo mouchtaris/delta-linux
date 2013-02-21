@@ -54,6 +54,8 @@ namespace util
 		void SendToChild(const Buffer& buffer);
 		void ReadFromChild(void);
 
+		bool Succeeded(void) const;
+
 		///--- overloaded operators
 		unsigned long operator ()(
 			const std::string& application,
@@ -81,6 +83,7 @@ namespace util
 		OnOutput onOutput;		///< on child process output callback
 		OnFinish onFinish;		///< on child process finish callback
 
+		void* hChildProcess;
 		void* hInputWrite;		///< pipe sending input to child
 		void* hOutputRead;		///< pipe receiving output from child
 	};

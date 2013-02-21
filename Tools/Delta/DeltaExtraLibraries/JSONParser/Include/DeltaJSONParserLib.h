@@ -1,3 +1,8 @@
+// DeltaJsonParserLib.h
+// Handling export and import dll  
+// for the entire jsonParser.dll.
+// Giannhs Apostolidhs, january 2013.
+//
 
 #ifndef	DELTAJSONPARSERLIB_H
 #define	DELTAJSONPARSERLIB_H

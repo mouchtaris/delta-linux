@@ -1,3 +1,8 @@
+// JsonLoaderAPI.h
+// The API of a basic json parser. 
+// Using singleton pattern.
+// Giannhs Apostolidhs, january 2013.
+//
 
 #include <iostream>
 #include "JsonLoaderAPI.h"
@@ -6,15 +11,16 @@
 #include "JsonLoaderErrorMsg.h"
 #include "JsonParseActions.h"
 #include "uinit.h"
+#include "uptr.h"
 
-JsonLoaderAPI * JsonLoaderAPI::singletonPtr = (JsonLoaderAPI*) 0;
-std::string*	JsonLoaderAPI::currFile		= (std::string*) 0;
-util_ui32		JsonLoaderAPI::currLine		= (util_ui32) 0;
+JsonLoaderAPI*			JsonLoaderAPI::singletonPtr = (JsonLoaderAPI*) 0;
+std::string*			JsonLoaderAPI::currFile		= (std::string*) 0;
+util_ui32				JsonLoaderAPI::currLine		= (util_ui32) 0;
 
-extern FILE*	JsonLex_yyin;
-extern void		JsonLex_yyrestart(FILE *);
-extern int		JsonLex_yylineno;
-extern int		JsonLex_yyparse (DeltaObject**, bool);
+extern FILE*			JsonLex_yyin;
+extern void				JsonLex_yyrestart(FILE *);
+extern int				JsonLex_yylineno;
+extern int				JsonLex_yyparse (DeltaObject**, bool);
 
 JsonLoaderAPI::JsonLoaderAPI(void)
 {
@@ -29,24 +35,27 @@ JsonLoaderAPI::~JsonLoaderAPI(void)
 static bool InitialiseScannerFromFile (const std::string& file)
 {
 	JsonLex_yyin = fopen(file.c_str(), "r");
+	bool retVal;
 	if (!JsonLex_yyin) {
 		JsonParserLoaderErrorMsg::JsonLoaderError("Could not open file '%s' for reading", file.c_str());
-		return false;
+		retVal = false;
 	}
 	else {
 		JsonParserLoaderErrorMsg::JsonLoaderMsg("Start reading JSON file '%s'.\n", file.c_str());
 		//Reset Lexical Analizer (yyrestart(yyin))
 		JsonLex_yyrestart( JsonLex_yyin );
-		return true;
+		retVal = true;
 	}
+
+	return retVal;
 }
 
 void JsonLoaderAPI::CleanUpScannerFromFile (void)
 {
 	currFile->clear();
 	currLine = (util_ui32) 0;
-	fclose(JsonLex_yyin);
-	JsonLex_yyin = (FILE *) 0;
+	fclose( JsonLex_yyin );
+	JsonLex_yyin = (FILE*) 0;
 }
 
 extern void		JsonLoaderInitialiseScannerFromString (const char* str);
@@ -54,7 +63,7 @@ extern void		JsonLoaderCleanUpScannerFromString (void);
 
 static bool InitialiseScannerFromString (const std::string& str) {
 	JsonParserLoaderErrorMsg::JsonLoaderMsg("Start reading JSON from string.\n");
-	JsonLoaderInitialiseScannerFromString(str.c_str()); 
+	JsonLoaderInitialiseScannerFromString( str.c_str() ); 
 	return true;
 }
 
@@ -78,27 +87,33 @@ void JsonLoaderAPI::SetFile (const std::string& file)
 
 
 DeltaObject* JsonLoaderAPI::Load (const std::string& path, bool retainNull ){
+	DeltaObject* retVal;
 
 	if (!InitialiseScannerFromFile(path)) {
 		currFile->clear();
-		return (DeltaObject*) 0;
+		retVal = (DeltaObject*) 0;
 	}
 	else {
 		currFile->assign(path);
-		return Parse(&CleanUpScannerFromFile, retainNull);
+		retVal = Parse(&CleanUpScannerFromFile, retainNull);
 	}
+
+	return retVal;
 }
 
 DeltaObject* JsonLoaderAPI::LoadFromString (const std::string& buffer, bool retainNull ){
-	
+	DeltaObject* retVal;
+
 	if (!InitialiseScannerFromString(buffer)) {
 		currFile->clear();
-		return (DeltaObject*) 0;
+		retVal = (DeltaObject*) 0;
 	}
 	else {
 		currFile->assign("<text buffer>");
-		return Parse(&CleanUpScannerFromString, retainNull);
+		retVal = Parse(&CleanUpScannerFromString, retainNull);
 	}
+
+	return retVal;
 }
 
 DeltaObject* JsonLoaderAPI::Parse (void (*cleanUpScanner)(void), bool retainNull)
@@ -106,10 +121,12 @@ DeltaObject* JsonLoaderAPI::Parse (void (*cleanUpScanner)(void), bool retainNull
 	JsonLex_yylineno = 1;
 
 	JsonParserLoaderErrorMsg::JsonLoaderResetErrors();
+	JsonParserLoaderActions::Manage_Init();
 
-	DeltaObject* result = (DeltaObject *)0;
+	DeltaObject* result = (DeltaObject *) 0;
 	JsonLex_yyparse(&result, retainNull);
 
+	JsonParserLoaderActions::Manage_Clear();
 	(*cleanUpScanner)();
 
 	util_ui32 numErrors = JsonParserLoaderErrorMsg::JsonLoaderNumErrors();
@@ -158,6 +175,8 @@ bool JsonLoaderAPI::WriteArray(FILE* fp, DeltaTable* table, util_ui32 tabs){
 }
 
 bool JsonLoaderAPI::WriteObject(FILE* fp, DeltaTable* table, util_ui32 tabs){
+	DASSERT( fp && table );
+
 	DeltaValue index, content;
 
 	DeltaTable* indices = DPTR(table)->GetIndices();
@@ -181,9 +200,12 @@ bool JsonLoaderAPI::WriteValue(FILE* fp, DeltaValue& value, util_ui32 tabs){
 	DeltaTable* obj, *indices;
 	DeltaValue val;
 
+	DASSERT( fp );
 	DASSERT(
-		value.Type() == DeltaValue_Table	|| value.Type() == DeltaValue_String || 
-		value.Type() == DeltaValue_Bool		|| value.Type() == DeltaValue_Number || 
+		value.Type() == DeltaValue_Table	|| 
+		value.Type() == DeltaValue_String	|| 
+		value.Type() == DeltaValue_Bool		|| 
+		value.Type() == DeltaValue_Number	|| 
 		value.Type() == DeltaValue_ExternId
 	);
 
@@ -202,7 +224,7 @@ bool JsonLoaderAPI::WriteValue(FILE* fp, DeltaValue& value, util_ui32 tabs){
 		std::string typeStr;
 
 		if(value.Type() == DeltaValue_ExternId){
-			void * val = value.ToExternId(typeStr);
+			void* val = value.ToExternId(typeStr);
 			DASSERT(typeStr == JSON_NULL_TYPE_STR);
 			DASSERT(val ==  JSON_NULL);
 			fprintf( fp, "null");

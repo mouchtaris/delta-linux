@@ -1,3 +1,8 @@
+// JsonLoaderErrorMsg.h
+// Collecting all the error messages
+// Giannhs Apostolidhs, january 2013.
+//
+
 #ifndef	JSONLOADERERRORMSG_H
 #define	JSONLOADERERRORMSG_H
 

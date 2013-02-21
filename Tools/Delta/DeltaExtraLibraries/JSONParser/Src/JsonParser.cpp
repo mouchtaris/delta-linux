@@ -70,28 +70,36 @@
 /* Line 189 of yacc.c  */
 #line 1 "..\\JsonParser.y"
 
-	#include "JsonParseActions.h"
-	#include "JsonLoaderErrorMsg.h"
-    #include "JsonParser.h"
-	#include "DeltaObject.h"
-	#include "DeltaValue.h"
 
-	using namespace JsonParserLoaderActions;
+// Json parser for Delta, syntax directed parsing file, 
+// using Bison parser generator. I collect all the variables 
+// that i reserve memory for better performance 
+// and for avoiding memory leaks in case of syntax error
+// Giannhs Apostolidhs, january 2013 (original full version).
+//
 
-	#define yylex JsonLex_yylex
-	#define	yyparse	JsonLex_yyparse
-	#define yytext JsonLex_yytext
+#include "JsonParseActions.h"
+#include "JsonLoaderErrorMsg.h"
+#include "JsonParser.h"
+#include "DeltaObject.h"
+#include "DeltaValue.h"
 
-	extern char *yytext;
-	extern int yylex();
-	extern int yylineno;
+using namespace JsonParserLoaderActions;
 
-	int yyerror (DeltaObject **return_value, bool retainNull, std::string yaccProvidedMessage);
+#define yylex JsonLex_yylex
+#define	yyparse	JsonLex_yyparse
+#define yytext JsonLex_yytext
+
+extern char *yytext;
+extern int yylex();
+extern int yylineno;
+
+int yyerror (DeltaObject **returnValue, bool retainNull, std::string yaccProvidedMessage);
 
 
 
 /* Line 189 of yacc.c  */
-#line 95 "JsonParser.tab.c"
+#line 103 "JsonParser.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -119,20 +127,19 @@
       know about them.  */
    enum yytokentype {
      STRING = 258,
-     INTEGER = 259,
-     FLOAT = 260,
-     EXPINTEGER = 261,
-     EXPFLOAT = 262,
+     EXPINTEGER = 259,
+     EXPFLOAT = 260,
+     INTEGER = 261,
+     FLOAT = 262,
      BLOCK_L = 263,
      BLOCK_R = 264,
      BRACKET_L = 265,
      BRACKET_R = 266,
      COMMA = 267,
-     DBLDOT = 268,
+     COLON = 268,
      TRUE = 269,
      FALSE = 270,
-     NIL = 271,
-     QUOTE = 272
+     NIL = 271
    };
 #endif
 
@@ -143,9 +150,9 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 25 "..\\JsonParser.y"
+#line 33 "..\\JsonParser.y"
   
-  std::string*	stringValue;
+  const char*	stringValue;
   double		numberValue;
   DeltaValue*	deltaValue;
   DeltaObject*	deltaObject;
@@ -153,7 +160,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 157 "JsonParser.tab.c"
+#line 164 "JsonParser.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -165,7 +172,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 169 "JsonParser.tab.c"
+#line 176 "JsonParser.tab.c"
 
 #ifdef short
 # undef short
@@ -378,22 +385,22 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  8
+#define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   34
+#define YYLAST   25
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  18
+#define YYNTOKENS  17
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  9
+#define YYNNTS  13
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  22
+#define YYNRULES  26
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  32
+#define YYNSTATES  36
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   272
+#define YYMAXUTOK   271
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -428,7 +435,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17
+      15,    16
 };
 
 #if YYDEBUG
@@ -436,28 +443,29 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     8,    12,    14,    18,    22,    25,
-      29,    31,    35,    37,    39,    41,    43,    45,    47,    49,
-      51,    53,    55
+       0,     0,     3,     5,     8,     9,    14,    18,    20,    21,
+      26,    29,    30,    35,    37,    41,    43,    45,    47,    49,
+      51,    53,    55,    57,    59,    61,    63
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      19,     0,    -1,    20,    -1,     8,     9,    -1,     8,    21,
-       9,    -1,    22,    -1,    22,    12,    21,    -1,     3,    13,
-      25,    -1,    10,    11,    -1,    10,    24,    11,    -1,    25,
-      -1,    25,    12,    24,    -1,     3,    -1,    26,    -1,    20,
-      -1,    23,    -1,    14,    -1,    15,    -1,    16,    -1,     4,
-      -1,     5,    -1,     6,    -1,     7,    -1
+      18,     0,    -1,    19,    -1,     8,     9,    -1,    -1,     8,
+      20,    21,     9,    -1,    22,    12,    21,    -1,    22,    -1,
+      -1,     3,    13,    23,    28,    -1,    10,    11,    -1,    -1,
+      10,    25,    27,    11,    -1,    28,    -1,    26,    12,    27,
+      -1,    26,    -1,     3,    -1,    29,    -1,    19,    -1,    24,
+      -1,    14,    -1,    15,    -1,    16,    -1,     6,    -1,     7,
+      -1,     4,    -1,     5,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    46,    46,    50,    52,    56,    58,    62,    66,    68,
-      72,    74,    78,    80,    82,    84,    86,    88,    90,    94,
-      96,    98,   100
+       0,    53,    53,    57,    60,    59,    65,    66,    71,    70,
+      76,    79,    78,    84,    88,    89,    92,    94,    96,    98,
+     100,   102,   104,   108,   110,   112,   114
 };
 #endif
 
@@ -466,11 +474,11 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "STRING", "INTEGER", "FLOAT",
-  "EXPINTEGER", "EXPFLOAT", "BLOCK_L", "BLOCK_R", "BRACKET_L", "BRACKET_R",
-  "COMMA", "DBLDOT", "TRUE", "FALSE", "NIL", "QUOTE", "$accept",
-  "document", "object", "members", "pair", "array", "elements", "value",
-  "number", 0
+  "$end", "error", "$undefined", "STRING", "EXPINTEGER", "EXPFLOAT",
+  "INTEGER", "FLOAT", "BLOCK_L", "BLOCK_R", "BRACKET_L", "BRACKET_R",
+  "COMMA", "COLON", "TRUE", "FALSE", "NIL", "$accept", "document",
+  "object", "$@1", "members", "pair", "$@2", "array", "$@3",
+  "elementsValue", "elements", "value", "number", 0
 };
 #endif
 
@@ -480,24 +488,24 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272
+     265,   266,   267,   268,   269,   270,   271
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    18,    19,    20,    20,    21,    21,    22,    23,    23,
-      24,    24,    25,    25,    25,    25,    25,    25,    25,    26,
-      26,    26,    26
+       0,    17,    18,    19,    20,    19,    21,    21,    23,    22,
+      24,    25,    24,    26,    27,    27,    28,    28,    28,    28,
+      28,    28,    28,    29,    29,    29,    29
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     2,     3,     1,     3,     3,     2,     3,
-       1,     3,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1
+       0,     2,     1,     2,     0,     4,     3,     1,     0,     4,
+       2,     0,     4,     1,     3,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -505,33 +513,35 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     2,     0,     3,     0,     5,     1,     0,
-       4,     0,    12,    19,    20,    21,    22,     0,    16,    17,
-      18,    14,    15,     7,    13,     6,     8,     0,    10,     9,
-       0,    11
+       0,     4,     0,     2,     3,     0,     1,     0,     0,     7,
+       8,     5,     0,     0,     6,    16,    25,    26,    23,    24,
+      11,    20,    21,    22,    18,    19,     9,    17,    10,     0,
+      15,     0,    13,     0,    12,    14
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,    21,     6,     7,    22,    27,    28,    24
+      -1,     2,    24,     5,     8,     9,    13,    25,    29,    30,
+      31,    32,    27
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -4
+#define YYPACT_NINF -14
 static const yytype_int8 yypact[] =
 {
-      -2,    19,     9,    -4,     7,    -4,     1,    12,    -4,    11,
-      -4,    20,    -4,    -4,    -4,    -4,    -4,    -3,    -4,    -4,
-      -4,    -4,    -4,    -4,    -4,    -4,    -4,    18,    21,    -4,
-      11,    -4
+      -2,    -1,     9,   -14,   -14,     7,   -14,     1,     6,     4,
+     -14,   -14,     7,    -3,   -14,   -14,   -14,   -14,   -14,   -14,
+       8,   -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,    -3,
+       5,    10,   -14,    -3,   -14,   -14
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4,    30,    23,    -4,    -4,     2,    22,    -4
+     -14,   -14,    18,   -14,    11,   -14,   -14,   -14,   -14,   -14,
+     -13,    12,   -14
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -541,28 +551,26 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      12,    13,    14,    15,    16,     1,     1,    17,    26,     8,
-      10,    18,    19,    20,    12,    13,    14,    15,    16,     1,
-       9,    17,     4,     4,    11,    18,    19,    20,     5,    29,
-       3,    23,    31,    30,    25
+      15,    16,    17,    18,    19,     1,     1,    20,     4,     6,
+       7,    21,    22,    23,    10,    11,    12,    33,     3,    28,
+      35,    34,     0,    14,     0,    26
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-       3,     4,     5,     6,     7,     8,     8,    10,    11,     0,
-       9,    14,    15,    16,     3,     4,     5,     6,     7,     8,
-      13,    10,     3,     3,    12,    14,    15,    16,     9,    11,
-       0,     9,    30,    12,    11
+       3,     4,     5,     6,     7,     8,     8,    10,     9,     0,
+       3,    14,    15,    16,    13,     9,    12,    12,     0,    11,
+      33,    11,    -1,    12,    -1,    13
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     8,    19,    20,     3,     9,    21,    22,     0,    13,
-       9,    12,     3,     4,     5,     6,     7,    10,    14,    15,
-      16,    20,    23,    25,    26,    21,    11,    24,    25,    11,
-      12,    24
+       0,     8,    18,    19,     9,    20,     0,     3,    21,    22,
+      13,     9,    12,    23,    21,     3,     4,     5,     6,     7,
+      10,    14,    15,    16,    19,    24,    28,    29,    11,    25,
+      26,    27,    28,    12,    11,    27
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -595,7 +603,7 @@ do								\
     }								\
   else								\
     {								\
-      yyerror (return_value, retainNull, YY_("syntax error: cannot back up")); \
+      yyerror (returnValue, retainNull, YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
 while (YYID (0))
@@ -675,7 +683,7 @@ do {									  \
     {									  \
       YYFPRINTF (stderr, "%s ", Title);					  \
       yy_symbol_print (stderr,						  \
-		  Type, Value, return_value, retainNull); \
+		  Type, Value, returnValue, retainNull); \
       YYFPRINTF (stderr, "\n");						  \
     }									  \
 } while (YYID (0))
@@ -689,20 +697,20 @@ do {									  \
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DeltaObject **return_value, bool retainNull)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DeltaObject **returnValue, bool retainNull)
 #else
 static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep, return_value, retainNull)
+yy_symbol_value_print (yyoutput, yytype, yyvaluep, returnValue, retainNull)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
-    DeltaObject **return_value;
+    DeltaObject **returnValue;
     bool retainNull;
 #endif
 {
   if (!yyvaluep)
     return;
-  YYUSE (return_value);
+  YYUSE (returnValue);
   YYUSE (retainNull);
 # ifdef YYPRINT
   if (yytype < YYNTOKENS)
@@ -725,14 +733,14 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, return_value, retainNull)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DeltaObject **return_value, bool retainNull)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, DeltaObject **returnValue, bool retainNull)
 #else
 static void
-yy_symbol_print (yyoutput, yytype, yyvaluep, return_value, retainNull)
+yy_symbol_print (yyoutput, yytype, yyvaluep, returnValue, retainNull)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
-    DeltaObject **return_value;
+    DeltaObject **returnValue;
     bool retainNull;
 #endif
 {
@@ -741,7 +749,7 @@ yy_symbol_print (yyoutput, yytype, yyvaluep, return_value, retainNull)
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, return_value, retainNull);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, returnValue, retainNull);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -784,13 +792,13 @@ do {								\
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, int yyrule, DeltaObject **return_value, bool retainNull)
+yy_reduce_print (YYSTYPE *yyvsp, int yyrule, DeltaObject **returnValue, bool retainNull)
 #else
 static void
-yy_reduce_print (yyvsp, yyrule, return_value, retainNull)
+yy_reduce_print (yyvsp, yyrule, returnValue, retainNull)
     YYSTYPE *yyvsp;
     int yyrule;
-    DeltaObject **return_value;
+    DeltaObject **returnValue;
     bool retainNull;
 #endif
 {
@@ -805,7 +813,7 @@ yy_reduce_print (yyvsp, yyrule, return_value, retainNull)
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       		       , return_value, retainNull);
+		       		       , returnValue, retainNull);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -813,7 +821,7 @@ yy_reduce_print (yyvsp, yyrule, return_value, retainNull)
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (yyvsp, Rule, return_value, retainNull); \
+    yy_reduce_print (yyvsp, Rule, returnValue, retainNull); \
 } while (YYID (0))
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1064,19 +1072,19 @@ yysyntax_error (char *yyresult, int yystate, int yychar)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, DeltaObject **return_value, bool retainNull)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, DeltaObject **returnValue, bool retainNull)
 #else
 static void
-yydestruct (yymsg, yytype, yyvaluep, return_value, retainNull)
+yydestruct (yymsg, yytype, yyvaluep, returnValue, retainNull)
     const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
-    DeltaObject **return_value;
+    DeltaObject **returnValue;
     bool retainNull;
 #endif
 {
   YYUSE (yyvaluep);
-  YYUSE (return_value);
+  YYUSE (returnValue);
   YYUSE (retainNull);
 
   if (!yymsg)
@@ -1100,7 +1108,7 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (DeltaObject **return_value, bool retainNull);
+int yyparse (DeltaObject **returnValue, bool retainNull);
 #else
 int yyparse ();
 #endif
@@ -1136,11 +1144,11 @@ yyparse (YYPARSE_PARAM)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 int
-yyparse (DeltaObject **return_value, bool retainNull)
+yyparse (DeltaObject **returnValue, bool retainNull)
 #else
 int
-yyparse (return_value, retainNull)
-    DeltaObject **return_value;
+yyparse (returnValue, retainNull)
+    DeltaObject **returnValue;
     bool retainNull;
 #endif
 #endif
@@ -1389,154 +1397,154 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 47 "..\\JsonParser.y"
-    { *return_value = (yyvsp[(1) - (1)].deltaObject); ;}
+#line 54 "..\\JsonParser.y"
+    { *returnValue = (yyvsp[(1) - (1)].deltaObject); ;}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 51 "..\\JsonParser.y"
-    { (yyval.deltaObject) = manage_objectEmpty(); ;}
+#line 58 "..\\JsonParser.y"
+    { (yyval.deltaObject) = Manage_ObjectEmpty(); ;}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 53 "..\\JsonParser.y"
-    { (yyval.deltaObject) = (yyvsp[(2) - (3)].deltaObject);;}
+#line 60 "..\\JsonParser.y"
+    { Manage_PushNewObject(); ;}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 57 "..\\JsonParser.y"
-    { (yyval.deltaObject) = (yyvsp[(1) - (1)].deltaObject);;}
-    break;
-
-  case 6:
-
-/* Line 1455 of yacc.c  */
-#line 59 "..\\JsonParser.y"
-    { (yyval.deltaObject) = manage_membersPairs((yyvsp[(1) - (3)].deltaObject), (yyvsp[(3) - (3)].deltaObject)); ;}
-    break;
-
-  case 7:
-
-/* Line 1455 of yacc.c  */
-#line 63 "..\\JsonParser.y"
-    { (yyval.deltaObject) = manage_pair((yyvsp[(1) - (3)].stringValue), (yyvsp[(3) - (3)].deltaValue));	;}
+#line 62 "..\\JsonParser.y"
+    { (yyval.deltaObject) = Manage_PopObject(); ;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 67 "..\\JsonParser.y"
-    { (yyval.deltaObject) = manage_emptyArray();	;}
+#line 71 "..\\JsonParser.y"
+    { Manage_PairIndex((yyvsp[(1) - (2)].stringValue)); ;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 69 "..\\JsonParser.y"
-    { (yyval.deltaObject) = (yyvsp[(2) - (3)].deltaObject); ;}
+#line 73 "..\\JsonParser.y"
+    { Manage_PairValue((yyvsp[(4) - (4)].deltaValue));	;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 73 "..\\JsonParser.y"
-    { (yyval.deltaObject) = manage_elementsValue((yyvsp[(1) - (1)].deltaValue)); ;}
+#line 77 "..\\JsonParser.y"
+    { (yyval.deltaObject) = Manage_EmptyArray();	;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 75 "..\\JsonParser.y"
-    { (yyval.deltaObject) = manage_elementsValues((yyvsp[(1) - (3)].deltaValue), (yyvsp[(3) - (3)].deltaObject)); ;}
+#line 79 "..\\JsonParser.y"
+    { Manage_PushNewArray(); ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 79 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_valueString((yyvsp[(1) - (1)].stringValue)); ;}
+#line 81 "..\\JsonParser.y"
+    { (yyval.deltaObject) = Manage_PopArray(); ;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 81 "..\\JsonParser.y"
-    {  (yyval.deltaValue) = (yyvsp[(1) - (1)].deltaValue); ;}
-    break;
-
-  case 14:
-
-/* Line 1455 of yacc.c  */
-#line 83 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_valueObject((yyvsp[(1) - (1)].deltaObject)); ;}
-    break;
-
-  case 15:
-
-/* Line 1455 of yacc.c  */
 #line 85 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_valueArray((yyvsp[(1) - (1)].deltaObject)); ;}
+    { Manage_ElementsValue((yyvsp[(1) - (1)].deltaValue)); ;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 87 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_valueTrue(); ;}
+#line 93 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_ValueString((yyvsp[(1) - (1)].stringValue)); ;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 89 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_valueFalse(); ;}
+#line 95 "..\\JsonParser.y"
+    {  (yyval.deltaValue) = (yyvsp[(1) - (1)].deltaValue); ;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 91 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_valueNil(retainNull); ;}
+#line 97 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_ValueObject((yyvsp[(1) - (1)].deltaObject)); ;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 95 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_numberInteger((yyvsp[(1) - (1)].numberValue)); ;}
+#line 99 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_ValueArray((yyvsp[(1) - (1)].deltaObject)); ;}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 97 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_numberFloat((yyvsp[(1) - (1)].numberValue)); ;}
+#line 101 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_ValueTrue(); ;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 99 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_numberExpInteger((yyvsp[(1) - (1)].stringValue)); ;}
+#line 103 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_ValueFalse(); ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 101 "..\\JsonParser.y"
-    { (yyval.deltaValue) = manage_numberExpFloat((yyvsp[(1) - (1)].stringValue)); ;}
+#line 105 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_ValueNil(retainNull); ;}
+    break;
+
+  case 23:
+
+/* Line 1455 of yacc.c  */
+#line 109 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_NumberInteger((yyvsp[(1) - (1)].numberValue)); ;}
+    break;
+
+  case 24:
+
+/* Line 1455 of yacc.c  */
+#line 111 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_NumberFloat((yyvsp[(1) - (1)].numberValue)); ;}
+    break;
+
+  case 25:
+
+/* Line 1455 of yacc.c  */
+#line 113 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_NumberExpInteger((yyvsp[(1) - (1)].stringValue)); ;}
+    break;
+
+  case 26:
+
+/* Line 1455 of yacc.c  */
+#line 115 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_NumberExpFloat((yyvsp[(1) - (1)].stringValue)); ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1540 "JsonParser.tab.c"
+#line 1548 "JsonParser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1571,7 +1579,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (return_value, retainNull, YY_("syntax error"));
+      yyerror (returnValue, retainNull, YY_("syntax error"));
 #else
       {
 	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
@@ -1595,11 +1603,11 @@ yyerrlab:
 	if (0 < yysize && yysize <= yymsg_alloc)
 	  {
 	    (void) yysyntax_error (yymsg, yystate, yychar);
-	    yyerror (return_value, retainNull, yymsg);
+	    yyerror (returnValue, retainNull, yymsg);
 	  }
 	else
 	  {
-	    yyerror (return_value, retainNull, YY_("syntax error"));
+	    yyerror (returnValue, retainNull, YY_("syntax error"));
 	    if (yysize != 0)
 	      goto yyexhaustedlab;
 	  }
@@ -1623,7 +1631,7 @@ yyerrlab:
       else
 	{
 	  yydestruct ("Error: discarding",
-		      yytoken, &yylval, return_value, retainNull);
+		      yytoken, &yylval, returnValue, retainNull);
 	  yychar = YYEMPTY;
 	}
     }
@@ -1679,7 +1687,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp, return_value, retainNull);
+		  yystos[yystate], yyvsp, returnValue, retainNull);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -1714,7 +1722,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (return_value, retainNull, YY_("memory exhausted"));
+  yyerror (returnValue, retainNull, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -1722,7 +1730,7 @@ yyexhaustedlab:
 yyreturn:
   if (yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
-		 yytoken, &yylval, return_value, retainNull);
+		 yytoken, &yylval, returnValue, retainNull);
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK (yylen);
@@ -1730,7 +1738,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp, return_value, retainNull);
+		  yystos[*yyssp], yyvsp, returnValue, retainNull);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -1748,10 +1756,10 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 104 "..\\JsonParser.y"
+#line 118 "..\\JsonParser.y"
 
 
-int yyerror (DeltaObject **return_value, bool retainNull, std::string yaccProvidedMessage)
+int yyerror (DeltaObject **returnValue, bool retainNull, std::string yaccProvidedMessage)
 {
 	JsonParserLoaderErrorMsg::JsonLoaderError("%s before token %s", yaccProvidedMessage.c_str(), JsonLex_yytext);
 	return -1;
