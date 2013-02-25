@@ -1,7 +1,0 @@
-BytecodeStructures			DBYTECODE_IMPORT
-DebuggerFrontend			DVMDEBUGFRONTEND_IMPORT
-DebuggerCommon				DVMDEBUGCOMMON_IMPORT
-ReadersWriters				READERS_IMPORT
-Sockets						SOCKETLIB_IMPORT
-UtilAndDefensiveHeap		UTILLIB_IMPORT DDEBUG_IMPORT
-VirtualMachineComponents	DVM_IMPORT RCLOAD_IMPORT

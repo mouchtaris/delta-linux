@@ -2,6 +2,10 @@
 <PropertyTable>
     <vm>
         <libdefs>
+            <value3>
+                <path>../Tools/Delta/DeltaExtraLibraries/JSONParser/JSONParserLibFuncs.txt</path>
+                <name>json</name>
+            </value3>
             <value2>
                 <path>../Tools/Delta/DeltaExtraLibraries/XMLParser/XMLParserLibFuncs.txt</path>
                 <name>xml</name>
