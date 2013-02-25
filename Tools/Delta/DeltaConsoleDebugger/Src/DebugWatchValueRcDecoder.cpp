@@ -70,7 +70,7 @@ static bool Parse_TypeAndValue (
 /////////////////////////////////////////////////////////////
 
 static bool Parse_DisplayDesc (
-		std::string&				displayDesc,
+		std::string&			displayDesc,
 		const std::string&		key,
 		RcAttrParser&			parser, 
 		DeltaTable*				t

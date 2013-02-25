@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>DeltaConsoleDebugger (DISCO)</ProjectName>
+    <ProjectName>DeltaConsoleDebuggerStaticLibs (DISCO)</ProjectName>
     <ProjectGuid>{CD76C615-5DC2-46C7-8CA7-257255C17773}</ProjectGuid>
     <RootNamespace>DeltaConsoleDebugger (DISCO)</RootNamespace>
   </PropertyGroup>
