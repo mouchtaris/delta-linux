@@ -70,9 +70,7 @@ EXPFLOAT {FLOAT}{exp}{INTEGER}
 {STRING}	{
 				std::string s(yytext);
 				s = s.substr(1, s.length() - 2).c_str();
-				char * t = ucopystr(s);
-				JsonParserLoaderActions::Manage_SetUndeletedString( t );
-				yylval.stringValue = t ;
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
 				return STRING;
 			}
 
@@ -88,17 +86,13 @@ EXPFLOAT {FLOAT}{exp}{INTEGER}
 
 {EXPINTEGER} {
 				std::string s(yytext);
-				char * t = ucopystr(s);
-				JsonParserLoaderActions::Manage_SetUndeletedString( t );
-				yylval.stringValue = t ;
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
 				return EXPINTEGER;
 			 }
 
 {EXPFLOAT}	{
 				std::string s(yytext);
-				char * t = ucopystr(s);
-				JsonParserLoaderActions::Manage_SetUndeletedString( t );
-				yylval.stringValue = t ;
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
 				return EXPFLOAT;
 		    }
 

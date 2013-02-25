@@ -62,15 +62,13 @@ object:		BLOCK_L BLOCK_R
 				{ $$ = Manage_PopObject(); }
 		;
 
-members:	pair COMMA members
+members:	members COMMA pair
 		|	pair 
 
 		;
-	 
-pair:		STRING COLON
-				{ Manage_PairIndex($1); }
-			value 
-				{ Manage_PairValue($4);	}
+
+pair:		STRING COLON value 
+				{ Manage_Pair($1, $3);	}
 		;
 	
 array:		BRACKET_L BRACKET_R 
@@ -85,7 +83,7 @@ elementsValue:	value
 					{ Manage_ElementsValue($1); }
 				;
 	
-elements:	elementsValue COMMA elements
+elements:	elements COMMA elementsValue
 		|	elementsValue
 		;
 		

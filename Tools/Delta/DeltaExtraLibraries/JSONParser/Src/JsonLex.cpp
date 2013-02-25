@@ -771,15 +771,13 @@ YY_RULE_SETUP
 {
 				std::string s(yytext);
 				s = s.substr(1, s.length() - 2).c_str();
-				char * t = ucopystr(s);
-				JsonParserLoaderActions::Manage_SetUndeletedString( t );
-				yylval.stringValue = t ;
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
 				return STRING;
 			}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 79 "..\\JsonLex.l"
+#line 77 "..\\JsonLex.l"
 {
 				yylval.numberValue = atof(yytext); 
 				return INTEGER;
@@ -787,7 +785,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 84 "..\\JsonLex.l"
+#line 82 "..\\JsonLex.l"
 {
 				yylval.numberValue = atof(yytext); 
 				return FLOAT;
@@ -795,29 +793,25 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 89 "..\\JsonLex.l"
+#line 87 "..\\JsonLex.l"
 {
 				std::string s(yytext);
-				char * t = ucopystr(s);
-				JsonParserLoaderActions::Manage_SetUndeletedString( t );
-				yylval.stringValue = t ;
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
 				return EXPINTEGER;
 			 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 97 "..\\JsonLex.l"
+#line 93 "..\\JsonLex.l"
 {
 				std::string s(yytext);
-				char * t = ucopystr(s);
-				JsonParserLoaderActions::Manage_SetUndeletedString( t );
-				yylval.stringValue = t ;
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
 				return EXPFLOAT;
 		    }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 105 "..\\JsonLex.l"
+#line 99 "..\\JsonLex.l"
 {
 				JsonParserLoaderErrorMsg::JsonLoaderError("Did not recognize token %s", yytext);
 				return yytext[0];
@@ -825,10 +819,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 110 "..\\JsonLex.l"
+#line 104 "..\\JsonLex.l"
 ECHO;
 	YY_BREAK
-#line 832 "lex.JsonLex_yy.c"
+#line 826 "lex.JsonLex_yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -1712,6 +1706,6 @@ int main()
 	return 0;
 	}
 #endif
-#line 110 "..\\JsonLex.l"
+#line 104 "..\\JsonLex.l"
 
 

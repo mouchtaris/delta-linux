@@ -14,7 +14,7 @@
 
 void AspectCompiler::Error(const std::string& msg) {
 	if (onError)
-		onError(uconstructstr(msg.c_str(), UERROR_GETREPORT().c_str()).c_str());
+		onError(uconstructstr((msg + ".\n").c_str(), UERROR_GETREPORT().c_str()).c_str());
 	UERROR_CLEAR();
 }
 
@@ -102,7 +102,7 @@ bool AspectCompiler::ApplyTransformations(const StringList& aspects) {
 		if (!DPTR(vm)->GlobalFuncExists(ASPECT_TRANSFORMATION_FUNCNAME)) {
 			udelete(vm);
 			if (onError)
-				onError(uconstructstr("Error: No global function '%s' found\n", ASPECT_TRANSFORMATION_FUNCNAME).c_str());
+				onError(uconstructstr("Error: No global function '%s' found.\n", ASPECT_TRANSFORMATION_FUNCNAME).c_str());
 			break;
 		}
 
@@ -122,12 +122,17 @@ bool AspectCompiler::ApplyTransformations(const StringList& aspects) {
 		tree = DeltaAST_Get(DPTR(vm)->GetReturnValue());		//previous tree is automatically garbage collected if needed
 		if (ValidatableHandler::Validate(vm, serialNo))
 			DDELETE(vm);
+		if (!tree) {
+			if (onError)
+				onError("Invalid transformation: result is not a valid AST.\n");
+			break;
+		}
 
 		AST::AlphaRenamer()(tree);
 		AST::ValidationVisitor validator;
 		if (!validator(tree)) {
 			if (onError)
-				onError(uconstructstr("Invalid transformation: %s\n", validator.GetValidationError().c_str()).c_str());
+				onError(uconstructstr("Invalid transformation: %s.\n", validator.GetValidationError().c_str()).c_str());
 			unullify(tree);
 			break;
 		}

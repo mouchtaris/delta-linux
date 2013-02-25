@@ -6,12 +6,26 @@
 #include "JsonParseActions.h"
 #include "JsonLoaderAPI.h"
 #include "uptr.h"
+#include "ulatedestructor.h"
 #include <list>
 #include <algorithm>
 
-static char* 							undeletedString = (char*) 0;
+typedef udestroyablewrapper<char*, uarrdestructorfunctor<char*> > DestroyableString;
+
+class JSONStringHolder :
+    public ulatedestructionmanager<
+                DestroyableString,
+                uptrdestructorfunctor<DestroyableString*>
+            >{
+    public:
+    char* StringWithLateDestruction(char* s) {
+        add(DNEWCLASS(DestroyableString, (s)));
+        return s;
+    }
+};
+
+static JSONStringHolder					stringHolder;
 static DeltaValue*						undeletedValue = (DeltaValue*) 0;
-static std::list<std::string>			indexHolder;
 static std::list<DeltaObject*>			objectHolder;
 static std::list<DeltaObject*>			arrayHolder;
 
@@ -24,17 +38,14 @@ namespace JsonObjectDeleter{
 }
 
 void JsonParserLoaderActions::Manage_Init(void){
-	DASSERT(	indexHolder.empty()		&&
-				objectHolder.empty()	&& 
+	DASSERT(	objectHolder.empty()	&& 
 				arrayHolder.empty()		&&
-				!undeletedValue			&& 
-				!undeletedString		
+				!undeletedValue
 			);
 }
 
 void JsonParserLoaderActions::Manage_Clear(void){
 	udeleteunlessnull( undeletedValue );
-	udeleteasarrayunlessnull( undeletedString );
 
 	std::for_each(
 		arrayHolder.begin(), 
@@ -49,13 +60,12 @@ void JsonParserLoaderActions::Manage_Clear(void){
 		JsonObjectDeleter::ObjectDeleter()
 	);
 	objectHolder.clear();
-	indexHolder.clear();
+
+	stringHolder.commit();
 }
 
-void JsonParserLoaderActions::Manage_SetUndeletedString( char* str ){
-	DASSERT(!undeletedString);
-	undeletedString = str;
-}
+char* JsonParserLoaderActions::Manage_StringWithLateDestruction(char* str)
+	{ return stringHolder.StringWithLateDestruction(str); }
 
 ////////////////////////////////////object
 
@@ -74,23 +84,14 @@ DeltaObject* JsonParserLoaderActions::Manage_PopObject(void){
 	return topObj;
 }
 
-void JsonParserLoaderActions::Manage_PairIndex(const char* key){
-	DASSERT( objectHolder.size()>0 );
+void JsonParserLoaderActions::Manage_Pair(const char* key, DeltaValue* val){
 	DASSERT( key );
-	indexHolder.push_front(key);
-	DASSERT(undeletedString == key);
-	udeleteasarray(undeletedString);
-}
-
-void JsonParserLoaderActions::Manage_PairValue(DeltaValue* val){
 	DASSERT( objectHolder.size()>0 );
-	DASSERT( indexHolder.size()>0 );
 	if (val) {
-		DPTR(objectHolder.front())->Set( indexHolder.front(), *DPTR( val ) );
+		DPTR(objectHolder.front())->Set( key, *DPTR( val ) );
 		DASSERT(undeletedValue == val);
 		udelete(undeletedValue);
 	}
-	indexHolder.pop_front();
 }
 
 /////////////////////////////////array
@@ -130,12 +131,7 @@ void JsonParserLoaderActions::Manage_ElementsValue(DeltaValue* val){
 
 DeltaValue* JsonParserLoaderActions::Manage_ValueString(const char* str){
 	DASSERT(str && !undeletedValue);
-	DeltaValue* retValue = DNEWCLASS(DeltaValue, (DPTR(str)));
-
-	DASSERT(undeletedString == str);
-	udeleteasarray(undeletedString);
-
-	return undeletedValue = DPTR(retValue);
+	return undeletedValue = DNEWCLASS(DeltaValue, (DPTR(str)));
 }
 
 static DeltaValue* MakeNewValueFromObject(DeltaObject* obj){

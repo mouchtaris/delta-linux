@@ -1139,9 +1139,7 @@ void Script::BuildWithScriptDependencies (const ScriptPtrSet& deps) {
 	for (ScriptPtrSet::iterator i = toBuild.begin(); i != toBuild.end(); ++i) {
 		UIntList workId = m_workId;
 		workId.push_back(NextWorkSerial());
-
-		boost::thread(boost::bind(&Script::BuildImpl, *i, workId, m_debugBuild, this));
-		//(*i)->BuildImpl(workId, m_debugBuild, this);
+		(*i)->BuildImpl(workId, m_debugBuild, this);
 	}
 }
 

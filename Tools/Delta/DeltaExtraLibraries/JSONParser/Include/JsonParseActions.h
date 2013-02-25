@@ -11,15 +11,14 @@
 
 namespace JsonParserLoaderActions {
 
-extern void Manage_Init(void);
-extern void Manage_Clear(void);
-extern void Manage_SetUndeletedString( char* str );
+extern void				Manage_Init(void);
+extern void				Manage_Clear(void);
+extern char*			Manage_StringWithLateDestruction(char* str);
 
 extern DeltaObject*		Manage_ObjectEmpty(void);
 extern void				Manage_PushNewObject(void);
 extern DeltaObject*		Manage_PopObject(void);
-extern void				Manage_PairIndex(const char* key);
-extern void				Manage_PairValue(DeltaValue* val);
+extern void				Manage_Pair(const char* key, DeltaValue* val);
 
 extern DeltaObject*		Manage_EmptyArray();
 extern void				Manage_PushNewArray();

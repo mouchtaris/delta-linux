@@ -77,19 +77,21 @@ static bool IsSingleNode(TreeNode* node, bool (*func)(TreeNode*)) {
 CONVERSION_CLASS_EX(
 	ExpressionConversion,
 	static bool IsConvertibleToExpression(TreeNode* node);
-	TreeNode* ToExpression(TreeNode* node) const;
+	TreeNode* ToExpression(TreeNode* node, bool primary = true) const;
 );
 
 //*****************************
 
 bool ExpressionConversion::IsValid (TreeNode* target, TreeNode* node) const
-	{ return node && IsConvertibleToExpression(node); }
+	{ return target && DPTR(target)->GetParent() && node && IsConvertibleToExpression(node); }
 
 //*****************************
 
 void ExpressionConversion::operator() (TreeNode* target, TreeNode* node, TreeNode**) const {
 	DASSERT(IsValid(target, node) && target);
-	DefaultReplace(target, ToExpression(node));
+	bool primary = !AST::ValidationVisitor::IsMetaGeneratedCode(node);
+	//Metagenerated code (i.e. inlines & escapes) should never have primary parent
+	DefaultReplace(target, ToExpression(node, primary));
 }
 
 //*****************************
@@ -103,14 +105,15 @@ bool ExpressionConversion::IsConvertibleToExpression(TreeNode* node) {
 
 //*****************************
 
-TreeNode* ExpressionConversion::ToExpression(TreeNode* node) const {
+TreeNode* ExpressionConversion::ToExpression(TreeNode* node, bool primary) const {
 	if (!AST::ValidationVisitor::IsExpression(node) && !AST::ValidationVisitor::IsPrimary(node))
 		node = GetSingleNode(node);
-	if (AST::ValidationVisitor::IsPrimary(node))
+	if (primary && AST::ValidationVisitor::IsPrimary(node))
 		node = Extend(node, AST_TAG_PRIMARY_EXPRESSION, AST_CHILD_EXPR);
 	else if (DPTR(node)->GetTotalChildren() > 1) {	//use extra () to maintain operator precedence
 		node = Extend(node, AST_TAG_PARENTHESISED_EXPR, AST_CHILD_EXPR);
-		node = Extend(node, AST_TAG_PRIMARY_EXPRESSION, AST_CHILD_EXPR);
+		if (primary)
+			node = Extend(node, AST_TAG_PRIMARY_EXPRESSION, AST_CHILD_EXPR);
 	}
 	return node;
 }

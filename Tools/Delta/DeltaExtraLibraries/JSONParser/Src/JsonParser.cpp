@@ -387,16 +387,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   25
+#define YYLAST   23
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  17
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  13
+#define YYNNTS  12
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  26
+#define YYNRULES  25
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  36
+#define YYNSTATES  35
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -443,29 +443,29 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     8,     9,    14,    18,    20,    21,
-      26,    29,    30,    35,    37,    41,    43,    45,    47,    49,
-      51,    53,    55,    57,    59,    61,    63
+       0,     0,     3,     5,     8,     9,    14,    18,    20,    24,
+      27,    28,    33,    35,    39,    41,    43,    45,    47,    49,
+      51,    53,    55,    57,    59,    61
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
       18,     0,    -1,    19,    -1,     8,     9,    -1,    -1,     8,
-      20,    21,     9,    -1,    22,    12,    21,    -1,    22,    -1,
-      -1,     3,    13,    23,    28,    -1,    10,    11,    -1,    -1,
-      10,    25,    27,    11,    -1,    28,    -1,    26,    12,    27,
-      -1,    26,    -1,     3,    -1,    29,    -1,    19,    -1,    24,
-      -1,    14,    -1,    15,    -1,    16,    -1,     6,    -1,     7,
-      -1,     4,    -1,     5,    -1
+      20,    21,     9,    -1,    21,    12,    22,    -1,    22,    -1,
+       3,    13,    27,    -1,    10,    11,    -1,    -1,    10,    24,
+      26,    11,    -1,    27,    -1,    26,    12,    25,    -1,    25,
+      -1,     3,    -1,    28,    -1,    19,    -1,    23,    -1,    14,
+      -1,    15,    -1,    16,    -1,     6,    -1,     7,    -1,     4,
+      -1,     5,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    53,    53,    57,    60,    59,    65,    66,    71,    70,
-      76,    79,    78,    84,    88,    89,    92,    94,    96,    98,
-     100,   102,   104,   108,   110,   112,   114
+       0,    53,    53,    57,    60,    59,    65,    66,    70,    74,
+      77,    76,    82,    86,    87,    90,    92,    94,    96,    98,
+     100,   102,   106,   108,   110,   112
 };
 #endif
 
@@ -477,8 +477,8 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "STRING", "EXPINTEGER", "EXPFLOAT",
   "INTEGER", "FLOAT", "BLOCK_L", "BLOCK_R", "BRACKET_L", "BRACKET_R",
   "COMMA", "COLON", "TRUE", "FALSE", "NIL", "$accept", "document",
-  "object", "$@1", "members", "pair", "$@2", "array", "$@3",
-  "elementsValue", "elements", "value", "number", 0
+  "object", "$@1", "members", "pair", "array", "$@2", "elementsValue",
+  "elements", "value", "number", 0
 };
 #endif
 
@@ -495,17 +495,17 @@ static const yytype_uint16 yytoknum[] =
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    17,    18,    19,    20,    19,    21,    21,    23,    22,
-      24,    25,    24,    26,    27,    27,    28,    28,    28,    28,
-      28,    28,    28,    29,    29,    29,    29
+       0,    17,    18,    19,    20,    19,    21,    21,    22,    23,
+      24,    23,    25,    26,    26,    27,    27,    27,    27,    27,
+      27,    27,    28,    28,    28,    28
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     2,     0,     4,     3,     1,     0,     4,
-       2,     0,     4,     1,     3,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1
+       0,     2,     1,     2,     0,     4,     3,     1,     3,     2,
+       0,     4,     1,     3,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -514,34 +514,34 @@ static const yytype_uint8 yyr2[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     4,     0,     2,     3,     0,     1,     0,     0,     7,
-       8,     5,     0,     0,     6,    16,    25,    26,    23,    24,
-      11,    20,    21,    22,    18,    19,     9,    17,    10,     0,
-      15,     0,    13,     0,    12,    14
+       0,     5,     0,    15,    24,    25,    22,    23,    10,    19,
+      20,    21,    17,    18,     8,    16,     6,     9,     0,    14,
+       0,    12,    11,     0,    13
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,    24,     5,     8,     9,    13,    25,    29,    30,
-      31,    32,    27
+      -1,     2,    22,     5,     8,     9,    23,    28,    29,    30,
+      31,    25
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -14
+#define YYPACT_NINF -12
 static const yytype_int8 yypact[] =
 {
-      -2,    -1,     9,   -14,   -14,     7,   -14,     1,     6,     4,
-     -14,   -14,     7,    -3,   -14,   -14,   -14,   -14,   -14,   -14,
-       8,   -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,    -3,
-       5,    10,   -14,    -3,   -14,   -14
+       0,     6,    16,   -12,   -12,     3,   -12,     7,     5,   -12,
+      -3,   -12,     3,   -12,   -12,   -12,   -12,   -12,     8,   -12,
+     -12,   -12,   -12,   -12,   -12,   -12,   -12,   -12,    -3,   -12,
+      -2,   -12,   -12,    -3,   -12
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -14,   -14,    18,   -14,    11,   -14,   -14,   -14,   -14,   -14,
-     -13,    12,   -14
+     -12,   -12,    18,   -12,   -12,     9,   -12,   -12,   -11,   -12,
+      13,   -12
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -551,16 +551,16 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      15,    16,    17,    18,    19,     1,     1,    20,     4,     6,
-       7,    21,    22,    23,    10,    11,    12,    33,     3,    28,
-      35,    34,     0,    14,     0,    26
+      13,    14,    15,    16,    17,     1,     7,    18,     1,    32,
+      33,    19,    20,    21,    11,     4,     6,    12,     3,    27,
+      10,    26,    34,    24
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-       3,     4,     5,     6,     7,     8,     8,    10,     9,     0,
-       3,    14,    15,    16,    13,     9,    12,    12,     0,    11,
-      33,    11,    -1,    12,    -1,    13
+       3,     4,     5,     6,     7,     8,     3,    10,     8,    11,
+      12,    14,    15,    16,     9,     9,     0,    12,     0,    11,
+      13,    12,    33,    10
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -568,9 +568,9 @@ static const yytype_int8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     8,    18,    19,     9,    20,     0,     3,    21,    22,
-      13,     9,    12,    23,    21,     3,     4,     5,     6,     7,
-      10,    14,    15,    16,    19,    24,    28,    29,    11,    25,
-      26,    27,    28,    12,    11,    27
+      13,     9,    12,     3,     4,     5,     6,     7,    10,    14,
+      15,    16,    19,    23,    27,    28,    22,    11,    24,    25,
+      26,    27,    11,    12,    25
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1426,125 +1426,118 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 71 "..\\JsonParser.y"
-    { Manage_PairIndex((yyvsp[(1) - (2)].stringValue)); ;}
+    { Manage_Pair((yyvsp[(1) - (3)].stringValue), (yyvsp[(3) - (3)].deltaValue));	;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 73 "..\\JsonParser.y"
-    { Manage_PairValue((yyvsp[(4) - (4)].deltaValue));	;}
+#line 75 "..\\JsonParser.y"
+    { (yyval.deltaObject) = Manage_EmptyArray();	;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
 #line 77 "..\\JsonParser.y"
-    { (yyval.deltaObject) = Manage_EmptyArray();	;}
+    { Manage_PushNewArray(); ;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
 #line 79 "..\\JsonParser.y"
-    { Manage_PushNewArray(); ;}
+    { (yyval.deltaObject) = Manage_PopArray(); ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 81 "..\\JsonParser.y"
-    { (yyval.deltaObject) = Manage_PopArray(); ;}
+#line 83 "..\\JsonParser.y"
+    { Manage_ElementsValue((yyvsp[(1) - (1)].deltaValue)); ;}
     break;
 
-  case 13:
+  case 15:
 
 /* Line 1455 of yacc.c  */
-#line 85 "..\\JsonParser.y"
-    { Manage_ElementsValue((yyvsp[(1) - (1)].deltaValue)); ;}
+#line 91 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_ValueString((yyvsp[(1) - (1)].stringValue)); ;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
 #line 93 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_ValueString((yyvsp[(1) - (1)].stringValue)); ;}
+    {  (yyval.deltaValue) = (yyvsp[(1) - (1)].deltaValue); ;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
 #line 95 "..\\JsonParser.y"
-    {  (yyval.deltaValue) = (yyvsp[(1) - (1)].deltaValue); ;}
+    { (yyval.deltaValue) = Manage_ValueObject((yyvsp[(1) - (1)].deltaObject)); ;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
 #line 97 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_ValueObject((yyvsp[(1) - (1)].deltaObject)); ;}
+    { (yyval.deltaValue) = Manage_ValueArray((yyvsp[(1) - (1)].deltaObject)); ;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
 #line 99 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_ValueArray((yyvsp[(1) - (1)].deltaObject)); ;}
+    { (yyval.deltaValue) = Manage_ValueTrue(); ;}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
 #line 101 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_ValueTrue(); ;}
+    { (yyval.deltaValue) = Manage_ValueFalse(); ;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
 #line 103 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_ValueFalse(); ;}
+    { (yyval.deltaValue) = Manage_ValueNil(retainNull); ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 105 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_ValueNil(retainNull); ;}
+#line 107 "..\\JsonParser.y"
+    { (yyval.deltaValue) = Manage_NumberInteger((yyvsp[(1) - (1)].numberValue)); ;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
 #line 109 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_NumberInteger((yyvsp[(1) - (1)].numberValue)); ;}
+    { (yyval.deltaValue) = Manage_NumberFloat((yyvsp[(1) - (1)].numberValue)); ;}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
 #line 111 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_NumberFloat((yyvsp[(1) - (1)].numberValue)); ;}
+    { (yyval.deltaValue) = Manage_NumberExpInteger((yyvsp[(1) - (1)].stringValue)); ;}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
 #line 113 "..\\JsonParser.y"
-    { (yyval.deltaValue) = Manage_NumberExpInteger((yyvsp[(1) - (1)].stringValue)); ;}
-    break;
-
-  case 26:
-
-/* Line 1455 of yacc.c  */
-#line 115 "..\\JsonParser.y"
     { (yyval.deltaValue) = Manage_NumberExpFloat((yyvsp[(1) - (1)].stringValue)); ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1548 "JsonParser.tab.c"
+#line 1541 "JsonParser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1756,7 +1749,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 118 "..\\JsonParser.y"
+#line 116 "..\\JsonParser.y"
 
 
 int yyerror (DeltaObject **returnValue, bool retainNull, std::string yaccProvidedMessage)
