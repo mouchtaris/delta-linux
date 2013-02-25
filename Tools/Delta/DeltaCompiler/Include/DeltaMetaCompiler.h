@@ -10,7 +10,6 @@
 #include "CompilerAPI.h"
 #include "ucallbacks.h"
 #include "ASTUnparseVisitor.h"
-#include "CompilerComponentDirectory.h"
 
 ///////////////////////////////////////////////////////////////
 
