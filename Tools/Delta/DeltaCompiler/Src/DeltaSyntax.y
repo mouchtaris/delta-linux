@@ -886,7 +886,7 @@ Lvalue:						Ident {
 								SET_LOCATION($$, @1, @2);
 							}
 
-						|	ConstAttributeId
+						|	AttributeId
 								{ $$ = ASTCREATOR_BY_CONTEXT.MakeNode_AttrLvalue($1); SET_LOCATION($$, @1, @1); }
 
 						|	STATIC 
