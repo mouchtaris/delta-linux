@@ -95,6 +95,26 @@
 		const std::string _var##_ = DPTR(vm)->GetActualArg(_argNo++)->ToString();	\
 		if (_var##_ == "DefaultPosition" || _var##_ == "wxDefaultPosition")			\
 			_var = new wxPoint(wxDefaultPosition);									\
+		else																		\
+			DLIB_ERROR_CHECK(														\
+				true,																\
+				uconstructstr(														\
+					"invalid argument passed (%s)."									\
+					" Expected externid of type 'point' or"							\
+					" String with value \"[wx]DefaultPosition\"",					\
+					DPTR(vm)->GetActualArg(_argNo)->TypeStr()						\
+				)																	\
+			)																		\
+	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Nil) {			\
+		DLIB_ERROR_CHECK(															\
+			true,																	\
+			uconstructstr(															\
+				"invalid argument passed (%s)."										\
+				" Expected externid of type 'point' or"								\
+				" String with value \"[wx]DefaultPosition\"",						\
+				DPTR(vm)->GetActualArg(_argNo)->TypeStr()							\
+			)																		\
+		)																			\
 	} else {																		\
 		DLIB_WXGET_BASE(point, Point, _var##_)										\
 		_var = _var##_;																\
@@ -106,6 +126,26 @@
 		const std::string _var##_ = DPTR(vm)->GetActualArg(_argNo++)->ToString();	\
 		if (_var##_ == "DefaultSize" || _var##_ == "wxDefaultSize")					\
 			_var = new wxSize(wxDefaultSize);										\
+		else																		\
+			DLIB_ERROR_CHECK(														\
+				true,																\
+				uconstructstr(														\
+					"invalid argument passed (%s)."									\
+					" Expected externid of type 'size' or"							\
+					" String with value \"[wx]DefaultSize\"",						\
+					DPTR(vm)->GetActualArg(_argNo)->TypeStr()						\
+				)																	\
+			)																		\
+	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Nil) {			\
+		DLIB_ERROR_CHECK(															\
+			true,																	\
+			uconstructstr(															\
+				"invalid argument passed (%s)."										\
+				" Expected externid of type 'size' or"								\
+				" String with value \"[wx]DefaultSize\"",							\
+				DPTR(vm)->GetActualArg(_argNo)->TypeStr()							\
+			)																		\
+		)																			\
 	} else {																		\
 		DLIB_WXGET_BASE(size, Size, _var##_)										\
 		_var = _var##_;																\
