@@ -285,6 +285,8 @@ function oninitfunc() {
 	scrollbar.scrollbarPos = scrollbarPos;
 	
 //CREATE BUTTON & ADD IT TO SIZER
+	staticbitmap = staticbitmap_construct(frame, wx::ID_ANY, fileopen_bmp);
+	sizer.add(staticbitmap, 0, wx::ALIGN_CENTER);
 	okButton = button_construct(frame, "ID_OK", "Quit");
 	okButton.setdefault();
 	sizer.add(okButton, 0, "ALIGN_CENTER");

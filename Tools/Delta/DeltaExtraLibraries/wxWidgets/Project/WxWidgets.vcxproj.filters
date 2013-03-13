@@ -674,6 +674,9 @@
     <ClCompile Include="..\Src\DeltaWxGBSizerItem.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\DeltaWxStaticBitmap.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\DeltaWxWidgets.h">
@@ -1281,6 +1284,9 @@
     </ClInclude>
     <ClInclude Include="..\Include\DeltaWxGBSizerItem.h">
       <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DeltaWxStaticBitmap.h">
+      <Filter>Header Files\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -98,6 +98,7 @@
     <ClCompile Include="..\Src\DeltaWxGridBagSizer.cpp" />
     <ClCompile Include="..\Src\DeltaWxPaintEvent.cpp" />
     <ClCompile Include="..\Src\DeltaWxScrollBar.cpp" />
+    <ClCompile Include="..\Src\DeltaWxStaticBitmap.cpp" />
     <ClCompile Include="..\Src\DeltaWxWidgetsLib.cpp" />
     <ClCompile Include="..\Src\wxWrapperUtilFunctions.cpp" />
     <ClCompile Include="..\Src\DeltaWxBitmapButton.cpp" />
@@ -301,6 +302,7 @@
     <ClInclude Include="..\Include\DeltaWxGridBagSizer.h" />
     <ClInclude Include="..\Include\DeltaWxPaintEvent.h" />
     <ClInclude Include="..\Include\DeltaWxScrollBar.h" />
+    <ClInclude Include="..\Include\DeltaWxStaticBitmap.h" />
     <ClInclude Include="..\Include\DeltaWxWidgets.h" />
     <ClInclude Include="..\Include\DeltaWxWidgetsLib.h" />
     <ClInclude Include="..\Include\wxWrapperUtilFunctions.h" />

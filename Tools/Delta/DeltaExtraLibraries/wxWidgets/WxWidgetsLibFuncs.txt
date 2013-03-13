@@ -461,6 +461,8 @@ gbspan
 gbsizeritem					: sizeritem
 @type
 gridbagsizer				: flexgridsizer
+@type
+staticbitmap				: control
 @const
 DLL										"WxWidgets.dll"
 @const
@@ -6672,6 +6674,13 @@ splitterwindow_splitvertically				(splitterwindow:splitterwindow,window1:+{windo
 splitterwindow_unsplit						(splitterwindow:splitterwindow):Bool (splitterwindow:splitterwindow,toRemove:+{window,Nil}):Bool
 splitterwindow_updatesize					(splitterwindow:splitterwindow)
 #group(wxbox)
+staticbitmap_construct						():staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String}):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String}):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String}):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):staticbitmap
+staticbitmap_destruct						(bitmap:staticbitmap)
+staticbitmap_create							(bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String}):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String}):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
+staticbitmap_getbitmap						(bitmap:staticbitmap) : bitmap
+staticbitmap_geticon						(bitmap:staticbitmap) : icon
+staticbitmap_setbitmap						(bitmap:staticbitmap,bmp:bitmap)
+staticbitmap_seticon						(bitmap:staticbitmap,icon:icon)
 staticbox_construct							():staticbox (parent:+{window,Nil},id:+{Number,String},label:String):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):staticbox
 staticbox_destruct							(staticbox:staticbox)
 staticbox_create							(staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool

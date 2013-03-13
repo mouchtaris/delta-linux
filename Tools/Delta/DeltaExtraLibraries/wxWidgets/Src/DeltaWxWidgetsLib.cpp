@@ -228,6 +228,7 @@ DWXWIDGETS_CFUNC void* Install (void) {
 	Install_DeltaWxGBSpan_Lib(api);
 	Install_DeltaWxGBSizerItem_Lib(api);
 	Install_DeltaWxGridBagSizer_Lib(api);
+	Install_DeltaWxStaticBitmap_Lib(api);
 	return udynamiclibloader::New("CleanUp", true);	 // Explicitly supply a cleaner.
 }
 
@@ -433,6 +434,7 @@ DWXWIDGETS_CFUNC void* CleanUp (void) {
 	CleanUp_DeltaWxGBSpan_Lib();
 	CleanUp_DeltaWxGBSizerItem_Lib();
 	CleanUp_DeltaWxGridBagSizer_Lib();
+	CleanUp_DeltaWxStaticBitmap_Lib();
 
 	DeltaLibraryObjectCreator::DestroyAPI(api);
 	return udynamiclibloader::New("dll cleared");

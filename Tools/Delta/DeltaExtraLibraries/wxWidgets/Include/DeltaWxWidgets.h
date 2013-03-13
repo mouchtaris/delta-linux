@@ -200,5 +200,6 @@
 #include "DeltaWxGBSpan.h"
 #include "DeltaWxGBSizerItem.h"
 #include "DeltaWxGridBagSizer.h"
+#include "DeltaWxStaticBitmap.h"
 
 #endif	// Do not add stuff beyond this point.
