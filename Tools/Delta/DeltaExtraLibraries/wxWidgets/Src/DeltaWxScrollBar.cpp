@@ -26,8 +26,11 @@ WX_FUNC_DEF(getrange)
 WX_FUNC_DEF(getpagesize)
 WX_FUNC_DEF(getthumbposition)
 WX_FUNC_DEF(getthumbsize)
-WX_FUNC_DEF(setthumbposition)
+WX_FUNC_DEF(setpagesize)
+WX_FUNC_DEF(setrange)
 WX_FUNC_DEF(setscrollbar)
+WX_FUNC_DEF(setthumbposition)
+WX_FUNC_DEF(setthumbsize)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
@@ -37,13 +40,16 @@ WX_FUNCS_START
 	WX_FUNC(getpagesize),
 	WX_FUNC(getthumbposition),
 	WX_FUNC(getthumbsize),
+	WX_FUNC(setpagesize),
+	WX_FUNC(setrange),
+	WX_FUNC(setscrollbar),
 	WX_FUNC(setthumbposition),
-	WX_FUNC(setscrollbar)
+	WX_FUNC(setthumbsize)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setscrollbar")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setthumbsize")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ScrollBar, "scrollbar", Control)
 
@@ -144,10 +150,22 @@ DLIB_FUNC_START(scrollbar_getthumbsize, 1, Nil)
 	WX_SETNUMBER(scrollbar->GetThumbSize())
 }
 
-DLIB_FUNC_START(scrollbar_setthumbposition, 2, Nil)
+DLIB_FUNC_START(scrollbar_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(scrollbar, ScrollBar, scrollbar)
-	WX_GETNUMBER(viewStart)
-	scrollbar->SetThumbPosition(viewStart);
+	WX_GETNUMBER(newPageSize)
+	int thumbPosition		= scrollbar->GetThumbPosition();
+	int thumbSize			= scrollbar->GetThumbSize();
+	int range				= scrollbar->GetRange();
+	scrollbar->SetScrollbar(thumbPosition, thumbSize, range, newPageSize);
+}
+
+DLIB_FUNC_START(scrollbar_setrange, 2, Nil)
+	DLIB_WXGET_BASE(scrollbar, ScrollBar, scrollbar)
+	WX_GETNUMBER(newRange)
+	int thumbPosition		= scrollbar->GetThumbPosition();
+	int thumbSize			= scrollbar->GetThumbSize();
+	int pageSize			= scrollbar->GetPageSize();
+	scrollbar->SetScrollbar(thumbPosition, thumbSize, newRange, pageSize);
 }
 
 WX_FUNC_ARGRANGE_START(scrollbar_setscrollbar, 5, 6, Nil)
@@ -159,4 +177,19 @@ WX_FUNC_ARGRANGE_START(scrollbar_setscrollbar, 5, 6, Nil)
 	bool refresh = true;
 	if (n >= 6) { WX_GETBOOL_DEFINED(refresh) }
 	scrollbar->SetScrollbar(position, thumbSize, range, pageSize, refresh);
+}
+
+DLIB_FUNC_START(scrollbar_setthumbposition, 2, Nil)
+	DLIB_WXGET_BASE(scrollbar, ScrollBar, scrollbar)
+	WX_GETNUMBER(viewStart)
+	scrollbar->SetThumbPosition(viewStart);
+}
+
+DLIB_FUNC_START(scrollbar_setthumbsize, 2, Nil)
+	DLIB_WXGET_BASE(scrollbar, ScrollBar, scrollbar)
+	WX_GETNUMBER(newThumbSize)
+	int thumbPosition		= scrollbar->GetThumbPosition();
+	int range				= scrollbar->GetRange();
+	int pageSize			= scrollbar->GetPageSize();
+	scrollbar->SetScrollbar(thumbPosition, newThumbSize, range, pageSize);
 }

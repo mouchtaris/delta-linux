@@ -6420,8 +6420,11 @@ scrollbar_getrange							(scrollbar:scrollbar) : Number
 scrollbar_getpagesize						(scrollbar:scrollbar) : Number
 scrollbar_getthumbposition					(scrollbar:scrollbar) : Number
 scrollbar_getthumbsize						(scrollbar:scrollbar) : Number
-scrollbar_setthumbposition					(scrollbar:scrollbar,viewStart:Number)
+scrollbar_setpagesize						(scrollbar:scrollbar,pageSize:Number)
+scrollbar_setrange							(scrollbar:scrollbar,range:Number)
 scrollbar_setscrollbar						(scrollbar:scrollbar,position:Number,thumbSize:Number,range:Number,pageSize:Number) (scrollbar:scrollbar,position:Number,thumbSize:Number,range:Number,pageSize:Number,refresh:Bool)
+scrollbar_setthumbposition					(scrollbar:scrollbar,viewStart:Number)
+scrollbar_setthumbsize						(scrollbar:scrollbar,thumbSize:Number)
 scrolledwindow_construct					():scrolledwindow (parent:+{window,Nil}):scrolledwindow (parent:+{window,Nil},id:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):scrolledwindow
 scrolledwindow_destruct						(scrolledwindow:scrolledwindow)
 scrolledwindow_calcscrolledposition			(scrolledwindow:scrolledwindow,pt:+{point,String}):point (scrolledwindow:scrolledwindow,x:Number,y:Number):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void
