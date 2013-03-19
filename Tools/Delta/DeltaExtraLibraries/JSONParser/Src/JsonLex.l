@@ -48,7 +48,7 @@ exp ("e"|"e+"|"e-"|"E"|"E+"|"E-")
 white [ \n\t]
 
 STRING \"{character}*\"
-INTEGER [-]*{digit}+
+INTEGER [-]?{digit}+
 FLOAT {INTEGER}"."{digit}+
 EXPINTEGER {INTEGER}{exp}{INTEGER}
 EXPFLOAT {FLOAT}{exp}{INTEGER}
