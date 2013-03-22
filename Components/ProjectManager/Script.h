@@ -146,6 +146,7 @@ namespace ide
 
 		static UpToDateMap*					s_upToDate;
 		static VisitMap*					s_visitMap;
+		static VisitMap*					s_upToDateVisitMap;
 		static VisitMap*					s_visitMapProduceCyclicPath;
 		static ScriptPtrList*				s_allScripts;
 		static unsigned						s_buildNesting;

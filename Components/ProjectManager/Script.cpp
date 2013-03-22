@@ -96,6 +96,7 @@ namespace ide
 		s_upToDate					= new UpToDateMap;
 		s_visitMap					= new VisitMap;
 		s_visitMapProduceCyclicPath	= new VisitMap;
+		s_upToDateVisitMap			= new VisitMap;
 
 		ComponentLoader::Instance().LoadComponent("BuildSystem");
 	}
@@ -114,6 +115,9 @@ namespace ide
 
 		delete s_visitMap;
 		s_visitMap = (VisitMap*) 0;
+
+		delete s_upToDateVisitMap;
+		s_upToDateVisitMap = (VisitMap*) 0;
 
 		delete s_visitMapProduceCyclicPath;
 		s_visitMapProduceCyclicPath = (VisitMap*) 0;

@@ -278,8 +278,10 @@ namespace ide {
 	boost::mutex			Script::s_allScriptsMutex;
 	Script::ScriptPtrList*	Script::s_allScripts					= (ScriptPtrList*) 0;
 	Script::UpToDateMap*	Script::s_upToDate						= (UpToDateMap*) 0;
+
 	Script::VisitMap*		Script::s_visitMap						= (VisitMap*) 0;		// Used only on cyclic reference path detection
 	Script::VisitMap*		Script::s_visitMapProduceCyclicPath		= (VisitMap*) 0;		// Used only on producing the cyclic path
+	Script::VisitMap*		Script::s_upToDateVisitMap				= (VisitMap*) 0;		// Used only on producing the cyclic path
 
 	const Script*			Script::s_cleanStarter		= (Script*) 0;
 	unsigned				Script::s_buildNesting		= 0;
@@ -1889,6 +1891,12 @@ bool Script::IsUpToDateCalculation (void) {
 		boost::mutex::scoped_lock lock(m_buildDepsMutex);
 		DASSERT(m_buildDeps.empty());
 
+		// If already visited assume it is up-to-date, since the actual 
+		// up-to-date calculation will get us the correct results
+		if (s_upToDateVisitMap->find(this) != s_upToDateVisitMap->end())
+			return true;
+		(*s_upToDateVisitMap)[this];
+
 		SaveSource();
 
 		if (!IsByteCodeUpToDate() || !AreLastBuildPropertiesSameAsCurrent())
@@ -2219,6 +2227,7 @@ void Script::RunImpl (const std::string& func) {
 		Call<void (void), SafeCall>(this, "BuildOrder", "Clear")();
 
 		s_upToDate->clear();
+		s_upToDateVisitMap->clear();
 
 		SetRunAutomaticallyAfterBuild(func);
 		if (!IsUpToDateCalculation())
