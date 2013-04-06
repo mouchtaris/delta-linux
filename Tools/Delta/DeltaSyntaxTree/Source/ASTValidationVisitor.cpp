@@ -42,18 +42,18 @@
 #define TAG_VALIDATOR_EX(index, tag, validator)	\
 	IndexedChildValidator(index, validator, CHILD_INDEX_TAG_MISMATCH(index, tag))
 
-#define TAG_VALIDATOR(index, tag)	TAG_VALIDATOR_EX(index, tag, &TagValidator(tag))
+#define TAG_VALIDATOR(index, tag)	TAG_VALIDATOR_EX(index, tag, TagValidator(tag))
 
 #define FUNC_VALIDATOR_EX(index, func, validator)	\
 	IndexedChildValidator(index, validator, CHILD_INDEX_FAIL(index, VISITOR->GetFuncValidatorMessage(func)))
 
-#define FUNC_VALIDATOR(index, func)	FUNC_VALIDATOR_EX(index, func, &PtrFuncValidator(func))
+#define FUNC_VALIDATOR(index, func)	FUNC_VALIDATOR_EX(index, func, PtrFuncValidator(func))
 
 #define LIST_TAG_VALIDATOR(tag)	\
-	IndexedChildValidator("", &TagValidator(tag), uconstructstr("all children should be of type '%s'", ucstringarg(tag)))
+	IndexedChildValidator("", TagValidator(tag), uconstructstr("all children should be of type '%s'", ucstringarg(tag)))
 
 #define LIST_NAME_VALIDATOR()	\
-	IndexedChildValidator("", &PtrFuncValidator(&IsName), uconstructstr("all children should be valid names"))
+	IndexedChildValidator("", PtrFuncValidator(&IsName), uconstructstr("all children should be valid names"))
 
 //*************************
 
@@ -78,6 +78,8 @@
 #define STMTS_CHILDREN							"statement lists should contain only statements and using directives"
 #define NON_TOP_LEVEL_USING_DIRECTIVES			"using directives are valid only at global scope"
 #define USING_DIRECTIVE_AFTER_STMT				"no statement should precede a using directive"
+
+#define RETURN_CHILD							"child with index 'expr' should be an expression or a function expression"
 
 #define TABLE_ELEMENT_CHILDREN					"all children should be table elements"
 #define QUOTED_ELEMENT_CHILDREN					"all children should be valid quoted elements"
@@ -276,9 +278,9 @@ void AST::ValidationVisitor::Handle_FunctionBasic (AST_VISITOR_ARGS, const Index
 
 	IndexedChildValidatorList childValidators;
 	if (TreeNode* name = DPTR(node)->GetChild(AST_CHILD_NAME))
-		childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_NAME, IsName, &isName));
+		childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_NAME, IsName, isName));
 
-	childValidators.push_back(TAG_VALIDATOR_EX(AST_CHILD_FORMALS, AST_TAG_FORMAL_ARGS, &formalsTag));
+	childValidators.push_back(TAG_VALIDATOR_EX(AST_CHILD_FORMALS, AST_TAG_FORMAL_ARGS, formalsTag));
 	childValidators.push_back(bodyValidator);
 
 	StringList attributes;
@@ -377,8 +379,8 @@ void AST::ValidationVisitor::Handle_AssertStmt (AST_VISITOR_ARGS)
 ///////////////////////////////////////////////////////////
 
 void AST::ValidationVisitor::Handle_Return (AST_VISITOR_ARGS) {
-	if (node->GetChild(AST_CHILD_EXPR))
-		Handle_UnaryExprExpression(AST_VISITOR_ACTUALS);
+	if (TreeNode* expr = node->GetChild(AST_CHILD_EXPR))
+		VALIDATE(IsExpression(DPTR(expr)) || IsFunctionExpression(DPTR(expr)), RETURN_CHILD);
 	else
 		Handle_KwdExpr(AST_VISITOR_ACTUALS);
 } 
@@ -473,7 +475,7 @@ void AST::ValidationVisitor::Handle_ExprListChild (AST_VISITOR_ARGS, const Index
 			DASSERT(listItem && DPTR(listItem)->GetTag() == AST_TAG_EXPRLIST_ITEM);
 			TreeNode* child = DPTR(listItem)->GetChild(AST_CHILD_EXPR);
 			VALIDATE(child, MISSING_CHILD(AST_CHILD_EXPR));
-			VALIDATE((*validator.second)(DPTR(child)), validator.third);
+			VALIDATE((validator.second)(DPTR(child)), validator.third);
 		}
 	}
 }
@@ -524,7 +526,7 @@ void AST::ValidationVisitor::Handle_FunctionCall (AST_VISITOR_ARGS) {
 		AST_VISITOR_ACTUALS,
 		IndexedChildValidator(
 			AST_CHILD_ACTUALS,
-			&PtrFuncValidator(&IsActualArgument),
+			PtrFuncValidator(&IsActualArgument),
 			CHILD_INDEX_FAIL(AST_CHILD_ACTUALS, ACTUAL_ARGUMENTS)
 		)
 	);
@@ -599,7 +601,7 @@ void AST::ValidationVisitor::Handle_TableConstructor (AST_VISITOR_ARGS){
 		AST_VISITOR_ACTUALS,
 		IndexedChildValidator(
 			"",
-			&PtrFuncValidator(&IsTableElement),
+			PtrFuncValidator(&IsTableElement),
 			TABLE_ELEMENT_CHILDREN			
 		)
 	);
@@ -643,7 +645,7 @@ void AST::ValidationVisitor::Handle_TableValues (AST_VISITOR_ARGS){
 		AST_VISITOR_ACTUALS,
 		IndexedChildValidator(
 			"",
-			&PtrFuncValidator(&IsContentExpression),
+			PtrFuncValidator(&IsContentExpression),
 			CHILD_INDEX_FAIL(AST_CHILD_VALUES, TABLE_VALUES)
 		)
 	);
@@ -657,7 +659,7 @@ void AST::ValidationVisitor::Handle_TableIndices (AST_VISITOR_ARGS) {
 		AST_VISITOR_ACTUALS,
 		IndexedChildValidator(
 			"",
-			&PtrFuncValidator(&IsIndexExpression),
+			PtrFuncValidator(&IsIndexExpression),
 			CHILD_INDEX_FAIL(AST_CHILD_INDICES, TABLE_INDICES)
 		)
 	);
@@ -725,17 +727,17 @@ void AST::ValidationVisitor::Handle_ForStmt (AST_VISITOR_ARGS) {
 	PtrFuncValidator isExpr(&IsExpression);
 	PtrFuncValidator isStmt(&IsStmt);
 
-	childValidators.push_back(TAG_VALIDATOR_EX(AST_CHILD_INIT, AST_TAG_EXPR_LIST, &isExprList));
-	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_COND, IsExpression, &isExpr));
-	childValidators.push_back(TAG_VALIDATOR_EX(AST_CHILD_SUFFIX, AST_TAG_EXPR_LIST, &isExprList));
-	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_STMT, IsStmt, &isStmt));
+	childValidators.push_back(TAG_VALIDATOR_EX(AST_CHILD_INIT, AST_TAG_EXPR_LIST, isExprList));
+	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_COND, IsExpression, isExpr));
+	childValidators.push_back(TAG_VALIDATOR_EX(AST_CHILD_SUFFIX, AST_TAG_EXPR_LIST, isExprList));
+	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_STMT, IsStmt, isStmt));
 	
 	Handle_NaryNode(AST_VISITOR_ACTUALS, childValidators);
 	Handle_ExprListChild(
 		AST_VISITOR_ACTUALS,
 		IndexedChildValidator(
 			AST_CHILD_INIT,
-			&isExpr,
+			isExpr,
 			CHILD_INDEX_FAIL(AST_CHILD_INIT, EXPRESSIONS)
 		)
 	);
@@ -743,7 +745,7 @@ void AST::ValidationVisitor::Handle_ForStmt (AST_VISITOR_ARGS) {
 		AST_VISITOR_ACTUALS,
 		IndexedChildValidator(
 			AST_CHILD_SUFFIX,
-			&isExpr,
+			isExpr,
 			CHILD_INDEX_FAIL(AST_CHILD_SUFFIX, EXPRESSIONS)
 		)
 	);
@@ -757,14 +759,14 @@ void AST::ValidationVisitor::Handle_ForeachStmt (AST_VISITOR_ARGS) {
 	PtrFuncValidator isLvalue(&IsLvalue);
 
 	if (node->GetChild(AST_CHILD_INDEX))
-		childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_INDEX, IsLvalue, &isLvalue));
-	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_LVALUE, IsLvalue, &isLvalue));
+		childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_INDEX, IsLvalue, isLvalue));
+	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_LVALUE, IsLvalue, isLvalue));
 	
 	PtrFuncValidator isExpr(&IsExpression);
-	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_CONTAINER, IsExpression, &isExpr));
+	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_CONTAINER, IsExpression, isExpr));
 	
 	PtrFuncValidator isStmt(&IsStmt);
-	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_STMT, IsStmt, &isStmt));
+	childValidators.push_back(FUNC_VALIDATOR_EX(AST_CHILD_STMT, IsStmt, isStmt));
 	
 	Handle_NaryNode(AST_VISITOR_ACTUALS, childValidators);
 } 
@@ -819,7 +821,7 @@ void AST::ValidationVisitor::Handle_QuotedElements (AST_VISITOR_ARGS) {
 		AST_VISITOR_ACTUALS,
 		IndexedChildValidator(
 			"",
-			&PtrFuncValidator(&IsQuotedElement),
+			PtrFuncValidator(&IsQuotedElement),
 			QUOTED_ELEMENT_CHILDREN
 		)
 	);
@@ -871,7 +873,7 @@ void AST::ValidationVisitor::Handle_ListNode (AST_VISITOR_ARGS, const IndexedChi
 		for (util_i32 i = 0; i < n; ++i) {
 			TreeNode* child = DPTR(node)->GetChild(i);
 			VALIDATE(child, MISSING_CHILD(unum2string(i)));
-			VALIDATE((*validator.second)(DPTR(child)), validator.third);
+			VALIDATE((validator.second)(DPTR(child)), validator.third);
 		}
 	}
 }
@@ -889,7 +891,7 @@ void AST::ValidationVisitor::Handle_NaryNode (
 		for (IndexedChildValidatorList::const_iterator i = childValidators.begin(); i != childValidators.end(); ++i) {
 			TreeNode* child = DPTR(node)->GetChild(i->first);
 			VALIDATE(child, MISSING_CHILD(i->first));
-			VALIDATE((*i->second)(DPTR(child)), i->third);
+			VALIDATE((i->second)(DPTR(child)), i->third);
 		}
 		for (StringList::const_iterator i = stringAttributes.begin(); i != stringAttributes.end(); ++i) {
 			VALIDATE(DPTR(node)->HasAttribute(*i), MISSING_ATTRIBUTE(*i));

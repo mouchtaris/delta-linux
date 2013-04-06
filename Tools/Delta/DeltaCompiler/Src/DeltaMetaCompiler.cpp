@@ -244,24 +244,31 @@ void DeltaMetaCompiler::Inline (DeltaValue* value) {
 
 	AST::Node* ast = GetSyntaxTree();
 	AST::Node* target = InlineLocator()(ast);
-	DASSERT(target);
+	
+	// Upon simple meta-compilation the number of inlines should match the number of std::inline calls.
+	// However, through std::context it is possible to remove inline nodes from the original AST.
+	// Additionally, through AOP it is possible to introduce additional std::inline calls.
+	// Overall, it is possible that a given std::inline call does not correspond to a valid inline node, so check here.
+	if (target) {
+		DASSERT(!inlineReferences.empty());
+		AST::Node::SourceInfoReferences refs = inlineReferences.front();
+		inlineReferences.pop_front();
 
-	DASSERT(!inlineReferences.empty());
-	AST::Node::SourceInfoReferences refs = inlineReferences.front();
-	inlineReferences.pop_front();
+		if (node)
+			AST::LocationSetter(target->GetLocation(), target->GetLine(), mainSource, refs)(DPTR(node));
+		(*astInjector)(target, node);
 
-	if (node)
-		AST::LocationSetter(target->GetLocation(), target->GetLine(), mainSource, refs)(DPTR(node));
-	(*astInjector)(target, node);
-
-	AST::SanitiseVisitor()(ast);
-	AST::ValidationVisitor* validator = NewValidator(true);
-	DPTR(validator)->SetAllowRenames();
-	if ((*validator)(ast))
-		AST::AlphaRenamer()(ast);
+		AST::SanitiseVisitor()(ast);
+		AST::ValidationVisitor* validator = NewValidator(true);
+		DPTR(validator)->SetAllowRenames();
+		if ((*validator)(ast))
+			AST::AlphaRenamer()(ast);
+		else
+			COMPMESSENGER.Error("Invalid inline: %s", DPTR(validator)->GetValidationError().c_str());
+		DDELETE(validator);
+	}
 	else
-		COMPMESSENGER.Error("Invalid inline: %s", DPTR(validator)->GetValidationError().c_str());
-	DDELETE(validator);
+		COMPMESSENGER.Error("Invalid inline: program AST contains no inline tags (maybe removed via std::context access?)");
 }
 
 /////////////////////////////////////////////////////////

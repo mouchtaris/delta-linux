@@ -594,7 +594,7 @@ Next is garbage collectable:
 Ast			ast_new(tag[, attributes])
 String		ast_get_tag(a)
 Ast			ast_get_child(a, index)
-Object		ast_get_child_index(a, node)
+Object		ast_get_child_index(a, node)				Returned object has the form [.index : Number, .id : String].
 List		ast_get_children(a)
 Number		ast_get_total_children(a)
 Ast			ast_get_parent(a)
@@ -615,11 +615,11 @@ Bool		ast_accept_postorder(a, visitor)
 Bool		ast_accept_preorder(a, visitor)
 Ast			ast_copy(a)
 String		ast_unparse(a)								Generates a string representation of the given ast value
-Ast			ast_inject(a, val)							Injects the given value at the next espace of the given ast.
+Ast			ast_escape(a, val)							Inserts the given value at the next espace of the given ast.
 														Returns the new ast (it may change).
 														Used mainly for the code generation of the escapes (~...).
 			ast_decr_esc_cardinalities(a)				Decreases the cardinality (delay factor) of all escapes of the
-														given ast by 1. Typically follows a series of ast_inject calls.
+														given ast by 1. Typically follows a series of ast_escape calls.
 														Used mainly for the code generation of quasi-quotes (<<...>>).
 
 Also, all previous functions, except ast_new, may be called as methods

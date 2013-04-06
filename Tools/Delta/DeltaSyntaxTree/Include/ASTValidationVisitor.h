@@ -46,7 +46,7 @@ class SYNTAXTREELIB_CLASS ValidationVisitor : public TreeVisitor {
 		TagListValidator(const StringList& tagList) : tags(tags) {}
 	};
 
-	typedef utriple<std::string, const Validator*, std::string> IndexedChildValidator;
+	typedef utriple<std::string, const Validator&, std::string> IndexedChildValidator;
 	typedef std::list<IndexedChildValidator>					IndexedChildValidatorList;
 
 	/////////////////////////////////////////////////////////

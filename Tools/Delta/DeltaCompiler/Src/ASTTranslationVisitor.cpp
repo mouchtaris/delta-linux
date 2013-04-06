@@ -1708,7 +1708,7 @@ void AST::TranslationVisitor::Handle_QuasiQuotes (AST_VISITOR_ARGS){
 		bool hasEscapes = visitor(child);
 		EvaluationStack::StackValues& values = visitor.GetEvalStack().GetValues();
 		for (EvaluationStack::StackValues::reverse_iterator i = values.rbegin(); i != values.rend(); ++i) {
-			func = translator.Translate_NamespaceLvalue(NameList(1, DELTA_STDLIB_NAMESPACE), "ast_inject", &ns);
+			func = translator.Translate_NamespaceLvalue(NameList(1, DELTA_STDLIB_NAMESPACE), "ast_escape", &ns);
 			DeltaExpr* args = i->first.expr()->AdaptIfBool();
 			DASSERT(args || COMPMESSENGER.ErrorsExist());
 			if (args)

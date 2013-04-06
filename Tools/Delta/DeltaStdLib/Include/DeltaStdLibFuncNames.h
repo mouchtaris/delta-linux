@@ -505,7 +505,7 @@ static const char* stdLibFuncNames[] = {
 	"ast_accept_preorder"			"(a:ast, visitor:astvisitor)							:	Bool		",
 	"ast_copy"						"(a:ast)												:	ast			",
 	"ast_unparse"					"(a:ast)												:	String		",
-	"ast_inject"					"(a:ast, node:+{ast,Number,String,Bool,Nil})			:	ast			",
+	"ast_escape"					"(a:ast, node:+{ast,Number,String,Bool,Nil})			:	ast			",
 	"ast_decr_esc_cardinalities"	"(a:ast)												:	Void		",
 
 	// AST traversal.

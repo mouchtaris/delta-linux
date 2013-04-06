@@ -98,7 +98,7 @@ static void ast_accept_postorder_LibFunc (DeltaVirtualMachine*);
 static void ast_accept_preorder_LibFunc (DeltaVirtualMachine*);
 static void ast_copy_LibFunc (DeltaVirtualMachine*);
 static void ast_unparse_LibFunc (DeltaVirtualMachine*);
-static void ast_inject_LibFunc (DeltaVirtualMachine*);
+static void ast_escape_LibFunc (DeltaVirtualMachine*);
 static void ast_decr_esc_cardinalities_LibFunc (DeltaVirtualMachine*);
 
 static DeltaLibraryObjectCreator::FuncEntry funcs[] = {
@@ -126,7 +126,7 @@ static DeltaLibraryObjectCreator::FuncEntry funcs[] = {
 	{ "accept_preorder",		ast_accept_preorder_LibFunc			},
 	{ "copy",					ast_copy_LibFunc					},
 	{ "unparse",				ast_unparse_LibFunc					},
-	{ "inject",					ast_inject_LibFunc					},
+	{ "escape",					ast_escape_LibFunc					},
 	{ "decr_esc_cardinalities",	ast_decr_esc_cardinalities_LibFunc	}
 };
 
@@ -748,7 +748,7 @@ static TreeNode* Extend(TreeNode* child, const std::string& tag, const std::stri
 	return node;
 }
 
-DLIB_FUNC_START(ast_inject, 2, Nil)
+DLIB_FUNC_START(ast_escape, 2, Nil)
 DLIB_GET_AST
 TreeNode* node = (TreeNode*) 0;
 DeltaValue* nodeArg = vm->GetActualArg(1);
@@ -820,7 +820,7 @@ std::list<TreeNode*> escapes = EscapeLocator(true)(ast);
 DASSERT(escapes.empty() || escapes.size() == 1);
 if (escapes.empty()) {
 	DPTR(vm)->PrimaryError(
-		"in %s, given ast has no injection points (escapes)",
+		"in %s, given ast has no escapes",
 		CURR_FUNC
 	);
 	DLIB_RESET_RETURN;
@@ -840,7 +840,7 @@ if (result) {
 	validator.EnterQuotes();
 	if (!validator(result)) {
 		DPTR(vm)->PrimaryError(
-			"in %s, invalid injection: %s",
+			"in %s, invalid escape: %s",
 			CURR_FUNC,
 			validator.GetValidationError().c_str()
 		);
