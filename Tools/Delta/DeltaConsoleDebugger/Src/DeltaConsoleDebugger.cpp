@@ -29,6 +29,9 @@
 #include "VMInit.h"
 #include "uerrorclass.h"
 #include "DebugWatchValueInfo.h"
+#include "DebugWatchValueRcEncodingDefs.h"
+#include "DebugWatchValueJsonEncodingDefs.h"
+#include "JsonLoaderAPI.h"
 #include "DeltaTable.h"
 #include "RcLoaderAPI.h"
 
@@ -67,6 +70,7 @@ static std::string											stopContext;
 static std::list< std::pair<std::string, std::string> >		returnValuesAutoList;
 static std::vector<std::string> 							sourceCode;
 static std::string											sourceFile;
+static std::string											encodingFormat(RC_ENCODING_ID);
 static std::string											breakpointsFile = BREAKPOINTS_DEFAULT_FILE;
 static util_ui32											debuggerPort	= DEBUGGER_DEFAULT_PORT;
 
@@ -201,7 +205,7 @@ static void LoadSource (const char* path) {
 
 #define	CD_RUNSTANDARD_COMMANDS \
 	"| [G]o             | Set [m]ax len         | Co[n]figure graph     |\n" \
-	"| [3] Stop         | 4. Break              |\n"
+	"| Set encoding	[z]	| [3] Stop				| 4. Break              |\n"
 
 #define	CD_ALWAYS_COMMANDS \
 	"|(B)reak at        | D(e)lete bpt          | (C)lear bpts          |\n" \
@@ -509,7 +513,7 @@ static void CDDeleteBreakpoint (void){
 
 //////////////////////////////////////////////////////////////
 
-static void CDClearBreakpoints (void){
+static void CDClearBreakpoints (void) {
 	ShowMessage("ClearBreakpoints\n");
 	std::string source = GetFile();
 
@@ -521,6 +525,29 @@ static void CDClearBreakpoints (void){
 static void CDClearFunctionResults (void) {
 	ShowMessage("ClearFunctionResults\n");
 	ClearReturnValuesAutoList();
+}
+
+//////////////////////////////////////////////////////////////
+
+static void CDSetEncodingFormat (void){
+
+	ShowMessage("SetEncodingFormat\n");
+	printf("1.RC, 2.JSON, 3.Cancel\n");
+
+	while (true) {
+
+		util_ui32 option;
+		if (!GetNumber("Option:", &option) || option == 3)
+			return;
+		else
+		if (option == 1)
+			encodingFormat = RC_ENCODING_ID;
+		else
+		if (option == 2)
+			encodingFormat = JSON_ENCODING_ID;
+		else
+			printf("Invalid option!\n");
+	}
 }
 
 //////////////////////////////////////////////////////////////
@@ -741,7 +768,7 @@ static void CDPrintExpr (void) {
 ///////////////////////////////////////////////////////////////////
 // EXPRESSION BROWSER.
 
-extern bool DebugWatchValueRcDecoder (const std::string& rc, DebugWatchValueInfo* at);
+extern bool DebugWatchValueDecoder (const std::string& encoding, const std::string& format, DebugWatchValueInfo* at);
 
 static bool ReceiveExprTypeData (std::string* value) {
 	DeltaDebugClient::WaitAnyMessage();
@@ -847,14 +874,19 @@ static void ShowElements (
 //
 static bool ExprBrowser (const std::string& expr, bool visible) {
 	
-	DeltaDebugClient::DoGetExprTypeData("rc", expr);
+	DeltaDebugClient::DoGetExprTypeData(encodingFormat.c_str(), expr);
 	std::string result;
 	if (!ReceiveExprTypeData(&result))
 		{ fprintf(stdout, "%s\n", result.c_str()); return true; }
 
+	DASSERT(
+		encodingFormat == RC_ENCODING_ID || 
+		encodingFormat == JSON_ENCODING_ID
+	);
+
 	DebugWatchValueInfo info;
-	if (!DebugWatchValueRcDecoder(result, &info))
-		{ fprintf(stdout, "Decoding error!\n"); return true; }
+	if (!DebugWatchValueDecoder(result, encodingFormat, &info))
+		{ fprintf(stdout, "Decoding '%s' error!\n", encodingFormat.c_str()); return true; }
 
 	if (info.GetType() == DebugWatchValueInfo::SimpleType)
 		{ fprintf(stdout, "Value: %s\n", info.GetSimple().c_str()); return true; }
@@ -1229,6 +1261,7 @@ static void InstalHandlers (void) {
 	handlers['B'] = handlers['b'] = &CDBreakAt;
 	handlers['E'] = handlers['e'] = &CDDeleteBreakpoint;
 	handlers['C'] = handlers['c'] = &CDClearBreakpoints;
+	handlers['Z'] = handlers['z'] = &CDSetEncodingFormat;
 	handlers['5'] = &CDAbout;
 	handlers['6'] = &CDQuit;
 }
@@ -1238,7 +1271,7 @@ static void InstalHandlers (void) {
 static const char* runExtraBreakPointCommands	= "SsIiVvOoRrKkDdUuAaTtLlXxWwHhFfYy";
 static const char* runStandardCommands			= "GgMmNn34";
 static const char* notRunCommands				= "12";
-static const char* alwaysCommands				= "BbEeCc56";
+static const char* alwaysCommands				= "BbEeCcZz56";
 
 static bool RunExtraPrecond (void)		{ return connected && inBreakPoint; }
 static bool RunStandardPrecond (void)	{ return connected; }
@@ -1481,6 +1514,7 @@ int main (int argc, char** argv) {
 	UtilPackage::Initialise();
 	VirtualMachinePackage::Initialise();
 	ResourceLoader::SingletonCreate();
+	JsonLoaderAPI::SingletonCreate();
 
 	fprintf(stdout, "%s", ABOUT);
 	fflush(stdout);
@@ -1504,6 +1538,7 @@ int main (int argc, char** argv) {
 	VirtualMachinePackage::CleanUp();
 	UtilPackage::CleanUp();
 	ResourceLoader::SingletonDestroy();
+	JsonLoaderAPI::SingletonDestroy();
 
 	dclose();
 	return 0;

@@ -9,7 +9,9 @@
 #include "RcLoaderAPI.h"
 #include "DeltaTable.h"
 #include "RcAttrRDParser.h"
+#include "JsonLoaderAPI.h"
 #include "DebugWatchValueRcEncodingDefs.h"
+#include "DebugWatchValueJsonEncodingDefs.h"
 
 //#define	DUMP_ENCODING
 
@@ -231,13 +233,21 @@ static bool Parse_Contents (
 
 /////////////////////////////////////////////////////////////
 
-bool DebugWatchValueRcDecoder (const std::string& rc, DebugWatchValueInfo* at) {
+bool DebugWatchValueDecoder (const std::string& encoding, const std::string& format, DebugWatchValueInfo* at) {
 	
 #if	defined(DUMP_ENCODING)
 	FILE* fp = fopen("rcencoding.txt","w"); fprintf(fp,"%s", rc.c_str()); fclose(fp);
 #endif
 
-	DeltaTable* t = ResourceLoader::LoadFromString(rc);
+	DeltaTable* t = (DeltaTable*) 0;
+
+	if (format == RC_ENCODING_ID)
+		t = ResourceLoader::LoadFromString(encoding);
+	else {
+		DASSERT(format == JSON_ENCODING_ID);
+		t = JsonLoaderAPI::LoadFromString(encoding, false);
+	}
+
 	CHECKERROR(t);
 
 	RcAttrParser parser;

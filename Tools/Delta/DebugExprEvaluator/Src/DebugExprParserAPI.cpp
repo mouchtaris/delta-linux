@@ -16,6 +16,7 @@
 #include "DebugWatchValueTextEncoders.h"
 #include "DebugWatchValueRcEncoder.h"
 #include "DebugWatchValueXmlEncoder.h"
+#include "DebugWatchValueJsonEncoder.h"
 #include "DebugAttributeInformation.h"
 #include "DebugClosureInformation.h"
 #include "ulexutil.h"
@@ -53,6 +54,10 @@ void DebugExprEvaluator::SingletonCreate (void) {
 	DebugWatchValueTextEncoders::Install(
 		DebugWatchValueXmlEncoder::GetFormatId(),
 		&DebugWatchValueXmlEncoder::Encode
+	);
+	DebugWatchValueTextEncoders::Install(
+		DebugWatchValueJsonEncoder::GetFormatId(),
+		&DebugWatchValueJsonEncoder::Encode
 	);
 }
 

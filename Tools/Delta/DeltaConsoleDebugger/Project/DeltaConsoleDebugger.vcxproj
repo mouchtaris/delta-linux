@@ -54,7 +54,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\ThreadLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DebugClient\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\DebugWatchValueInfo\Include;$(DELTA)\ResourceLoaderLib\Include;$(DELTA)\DebugExprEvaluator\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\ThreadLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DebugClient\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\DebugWatchValueInfo\Include;$(DELTA)\ResourceLoaderLib\Include;$(DELTA)\DebugExprEvaluator\Include;$(DELTA)\DeltaExtraLibraries\JSONParser\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;DVMDEBUGCOMMON_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -75,7 +75,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\ThreadLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DebugClient\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\DebugWatchValueInfo\Include;$(DELTA)\ResourceLoaderLib\Include;$(DELTA)\DebugExprEvaluator\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\ThreadLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DebugClient\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\DebugWatchValueInfo\Include;$(DELTA)\ResourceLoaderLib\Include;$(DELTA)\DebugExprEvaluator\Include;$(DELTA)\DeltaExtraLibraries\JSONParser\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;DVMDEBUGCOMMON_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -125,6 +125,9 @@
     <ProjectReference Include="$(DELTA)\DLLs\VirtualMachineComponents\Project\VirtualMachineComponents.vcxproj">
       <Project>{8e7fd87f-7874-468a-913c-eb3837233606}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaExtraLibraries\JSONParser\Project\JSONParser.vcxproj">
+      <Project>{38c43571-8cc7-4baa-94da-81a0dd64732c}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
