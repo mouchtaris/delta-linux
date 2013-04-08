@@ -17,8 +17,13 @@
 
 /////////////////////////////////////////////////////////////
 
-#define	CHECKFINAL(e)	if (true) { if (!(e)) { DPTR(t)->DecRefCounter((DeltaValue*) 0); return false; } } else
-#define	CHECKERROR(e)	if (!(e)) return false
+static volatile util_ui32 errorLine = 0;
+static void OnError (util_ui32 line) {
+	fprintf(stdout, "%u", line);
+}
+
+#define	CHECKFINAL(e)	if (true) { if (!(e)) { DPTR(t)->DecRefCounter((DeltaValue*) 0); OnError(__LINE__); return false; } } else
+#define	CHECKERROR(e)	if (!(e)) { OnError(__LINE__); return false; } else
 
 #define	PARSE(s)		parser.Parse(t, (s).c_str())
 #define	GETSTRING()		val = parser.GetResult().GetString()
@@ -165,6 +170,8 @@ static bool Parse_FieldKeys (
 		DeltaTable*									t
 	) {
 	
+	// TODO: in JSON it should be value.contents[i].size not value.contents[i].fieldkeys.size
+	// thus need a different treatment
 	util_ui32 n;
 	CHECKERROR(Parse_number(&n, key dot RC(RC_SYM_SIZE), parser, t));
 
@@ -212,6 +219,7 @@ static bool Parse_Contents (
 		std::string&								overview,
 		std::string&								absref,
 		const std::string&							key,
+		const std::string&							contentsKey,
 		RcAttrParser&								parser, 
 		DeltaTable*									t
 	) {
@@ -224,7 +232,7 @@ static bool Parse_Contents (
 	
 	for (util_ui32 i = 0; i < n; ++i) {
 		DebugWatchValueInfo::Content content;
-		CHECKERROR(Parse_Content(content, key + uconstructstr("[%d]", i), parser, t));
+		CHECKERROR(Parse_Content(content, contentsKey + uconstructstr("[%d]", i), parser, t));
 		contents.push_back(content);
 	}
 
@@ -262,7 +270,13 @@ bool DebugWatchValueDecoder (const std::string& encoding, const std::string& for
 		std::list<DebugWatchValueInfo::Content> contents;
 		std::string overview, absref;
 
-		CHECKFINAL(Parse_Contents(contents, overview,  absref, RC(RC_SYM_VALUE) dot RC(RC_SYM_CONTENTS), parser, t));
+		std::string key			(RC(RC_SYM_VALUE));
+		std::string	contentsKey	(key dot RC(RC_SYM_CONTENTS));
+
+		if (format == RC_ENCODING_ID)
+			key = contentsKey;
+
+		CHECKFINAL(Parse_Contents(contents, overview, absref, key, contentsKey, parser, t));
 		at->Set(DebugWatchValueInfo::Composite(overview, absref, contents));
 
 		DPTR(t)->DecRefCounter((DeltaValue*) 0);

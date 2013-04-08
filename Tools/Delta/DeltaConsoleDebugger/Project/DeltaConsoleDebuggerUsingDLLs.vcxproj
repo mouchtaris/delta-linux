@@ -62,7 +62,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\Common\Include;..\..\DeltaVirtualMachine\Include;..\..\FileReadersLib\Include;..\..\DebugWatchValueInfo\Include;..\..\DeltaVirtualMachinedebugextensions\Include;..\..\ResourceLoaderLib\Include;..\Include;..\..\DebugExprEvaluator\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\DebugBreakPointHolder\Include;..\..\DebugClient\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Common\Include;..\..\DeltaVirtualMachine\Include;..\..\FileReadersLib\Include;..\..\DebugWatchValueInfo\Include;..\..\DeltaVirtualMachinedebugextensions\Include;..\..\ResourceLoaderLib\Include;..\Include;..\..\DebugExprEvaluator\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\DebugBreakPointHolder\Include;..\..\DebugClient\Include;$(DELTA)\DeltaExtraLibraries\JSONParser\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_;DVM_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;DCOMPLIB_IMPORT;DBYTECODE_IMPORT;DVMDEBUGCOMMON_IMPORT;DVMDEBUGFRONTEND_IMPORT;SOCKETLIB_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -99,8 +99,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\Common\Include;..\..\DeltaVirtualMachine\Include;..\..\FileReadersLib\Include;..\..\DebugWatchValueInfo\Include;..\..\DeltaVirtualMachinedebugextensions\Include;..\..\ResourceLoaderLib\Include;..\Include;..\..\DebugExprEvaluator\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\DebugBreakPointHolder\Include;..\..\DebugClient\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_;DVM_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;DCOMPLIB_IMPORT;DBYTECODE_IMPORT;DVMDEBUGCOMMON_IMPORT;DVMDEBUGFRONTEND_IMPORT;SOCKETLIB_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\Common\Include;..\..\DeltaVirtualMachine\Include;..\..\FileReadersLib\Include;..\..\DebugWatchValueInfo\Include;..\..\DeltaVirtualMachinedebugextensions\Include;..\..\ResourceLoaderLib\Include;..\Include;..\..\DebugExprEvaluator\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\DebugBreakPointHolder\Include;..\..\DebugClient\Include;$(DELTA)\DeltaExtraLibraries\JSONParser\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_;DVM_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;DCOMPLIB_IMPORT;DBYTECODE_IMPORT;DVMDEBUGCOMMON_IMPORT;DVMDEBUGFRONTEND_IMPORT;SOCKETLIB_IMPORT;DJSONPARSER_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -139,6 +139,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DeltaExtraLibraries\JSONParser\Project\JSONParser.vcxproj">
+      <Project>{38c43571-8cc7-4baa-94da-81a0dd64732c}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\DLLs\BytecodeStructures\Project\BytecodeStructures.vcxproj">
       <Project>{bec371d3-e221-4bac-ba70-3aed5c4f0150}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
