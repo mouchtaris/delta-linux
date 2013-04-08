@@ -95,6 +95,7 @@
     <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugExprParserAPI.cpp" />
     <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugMonitors.cpp" />
     <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugReservedTableAttributes.cpp" />
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueJsonEncoder.cpp" />
     <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueRcEncoder.cpp" />
     <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueTextEncoders.cpp" />
     <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueXmlEncoder.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParseActions.h" />
     <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParser.h" />
     <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugExprParserAPI.h" />
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueJsonEncodingDefs.h" />
     <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueRcEncoder.h" />
     <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueRcEncodingDefs.h" />
     <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueTextEncoders.h" />

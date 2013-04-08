@@ -55,7 +55,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\ThreadLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DebugClient\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\DebugWatchValueInfo\Include;$(DELTA)\ResourceLoaderLib\Include;$(DELTA)\DebugExprEvaluator\Include;$(DELTA)\DeltaExtraLibraries\JSONParser\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;DVMDEBUGCOMMON_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;READERS_IMPORT;DVMDEBUGCOMMON_IMPORT;DJSONPARSER_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -76,7 +76,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(DELTA)\Common\Include;$(DELTA)\DebugLib\Include;$(DELTA)\DebugBreakPointHolder\Include;$(DELTA)\DeltaStdLib\Include;$(DELTA)\DeltaVirtualMachine\Include;$(DELTA)\ThreadLib\Include;$(DELTA)\UtilLib\Include;$(DELTA)\FileReadersLib\Include;$(DELTA)\DeltaPureVMFacade\Include;$(DELTA)\DebugClient\Include;$(DELTA)\DeltaVirtualMachineDebugExtensions\Include;$(DELTA)\DebugWatchValueInfo\Include;$(DELTA)\ResourceLoaderLib\Include;$(DELTA)\DebugExprEvaluator\Include;$(DELTA)\DeltaExtraLibraries\JSONParser\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;DVMDEBUGCOMMON_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;UTILLIB_IMPORT;DDEBUG_IMPORT;DVM_IMPORT;READERS_IMPORT;RCLOAD_IMPORT;DCOMPLIB_IMPORT;SOCKETLIB_IMPORT;DBYTECODE_IMPORT;DVMDEBUGCOMMON_IMPORT;DJSONPARSER_IMPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>

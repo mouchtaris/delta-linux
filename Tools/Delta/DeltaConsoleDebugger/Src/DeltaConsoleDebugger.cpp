@@ -532,7 +532,7 @@ static void CDClearFunctionResults (void) {
 static void CDSetEncodingFormat (void){
 
 	ShowMessage("SetEncodingFormat\n");
-	printf("1.RC, 2.JSON, 3.Cancel\n");
+	printf("1.RC format\n2.JSON fomat\n3.Cancel\n");
 
 	while (true) {
 
@@ -541,10 +541,10 @@ static void CDSetEncodingFormat (void){
 			return;
 		else
 		if (option == 1)
-			encodingFormat = RC_ENCODING_ID;
+			{ encodingFormat = RC_ENCODING_ID; break; }
 		else
 		if (option == 2)
-			encodingFormat = JSON_ENCODING_ID;
+			{ encodingFormat = JSON_ENCODING_ID; break; }
 		else
 			printf("Invalid option!\n");
 	}

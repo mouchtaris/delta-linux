@@ -11,11 +11,12 @@
 #include <list>
 #include "DeltaObject.h"
 #include "DeltaValue.h"
+#include "DeltaJsonParserLib.h"
 
 #define JSON_NULL_TYPE_STR	"json::null"
 #define JSON_NULL			(void*) 0     
 
-class JsonLoaderAPI{
+class DJSONPARSER_CLASS JsonLoaderAPI{
 	public:
 		static void					SingletonCreate (void) 
 										{ singletonPtr = new JsonLoaderAPI; }

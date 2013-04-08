@@ -121,6 +121,9 @@
     <ClCompile Include="..\..\..\DeltaDebuggedVMFacade\Src\DeltaDebuggedVMFacade.cpp">
       <Filter>Source Files\Facade</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\DebugExprEvaluator\Src\DebugWatchValueJsonEncoder.cpp">
+      <Filter>Source Files\ExpressionEvaluator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\DebugExprEvaluator\Src\DebugExprParser.y">
@@ -216,6 +219,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\DebugWatchValueInfo\Include\DebugWatchValueInfo.h">
       <Filter>Header Files\WatchValue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DebugExprEvaluator\Include\DebugWatchValueJsonEncodingDefs.h">
+      <Filter>Header Files\ExpressionEvaluator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
