@@ -9,6 +9,26 @@
 #include "ustrings.h"
 
 ///////////////////////////////////////////////////////////
+//Utility functions
+
+//TODO: Copied from DeltaString::IsIdentifier, RF: put in lexutils
+static bool IsIdentifier (const std::string& s) {
+
+	if (s.empty())
+		return false;
+
+	std::string::const_iterator i = s.begin();
+
+	if (!isalpha(*i))
+		return false;
+
+	while (++i != s.end())
+		if (!isalnum(*i) && *i != '_')
+			return false;
+	return true;
+}
+
+///////////////////////////////////////////////////////////
 
 #define VISITOR	DNULLCHECK((AST::ValidationVisitor*) closure)
 
@@ -25,6 +45,9 @@
 
 #define	_H(name, tag)		\
 		SetHandler(tag, &Handle_##name, this)
+
+#define	_C(name, tag, id)	\
+		SetContextDependentHandler(tag, id, &Handle_##name, this)
 
 ///////////////////////////////////////////////////////////
 
@@ -57,7 +80,8 @@
 
 //*************************
 
-#define INVALID_NAME(name)						uconstructstr("name '%s' is not a valid identifier", ucstringarg(name))
+#define INVALID_FUNCTION_NAME(name)				uconstructstr("'%s' is not a valid function name", ucstringarg(name))
+#define INVALID_NAME(name)						uconstructstr("'%s' is not a valid identifier", ucstringarg(name))
 
 #define CHILDREN_TOTAL_MISMATCH(size)			uconstructstr("%d children expected ", size)
 #define NO_CHILDREN								"no children expected"
@@ -215,6 +239,20 @@ AST::ValidationVisitor::ValidationVisitor (bool allowEmptyInlines, LineGetter li
 	_H(Execute,							AST_TAG_EXECUTE);
 	_H(Inline,							AST_TAG_INLINE);
 
+	// Context dependent handlers.
+	_C(Identifier,					AST_TAG_USING_BYTECODE_LIBRARY,	AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_CONSTDEF,				AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_LVALUE_IDENT,			AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_LVALUE_ATTRIBUTE,		AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_LVALUE_STATIC_IDENT,	AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_LVALUE_LOCAL_IDENT,		AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_EXCEPTION_VAR,			AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_TABLE_IDENTINDEX_ELEM,	AST_CHILD_NAME);
+	_C(Identifier,					AST_TAG_TABLE_NEW_ATTRIBUTE,	AST_CHILD_NAME);
+	
+
+
+
 #define FUNC_VALIDATOR_MESSAGE(func, msg)	\
 	funcValidatorMessages[func] = uconstructstr("should be %s", msg)
 
@@ -265,31 +303,14 @@ void AST::ValidationVisitor::Handle_Program (AST_VISITOR_ARGS)
 
 ///////////////////////////////////////////////////////////
 
-//TODO: Copied from DeltaString::IsIdentifier, refactor putting in lexutils
-static bool IsIdentifier (const std::string& s) {
-
-	if (s.empty())
-		return false;
-
-	std::string::const_iterator i = s.begin();
-
-	if (!isalpha(*i))
-		return false;
-
-	while (++i != s.end())
-		if (!isalnum(*i) && *i != '_')
-			return false;
-	return true;
-}
-
 void AST::ValidationVisitor::Handle_Name (AST_VISITOR_ARGS) {
-	Handle_SingleAttributeNode(AST_VISITOR_ACTUALS, AST_ATTRIBUTE_NAME);
-	if (DPTR(node)->HasAttribute(AST_ATTRIBUTE_NAME)) {
-		const std::string name = NAME(node);
-		VALIDATE(IsIdentifier(name), INVALID_NAME(name));
+	if (!entering) {
+		VALIDATE(DPTR(node)->HasAttribute(AST_ATTRIBUTE_NAME), MISSING_ATTRIBUTE(AST_ATTRIBUTE_NAME));
+		TreeAttribute* name = DPTR(node)->GetAttribute(AST_ATTRIBUTE_NAME);
+		VALIDATE(DPTR(name)->IsString(), ATTRIBUTE_TYPE_MISMATCH(AST_ATTRIBUTE_NAME, "string"));
+		if (!VISITOR->allowRenames && DPTR(node)->HasAttribute(AST_ATTRIBUTE_RENAME))
+			VALIDATE(VISITOR->quotes.inside(), RENAME_OUTSIDE_QUOTES);
 	}
-	if (!VISITOR->allowRenames && DPTR(node)->HasAttribute(AST_ATTRIBUTE_RENAME))
-		VALIDATE(VISITOR->quotes.inside(), RENAME_OUTSIDE_QUOTES);
 }
 
 ///////////////////////////////////////////////////////////
@@ -316,8 +337,27 @@ void AST::ValidationVisitor::Handle_FunctionBasic (AST_VISITOR_ARGS, const Index
 
 //*************************
 
-void AST::ValidationVisitor::Handle_Function (AST_VISITOR_ARGS)
-	{  Handle_FunctionBasic(AST_VISITOR_ACTUALS, TAG_VALIDATOR(AST_CHILD_BODY, AST_TAG_COMPOUND)); }
+void AST::ValidationVisitor::Handle_Function (AST_VISITOR_ARGS) {
+	Handle_FunctionBasic(AST_VISITOR_ACTUALS, TAG_VALIDATOR(AST_CHILD_BODY, AST_TAG_COMPOUND));
+	if (!VISITOR->ShouldLeave() && !entering)
+		if (TreeNode* n = DPTR(node)->GetChild(AST_TAG_NAME)) {
+			const std::string name = NAME(n);
+			const char* operators[] = {
+				"+", "-", "*", "/", "%",
+				">", "<", "!=", "==", ">=", "<=", "=",
+				"+_", "-_", "*_", "/_", "%_",
+				">_", "<_", "!=_", "==_", ">=_", "<=_",
+				"()", "=()", ".", ".=", AST_VALUE_TOSTRING_SYMBOLIC_NAME
+			};
+			bool found = false;
+			for (util_ui8 i = 0; i < uarraysize(operators); ++i)
+				if (name == operators[i]) {
+					found = true;
+					break;
+				}
+			VALIDATE(found || IsIdentifier(name), INVALID_FUNCTION_NAME(name));
+		}
+}
 
 void AST::ValidationVisitor::Handle_LambdaFunction (AST_VISITOR_ARGS)
 	{  Handle_FunctionBasic(AST_VISITOR_ACTUALS, FUNC_VALIDATOR(AST_CHILD_EXPR, IsExpression)); }
@@ -329,8 +369,19 @@ void AST::ValidationVisitor::Handle_FunctionStmt (AST_VISITOR_ARGS)
 
 //*************************
 
-void AST::ValidationVisitor::Handle_FormalArgs (AST_VISITOR_ARGS)
-	{ Handle_ListNode(AST_VISITOR_ACTUALS, LIST_NAME_VALIDATOR()); }
+void AST::ValidationVisitor::Handle_FormalArgs (AST_VISITOR_ARGS){
+	Handle_ListNode(AST_VISITOR_ACTUALS, LIST_NAME_VALIDATOR());
+	if (!VISITOR->ShouldStop() && !entering) {
+		const util_ui32 totalChildren = DPTR(node)->GetTotalChildren();
+		for (util_ui32 i = 0; i < totalChildren; ++i) {
+			TreeNode* child = DPTR(node)->GetChild(i);
+			if (i != totalChildren - 1 || NAME(child) != AST_VALUE_VARARGS_FORMAL_NAME)
+				Handle_Identifier(child, "", entering, closure);
+			if (VISITOR->ShouldStop())
+				break;
+		}
+	}
+}
 
 //*************************
 
@@ -410,10 +461,8 @@ void AST::ValidationVisitor::Handle_Return (AST_VISITOR_ARGS) {
 
 ///////////////////////////////////////////////////////////
 
-void AST::ValidationVisitor::Handle_UsingNamespace (AST_VISITOR_ARGS) {
-	Handle_ListNode(AST_VISITOR_ACTUALS, LIST_NAME_VALIDATOR());
-	VALIDATE(DPTR(node)->GetTotalChildren(), AT_LEAST_ONE_CHILD);
-}
+void AST::ValidationVisitor::Handle_UsingNamespace (AST_VISITOR_ARGS)
+	{ Handle_NamespacePath(AST_VISITOR_ACTUALS); }
 
 ///////////////////////////////////////////////////////////
 
@@ -505,20 +554,27 @@ void AST::ValidationVisitor::Handle_ExprListChild (AST_VISITOR_ARGS, const Index
 
 ///////////////////////////////////////////////////////////
 
-#define SINGLE_ATTRIBUTE_FUNC_IMPL(name, attr, func, type)												\
+#define SINGLE_ATTRIBUTE_FUNC_IMPL(name, attr, func, type, extra)										\
 	void AST::ValidationVisitor::name (AST_VISITOR_ARGS) {												\
 		yysetline();																					\
 		if (entering) {																					\
 			VALIDATE(DPTR(node)->GetTotalChildren() == 0, NO_CHILDREN);									\
 			VALIDATE(DPTR(node)->HasAttribute(attr), MISSING_ATTRIBUTE(attr));							\
 			VALIDATE(DPTR(node)->GetAttribute(attr)->func(), ATTRIBUTE_TYPE_MISMATCH(attr, type));		\
+			extra																						\
 		}																								\
 	}
 
-SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_NumConst, AST_ATTRIBUTE_CONSTVALUE, IsDouble, "double")
-SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_BoolConst, AST_ATTRIBUTE_CONSTVALUE, IsBool, "boolean")
-SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_StringConst, AST_ATTRIBUTE_ITEMS, IsStringList, "string list")
-SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_StringifyDottedIdents, AST_ATTRIBUTE_ITEMS, IsStringList, "string list")
+SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_NumConst, AST_ATTRIBUTE_CONSTVALUE, IsDouble, "double", UEMPTY)
+SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_BoolConst, AST_ATTRIBUTE_CONSTVALUE, IsBool, "boolean", UEMPTY)
+SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_StringConst, AST_ATTRIBUTE_ITEMS, IsStringList, "string list", UEMPTY)
+
+#define LIST_IDENTIFIER_CHECK																				\
+	const std::list<std::string>& l = DPTR(node)->GetAttribute(AST_ATTRIBUTE_ITEMS)->GetStringList();		\
+	for(std::list<std::string>::const_iterator i = l.begin(); i != l.end(); ++i)							\
+		VALIDATE(IsIdentifier(*i), INVALID_NAME(*i));
+
+SINGLE_ATTRIBUTE_FUNC_IMPL(Handle_StringifyDottedIdents, AST_ATTRIBUTE_ITEMS, IsStringList, "string list", LIST_IDENTIFIER_CHECK)
 
 //*****************************
 
@@ -527,10 +583,8 @@ void AST::ValidationVisitor::Handle_NilConst (AST_VISITOR_ARGS)
 
 //*****************************
 
-void AST::ValidationVisitor::Handle_StringifyNamespaceIdent (AST_VISITOR_ARGS) {
-	Handle_ListNode(AST_VISITOR_ACTUALS, LIST_NAME_VALIDATOR());
-	VALIDATE(DPTR(node)->GetTotalChildren(), AT_LEAST_ONE_CHILD);
-}
+void AST::ValidationVisitor::Handle_StringifyNamespaceIdent (AST_VISITOR_ARGS)
+	{ Handle_NamespacePath(AST_VISITOR_ACTUALS); }
 
 ///////////////////////////////////////////////////////////
 
@@ -557,10 +611,8 @@ void AST::ValidationVisitor::Handle_FunctionCall (AST_VISITOR_ARGS) {
 
 ///////////////////////////////////////////////////////////
 
-void AST::ValidationVisitor::Handle_NamespaceLvalue (AST_VISITOR_ARGS) {
-	Handle_ListNode(AST_VISITOR_ACTUALS, LIST_NAME_VALIDATOR());
-	VALIDATE(DPTR(node)->GetTotalChildren(), AT_LEAST_ONE_CHILD);
-}
+void AST::ValidationVisitor::Handle_NamespaceLvalue (AST_VISITOR_ARGS)
+	{ Handle_NamespacePath(AST_VISITOR_ACTUALS); }
 
 ///////////////////////////////////////////////////////////
 
@@ -579,11 +631,19 @@ void AST::ValidationVisitor::Handle_AttrLvalue (AST_VISITOR_ARGS)
 
 ///////////////////////////////////////////////////////////
 
-void AST::ValidationVisitor::Handle_DotIndexIdent (AST_VISITOR_ARGS)
-	{ Handle_SingleAttributeNode(AST_VISITOR_ACTUALS, AST_ATTRIBUTE_VALUE); }
+void AST::ValidationVisitor::Handle_DotIndexIdent (AST_VISITOR_ARGS) {
+	if (!entering) {
+		VALIDATE(DPTR(node)->HasAttribute(AST_ATTRIBUTE_VALUE), MISSING_ATTRIBUTE(AST_ATTRIBUTE_VALUE));
+		TreeAttribute* value = DPTR(node)->GetAttribute(AST_ATTRIBUTE_VALUE);
+		VALIDATE(DPTR(value)->IsString(), ATTRIBUTE_TYPE_MISMATCH(AST_ATTRIBUTE_VALUE, "string"));
+		const std::string name = DPTR(value)->GetString();
+		VALIDATE(IsIdentifier(name), INVALID_NAME(name));
+	}
+}
 
 //*****************************
 
+//TODO: validate that AST_ATTRIBUTE_VALUE is a valid operator
 void AST::ValidationVisitor::Handle_DotIndexOpString (AST_VISITOR_ARGS)
 	{ Handle_SingleAttributeNode(AST_VISITOR_ACTUALS, AST_ATTRIBUTE_VALUE); }
 
@@ -652,8 +712,15 @@ void  AST::ValidationVisitor::Handle_FunctionExpression (AST_VISITOR_ARGS)
 
 //*****************************
 
-void AST::ValidationVisitor::Handle_DottedIdent (AST_VISITOR_ARGS)
-	{ Handle_SingleAttributeNode(AST_VISITOR_ACTUALS, AST_ATTRIBUTE_NAME); }
+void AST::ValidationVisitor::Handle_DottedIdent (AST_VISITOR_ARGS) {
+	if (!entering) {
+		VALIDATE(DPTR(node)->HasAttribute(AST_ATTRIBUTE_NAME), MISSING_ATTRIBUTE(AST_ATTRIBUTE_NAME));
+		TreeAttribute* nameAttr = DPTR(node)->GetAttribute(AST_ATTRIBUTE_NAME);
+		VALIDATE(DPTR(nameAttr)->IsString(), ATTRIBUTE_TYPE_MISMATCH(AST_ATTRIBUTE_NAME, "string"));
+		const std::string name = DPTR(nameAttr)->GetString();
+		VALIDATE(IsIdentifier(name), INVALID_NAME(name));
+	}
+}
 
 //*****************************
 
@@ -887,6 +954,35 @@ void AST::ValidationVisitor::Handle_Inline (AST_VISITOR_ARGS) {
 }
 
 ///////////////////////////////////////////////////////////
+
+void AST::ValidationVisitor::Handle_Identifier (AST_VISITOR_ARGS) {	
+	if (!entering && DPTR(node)->GetTag() == AST_TAG_NAME) {
+		const std::string name = NAME(node);
+		VALIDATE(IsIdentifier(name), INVALID_NAME(name));
+	}
+}
+
+//*****************************
+
+void AST::ValidationVisitor::Handle_NamespacePath (AST_VISITOR_ARGS) {
+	Handle_ListNode(AST_VISITOR_ACTUALS, LIST_NAME_VALIDATOR());
+	if (!VISITOR->ShouldStop() && !entering) {
+		const util_ui32 totalChildren = DPTR(node)->GetTotalChildren();
+		VALIDATE(totalChildren, AT_LEAST_ONE_CHILD);
+		if (totalChildren == 1)
+			Handle_Identifier(DPTR(node)->GetChild(0), "", entering, closure);
+		else
+			for (util_ui32 i = 0; i < totalChildren; ++i) {
+				TreeNode* child = DPTR(node)->GetChild(i);
+				if (i > 0 || NAME(child) != DELTA_LIBRARYNAMESPACE_SEPARATOR)
+					Handle_Identifier(child, "", entering, closure);
+				if (VISITOR->ShouldStop())
+					break;
+			}
+	}
+}
+
+//*****************************
 
 void AST::ValidationVisitor::Handle_ListNode (AST_VISITOR_ARGS, const IndexedChildValidator& validator) {
 	yysetline();

@@ -54,6 +54,7 @@ class SYNTAXTREELIB_CLASS ValidationVisitor : public TreeVisitor {
 
 	static void	Handle_Program (AST_VISITOR_ARGS);
 	static void	Handle_Name (AST_VISITOR_ARGS);
+	static void Handle_Identifier (AST_VISITOR_ARGS);
 	static void Handle_Stmts (AST_VISITOR_ARGS);
 	static void Handle_Stmt (AST_VISITOR_ARGS);
 	static void Handle_BasicStmt (AST_VISITOR_ARGS);
@@ -123,7 +124,8 @@ class SYNTAXTREELIB_CLASS ValidationVisitor : public TreeVisitor {
 	static void Handle_Inline (AST_VISITOR_ARGS);
 
 	/////////////////////////////////////////////////////////
-	// Translation helpers.
+	// Validation helpers.
+	static void Handle_NamespacePath (AST_VISITOR_ARGS);
 
 	static void Handle_ListNode (AST_VISITOR_ARGS, const IndexedChildValidator& validator);
 	static void Handle_NaryNode (
