@@ -58,7 +58,7 @@ static bool IsList (TreeNode* node, bool (*func)(TreeNode*)) {
 	for (util_ui32 i = 0; i < n; ++i)
 		if (!(*func)(DPTR(node)->GetChild(i)))
 			return false;
-	return true;
+	return n > 0;	//assume valid only if non empty list
 }
 
 //*****************************
@@ -381,7 +381,7 @@ class ItemListConversion : public ASTInjector::Conversion {
 bool ItemListConversion::IsValid (TreeNode* target, TreeNode* node) const {
 	if (!allowNullNode && !node)
 		return false;
-	return	!node || (*isItem)(node) || IsList(node, isItem);
+	return !node || (*isItem)(node) || IsList(node, isItem);
 }
 
 //*****************************
