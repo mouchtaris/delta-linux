@@ -205,10 +205,10 @@ static void LoadSource (const char* path) {
 
 #define	CD_RUNSTANDARD_COMMANDS \
 	"| [G]o             | Set [m]ax len         | Co[n]figure graph     |\n" \
-	"| Set encoding	[z] | [3] Stop              | [4] Break             |\n"
+	"| Set encoding [z] | [3] Stop              | [4] Break             |\n"
 
 #define	CD_ALWAYS_COMMANDS \
-	"|(B)reak at        | D(e)lete bpt          | (C)lear bpts          |\n" \
+	"| [B]reak at       | D[e]lete bpt          | [C]lear bpts          |\n" \
 	"| [5] About        | [6] Quit              |\n"
 
 //*******************************

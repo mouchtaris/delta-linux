@@ -32,6 +32,23 @@ static void OnError (util_ui32 line) {
 
 /////////////////////////////////////////////////////////////
 
+static const std::string rc_content_attrs_key (void)
+	{ return RC(RC_SYM_VALUE) dot RC(RC_SYM_CONTENTS); }
+
+static const std::string json_content_attrs_key (void)
+	{ return RC(RC_SYM_VALUE); }
+
+static const std::string rc_fields_size_key (const std::string& contentsKey)
+	{ return contentsKey dot RC(RC_SYM_FIELDKEYS); }
+
+static const std::string json_fields_size_key (const std::string& contentsKey)
+	{ return contentsKey; }
+
+static const std::string (*content_attrs_key_func) (void) = 0;
+static const std::string (*fields_size_key_func) (const std::string&) = 0;
+
+/////////////////////////////////////////////////////////////
+
 static bool Parse_Simple (RcAttrParser& parser, DeltaTable* t, DebugWatchValueInfo* at) {
 	CHECKFINAL(PARSE(RC(RC_SYM_VALUE)));
 	at->Set(parser.GetResult().GetString());
@@ -166,14 +183,13 @@ static bool Parse_FieldKey (
 static bool Parse_FieldKeys (
 		std::list<DebugWatchValueInfo::FieldKey>&	fieldKeys,
 		const std::string&							key,
+		const std::string&							fieldsSizeKey,
 		RcAttrParser&								parser, 
 		DeltaTable*									t
 	) {
 	
-	// TODO: in JSON it should be value.contents[i].size not value.contents[i].fieldkeys.size
-	// thus need a different treatment
 	util_ui32 n;
-	CHECKERROR(Parse_number(&n, key dot RC(RC_SYM_SIZE), parser, t));
+	CHECKERROR(Parse_number(&n, fieldsSizeKey dot RC(RC_SYM_SIZE), parser, t));
 
 	for (util_ui32 i = 0; i < n; ++i) {
 		DebugWatchValueInfo::FieldKey fieldKey;
@@ -206,7 +222,9 @@ static bool Parse_Content (
 	CHECKERROR(Parse_KeyAccess(&visible, key, parser,t ));
 
 	std::list<DebugWatchValueInfo::FieldKey> fieldKeys;
-	CHECKERROR(Parse_FieldKeys(fieldKeys, key dot RC(RC_SYM_FIELDKEYS), parser, t));
+	std::string fieldsSizeKey ((*fields_size_key_func)(key));
+
+	CHECKERROR(Parse_FieldKeys(fieldKeys, key dot RC(RC_SYM_FIELDKEYS), fieldsSizeKey, parser, t));
 
 	content.Set(subIndex, displayDesc, visible, fieldKeys, keyType);
 	return true;
@@ -249,11 +267,16 @@ bool DebugWatchValueDecoder (const std::string& encoding, const std::string& for
 
 	DeltaTable* t = (DeltaTable*) 0;
 
-	if (format == RC_ENCODING_ID)
+	if (format == RC_ENCODING_ID) {
 		t = ResourceLoader::LoadFromString(encoding);
+		content_attrs_key_func	= &rc_content_attrs_key;
+		fields_size_key_func	= &rc_fields_size_key;
+	}
 	else {
 		DASSERT(format == JSON_ENCODING_ID);
 		t = JsonLoaderAPI::LoadFromString(encoding, false);
+		content_attrs_key_func	= &json_content_attrs_key;
+		fields_size_key_func	= &json_fields_size_key;
 	}
 
 	CHECKERROR(t);
@@ -270,13 +293,10 @@ bool DebugWatchValueDecoder (const std::string& encoding, const std::string& for
 		std::list<DebugWatchValueInfo::Content> contents;
 		std::string overview, absref;
 
-		std::string key			(RC(RC_SYM_VALUE));
-		std::string	contentsKey	(key dot RC(RC_SYM_CONTENTS));
+		std::string attrsKey	((*content_attrs_key_func)());
+		std::string	contentsKey	(RC(RC_SYM_VALUE) dot RC(RC_SYM_CONTENTS));
 
-		if (format == RC_ENCODING_ID)
-			key = contentsKey;
-
-		CHECKFINAL(Parse_Contents(contents, overview, absref, key, contentsKey, parser, t));
+		CHECKFINAL(Parse_Contents(contents, overview, absref, attrsKey, contentsKey, parser, t));
 		at->Set(DebugWatchValueInfo::Composite(overview, absref, contents));
 
 		DPTR(t)->DecRefCounter((DeltaValue*) 0);
