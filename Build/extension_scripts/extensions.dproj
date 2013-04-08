@@ -30,6 +30,7 @@
             <output>AutoAdjustDebugTools</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -49,6 +50,7 @@
             <output>BreakpointsView</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -68,6 +70,7 @@
             <output>BuildTreeListView</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -87,6 +90,7 @@
             <output>DebugTooltips</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -106,6 +110,7 @@
             <output>ExpressionTreeListView</output>
             <libs>spw;xml</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -125,6 +130,7 @@
             <output>ExpressionWatches</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -144,6 +150,7 @@
             <output>LineCounter</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -163,6 +170,7 @@
             <output>Monitors</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -182,6 +190,7 @@
             <output>QuickWatch</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -201,6 +210,7 @@
             <output>RecentReturnValuesView</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -220,6 +230,7 @@
             <output>RecentWorkspaces</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -239,6 +250,7 @@
             <output>VariableView</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -258,6 +270,7 @@
             <output>SourceBrowser</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -277,6 +290,7 @@
             <output>ASTView</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>

@@ -30,6 +30,7 @@
             <output>sparrowlib</output>
             <libs>spw</libs>
             <icode>1</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>

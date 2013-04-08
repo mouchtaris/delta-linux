@@ -30,6 +30,7 @@
             <output>beginner</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -49,6 +50,7 @@
             <output>delta_devel</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -68,6 +70,7 @@
             <output>simple_profile</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -87,6 +90,7 @@
             <output>sparrow_devel</output>
             <libs>spw</libs>
             <icode>1</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
@@ -106,6 +110,7 @@
             <output>welcome</output>
             <libs>spw</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
