@@ -128,9 +128,14 @@ static const std::string GenerateSource (AST::Node* ast, const std::string& sour
 
 	DeltaMetaCompiler* compiler = DNEW(DeltaMetaCompiler);
 	AST::Node* unparsedAst = DPTR(compiler)->ParseText(text.c_str());
-	DASSERT(unparsedAst);
-	AST::SerialProducer()(ast);
-	UpdateSourceLocationFromUnparsed(ast, unparsedAst, source, addSourceReference);
+	
+	// Ideally we should have assert(unparsedAst);
+	// However, upon AST problems this causes hard to debug errors since we typically run in release mode.
+	// So use the if, allowing the stage source to be generated and look there to resolve the errors.
+	if (unparsedAst) {	
+		AST::SerialProducer()(ast);
+		UpdateSourceLocationFromUnparsed(ast, unparsedAst, source, addSourceReference);
+	}
 	DDELETE(compiler);
 
 	return text;
@@ -238,12 +243,14 @@ bool DeltaMetaCompiler::StagedCompilation (AST::Node* ast) {
 void DeltaMetaCompiler::Inline (DeltaValue* value) {
 	AST::Node* node;
 	if (!ToAST(value, &node)) {
-		COMPMESSENGER.Error("Invalid inline value");
+		COMPMESSENGER.Error("Invalid inline value: no AST or AST convertible value given");
 		return;
 	}
 
 	AST::Node* ast = GetSyntaxTree();
 	AST::Node* target = InlineLocator()(ast);
+
+	std::string error;
 	
 	// Upon simple meta-compilation the number of inlines should match the number of std::inline calls.
 	// However, through std::context it is possible to remove inline nodes from the original AST.
@@ -254,21 +261,29 @@ void DeltaMetaCompiler::Inline (DeltaValue* value) {
 		AST::Node::SourceInfoReferences refs = inlineReferences.front();
 		inlineReferences.pop_front();
 
-		if (node)
-			AST::LocationSetter(target->GetLocation(), target->GetLine(), mainSource, refs)(DPTR(node));
-		(*astInjector)(target, node);
-
-		AST::SanitiseVisitor()(ast);
 		AST::ValidationVisitor* validator = NewValidator(true);
 		DPTR(validator)->SetAllowRenames();
-		if ((*validator)(ast))
-			AST::AlphaRenamer()(ast);
-		else
-			COMPMESSENGER.Error("Invalid inline: %s", DPTR(validator)->GetValidationError().c_str());
+
+		if (node && !(*validator)(node))
+			error = uconstructstr("Invalid inline value: invalid AST given: %s", DPTR(validator)->GetValidationError().c_str());
+		else {
+			if (node)
+				AST::LocationSetter(target->GetLocation(), target->GetLine(), mainSource, refs)(DPTR(node));
+			(*astInjector)(target, node);
+
+			AST::SanitiseVisitor()(ast);
+			if ((*validator)(ast))
+				AST::AlphaRenamer()(ast);
+			else
+				error = uconstructstr("Invalid inline result: %s", DPTR(validator)->GetValidationError().c_str());
+		}
 		DDELETE(validator);
 	}
 	else
-		COMPMESSENGER.Error("Invalid inline: program AST contains no inline tags (maybe removed via std::context access?)");
+		error = "Invalid inline: program AST contains no inline tags (maybe removed via std::context access?)";
+
+	if (!error.empty())
+		COMPMESSENGER.Error(error.c_str());
 }
 
 /////////////////////////////////////////////////////////

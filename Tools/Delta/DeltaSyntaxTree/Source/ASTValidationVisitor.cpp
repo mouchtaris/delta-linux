@@ -57,6 +57,8 @@
 
 //*************************
 
+#define INVALID_NAME(name)						uconstructstr("name '%s' is not a valid identifier", ucstringarg(name))
+
 #define CHILDREN_TOTAL_MISMATCH(size)			uconstructstr("%d children expected ", size)
 #define NO_CHILDREN								"no children expected"
 #define AT_LEAST_ONE_CHILD						"at least one child expected"
@@ -263,8 +265,29 @@ void AST::ValidationVisitor::Handle_Program (AST_VISITOR_ARGS)
 
 ///////////////////////////////////////////////////////////
 
+//TODO: Copied from DeltaString::IsIdentifier, refactor putting in lexutils
+static bool IsIdentifier (const std::string& s) {
+
+	if (s.empty())
+		return false;
+
+	std::string::const_iterator i = s.begin();
+
+	if (!isalpha(*i))
+		return false;
+
+	while (++i != s.end())
+		if (!isalnum(*i) && *i != '_')
+			return false;
+	return true;
+}
+
 void AST::ValidationVisitor::Handle_Name (AST_VISITOR_ARGS) {
 	Handle_SingleAttributeNode(AST_VISITOR_ACTUALS, AST_ATTRIBUTE_NAME);
+	if (DPTR(node)->HasAttribute(AST_ATTRIBUTE_NAME)) {
+		const std::string name = NAME(node);
+		VALIDATE(IsIdentifier(name), INVALID_NAME(name));
+	}
 	if (!VISITOR->allowRenames && DPTR(node)->HasAttribute(AST_ATTRIBUTE_RENAME))
 		VALIDATE(VISITOR->quotes.inside(), RENAME_OUTSIDE_QUOTES);
 }
