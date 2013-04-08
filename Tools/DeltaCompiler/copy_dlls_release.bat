@@ -8,4 +8,5 @@ copy  "%DELTA%\DLLs\UtilAndDebugLib\lib\release\UtilAndDefensiveHeap.dll" "..\..
 copy  "%DELTA%\DLLs\SyntaxTree\lib\release\SyntaxTree.dll" "..\..\Build"
 copy  "%DELTA%\DLLs\CompilerComponents\lib\release\CompilerComponents.dll" "..\..\Build"
 copy  "%DELTA%\DLLs\VirtualMachineComponents\lib\release\VirtualMachineComponents.dll" "..\..\Build"
+copy  "%DELTA%\DeltaExtraLibraries\JSONParser\lib\release\JSONParser.dll" "..\..\Build"
 
