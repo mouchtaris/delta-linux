@@ -132,7 +132,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Src\DebugWatchValueRcDecoder.cpp" />
+    <ClCompile Include="..\Src\DebugWatchValueDecoder.cpp" />
     <ClCompile Include="..\Src\DeltaConsoleDebugger.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\objs\Release/dll</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)</XMLDocumentationFileName>

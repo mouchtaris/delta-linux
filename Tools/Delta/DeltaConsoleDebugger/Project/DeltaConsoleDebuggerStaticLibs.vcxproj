@@ -134,7 +134,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Src\DebugWatchValueRcDecoder.cpp" />
+    <ClCompile Include="..\Src\DebugWatchValueDecoder.cpp" />
     <ClCompile Include="..\Src\DeltaConsoleDebugger.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>

@@ -7,10 +7,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Src\DebugWatchValueRcDecoder.cpp">
+    <ClCompile Include="..\Src\DeltaConsoleDebugger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\DeltaConsoleDebugger.cpp">
+    <ClCompile Include="..\Src\DebugWatchValueDecoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
