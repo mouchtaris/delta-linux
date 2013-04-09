@@ -7,11 +7,16 @@
  *
  *	Ioannis Lilis <lilis@ics.forth.gr>
  *	August 2008
+ *
+ *	+ json decoder
+ *
+ *	Giannhs Apostolidhs <japostol@csd.uoc.gr>
+ *	April 2013
  */
 
 using std;
 using #sparrowlib;
-spw  = sparrowlib::sparrow();
+spw = sparrowlib::sparrow();
 
 const classId = "ExpressionTreeListView";
 
@@ -40,6 +45,8 @@ function ParseAndAdaptXML(str) {
 	}
 
 	local t = xml::parse(str);
+	if (std::isnil(t))
+		return nil;
 	local value;
 	if (t.contents) {
 		local contents = t.contents[0].content;
@@ -70,16 +77,41 @@ function ParseAndAdaptXML(str) {
 }
 xmlDll = nil;
 
+function ParseAndAdaptJSON(str) {
+	local t = json::parse(str, true);
+	local value = nil;
+
+	if(t)
+		if(t.type == "COMPOSITE"){
+			local contents = t.value.contents;
+			contents.size = t.value.size;
+			contents.absoluteref = t.value.absoluteref;
+			contents.overview = t.value.overview;
+		
+			for (local i = 0; i < contents.size; ++i) {
+				contents[i].fieldkeys.size = contents[i].size;	
+			}
+			value = [ @type: t.type, @value: [@contents : contents] ];
+		}	
+		else
+			value = [ @type: t.type, @value: t.value ]; 
+		
+	return value;
+}
+
+jsonDll = nil;
+
 //-----------------------------------------------------------------------
 
 decoder = nil;
 decoders = [];
 
-const DEFAULT_DECODER = "rc";
-
 //-----------------------------------------------------------------------
 
-function InitializeDecoders() { xmlDll = dllimportdeltalib(xml::DLL); }
+function InitializeDecoders() { 
+	xmlDll = dllimportdeltalib(xml::DLL); 
+	jsonDll = dllimportdeltalib(json::DLL);
+}
 
 function InstallDecoders() {
 	decoders["rc"] = [
@@ -90,11 +122,17 @@ function InstallDecoders() {
 		@format : "xml",
 		method @operator()(str){ return ParseAndAdaptXML(str); }		
 	];
+	decoders["json"] = [
+		@format : "json",
+		method @operator()(str){ return ParseAndAdaptJSON(str); }		
+	];
 }
 
 function CleanupDecoders() {
 	assert xmlDll;
+	assert jsonDll;
 	dllunimportdeltalib(xmlDll);
+	dllunimportdeltalib(jsonDll);
 }
 
 function SelectDecoder(format) {
@@ -514,6 +552,13 @@ function onTreeListItemExpanding(invoker, id)
 	ItemExpanding(id);
 }
 
+//-----------------------------------------------------------------------
+
+function onExpressionEvaluationFormatChanged(invoker, format)
+{
+	SelectDecoder(format);
+}
+
 //-------------------------------------------------------//
 //---- Component Registration ---------------------------//
 
@@ -537,7 +582,10 @@ onevent ClassLoad
 		"Update the expression for the given node");
 	spw::class_decl_required_member_function(classId, "Clear", "void (void)",
 		"Clear the tree list view");
+	spw::class_decl_required_member_function(classId, "SelectDecoder", "void (String format)",
+		"Selects the decoder for the expression evaluation");
 	spw::class_decl_required_member_handler(classId, "TreeListItemExpanding");
+	spw::class_decl_required_member_handler(classId, "ExpressionEvaluationFormatChanged");
 
 	spw::class_decl_required_member_command(
 		[
@@ -568,13 +616,17 @@ onevent Constructor
 	spw::inst_impl_required_member_function(classId, "GetFullExpression", GetFullExpression);
 	spw::inst_impl_required_member_function(classId, "UpdateExpression", UpdateExpression);
 	spw::inst_impl_required_member_function(classId, "Clear", Clear);
+	spw::inst_impl_required_member_function(classId, "SelectDecoder", SelectDecoder);
 	spw::inst_impl_required_member_handler(classId, "TreeListItemExpanding", onTreeListItemExpanding);
+	spw::inst_impl_required_member_handler(classId, "ExpressionEvaluationFormatChanged", onExpressionEvaluationFormatChanged);
 
 	spw::inst_impl_required_member_command(classId, "ConfigureExpressionTreeListView", 
 		(function Configure {spw.components.Shell.ConfigureComponent(classId); }));
 		
 	InstallDecoders();
-	SelectDecoder(DEFAULT_DECODER);
+	local debugger = spw::getproperty("DeltaVM", "debugger");
+	assert debugger;
+	SelectDecoder(debugger.properties.value.expression_evaluation_format.value);
 }
 
 //-----------------------------------------------------------------------

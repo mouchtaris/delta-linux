@@ -19,22 +19,30 @@ namespace AST {
 
 class EscapeTranslationVisitor :	public ucomponentdirectoryclient,
 									public TreeVisitor {
+	public:
+
+	/////////////////////////////////////////////////////////
+	// Translation value stack.
+
+	typedef std::pair<TreeNode*, StackValue> EscapeStackValue;
+
+	struct IsUndefFunctor {
+		bool operator()(const EscapeStackValue& v) const
+			{ return v.second.GetType() == StackValue::undef_t; }
+	};
+
+	typedef AST::EvaluationStack<EscapeStackValue, IsUndefFunctor> EvaluationStack;
+
 	private:
 
 	/////////////////////////////////////////////////////////
 	// Translation handlers.
 
 	static void Handle_Escape (AST_VISITOR_ARGS);
-
-	/////////////////////////////////////////////////////////
-	// Translation value stack.
-
-	struct IsUndefFunctor {
-		bool operator()(const StackValue& v) const
-			{ return v.GetType() == StackValue::undef_t; }
-	};
 	
-	typedef AST::EvaluationStack<StackValue, IsUndefFunctor> EvaluationStack;
+	/////////////////////////////////////////////////////////
+	// Members.
+
 	EvaluationStack	evalStack;
 	bool hasEscapes;
 

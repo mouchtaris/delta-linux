@@ -22,7 +22,6 @@
 
 static void* bufferState = (void*) 0;
 
-
 void JsonLoaderInitialiseScannerFromString (const char* str) {
 	bufferState = yy_scan_string(str);
 }
@@ -34,6 +33,8 @@ void JsonLoaderCleanUpScannerFromString (void) {
 	bufferState = (void*) 0;
 }
 
+const std::string ReadQuotedString (void);
+
 %}
 /* Flex options */
 
@@ -42,12 +43,10 @@ void JsonLoaderCleanUpScannerFromString (void) {
 
 /* Flex macros */
 
-character [^"]
 digit [0-9]
 exp ("e"|"e+"|"e-"|"E"|"E+"|"E-")
 white [ \n\t]
 
-STRING \"{character}*\"
 INTEGER [-]?{digit}+
 FLOAT {INTEGER}"."{digit}+
 EXPINTEGER {INTEGER}{exp}{INTEGER}
@@ -67,10 +66,8 @@ EXPFLOAT {FLOAT}{exp}{INTEGER}
 
 {white}*	{ /*do nothing*/ }
 
-{STRING}	{
-				std::string s(yytext);
-				s = s.substr(1, s.length() - 2).c_str();
-				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
+\"			{
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(ReadQuotedString()));
 				return STRING;
 			}
 
@@ -103,3 +100,12 @@ EXPFLOAT {FLOAT}{exp}{INTEGER}
 
 %%
 
+static char input_wrapper(void) { return yyinput(); }
+
+static const std::string ReadQuotedString (void) {
+	std::string s;
+	std::string error;
+	if (!ureadquotedstring(s, input_wrapper, (util_ui32 *)&yylineno, &error))
+		JsonParserLoaderErrorMsg::JsonLoaderError("%s", error.c_str());
+	return uextendescapesequences(s.c_str());
+}

@@ -1706,10 +1706,11 @@ void AST::TranslationVisitor::Handle_QuasiQuotes (AST_VISITOR_ARGS){
 
 		EscapeTranslationVisitor visitor(VISITOR->GET_COMPONENT_DIRECTORY());
 		bool hasEscapes = visitor(child);
-		EvaluationStack::StackValues& values = visitor.GetEvalStack().GetValues();
-		for (EvaluationStack::StackValues::reverse_iterator i = values.rbegin(); i != values.rend(); ++i) {
+		EscapeTranslationVisitor::EvaluationStack::StackValues& values = visitor.GetEvalStack().GetValues();
+		for (EscapeTranslationVisitor::EvaluationStack::StackValues::reverse_iterator i = values.rbegin(); i != values.rend(); ++i) {
 			func = translator.Translate_NamespaceLvalue(NameList(1, DELTA_STDLIB_NAMESPACE), "ast_escape", &ns);
-			DeltaExpr* args = i->first.expr()->AdaptIfBool();
+			SetSourceInfo(i->first.first, "", entering, closure);
+			DeltaExpr* args = i->first.second.expr()->AdaptIfBool();
 			DASSERT(args || COMPMESSENGER.ErrorsExist());
 			if (args)
 				args->next = yv.expr();
@@ -1739,9 +1740,6 @@ void AST::TranslationVisitor::Handle_Execute (AST_VISITOR_ARGS)
 void AST::TranslationVisitor::SetSourceInfo (AST_VISITOR_ARGS) {
 	AST::Node* n = (AST::Node*) node;
 	PARSEPARMS.SetLine(DPTR(n)->GetStartLine());
-	util_ui32 nodeId = 0;
-	if (const TreeAttribute* serial = DPTR(n)->GetAttribute("serial"))
-		nodeId = DPTR(serial)->GetUInt();
 	if (const AST::Node::SourceInfoReferences* refs = DPTR(n)->GetSourceReferences())
 		COMPMESSENGER.SetSourceReferences(*refs);
 	else

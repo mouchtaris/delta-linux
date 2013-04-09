@@ -453,5 +453,11 @@
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ParserWrapper.h">
       <Filter>Header Files\API</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTCreationHelpers.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTStackValue.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

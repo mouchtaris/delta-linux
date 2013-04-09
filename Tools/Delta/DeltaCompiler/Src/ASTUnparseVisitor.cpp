@@ -440,9 +440,11 @@ void AST::UnparseVisitor::Handle_AssertStmt (AST_VISITOR_ARGS) {
 void AST::UnparseVisitor::Handle_Return (AST_VISITOR_ARGS) {
 	yysetline();
 	if (!entering) {
-		util_ui32 n = DPTR(node)->GetChild(AST_CHILD_EXPR) ? 1 : 0;
+		TreeNode* expr = DPTR(node)->GetChild(AST_CHILD_EXPR);
+		util_ui32 n = expr ? 1 : 0;
 		yyrule(n);
-		yv = n ? Unparse_ExprStmt(RETURN, yy[1]) : Unparse_BuiltInStmt(RETURN);
+		yv = n ?	Unparse_ExprStmt(RETURN, yy[1], DPTR(expr)->GetTag() != AST_TAG_FUNCTION_EXPR) :
+					Unparse_BuiltInStmt(RETURN);
 	}
 } 
 

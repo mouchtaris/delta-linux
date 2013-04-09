@@ -367,13 +367,14 @@ AST::Node* AST::StageAssembler::GenerateInlineCode(AST::Node* target, AST::Node*
 
 	struct ReferenceSetter : public TreeVisitor {
 		AST::Node* original;
+		AST::Node* target;
 		static void Handle_All (AST_VISITOR_ARGS) {			
 			if (entering) {
 				ReferenceSetter* visitor = (ReferenceSetter*) closure;
-				AST::Node* original = visitor->original;
-				if (node == original)
+				if (node == visitor->target)
 					visitor->Leave();
 				else {
+					AST::Node* original = visitor->original;
 					AST::Node* n = (AST::Node*) node;
 					DPTR(n)->AddSourceReference(AST::Node::SourceInfo(DPTR(original)->GetSource(), DPTR(original)->GetStartLine()));
 					if (const AST::Node::SourceInfoReferences* refs = DPTR(original)->GetSourceReferences())
@@ -382,9 +383,10 @@ AST::Node* AST::StageAssembler::GenerateInlineCode(AST::Node* target, AST::Node*
 			}
 		}
 		void operator()(AST::Node* root) { if (root) DPTR(root)->AcceptPreOrder(this); }
-		ReferenceSetter (AST::Node* original) : original(original) { SetDefaultHandler(&Handle_All, this); }
+		ReferenceSetter (AST::Node* original, AST::Node* target) :
+			original(original), target(target) { SetDefaultHandler(&Handle_All, this); }
 	};
-	(ReferenceSetter(original))(DPTR(stmt));
+	(ReferenceSetter(original, target))(DPTR(stmt));
 
 	AST::Node::SourceInfoReferences references;
 	const AST::Node::SourceInfoReferences* refs = DPTR(stmt)->GetSourceReferences();
@@ -540,9 +542,6 @@ void AST::StageAssembler::GlobalizeConst(AST_VISITOR_ARGS, Symbol* constant) {
 void AST::StageAssembler::SetSourceInfo (AST_VISITOR_ARGS) {
 	AST::Node* n = (AST::Node*) node;
 	PARSEPARMS.SetLine(DPTR(n)->GetStartLine());
-	util_ui32 nodeId = 0;
-	if (const TreeAttribute* serial = DPTR(n)->GetAttribute("serial"))
-		nodeId = DPTR(serial)->GetUInt();
 	if (const AST::Node::SourceInfoReferences* refs = DPTR(n)->GetSourceReferences())
 		COMPMESSENGER.SetSourceReferences(*refs);
 	else

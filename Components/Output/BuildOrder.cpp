@@ -335,7 +335,7 @@ namespace ide
 			String filename;
 			int lineno;
 
-			if (text.StartsWith(_T("Error")) || text.StartsWith(_T("Warning")))
+			if (text.Matches(_T("*Error*")) || text.Matches(_T("*Warning*")) || text.Matches(_T("*See original source*")))
 			{
 				std::vector<String> tokens;
 				util::stringtokenizer(tokens, text, _T(","));	///< initally seperate by commas
@@ -348,7 +348,7 @@ namespace ide
 				filename = tokens[1].substr(7, tokens[1].length() - 8);
 				lineno = boost::lexical_cast<int>(inner_tokens[0].substr(6));
 			}
-			else if (text.StartsWith(_T("Runtime error")) || text.StartsWith(_T("Runtime warning")))
+			else if (text.Matches(_T("*Runtime error*")) || text.Matches(_T("*Runtime warning*")))
 			{
 				static const size_t source_header_size = strlen(" source '");
 				static const size_t line_header_size = strlen(" line ");
@@ -364,7 +364,7 @@ namespace ide
 				filename = tokens[1].substr(source_header_size, tokens[1].size() - source_header_size - 1);
 				lineno = boost::lexical_cast<int>(inner_tokens[0].substr(line_header_size));
 			}
-			else if (text.StartsWith(_T("Stopped at line: ")))
+			else if (text.Matches(_T("*Stopped at line: *")))
 			{
 				std::vector<String> tokens;
 				util::stringtokenizer(tokens, text, _T(","));	///< initally seperate by commas

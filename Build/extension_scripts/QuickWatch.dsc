@@ -1,7 +1,7 @@
 /**
  *	QuickWatch.dsc
  *
- *	-- Sparrow Quick Watche --
+ *	-- Sparrow Quick Watch --
  *
  *	Quick watch view of a Delta expression during debugging
  *

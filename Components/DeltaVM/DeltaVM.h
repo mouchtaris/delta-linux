@@ -242,6 +242,7 @@ namespace ide
 		static void SetToStringMaxLength (void);
 		static void SetBreakOnThrownException (void);
 		static void SetObjectGraphConfiguration (void);
+		static void SetExpressionEvaluationFormat (void);
 
 		static void ResumeDebug(void);
 

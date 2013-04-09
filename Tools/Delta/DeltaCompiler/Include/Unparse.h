@@ -54,7 +54,7 @@ extern _CS_ Unparse_TableContentDoubleBracket (_CS_& t, _CS_& index);
 extern _CS_ Unparse_Stmts (_CS_& stmts, _CS_& stmt);
 extern _CS_ Unparse_ExprListStmt (_CS_& el);
 extern _CS_ Unparse_EmptyStmt (void);
-extern _CS_ Unparse_ExprStmt (util_ui32 token, _CS_& e);
+extern _CS_ Unparse_ExprStmt (util_ui32 token, _CS_& e, bool addSemi = true);
 extern _CS_ Unparse_BuiltInStmt (util_ui32 token);
 extern _CS_ Unparse_TryTrap (_CS_& trySection, _CS_& trapSection, _CS_& exceptionVar);
 extern _CS_ Unparse_TryTrapPrettyPrint (_CS_& trySection, _CS_& trapSection, _CS_& exceptionVar, util_ui16 tabs);

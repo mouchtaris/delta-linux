@@ -242,8 +242,8 @@ namespace ide
 		}
 	};
 	template <typename Type>
-	struct to_native<std::map<std::string, Type>> {
-		void convert(std::map<std::string, Type>& output, DeltaValue* input, uint index=0) const {
+	struct to_native<std::map<const std::string, Type>> {
+		void convert(std::map<const std::string, Type>& output, DeltaValue* input, uint index=0) const {
 			if (input->Type() != DeltaValue_Table)
 				throw std::exception(("argument " + boost::lexical_cast<std::string>(index + 1)
 					+ " can not be converted to Map").c_str());
@@ -566,7 +566,7 @@ namespace ide
 			DeltaValue data;
 			table->BasicGet("properties", &data);
 			conf::AggregateProperty* p = new conf::AggregateProperty(String());
-			try { to_native<conf::PropertyMap>().convert(p->GetPropertyMap(), &data, index); }
+			try { to_native< std::map<const std::string, conf::Property*> >().convert(p->GetPropertyMap(), &data, index); }
 			catch(...) { delete p; throw; }
 			return p;
 		}
@@ -785,9 +785,9 @@ namespace ide
 		}
 	};
 	template <typename Type>
-	struct to_delta<std::map<std::string, Type>> {
-		typedef std::map<std::string, Type> Map;
-		void convert(DeltaValue* output, const Map& input) const {
+	struct to_delta<const std::map<const std::string, Type>> {
+		typedef const std::map<const std::string, Type> Map;
+		void convert(DeltaValue* output, Map& input) const {
 			DeltaTable* table = DeltaObject::NewObject();
 			output->FromTable(table);
 			table->Set("class", "Map");
@@ -923,8 +923,8 @@ namespace ide
 			to_delta<StringList>().convert(&data, StringList(options.begin(), options.end()));
 			table->Set("options", data);
 			table->Set("index", (DeltaNumberValueType) p->GetOption());
+			table->Set("value", util::str2std(p->GetValue()));
 		}
-
 
 		template<class T>
 		static void ConvertStringListPropertyTemplate(DeltaTable* table, const conf::Property* prop) {
@@ -941,7 +941,7 @@ namespace ide
 		static void ConvertAggregateProperty(DeltaTable* table, const conf::Property* prop) {
 			const conf::AggregateProperty* p = conf::safe_prop_cast<const conf::AggregateProperty>(prop);
 			DeltaValue data;
-			to_delta<conf::PropertyMap>().convert(&data, p->GetPropertyMap());
+			to_delta< const std::map<const std::string, conf::Property*> >().convert(&data, p->GetPropertyMap());
 			table->Set("properties", data);
 		}
 
@@ -1032,6 +1032,12 @@ namespace ide
 			}
 			else
 				output->FromNil();
+		}
+	};
+	template <>
+	struct to_delta<conf::Property*> {
+		void convert(DeltaValue* output, conf::Property* input) const {
+			to_delta<const conf::Property*>().convert(output, const_cast<const conf::Property*>(input));
 		}
 	};
 

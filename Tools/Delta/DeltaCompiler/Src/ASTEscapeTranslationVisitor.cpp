@@ -49,7 +49,7 @@ void AST::EscapeTranslationVisitor::Handle_Escape (AST_VISITOR_ARGS) {
 		yyrule;
 		TranslationVisitor visitor(VISITOR->GET_COMPONENT_DIRECTORY());
 		visitor((Node *) node->GetChild(AST_CHILD_EXPR));
-		yypush(visitor.GetEvalStack().Top());
+		yypush(std::make_pair(node, visitor.GetEvalStack().Top()));
 		((AST::EscapeTranslationVisitor *) closure)->Leave();
 	}
 } 

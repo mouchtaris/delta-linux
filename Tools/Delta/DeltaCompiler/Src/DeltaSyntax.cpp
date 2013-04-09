@@ -146,6 +146,7 @@ void SET_LOCATION(YYLTYPE& pos, const YYLTYPE& start, const YYLTYPE& end) {
 	if (true) {															\
 		PE(S_FUNC_(GetFuncClass(_p)));									\
 		_pp = ASTCREATOR_BY_CONTEXT.MakeNode_FunctionExpression(_p);	\
+		(_pp)->SetLocation((_p)->GetLocation());							\
 	} else
 
 

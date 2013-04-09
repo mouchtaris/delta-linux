@@ -154,7 +154,9 @@
     <None Include="Deps.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTCreationHelpers.h" />
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTEscapeTranslationVisitor.h" />
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTStackValue.h" />
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTStageAssembler.h" />
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTStageDepthCalculator.h" />
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTUtilVisitors.h" />

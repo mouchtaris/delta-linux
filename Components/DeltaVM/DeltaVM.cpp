@@ -195,6 +195,7 @@ namespace ide
 	EXPORTED_STATIC_SIGNAL(DeltaVM, RunStopped, (const String& uri));
 
 	EXPORTED_STATIC_SIGNAL(DeltaVM, LibraryDefinitionsChanged, (const StringList& newDefinitions));
+	EXPORTED_STATIC_SIGNAL(DeltaVM, ExpressionEvaluationFormatChanged, (const String& format));
 
 	//-----------------------------------------------------------------------
 
@@ -219,6 +220,14 @@ namespace ide
 		graph->AddProperty("expandFuncVMs", new BoolProperty(_("Expand Function VMs"), false,
 			_("Flag indicating to expand the function's virtual machines")));
 		debugger->AddProperty("object_graph", graph);
+
+		StringVec options;
+		options.push_back(_T("rc"));
+		options.push_back(_T("xml"));
+		options.push_back(_T("json"));
+		EnumStringProperty* format = new EnumStringProperty(_("Expression Evaluation Format"), options, 0,
+			_("Option for the communication format between debugger frontend and backend"));
+		debugger->AddProperty("expression_evaluation_format", format);
 		table.AddProperty("debugger", debugger);
 
 		AggregateProperty* vm = new AggregateProperty(_("Virtual Machine"), _("Virtual machine configuration data"));
@@ -1198,6 +1207,8 @@ namespace ide
 				SetBreakOnThrownException();
 			if (std::find(changed.begin(), changed.end(), "debugger.object_graph") != changed.end())
 				SetObjectGraphConfiguration();
+			if (std::find(changed.begin(), changed.end(), "debugger.expression_evaluation_format") != changed.end())
+				SetExpressionEvaluationFormat();
 		}
 		IDEComponent::ComponentAppliedChangedProperties(old, changed);
 	}
@@ -1258,6 +1269,17 @@ namespace ide
 			get_prop_value<BoolProperty>(graph->GetProperty("expandProgramFuncs")),
 			get_prop_value<BoolProperty>(graph->GetProperty("expandFuncVMs"))
 		);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void DeltaVM::SetExpressionEvaluationFormat(void)
+	{
+		using namespace conf;
+		const ComponentEntry& entry = ComponentRegistry::Instance().GetComponentEntry(s_classId);
+		const AggregateProperty* debugger = safe_prop_cast<const AggregateProperty>(entry.GetProperty("debugger"));
+		const Property *exprEvaluationFormat = debugger->GetProperty("expression_evaluation_format");				
+		sigExpressionEvaluationFormatChanged(get_prop_value<conf::EnumStringProperty>(exprEvaluationFormat));
 	}
 
 	//-----------------------------------------------------------------------

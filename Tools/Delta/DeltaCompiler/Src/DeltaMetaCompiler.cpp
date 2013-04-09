@@ -113,6 +113,7 @@ static void UpdateSourceLocationFromUnparsed (AST::Node* original, AST::Node* un
 		if (addSourceReference && !(source = DPTR(node)->GetSource()).empty() && source != currentSource)
 			DPTR(node)->AddSourceReference(AST::Node::SourceInfo(source, DPTR(node)->GetStartLine()));
 		DPTR(node)->SetLocation(DPTR(*j)->GetLocation());
+		DPTR(node)->SetSource(DPTR(*j)->GetSource());
 		if (unsigned line = DPTR(*j)->GetLine())
 			DPTR(node)->SetLine(line);
 	}
@@ -132,8 +133,8 @@ static const std::string GenerateSource (AST::Node* ast, const std::string& sour
 	// Ideally we should have assert(unparsedAst);
 	// However, upon AST problems this causes hard to debug errors since we typically run in release mode.
 	// So use the if, allowing the stage source to be generated and look there to resolve the errors.
-	if (unparsedAst) {	
-		AST::SerialProducer()(ast);
+	if (unparsedAst) {
+		(AST::SourceSetter(source))(unparsedAst);
 		UpdateSourceLocationFromUnparsed(ast, unparsedAst, source, addSourceReference);
 	}
 	DDELETE(compiler);
@@ -207,6 +208,7 @@ bool DeltaMetaCompiler::StagedCompilation (AST::Node* ast) {
 		DeltaMetaCompiler::LineMappings lineMappings;
 		const std::string stageText = GenerateSource(stage, stageSource, &lineMappings);
 		PatchInlineSourceLocations(inlineReferences, stageSource, lineMappings);
+		AST::SerialProducer()(stage);
 		SourceReferences sourceRefs = AST::SourceReferenceGetter()(stage);
 
 		DASSERT(stageCallback);
@@ -227,7 +229,8 @@ bool DeltaMetaCompiler::StagedCompilation (AST::Node* ast) {
 		depth = AST::StageDepthCalculator()(ast);
 		lineMappings.clear();
 		sourceRefs.clear();
-		const std::string mainText = GenerateSource(ast, mainSource, &lineMappings, false);
+		const std::string mainText = GenerateSource(ast, mainSource, &lineMappings, depth > 0);
+		AST::SerialProducer()(ast);	// node get new serials after stage execution
 		sourceRefs = AST::SourceReferenceGetter()(ast);
 
 		DASSERT(stageResultCallback);

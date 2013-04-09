@@ -312,19 +312,19 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 static yyconst short int yy_acclist[51] =
     {   0,
        10,   10,   18,   16,   17,   10,   16,   17,   10,   17,
-       16,   17,    5,   16,   17,   16,   17,   12,   16,   17,
-        6,   16,   17,    3,   16,   17,    4,   16,   17,   16,
-       17,   16,   17,   16,   17,    1,   16,   17,    2,   16,
-       17,   10,   11,   12,   13,   14,    9,    7,   15,    8
+       11,   16,   17,    5,   16,   17,   16,   17,   12,   16,
+       17,    6,   16,   17,    3,   16,   17,    4,   16,   17,
+       16,   17,   16,   17,   16,   17,    1,   16,   17,    2,
+       16,   17,   10,   12,   13,   14,    9,    7,   15,    8
     } ;
 
-static yyconst short int yy_accept[49] =
+static yyconst short int yy_accept[47] =
     {   0,
-        1,    2,    3,    4,    6,    9,   11,   13,   16,   18,
-       21,   24,   27,   30,   32,   34,   36,   39,   42,   43,
-       43,   44,   45,   45,   45,   45,   45,   45,   45,   46,
-       46,   46,   47,   47,   47,   47,   47,   47,   47,   47,
-       48,   49,   49,   49,   50,   51,   51,   51
+        1,    2,    3,    4,    6,    9,   11,   14,   17,   19,
+       22,   25,   28,   31,   33,   35,   37,   40,   43,   44,
+       45,   45,   45,   45,   45,   45,   45,   46,   46,   46,
+       47,   47,   47,   47,   47,   47,   47,   47,   48,   49,
+       49,   49,   50,   51,   51,   51
     } ;
 
 static yyconst int yy_ec[256] =
@@ -366,54 +366,52 @@ static yyconst int yy_meta[25] =
         1,    1,    1,    1
     } ;
 
-static yyconst short int yy_base[49] =
+static yyconst short int yy_base[46] =
     {   0,
-        0,    0,   77,   78,   23,   25,   72,   78,   66,   21,
-       78,   78,   78,   60,   51,   53,   78,   78,   31,   67,
-       78,    0,   61,   30,   33,   52,   51,   45,   32,   37,
-       41,   57,   45,   47,   48,   44,   47,   53,   46,   78,
-       78,   48,   51,   50,   78,   36,   78,   30
+        0,    0,   74,   75,   23,   25,   75,   75,   64,   21,
+       75,   75,   75,   58,   49,   51,   75,   75,   31,    0,
+       60,   30,   33,   51,   50,   44,   32,   37,   41,   56,
+       44,   46,   47,   44,   47,   52,   44,   75,   75,   48,
+       51,   36,   75,   22,   75
     } ;
 
-static yyconst short int yy_def[49] =
+static yyconst short int yy_def[46] =
     {   0,
-       47,    1,   47,   47,   47,   47,   48,   47,   47,   47,
-       47,   47,   47,   47,   47,   47,   47,   47,   47,   48,
-       47,   10,   47,   47,   47,   47,   47,   47,   47,   47,
-       47,   47,   47,   47,   47,   47,   47,   47,   47,   47,
-       47,   47,   47,   47,   47,   47,    0,   47
+       45,    1,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   10,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,    0
     } ;
 
-static yyconst short int yy_nxt[103] =
+static yyconst short int yy_nxt[100] =
     {   0,
         4,    5,    6,    7,    4,    8,    9,    4,   10,   11,
         4,   12,   13,    4,    4,   14,    4,   15,    4,    4,
-       16,    4,   17,   18,   19,   19,   19,   19,   23,   22,
-       20,   24,   19,   19,   30,   25,   31,   30,   32,   31,
-       29,   32,   36,   38,   44,   32,   37,   38,   42,   32,
-       43,   42,   44,   43,   46,   44,   44,   46,   44,   44,
-       45,   32,   41,   40,   39,   32,   35,   34,   33,   29,
-       21,   28,   27,   26,   22,   21,   47,    3,   47,   47,
-       47,   47,   47,   47,   47,   47,   47,   47,   47,   47,
-       47,   47,   47,   47,   47,   47,   47,   47,   47,   47,
+       16,    4,   17,   18,   19,   19,   19,   19,   21,   20,
+       42,   22,   19,   19,   28,   23,   29,   28,   30,   29,
+       27,   30,   34,   36,   42,   30,   35,   36,   40,   30,
+       41,   40,   42,   41,   44,   42,   42,   44,   43,   42,
+       30,   39,   38,   37,   30,   33,   32,   31,   27,   26,
+       25,   24,   20,   45,    3,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45
 
-       47,   47
     } ;
 
-static yyconst short int yy_chk[103] =
+static yyconst short int yy_chk[100] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    5,    5,    6,    6,   10,   10,
-       48,   10,   19,   19,   24,   10,   24,   25,   24,   25,
-       29,   25,   29,   30,   46,   30,   29,   31,   36,   31,
-       36,   37,   36,   37,   42,   37,   42,   43,   44,   43,
-       39,   38,   35,   34,   33,   32,   28,   27,   26,   23,
-       20,   16,   15,   14,    9,    7,    3,   47,   47,   47,
-       47,   47,   47,   47,   47,   47,   47,   47,   47,   47,
-       47,   47,   47,   47,   47,   47,   47,   47,   47,   47,
+       44,   10,   19,   19,   22,   10,   22,   23,   22,   23,
+       27,   23,   27,   28,   42,   28,   27,   29,   34,   29,
+       34,   35,   34,   35,   40,   35,   40,   41,   37,   41,
+       36,   33,   32,   31,   30,   26,   25,   24,   21,   16,
+       15,   14,    9,    3,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45,   45,
+       45,   45,   45,   45,   45,   45,   45,   45,   45
 
-       47,   47
     } ;
 
 static yy_state_type yy_state_buf[YY_BUF_SIZE + 2], *yy_state_ptr;
@@ -456,7 +454,6 @@ char *yytext;
 
 static void* bufferState = (void*) 0;
 
-
 void JsonLoaderInitialiseScannerFromString (const char* str) {
 	bufferState = yy_scan_string(str);
 }
@@ -468,9 +465,11 @@ void JsonLoaderCleanUpScannerFromString (void) {
 	bufferState = (void*) 0;
 }
 
+const std::string ReadQuotedString (void);
+
 /* Flex options */
 /* Flex macros */
-#line 474 "lex.JsonLex_yy.c"
+#line 473 "lex.JsonLex_yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -621,10 +620,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 56 "..\\JsonLex.l"
+#line 55 "..\\JsonLex.l"
 
 
-#line 628 "lex.JsonLex_yy.c"
+#line 627 "lex.JsonLex_yy.c"
 
 	if ( yy_init )
 		{
@@ -672,14 +671,14 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 48 )
+				if ( yy_current_state >= 46 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			*yy_state_ptr++ = yy_current_state;
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 78 );
+		while ( yy_base[yy_current_state] != 75 );
 
 yy_find_action:
 		yy_current_state = *--yy_state_ptr;
@@ -717,67 +716,65 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 58 "..\\JsonLex.l"
+#line 57 "..\\JsonLex.l"
 return BLOCK_L;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 59 "..\\JsonLex.l"
+#line 58 "..\\JsonLex.l"
 return BLOCK_R;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 60 "..\\JsonLex.l"
+#line 59 "..\\JsonLex.l"
 return BRACKET_L;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 61 "..\\JsonLex.l"
+#line 60 "..\\JsonLex.l"
 return BRACKET_R;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 62 "..\\JsonLex.l"
+#line 61 "..\\JsonLex.l"
 return COMMA;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 63 "..\\JsonLex.l"
+#line 62 "..\\JsonLex.l"
 return COLON;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 64 "..\\JsonLex.l"
+#line 63 "..\\JsonLex.l"
 return TRUE;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 65 "..\\JsonLex.l"
+#line 64 "..\\JsonLex.l"
 return FALSE;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 66 "..\\JsonLex.l"
+#line 65 "..\\JsonLex.l"
 return NIL;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 68 "..\\JsonLex.l"
+#line 67 "..\\JsonLex.l"
 { /*do nothing*/ }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 70 "..\\JsonLex.l"
+#line 69 "..\\JsonLex.l"
 {
-				std::string s(yytext);
-				s = s.substr(1, s.length() - 2).c_str();
-				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
+				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(ReadQuotedString()));
 				return STRING;
 			}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 77 "..\\JsonLex.l"
+#line 74 "..\\JsonLex.l"
 {
 				yylval.numberValue = atof(yytext); 
 				return INTEGER;
@@ -785,7 +782,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 82 "..\\JsonLex.l"
+#line 79 "..\\JsonLex.l"
 {
 				yylval.numberValue = atof(yytext); 
 				return FLOAT;
@@ -793,7 +790,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 87 "..\\JsonLex.l"
+#line 84 "..\\JsonLex.l"
 {
 				std::string s(yytext);
 				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
@@ -802,7 +799,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 93 "..\\JsonLex.l"
+#line 90 "..\\JsonLex.l"
 {
 				std::string s(yytext);
 				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
@@ -811,7 +808,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 99 "..\\JsonLex.l"
+#line 96 "..\\JsonLex.l"
 {
 				JsonParserLoaderErrorMsg::JsonLoaderError("Did not recognize token %s", yytext);
 				return yytext[0];
@@ -819,10 +816,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 104 "..\\JsonLex.l"
+#line 101 "..\\JsonLex.l"
 ECHO;
 	YY_BREAK
-#line 826 "lex.JsonLex_yy.c"
+#line 823 "lex.JsonLex_yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -1111,7 +1108,7 @@ static yy_state_type yy_get_previous_state()
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 48 )
+			if ( yy_current_state >= 46 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1141,11 +1138,11 @@ yy_state_type yy_current_state;
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 48 )
+		if ( yy_current_state >= 46 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 47);
+	yy_is_jam = (yy_current_state == 45);
 	if ( ! yy_is_jam )
 		*yy_state_ptr++ = yy_current_state;
 
@@ -1706,6 +1703,15 @@ int main()
 	return 0;
 	}
 #endif
-#line 104 "..\\JsonLex.l"
+#line 101 "..\\JsonLex.l"
 
 
+static char input_wrapper(void) { return yyinput(); }
+
+static const std::string ReadQuotedString (void) {
+	std::string s;
+	std::string error;
+	if (!ureadquotedstring(s, input_wrapper, (util_ui32 *)&yylineno, &error))
+		JsonParserLoaderErrorMsg::JsonLoaderError("%s", error.c_str());
+	return uextendescapesequences(s.c_str());
+}

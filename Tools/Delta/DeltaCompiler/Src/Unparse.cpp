@@ -267,8 +267,12 @@ _CS_ Unparse_ExprListStmt (_CS_& el)
 _CS_ Unparse_EmptyStmt (void)
 	{ return ";"; }
 
-_CS_ Unparse_ExprStmt (util_ui32 token, _CS_& e)
-	{ return Unparse_Token(token) + SPACE + e + SCHAR(";"); }
+_CS_ Unparse_ExprStmt (util_ui32 token, _CS_& e, bool addSemi) {
+	std::string result = Unparse_Token(token) + SPACE + e;
+	if (addSemi)
+		result.append(SCHAR(";"));
+	return result;
+}
 
 _CS_ Unparse_BuiltInStmt (util_ui32 token)
 	{ return Unparse_Token(token) + SCHAR(";"); }
