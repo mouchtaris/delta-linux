@@ -94,8 +94,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(DELTA)\DeltaConsoleDebugger\Src\DebugWatchValueRcDecoder.cpp" />
     <ClCompile Include="$(DELTA)\DeltaConsoleDebugger\Src\DeltaConsoleDebugger.cpp" />
+    <ClCompile Include="..\Src\DebugWatchValueDecoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(DELTA)\DLLs\BytecodeStructures\Project\BytecodeStructures.vcxproj">

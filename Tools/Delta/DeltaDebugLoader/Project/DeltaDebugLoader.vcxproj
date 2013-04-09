@@ -170,8 +170,8 @@
       <Project>{844d68cf-44e1-4073-8322-29d104ddcb39}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\DeltaExtraLibraries\JSONParser\Project\JSONParser.vcxproj">
-      <Project>{38c43571-8cc7-4baa-94da-81a0dd64732c}</Project>
+    <ProjectReference Include="..\..\DeltaExtraLibraries\JSONParser\Project\JSONParserLib.vcxproj">
+      <Project>{72a2f9c5-5791-4be6-8724-cc293b9e5b1e}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\DeltaPureVMFacade\Project\DeltaPureVMFacade.vcxproj">
       <Project>{d2934de0-4ca1-436c-95bc-126ef49e6835}</Project>

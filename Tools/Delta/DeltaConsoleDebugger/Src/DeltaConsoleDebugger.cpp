@@ -14,6 +14,7 @@
 // Extended August 2009, support debugger (server) port and breakpoints file as
 // command line arguments (needed to integrate the console debugger in Sparrow).
 // Extended May 2010, added support for configuration parms when getting object graph.
+// Extended April 2013, added support json format and format selection.
 //
 
 #include <stdio.h>
@@ -41,8 +42,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#define	ABOUT							"\nDelta console debugger (Disco), version 4.0 (May 2010).\n"	\
+#define	ABOUT							"\nDelta console debugger (Disco), version 5.0 (April 2013).\n"	\
 										"(c) Institute of Computer Science - FORTH, Anthony Savidis <as@ics.forth.gr>.\n\n"
+
 #define	DEBUGGER_DEFAULT_PORT			0
 #define	BREAKPOINTS_DEFAULT_FILE		"break.dat"
 #define	CURRENT_FILE					"$$"
@@ -201,11 +203,11 @@ static void LoadSource (const char* path) {
 	"| Stack [d]own     | Stack [u]p            | Print loc[a]l         |\n" \
 	"| Print ac[t]ual   | Clear [f]unc results  | Print g[l]obal        |\n" \
 	"| Print E[x]pr     | Bro[w]se expr         | Get object grap[h]    |\n" \
-	"| Binar[y] data	|\n"
+	"| Binar[y] data    | Break on exce[p]tions	|\n"
 
 #define	CD_RUNSTANDARD_COMMANDS \
 	"| [G]o             | Set [m]ax len         | Co[n]figure graph     |\n" \
-	"| Set encoding [z] | [3] Stop              | [4] Break             |\n"
+	"| Set [z] encoding | [3] Stop              | [4] Break             |\n"
 
 #define	CD_ALWAYS_COMMANDS \
 	"| [B]reak at       | D[e]lete bpt          | [C]lear bpts          |\n" \
@@ -498,6 +500,19 @@ static void CDConfigureObjectGraph (void){
 
 //////////////////////////////////////////////////////////////
 
+static void CDBreakOnExceptions (void) {
+
+	ShowMessage("BreakOnExceptions\n");
+
+	printf("Respond with [y]es / [n]o\n");
+
+	bool result;
+	if (GetYesNo("Break on exceptions ?", &result))
+		DeltaDebugClient::DoSetBreakOnThrownException(result);
+}
+
+//////////////////////////////////////////////////////////////
+
 static void CDDeleteBreakpoint (void){
 
 	ShowMessage("DeleteBreakpoint\n");
@@ -532,7 +547,13 @@ static void CDClearFunctionResults (void) {
 static void CDSetEncodingFormat (void){
 
 	ShowMessage("SetEncodingFormat\n");
-	printf("1.RC format\n2.JSON fomat\n3.Cancel\n");
+	printf(
+		"Current format is '%s'\n"
+		"1.Resource Loader format (RC)\n"
+		"2.Javascript Object Notation format (JSON)\n"
+		"3.Main menu\n",
+		encodingFormat.c_str()
+	);
 
 	while (true) {
 
@@ -1248,6 +1269,7 @@ static void InstalHandlers (void) {
 	handlers['G'] = handlers['g'] = &CDGo;
 	handlers['M'] = handlers['m'] = &CDSetMaxLength;
 	handlers['N'] = handlers['n'] = &CDConfigureObjectGraph;
+	handlers['P'] = handlers['p'] = &CDBreakOnExceptions;
 	handlers['3'] = &CDStop;
 	handlers['4'] = &CDBreakExecution;
 
@@ -1269,7 +1291,7 @@ static void InstalHandlers (void) {
 //*********************
 
 static const char* runExtraBreakPointCommands	= "SsIiVvOoRrKkDdUuAaTtLlXxWwHhFfYy";
-static const char* runStandardCommands			= "GgMmNn34";
+static const char* runStandardCommands			= "PpGgMmNn34";
 static const char* notRunCommands				= "12";
 static const char* alwaysCommands				= "BbEeCcZz56";
 

@@ -139,6 +139,7 @@
     </ClCompile>
     <ClCompile Include="..\Src\DebugMonitors.cpp" />
     <ClCompile Include="..\Src\DebugReservedTableAttributes.cpp" />
+    <ClCompile Include="..\Src\DebugWatchValueJsonEncoder.cpp" />
     <ClCompile Include="..\Src\DebugWatchValueRcEncoder.cpp" />
     <ClCompile Include="..\Src\DebugWatchValueTextEncoders.cpp" />
     <ClCompile Include="..\Src\DebugWatchValueXmlEncoder.cpp" />
@@ -157,6 +158,8 @@
     <ClInclude Include="..\Include\DebugExprParser.h" />
     <ClInclude Include="..\Include\DebugExprParserAPI.h" />
     <ClInclude Include="..\Include\DebugWatchValueEncodingDefs.h" />
+    <ClInclude Include="..\Include\DebugWatchValueJsonEncoder.h" />
+    <ClInclude Include="..\Include\DebugWatchValueJsonEncodingDefs.h" />
     <ClInclude Include="..\Include\DebugWatchValueRcEncoder.h" />
     <ClInclude Include="..\Include\DebugWatchValueRcEncodingDefs.h" />
     <ClInclude Include="..\Include\DebugWatchValueTextEncoders.h" />

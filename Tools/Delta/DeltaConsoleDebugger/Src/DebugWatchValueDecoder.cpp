@@ -1,8 +1,9 @@
-// DebugWatchValueRcDecoder.cpp
-// Decoder to convert from an rc to a watch value.
+// DebugWatchValueDecoder.cpp
+// Decoder to convert from an rc / json to a watch value.
 // A Descent Parser implementation.
 // ScriptFighter Project.
 // A. Savidis, August 2008.
+// Extended, April, 2013, to support json format too.
 
 #include "DDebug.h"
 #include "DebugWatchValueInfo.h"
@@ -17,29 +18,24 @@
 
 /////////////////////////////////////////////////////////////
 
-static volatile util_ui32 errorLine = 0;
-static void OnError (util_ui32 line) {
-	fprintf(stdout, "%u", line);
-}
-
-#define	CHECKFINAL(e)	if (true) { if (!(e)) { DPTR(t)->DecRefCounter((DeltaValue*) 0); OnError(__LINE__); return false; } } else
-#define	CHECKERROR(e)	if (!(e)) { OnError(__LINE__); return false; } else
+#define	CHECKFINAL(e)	if (true) { if (!(e)) { DPTR(t)->DecRefCounter((DeltaValue*) 0); return false; } } else
+#define	CHECKERROR(e)	if (!(e)) { return false; } else
 
 #define	PARSE(s)		parser.Parse(t, (s).c_str())
 #define	GETSTRING()		val = parser.GetResult().GetString()
-#define	RC(s)			std::string(s)
-#define	dot				+ RC(".") +
+#define	SS(s)			std::string(s)
+#define	dot				+ SS(".") +
 
 /////////////////////////////////////////////////////////////
 
 static const std::string rc_content_attrs_key (void)
-	{ return RC(RC_SYM_VALUE) dot RC(RC_SYM_CONTENTS); }
+	{ return SS(RC_SYM_VALUE) dot SS(RC_SYM_CONTENTS); }
 
 static const std::string json_content_attrs_key (void)
-	{ return RC(RC_SYM_VALUE); }
+	{ return SS(JSON_VAL_VALUE); }
 
 static const std::string rc_fields_size_key (const std::string& contentsKey)
-	{ return contentsKey dot RC(RC_SYM_FIELDKEYS); }
+	{ return contentsKey dot SS(RC_SYM_FIELDKEYS); }
 
 static const std::string json_fields_size_key (const std::string& contentsKey)
 	{ return contentsKey; }
@@ -50,7 +46,7 @@ static const std::string (*fields_size_key_func) (const std::string&) = 0;
 /////////////////////////////////////////////////////////////
 
 static bool Parse_Simple (RcAttrParser& parser, DeltaTable* t, DebugWatchValueInfo* at) {
-	CHECKFINAL(PARSE(RC(RC_SYM_VALUE)));
+	CHECKFINAL(PARSE(SS(RC_SYM_VALUE)));
 	at->Set(parser.GetResult().GetString());
 	t->DecRefCounter((DeltaValue*) 0);
 	return true;
@@ -82,12 +78,12 @@ static bool Parse_TypeAndValue (
 		RcAttrParser&			parser, 
 		DeltaTable*				t
 	) {
-	CHECKERROR(PARSE(key dot  RC(RC_SYM_TYPE)));
+	CHECKERROR(PARSE(key dot  SS(RC_SYM_TYPE)));
 	std::string val;
 	GETSTRING();
 	CHECKERROR(val == kwdNone || val == kwdHas);
 	if (val == kwdHas)
-		CHECKERROR(Parse_string(at, key dot RC(RC_SYM_VALUE), parser, t));
+		CHECKERROR(Parse_string(at, key dot SS(RC_SYM_VALUE), parser, t));
 	return true;
 }
 
@@ -103,7 +99,7 @@ static bool Parse_DisplayDesc (
 				displayDesc,
 				RC_KWD_NODESC,
 				RC_KWD_DESC,
-				key dot RC(RC_SYM_DISPLAYDESC),
+				key dot SS(RC_SYM_DISPLAYDESC),
 				parser,
 				t
 			);
@@ -121,7 +117,7 @@ static bool Parse_KeyType (
 				keyType,
 				RC_KWD_NOKEYTYPE,
 				RC_KWD_KEYTYPE,
-				key dot RC(RC_SYM_KEYTYPEINFO),
+				key dot SS(RC_SYM_KEYTYPEINFO),
 				parser,
 				t
 			);
@@ -139,7 +135,7 @@ static bool Parse_KeyContentReference (
 				displayDesc,
 				RC_KWD_NOKEYREF,
 				RC_KWD_KEYREF,
-				key dot RC(RC_SYM_KEYCONTENTREF),
+				key dot SS(RC_SYM_KEYCONTENTREF),
 				parser,
 				t
 			);
@@ -153,7 +149,7 @@ static bool Parse_KeyAccess (
 		RcAttrParser&			parser, 
 		DeltaTable*				t
 	) {
-	CHECKERROR(PARSE(key dot RC(RC_SYM_KEYACCESS)));
+	CHECKERROR(PARSE(key dot SS(RC_SYM_KEYACCESS)));
 	std::string val;
 	GETSTRING();
 	CHECKERROR(val == RC_KWD_VISIBLE || val == RC_KWD_HIDDEN);
@@ -189,7 +185,7 @@ static bool Parse_FieldKeys (
 	) {
 	
 	util_ui32 n;
-	CHECKERROR(Parse_number(&n, fieldsSizeKey dot RC(RC_SYM_SIZE), parser, t));
+	CHECKERROR(Parse_number(&n, fieldsSizeKey dot SS(RC_SYM_SIZE), parser, t));
 
 	for (util_ui32 i = 0; i < n; ++i) {
 		DebugWatchValueInfo::FieldKey fieldKey;
@@ -210,7 +206,7 @@ static bool Parse_Content (
 	) {
 
 	std::string subIndex;
-	CHECKERROR(Parse_string(subIndex, key dot RC(RC_SYM_SUBINDEX), parser, t));
+	CHECKERROR(Parse_string(subIndex, key dot SS(RC_SYM_SUBINDEX), parser, t));
 
 	std::string displayDesc;
 	CHECKERROR(Parse_DisplayDesc(displayDesc, key, parser, t));
@@ -224,7 +220,7 @@ static bool Parse_Content (
 	std::list<DebugWatchValueInfo::FieldKey> fieldKeys;
 	std::string fieldsSizeKey ((*fields_size_key_func)(key));
 
-	CHECKERROR(Parse_FieldKeys(fieldKeys, key dot RC(RC_SYM_FIELDKEYS), fieldsSizeKey, parser, t));
+	CHECKERROR(Parse_FieldKeys(fieldKeys, key dot SS(RC_SYM_FIELDKEYS), fieldsSizeKey, parser, t));
 
 	content.Set(subIndex, displayDesc, visible, fieldKeys, keyType);
 	return true;
@@ -242,13 +238,14 @@ static bool Parse_Contents (
 		DeltaTable*									t
 	) {
 
-	CHECKERROR(Parse_string(overview, key dot RC(RC_SYM_OVERVIEW), parser, t));
-	CHECKERROR(Parse_string(absref, key dot RC(RC_SYM_ABSOLUTEREF), parser, t));
+	CHECKERROR(Parse_string(overview, key dot SS(RC_SYM_OVERVIEW), parser, t));
+	CHECKERROR(Parse_string(absref, key dot SS(RC_SYM_ABSOLUTEREF), parser, t));
 
 	util_ui32 n;
-	CHECKERROR(Parse_number(&n, key dot RC(RC_SYM_SIZE), parser, t));
+	CHECKERROR(Parse_number(&n, key dot SS(RC_SYM_SIZE), parser, t));
 	
 	for (util_ui32 i = 0; i < n; ++i) {
+
 		DebugWatchValueInfo::Content content;
 		CHECKERROR(Parse_Content(content, contentsKey + uconstructstr("[%d]", i), parser, t));
 		contents.push_back(content);
@@ -284,9 +281,10 @@ bool DebugWatchValueDecoder (const std::string& encoding, const std::string& for
 	RcAttrParser parser;
 	std::string val;
 		
-	CHECKFINAL(PARSE(RC(RC_SYM_TYPE)));
+	CHECKFINAL(PARSE(SS(RC_SYM_TYPE)));
 	GETSTRING();
 	CHECKFINAL(val == RC_KWD_SIMPLE || val == RC_KWD_COMPOSITE);
+
 	if (val == RC_KWD_SIMPLE)
 		return Parse_Simple(parser, t, at);
 	else {
@@ -294,7 +292,7 @@ bool DebugWatchValueDecoder (const std::string& encoding, const std::string& for
 		std::string overview, absref;
 
 		std::string attrsKey	((*content_attrs_key_func)());
-		std::string	contentsKey	(RC(RC_SYM_VALUE) dot RC(RC_SYM_CONTENTS));
+		std::string	contentsKey	(SS(RC_SYM_VALUE) dot SS(RC_SYM_CONTENTS));
 
 		CHECKFINAL(Parse_Contents(contents, overview, absref, attrsKey, contentsKey, parser, t));
 		at->Set(DebugWatchValueInfo::Composite(overview, absref, contents));

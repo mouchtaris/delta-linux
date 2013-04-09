@@ -53,6 +53,9 @@
     <ClCompile Include="..\Src\DeltaValueToDebugWatchValueInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\DebugWatchValueJsonEncoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Src\DebugExprParser.y">
@@ -101,6 +104,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\DeltaValueToDebugWatchValueInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DebugWatchValueJsonEncoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\DebugWatchValueJsonEncodingDefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
