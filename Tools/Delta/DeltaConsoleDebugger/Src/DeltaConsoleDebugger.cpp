@@ -789,7 +789,12 @@ static void CDPrintExpr (void) {
 ///////////////////////////////////////////////////////////////////
 // EXPRESSION BROWSER.
 
-extern bool DebugWatchValueDecoder (const std::string& encoding, const std::string& format, DebugWatchValueInfo* at);
+extern bool DebugWatchValueDecoder (
+	const std::string&		encoding, 
+	const std::string&		format, 
+	std::string*			error, 
+	DebugWatchValueInfo*	at
+);
 
 static bool ReceiveExprTypeData (std::string* value) {
 	DeltaDebugClient::WaitAnyMessage();
@@ -905,9 +910,10 @@ static bool ExprBrowser (const std::string& expr, bool visible) {
 		encodingFormat == JSON_ENCODING_ID
 	);
 
+	std::string error;
 	DebugWatchValueInfo info;
-	if (!DebugWatchValueDecoder(result, encodingFormat, &info))
-		{ fprintf(stdout, "Decoding '%s' error!\n", encodingFormat.c_str()); return true; }
+	if (!DebugWatchValueDecoder(result, encodingFormat, &error, &info))
+		{ fprintf(stdout, "Decoding '%s' error: %s!\n", encodingFormat.c_str(), error.c_str()); return true; }
 
 	if (info.GetType() == DebugWatchValueInfo::SimpleType)
 		{ fprintf(stdout, "Value: %s\n", info.GetSimple().c_str()); return true; }

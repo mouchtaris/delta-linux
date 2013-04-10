@@ -6,6 +6,7 @@
 // Extended, April, 2013, to support json format too.
 
 #include "DDebug.h"
+#include "udebugsupport.h"
 #include "DebugWatchValueInfo.h"
 #include "RcLoaderAPI.h"
 #include "DeltaTable.h"
@@ -18,8 +19,10 @@
 
 /////////////////////////////////////////////////////////////
 
+static std::string	errorContext;
+
 #define	CHECKFINAL(e)	if (true) { if (!(e)) { DPTR(t)->DecRefCounter((DeltaValue*) 0); return false; } } else
-#define	CHECKERROR(e)	if (!(e)) { return false; } else
+#define	CHECKERROR(e)	if (!(e)) { errorContext = uconstructstr("%s, line %u", #e, __LINE__); return false; } else
 
 #define	PARSE(s)		parser.Parse(t, (s).c_str())
 #define	GETSTRING()		val = parser.GetResult().GetString()
@@ -256,8 +259,14 @@ static bool Parse_Contents (
 
 /////////////////////////////////////////////////////////////
 
-bool DebugWatchValueDecoder (const std::string& encoding, const std::string& format, DebugWatchValueInfo* at) {
+bool DebugWatchValueDecoder (const std::string& encoding, const std::string& format, std::string* error, DebugWatchValueInfo* at) {
 	
+	UTIL_ONFUNC_RETURN_EX(
+		DebugWatchValueDecoder, 
+		*((std::string*) p) = ::errorContext;, 
+		error
+	);
+
 #if	defined(DUMP_ENCODING)
 	FILE* fp = fopen("rcencoding.txt","w"); fprintf(fp,"%s", rc.c_str()); fclose(fp);
 #endif

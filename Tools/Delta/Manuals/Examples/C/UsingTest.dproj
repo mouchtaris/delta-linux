@@ -5,11 +5,13 @@
         <text>0</text>
         <symbolic>C/UsingTest.dproj</symbolic>
         <startup>c.dsc</startup>
+        <stage_output_path>./</stage_output_path>
         <output_path>./</output_path>
         <libs></libs>
         <icode>0</icode>
         <hostd></hostd>
         <host></host>
+        <dllimport_path></dllimport_path>
         <deployment>0</deployment>
         <debug>1</debug>
         <collapsed>0</collapsed>
@@ -22,13 +24,19 @@
             <working_directory>./</working_directory>
             <text>0</text>
             <symbolic>C/A/a.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>./</output_path>
+            <output>a</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>E</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="B\b.dsc">
@@ -36,13 +44,19 @@
             <working_directory>./</working_directory>
             <text>0</text>
             <symbolic>C/B/b.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>./</output_path>
+            <output>b</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>F</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="A\E\e.dsc">
@@ -50,13 +64,19 @@
             <working_directory>./</working_directory>
             <text>0</text>
             <symbolic>C/A/E/e.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>./</output_path>
+            <output>e</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path></bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="B\F\f.dsc">
@@ -64,13 +84,19 @@
             <working_directory>./</working_directory>
             <text>0</text>
             <symbolic>C/B/F/f.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>./</output_path>
+            <output>f</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path></bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="c.dsc">
@@ -78,13 +104,19 @@
             <working_directory>./out</working_directory>
             <text>0</text>
             <symbolic>C/c.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>./</output_path>
+            <output>c</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>A;B</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
 </Project>

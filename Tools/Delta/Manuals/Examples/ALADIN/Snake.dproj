@@ -5,11 +5,13 @@
         <text>1</text>
         <symbolic>ALADIN/Snake.dproj</symbolic>
         <startup>Snake.dsc</startup>
+        <stage_output_path>./</stage_output_path>
         <output_path></output_path>
         <libs>aladin</libs>
         <icode>0</icode>
         <hostd></hostd>
         <host></host>
+        <dllimport_path></dllimport_path>
         <deployment>0</deployment>
         <debug>1</debug>
         <collapsed>0</collapsed>
@@ -23,13 +25,19 @@
             <working_directory>.</working_directory>
             <text>1</text>
             <symbolic>ALADIN/Snake.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path></output_path>
+            <output>Snake</output>
             <libs>aladin</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path></bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
 </Project>
