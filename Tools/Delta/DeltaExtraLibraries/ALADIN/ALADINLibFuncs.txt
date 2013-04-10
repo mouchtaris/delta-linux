@@ -1,0 +1,646 @@
+#******************************************
+# ALADIN aladin namespace and library.
+# File creator: Anthony Savidis, August 2010.
+#******************************************
+# Auto-completion groups:
+#******************************************
+#albit		bitmaps and drawables
+#aljoy		joystick
+#alkb		keyboard
+#almou		mouse
+#alpal		palette (256 colors only)
+#alfo		font
+#alrc		resource management
+#alco		library constants
+#alscr		screen
+#ipo		input control wrapper
+#******************************************
+@enter
+aladin
+#******************************************
+# Types
+#******************************************
+@type 
+drawable
+@type
+bitmap : drawable
+@type
+screen : drawable
+@type
+font
+@type
+palette
+#
+aladin_getapi						() : Object
+#
+#groupex(alco)
+#groupex(alscr)
+@const
+DLL						"ALADIN.dll"
+@const
+SCREEN_MODE_FULLSCREEN	"fullscreen"
+@const
+SCREEN_MODE_OVERLAYED	"overlayed"
+@const
+SCREEN_RES_640x480		"640x480"
+@const
+SCREEN_RES_800x600		"800x600"
+@const
+SCREEN_RES_1024x768		"1024x768"
+@const
+SCREEN_DEPTH_8_BITS		"8bits"
+@const
+SCREEN_DEPTH_16_BITS	"16bits"
+@const
+SCREEN_DEPTH_24_BITS	"24bits"
+@const
+SCREEN_DEPTH_32_BITS	"32bits"
+@const
+SCREEN_DEPTH_DETECT		"detect"
+#groupex(_)
+#groupex(_)
+#
+initialise							(mode:String, res:String, depth:String) :Void
+cleanup								() : Void
+iswindowcloserequested				(): Bool
+#
+#group(alco)
+@const
+TEXT_ORIGIN_LEFT	"left"
+@const
+TEXT_ORIGIN_RIGHT	"right"
+@const
+TEXT_ORIGIN_CENTRE	"centre"
+#
+#group(albit)
+bitmap_construct					(width:Number, height:Number, isVideo:Bool): bitmap
+bitmap_load							(path:String, isVideo:Bool): bitmap
+bitmap_loadimage					(path:String): bitmap
+bitmap_destroy						(b:bitmap)
+drawable_white						() : Number
+drawable_black						() : Number
+drawable_makecolor					(r:Number, g:Number, b:Number) : Number
+drawable_transparent				() : Number
+drawable_width						(d:drawable) : Number
+drawable_height						(d:drawable) : Number
+drawable_blit						(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_maskedblit					(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_rotateblit					(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, src_w:Number, src_h:Number, angle:Number): Void
+drawable_shrinkblit					(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, src_w:Number, src_h:Number, factor:Number): Void
+drawable_fitblit					(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, src_w:Number, src_h:Number, dest_w:Number, dest_h:Number): Void
+drawable_blitbylighting				(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_blitbydarkening			(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_blitbytranslucency			(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, src_w:Number, src_h:Number, trans:Number): Void
+drawable_blitbygreying				(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_blitbyinverting			(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_blitbyblurring				(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_blitbylightingsource		(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number, light:Number): Void
+drawable_blitbydarkeningsource		(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number, dark:Number): Void
+drawable_blitbygreyingsource		(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_blitbyinvertingsource		(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_blitbyblurringsource		(dest:drawable, src:drawable, src_x:Number, src_y:Number, dest_x:Number, dest_y:Number, w:Number, h:Number): Void
+drawable_clear						(d:drawable) : Void
+drawable_cleartocolor				(d:drawable, color:Number) : Void
+drawable_textdraw					(d:drawable, f:font, x:Number, y:Number, text:String, origin:String, color:Number) : Void
+drawable_settextopaque				(bgColor:Number) : Void
+drawable_settexttransparent			() : Void
+drawable_textwidth					(f:font, text:String) : Number
+drawable_textheight					(f:font) : Number
+drawable_putpixel					(d:drawable, x:Number, y:Number, color:Number) : Void
+drawable_getpixel					(d:drawable, x:Number, y:Number) : Number
+drawable_vertline					(d:drawable, y1:Number, x:Number, y2:Number, color:Number) : Void
+drawable_horizline					(d:drawable, x1:Number, y:Number, x2:Number, color:Number) : Void
+drawable_rect						(d:drawable, x1:Number, y1:Number, x2:Number,  y2:Number, color:Number) : Void
+drawable_fillrect					(d:drawable, x1:Number, y1:Number, x2:Number,  y2:Number, color:Number) : Void
+drawable_line						(d:drawable, x1:Number, y1:Number, x2:Number,  y2:Number, color:Number) : Void
+drawable_triangle					(d:drawable, x1:Number, y1:Number, x2:Number,  y2:Number, x3:Number,  y3:Number, color:Number) : Void
+drawable_polygon					(d:drawable, n:Number, xpts:std::list, ypts:std::list, color:Number) : Void
+drawable_circle						(d:drawable, xc:Number, yc:Number, radius:Number, color:Number) : Void
+drawable_fillcircle					(d:drawable, xc:Number, yc:Number, radius:Number, color:Number) : Void
+drawable_ellipse					(d:drawable, xc:Number, yc:Number, rx:Number, ry:Number, color:Number) : Void
+drawable_fillellipse				(d:drawable, xc:Number, yc:Number, rx:Number, ry:Number, color:Number) : Void
+drawable_loadtransmap				(path:String) : Bool
+drawable_loadrctransmap				(path:String) : Bool
+drawable_cleartransmap				() : Void
+drawable_loadlightmap				(path:String) : Bool
+drawable_loadrclightmap				(path:String) : Bool
+drawable_clearlightmap				() : Void
+drawable_loaddarkmap				(path:String) : Bool
+drawable_loadrcdarkmap				(path:String) : Bool
+drawable_cleardarkmap				() : Void
+#
+#group(aljoy)
+joystick_install					() : Void
+joystick_uninstall					() : Void
+joystick_ispresent					() : Bool
+joystick_gettotal					() : Number
+joystick_gettotalbuttons			(joyNum: Number) : Number
+joystick_getbuttonname				(joyNum: Number, buttonNum : Number) : String
+joystick_buttonpressed				(joyNum: Number, buttonNum : Number) : Bool
+joystick_calibratemsg				(joyNum: Number) : String
+joystick_calibrate					(joyNum: Number) : Bool
+joystick_iscalibrated				(joyNum: Number) : Bool
+joystick_maxaxis					(joyNum: Number) : String
+joystick_gettype					(joyNum: Number) : String
+joystick_setanaloguemovethreshold	(joyNum: Number, threshold:Number) : Void
+joystick_poll						() : Void
+joystick_getpos						(joyNum: Number, axis:String, isAnalog:Bool) : Number
+joystick_getdirx					(joyNum: Number, isAnalog:Bool) : Number
+joystick_getdiry					(joyNum: Number, isAnalog:Bool) : Number
+joystick_getdirz					(joyNum: Number, isAnalog:Bool) : Number
+#
+#groupex(alco)
+@const
+JOY_AXIS_X			"x"
+@const
+JOY_AXIS_Y			"y"
+@const
+JOY_AXIS_Z			"z"
+@const
+JOY_AXIS_NONE		"none"
+@const
+JOY_TYPE_ANALOGUE	"analogue"
+@const
+JOY_TYPE_DIGITAL	"digital"
+@const
+JOY_TYPE_NONE		"none"
+@const
+JOY_XDIR_LEFT		"left"
+@const
+JOY_XDIR_RIGHT		"right"
+@const
+JOY_XDIR_CENTRE		"centre"
+@const
+JOY_YDIR_FRONT		"front"
+@const
+JOY_YDIR_BACK		"back"
+@const
+JOY_YDIR_CENTRE		"centre"
+@const
+JOY_ZDIR_UP			"up"
+@const
+JOY_ZDIR_DOWN		"down"
+@const
+JOY_ZDIR_CENTRE		"centre"
+#groupex(_)
+#
+#group(alkb)
+kbd_install							() : Void
+kbd_uninstall						() : Void
+kbd_keypressed						() : Bool
+kbd_readkey							() : Number
+kbd_getkeyasciicode					(keyCode:Number) : Number
+kbd_getkeyscancode					(keyCode:Number) : Number
+kbd_getshiftkeysstate				() : Number
+kbd_testkey							(key:+{String,Number}) : Bool
+kbd_keytonum						(key:String) : Number
+kbd_numtokey						(key:Number) : String
+kbd_flagtonum						(flag:String) : Number
+kbd_asciitostr						(ascii:Number) : String
+kbd_getpressedkeys					() : std::list
+kbd_havepressedkeys					() : Bool
+kbd_letteralphabetpos				(letter:String) : Number
+kbd_bufferclear						() : Void
+#
+@enter
+keys
+#group(alkeys)
+#groupex(alco)
+@const
+KEY_A "KEY_A"			
+@const
+KEY_B "KEY_B"			
+@const
+KEY_C "KEY_C"			
+@const
+KEY_D "KEY_D"			
+@const
+KEY_E "KEY_E"			
+@const
+KEY_F "KEY_F"			
+@const
+KEY_G "KEY_G"			
+@const
+KEY_H "KEY_H"			
+@const
+KEY_I "KEY_I"			
+@const
+KEY_J "KEY_J"			
+@const
+KEY_K "KEY_K"			
+@const
+KEY_L "KEY_L"			
+@const
+KEY_M "KEY_M"			
+@const
+KEY_N "KEY_N"			
+@const
+KEY_O "KEY_O"			
+@const
+KEY_P "KEY_P"			
+@const
+KEY_Q "KEY_Q"			
+@const
+KEY_R "KEY_R"			
+@const
+KEY_S "KEY_S"			
+@const
+KEY_T "KEY_T"			
+@const
+KEY_U "KEY_U"			
+@const
+KEY_V "KEY_V"			
+@const
+KEY_W "KEY_W"			
+@const
+KEY_X "KEY_X"			
+@const
+KEY_Y "KEY_Y"			
+@const
+KEY_Z "KEY_Z"			
+@const
+KEY_0 "KEY_0"			
+@const
+KEY_1 "KEY_1"			
+@const
+KEY_2 "KEY_2"			
+@const
+KEY_3 "KEY_3"			
+@const
+KEY_4 "KEY_4"			
+@const
+KEY_5 "KEY_5"			
+@const
+KEY_6 "KEY_6"			
+@const
+KEY_7 "KEY_7"			
+@const
+KEY_8 "KEY_8"			
+@const
+KEY_9 "KEY_9"			
+@const
+KEY_0_PAD "KEY_0_PAD"		
+@const
+KEY_1_PAD "KEY_1_PAD"		
+@const
+KEY_2_PAD "KEY_2_PAD"		
+@const
+KEY_3_PAD "KEY_3_PAD"		
+@const
+KEY_4_PAD "KEY_4_PAD"		
+@const
+KEY_5_PAD "KEY_5_PAD"		
+@const
+KEY_6_PAD "KEY_6_PAD"		
+@const
+KEY_7_PAD "KEY_7_PAD"		
+@const
+KEY_8_PAD "KEY_8_PAD"		
+@const
+KEY_9_PAD "KEY_9_PAD"		
+@const
+KEY_F1 "KEY_F1"			
+@const
+KEY_F2 "KEY_F2"			
+@const
+KEY_F3 "KEY_F3"			
+@const
+KEY_F4 "KEY_F4"			
+@const
+KEY_F5 "KEY_F5"			
+@const
+KEY_F6 "KEY_F6"			
+@const
+KEY_F7 "KEY_F7"			
+@const
+KEY_F8 "KEY_F8"			
+@const
+KEY_F9 "KEY_F9"			
+@const
+KEY_F10 "KEY_F10"			
+@const
+KEY_F11 "KEY_F11"			
+@const
+KEY_F12 "KEY_F12"			
+@const
+KEY_ESC "KEY_ESC"			
+@const
+KEY_TILDE "KEY_TILDE"		
+@const
+KEY_MINUS "KEY_MINUS"		
+@const
+KEY_EQUALS "KEY_EQUALS"		
+@const
+KEY_BACKSPACE "KEY_BACKSPACE"	
+@const
+KEY_TAB "KEY_TAB"			
+@const
+KEY_OPENBRACE "KEY_OPENBRACE"	
+@const
+KEY_CLOSEBRACE "KEY_CLOSEBRACE"	
+@const
+KEY_ENTER "KEY_ENTER"		
+@const
+KEY_COLON "KEY_COLON"		
+@const
+KEY_QUOTE "KEY_QUOTE"		
+@const
+KEY_BACKSLASH "KEY_BACKSLASH"	
+@const
+KEY_BACKSLASH2 "KEY_BACKSLASH2"	
+@const
+KEY_COMMA "KEY_COMMA"		
+@const
+KEY_STOP "KEY_STOP"			
+@const
+KEY_SLASH "KEY_SLASH"		
+@const
+KEY_SPACE "KEY_SPACE"		
+@const
+KEY_INSERT "KEY_INSERT"		
+@const
+KEY_DEL "KEY_DEL"			
+@const
+KEY_HOME "KEY_HOME"			
+@const
+KEY_END "KEY_END"			
+@const
+KEY_PGUP "KEY_PGUP"			
+@const
+KEY_PGDN "KEY_PGDN"			
+@const
+KEY_LEFT "KEY_LEFT"			
+@const
+KEY_RIGHT "KEY_RIGHT"		
+@const
+KEY_UP "KEY_UP"			
+@const
+KEY_DOWN "KEY_DOWN"			
+@const
+KEY_SLASH_PAD "KEY_SLASH_PAD"	
+@const
+KEY_ASTERISK "KEY_ASTERISK"		
+@const
+KEY_MINUS_PAD "KEY_MINUS_PAD"	
+@const
+KEY_PLUS_PAD "KEY_PLUS_PAD"		
+@const
+KEY_DEL_PAD "KEY_DEL_PAD"		
+@const
+KEY_ENTER_PAD "KEY_ENTER_PAD"	
+@const
+KEY_PRTSCR "KEY_PRTSCR"		
+@const
+KEY_PAUSE "KEY_PAUSE"		
+@const
+KEY_YEN "KEY_YEN"			
+@const
+KEY_YEN2 "KEY_YEN2"			
+@const
+KEY_MODIFIERS "KEY_MODIFIERS"	
+@const
+KEY_LSHIFT "KEY_LSHIFT"		
+@const
+KEY_RSHIFT "KEY_RSHIFT"		
+@const
+KEY_LCONTROL "KEY_LCONTROL"		
+@const
+KEY_RCONTROL "KEY_RCONTROL"		
+@const
+KEY_ALT "KEY_ALT"			
+@const
+KEY_ALTGR "KEY_ALTGR"		
+@const
+KEY_LWIN "KEY_LWIN"			
+@const
+KEY_RWIN "KEY_RWIN"			
+@const
+KEY_MENU "KEY_MENU"			
+@const
+KEY_SCRLOCK "KEY_SCRLOCK"		
+@const
+KEY_NUMLOCK "KEY_NUMLOCK"		
+@const
+KEY_CAPSLOCK "KEY_CAPSLOCK"	
+#groupex(_)
+@exit
+#
+@enter
+shiftkeys
+#group(alkeys)
+#groupex(alco)
+@const
+SHIFT_FLAG "SHIFT_FLAG"    
+@const
+CTRL_FLAG "CTRL_FLAG"     
+@const
+ALT_FLAG "ALT_FLAG"      
+@const
+LWIN_FLAG "LWIN_FLAG"     
+@const
+RWIN_FLAG "RWIN_FLAG"     
+@const
+MENU_FLAG "MENU_FLAG"     
+@const
+SCROLOCK_FLAG "SCROLOCK_FLAG" 
+@const
+NUMLOCK_FLAG "NUMLOCK_FLAG"  
+@const
+CAPSLOCK_FLAG "CAPSLOCK_FLAG" 
+@const
+INALTSEQ_FLAG "INALTSEQ_FLAG" 
+@const
+ACCENT1_FLAG "ACCENT1_FLAG"  
+@const
+ACCENT2_FLAG "ACCENT2_FLAG"  
+@const
+ACCENT3_FLAG "ACCENT3_FLAG"  
+@const
+ACCENT4_FLAG "ACCENT4_FLAG"  
+#groupex(_)
+@exit
+#
+#group(almou)
+mouse_install						() : Void
+mouse_uninstall						() : Void
+mouse_poll							() : Void
+mouse_getx							() : Number
+mouse_gety							() : Number
+mouse_getdx							() : Number
+mouse_getdy							() : Number
+mouse_setpos						(x:Number, y:Number) : Void
+mouse_leftbuttonpressed				() : Bool
+mouse_rightbuttonpressed			() : Bool
+mouse_middlebuttonpressed			() : Bool
+mouse_movedbydir					(dir:String) : Void
+mouse_getdirbyaxis					(axis:String) : Void
+mouse_haswheel						() : Bool
+mouse_getwheeldisplacement			() : Number
+mouse_setcursorbitmap				(b:bitmap, bit_x:Number, bit_y:Number) : Void
+mouse_setdefaultcursor				() : Void
+mouse_setautodisplay				() : Void
+mouse_resetautodisplay				() : Void
+mouse_resetallsettings				() : Void
+mouse_displaycursor					() : Void
+mouse_showcursor					() : Void
+mouse_hidecursor					() : Void
+mouse_areashowcursor				(x:Number, y:Number, w:Number, h:Number): Void
+mouse_areahidecursor				(x:Number, y:Number, w:Number, h:Number): Void
+mouse_areasetcursorbitmap			(x:Number, y:Number, w:Number, h:Number, b:bitmap, bit_x:Number, bit_y:Number): Void
+mouse_arearesetcursorbitmap			(x:Number, y:Number, w:Number, h:Number): Void
+#
+#group(alpal)
+aladin_palette256					() : palette
+aladin_palette_getcolor256_red		(p:palette, index256:Number) : Number
+aladin_palette_getcolor256_green	(p:palette, index256:Number) : Number
+aladin_palette_getcolor256_blue		(p:palette, index256:Number) : Number
+aladin_palette_setcolor256			(p:palette, index256:Number,r:Number, g:Number, b:Number) : Void
+aladin_palette_copycolors256		(to:palette, from:palette) : Void
+aladin_setpalette256				(p:palette) : Void
+aladin_getpalette256				(putHere:palette) : Void
+aladin_setpaletterange256			(p:palette, from:Number, to:Number) : Void
+aladin_setcolor256					(index:Number, r:Number, g:Number, b:Number) : Void
+aladin_getcolor256_red				(p:palette, index:Number) : Number
+aladin_getcolor256_green			(p:palette, index:Number) : Number
+aladin_getcolor256_blue				(p:palette, index:Number) : Number
+aladin_getdefaultpalette256			(putHere:palette) : Void
+#
+#group(alscr)
+#groupex(alco)
+@const
+SCREEN_DOUBLE_BUFFERING				"doublebuffering"
+@const
+SCREEN_PAGE_FLIPPING				"pageflipping"
+@const
+SCREEN_TRIPLE_BUFFERING				"triplebuffering"
+@const
+SCREEN_DOUBLE_BUFFERING_MEM			"doublebufferingmemory"
+@const
+SCREEN_DOUBLE_BUFFERING_MEMVSYNC	"doublebufferingmemoryvsync"
+#groupex(_)
+#
+screen_get							() : screen
+screen_instantiate					(policy:String) : Bool
+screen_destroy						() : Void
+screen_getpolicy					() : String
+screen_flip							() : Void
+#
+#group(alfo)
+font_getdefault						() : aladin::font
+font_load							(path:String) : aladin::font
+font_destroy						(f:aladin::font) : Void
+font_getname						(f:aladin::font) : String
+@exit
+#End of 'aladin' namespace here. Rest belong to global namespace.
+#####################################
+#group(ipo)
+@type
+kbdbinding
+@type
+mousebinding
+@type
+joybinding
+ipon_initialise						() : Void
+ipon_cleanup						() : Void
+ipon_load							(rcId:String) : Void
+ipon_loadfrompath					(path:String) : Void
+ipon_store							(path:String) : Bool
+ipon_processinput					() : Void
+ipon_gettriggeredcommands			(channel:Number) : std::list
+ipon_isvalidchannel					(channel:Number) : Bool
+ipon_newchannel						(channel:Number, descr:String) : Bool
+ipon_cancelchannel					(channel:Number) : Void
+ipon_setkbdcommand					(channel:Number, cmmd:Number, descr:String, kb:kbdbinding) : Void
+ipon_cancelkbdcommand				(channel:Number, kb:kbdbinding) : Void
+ipon_setjoycommand					(channel:Number, cmmd:Number, descr:String, jb:joybinding) : Void
+ipon_canceljoycommand				(channel:Number, jb:joybinding) : Void
+ipon_setmousecommand				(channel:Number, cmmd:Number, descr:String, mb:mousebinding) : Void
+ipon_cancelmousecommand				(channel:Number, mb:mousebinding) : Void
+ipon_getchanneldesc					(channel:Number) : String
+ipon_totalkbdcommands				(channel:Number) : Number
+ipon_totaljoycommands				(channel:Number) : Number
+ipon_totalmousecommands				(channel:Number) : Number
+ipon_getkbdcommanddesc				(channel:Number, cmmd:Number) : String
+ipon_getjoycommanddesc				(channel:Number, cmmd:Number) : String
+ipon_getmousecommanddesc			(channel:Number, cmmd:Number) : String
+ipon_getkbdbinding					(channel:Number, cmmd:Number) : kbdbinding
+ipon_getjoybinding					(channel:Number, cmmd:Number) : joybinding
+ipon_getmousebinding				(channel:Number, cmmd:Number) : mousebinding
+#
+#groupex(alkb)
+kbdbinding_new						() : kbdbinding
+kbdbinding_copy						(kb: kbdbinding) : kbdbinding
+kbdbinding_reset					(kb: kbdbinding) : Void
+kbdbinding_totalkeys				(kb: kbdbinding) : Number
+kbdbinding_clearkeys				(kb: kbdbinding) : Void
+kbdbinding_getkey					(kb: kbdbinding, cmmd:Number) : String
+kbdbinding_addkey					(kb: kbdbinding, key:String) : Bool
+#groupex(_)
+#
+#groupex(aljoy)
+joybinding_new						() : joybinding
+joybinding_copy						(jb: joybinding) : joybinding
+joybinding_reset					(jb: joybinding) : Void
+joybinding_setjoynum				(jb: joybinding, joyNum:Number) : Void
+joybinding_getjoynum				(jb: joybinding) : Number
+joybinding_setxdir					(jb: joybinding, dir:String) : Void
+joybinding_setydir					(jb: joybinding, dir:String) : Void
+joybinding_setzdir					(jb: joybinding, dir:String) : Void
+joybinding_getxdir					(jb: joybinding) : String
+joybinding_getydir					(jb: joybinding) : String
+joybinding_getzdir					(jb: joybinding) : String
+joybinding_totalbuttons				(jb: joybinding) : Number
+joybinding_clearbuttons				(jb: joybinding) : Void
+joybinding_getbutton				(jb: joybinding, i:Number) : Number
+joybinding_addbutton				(jb: joybinding, buttonId:Number) : Void
+#groupex(_)
+#
+#groupex(almou)
+mousebinding_new					() : mousebinding
+mousebinding_copy					(mb: mousebinding) : mousebinding
+mousebinding_reset					(mb: mousebinding) : Void
+mousebinding_setxdir				(mb: mousebinding, dir:String) : Void
+mousebinding_setydir				(mb: mousebinding, dir:String) : Void
+mousebinding_setzdir				(mb: mousebinding, dir:String) : Void
+mousebinding_getxdir				(mb: mousebinding) : String
+mousebinding_getydir				(mb: mousebinding) : String
+mousebinding_getzdir				(mb: mousebinding) : String
+mousebinding_setleftbutton			(mb: mousebinding, state:Bool) : Void
+mousebinding_setrightbutton			(mb: mousebinding, state:Bool) : Void
+mousebinding_setmiddlebutton		(mb: mousebinding, state:Bool) : Void
+mousebinding_getleftbutton			(mb: mousebinding) : Bool
+mousebinding_getrightbutton			(mb: mousebinding) : Bool
+mousebinding_getmiddlebutton		(mb: mousebinding) : Bool
+#groupex(_)
+#
+#groupex(alrc)
+rcmanagers_getapi					() : Object
+#groupex(_)
+#
+#groupex(alfo)
+fontmanager_load					(rcId: String) : aladin::font
+fontmanager_unload					(f:aladin::font) : Void
+fontmanager_get						(rcId:String) : aladin::font
+fontmanager_cleanup					() : Void
+#groupex(_)
+#
+#groupex(albit)
+bitmapmanager_load					(rcId:String, isVideo:Bool) : aladin::bitmap
+bitmapmanager_loadany				(rcId:String) : aladin::bitmap
+bitmapmanager_unload				(rcId:String)
+bitmapmanager_get					(rcId:String) : aladin::bitmap
+bitmapmanager_cleanup				() : Void
+#
+#group(alrc)
+rcmap_getapi						() : Object
+rcmap_initialise					() : Void
+rcmap_cleanup						() : Void
+rcmap_loadtext						(rcId:String) : Bool
+rcmap_loadbin						(rcId:String) : Bool
+rcmap_loadbinex						(rcId:String) : Bool
+rcmap_add							(rcId:String, text:String): Void (rcId:String, b:aladin::bitmap, x:Number, y:Number, w:Number, h:Number): Void
+rcmap_remove						(rcId:String) : Void
+rcmap_has							(rcId:String) : Bool
+#******************************************
+# ALADIN aladin namespace and library.
+#******************************************
