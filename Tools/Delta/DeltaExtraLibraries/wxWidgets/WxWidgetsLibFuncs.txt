@@ -4707,6 +4707,7 @@ boxsizer_destruct							(sizer:boxsizer)
 boxsizer_recalcsizes						(sizer:boxsizer)
 boxsizer_calcmin							(sizer:boxsizer) : size
 boxsizer_getorientation						(sizer:boxsizer) : Number
+boxsizer_setorientation						(sizer:boxsizer,orientation:+{Number,String})
 #group(wxbrush)
 brush_construct								():brush (colour:colour):brush (colour:colour,style:+{Number,String}):brush (stippleBitmap:bitmap):brush (colourName:String,style:+{Number,String}):brush
 brush_destruct								(br:brush)

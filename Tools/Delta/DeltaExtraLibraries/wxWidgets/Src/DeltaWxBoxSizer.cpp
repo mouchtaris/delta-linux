@@ -21,18 +21,20 @@ WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(recalcsizes)
 WX_FUNC_DEF(calcmin)
 WX_FUNC_DEF(getorientation)
+WX_FUNC_DEF(setorientation)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
 	WX_FUNC(destruct),
 	WX_FUNC(recalcsizes),
 	WX_FUNC(calcmin),
-	WX_FUNC(getorientation)
+	WX_FUNC(getorientation),
+	WX_FUNC(setorientation)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getorientation")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setorientation")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(BoxSizer, "boxsizer", Sizer)
 
@@ -94,4 +96,10 @@ DLIB_FUNC_START(boxsizer_calcmin, 1, Nil)
 DLIB_FUNC_START(boxsizer_getorientation, 1, Nil)
 	DLIB_WXGET_BASE(boxsizer, BoxSizer, sizer)
 	WX_SETNUMBER(sizer->GetOrientation())
+}
+
+DLIB_FUNC_START(boxsizer_setorientation, 2, Nil)
+	DLIB_WXGET_BASE(boxsizer, BoxSizer, sizer)
+	WX_GETDEFINE(orientation)
+	sizer->SetOrientation(orientation);
 }
