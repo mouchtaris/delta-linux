@@ -129,6 +129,7 @@ class		[
 				[ 	name	"d_comment",		color "green", 			style "italic" 	],
 				[ 	name	"d_ident",			color "rgb(56,56,56)", 	style "italic" 	],
 				[ 	name	"d_libfunc",		color "rgb(0,64,128)", 	weight "bold"	],
+				[ 	name	"d_metaop",			color "blue", weight "bold"	],
 				[ 	name	"d_binaryop",		color "rgb(147,73,0)"		],
 				[ 	name	"d_overloadedop",	color "blue" 				],
 				[ 	name	"d_objectop",		color "black", weight "bold"],

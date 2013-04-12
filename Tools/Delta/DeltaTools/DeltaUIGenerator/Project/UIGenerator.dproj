@@ -5,11 +5,13 @@
         <text>0</text>
         <symbolic>Project/UIGenerator.dproj</symbolic>
         <startup>..\Src\UIBuilder.dsc</startup>
+        <stage_output_path>./</stage_output_path>
         <output_path>../dbc</output_path>
         <libs>wx;Corba;WxWidgets;corba</libs>
         <icode>0</icode>
         <hostd></hostd>
         <host></host>
+        <dllimport_path></dllimport_path>
         <deployment>0</deployment>
         <debug>1</debug>
         <collapsed>0</collapsed>
@@ -22,13 +24,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/CORBAMetadataUIAPISpecConverter.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>CORBAMetadataUIAPISpecConverter</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\MicroUIs.dsc">
@@ -36,13 +44,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/MicroUIs.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>MicroUIs</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\Properties.dsc">
@@ -50,13 +64,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/Properties.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>Properties</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertyGenerator.dsc">
@@ -64,13 +84,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/PropertyGenerator.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>PropertyGenerator</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertyUIMappingRules.dsc">
@@ -78,13 +104,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/PropertyUIMappingRules.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>PropertyUIMappingRules</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\TopLevelUIs.dsc">
@@ -92,13 +124,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/TopLevelUIs.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>TopLevelUIs</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIAPIHolder.dsc">
@@ -106,13 +144,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/UIAPIHolder.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>UIAPIHolder</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIAPISpec.dsc">
@@ -120,13 +164,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/UIAPISpec.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>UIAPISpec</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIAPISpecValidator.dsc">
@@ -134,13 +184,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/UIAPISpecValidator.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>UIAPISpecValidator</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\UIBuilder.dsc">
@@ -148,13 +204,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/UIBuilder.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>UIBuilder</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertySelectionHolder.dsc">
@@ -162,13 +224,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/PropertySelectionHolder.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>PropertySelectionHolder</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
     <Child type="Script" name="..\Src\PropertySelectionUIs.dsc">
@@ -176,13 +244,19 @@
             <working_directory>../dbc</working_directory>
             <text>0</text>
             <symbolic>Src/PropertySelectionUIs.dsc</symbolic>
+            <stage_sources_options/>
+            <stage_output_path>./</stage_output_path>
             <output_path>../dbc</output_path>
+            <output>PropertySelectionUIs</output>
             <libs>wx;Corba;WxWidgets;corba</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
+            <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
             <bytecode_path>../dbc</bytecode_path>
+            <aspects></aspects>
         </ScriptProperties>
     </Child>
 </Project>

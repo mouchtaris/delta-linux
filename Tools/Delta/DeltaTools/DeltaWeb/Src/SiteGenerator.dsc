@@ -109,7 +109,7 @@ function KwdLexicalAnalyser (kwds) {
 	
 	la.produce_fsm(kwds);
 	return la;
-};
+}
 
 /////////////////////////////////////////////////////////////
 
@@ -128,6 +128,7 @@ function LexicalAnalyser {
 	const FORMALS		= #d_formals;
 	const LIBFUNC		= #d_libfunc;
 	const COMMENT		= #d_comment;
+	const META_OP		= #d_metaop;
 	const BINARY_OP		= #d_binaryop;
 	const OBJECT_OP		= #d_objectop;
 	const OVERLOADED_OP	= #d_overloadedop;
@@ -186,6 +187,8 @@ function LexicalAnalyser {
 			}, 
 			
 			@operators : [
+				{ META_OP		:	list_new("<<", ">>", "~", "!", "&", "$") },
+
 				{ BINARY_OP		:	list_new(
 										">", ">=", "<", "<=", "==", "!=", 
 										"+", "+=", "-", "-=", "*",	"*=", 
@@ -1656,7 +1659,7 @@ function Main {
 	::stylesheet 		= CssGenerator();
 	::mainmenu 			= Menu();
 
-	rcsetpreprocessor(cpp, "-I" + cwd);
+	rcsetpreprocessor(cpp, "");
 
 	function LoadResourceData (rc) {
 		if (not (local data = rcload(rc))) 		{

@@ -1054,6 +1054,95 @@ Iter		remove_if(pred, cont[, end, eraser])		Same as before, except start is the 
 			remove_all_if(pred, cont[, end, eraser])	Same as before, except start is the first element in container cont
 "
 FUNCS_END
+END_SEC,
+
+///////////////////////////////////////////////////////////////////
+
+START_SEC("ss_ast", "Ast and visitors")		
+index [
+	"ast_new",
+	"ast_get_tag",
+	"ast_get_child",
+	"ast_get_child_index",
+	"ast_get_children",
+	"ast_get_total_children",
+	"ast_get_parent",
+	"ast_is_descendant",
+	"ast_push_back",
+	"ast_push_front",
+	"ast_insert_after",
+	"ast_insert_before",
+	"ast_pop_back",
+	"ast_pop_front",
+	"ast_remove",
+	"ast_remove_from_parent",
+	"ast_replace",
+	"ast_get_attribute",
+	"ast_set_attribute",
+	"ast_get_attributes",
+	"ast_accept_postorder",
+	"ast_accept_preorder",
+	"ast_copy",
+	"ast_unparse",
+	"ast_inject",
+	"ast_decr_esc_cardinalities",
+	"astvisitor_new",
+	"astvisitor_set_handler",
+	"astvisitor_set_context_handler",
+	"astvisitor_set_default_handler",
+	"astvisitor_stop",
+	"astvisitor_leave"
+],   
+FUNCS_START "
+Next is garbage collectable:
+Ast	 		ast_new(tag[, attributes])
+String		ast_get_tag(a)
+Ast	 		ast_get_child(a, index)
+Object		ast_get_child_index(a, node)
+List		ast_get_children(a)
+Number		ast_get_total_children(a)
+Ast			ast_get_parent(a)
+Bool		ast_is_descendant(a, node)			
+			ast_push_back(a, node[, id])
+			ast_push_front(a, node[, id])
+			ast_insert_after(a, after, node[, id])
+			ast_insert_before(a, before, node[, id])
+			ast_pop_back(a)
+			ast_pop_front(a)
+			ast_remove(a, index / node)
+			ast_remove_from_parent(a)
+			ast_replace(a, old, new)
+Value		ast_get_attribute(a, id)
+Bool		ast_set_attribute(a, id, val)
+Object		ast_get_attributes(a)
+Bool		ast_accept_postorder(a, visitor)
+Bool		ast_accept_preorder(a, visitor)
+Ast			ast_copy(a)
+String		ast_unparse(a)								Generates a string representation of the given ast value
+Ast			ast_inject(a, val)							Injects the given value at the next espace of the given ast.
+														Returns the new ast (it may change).
+														Used mainly for the code generation of the escapes (~...).
+			ast_decr_esc_cardinalities(a)				Decreases the cardinality (delay factor) of all escapes of the
+														given ast by 1. Typically follows a series of ast_inject calls.
+														Used mainly for the code generation of quasi-quotes (<<...>>).
+
+Also, all previous functions, except ast_new, may be called as methods
+using an ast variable, without the 'ast_' prefix.
+
+Next is garbage collectable:
+AstVisitor	astvisitor_new()
+			astvisitor_set_handler(v, tag, callable)							Set traversal handler for a given ast tag.
+			astvisitor_set_context_handler(v, parentTag, childId, callable)		Set a context-dependent traversal handler:
+																				for a specific parent tag, the target child.
+			astvisitor_set_default_handler(v, callable)							Set traversal handler for all nodes (fallback).
+			astvisitor_stop(v)													Terminate ast traversal.
+			astvisitor_leave(v)													On enter skips children;
+																				on exit skips siblings
+
+Also, all previous functions, except astvisitor_new, may be called as methods
+using an ast visitor variable, without the 'astvisitor_' prefix.
+"
+FUNCS_END
 END_SEC
 
 ///////////////////////////////////////////////////////////////////

@@ -1,0 +1,301 @@
+///////////////////////////////////////////////////////////////////
+// Content documents for Delta web site - Metaprogramming.
+// Y. Lilis, March 2013.
+///////////////////////////////////////////////////////////////////
+ 
+#include "defines.h"
+
+START_DOC("d_metaprogramming", "Metaprogramming"),
+index ["Metaprogramming", "Introduction", "Staging annotations", "Stage assembly", "Advanced examples"],
+
+START_SEC("si_metaprogramming_introduction", "Introduction")
+
+[_text [
+
+"The term metaprogramming is generally used to denote programs that generate
+other programs and was originally related to the existence of a macro system
+like the C Preprocessor (CPP) or the Lisp macro system that would allow program 
+fragments to be built up at compile-time.
+Lexical systems like the CPP are recognized as being inadequate for metaprogramming
+as they operate on raw text, unaware of any context information, while most
+languages do not share Lisp's syntactic minimalism to provide an equally powerful
+facility with seamless integration.",
+NL2,
+"In modern languages, metaprogramming is closely coupled with functions that operate
+on some abstract syntactic form, like an abstract syntax tree (AST), and can be
+invoked during compile-time to change existing code or introduce additional code in
+the source file that is being compiled. Such functions are called metafunctions and
+they as a whole constitute the metaprogram.
+The compilation of a program that contains a metaprogram requires the metaprogram
+to be executed at compile-time to produce a possibly changed source file that will
+then be compiled. If the resulting source contains additional metaprograms they are
+executed in the same way until we reach a final source with no metaprograms that 
+will be compiled into the final executable. This iterative process may involve
+multiple steps of metaprogram evaluations called stages, while languages that support
+such a compilation scheme are called multi-stage languages.
+Multi-stage languages use special syntax, called staging annotations, to explicitly
+specify the evaluation order of the various computations of the program, with respect
+to the stage they appear in."
+
+] ]
+END_SEC,	// si_metaprogramming_introduction
+
+START_SEC("si_staging_annotations", "Staging annotations")
+
+[_text [
+
+"Delta supports multi-stage metaprogramming through the following staging annotations:",
+NL2,
+
+!italic !blue !emphatic "Quasi-quotes",
+" (written ", !dsrc "<<...>>", ") may be inserted around definitions, such as expressions,
+statements, functions, etc., to convey their AST form and are the easiest way (but not the
+only one) to create ASTs directly from source text. For instance, ", !dsrc "<<1+2>>", "is the
+AST for the source text", !dsrc "1+2", ". Variables within quasi-quotes are scoped in the
+context where the respective AST is finally inserted. For instance, ", !dsrc "<<x=1>>",
+"does not bind to any", !dsrc "x", "visible at the quasi-quote location. It will bind to an
+existing", !dsrc "x", "at the insertion context, or if no", !dsrc "x", "is defined there,
+introduce a new", !dsrc "x", "in scope (in Delta variables are declared-by-use). To prevent
+variable capture we allow quasi-quotes to introduce alpha-renamed variables (i.e., given
+automatically contextually-unique names) using special syntax. In particular,", !dsrc "<<$x>>",
+"denotes that", !dsrc "x", "will be given a fresh unique name at the insertion context.
+Finally, we allow quasi-quotes to be arbitrarily nested, something useful in higher order 
+metaprograms (e.g. when implementing metagenerators). For example,", !dsrc "<< <<1+2>> >>",
+"is a nested quasi-quoted expression whose generation produces the quasi-quoted expression",
+!dsrc "<<1+2>>", ". Further quasi-quote examples are provided in the code below.",
+NL2,
+
+CODE_BLOCK "
+x = <<1+2>>;						// x get a value          +
+									// representing the     /   \\ 
+									// tree on the right   1     2
+y = <<1, true, \"str\", [1, 2]>>;	// represents a list of items that can be used
+									// as an argument list or as table elements
+z = <<								// represents the AST of the entire for loop
+	for(i = 0; i < 5; ++i)
+		std::print(i);
+>>;
+u = <<								// represents the AST of the entire function
+	function add(x,y)
+		{ return x + y; }
+>>;
+v = <<								// represents a list of statements
+	a = 1;
+	try {
+		while(a > 0) f(a--);
+		assert a == 0;
+	}
+	trap ex { std::print(ex); }
+>>;
+w = << <<1+2>> >>;					// a nested AST value (AST representing an AST)
+q = <<$x = 1>>;						// variable x will not bind to an existing x at the
+									// insertion context, but is automatically renamed",
+
+NL2,
+!italic !blue !emphatic "Escape",
+" (written ", !dsrc "~(expr)", "or", !dsrc "~id", ") is used only within quasi-quotes to prevent converting the
+source text of expr into an AST form by evaluating expr normally. Practically, escape is used
+on expressions already carrying AST values which need to be combined into an AST constructed
+via quasi-quotes. For example, assuming", !dsrc "x", "already carries the AST value of",
+!dsrc "<<1>>", ", the expression", !dsrc "<<~x+2>>", "evaluates to", !dsrc "<<1+2>>", ".
+Additionally, we also support the escaped expression to carry scalar values like number,
+boolean or string (i.e. ground values). In this case, the value is automatically converted to
+its corresponding AST value as if it has been a constant. For instance, if", !dsrc "x", "is",
+!dsrc "1", ", then", !dsrc "~x", "within", !dsrc "<<~x+2>>", "will be converted to the AST of
+value", !dsrc "1", ", or", !dsrc "<<1>>", ", thus", !dsrc "<<~x+2>>", "evaluates to", 
+!dsrc "<<1+2>>", ".",
+NL2,
+"In case of nested quasi-quotes, escapes are evaluated during the construction of the outermost
+quasi-quote, meaning that if", !dsrc "x", " is ", !dsrc "<<1>>", ", the expression",
+!dsrc "<< <<~x+2>> >>", "evaluates to", !dsrc "<< <<1+2>> >>", ". In order to delay the
+evaluation of an escape (something useful in metagenerators), we can use a",
+!italic !blue !emphatic "delayed escape", ", denoted as", !dsrc "~...~(expr)", ". For example,
+writing", !dsrc "<< <<~~x>> >>", "represents the AST of", !dsrc "<<~x>>", ". The number of
+tildes is the initial nesting which for normal escapes is one. Then escape evaluation, being
+performed when quasi-quotes are constructed, is applied as follows:",
+NL2,
+!definition "eval(escape(n, expr) = if n is 1 then expr else escape(n - 1, expr)",
+NL2,
+"Notice that the previous evaluation is not recursive; it returns either the escaped expression
+or a new escape with decreased nesting. Practically, this means that a delayed escape will
+eventually be inserted in a generated quasi-quote as a normal escape and then follow its normal
+evaluation.",
+NL1,
+"The code below shows some examples relating to escapes, while examples highlighting the use of
+delayed escapes will be discussed once the staging tags and stage assembly are fully explained.", 
+NL2,
+
+CODE_BLOCK "
+x = <<1>>;
+y = <<~x + 2>>;						// y is <<1 + 2>>
+z = <<~x + ~y * 3>>;				// z is <<1 + (1 + 2) * 3>>
+
+function id(x) { return x; }
+v = <<~(id(1)) + ~(id(2))>>;		// v is <<1 + 2>>
+
+num = 1, str = \"hello\", bool = true;
+w = <<~num, ~str, ~bool>>;			// escapses also support ground values, automatically
+									// converting them to ASTs, so w is <<1, \"hello\", true>>
+
+function pow(x, n) {				// will generate the AST of multiplying x with itself n times
+  if (n == 0)
+    return <<1>>;					// termination: just multiply with 1 (in AST form)
+  else
+    return <<~x * ~(pow(x, n-1))>>;	// recursion: multiply x with the result of the recursive invocation
+}
+
+pow3 = pow(<<x>>, 3);				// pow3 is <<x * x * x * 1>>
+
+args = <<2, 3>>;
+call1 = <<f(~args)>>;		// call1 is <<f(2, 3)>>
+call2 = <<f(1, ~args, 4)>>;	// call2 is <<f(1, 2, 3, 4)>>
+call3 = << <<f(~args)>> >>;	// escapes also apply for nested quotes, so call3 is << <<f(2,3)>> >>
+
+t1 = <<[1, ~args, 4]>>;		// t2 is <<[1, 2, 3, 4]>>
+empty_ast = nil;			// nil is used to denote an empty AST
+t2 = <<[1, ~empty_ast, 4]>>;// escaping a nil value removes the entire node, so t2 is <<[1, 4]>>
+call4 = <<f(~empty_ast)>>;	// similarly, call4 is <<f()>>
+
+function func_generator(name, args, body)
+	{ return <<function ~name (~args) { ~body; }>>; }
+
+f = func_generator(<<id>>, <<x>>, <<return x;>>);	// f is <<function id(x) { return x; }>>
+
+a = <<$x>>;						// the AST contains variable that will be automatically renamed
+b = <<~a + ~a>>;				// such variables are preserved by escapes, so b is <<$x + $x>>
+
+stmts = list_new(				// a list of statements as AST values.
+	<<x = 1;>>,					
+	<<while(x > 1) f(--x);>>,
+	<<assert x == 0;>>
+);								// to combine them into a single AST we can do the following:
+code = nil;						// initially we have no code, so code is nil
+foreach(local stmt, stmts)		// iterate over all statements in the list
+	code = <<~code; ~stmt;>>;	// append each statement at the end of the already existing code
+								// finally, code is <<
+								//			x = 1;
+								//			while(x > 1)
+								//				f(--x);
+								//			assert x == 0;
+								//		    >>",
+
+NL2,
+!italic !blue !emphatic "Inline",
+" (written ", !dsrc "!(expr)", ") evaluates the expr during translation and inserts its result
+(that must be of AST type) into the program code by substituting itself, thus performing program
+transformation. Inline tags within quasi-quotes are allowed, and as all other quasi-quoted
+expressions, are just AST values and are not directly evaluated. It is allowed for expressions
+carrying an AST representing an inline directive to be inlined, meaning generation directives
+may generate further generation directives, thus supporting metagenerators. The following
+examples illustrate the usage of inline.",
+NL2,
+
+CODE_BLOCK "
+!(<<a = 1>>);						// inserts the statement a = 1 directly into the program source
+b = !(<<1+2>>);						// equivalent to b = 1 + 2;
+c = !(<<f()>>);						// equivalent to c = f();
+function one() { !(<<return 1;>>); }// equivalent to function one() { return 1; }
+
+function id(x) { return x; }
+!(id(<<d>>)) = !(id(<<1>>)) + !(id(<<2>>));	// equivalent to d = 1 + 2;
+
+function func_generator(name, args, body)
+	{ return <<function ~name (~args) { ~body; }>>; }
+
+!(func_generator(<<add>>, <<x, y>>, <<return x+y;>>));	// will generate the following function:
+														// function add(x, y) { return x + y; }
+y = !(<<for(i = 0; i < 1; ++i);>>);	// error, generating a statement but expecting expression
+
+function pow(x, n) {
+	if (n == 0)
+		return <<1>>;
+	else
+		return <<~x * ~(pow(x, n - 1))>>;
+}
+print(!(pow(<<2>>, 3)));			// equivalent to print(2 * 2 * 2 * 1);
+!(<< print(!(pow(<<2>>, 3))); >>);	// metagenerator for the above statement
+
+function f(n) {
+	if (n < 1)
+		return nil;
+	else
+		return <<!(f(~(n - 1)))>>;	// returns an AST that when inlined will cause further staging
+}
+!(f(10));							// generates !(f(9)) that will then generate !(f(8)) and so on
+									// until the last step that eventually generates no code (nil)
+									// it involves 10 evaluation rounds (i.e. stages) to complete
+function f() { return <<!(f())>>; }
+!(f());								// repeatedly generates itself, causing endless staging",
+
+NL2,
+
+!italic !blue !emphatic "Execute",
+" (written ", !dsrc "&stmt", ") defines a staged", !dsrc "stmt", "representing any single
+statement, local definition or block in the language. Any definitions introduced are visible
+only within staged code. As with the other annotations, execute tags can also be quasi-quoted
+to be converted to AST form. This means that they are not evaluated directly, but when
+inlined they will introduce further staging (metageneration). Examples using execute are shown 
+in the code below.",
+NL2,
+
+CODE_BLOCK "
+&function ExpandPower (n, x) {						// function is available only during compilation
+	if (n == 0)
+		return <<1>>;
+	else
+		return <<~x * ~(ExpandPower(n - 1, x))>>;
+}
+&function MakePower (n)	{							// function is available only during compilation
+	return << (
+		function (x) { return ~(ExpandPower(n, <<x>>)); }
+	)>>;
+}
+power3 = !(MakePower(3));		// generates: power3 = (function(x){ return x * x * x * 1; });
+								// all previous declarations never appear in the final program
+&x = <<1>>, y = <<2>>, z = nil;	// x, y, z are available during compilation (compile-time state)
+&if (some_condition())			// the if statement is executed during compilation with all
+	z = x;						// compile-time state being available to it
+ else							// execute tags are also evaluated in order of appearance,
+	z = y;						// so they provide the notion of typical control-flow
+print(!(z));					// inlines are also evaluated in order and can access compile-time state
+								// the generated code depends on the result of the some_condition()
+&print(\"hello\");				// executed during compilation, prints 'hello' at compile-time
+!(<<&print(\"hello\");>>); 		// metagenerator for the above statement",
+
+NL2,
+"Both inline and execute tags can also be nested (e.g.", !dsrc "!(!(expr))", "or",
+!dsrc "&&&stmt", "), with their nesting depth specifying the exact compilation stage they will
+appear in. As a rule of thumb (the exact semantics will be discussed in the following section),
+the higher the nesting of inline or execute tags, the sooner they are evaluated during
+compilation. This is illustrated in the following example.",
+
+CODE_BLOCK "
+!(!(<< <<x = 1>> >>);	// the inner inline is evaluated first generating: !(<<x = 1>>);
+						// that is then evaluated to generate the final x = 1;
+&print(1);				// the higher the nesting, the sooner the execution, so despite the
+&&print(2);				// original order, this will first execute &&&print(3), then &&print(2)
+&&&print(3);			// and finally &print(1), meaning the compile-time output is 3, 2, 1"
+
+] ]
+
+END_SEC,	// si_staging_annotations
+
+START_SEC("si_stage_assembly", "Stage assembly")
+
+[_text [
+	"Stage assembly goes here."
+] ]
+
+END_SEC,	// si_stage_assembly
+
+START_SEC("si_metaprogramming_examples", "Advanced examples")
+
+[_text [
+	"Advanced examples go here."
+] ]
+
+END_SEC	// si_metaprogramming_examples
+
+END_DOC
+
+///////////////////////////////////////////////////////////////////

@@ -39,9 +39,11 @@ START_SEC("si_credits", "Credits")
 	
 		!green "Yannis Lilis", ": (i) enhanced the project manager and debugger user-interface of the Sparrow IDE, 
 		while he fixed numerous bugs of the initial version ", !italic "(2007)", "; (ii) implemented in the Delta language
-		an extension component of the Sparrow IDE to support tree views for expression watches ", !italic "(2008)", "; and (iii) 
-		implemented the linkage with Corba, enabling build Corba clients or servers direclty 
-		in the Delta language ", !italic "(2009)", ".",
+		an extension component of the Sparrow IDE to support tree views for expression watches ", !italic "(2008)", "; (iii) 
+		implemented the linkage with Corba, enabling build Corba clients or servers directly in the Delta language ",
+		!italic "(2009)", "; and (iv) implemented the metaprogramming extensions for the Delta language and all related
+		metaprogramming and aspect-oriented programming extensions and facilities of the Sparror IDE (compile-time debugging,
+		debugging of aspect programs, AST inspection, etc.) as part of his PHD work ", !italic "(2010-2013)", ".",
 		NL2,
 
 		!green "Nikos Koutsopoulos", " implemented: (i) the search and replace facility of the editor
@@ -71,7 +73,13 @@ START_SEC("si_credits", "Credits")
 		!green "Christos Despotakis", " implemented in the Delta language the build tree view of the Sparrow IDE
 		 (an extension component) as part of his pre-Diploma work ", !italic "(2010)", ".",
 		
+		NL2,
+
+		!green "Yannis Apostolidis", " implemented a JSON parser to loads JSON documents into Delta objects and added a 
+		JSON as a message encoding format for the debugger communication as part of his Diploma work ", !italic "(2013)", ".",
+		
 		NL2
+
 		]
 	],
 	

@@ -70,7 +70,8 @@ mainmenu	[
 			[_simpleitem _title("Runtime compilation")				sectionref "ss_comp"		],
 			[_simpleitem _title("List and iterators")				sectionref "ss_list"		],
 			[_simpleitem _title("Vector and iterators")				sectionref "ss_vector"		],
-			[_simpleitem _title("Algorithms")						sectionref "ss_algo"		]
+			[_simpleitem _title("Algorithms")						sectionref "ss_algo"		],
+			[_simpleitem _title("Ast and visitors")					sectionref "ss_ast"			]
 		]
 	],
 
@@ -82,5 +83,16 @@ mainmenu	[
 			[_simpleitem _title("Download")		sectionref "si_download"	],
 			[_simpleitem _title("Reports") 		sectionref "si_reports"		]
 		]
+	],
+
+	[
+		_submenu _title("Metaprogramming")		documentref "d_metaprogramming",
+		[
+			[_simpleitem _title("Introduction") 		sectionref "si_metaprogramming_introduction"	],
+			[_simpleitem _title("Staging annotations") 	sectionref "si_staging_annotations"				],
+			[_simpleitem _title("Stage assembly")		sectionref "si_stage_assembly"					],
+			[_simpleitem _title("Advanced examples") 	sectionref "si_metaprogramming_examples"		]
+		]
 	]
+
 ]
