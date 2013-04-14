@@ -25,11 +25,19 @@
 
 ///////////////////////////////////////////////////////////////
 
+static ugettimefunc_t ugettime_f = (ugettimefunc_t) 0;
+
+UTILLIB_FUNC void usettimefunc (ugettimefunc_t f)
+	{ DASSERT(f); ugettime_f = f; }
+
 #ifdef	_UNIX_
 
-UTILLIB_FUNC unsigned long ugettime (void) 
-//	{ return time((time_t*) 0) * 1000; }
-	{ return clock() / (CLOCKS_PER_SEC / 1000); }
+UTILLIB_FUNC unsigned long ugettime (void) {
+	if (ugettime_f)
+		return (*ugettime_f)() / 1000;
+	else
+		return clock() / (CLOCKS_PER_SEC / 1000);
+}
 
 static void defaultmodalmessage (const std::string& title, const std::string& msg) {
 	fprintf(stderr, "%s: %s\n", title.c_str(), msg.c_str());
@@ -120,8 +128,12 @@ static void defaultprintf (const std::string& output)
 static void defaultprintf (const std::string& output)
 	{ printf(output.c_str()); }
 
-UTILLIB_FUNC unsigned long ugettime (void) 
-	{ return timeGetTime(); }
+UTILLIB_FUNC unsigned long ugettime (void) {
+	if (ugettime_f)
+		return (*ugettime_f)() / 1000;
+	else
+		return timeGetTime();
+}
 
 UTILLIB_FUNC void uprocesssleep (util_ui32 msecs) 
 	{ Sleep(msecs); }

@@ -12,7 +12,10 @@
 
 //---------------------------------------------------------------
 
+typedef unsigned long			(*ugettimefunc_t) (void);	// Returns time in micro secs
+
 UTILLIB_FUNC  unsigned long		ugettime (void);
+UTILLIB_FUNC  void				usettimefunc (ugettimefunc_t f);
 UTILLIB_FUNC  void				uprocesssleep (util_ui32 msecs);
 UTILLIB_FUNC  const std::string	ugetenvironmentvar (const std::string& id);	// Returns empty when not found
 
