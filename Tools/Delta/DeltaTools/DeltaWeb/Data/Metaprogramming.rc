@@ -10,7 +10,7 @@ index ["Metaprogramming", "Introduction", "Staging annotations", "Stage assembly
 
 START_SEC("si_metaprogramming_introduction", "Introduction")
 
-[_text [
+TEXT_START
 
 "The term metaprogramming is generally used to denote programs that generate
 other programs and was originally related to the existence of a macro system
@@ -37,12 +37,12 @@ Multi-stage languages use special syntax, called staging annotations, to explici
 specify the evaluation order of the various computations of the program, with respect
 to the stage they appear in."
 
-] ]
+TEXT_END
 END_SEC,	// si_metaprogramming_introduction
 
 START_SEC("si_staging_annotations", "Staging annotations")
 
-[_text [
+TEXT_START
 
 "Delta supports multi-stage metaprogramming through the following staging annotations:",
 NL2,
@@ -262,7 +262,47 @@ print(!(z));					// inlines are also evaluated in order and can access compile-t
 &print(\"hello\");				// executed during compilation, prints 'hello' at compile-time
 !(<<&print(\"hello\");>>); 		// metagenerator for the above statement",
 
-NL2,
+"From the staging annotations discussed, quasi-quotes and escape involve no staging but are 
+essentially facilities helping programmers in AST manipulation. As shown in the following table,
+quasi-quotes are essentially shortcuts for AST creation (ast_create) and escapes involve AST 
+composition operations (ast_escape), all handled in our language with internal parser invocations."
+
+TEXT_END,
+
+[ _table(6, 2)
+	[ TEXT( !bold !italic "AST tag expressions"), TEXT( !bold !italic "Respective intermediate code")],
+	[ TEXT_START !dsrc "<<1 + g()>>;" TEXT_END, TEXT_START !courier "ast_create $0", !dsrc "\"1 + g()\"" TEXT_END],
+	[ 	TEXT_START !dsrc "<<~(f(x)) + 2>>;" TEXT_END,
+		TEXT_START
+			!courier "param x", NL1,
+			!courier "call f", NL1,
+			!courier "getretval $0", TAB2 !courier !comment "#carries f(x)", NL1,
+			!courier "ast_create $1 ", !dsrc "\"~(f(x)) + 2\"", NL1,
+			!courier "ast_escape $1 $0", TAB1 !courier !comment "#inserts f(x)"
+		TEXT_END
+	],
+	[ TEXT_START !dsrc "<< << ~~x >> >>" TEXT_END, TEXT_START !courier "ast_create $0", !dsrc "\"<< ~~x >>\"" TEXT_END],
+	[ 	TEXT_START !dsrc "<< << ~~x + ~y >> >>" TEXT_END,
+		TEXT_START
+			!courier "ast_create $0 ", !dsrc "\"<< ~~x + ~y>>\"", NL1,
+			!courier "ast_escape $0 y", TAB1 !courier !comment "#inserts y"
+		TEXT_END		
+	],
+	[ 	TEXT_START !dsrc "<<f(~a, ~b)>>" TEXT_END,
+		TEXT_START
+			!courier "ast_create $0 ", !dsrc "\"f(~a, ~b)\"", NL1,
+			!courier "ast_escape $0 a", TAB1 !courier !comment "#inserts a", NL1,
+			!courier "ast_escape $0 b", TAB1 !courier !comment "#inserts b"
+		TEXT_END
+	]
+],
+
+TEXT_START
+
+"Inline and execute imply compile-time evaluation of the associated source code, and are essential
+in supporting compile-time metaprogramming. Syntactically, they define the boundaries between staged
+code fragments and introduce stage nesting. As such, they are also referred to as staging tags.", NL2,
+
 "Both inline and execute tags can also be nested (e.g.", !dsrc "!(!(expr))", "or",
 !dsrc "&&&stmt", "), with their nesting depth specifying the exact compilation stage they will
 appear in. As a rule of thumb (the exact semantics will be discussed in the following section),
@@ -276,23 +316,530 @@ CODE_BLOCK "
 &&print(2);				// original order, this will first execute &&&print(3), then &&print(2)
 &&&print(3);			// and finally &print(1), meaning the compile-time output is 3, 2, 1"
 
-] ]
+TEXT_END
 
 END_SEC,	// si_staging_annotations
 
 START_SEC("si_stage_assembly", "Stage assembly")
 
-[_text [
-	"Stage assembly goes here."
-] ]
+TEXT_START
+
+"Delta introduces the integrated metaprogramming model, treating distinct meta-code fragments as a single coherent metaprogram.
+In this sense, each stage is composed by assembling source fragments from specific staging tags within the main program AST.
+Their selection relies on the nesting level of staging tags and reflects two basic rules:", NL1,
+!italic !emphatic "(i)", " source fragments of tags with larger nesting depth are evaluated before those of smaller nesting depth", NL1,
+!italic !emphatic "(ii)", " source fragments of tags with identical nesting depth are evaluated together in the same stage.", NL1,
+"This practically means that to assemble a stage we have to collect all source fragments from the staging tags of the 
+maximum nesting depth (i.e. the innermost).", NL2,
+
+"The stage composition begins by traversing the program AST to find its maximum staging nesting.
+Then we perform a depth-first traversal and collect all source fragments belonging to staging tags with this maximum nesting.
+For execute tags the stmt source is added, and the tag is removed from the main program AST.
+This ensures that the specific source fragments only take part in the composition of the current stage.
+For inline tags, an ", !dsrc  "std::inline", " call is added with argument the associated expr.
+This function is available only during compilation and handles the insertion of source fragments (as ASTs) to the main program AST.
+While expr is removed from the main program AST, an orphan inline leaf node is retained so that it can be
+used as a marker of the position where the next insertion from ", !dsrc "std::inline", " will occur. 
+The latter supports having multiple inlines in the same stage nesting, thus resulting 
+in multiple std::inline calls in the stage and orphan inline nodes in the AST.
+The ", !dsrc "std::inline", " calls and inline nodes are created during the same traversal so 
+that they perfectly match each other during stage evaluation.
+", NL2,
+
+"After all source fragments relevant to the current stage are collected, they are assembled
+together following their order of appearance in the main program. Then, the resulting program,
+that by construction contains no staging tags, is normally compiled to produce the stage binary
+which is executed to perform the respective source code transformations.", NL1,
+
+"For example, consider that we have the following source:", NL2,
+
+!emphatic "Original Source",
+CODE_BLOCK "
+&&function generator(name, args, body)
+	{ return << function ~name(~args) { ~body; } >>; }
+&!(generator(
+	<<const_maker>>,
+	<<name, val>>,
+	<< return <<function ~~name { return ~~val;}>>; >>
+));
+!(const_maker(<<one>>, <<1>>));
+print(one());
+!(const_maker(<<two>>, <<2>>));
+print(two());",
+
+"It contains staged code with maximum nesting depth 2, the ", !dsrc "generator", " function and its corresponding invocation.
+As previously mentioned, only & and ! tags count towards the nesting depth.", NL1,
+"After collecting all source fragments with the maximum nesting depth, the first stage is assembled as:", NL2,
+
+!emphatic "Stage 1 (Nesting depth 2)",
+CODE_BLOCK "
+function generator(name, args, body)
+	{ return <<function ~name(~args) { ~body; }>>; }
+std::inline(generator(
+	<<const_maker>>,
+	<<name, val>>,
+	<< return <<function ~~name { return ~~val;}>>; >>
+));",
+
+"After compiling and executing the first stage, ", !dsrc "std::inline", " will insert the AST resulting from the ", 
+!dsrc "generator", " function invocation, thus transforming the original source as follows. Also notice that the 
+entire definition of function ", !dsrc "generator", " has been removed from the transformed source as it was meant
+to be available only for the nesting depth 2.", NL2,
+
+!emphatic "Intermediate Source",
+CODE_BLOCK "
+&function const_maker(name, val)
+	{ return <<function ~name { return ~val; }>>; } 
+!(const_maker(<<one>>, <<1>>)); 
+print(one()); 
+!(const_maker(<<two>>, <<2>>)); 
+print(two());",
+
+"The transformed source still contains staged code so the staging process continues. Here, the maximum 
+nesting depth is 1, present in the definition of function ", !dsrc "const_maker", " and its following
+invocations. This way, the second stage is assembled as:", NL2,
+
+!emphatic "Stage 2 (Nesting depth 1)",
+CODE_BLOCK "
+function const_maker(name, val)
+	{ return <<function ~name { return ~val; }>>; }
+std::inline(const_maker(<<one>>,<<1>>));
+std::inline(const_maker(<<two>>,<<2>>));",
+
+"When executed, the two ", !dsrc "std::inline", "invocations will transform the main AST (and thus the intermediate source version)
+by inserting the corresponding ASTs produced by the ", !dsrc "const_maker", " function calls. Each call inserts code directly in the 
+location of the original corresponding inline tag. The resulting source is as follows:", NL2,
+
+!emphatic "Final Source",
+CODE_BLOCK "
+function one { return 1; }
+print(one());
+function two { return 2; }
+print(two());",
+
+"The transformed source contains no further staged code, so it has reached its final form and can be normally 
+compiled to produce the final binary. The result of the entire compilation is as though the original program
+contained the code shown above.", NL2,
+
+"Apart from the source code insertions performed by the ", !dsrc "std::inline", " invocations, Delta also offers
+an additional compile-time function called ", !dsrc "std::context", " that enables metaprograms to obtain and manipulate
+the actual context of any inline annotation, thus supporting context-aware generation and transformation. In particular,
+the ", !dsrc "std::context", " function locates and returns the orphan inline AST node in which the next inline will actually occur.", NL1,
+"For example, consider a class definition with data members for which we wish to automatically generate setter and
+getter functions. Instead of separately introducing inline tags for each data member and explicitly supplying their
+names, we can utilize ", !dsrc "std::context", " to obtain the AST of the class definition, traverse the AST to obtain
+member information and then:", NL1,
+!italic !emphatic "(i)", " directly attach to the AST the required method definitions; or ", NL1,
+!italic !emphatic "(ii)", " produce the AST for the method definitions, and inline its returned value where desired.", NL1,
+"Both options for context-aware code generation are illustrated in the following example.", NL2,
+
+CODE_BLOCK "
+&function SettersAndGetters1(class) {
+	foreach (local attr, class.getAttributes()) {	 //iterate over class attributes
+		local name = attr.getName();
+		local setter = <<method ~(\"set_\" + name)(val){self[~name]=val;}>>;
+		local getter = <<method ~(\"get_\" + name)(){return self[~name];}>>;
+		class.addMethod(setter);	 //add setter and getter methods directly to target class
+		class.addMethod(getter);
+	}
+	return nil;	//no additional code to be inlined in the target class
+}
+&function SettersAndGetters2(class) {
+	local result = nil;  	 //will hold the generated method code tobe inlined in the class 
+	foreach (local attr, class.getAttributes()) {	 //iterate over class attributes
+		local name = attr.getName();
+		local setter = <<method ~(\"set_\" + name)(val){self.~name=val;}>>;
+		local getter = <<method ~(\"get_\" + name)(){return self.~name;}>>;
+		result = <<~result, ~setter, ~getter>>; // combine methods in a new AST
+	}
+	return result;	//all setter and getter methods will be inlined in the target class
+}
+function Point(x, y) {
+	return [
+		@x : x, @y : y,
+		!(SettersAndGetters1(std::context(\"class\")));
+		//or !(SettersAndGetters2(std::context(\"class\")));
+		//both invocations transform the Point class as shown below:
+	];
+}
+//function Point(x, y) {
+//	return [
+//		@x : x, @y : y,
+//		method set_x(val){ self.x = val;  },
+//		method get_x()   { return self.x; },
+//		method set_y(val){ self.y = val;  },
+//		method get_y()   { return self.y; }
+//	];
+//}"
+
+TEXT_END
 
 END_SEC,	// si_stage_assembly
 
-START_SEC("si_metaprogramming_examples", "Advanced examples")
+START_SEC("si_metaprogramming_examples", "Integrated Metaprogram Examples")
 
-[_text [
-	"Advanced examples go here."
-] ]
+TEXT_START
+
+"We discuss various metaprogram scenarios utilizing basic object-oriented features like encapsulation and
+information hiding. Such features may differ from what is typically met in the discussion of a metalanguage,
+but they are chosen on purpose to:", NL1,
+!italic !emphatic "(i)", " emphasize our point that metaprograms are more than atomic macro expressions", NL1,
+!italic !emphatic "(ii)", " highlight the engineering of stages equally to normal programs using shared state and typical control flow.", NL1,
+"We don't argue that such examples cannot be expressed in multi-stage languages that do not offer such facilities,
+but rather focus on the software engineering advantages gained by adopting the standard programming patterns and
+techniques practiced in normal programs. In particular, our examples involve grouping common functionality into
+objects available during compilation and utilizing them to transform multiple source code locations without
+repeating generation parameters. In a traditional metaprogramming implementation, such examples would have to
+adopt separate meta-functions, resulting in a procedural paradigm, while their invocations would typically
+involve repetition of the required parameters, as no state sharing is possible (one should also consider that
+such parameters are syntactically verbose due to quasi-quotes).", NL2,
+
+!emphatic "Exception Handling", NL1,
+
+"Exception handling is known to be a global design issue that affects multiple system modules. In this sense,
+it should be possible to select a specific exception handling policy for the entire system or apply different
+policies for different components of the system. This can be achieved through metaprogramming:
+We can use meta-functions to abstract the logic for any exception handling pattern and deploy them
+to generate the appropriate code at their call sites.", NL2,
+
+"However, without common state across each such invocation is separated from the others and thus requires explicitly
+repeating all exception pattern details. Moreover, if multiple exception handling patterns are available, it is not
+possible to parameterize their application to form specific exception handling policies. Using integrated metaprograms, 
+it is possible to maintain a collection of the available exception handling patterns and select the appropriate policy
+based on configuration parameters or normal control flow while requiring no changes at the call sites inside client code.
+This is illustrated in the following example.", NL2,
+
+CODE_BLOCK "
+&function Logging (stmts)
+	{ return << try { ~stmts; } trap e { log(e); } >>; }
+&function ConstructRetry (data) {	//constructor for a custom retry policy
+	return function (stmts) {		//return a function implementing the code pattern
+		return <<					//the returned function returns an AST
+			for (local i = 0; i < ~(data.attempts); ++i)
+				try { ~stmts; break; }				//try & break loop when successful
+				trap e { Sleep(~(data.delay)); } 	//catch & wait before retrying
+			if (i == ~(data.attempts)) 				//maximum attempts were tried?
+				{ ~(data.failure_stmts); 	} 		//then give-up & invoke failure code
+		>>;
+	};
+}
+
+&Policies = [			//compile-time structure for holding exception policies
+	method Install(key, func) {...},
+	method Get(key) {...}
+];
+&Policies.Install(\"LOG\", Logging);			//install the Logging policy
+&Policies.Install(\"RETRY\", ConstructRetry([	//create and install a retry policy
+	@attempts : 5, @delay : 1000, @fail : <<post(\"FAIL\")>>
+]));
+
+&policy = Policies.Get(\"RETRY\");		
+!(policy(<<f()>>));				//Generates the code below:
+								//for (i = 0; i < 5; ++i)
+								//	try { f(); break;  }
+								//	trap e { Sleep(1000); }
+								//if (i == 5) { post(\"FAIL\"); }
+&policy = Policies.Get(\"LOG\");
+!(policy(<<g()>>));				//Generates the code below:
+								//try { g(); } 
+								//catch e { log(e); }",
+
+"The ", !dsrc "Logging", " policy requires no additional information to be expressed while the ",
+!dscr "Retry", " policy receives its information (i.e. number of attempts for retrying the operation,
+the delay to wait between them in case an exception occurs and code to be executed in case all attempts
+fail) as construction parameters. It is important to note that any parameters are required only once upon
+construction and are not repeated per policy application. This relieves programmers from repeatedly supplying
+the required parameters, but more importantly, it achieves a uniform invocation style, allowing different
+policies to be used interchangeably without changes in their call sites. This means that the single ",
+!dsrc "!(policy(...));", " invocation can generate any of the available exception handling patterns,
+granted that the policy variable has the corresponding value.", NL2,
+
+!emphatic "Design by Contract", NL1,
+
+"Design by Contract (DbyC) is a popular method towards self-checking code that improves software reliability.
+It proposes contracts, constituting computable agreements between clients and suppliers.
+Clients have to respect method preconditions prior to invocation while suppliers guarantee that the associated
+postconditions will be satisfied once the invocation completes. Failure to satisfy the promised obligations, on
+either the client or the supplier side, constitutes a contract violation that will most likely result into an error,
+typically conveyed as an exception.", NL2,
+
+"In this context, it is possible to use metaprogramming to automatically generate contract verification code.
+This applies both for the supplier class, whose methods can be enriched with precondition and postcondition
+checking that raise exceptions upon contract failures, and the class clients, whose invocations can be
+automatically protected with try-trap blocks. Nevertheless, the definition of the supplier class is separated
+from the client invocations, meaning that the applications of the code transformations are also typically
+separated. This means that if the transformation logic is not known a priori, i.e. it relies on some prior
+compile-time computation, it is not possible to match the generated class definition with a corresponding
+generation of the class invocations. Even if the transformation logic is predefined, its applications are still
+separated so they may be applied partly, meaning it is possible to end up with a supplier class that uses DbyC
+and client invocations that do not or vice versa. In the first case any thrown supplier exception will never be
+handled by clients, while in the second case client invocations will contain irrelevant exception handling code
+since the supplier class may not throw any contract exceptions.", NL2,
+
+"This problem can be solved with the state sharing and typical control flow offered by integrated metaprograms.
+Any transformation to be applied on the supplier class can be stored along with the corresponding transformation
+required for its usage and be available in the following stage calls that will generate the client invocations,
+taking into account the transformations performed on the class definition. The following code highlights this
+functionality, by introducing a single object that can be used to transform both the class definition (through
+the ", !dsrc "std::context", " function discussed earlier) and usages. In particular, the transformer object ",
+!dsrc "t", " contains all relevant transformation information and could be used to handle any number of classes
+along with their usages. Additionally, notice that the inlining code that uses the transformer object is completely 
+unaware of the actual transformation being applied; this information is properly encapsulated within the transformer object.", NL2,
+
+CODE_BLOCK "
+&function DbyC() {			   				//DbyC transformer
+	return [					    		//create and return a transformer object
+		method supplier(class) {			//generator for the supplier class
+			foreach (local m, class.getMethods()) {	//iterate over class methods
+				local pre_id = \"pre_\" + m.getName();//precondition method id
+				if (class.hasMethod(pre_id))		//does the precondition method exist?
+					m.body.push_front(<<			//add AST at the beginning of the method						
+						if (not self[~pre_id]()) 	//has precondition call failed?
+							throw [					//then throw an exception
+								@class	: \"ContractException\",
+								@type	: \"Precondition\",
+								@classId: ~(class.getName()),
+								@method	: ~(m.getName())
+							];>>
+					);
+					//similar logic to add postcondition checking code at the method end here
+				}
+				return nil;		//no additional code to be inlined in the supplier context
+    },
+    method client(invocation_stmts) { 	//generator for the client invocations
+    	return <<
+         try { ~invocation_stmts; }
+         trap ContractException { log(ContractException); }
+      >>;
+    }
+  ];
+}
+&t = DbyC();	//compile-time transformer object
+
+function Stack() { 
+  return [
+	  method empty	{...},		//Pop is transformed as follows:
+	  method pre_pop{...},		//method pop	{
+	  method pop	{...},		//	if (not self[\"pre_pop\"]())
+								//		throw [
+	!( t.supplier(				//			@class	: \"ContractException\",
+	   std::context(\"class\")	//			@type	: \"Precondition\",
+ 	));							//			@classId: \"Stack\",
+								//			@method	: \"pop\"
+ ];								//		];
+}								//	...original body of pop method here
+								//}
+st = Stack();
+!(t.client(<<st.pop()>>));		//Generates the code below:
+								//try { st.pop(); }
+								//trap ContractException { log(ContractException); }",
+
+!emphatic "Design patterns", NL1,
+
+"Design patterns constitute generic reusable solutions to commonly recurring problems within a
+given context in software design. Effective software design requires considering issues that may
+not become visible until later in the implementation and design patterns can help preventing such
+problems by providing tested, proven development paradigms. A design pattern is not a complete
+design directly transformable into code; it is rather a description on how to solve the given
+problem in different situations illustrating relationships and interactions between classes and
+objects involved. This means that in general, a pattern has to be re-implemented from scratch each
+time it is used, thus significantly reducing the achieved reusability.", NL2,
+
+"Towards this direction, it is possible to utilize metaprogramming to support generating concrete
+pattern implementations. The pattern application logic can be expressed as a metaprogram, the concepts
+of the pattern can be incorporated as functionality or state present within the metaprogram, while any
+information depending on a particular application context can be considered as deployment parameters.
+However, such metaprograms may require elaborate programming practices not applicable in a typical metalanguage.", NL2,
+
+"In integrated metaprograms, programmers can apply any typical programming practices like encapsulation,
+abstraction and separation of concerns, thus significantly improving the development process.
+For example, it is possible to abstract the pattern implementation logic into object-oriented code
+generator objects. Additionally, it is possible to have multiple such code generators available (or even
+hierarchies of code generators) and being able to select the appropriate one at compile-time based on
+the application context without affecting the invocation style used in their deployment. This functionality
+is demonstrated in the following example that implements the adapter pattern. The pattern is implemented in
+two ways, using delegation and sub-classing, while its application may be parameterized at compile-time.", NL2,
+
+CODE_BLOCK "
+&function GetClassDef (target) {...}	//uses compiler state to find the target class 
+&function AdapterByDelegation() {   	//creates an adapter object that uses delegation 
+	return [
+		method adapt (spec) {
+			local methods = nil;      		//AST of adapted class methods, initially empty
+			local class = GetClassDef(spec.original);
+			foreach(local m, class.getMethods()) {  //iterate over class methods
+				local name = m.GetName();
+				local newName = spec.renames[name];
+				if (not newName) newName = name; 	//if no renaming use original name
+					methods = <<	//merge existing adapted methods with the current one
+						~methods,
+						method ~newName (...) { @instance.~name(...); }
+					>>;
+			}
+			return <<  //create and return the adapted class using the adapted methods AST
+				function ~(spec.adapted) (...) {
+					return [
+						@instance : ~(spec.original)(...),
+						~methods
+					];
+				}
+			>>;
+		}
+	];
+}
+&function AdapterBySubclassing() { //creates an adapter object that uses subclassing
+	return [
+		method adapt (spec) {
+			local adaptedMethods = nil; 	    //AST of methods to be adapted 
+			local class = GetClassDef(spec.original);
+			foreach(local m, class.getMethods()) {  //iterate over class methods
+				local name = m.GetName();
+				local newName = spec.renames[name];
+				if (newName)	//only check renamed methods, other are inherited by base class
+					adaptedMethods = <<  //merge adapted methods with the current one
+						~adaptedMethods,
+						method ~newName (...) { self.~name(...); }
+					>>;
+			}
+			return <<  //the adapted class as a subclass that introduces the adapted methods
+				function ~(spec.adapted)(...) {
+					local base = ~(spec.original)(...);  //base class object
+					local derived = [~adaptedMethods];   //derived class object
+					std::inherit(derived, base); 		//derived object inherits from base
+					return derived;
+				}
+			>>;
+		}
+	];
+}
+
+&AdapterFactory = [    //Creating and populating a factory with adapter implementations
+	method Install (type, func) { self[type] = func; },
+	method New (type) { return self[type](); }
+];
+&AdapterFactory.Install(\"delegation\", AdapterByDelegation);
+&AdapterFactory.Install(\"subclassing\", AdapterBySubclassing);
+
+&adapterType = \"delegation\";		  //can also be read or computed dynamically
+&adapter = AdapterFactory.New(adapterType); 	   //create an adaptor object
+
+function Window(args) { 
+	return [
+		method Draw() {...},
+		method SetWholeScreen() {...},
+		method Iconify() {...}
+	];
+}
+
+&windowAdapterData = [			  //compile-time data for the window adapter
+	@original: <<Window>>,
+	@adapted : <<WindowAdapter>>,
+	@renames : [
+		{ \"SetWholeScreen\"	: \"Maximize\" },
+		{ \"Iconify\"			: \"Minimize\" }
+	]
+];
+
+!(adapter.adapt(windowAdapterData));	//Generates the code shown below:
+//function WindowAdapter(...) {
+//	return [
+//		@instance : Window(...),
+//		method Draw(...) { @instance.Draw(...); },
+//		method Maximize(...) { @instance.SetWholeScreen (...); },
+//		method Minimize(...) { @instance.Iconify(...); }
+//	];
+//}
+
+&adapter = AdapterFactory.New(\"subclassing\");
+&windowAdapterData.adapted = <<WindowAdapter2>>;
+
+!(adapter.adapt(windowAdapterData));	//Generates the code shown below:
+//function WindowAdapter2(...) {
+//	local base = Window(...); 
+//	local derived = [
+//		method Maximize(...) { self.SetWholeScreen(...); },
+//		method Minimize(...) { self.Iconify(...);	}
+//	]; 
+//	std::inherit(derived, base); 
+//	return derived;
+//}",
+
+"Such code generator objects can also abstract implementation details of the classes they generate.
+This means that such details may be specified only once upon creation and never repeated at each use site.
+For instance consider a Singleton class that may adopt different invocation styles (e.g. static functions
+or static instance and methods), that may even be declared within a namespace, thus requiring extra syntax
+in its usage. Implementing such a code generation scheme in a typical language would require repeating the
+generated class details at every inline site something both tiresome (consider that such details are
+syntactically verbose due to quasi-quotes) and error-prone. Similarly, updating or replacing such
+implementation details (e.g. for refactoring purposes) would require manually locating the affected code
+fragments and applying the proper changes for any of them. Below we show an example of abstracting the
+implementation details for the definition and usages of a MemoryManager singleton class. In this example,
+the singleton class is modeled either through a prototype function or as global data.", NL2,
+
+CODE_BLOCK "
+&memoryManagerClass = <<		//basic MemoryManager class implementation
+	[
+		method Initialize () {...},
+		method Cleanup () {...},
+		method Allocate (n) {...},
+		method Deallocate (var) {...}
+	]
+>>;
+&function GenerateMemoryManagerAsFunction() {
+	return [
+		@defs : << 
+			function MemoryManager() {
+				if (not static mm)	  //static initialization idiom
+					mm = ~memoryManagerClass;
+				return mm;
+			}
+		>>,
+		@init : <<MemoryManager().Initialize()>>,
+		@cleanup : <<MemoryManager().Cleanup()>>,
+		method alloc(n) { return << MemoryManager().Allocate(~n) >>; },
+		method dealloc(var) 
+			{ return << MemoryManager().Deallocate(~var) >>;}
+	];
+}
+&function GenerateMemoryManagerAsGlobalData(){ 
+	return [
+		@defs : <<	mm = ~memoryManagerClass >>,
+		@init : <<mm.Initialize()>>,
+		@cleanup : <<mm.Cleanup()>>,
+		method alloc (n) { return <<mm.Allocate(~n)>>; },
+		method dealloc (var) { return <<mm.Deallocate(~var)>>; }
+	];
+}
+&memoryManagerImplementations = [
+	@func  : GenerateMemoryManagerAsFunction,
+	@global: GenerateMemoryManagerAsGlobalData
+];
+&option = \"global\";			  	//can also be read or computed dynamically
+&mm = memoryManagerImplementations[option]();	//get the generator object
+
+!(mm.defs);					//Generates the code shown below:
+							//mm = [
+							//	method Initialize () {...},
+							//	method Cleanup () {...},
+							//	method Allocate (n) {...},
+							//	method Deallocate (var) {...}
+							//];
+//...other normal program definitions...
+!(mm.init);					//mm.Initialize();
+//...other normal program initializations...
+x = !(mm.alloc(<<10>>));	//x = mm.Allocate(10);
+//...other normal program code...
+!(mm.dealloc(<<x>>));		//mm.Deallocate(x);
+//...other normal program cleanups...
+!(mm.cleanup);				//mm.Cleanup();",
+
+"As shown, the invocation details are specified only once for each case and are abstracted through
+the mm code generator object, allowing matching definition and usage pairs to be automatically
+produced without requiring any additional information. The latter allows updating the generation
+parameters, possibly affecting names or calling styles, however, without having to change anything
+regarding the use of the generated class."
+
+TEXT_END
 
 END_SEC	// si_metaprogramming_examples
 

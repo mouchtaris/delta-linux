@@ -11,6 +11,7 @@
 #define	COMMA			,
 
 #define _text			type "text",
+#define _list			type "list",
 #define _link			type "link",
 #define _image			type "image",
 #define _imagelink		type "imagelink",
@@ -92,6 +93,8 @@
 #define	TEXT(t)			[ _text [ t ] ]
 #define	TEXT_START		[ _text [
 #define	TEXT_END		] ]
+#define	LIST_START		[ _list
+#define	LIST_END		]
 #define	LINK(url, t)	[_link _url(url) text  t ]
 
 ///////////////////////////////////////////////////////////////////

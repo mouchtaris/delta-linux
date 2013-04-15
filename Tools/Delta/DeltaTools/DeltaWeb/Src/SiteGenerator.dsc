@@ -1257,10 +1257,21 @@ function DocumentItem {  	// Provides methods to print SectionItems and SimpleIt
 				}
 				else
 				if(textitem.text)
-					html("<span class=\"normal\">" + textitem.text + "</span>"+"\n");
+					html("<span class=\"normal\">" + textitem.text + "</span>" + "\n");
 			}
-		},	
-			
+		},
+
+		method list (list) {
+			html("<ul>" + "\n");
+			for (local n1 = tablength(list), local i = 0; i < n1 - 1; ++i) {	//-1 to skip the .type entry
+				html("<li>" + "\n");
+				for (local n2 = tablength(list[i]), local j = 0; j < n2; ++j)
+					self[list[i][j].type](list[i][j]);
+				html("</li>" + "\n");
+			}
+			html("</ul>" + "\n");
+		},
+		
 		method link (link) {
 			if(link.url)
 				html("<a href=\""+link.url+"\"");

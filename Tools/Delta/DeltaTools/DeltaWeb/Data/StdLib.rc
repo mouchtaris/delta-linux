@@ -1084,7 +1084,7 @@ index [
 	"ast_accept_preorder",
 	"ast_copy",
 	"ast_unparse",
-	"ast_inject",
+	"ast_escape",
 	"ast_decr_esc_cardinalities",
 	"astvisitor_new",
 	"astvisitor_set_handler",
@@ -1119,11 +1119,11 @@ Bool		ast_accept_postorder(a, visitor)
 Bool		ast_accept_preorder(a, visitor)
 Ast			ast_copy(a)
 String		ast_unparse(a)								Generates a string representation of the given ast value
-Ast			ast_inject(a, val)							Injects the given value at the next espace of the given ast.
+Ast			ast_escape(a, val)							Inserts the given value at the next espace of the given ast.
 														Returns the new ast (it may change).
 														Used mainly for the code generation of the escapes (~...).
 			ast_decr_esc_cardinalities(a)				Decreases the cardinality (delay factor) of all escapes of the
-														given ast by 1. Typically follows a series of ast_inject calls.
+														given ast by 1. Typically follows a series of ast_escape calls.
 														Used mainly for the code generation of quasi-quotes (<<...>>).
 
 Also, all previous functions, except ast_new, may be called as methods

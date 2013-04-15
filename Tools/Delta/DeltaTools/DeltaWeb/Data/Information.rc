@@ -42,7 +42,7 @@ START_SEC("si_credits", "Credits")
 		an extension component of the Sparrow IDE to support tree views for expression watches ", !italic "(2008)", "; (iii) 
 		implemented the linkage with Corba, enabling build Corba clients or servers directly in the Delta language ",
 		!italic "(2009)", "; and (iv) implemented the metaprogramming extensions for the Delta language and all related
-		metaprogramming and aspect-oriented programming extensions and facilities of the Sparror IDE (compile-time debugging,
+		metaprogramming and aspect-oriented programming extensions and facilities of the Sparrow IDE (compile-time debugging,
 		debugging of aspect programs, AST inspection, etc.) as part of his PHD work ", !italic "(2010-2013)", ".",
 		NL2,
 
@@ -245,7 +245,80 @@ START_SEC("si_download", "Download")
 		"*** Spotting the Delta language componets in the solution hierarchy ***"
 	)
 
-END_SEC	// si_download
+END_SEC,	// si_download
 
+START_SEC("si_reports", "Reports")
+	
+	TEXT("Below is a list of publications related to the Delta language and the Sparrow IDE:"),
+	LIST_START
+		[
+			TEXT_START
+			"Lilis, Y., Savidis, A. (2012). ", !italic "Implementing Reusable Exception Handling Patterns with Compile-Time Metaprogramming.",
+			" In SERENE 2012 4th International Workshop on Software Engineering for Resilient Systems, Pisa, Italy (September 27-28), Springer LNCS 7527, 1-15.",
+			NL2 TEXT_END
+		],
+		[
+			TEXT_START
+			"Lilis, Y., Savidis, A. (2012). ", !italic "Supporting Compile-Time Debugging and Precise Error Reporting in Meta-Programs.",
+			" In TOOLS 2012, International Conference on Objects, Models, Components, Patterns (29-31 May), Prague, Czech Republic, Springer LNCS 7304, pp 155-170.",
+			NL2 TEXT_END
+		],
+		[
+			TEXT_START
+			"Savidis, A., Koutsopoulos, N. (2011). ", !italic "Interactive object graphs for debuggers with improved visualization, inspection and 
+			configuration features.", "In Proceedings of the 7th international conference on Advances in visual computing - Volume Part I (ISVC'11),
+			George Bebis, Richard Boyle, Bahram Parvin, Darko Koracin, and Song Wang (Eds.), Vol. Part I. Springer-Verlag, Berlin, Heidelberg, 259-268.",
+			NL2	TEXT_END
+		],
+		[
+			TEXT_START
+			"Savidis, A. (2011). ", !italic "Integrated implementation of dynamic untyped object-based operator overloading.",
+			" Softw: Pract. Exper., 41: 1155-1184. doi:"
+			TEXT_END, LINK("http://dx.doi.org/10.1002/spe.1025", "10.1002/spe.1025"),
+			TEXT(NL2)
+		],
+		[
+			TEXT_START
+			"Savidis, A. (2011). ", !italic "Supporting cross-language exception handling when extending applications with embedded languages.",
+			" In Proceedings of the Third international conference on Software engineering for resilient systems (SERENE'11), Elena A. Troubitsyna (Ed.). Springer-Verlag, Berlin, Heidelberg, 93-99. ",
+			NL2 TEXT_END
+		],
+		[
+			TEXT_START
+			"Savidis, A., Lilis, Y. (2009). ", !italic "Support for language independent browsing of aggregate values by debugger backends.",
+			" Journal of Object Technology, Volume 8, no. 6 (September 2009), pp. 159-180, doi:"
+			TEXT_END, LINK("http://dx.doi.org/10.5381/jot.2009.8.6.a4", "10.5381/jot.2009.8.6.a4"),
+			TEXT(NL2)
+		],
+		[
+			TEXT_START
+			"Savidis, A., (2008). ", !italic "An enhanced form of dynamic untyped object-based inheritance.",
+			" Journal of Object Technology, Volume 7, no. 4 (May 2008), pp. 101-122, doi:"
+				TEXT_END, LINK("http://dx.doi.org/10.5381/jot.2008.7.4.a2", "10.5381/jot.2008.7.4.a2"), TEXT_START
+			NL2 TEXT_END
+		],
+		[
+			TEXT_START
+			"Savidis, A., Bourdenas, T., Georgalis, J. (2007). ", !italic "An Adaptable Circular Meta-IDE for a Dynamic Programming Language.",
+			" In the Proceedings of the 4th international workshop on Rapid Integration of Software Engineering Techniques (RISE 2007) (pp. 99-114), 26-27 November 2007, Luxemburg.",
+			NL2 TEXT_END
+		],
+		[
+			TEXT_START
+			"Savidis, A. (2005). ", !italic "More dynamic imperative languages.",
+			" SIGPLAN Not. 40, 12 (December 2005), 6-13. DOI="
+			TEXT_END, LINK("http://dx.doi.org/10.1145/1117303.1117305", "10.1145/1117303.1117305"),
+			TEXT(NL2)
+		],
+		[
+			TEXT_START
+			"Savidis, A. (2005). ", !italic "Dynamic Imperative Languages for Runtime Extensible Semantics and Polymorphic Meta-Programming.",
+			" In proceedings of RISE 2005, International Workshop on Rapid Integration of Software Engineering Techniques (RISE 2005). Heraklion,
+			Crete, Greece, 8-9 September 2005 (pp. 113-128). Berlin Heidelberg: Springer-Verlag (LNCS 3943).",
+			NL2 TEXT_END
+		]
+	LIST_END
+
+END_SEC	// si_reports
 
 END_DOC

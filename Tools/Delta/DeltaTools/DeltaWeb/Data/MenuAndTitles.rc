@@ -83,16 +83,5 @@ mainmenu	[
 			[_simpleitem _title("Download")		sectionref "si_download"	],
 			[_simpleitem _title("Reports") 		sectionref "si_reports"		]
 		]
-	],
-
-	[
-		_submenu _title("Metaprogramming")		documentref "d_metaprogramming",
-		[
-			[_simpleitem _title("Introduction") 		sectionref "si_metaprogramming_introduction"	],
-			[_simpleitem _title("Staging annotations") 	sectionref "si_staging_annotations"				],
-			[_simpleitem _title("Stage assembly")		sectionref "si_stage_assembly"					],
-			[_simpleitem _title("Advanced examples") 	sectionref "si_metaprogramming_examples"		]
-		]
 	]
-
 ]
