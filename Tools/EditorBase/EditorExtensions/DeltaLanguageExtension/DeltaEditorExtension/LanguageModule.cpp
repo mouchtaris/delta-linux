@@ -208,6 +208,7 @@ void LanguageModule::ContentAdded (
 {
 	this->updatePositions(atPos, (int) length);
 	Slice slice = m_progDesc.GetAffectedSliceAfterAdd(Range(atPos, atPos + length));
+	this->expandAffectedSliceToIncludeBlockComments(slice);
 	this->parseSlice(slice);
 	DeltaGotoDefinition::HandleContentEdited(this);
 }
@@ -230,6 +231,7 @@ void LanguageModule::ContentDeleted (
 {
 	this->updatePositions(atPos, -((int) length));
 	Slice slice = m_progDesc.GetAffectedSliceAfterRemove(Range(atPos, atPos + length));
+	this->expandAffectedSliceToIncludeBlockComments(slice);
 	this->parseSlice(slice);
 	DeltaGotoDefinition::HandleContentEdited(this);
 }
@@ -636,6 +638,20 @@ void LanguageModule::parseSlice (const Slice& slice)
 	if (m_showParseIndicator) {
 		this->setInfoIndicator(m_parseInfoAtRange, slice.first, wxSCI_INDIC1_MASK);
 		m_parseIndicatorTimer.Start(2000, wxTIMER_ONE_SHOT);
+	}
+}
+
+//**********************************************************************
+
+void LanguageModule::expandAffectedSliceToIncludeBlockComments (Slice& slice) {
+	EditorWindow* editor = this->GetEditor();
+	int start = editor->FindText(slice.first.left, slice.first.right, _T("/*"));
+	if (start >= slice.first.left && start < slice.first.right) {
+		int end = editor->FindText(start + 2, editor->GetLength(), _T("*/"));
+		if (end == -1)
+			slice.first.right = editor->GetLength();
+		else if (end > slice.first.right)
+			slice.first.right = end;
 	}
 }
 

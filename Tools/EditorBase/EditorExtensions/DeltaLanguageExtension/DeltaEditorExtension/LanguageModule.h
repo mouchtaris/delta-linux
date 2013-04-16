@@ -254,6 +254,7 @@ private:
 
 	inline void updatePositions (uint atPos, int offset);
 	inline void parseSlice (const Slice& slice);
+	inline void expandAffectedSliceToIncludeBlockComments (Slice& slice);
 
 	bool afterOpeningBrace (char brace, int* position = 0) const;
 	bool shouldIncreaseIndentAfterNewLine (int line) const;

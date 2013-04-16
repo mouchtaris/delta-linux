@@ -24,6 +24,7 @@ mainmenu	[
 			[ _simpleitem _title("Subobject trees")				documentref 	"d_subobjects"		],
 			[ _simpleitem _title("Functional features")			documentref 	"d_functional"		],
 			[ _simpleitem _title("Operator overloading")		documentref 	"d_overloading"		],
+			[ _simpleitem _title("Metaprogramming")				documentref 	"d_metaprogramming"	],
 			[ _simpleitem _title("Virtual machines")			documentref 	"d_vms"				],
 			[ _simpleitem _title("Reflection support")			documentref 	"d_reflection"		],
 			[ _simpleitem _title("Embedding support")			documentref 	"d_embedding"		],
