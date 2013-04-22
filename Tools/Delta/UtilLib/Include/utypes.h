@@ -509,23 +509,27 @@ template <class T> class ubag {
 	private:
 	std::map<T, bool> bag;
 
-	struct bag_inserter : public std::binary_function<std::pair<T, bool>, ubag*, void> {
-		void operator()(const std::pair<T, bool>& p, ubag* b) const 
+	template <typename C>
+	struct bag_inserter : public std::binary_function<std::pair<C, bool>, ubag*, void> {
+		void operator()(const std::pair<C, bool>& p, ubag* b) const 
 			{ b->insert(p.first); }
 	};
 
-	struct list_inserter : public std::binary_function<T, ubag*, void> {
-		void operator()(const T& p, ubag* b) const 
+	template <typename C>
+	struct list_inserter : public std::binary_function<C, ubag*, void> {
+		void operator()(const C& p, ubag* b) const 
 			{ b->insert(p); }
 	};
 	
-	struct bag_remover : public std::binary_function<std::pair<T, bool>, ubag*, void> {
-		void operator()(const std::pair<T, bool>& p, ubag* b) const 
+	template <typename C>
+	struct bag_remover : public std::binary_function<std::pair<C, bool>, ubag*, void> {
+		void operator()(const std::pair<C, bool>& p, ubag* b) const 
 			{ b->remove(p.first); }
 	};
 
-	struct list_remover : public std::binary_function<T, ubag*, void> {
-		void operator()(const T& p, ubag* b) const 
+	template <typename C>
+	struct list_remover : public std::binary_function<C, ubag*, void> {
+		void operator()(const C& p, ubag* b) const 
 			{ b->remove(p); }
 	};
 
@@ -541,30 +545,34 @@ template <class T> class ubag {
 	const_iterator	end (void) const			{ return bag.end();					}
 	void			insert (const T& x)			{ bag[x] = true;					}
 	
-	void			insert (const ubag& b)		{ std::for_each(
+	template <typename C>
+	void			insert (const ubag<C>& b)	{ std::for_each(
 													b.begin(), 
 													b.end(), 
-													std::bind2nd(bag_inserter(), this)
+													std::bind2nd(bag_inserter<C>(), this)
 												  );								}
 	
-	void			insert (const std::list<T>& l)		
+	template <typename C>
+	void			insert (const std::list<C>& l)		
 												{ std::for_each(
 													l.begin(), 
 													l.end(), 
-													std::bind2nd(list_inserter(), this)
+													std::bind2nd(list_inserter<C>(), this)
 												  );								}
-												  
-	void			remove (const ubag& b)		{ std::for_each(
+
+	template <typename C>
+	void			remove (const ubag<C>& b)	{ std::for_each(
 													b.begin(), 
 													b.end(), 
-													std::bind2nd(bag_remover(), this)
+													std::bind2nd(bag_remover<C>(), this)
 												  );								}
 	
-	void			remove (const std::list<T>& l)		
+	template <typename C>
+	void			remove (const std::list<C>& l)		
 												{ std::for_each(
 													l.begin(), 
 													l.end(), 
-													std::bind2nd(list_remover(), this)
+													std::bind2nd(list_remover<C>(), this)
 												  );								}
 	void			remove (const T& x)			{ bag.erase(x);						}
 	void			remove (const iterator& i)	{ bag.erase(i);						}
