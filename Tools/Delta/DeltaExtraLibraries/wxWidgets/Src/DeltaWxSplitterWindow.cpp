@@ -172,7 +172,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "borderSize",			&GetBorderSize,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SplitterWindow, splitterwindow);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SplitterWindow,splitterwindow)
 
 ////////////////////////////////////////////////////////////////
 

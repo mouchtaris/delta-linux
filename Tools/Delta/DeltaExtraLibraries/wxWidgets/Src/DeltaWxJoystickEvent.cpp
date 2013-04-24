@@ -138,7 +138,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isZMove",			&GetIsZMove,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(JoystickEvent, joystickevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(JoystickEvent,joystickevent)
 
 ////////////////////////////////////////////////////////////////
 

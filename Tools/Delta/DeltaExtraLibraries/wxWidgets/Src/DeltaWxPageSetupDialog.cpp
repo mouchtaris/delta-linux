@@ -67,7 +67,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "pageSetupDialogData",&GetPageSetupDialogData,DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(PageSetupDialog, pagesetupdialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(PageSetupDialog,pagesetupdialog)
 
 ////////////////////////////////////////////////////////////////
 

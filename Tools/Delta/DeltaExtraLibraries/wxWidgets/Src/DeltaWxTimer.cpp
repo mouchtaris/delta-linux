@@ -70,7 +70,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "interval",			&GetInterval,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Timer, timer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Timer,timer)
 
 ////////////////////////////////////////////////////////////////
 

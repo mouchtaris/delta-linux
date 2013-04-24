@@ -204,7 +204,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "width",				&GetWidth,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Image, image);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Image,image)
 
 ////////////////////////////////////////////////////////////////
 

@@ -105,7 +105,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "span",				&GetSpan,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(GBSizerItem, gbsizeritem);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(GBSizerItem,gbsizeritem)
 
 ////////////////////////////////////////////////////////////////
 

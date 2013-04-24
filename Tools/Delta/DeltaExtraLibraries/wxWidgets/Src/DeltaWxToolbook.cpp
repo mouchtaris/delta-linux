@@ -174,7 +174,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "selection",			&GetSelection,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Toolbook, toolbook);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Toolbook,toolbook)
 
 ////////////////////////////////////////////////////////////////
 

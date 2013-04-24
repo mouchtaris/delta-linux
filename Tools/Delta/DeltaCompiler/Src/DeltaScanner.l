@@ -28,6 +28,12 @@
 
 #define YY_DECL	int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
 
+#ifndef	_MSC_VER
+extern "C" {
+static int isatty YY_PROTO(( int )) { return 0; }
+}
+#endif
+
 #define SET_END_LOCATION							\
 	yylloc->last_line = GET_PARSEPARMS.GetLine();	\
 	yylloc->last_column = yypos

@@ -60,7 +60,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "iconized",			&GetIconized,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(IconizeEvent, iconizeevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(IconizeEvent,iconizeevent)
 
 ////////////////////////////////////////////////////////////////
 

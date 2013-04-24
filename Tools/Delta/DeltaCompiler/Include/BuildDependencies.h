@@ -13,6 +13,9 @@
 #include <list>
 #include <string>
 
+class DeltaDependenciesFlexLexer;
+extern int DeltaDependencies_yyparse (DeltaDependenciesFlexLexer& lexer);
+
 ///////////////////////////////////////////////////////////////
 
 class DCOMPLIB_CLASS DeltaBuildDependencies {

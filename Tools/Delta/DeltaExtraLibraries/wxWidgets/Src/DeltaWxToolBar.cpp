@@ -193,7 +193,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "defaultHeight",		&GetDefaultHeight,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ToolBar, toolbar);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ToolBar,toolbar)
 
 ////////////////////////////////////////////////////////////////
 

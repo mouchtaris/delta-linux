@@ -86,7 +86,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "FlexGridSizer",		&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(GridBagSizer, gridbagsizer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(GridBagSizer,gridbagsizer)
 
 ////////////////////////////////////////////////////////////////
 

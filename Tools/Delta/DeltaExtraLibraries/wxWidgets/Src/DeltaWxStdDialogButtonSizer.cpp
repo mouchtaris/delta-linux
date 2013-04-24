@@ -122,7 +122,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "helpButton",			&GetHelpButton,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(StdDialogButtonSizer, stddialogbuttonsizer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(StdDialogButtonSizer,stddialogbuttonsizer)
 
 ////////////////////////////////////////////////////////////////
 

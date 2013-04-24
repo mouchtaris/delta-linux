@@ -68,7 +68,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 #endif //__WXMSW__
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(IconLocation, iconlocation);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(IconLocation,iconlocation)
 
 ////////////////////////////////////////////////////////////////
 

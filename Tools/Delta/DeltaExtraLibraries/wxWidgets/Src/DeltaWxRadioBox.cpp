@@ -151,7 +151,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "selectedButton",		&GetSelectedButton,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(RadioBox, radiobox);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(RadioBox,radiobox)
 
 ////////////////////////////////////////////////////////////////
 

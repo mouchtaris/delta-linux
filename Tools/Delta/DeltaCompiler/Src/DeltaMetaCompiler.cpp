@@ -367,12 +367,12 @@ static DeltaVirtualMachine* DefaultStageCallback(
 		const std::string vmId = stageSource;	//TODO: uconstructstr("%s%s", compilerSerial, ucstringarg(stageSource));
 		if (COMPOPTIONS_EX(directory).IsDynamicCode()) {
 			ubinaryio::OutputBuffer* ob = DNEW(ubinaryio::OutputBuffer);
-			DPTR(compiler)->DumpBinaryCode(PortableBufferWriter(*DPTR(ob)));
+			DPTR(compiler)->DumpBinaryCode(utempobj(PortableBufferWriter(*DPTR(ob))));
 
 			ubinaryio::InputBuffer* ib = DNEWCLASS(ubinaryio::InputBuffer, (*DPTR(ob)));
 			vm = DNEWCLASS(DeltaVirtualMachine, (vmId.c_str()));
 
-			bool loaded = DPTR(vm)->Load(PortableBufferReader(DPTR(ib)));
+			bool loaded = DPTR(vm)->Load(utempobj(PortableBufferReader(DPTR(ib))));
 			DASSERT(loaded);
 
 			DDELETE(ob);

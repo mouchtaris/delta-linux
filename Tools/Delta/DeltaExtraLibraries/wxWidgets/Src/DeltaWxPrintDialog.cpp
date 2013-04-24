@@ -89,7 +89,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "printDC",			&GetPrintDC,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(PrintDialog, printdialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(PrintDialog,printdialog)
 
 ////////////////////////////////////////////////////////////////
 

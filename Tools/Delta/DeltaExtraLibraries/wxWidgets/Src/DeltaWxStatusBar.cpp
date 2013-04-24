@@ -81,7 +81,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "numberOfFiels",		&GetFieldsCount,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(StatusBar, statusbar);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(StatusBar,statusbar)
 
 ////////////////////////////////////////////////////////////////
 

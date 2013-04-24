@@ -63,7 +63,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "dc",					&GetDC,					DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(EraseEvent, eraseevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(EraseEvent,eraseevent)
 
 ////////////////////////////////////////////////////////////////
 

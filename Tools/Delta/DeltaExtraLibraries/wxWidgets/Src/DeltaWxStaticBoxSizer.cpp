@@ -64,7 +64,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "staticBox",			&GetStaticBox,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticBoxSizer, staticboxsizer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticBoxSizer,staticboxsizer)
 
 ////////////////////////////////////////////////////////////////
 

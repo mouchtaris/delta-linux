@@ -1,37 +1,27 @@
+/* A Bison parser, made by GNU Bison 2.1.  */
 
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* Skeleton parser for Yacc-like parsing with Bison,
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
-   
-   This program is free software: you can redistribute it and/or modify
+   This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-   
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
-/* As a special exception, you may create a larger work that contains
-   part or all of the Bison parser skeleton and distribute that work
-   under terms of your choice, so long as that work isn't itself a
-   parser generator using the skeleton or a modified version thereof
-   as a parser skeleton.  Alternatively, if you modify or redistribute
-   the parser skeleton itself, you may (at your option) remove this
-   special exception, which will cause the skeleton and the resulting
-   Bison output files to be licensed under the GNU General Public
-   License without this special exception.
-   
-   This special exception was added by the Free Software Foundation in
-   version 2.2 of Bison.  */
-
+/* As a special exception, when this file is copied by Bison into a
+   Bison output file, you may use that output file without restriction.
+   This special exception was added by the Free Software Foundation
+   in version 1.24 of Bison.  */
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -133,14 +123,106 @@
      PARSE_QUOTED_ELEMENTS = 349
    };
 #endif
+/* Tokens.  */
+#define NUMBER_CONST 258
+#define STRING_CONST 259
+#define FUNCTION 260
+#define RETURN 261
+#define ONEVENT 262
+#define IF 263
+#define ELSE 264
+#define WHILE 265
+#define FOR 266
+#define FOREACH 267
+#define NIL 268
+#define LOCAL 269
+#define USING 270
+#define AND 271
+#define NOT 272
+#define OR 273
+#define PLUSPLUS 274
+#define MINUSMINUS 275
+#define LAMBDA 276
+#define TRY 277
+#define TRAP 278
+#define THROW 279
+#define ASSERT 280
+#define TRUE 281
+#define FALSE 282
+#define BREAK 283
+#define CONTINUE 284
+#define STATIC 285
+#define CONST 286
+#define METHOD 287
+#define SELF 288
+#define ARGUMENTS 289
+#define LAMBDA_REF 290
+#define OPERATOR 291
+#define NEWSELF 292
+#define SET 293
+#define GET 294
+#define LT 295
+#define GT 296
+#define LE 297
+#define GE 298
+#define EQ 299
+#define NE 300
+#define DOT 301
+#define DOUBLE_DOT 302
+#define TRIPLE_DOT 303
+#define DOT_ASSIGN 304
+#define DOT_EQUAL 305
+#define DOT_CAST 306
+#define DOT_EQUAL_RHS 307
+#define UMINUS 308
+#define ADD 309
+#define SUB 310
+#define MUL 311
+#define DIV 312
+#define MOD 313
+#define ATTRIBUTE 314
+#define STRINGIFY 315
+#define GLOBAL_SCOPE 316
+#define ASSIGN 317
+#define ADD_A 318
+#define SUB_A 319
+#define MUL_A 320
+#define DIV_A 321
+#define MOD_A 322
+#define DOUBLE_LB 323
+#define DOUBLE_RB 324
+#define CALL 325
+#define CAST 326
+#define SEMI 327
+#define IDENT 328
+#define ATTRIBUTE_IDENT 329
+#define ADD_POSTFIX 330
+#define SUB_POSTFIX 331
+#define MUL_POSTFIX 332
+#define DIV_POSTFIX 333
+#define MOD_POSTFIX 334
+#define GT_POSTFIX 335
+#define LT_POSTFIX 336
+#define NE_POSTFIX 337
+#define EQ_POSTFIX 338
+#define GE_POSTFIX 339
+#define LE_POSTFIX 340
+#define PARENTHESIS 341
+#define SQUARE_BRACKETS 342
+#define META_LSHIFT 343
+#define META_RSHIFT 344
+#define META_ESCAPE 345
+#define META_INLINE 346
+#define META_EXECUTE 347
+#define META_RENAME 348
+#define PARSE_QUOTED_ELEMENTS 349
 
 
 
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-{
 
+#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
 
+typedef union YYSTYPE {
 	double				numberConst;
 	util_ui32			line;
 	util_ui32			count;
@@ -148,18 +230,17 @@ typedef union YYSTYPE
 	const char*			constStr;
 	AST::NodeList*		nodeList;
 	AST::Node*			node;
-
-
-
 } YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
+/* Line 1447 of yacc.c.  */
+
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 
 
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+#if ! defined (YYLTYPE) && ! defined (YYLTYPE_IS_DECLARED)
 typedef struct YYLTYPE
 {
   int first_line;
@@ -171,6 +252,7 @@ typedef struct YYLTYPE
 # define YYLTYPE_IS_DECLARED 1
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
+
 
 
 

@@ -212,7 +212,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "printData",				&GetPrintData,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(PrintDialogData, printdialogdata);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(PrintDialogData,printdialogdata)
 
 ////////////////////////////////////////////////////////////////
 

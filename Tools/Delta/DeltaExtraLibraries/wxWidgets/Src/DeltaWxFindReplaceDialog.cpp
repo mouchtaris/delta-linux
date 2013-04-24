@@ -66,7 +66,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "findReplaceData",	&GetFindReplaceData,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(FindReplaceDialog, findreplacedialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(FindReplaceDialog,findreplacedialog)
 
 ////////////////////////////////////////////////////////////////
 

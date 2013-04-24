@@ -54,7 +54,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "CommandEvent",		&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ScrollEvent, scrollevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ScrollEvent,scrollevent)
 
 ////////////////////////////////////////////////////////////////
 

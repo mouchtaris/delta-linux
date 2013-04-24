@@ -82,7 +82,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "maxPointSize",		&GetMaxPointSize,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(FontPickerCtrl, fontpickerctrl);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(FontPickerCtrl,fontpickerctrl)
 
 ////////////////////////////////////////////////////////////////
 

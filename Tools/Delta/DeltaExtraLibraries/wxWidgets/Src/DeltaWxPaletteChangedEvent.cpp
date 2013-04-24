@@ -65,7 +65,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "changedWindow",		&GetChangedWindow,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(PaletteChangedEvent, palettechangedevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(PaletteChangedEvent,palettechangedevent)
 
 ////////////////////////////////////////////////////////////////
 

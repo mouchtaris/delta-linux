@@ -121,7 +121,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "menuBarFrame",		&GetMenuBarFrame,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(MenuBar, menubar);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(MenuBar,menubar)
 
 ////////////////////////////////////////////////////////////////
 

@@ -170,7 +170,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "containigWindow",	&GetContainingWindow,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Sizer, sizer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Sizer,sizer)
 
 ////////////////////////////////////////////////////////////////
 

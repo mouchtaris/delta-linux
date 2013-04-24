@@ -54,7 +54,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "itemId",				&GetItemId,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeItemData, treeitemdata);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeItemData,treeitemdata)
 
 ////////////////////////////////////////////////////////////////
 

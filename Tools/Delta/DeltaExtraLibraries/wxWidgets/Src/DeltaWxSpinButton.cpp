@@ -81,7 +81,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "max",				&GetMax,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SpinButton, spinbutton);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SpinButton,spinbutton)
 
 ////////////////////////////////////////////////////////////////
 

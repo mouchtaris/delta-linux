@@ -148,7 +148,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "yScrollLinesPerPage",&GetYScrollLinesPerPage,DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ScrolledWindow, scrolledwindow);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ScrolledWindow,scrolledwindow)
 
 ////////////////////////////////////////////////////////////////
 

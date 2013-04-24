@@ -123,7 +123,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isPickerCtrlGrowable",	&GetIsPickerCtrlGrowable,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(PickerBase, pickerbase);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(PickerBase,pickerbase)
 
 ////////////////////////////////////////////////////////////////
 

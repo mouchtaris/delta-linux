@@ -61,7 +61,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "Control",			&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticText, statictext);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticText,statictext)
 
 ////////////////////////////////////////////////////////////////
 

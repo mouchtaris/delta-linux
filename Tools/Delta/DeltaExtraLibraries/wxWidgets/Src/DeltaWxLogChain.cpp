@@ -76,7 +76,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isPassingMessages",	&GetIsPassingMessages,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(LogChain, logchain);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(LogChain,logchain)
 
 ////////////////////////////////////////////////////////////////
 

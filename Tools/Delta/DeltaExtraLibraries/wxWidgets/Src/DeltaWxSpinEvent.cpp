@@ -54,7 +54,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "NotifyEvent",		&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SpinEvent, spinevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SpinEvent,spinevent)
 
 ////////////////////////////////////////////////////////////////
 

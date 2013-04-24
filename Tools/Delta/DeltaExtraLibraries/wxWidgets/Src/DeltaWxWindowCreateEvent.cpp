@@ -63,7 +63,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "window",				&GetWindow,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(WindowCreateEvent, windowcreateevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(WindowCreateEvent,windowcreateevent)
 
 ////////////////////////////////////////////////////////////////
 

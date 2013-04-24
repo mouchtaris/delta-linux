@@ -267,7 +267,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "shiftDown",			&GetShiftDown,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseEvent, mouseevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseEvent,mouseevent)
 
 ////////////////////////////////////////////////////////////////
 

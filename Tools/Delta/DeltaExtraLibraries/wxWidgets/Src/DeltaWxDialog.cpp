@@ -108,7 +108,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "escapeId",			&GetEscapeId,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Dialog, dialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Dialog,dialog)
 
 ////////////////////////////////////////////////////////////////
 

@@ -421,7 +421,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isOk",				&GetIsOk,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Joystick, joystick);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Joystick,joystick)
 
 ////////////////////////////////////////////////////////////////
 

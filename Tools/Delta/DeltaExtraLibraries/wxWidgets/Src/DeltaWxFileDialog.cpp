@@ -146,7 +146,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "filenames",			&GetFilenames,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(FileDialog, filedialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(FileDialog,filedialog)
 
 ////////////////////////////////////////////////////////////////
 

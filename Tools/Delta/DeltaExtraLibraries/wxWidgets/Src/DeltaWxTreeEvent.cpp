@@ -122,7 +122,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "editCancelled",		&GetIsEditCancelled,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeEvent, treeevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeEvent,treeevent)
 
 ////////////////////////////////////////////////////////////////
 

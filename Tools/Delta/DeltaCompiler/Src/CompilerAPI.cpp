@@ -197,7 +197,7 @@ bool DeltaCompiler::SyntaxAnalysisAndIntermediateCode (void) {
 	DeltaLexAnalyserFlexLexer lexer;
 	lexer.SetDirectory(&directory);
 	
-	if (!PureSyntaxAnalysis(ParserWrapper<DeltaLexAnalyserFlexLexer>(lexer, &DeltaCompiler_yyparse)))
+	if (!PureSyntaxAnalysis(utempobj(ParserWrapper<DeltaLexAnalyserFlexLexer>(lexer, &DeltaCompiler_yyparse))))
 		return false;
 
 	if (!COMPMESSENGER.ErrorsExist())
@@ -234,7 +234,7 @@ bool DeltaCompiler::SyntaxAnalysis (const std::list<int>& tokens) {
 	Lexer lexer(tokens);
 	lexer.SetDirectory(&directory);
 
-	if (!PureSyntaxAnalysis(ParserWrapper<DeltaScannerFlexLexer>(lexer, &DeltaSyntax_yyparse)))
+	if (!PureSyntaxAnalysis(utempobj(ParserWrapper<DeltaScannerFlexLexer>(lexer, &DeltaSyntax_yyparse))))
 		return false;
 
 	PARSEPARMS.SetLine(1);

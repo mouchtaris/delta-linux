@@ -151,7 +151,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "text",				&GetText,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(UpdateUIEvent, updateuievent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(UpdateUIEvent,updateuievent)
 
 ////////////////////////////////////////////////////////////////
 

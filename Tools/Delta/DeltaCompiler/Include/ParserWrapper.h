@@ -29,9 +29,9 @@ class ParserWrapper {
 
 	public:
 	bool 				ParseFile (const std::string& file)
-							{ return ParseStream(std::ifstream(file.c_str(), std::ios::in)); }
+							{ return ParseStream(utempobj(std::ifstream(file.c_str(), std::ios::in))); }
 	bool 				ParseText (const std::string& text)
-							{ return ParseStream(std::istringstream(text, std::ios::in)); }
+							{ return ParseStream(utempobj(std::istringstream(text, std::ios::in))); }
 	bool 				ParseStream (std::istream& input) {
 							if (input.fail()) {
 								if (onParseStarted)

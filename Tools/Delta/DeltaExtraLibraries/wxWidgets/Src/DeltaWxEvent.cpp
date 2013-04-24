@@ -125,7 +125,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isCommandEvent",		&GetIsCommandEvent,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Event, event);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Event,event)
 
 ////////////////////////////////////////////////////////////////
 

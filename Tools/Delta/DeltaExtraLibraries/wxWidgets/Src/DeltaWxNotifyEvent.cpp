@@ -64,7 +64,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isAllowed",			&GetIsAllowed,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(NotifyEvent, notifyevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(NotifyEvent,notifyevent)
 
 ////////////////////////////////////////////////////////////////
 

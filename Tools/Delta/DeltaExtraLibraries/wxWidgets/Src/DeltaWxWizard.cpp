@@ -104,7 +104,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "sizerPage",			&GetSizer,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Wizard, wizard);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Wizard,wizard)
 
 ////////////////////////////////////////////////////////////////
 

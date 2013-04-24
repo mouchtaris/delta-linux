@@ -165,7 +165,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "rawFlags",			&GetRawFlags,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(KeyEvent, keyevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(KeyEvent,keyevent)
 
 ////////////////////////////////////////////////////////////////
 

@@ -57,6 +57,7 @@ WX_FUNC_DEF(getindent)
 WX_FUNC_DEF(getitembackgroundcolour)
 WX_FUNC_DEF(getitemdata)
 WX_FUNC_DEF(getitemfont)
+WX_FUNC_DEF(getitemparent)
 WX_FUNC_DEF(getitemimage)
 WX_FUNC_DEF(getitemtext)
 WX_FUNC_DEF(getitemtextcolour)
@@ -136,6 +137,7 @@ WX_FUNCS_START
 	WX_FUNC(getitembackgroundcolour),
 	WX_FUNC(getitemdata),
 	WX_FUNC(getitemfont),
+	WX_FUNC(getitemparent),
 	WX_FUNC(getitemimage),
 	WX_FUNC(getitemtext),
 	WX_FUNC(getitemtextcolour),
@@ -251,7 +253,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "textCtrl",			&GetTextCtrl,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeCtrl, treectrl);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeCtrl, treectrl)
 
 ////////////////////////////////////////////////////////////////
 

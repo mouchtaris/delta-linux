@@ -227,7 +227,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "count",				&GetItemCount,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ListCtrl, listctrl);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ListCtrl,listctrl)
 
 ////////////////////////////////////////////////////////////////
 

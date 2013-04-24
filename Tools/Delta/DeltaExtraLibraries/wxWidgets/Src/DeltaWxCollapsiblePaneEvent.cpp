@@ -63,7 +63,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "collapsed",			&GetCollapsed,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(CollapsiblePaneEvent, collapsiblepaneevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(CollapsiblePaneEvent,collapsiblepaneevent)
 
 ////////////////////////////////////////////////////////////////
 

@@ -74,7 +74,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "date",				&GetDate,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(DatePickerCtrl, datepickerctrl);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(DatePickerCtrl,datepickerctrl)
 
 ////////////////////////////////////////////////////////////////
 

@@ -103,7 +103,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "currentFocus",		&GetCurrentFocus,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(NavigationKeyEvent, navigationkeyevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(NavigationKeyEvent,navigationkeyevent)
 
 ////////////////////////////////////////////////////////////////
 

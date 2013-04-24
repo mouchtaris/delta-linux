@@ -128,7 +128,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "holiday",			&GetIsHoliday,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(CalendarDateAttr, calendardateattr);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(CalendarDateAttr,calendardateattr)
 
 ////////////////////////////////////////////////////////////////
 

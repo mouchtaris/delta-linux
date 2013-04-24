@@ -170,7 +170,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "defaultStyle",		&GetDefaultStyle,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(TextCtrl, textctrl);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(TextCtrl,textctrl)
 
 ////////////////////////////////////////////////////////////////
 

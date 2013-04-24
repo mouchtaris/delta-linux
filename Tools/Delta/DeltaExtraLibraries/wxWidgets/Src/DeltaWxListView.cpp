@@ -70,7 +70,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "ListCtrl",			&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ListView, listview);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ListView,listview)
 
 ////////////////////////////////////////////////////////////////
 

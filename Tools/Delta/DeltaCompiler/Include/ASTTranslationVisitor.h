@@ -159,7 +159,7 @@ class TranslationVisitor :	public ucomponentdirectoryclient,
 					DeltaExpr* (Translator::*f)(void), 
 					util_ui32 token
 				);
-	static void AST::TranslationVisitor::Handle_KwdExpr (
+	static void Handle_KwdExpr (
 					AST_VISITOR_ARGS,
 					DeltaExpr* (*f)(Translator& translator),
 					util_ui32 token

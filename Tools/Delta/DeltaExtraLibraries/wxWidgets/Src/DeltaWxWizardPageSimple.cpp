@@ -78,7 +78,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "next",				&GetNext,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(WizardPageSimple, wizardpagesimple);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(WizardPageSimple,wizardpagesimple)
 
 ////////////////////////////////////////////////////////////////
 

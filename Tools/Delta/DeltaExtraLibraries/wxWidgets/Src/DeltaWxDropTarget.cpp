@@ -62,7 +62,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "defaultAction",		&GetDefaultAction,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(DropTarget, droptarget);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(DropTarget,droptarget)
 
 ////////////////////////////////////////////////////////////////
 

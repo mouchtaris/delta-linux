@@ -138,7 +138,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "marginY",			&GetMarginY,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(BitmapButton, bitmapbutton);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(BitmapButton,bitmapbutton)
 
 ////////////////////////////////////////////////////////////////
 

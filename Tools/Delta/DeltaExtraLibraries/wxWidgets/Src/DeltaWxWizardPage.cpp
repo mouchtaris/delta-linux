@@ -64,7 +64,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "bitmap",				&GetBitmap,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(WizardPage, wizardpage);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(WizardPage,wizardpage)
 
 ////////////////////////////////////////////////////////////////
 

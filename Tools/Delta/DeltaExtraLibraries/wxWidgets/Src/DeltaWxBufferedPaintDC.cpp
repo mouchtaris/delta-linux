@@ -52,7 +52,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "BufferedDC",			&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(BufferedPaintDC, bufferedpaintdc);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(BufferedPaintDC,bufferedpaintdc)
 
 ////////////////////////////////////////////////////////////////
 

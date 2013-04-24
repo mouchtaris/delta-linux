@@ -194,7 +194,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "translators",		&GetTranslators,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(AboutDialogInfo, aboutdialoginfo);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(AboutDialogInfo,aboutdialoginfo)
 
 ////////////////////////////////////////////////////////////////
 

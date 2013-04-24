@@ -92,7 +92,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "extraLong",			&GetExtraLong,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(CommandEvent, commandevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(CommandEvent,commandevent)
 
 ////////////////////////////////////////////////////////////////
 

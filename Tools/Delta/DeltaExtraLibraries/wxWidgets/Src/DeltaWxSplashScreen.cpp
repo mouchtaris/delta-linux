@@ -81,7 +81,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "milliseconds",		&GetMilliseconds,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SplashScreen, splashscreen);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SplashScreen,splashscreen)
 
 ////////////////////////////////////////////////////////////////
 

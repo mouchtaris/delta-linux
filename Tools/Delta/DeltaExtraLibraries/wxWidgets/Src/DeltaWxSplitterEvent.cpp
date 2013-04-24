@@ -96,7 +96,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "windowBeingRemoved",	&GetWindowBeingRemoved,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SplitterEvent, splitterevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SplitterEvent,splitterevent)
 
 ////////////////////////////////////////////////////////////////
 

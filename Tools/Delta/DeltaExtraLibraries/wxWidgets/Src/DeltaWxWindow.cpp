@@ -733,7 +733,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "frozenness",			&GetFrozenness,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Window, window);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Window,window)
 
 ////////////////////////////////////////////////////////////////
 

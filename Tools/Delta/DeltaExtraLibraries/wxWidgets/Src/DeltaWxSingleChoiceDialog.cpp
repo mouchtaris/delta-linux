@@ -78,7 +78,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "stringSelection",	&GetStringSelection,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SingleChoiceDialog, singlechoicedialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SingleChoiceDialog,singlechoicedialog)
 
 ////////////////////////////////////////////////////////////////
 

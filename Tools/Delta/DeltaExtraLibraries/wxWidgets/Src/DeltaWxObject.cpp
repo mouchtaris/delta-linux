@@ -69,7 +69,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "refdata",			&GetRefData,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Object, object);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Object,object)
 
 ////////////////////////////////////////////////////////////////
 

@@ -93,7 +93,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isCancelButtonVisible",	&GetIsCancelButtonVisible,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SearchCtrl, searchctrl);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SearchCtrl,searchctrl)
 
 ////////////////////////////////////////////////////////////////
 

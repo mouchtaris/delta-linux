@@ -95,7 +95,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "chooseFull",			&GetChooseFull,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourData, colourdata);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourData,colourdata)
 
 ////////////////////////////////////////////////////////////////
 

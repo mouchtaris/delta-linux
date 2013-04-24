@@ -67,7 +67,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "orient",				&GetOrientation,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(BoxSizer, boxsizer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(BoxSizer,boxsizer)
 
 ////////////////////////////////////////////////////////////////
 

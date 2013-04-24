@@ -88,7 +88,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "files",				&GetFiles,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(DropFilesEvent, dropfilesevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(DropFilesEvent,dropfilesevent)
 
 ////////////////////////////////////////////////////////////////
 

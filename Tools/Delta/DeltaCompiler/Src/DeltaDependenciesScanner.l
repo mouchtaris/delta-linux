@@ -14,6 +14,13 @@
 #define	YY_NEVER_INTERACTIVE 1
 
 #define YY_DECL		int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
+
+#ifndef	_MSC_VER
+extern "C" {
+static int isatty YY_PROTO(( int )) { return 0; }
+}
+#endif
+
 #define BUILDDEPS	(*DNULLCHECK(UCOMPONENT_DIRECTORY_GET(*GetDirectory(), DeltaBuildDependencies)))
 
 %}

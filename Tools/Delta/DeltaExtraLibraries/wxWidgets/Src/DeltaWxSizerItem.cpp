@@ -219,7 +219,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "ratio",				&GetRatio,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SizerItem, sizeritem);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SizerItem,sizeritem)
 
 ////////////////////////////////////////////////////////////////
 

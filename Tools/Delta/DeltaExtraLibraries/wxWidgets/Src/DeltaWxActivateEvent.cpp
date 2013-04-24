@@ -60,7 +60,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "active",				&GetActive,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ActivateEvent, activateevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ActivateEvent,activateevent)
 
 ////////////////////////////////////////////////////////////////
 

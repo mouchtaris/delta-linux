@@ -82,7 +82,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "logFrame",			&GetLogFrame,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(LogWindow, logwindow);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(LogWindow,logwindow)
 
 ////////////////////////////////////////////////////////////////
 

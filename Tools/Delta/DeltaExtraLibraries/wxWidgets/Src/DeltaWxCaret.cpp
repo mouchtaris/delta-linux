@@ -117,7 +117,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isVisible",			&GetIsVisible,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Caret, caret);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Caret,caret)
 
 ////////////////////////////////////////////////////////////////
 

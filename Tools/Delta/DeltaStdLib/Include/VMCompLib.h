@@ -72,9 +72,9 @@ template<class T> class DefaultBuildDependenciesIFace : public BuildDependencies
 			for (typename T::Dependencies::const_iterator i = deps.begin(); i != deps.end(); ++i) {
 			ResolutionType type;
 				switch (i->second) {
-					case typename T::NotFound:	type = NotFound;	break;
-					case typename T::OneFound:	type = OneFound;	break;
-					case typename T::ManyFound:	type = ManyFound;	break;
+					case T::NotFound:	type = NotFound;	break;
+					case T::OneFound:	type = OneFound;	break;
+					case T::ManyFound:	type = ManyFound;	break;
 					default : DASSERT(false);
 				}
 				dependencies.push_back(Dependency(i->first, type));

@@ -191,7 +191,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "eventHandler",		&GetEventHandler,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Menu, menu);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Menu,menu)
 
 ////////////////////////////////////////////////////////////////
 

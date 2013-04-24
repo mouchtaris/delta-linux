@@ -72,7 +72,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "command",			&GetCommand,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(AcceleratorEntry, acceleratorentry);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(AcceleratorEntry,acceleratorentry)
 
 ////////////////////////////////////////////////////////////////
 

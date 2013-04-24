@@ -65,7 +65,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "colour",				&GetColour,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourPickerEvent, colourpickerevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourPickerEvent,colourpickerevent)
 
 ////////////////////////////////////////////////////////////////
 

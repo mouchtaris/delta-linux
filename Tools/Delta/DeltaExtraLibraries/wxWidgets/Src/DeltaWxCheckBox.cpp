@@ -78,7 +78,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "state",				&GetState,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(CheckBox, checkbox);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(CheckBox,checkbox)
 
 ////////////////////////////////////////////////////////////////
 

@@ -76,7 +76,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "Validator",			&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(TextValidator, textvalidator);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(TextValidator,textvalidator)
 
 ////////////////////////////////////////////////////////////////
 

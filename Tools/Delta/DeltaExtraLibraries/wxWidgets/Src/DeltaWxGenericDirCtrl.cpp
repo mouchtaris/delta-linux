@@ -157,7 +157,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "filterListCtrl",		&GetFilterListCtrl,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(GenericDirCtrl, genericdirctrl);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(GenericDirCtrl,genericdirctrl)
 
 ////////////////////////////////////////////////////////////////
 

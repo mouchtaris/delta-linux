@@ -153,7 +153,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "encoding",			&GetEncoding,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(FontData, fontdata);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(FontData,fontdata)
 
 ////////////////////////////////////////////////////////////////
 

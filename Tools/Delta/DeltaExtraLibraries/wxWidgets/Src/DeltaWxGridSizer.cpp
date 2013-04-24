@@ -98,7 +98,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "horizontalGap",		&GetHGap,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(GridSizer, gridsizer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(GridSizer,gridsizer)
 
 ////////////////////////////////////////////////////////////////
 

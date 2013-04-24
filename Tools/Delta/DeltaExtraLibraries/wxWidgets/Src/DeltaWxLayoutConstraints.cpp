@@ -163,7 +163,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "centreY",			&GetCentreY,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(LayoutConstraints, layoutconstraints);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(LayoutConstraints,layoutconstraints)
 
 ////////////////////////////////////////////////////////////////
 

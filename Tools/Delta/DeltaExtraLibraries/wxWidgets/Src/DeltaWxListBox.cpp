@@ -70,7 +70,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "ControlWithItems",	&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ListBox, listbox);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ListBox, listbox)
 
 ////////////////////////////////////////////////////////////////
 
@@ -169,9 +169,8 @@ DLIB_FUNC_START(listbox_insertitems, 3, Nil)
 	for (int i = 0, num = (int)nItems_table->Total(); i < num; ++i) {
 		DeltaValue value;
 		nItems_table->Get(DeltaValue(DeltaNumberValueType(i)), &value);
-		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
+		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String)
 			nItems.Add(wxString(value.ToString().c_str(), wxConvUTF8));
-		}
 	}
 	listbox->InsertItems(nItems, pos);
 }

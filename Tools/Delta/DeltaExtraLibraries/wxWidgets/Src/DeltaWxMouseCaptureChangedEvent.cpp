@@ -63,7 +63,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "capturedWindow",		&GetCapturedWindow,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseCaptureChangedEvent, mousecapturechangedevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseCaptureChangedEvent,mousecapturechangedevent)
 
 ////////////////////////////////////////////////////////////////
 

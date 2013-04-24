@@ -63,7 +63,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "path",				&GetPath,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(FileDirPickerEvent, filedirpickerevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(FileDirPickerEvent,filedirpickerevent)
 
 ////////////////////////////////////////////////////////////////
 

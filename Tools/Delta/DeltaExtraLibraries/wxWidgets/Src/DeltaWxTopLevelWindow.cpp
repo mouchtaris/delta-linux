@@ -134,7 +134,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isFullscreen",		&GetIsFullScreen,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(TopLevelWindow, toplevelwindow);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(TopLevelWindow,toplevelwindow)
 
 ////////////////////////////////////////////////////////////////
 

@@ -51,7 +51,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "Event",				&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseCaptureLostEvent, mousecapturelostevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseCaptureLostEvent,mousecapturelostevent)
 
 ////////////////////////////////////////////////////////////////
 

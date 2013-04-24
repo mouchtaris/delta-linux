@@ -70,7 +70,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "orientation",		&GetOrientation,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ScrollWinEvent, scrollwinevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ScrollWinEvent,scrollwinevent)
 
 ////////////////////////////////////////////////////////////////
 

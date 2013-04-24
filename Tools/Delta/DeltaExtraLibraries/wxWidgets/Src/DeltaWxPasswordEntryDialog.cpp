@@ -52,7 +52,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "TextEntryDialog",	&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(PasswordEntryDialog, passwordentrydialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(PasswordEntryDialog,passwordentrydialog)
 
 ////////////////////////////////////////////////////////////////
 

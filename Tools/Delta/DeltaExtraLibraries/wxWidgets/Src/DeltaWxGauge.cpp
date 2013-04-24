@@ -99,7 +99,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "rangePos",			&GetRangePos,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Gauge, gauge);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Gauge,gauge)
 
 ////////////////////////////////////////////////////////////////
 

@@ -81,7 +81,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "backgroundColour",	&GetBackgroundColour,	DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(VisualAttributes, visualattributes);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(VisualAttributes,visualattributes)
 
 ////////////////////////////////////////////////////////////////
 

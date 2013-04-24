@@ -175,7 +175,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "rightIndent",		&GetRightIndent,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(TextAttr, textattr);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(TextAttr,textattr)
 
 ////////////////////////////////////////////////////////////////
 

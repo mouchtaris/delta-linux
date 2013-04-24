@@ -134,7 +134,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "tickFrequency",		&GetTickFrequency,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Slider, slider);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Slider,slider)
 
 ////////////////////////////////////////////////////////////////
 

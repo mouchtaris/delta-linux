@@ -57,7 +57,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "Dialog",				&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ProgressDialog, progressdialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ProgressDialog,progressdialog)
 
 ////////////////////////////////////////////////////////////////
 

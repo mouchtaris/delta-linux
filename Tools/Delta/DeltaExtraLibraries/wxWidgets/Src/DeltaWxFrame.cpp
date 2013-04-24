@@ -126,7 +126,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "frameToolBar",		&GetToolBar,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(Frame, frame);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(Frame,frame)
 
 ////////////////////////////////////////////////////////////////
 

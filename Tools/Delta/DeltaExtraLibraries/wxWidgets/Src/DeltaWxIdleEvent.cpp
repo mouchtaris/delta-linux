@@ -69,7 +69,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "moreRequested",		&GetMoreRequested,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(IdleEvent, idleevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(IdleEvent,idleevent)
 
 ////////////////////////////////////////////////////////////////
 

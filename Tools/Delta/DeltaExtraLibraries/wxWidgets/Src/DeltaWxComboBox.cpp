@@ -99,7 +99,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "ControlWithItems",	&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ComboBox, combobox);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ComboBox,combobox)
 
 ////////////////////////////////////////////////////////////////
 

@@ -495,6 +495,12 @@ static yyconst short int yy_chk[311] =
 
 #define YY_DECL	int yyFlexLexer::yylex (YYSTYPE* yylval, YYLTYPE* yylloc)
 
+#ifndef	_MSC_VER
+extern "C" {
+int isatty YY_PROTO(( int )) { return 0; }
+}
+#endif
+
 ///////////////////////////////////////////////////////////
 // Helper macros to get specific components from the lexer
 // component directory.

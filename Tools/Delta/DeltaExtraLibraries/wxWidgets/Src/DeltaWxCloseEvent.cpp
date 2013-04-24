@@ -84,7 +84,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "canVeto",			&GetCanVeto,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(CloseEvent, closeevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(CloseEvent,closeevent)
 
 ////////////////////////////////////////////////////////////////
 

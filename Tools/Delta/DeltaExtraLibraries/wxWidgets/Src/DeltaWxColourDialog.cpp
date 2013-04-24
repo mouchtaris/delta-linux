@@ -67,7 +67,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "colourData",			&GetColourData,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourDialog, colourdialog);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourDialog,colourdialog)
 
 ////////////////////////////////////////////////////////////////
 

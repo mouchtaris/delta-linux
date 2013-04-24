@@ -199,7 +199,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "longHelpString",		&GetLongHelp,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ToolBarToolBase, toolbartoolbase);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ToolBarToolBase,toolbartoolbase)
 
 ////////////////////////////////////////////////////////////////
 

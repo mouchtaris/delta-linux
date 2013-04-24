@@ -74,7 +74,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "oldSelection",		&GetOldSelection,		DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(ChoicebookEvent, choicebookevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(ChoicebookEvent,choicebookevent)
 
 ////////////////////////////////////////////////////////////////
 

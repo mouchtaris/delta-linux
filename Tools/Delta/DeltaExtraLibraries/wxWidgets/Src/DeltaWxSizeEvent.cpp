@@ -76,7 +76,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "rect",				&GetRect,				DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(SizeEvent, sizeevent);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(SizeEvent,sizeevent)
 
 ////////////////////////////////////////////////////////////////
 

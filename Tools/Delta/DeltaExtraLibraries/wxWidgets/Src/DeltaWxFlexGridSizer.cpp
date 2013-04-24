@@ -82,7 +82,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "nonflexibleGrowMode",&GetNonFlexibleGrowMode,DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(FlexGridSizer, flexgridsizer);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(FlexGridSizer,flexgridsizer)
 
 ////////////////////////////////////////////////////////////////
 

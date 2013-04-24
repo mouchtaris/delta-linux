@@ -196,7 +196,7 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "isEnabled",			&GetIsEnabled,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION(MenuItem, menuitem);
+WX_LIBRARY_FUNCS_IMPLEMENTATION(MenuItem,menuitem)
 
 ////////////////////////////////////////////////////////////////
 
