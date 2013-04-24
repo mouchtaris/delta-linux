@@ -74,8 +74,8 @@ public:
 	virtual void ContentSetup (void) {}
 	virtual void ContentCleared (void) {}
 
-	virtual void ContentAdded (uint, uint, uint, uint) {}
-	virtual void ContentDeleted (uint, uint, uint, uint) {}
+	virtual void ContentAdded (uint, uint, uint) {}
+	virtual void ContentDeleted (uint, uint, uint) {}
 	virtual void ContentOffsetChanged (uint, int) {}
 
 	// Added for i-sense (AS).

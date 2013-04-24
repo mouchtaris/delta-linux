@@ -47,13 +47,24 @@ static void _Style (
 
 //**********************************************************************
 
+static int _FindLine(EditorWindow* editor, uint left, int updatePos, int linesAdded) {
+	int line = editor->LineFromPosition(left);
+	if (updatePos != -1 && editor->LineFromPosition(left) >= editor->LineFromPosition(updatePos))
+		line -= linesAdded;
+	return line;
+}
+
+//**********************************************************************
+
 template<class TRangeList>
 static void _ActionAtLine (
 		EditorWindow*		editor,
 		const TRangeList&	list,
 		void (EditorWindow::*func) (int),
 		uint				start,
-		uint				end		
+		uint				end,
+		int					updatePos = -1,
+		int					linesAdded = 0
 	)
 {
 	TRangeList::const_iterator iter = list.begin();
@@ -61,7 +72,7 @@ static void _ActionAtLine (
 		if (iter->left >= end)
 			break;
 		else if (iter->left >= start) {
-			int line = editor->LineFromPosition(iter->left);
+			int line = _FindLine(editor, iter->left, updatePos, linesAdded);
 			(editor->*func)(line);
 		}
 	}
@@ -121,7 +132,7 @@ void ScintillaStyler::SetIndicators (
 //**********************************************************************
 
 void ScintillaStyler::ClearIndicators (
-		editor::EditorWindow* editor, ProgramDescription& progDesc, uint start, uint end
+		editor::EditorWindow* editor, ProgramDescription& progDesc, uint start, uint end, int updatePos, int linesAdded
 	)
 {
 	// TODO: Temporary ... refactor
@@ -130,7 +141,7 @@ void ScintillaStyler::ClearIndicators (
 	ProgramDescription::ErrorRangeList::iterator iter = parseErrors.begin();
 	while (iter != parseErrors.end()) {
 		if (iter->Empty()) {
-			int line = editor->LineFromPosition(iter->left);
+			int line = _FindLine(editor, iter->left, updatePos, linesAdded);
 			editor->RemoveErrorFromLine(line);
 			iter = parseErrors.erase(iter);
 		}
@@ -140,20 +151,20 @@ void ScintillaStyler::ClearIndicators (
 	//
 
 	_Style(editor, progDesc.GetParseErrors(), wxSCI_INDICS_MASK, 0, start, end);
-	_ActionAtLine(editor, progDesc.GetParseErrors(), &EditorWindow::RemoveErrorFromLine, start, end);
+	_ActionAtLine(editor, progDesc.GetParseErrors(), &EditorWindow::RemoveErrorFromLine, start, end, updatePos, linesAdded);
 
 	ClearSemanticErrorIndicators(editor, progDesc, start, end);
 }
 
 void ScintillaStyler::ClearSemanticErrorIndicators (
-		editor::EditorWindow* editor, ProgramDescription& progDesc, uint start, uint end
+		editor::EditorWindow* editor, ProgramDescription& progDesc, uint start, uint end, int updatePos, int linesAdded
 	)
 {
 	ProgramDescription::ErrorRangeList& semanticErrors = progDesc.GetSemanticErrors();
 	ProgramDescription::ErrorRangeList::iterator iter = semanticErrors.begin();
 	while (iter != semanticErrors.end()) {
 		if (iter->Empty()) {
-			int line = editor->LineFromPosition(iter->left);
+			int line = _FindLine(editor, iter->left, updatePos, linesAdded);
 			editor->RemoveErrorFromLine(line);
 			iter = semanticErrors.erase(iter);
 		}
@@ -162,12 +173,12 @@ void ScintillaStyler::ClearSemanticErrorIndicators (
 	}
 
 	_Style(editor, progDesc.GetSemanticErrors(), wxSCI_INDICS_MASK, 0, start, editor->GetLength());
-	_ActionAtLine(editor, progDesc.GetSemanticErrors(), &EditorWindow::RemoveErrorFromLine, start, editor->GetLength());
+	_ActionAtLine(editor, progDesc.GetSemanticErrors(), &EditorWindow::RemoveErrorFromLine, start, editor->GetLength(), updatePos, linesAdded);
 
 	iter = semanticErrors.begin();
 	while (iter != semanticErrors.end()) {
 		if (iter->left >= start) {
-			int line = editor->LineFromPosition(iter->left);
+			int line = _FindLine(editor, iter->left, updatePos, linesAdded);
 			editor->RemoveErrorFromLine(line);
 			iter = semanticErrors.erase(iter);
 		}

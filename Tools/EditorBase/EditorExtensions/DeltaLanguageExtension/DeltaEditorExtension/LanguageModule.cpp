@@ -202,14 +202,13 @@ void LanguageModule::ContentCleared (void)
 void LanguageModule::ContentAdded (
 		uint			atPos,
 		uint			length,
-		uint			firstLine,
-		uint			lastLine
+		uint			linesAdded
 	)
 {
 	this->updatePositions(atPos, (int) length);
 	Slice slice = m_progDesc.GetAffectedSliceAfterAdd(Range(atPos, atPos + length));
 	this->expandAffectedSliceToIncludeBlockComments(slice);
-	this->parseSlice(slice);
+	this->parseSlice(slice, (int) atPos, (int) linesAdded);
 	DeltaGotoDefinition::HandleContentEdited(this);
 }
 
@@ -225,14 +224,13 @@ const std::string LanguageModule::GetCursorFocusInformation (void) const
 void LanguageModule::ContentDeleted (
 		uint			atPos,
 		uint			length,
-		uint			firstLine,
-		uint			lastLine
+		uint			linesDeleted
 	)
 {
 	this->updatePositions(atPos, -((int) length));
 	Slice slice = m_progDesc.GetAffectedSliceAfterRemove(Range(atPos, atPos + length));
 	this->expandAffectedSliceToIncludeBlockComments(slice);
-	this->parseSlice(slice);
+	this->parseSlice(slice, (int) atPos, -((int) linesDeleted));
 	DeltaGotoDefinition::HandleContentEdited(this);
 }
 
@@ -605,7 +603,7 @@ void LanguageModule::updatePositions (uint atPos, int offset)
 
 //**********************************************************************
 
-void LanguageModule::parseSlice (const Slice& slice)
+void LanguageModule::parseSlice (const Slice& slice, int updatePos, int updateLinesAdded)
 {
 	DBGOUT << "==== PARSING: " << slice.first << DBGENDL;
 
@@ -614,7 +612,7 @@ void LanguageModule::parseSlice (const Slice& slice)
 
 	EditorWindow* editor = this->GetEditor();
 
-	ScintillaStyler::ClearIndicators(editor, m_progDesc, slice.first.left, slice.first.right);
+	ScintillaStyler::ClearIndicators(editor, m_progDesc, slice.first.left, slice.first.right, updatePos, updateLinesAdded);
 	m_progDesc.Remove(slice);
 
 	EditorInputStream input(editor, slice.first.left, slice.first.right);
@@ -646,11 +644,11 @@ void LanguageModule::parseSlice (const Slice& slice)
 void LanguageModule::expandAffectedSliceToIncludeBlockComments (Slice& slice) {
 	EditorWindow* editor = this->GetEditor();
 	int start = editor->FindText(slice.first.left, slice.first.right, _T("/*"));
-	if (start >= slice.first.left && start < slice.first.right) {
+	if (start >= (int) slice.first.left && start < (int) slice.first.right) {
 		int end = editor->FindText(start + 2, editor->GetLength(), _T("*/"));
 		if (end == -1)
 			slice.first.right = editor->GetLength();
-		else if (end > slice.first.right)
+		else if (end > (int) slice.first.right)
 			slice.first.right = end;
 	}
 }

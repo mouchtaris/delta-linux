@@ -2337,6 +2337,7 @@ wxArrayStringPropertyClass::wxArrayStringPropertyClass( const wxString& label,
                                                         const wxArrayString& array )
     : wxPGProperty(label,name)
 {
+	SetTreatAsContainer();
     DoSetValue( array );
 }
 

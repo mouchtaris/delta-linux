@@ -973,23 +973,20 @@ void Editor::cancelDwellInfo (void)
 
 void Editor::textAddedOrRemoved (int pos, int length, int direction, int linesAdded)
 {
-	int firstLine = m_editor->LineFromPosition(pos);
-	int lastLine = m_editor->LineFromPosition(pos + length);
-
 #ifndef INCREMENTAL_EDITING
 	m_editor->GetLangIface()->ContentOffsetChanged(pos, direction * length);
 	m_timer.Start(100, wxTIMER_ONE_SHOT);
 #else
 
 	if (direction < 0)
-		m_editor->GetLangIface()->ContentDeleted(pos, length, firstLine, lastLine);
+		m_editor->GetLangIface()->ContentDeleted(pos, length, -linesAdded);
 	else
-		m_editor->GetLangIface()->ContentAdded(pos, length, firstLine, lastLine);
+		m_editor->GetLangIface()->ContentAdded(pos, length, linesAdded);
 
 #endif // ! INCREMENTAL_EDITING
 
 	if (linesAdded && !m_editor->IsReloading())
-		sigEditLinesChangedBy(this, firstLine + 1, linesAdded);
+		sigEditLinesChangedBy(this, m_editor->LineFromPosition(pos) + 1, linesAdded);
 	sigEditTextChanged(pos, length, direction >= 0);
 }
 

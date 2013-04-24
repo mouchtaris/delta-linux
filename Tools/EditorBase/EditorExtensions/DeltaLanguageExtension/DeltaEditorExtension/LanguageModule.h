@@ -188,15 +188,13 @@ public:
 	virtual void ContentAdded (
 			uint		atPos,
 			uint		length,
-			uint		firstLine,
-			uint		lastLine
+			uint		linesAdded
 		);
 
 	virtual void ContentDeleted (
 			uint		atPos,
 			uint		length,
-			uint		firstLine,
-			uint		lastLine
+			uint		linesDeleted
 		);
 
 	virtual void ContentOffsetChanged (
@@ -253,7 +251,7 @@ private:
 	inline void clearInfoIndicator (Range& range, int mask);
 
 	inline void updatePositions (uint atPos, int offset);
-	inline void parseSlice (const Slice& slice);
+	inline void parseSlice (const Slice& slice, int updatePos = -1, int updateLinesAdded = 0);
 	inline void expandAffectedSliceToIncludeBlockComments (Slice& slice);
 
 	bool afterOpeningBrace (char brace, int* position = 0) const;

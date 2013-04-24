@@ -1,11 +1,13 @@
 #include "wx/wxprec.h"
 #include "extraprops.h"
 
+#define DELIMCHAR	wxT(';')
+
 // -----------------------------------------------------------------------
 // FileList Property
 // -----------------------------------------------------------------------
 
-WX_PG_IMPLEMENT_ARRAYSTRING_PROPERTY_WITH_VALIDATOR(wxFileListProperty,wxT(';'),wxT("Browse"))
+WX_PG_IMPLEMENT_ARRAYSTRING_PROPERTY_WITH_VALIDATOR(wxFileListProperty,DELIMCHAR,wxT("Browse"))
 
 #if wxUSE_VALIDATORS
 wxValidator* wxPG_PROPCLASS(wxFileListProperty)::DoGetValidator() const
@@ -26,7 +28,7 @@ bool wxFileListPropertyClass::OnCustomStringEdit (wxWindow* parent, wxString& va
 // DirectoryList Property
 // -----------------------------------------------------------------------
 
-WX_PG_IMPLEMENT_ARRAYSTRING_PROPERTY_WITH_VALIDATOR(wxDirectoryListProperty,wxT(';'),wxT("Browse"))
+WX_PG_IMPLEMENT_ARRAYSTRING_PROPERTY_WITH_VALIDATOR(wxDirectoryListProperty,DELIMCHAR,wxT("Browse"))
 
 #if wxUSE_VALIDATORS
 wxValidator* wxPG_PROPCLASS(wxDirectoryListProperty)::DoGetValidator() const
@@ -100,9 +102,6 @@ public:
 	void RemovePGProperty(wxPGProperty* pg) { grid->Remove(wxPGId(pg)); }
 };
 
-
-#define DELIMCHAR	wxT(';')
-
 class wxPG_PROPCLASS(wxGenericListProperty) : public wxPG_PROPCLASS(wxArrayStringProperty)
 {
 	wxParentPropertyClass *valueCreator;
@@ -111,7 +110,7 @@ public:
 	wxPG_PROPCLASS(wxGenericListProperty)( const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass* valueCreator) : 
 		wxPG_PROPCLASS(wxArrayStringProperty)(label,name,value), valueCreator(valueCreator)
 	{
-		assert(valueCreator);
+		assert(valueCreator && valueCreator->GetCount());
 		wxPG_PROPCLASS(wxGenericListProperty)::GenerateValueAsString();
 	}
 	~wxPG_PROPCLASS(wxGenericListProperty)() {
@@ -119,33 +118,16 @@ public:
 		delete valueCreator;
 	}
 
-	virtual void GenerateValueAsString() {
-		wxChar delimChar = DELIMCHAR;
-		if ( delimChar == wxT('"') )
-			wxPG_PROPCLASS(wxArrayStringProperty)::GenerateValueAsString();
-		else
-			wxPropertyGrid::ArrayStringToString(m_display,m_value,0,DELIMCHAR,0);
-	}
-	
-	virtual bool SetValueFromString( const wxString& text, int ) {
-		wxChar delimChar = DELIMCHAR;
-		if ( delimChar == wxT('"') )
-			return wxPG_PROPCLASS(wxArrayStringProperty)::SetValueFromString(text,0);
-		m_value.Empty();
-		WX_PG_TOKENIZER1_BEGIN(text,DELIMCHAR)
-			m_value.Add( token );
-		WX_PG_TOKENIZER1_END()
-		GenerateValueAsString();
-		return true;
-	}
+	virtual void GenerateValueAsString();
+	virtual bool SetValueFromString(const wxString& text, int);
 
-	virtual bool OnEvent( wxPropertyGrid* propgrid, wxWindow* primary, wxEvent& event ) {
+	virtual bool OnEvent(wxPropertyGrid* propgrid, wxWindow* primary, wxEvent& event) {
 		if ( event.GetEventType() == wxEVT_COMMAND_BUTTON_CLICKED )
 			return OnButtonClick(propgrid,primary, wxT("Create new"));
 		return false;
 	}
 
-	virtual bool OnCustomStringEdit( wxWindow* parent, wxString& value ) {
+	virtual bool OnCustomStringEdit(wxWindow* parent, wxString& value) {
 		bool retval;
 		PropertiesDialog dialog(parent, _("Create new entry"), valueCreator);
 		if ( dialog.ShowModal() == wxID_OK ) {
@@ -160,6 +142,88 @@ public:
 
     WX_PG_DECLARE_VALIDATOR_METHODS()
 };
+
+void wxPG_PROPCLASS(wxGenericListProperty)::GenerateValueAsString() {
+	wxChar delimChar = DELIMCHAR;
+
+	m_display.Empty();
+
+	int iMax = m_value.Count();
+	int iMaxMinusOne = iMax-1;
+
+	for (int i = 0; i < iMax; i++) {
+		m_display += wxT("[") + m_value[i] + wxT("]");
+		if (i < iMaxMinusOne) {
+			m_display += wxT("; ");
+		}
+	}
+}
+
+bool wxPG_PROPCLASS(wxGenericListProperty)::SetValueFromString(const wxString& text, int) {
+	m_value.Empty();
+
+	unsigned int curChild = 0;
+
+	wxString token;
+	size_t pos = 0;
+
+	const wxChar delimeter = DELIMCHAR;
+	wxChar a;
+
+	size_t lastPos = text.length();
+	size_t tokenStart = 0xFFFFFF;
+
+	do {
+		a = text[pos];
+
+		if ( tokenStart != 0xFFFFFF ) {
+			// Token is running
+			if ( a == delimeter || a == 0 ) {
+				token = text.substr(tokenStart,pos-tokenStart);
+				token.Trim(true);
+				m_value.Add(token);
+				if ( ++curChild >= valueCreator->GetCount() )
+					curChild = 0;	//wrap for next list item
+				tokenStart = 0xFFFFFF;
+			}
+		}
+		else {
+			// Token is not running
+			if ( a != wxT(' ') ) {
+				// Is this a group of tokens?
+				if ( a == wxT('[') ) {
+					int depth = 1;
+					pos++;
+					size_t startPos = pos;
+
+					// Group item - find end
+					do {
+						a = text[pos];
+						pos++;
+						if ( a == wxT(']') )
+							depth--;
+						else if ( a == wxT('[') )
+							depth++;
+					} while ( depth > 0 && a );
+
+					token = text.substr(startPos,pos-startPos-1);
+					m_value.Add(token);
+					if ( ++curChild >= valueCreator->GetCount() )
+						curChild = 0;	//wrap for next list item
+					tokenStart = 0xFFFFFF;
+				}
+				else {
+					tokenStart = pos;
+					if ( a == delimeter )
+						pos--;
+				}
+			}
+		}
+		pos++;
+	} while ( pos <= lastPos );
+	GenerateValueAsString();
+	return true;
+}
 
 wxPGProperty* wxPG_CONSTFUNC(wxGenericListProperty)( const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass *valueCreator)
 	{ return new wxPG_PROPCLASS(wxGenericListProperty)(label,name,value,valueCreator); }

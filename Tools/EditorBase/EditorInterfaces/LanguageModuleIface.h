@@ -42,15 +42,13 @@ public:
 	virtual void ContentAdded (
 			uint		atPos,
 			uint		length,
-			uint		firstLine,
-			uint		lastLine
+			uint		linesAdded
 		) = 0;
 
 	virtual void ContentDeleted (
 			uint		atPos,
 			uint		length,
-			uint		firstLine,
-			uint		lastLine
+			uint		linesDeleted
 		) = 0;
 
 	virtual void ContentOffsetChanged (

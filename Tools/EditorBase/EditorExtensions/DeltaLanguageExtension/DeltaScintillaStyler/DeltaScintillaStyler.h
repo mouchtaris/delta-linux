@@ -47,14 +47,18 @@ public:
 			editor::EditorWindow*	editor,
 			ProgramDescription&		progDesc,
 			uint					start,
-			uint					end
+			uint					end,
+			int						updatePos = -1,
+			int						addedLines = 0
 		);
 
 	static void ClearSemanticErrorIndicators (
 			editor::EditorWindow*	editor,
 			ProgramDescription&		progDesc,
 			uint					start,
-			uint					end
+			uint					end,
+			int						updatePos = -1,
+			int						addedLines = 0
 		);
 
 private:

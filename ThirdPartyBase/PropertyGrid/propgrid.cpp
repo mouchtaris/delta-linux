@@ -848,6 +848,8 @@ void wxPGProperty::Init()
     m_parentingType = 0;
     m_bgColIndex = 0;
     m_fgColIndex = 0;
+
+	m_treatAsContainer = false;
 }
 
 
@@ -1601,10 +1603,11 @@ wxString wxPGPropertyWithChildren::GetValueAsString( int argFlags ) const
         if ( !(curChild->m_flags & wxPG_PROP_UNSPECIFIED) )
             s = curChild->GetValueAsString(argFlags);
 
-        if ( curChild->GetParentingType() == 0 )
+        if ( curChild->GetParentingType() != 0 || curChild->TreatAsContainer())
+			text += wxT("[") + s + wxT("]");
+		else
             text += s;
-        else
-            text += wxT("[") + s + wxT("]");
+            
 
         if ( i < iMaxMinusOne )
         {

@@ -2207,6 +2207,11 @@ public:
     // Shows error as a tooltip or something similar (depends on platform).
     void ShowError( const wxString& msg );
 
+	//@@ Extra, not in the original version
+	void SetTreatAsContainer(bool val = true) { m_treatAsContainer = val; }
+	bool TreatAsContainer (void) const { return m_treatAsContainer; }
+	//@@
+
 #if defined(__WXPYTHON__) && !defined(SWIG)
     // This is the python object that contains and owns the C++ representation.
     PyObject*                   m_scriptObject;
@@ -2251,6 +2256,8 @@ protected:
     unsigned char               m_bgColIndex; // Background brush index.
     unsigned char               m_fgColIndex; // Foreground colour index.
 
+	
+	bool						m_treatAsContainer; //@@ Extra, not in the original version
 #endif // #ifndef SWIG
 };
 
