@@ -20,7 +20,7 @@
 template <class T> class uinstancevalidator : public uinstanceholder<T> {
 	public:
 	void		validate (const T* inst) const
-					{ DASSERT((uinstanceholder<T>::in(inst)); }
+					{ DASSERT(uinstanceholder<T>::in(inst)); }
 
 	uinstancevalidator(void){}
 	~uinstancevalidator() {}
