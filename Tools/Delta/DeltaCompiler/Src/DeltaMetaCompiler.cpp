@@ -229,7 +229,7 @@ bool DeltaMetaCompiler::StagedCompilation (AST::Node* ast) {
 		depth = AST::StageDepthCalculator()(ast);
 		lineMappings.clear();
 		sourceRefs.clear();
-		const std::string mainText = GenerateSource(ast, mainSource, &lineMappings, depth > 0);
+		const std::string mainText = GenerateSource(ast, mainSource, &lineMappings);
 		AST::SerialProducer()(ast);	// node get new serials after stage execution
 		sourceRefs = AST::SourceReferenceGetter()(ast);
 

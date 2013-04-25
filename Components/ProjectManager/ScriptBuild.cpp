@@ -1141,7 +1141,7 @@ void Script::BuildWithScriptDependencies (const ScriptPtrSet& deps) {
 	for (ScriptPtrSet::iterator i = toBuild.begin(); i != toBuild.end(); ++i) {
 		UIntList workId = m_workId;
 		workId.push_back(NextWorkSerial());
-		(*i)->BuildImpl(workId, m_debugBuild, this);
+		(*i)->BuildImpl(workId, false, this);	//Do not recursively debug the dependency build
 	}
 }
 
@@ -2140,16 +2140,11 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	if (!m_aspectTransformations.empty())
 		BuildWithScriptDependencies(m_aspectTransformations);
 	else {
-		bool continueWithSelfBuild = true;
-		if (m_stageSources.empty()) {
-			const StringList usingDeps = ExtractDependencies();
-			if (!usingDeps.empty()) {
-				BuildWithUsingDependencies(usingDeps);
-				continueWithSelfBuild = false;
-			}
-		}
-		if (continueWithSelfBuild)
+		const StringList usingDeps = ExtractDependencies();
+		if (usingDeps.empty())
 			BuildSelf();
+		else
+			BuildWithUsingDependencies(usingDeps);
 	}
 	return NO_COMPILER_THREAD_PID;
 }
