@@ -727,8 +727,11 @@ Script* Script::GetScriptWithMostRecentSource (const ScriptPtrList& scripts) {
 	DASSERT(!scripts.empty());
 	Script* result = (Script*) 0;
 	for (ScriptPtrList::const_iterator i = scripts.begin(); i != scripts.end(); ++i)
-		if (!result || boost::filesystem::last_write_time(result->GetSource()) < boost::filesystem::last_write_time((*i)->GetSource())) 
-			result = *i;
+		try {
+			if (!result || boost::filesystem::last_write_time(result->GetSource()) < boost::filesystem::last_write_time((*i)->GetSource())) 
+				result = *i;
+		}
+		catch(...) { /*ignore filesystem errors */ }
 	return result;
 }
 
@@ -1172,9 +1175,10 @@ EXPORTED_FUNCTION(Script, bool, IsByteCodeUpToDate, (void))
 {
 	const std::string source = GetSource();
 	const std::string binary = GetProducedByteCodeFileFullPath();
-	return	FileSystemExists(source) &&
-			FileSystemExists(binary) &&
-			boost::filesystem::last_write_time(binary) >= boost::filesystem::last_write_time(source);
+	bool retval = FileSystemExists(source) && FileSystemExists(binary);
+	try { retval = retval && boost::filesystem::last_write_time(binary) >= boost::filesystem::last_write_time(source); }
+	catch(...) { retval = false; }
+	return retval;
 }
 
 EXPORTED_FUNCTION(Script, bool, AreSourceTransformationsUpToDate, (void))
@@ -1184,9 +1188,10 @@ EXPORTED_FUNCTION(Script, bool, AreSourceTransformationsUpToDate, (void))
 	else {
 		const std::string source = GetSource();
 		const std::string lastTransformation = GetTransformedFileFullPath(m_aspectTransformations.size());
-		return	FileSystemExists(source) &&
-				FileSystemExists(lastTransformation) &&
-				boost::filesystem::last_write_time(lastTransformation) >= boost::filesystem::last_write_time(source);
+		bool retval = FileSystemExists(source) && FileSystemExists(lastTransformation);
+		try { retval = retval && boost::filesystem::last_write_time(lastTransformation) >= boost::filesystem::last_write_time(source); }
+		catch(...) { retval = false; }
+		return retval;
 	}
 }
 
@@ -1902,7 +1907,9 @@ bool Script::IsUpToDateCalculation (void) {
 		if (!IsByteCodeUpToDate() || !AreLastBuildPropertiesSameAsCurrent())
 			result = false;
 		else {
-			std::time_t lastBinWrite = boost::filesystem::last_write_time(GetProducedByteCodeFileFullPath());
+			std::time_t lastBinWrite = 0;
+			try { lastBinWrite = boost::filesystem::last_write_time(GetProducedByteCodeFileFullPath()); }
+			catch(...) { /*ignore filesystem errors */ }
 
 			if (GetType() == "stage" && !AreExternalDependenciesUpToDate(lastBinWrite))
 				result = false;
@@ -1957,8 +1964,11 @@ bool Script::AreExternalDependenciesUpToDate(std::time_t timestamp) {
 	if (const conf::FileListProperty* p = conf::safe_prop_cast<const conf::FileListProperty>(GetInstanceProperty("extra_deps"))) {
 		BOOST_FOREACH(const String& dep, p->GetValues()) {
 			const std::string fullPath = util::str2std(MakeAbsolutePath(dep, GetWorkingDirectory()));
-			if (!FileSystemExists(fullPath) || timestamp < boost::filesystem::last_write_time(fullPath))	//bin less recent that dep
-				return false;
+			try {
+				if (!FileSystemExists(fullPath) || timestamp < boost::filesystem::last_write_time(fullPath))	//bin less recent that dep
+					return false;
+			}
+			catch(...) { /*ignore filesystem errors */ }
 		}
 	}
 	return true;
