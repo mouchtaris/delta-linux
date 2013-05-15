@@ -339,8 +339,9 @@ void AST::ValidationVisitor::Handle_FunctionBasic (AST_VISITOR_ARGS, const Index
 
 void AST::ValidationVisitor::Handle_Function (AST_VISITOR_ARGS) {
 	Handle_FunctionBasic(AST_VISITOR_ACTUALS, TAG_VALIDATOR(AST_CHILD_BODY, AST_TAG_COMPOUND));
-	if (!VISITOR->ShouldLeave() && !entering)
-		if (TreeNode* n = DPTR(node)->GetChild(AST_TAG_NAME)) {
+	if (!VISITOR->ShouldLeave() && !entering) {
+		TreeNode* n;
+		if ((n = DPTR(node)->GetChild(AST_CHILD_NAME)) && DPTR(n)->GetTag() == AST_TAG_NAME) {
 			const std::string name = NAME(n);
 			const char* operators[] = {
 				"+", "-", "*", "/", "%",
@@ -357,6 +358,7 @@ void AST::ValidationVisitor::Handle_Function (AST_VISITOR_ARGS) {
 				}
 			VALIDATE(found || IsIdentifier(name), INVALID_FUNCTION_NAME(name));
 		}
+	}
 }
 
 void AST::ValidationVisitor::Handle_LambdaFunction (AST_VISITOR_ARGS)
@@ -375,7 +377,7 @@ void AST::ValidationVisitor::Handle_FormalArgs (AST_VISITOR_ARGS){
 		const util_ui32 totalChildren = DPTR(node)->GetTotalChildren();
 		for (util_ui32 i = 0; i < totalChildren; ++i) {
 			TreeNode* child = DPTR(node)->GetChild(i);
-			if (i != totalChildren - 1 || NAME(child) != AST_VALUE_VARARGS_FORMAL_NAME)
+			if (i != totalChildren - 1 || DPTR(child)->GetTag() == AST_TAG_NAME && NAME(child) != AST_VALUE_VARARGS_FORMAL_NAME)
 				Handle_Identifier(child, "", entering, closure);
 			if (VISITOR->ShouldStop())
 				break;
@@ -974,7 +976,7 @@ void AST::ValidationVisitor::Handle_NamespacePath (AST_VISITOR_ARGS) {
 		else
 			for (util_ui32 i = 0; i < totalChildren; ++i) {
 				TreeNode* child = DPTR(node)->GetChild(i);
-				if (i > 0 || NAME(child) != DELTA_LIBRARYNAMESPACE_SEPARATOR)
+				if (i > 0 || DPTR(child)->GetTag() == AST_TAG_NAME && NAME(child) != DELTA_LIBRARYNAMESPACE_SEPARATOR)
 					Handle_Identifier(child, "", entering, closure);
 				if (VISITOR->ShouldStop())
 					break;
