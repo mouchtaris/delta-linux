@@ -660,7 +660,7 @@ EXPORTED_FUNCTION(Script, const String, GetFinalSourceURI, (void))
 
 EXPORTED_FUNCTION(Script, const StringList, GetFinalLineMappings, (void))
 {
-	return m_finalLineMappings;	
+	return m_finalLineMappings;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -1758,15 +1758,13 @@ void Script::GenerateFinalLineMappings(void) {
 		else {
 			LineMappings prev = lineMappings;
 			lineMappings.clear();
-			for (LineMappings::const_iterator i = prev.begin(); i != prev.end(); ++i) {
-				std::set<uint>& mapped = lineMappings[i->first];
+			for (LineMappings::const_iterator i = prev.begin(); i != prev.end(); ++i)
 				for (std::set<uint>::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
 					LineMappings::const_iterator iter1 = curr.find(*j);
 					if (iter1 != curr.end())
 						for (std::set<uint>::const_iterator iter2 = iter1->second.begin(); iter2 != iter1->second.end(); ++iter2)
-							mapped.insert(*iter2);
+							lineMappings[i->first].insert(*iter2);
 				}
-			}
 		}
 	}
 	m_finalLineMappings = LineMappingsToStringList(lineMappings);
