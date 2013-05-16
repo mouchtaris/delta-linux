@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project name="DeltaWeb.dproj" version="alpha">
-  <ProjectProperties>
-    <working_directory>./</working_directory>
-    <text>0</text>
-    <symbolic>DeltaWeb.dproj</symbolic>
-    <startup>Src\SiteGenerator.dsc</startup>
-    <stage_output_path>./</stage_output_path>
-    <output_path>./</output_path>
-    <libs></libs>
-    <icode>0</icode>
-    <hostd></hostd>
-    <host></host>
-    <dllimport_path></dllimport_path>
-    <deployment>0</deployment>
-    <debug>1</debug>
-    <collapsed>0</collapsed>
-    <bytecode_path></bytecode_path>
-    <argsd></argsd>
-    <args></args>
-  </ProjectProperties>
-  <Child type="Filter" name="Generator">
-    <Child type="Script" name="Src\SiteGenerator.dsc">
-      <ScriptProperties>
-        <working_directory>..</working_directory>
+    <ProjectProperties>
+        <working_directory>./</working_directory>
         <text>0</text>
-        <symbolic>Src/SiteGenerator.dsc</symbolic>
-        <stage_sources_options/>
+        <symbolic>DeltaWeb.dproj</symbolic>
+        <startup>Src\SiteGenerator.dsc</startup>
         <stage_output_path>./</stage_output_path>
-        <output_path>../</output_path>
-        <output>SiteGenerator</output>
+        <output_path>./</output_path>
         <libs></libs>
         <icode>0</icode>
-        <extra_deps></extra_deps>
+        <hostd></hostd>
+        <host></host>
         <dllimport_path></dllimport_path>
         <deployment>0</deployment>
         <debug>1</debug>
         <collapsed>0</collapsed>
         <bytecode_path></bytecode_path>
-        <aspects></aspects>
-      </ScriptProperties>
+        <argsd></argsd>
+        <args></args>
+    </ProjectProperties>
+    <Child type="Filter" name="Generator">
+        <Child type="Script" name="Src\SiteGenerator.dsc">
+            <ScriptProperties>
+                <working_directory>..</working_directory>
+                <text>0</text>
+                <symbolic>Src/SiteGenerator.dsc</symbolic>
+                <stage_sources_options/>
+                <stage_output_path>./</stage_output_path>
+                <output_path>../</output_path>
+                <output>SiteGenerator</output>
+                <libs></libs>
+                <icode>0</icode>
+                <extra_deps></extra_deps>
+                <dllimport_path></dllimport_path>
+                <deployment>0</deployment>
+                <debug>1</debug>
+                <collapsed>0</collapsed>
+                <bytecode_path></bytecode_path>
+                <aspects></aspects>
+            </ScriptProperties>
+        </Child>
+        <Child type="TextFile" name="Out\script.js"/>
     </Child>
-    <Child type="TextFile" name="Out\script.js"/>
-  </Child>
-  <Child type="Filter" name="Config">
-    <Child type="TextFile" name="Data\config.rc"/>
-  </Child>
-  <Child type="Filter" name="Styles">
-    <Child type="TextFile" name="Data\style.rc"/>
-  </Child>
-  <Child type="Filter" name="Content">
-    <Child type="TextFile" name="Data\Information.rc"/>
-    <Child type="TextFile" name="Data\Language.rc"/>
-    <Child type="TextFile" name="Data\MenuAndTitles.rc"/>
-    <Child type="TextFile" name="Data\MetaContent.rc"/>
-    <Child type="TextFile" name="Data\StdLib.rc"/>
-    <Child type="TextFile" name="Data\defines.h"/>
-    <Child type="TextFile" name="Data\ObjectsAndMethods.rc"/>
-    <Child type="TextFile" name="Data\Metaprogramming.rc"/>
-  </Child>
+    <Child type="Filter" name="Config">
+        <Child type="TextFile" name="Data\config.rc"/>
+    </Child>
+    <Child type="Filter" name="Styles">
+        <Child type="TextFile" name="Data\style.rc"/>
+    </Child>
+    <Child type="Filter" name="Content">
+        <Child type="TextFile" name="Data\Information.rc"/>
+        <Child type="TextFile" name="Data\Language.rc"/>
+        <Child type="TextFile" name="Data\MenuAndTitles.rc"/>
+        <Child type="TextFile" name="Data\MetaContent.rc"/>
+        <Child type="TextFile" name="Data\StdLib.rc"/>
+        <Child type="TextFile" name="Data\defines.h"/>
+        <Child type="TextFile" name="Data\ObjectsAndMethods.rc"/>
+        <Child type="TextFile" name="Data\Metaprogramming.rc"/>
+    </Child>
 </Project>

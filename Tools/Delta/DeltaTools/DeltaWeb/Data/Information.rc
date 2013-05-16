@@ -136,7 +136,7 @@ START_SEC("si_download", "Download")
 		choose a different folder name but should adopt the same folder structure).", NL1,
 		bullet "2.1.3)","Create ", !courier "WXWINDIR", " environmant variable with value the full
 		path of the", !courier "ThirdPartyLibraries\wxwidgets", " folder as shown in the image below (you may
-		choose a different folder name but should adopt the same folder structure).", NL1
+		choose a different folder name but should adopt the same folder structure).", NL1,
 		bullet "2.1.4)","Create ", !courier "WXWINVER", " environmant variable with a value specifying the 
 		wxWidgets version as follows:", !courier "WXWIN28", " for versions 2.8.*, and ",
 		!courier "WXWIN29", " for versions 2.9.*", NL2
@@ -191,7 +191,7 @@ START_SEC("si_download", "Download")
 
 		bullet "2.3)", 	"Run (as administrator) ", !courier "trunk/Build/Installer/update.bat",
 		" to generate the ", !courier "WXWINDIR", " and ", !courier "WXWINVER",
-		"environment variables (this uses the previously set WXWIN28 variable)", NL1,
+		"environment variables (this uses the previously set WXWIN28 variable)", NL2,
 
 		bullet "3)", 	"Run (as administrator) ", !courier "trunk/Build/Installer/install.bat",
 		" to generate a ", !courier "DELTA", " environment variable and properly associate
