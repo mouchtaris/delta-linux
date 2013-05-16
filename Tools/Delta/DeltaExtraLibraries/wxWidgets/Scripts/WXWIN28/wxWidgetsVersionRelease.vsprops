@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="wxWidgets Version Release"
+	>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="wxmsw28u_adv.lib wxmsw28u_aui.lib wxmsw28u_html.lib wxmsw28u_core.lib wxmsw28u_richtext.lib wxbase28u.lib wxbase28u_xml.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxexpat.lib"
+	/>
+</VisualStudioPropertySheet>
