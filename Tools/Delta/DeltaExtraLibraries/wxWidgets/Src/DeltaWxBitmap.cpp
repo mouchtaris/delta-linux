@@ -233,13 +233,13 @@ WX_FUNC_ARGRANGE_START(bitmap_loadfile, 2, 3, Nil)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	WX_GETSTRING(name)
 #if defined (__WXMSW__)
-	long type = wxBITMAP_TYPE_BMP_RESOURCE;
+	int type = wxBITMAP_TYPE_BMP_RESOURCE;
 	if (n >= 3) { WX_GETDEFINE_DEFINED(type) }
 #else if defined (__WXGTK__) || defined (__WXGET20__)
 	wxBitmapType type = wxBITMAP_TYPE_XPM;
 	if (n >= 3) { WX_GETDEFINE(def) type = (wxBitmapType) def; }
 #endif
-	WX_SETBOOL(bitmap->LoadFile(name, type))
+	WX_SETBOOL(bitmap->LoadFile(name, (wxBitmapType) type))
 }
 
 DLIB_FUNC_START(bitmap_isok, 1, Nil)

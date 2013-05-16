@@ -21,6 +21,13 @@
 #include "wxWrapperUtilFunctions.h"
 //
 
+#if !wxCHECK_VERSION(2, 9, 0)
+typedef int wxRasterOperationMode;
+typedef int wxPolygonFillMode;
+typedef int wxFloodFillStyle;
+typedef int wxMappingMode;
+#endif
+
 ////////////////////////////////////////////////////////////////
 
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(dc, name)
@@ -221,7 +228,12 @@ static bool GetBaseClass (void* val, DeltaValue* at)
 static bool GetOk (void* val, DeltaValue* at) 
 {
 	wxDC *dc = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	WX_SETBOOL_EX(*at, dc->Ok())
+#if wxCHECK_VERSION(2, 9, 0)
+	bool ok = dc->IsOk();
+#else
+	bool ok = dc->Ok();
+#endif
+	WX_SETBOOL_EX(*at, ok)
 	return true;
 }
 
@@ -477,7 +489,7 @@ WX_FUNC_ARGRANGE_START(dc_blit, 5, 12, Nil)
 		if (n >= 10) { WX_GETBOOL_DEFINED(useMask) }
 		if (n >= 11) { WX_GETDEFINE_DEFINED(xsrcMask) }
 		if (n >= 12) { WX_GETDEFINE_DEFINED(ysrcMask) }
-		WX_SETBOOL(dc->Blit(xdest, ydest, width, height, (wxDC*) source, xsrc, ysrc, rop, useMask, xsrcMask, ysrcMask))
+		WX_SETBOOL(dc->Blit(xdest, ydest, width, height, (wxDC*) source, xsrc, ysrc, (wxRasterOperationMode) rop, useMask, xsrcMask, ysrcMask))
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGETPOINT_BASE(destPt)
 		DLIB_WXGETSIZE_BASE(sz)
@@ -489,7 +501,7 @@ WX_FUNC_ARGRANGE_START(dc_blit, 5, 12, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(rop) }
 		if (n >= 7) { WX_GETBOOL_DEFINED(useMask) }
 		if (n >= 8) { DLIB_WXGETPOINT_BASE(pt) srcPtMask = *pt; }
-		WX_SETBOOL(dc->Blit(*destPt, *sz, (wxDC*) source, *srcPt, rop, useMask, srcPtMask))
+		WX_SETBOOL(dc->Blit(*destPt, *sz, (wxDC*) source, *srcPt, (wxRasterOperationMode) rop, useMask, srcPtMask))
 	}
 }
 
@@ -507,7 +519,11 @@ DLIB_FUNC_START(dc_clear, 1, Nil)
 
 DLIB_FUNC_START(dc_computescaleandorigin, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
+#if wxCHECK_VERSION(2, 9, 0)
+	dc->GetImpl()->ComputeScaleAndOrigin();
+#else
 	dc->ComputeScaleAndOrigin();
+#endif
 }
 
 WX_FUNC_ARGRANGE_START(dc_crosshair, 2, 3, Nil)
@@ -756,7 +772,7 @@ WX_FUNC_ARGRANGE_START(dc_drawpolygon, 3, 6, Nil)
 	if (n >= 4) { WX_GETNUMBER_DEFINED(xoffset) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(yoffset) }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(fillStyle) }
-	dc->DrawPolygon(points_size, points, xoffset, yoffset, fillStyle);
+	dc->DrawPolygon(points_size, points, xoffset, yoffset, (wxPolygonFillMode) fillStyle);
 	DDELARR(points);
 }
 
@@ -789,7 +805,7 @@ WX_FUNC_ARGRANGE_START(dc_drawpolypolygon, 4, 7, Nil)
 	if (n >= 4) { WX_GETNUMBER_DEFINED(xoffset) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(yoffset) }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(fillStyle) }
-	dc->DrawPolyPolygon(size, count, points, xoffset, yoffset, fillStyle);
+	dc->DrawPolyPolygon(size, count, points, xoffset, yoffset, (wxPolygonFillMode) fillStyle);
 	DDELARR(count);
 	DDELARR(points);
 }
@@ -921,14 +937,14 @@ WX_FUNC_ARGRANGE_START(dc_floodfill, 3, 5, Nil)
 		DLIB_WXGET_BASE(colour, Colour, col)
 		int style = wxFLOOD_SURFACE;
 		if (n >= 4) { WX_GETDEFINE_DEFINED(style) }
-		WX_SETBOOL(dc->FloodFill(*pt, *col, style))
+		WX_SETBOOL(dc->FloodFill(*pt, *col, (wxFloodFillStyle) style))
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
 		DLIB_WXGET_BASE(colour, Colour, col)
 		int style = wxFLOOD_SURFACE;
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
-		WX_SETBOOL(dc->FloodFill(x, y, *col, style))
+		WX_SETBOOL(dc->FloodFill(x, y, *col, (wxFloodFillStyle) style))
 	}
 }
 
@@ -1305,7 +1321,7 @@ DLIB_FUNC_START(dc_setlayoutdirection, 2, Nil)
 DLIB_FUNC_START(dc_setlogicalfunction, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETDEFINE(function)
-	dc->SetLogicalFunction(function);
+	dc->SetLogicalFunction((wxRasterOperationMode) function);
 }
 
 DLIB_FUNC_START(dc_setlogicalorigin, 3, Nil)
@@ -1318,7 +1334,7 @@ DLIB_FUNC_START(dc_setlogicalorigin, 3, Nil)
 DLIB_FUNC_START(dc_setmapmode, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETDEFINE(mode)
-	dc->SetMapMode(mode);
+	dc->SetMapMode((wxMappingMode) mode);
 }
 
 DLIB_FUNC_START(dc_setpalette, 2, Nil)

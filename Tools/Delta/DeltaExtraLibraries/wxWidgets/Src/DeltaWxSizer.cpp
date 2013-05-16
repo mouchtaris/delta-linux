@@ -551,7 +551,13 @@ DLIB_FUNC_START(sizer_remove, 2, Nil)
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
 		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
 			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
-			WX_SETBOOL(sizer->Remove(window))
+			bool retval;
+#if wxCHECK_VERSION(2, 9, 0)
+			retval = sizer->Detach(window);
+#else
+			retval = sizer->Remove(window);
+#endif
+			WX_SETBOOL(retval)
 		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
 			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
 			WX_SETBOOL(sizer->Remove(szr))

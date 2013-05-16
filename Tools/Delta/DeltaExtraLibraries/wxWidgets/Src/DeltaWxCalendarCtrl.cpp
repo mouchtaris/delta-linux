@@ -91,6 +91,7 @@ static bool GetBaseClass (void* val, DeltaValue* at)
 	return true;
 }
 
+#if !wxCHECK_VERSION(2, 9, 0)
 static bool GetMonth (void* val, DeltaValue* at) 
 {
 	wxCalendarCtrl *ctrl = DLIB_WXTYPECAST_BASE(CalendarCtrl, val, calendarctrl);
@@ -108,6 +109,7 @@ static bool GetYear (void* val, DeltaValue* at)
 	WX_SETOBJECT_EX(*at, Control, retval)
 	return true;
 }
+#endif
 
 static bool GetDate (void* val, DeltaValue* at) 
 {
@@ -117,6 +119,7 @@ static bool GetDate (void* val, DeltaValue* at)
 	return true;
 }
 
+#if !wxCHECK_VERSION(2, 9, 0)
 static bool GetLowDate (void* val, DeltaValue* at) 
 {
 	wxCalendarCtrl *ctrl = DLIB_WXTYPECAST_BASE(CalendarCtrl, val, calendarctrl);
@@ -132,6 +135,7 @@ static bool GetHighDate (void* val, DeltaValue* at)
 	WX_SETOBJECT_EX(*at, DateTime, retval)
 	return true;
 }
+#endif
 
 static bool GetColHighlightFg (void* val, DeltaValue* at) 
 {
@@ -200,11 +204,15 @@ static bool GetAttrs (void* val, DeltaValue* at)
 static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "keys",				&GetKeys,				DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "Control",			&GetBaseClass,			DELTA_GETBYSTRING_NO_PRECOND	},
+#if !wxCHECK_VERSION(2, 9, 0)
 	{ "month",				&GetMonth,				DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "year",				&GetYear,				DELTA_GETBYSTRING_NO_PRECOND	},
+#endif
 	{ "date",				&GetDate,				DELTA_GETBYSTRING_NO_PRECOND	},
+#if !wxCHECK_VERSION(2, 9, 0)
 	{ "lowdate",			&GetLowDate,			DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "highdate",			&GetHighDate,			DELTA_GETBYSTRING_NO_PRECOND	},
+#endif
 	{ "colHightlightFg",	&GetColHighlightFg,		DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "colHightlightBg",	&GetColHighlightBg,		DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "colHolidayFg",		&GetColHolidayFg,		DELTA_GETBYSTRING_NO_PRECOND	},
@@ -286,7 +294,11 @@ WX_FUNC_ARGRANGE_START(calendarctrl_enableyearchange, 1, 2, Nil)
 	DLIB_WXGET_BASE(calendarctrl, CalendarCtrl, calctrl)
 	bool enable = true;
 	if (n >= 2) { WX_GETBOOL_DEFINED(enable) }
+#if wxCHECK_VERSION(2, 9, 0)
+	calctrl->EnableMonthChange(enable);	//Used for both month and year
+#else
 	calctrl->EnableYearChange(enable);
+#endif
 }
 
 WX_FUNC_ARGRANGE_START(calendarctrl_enablemonthchange, 1, 2, Nil)

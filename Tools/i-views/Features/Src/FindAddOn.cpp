@@ -106,7 +106,7 @@ SlotRenderingInfo * FindAddOn::GetNthSlotRenderingInfoFromList(
 		SlotRenderingInfoPtrList &	slots,
 		const int					distance
 	){
-	assert(distance >= 0 && distance < slots.size());
+	assert(distance >= 0 && (size_t) distance < slots.size());
 
 	SlotRenderingInfoPtrList::iterator i = slots.begin();
 	std::advance(i, distance);

@@ -20,7 +20,7 @@
 			OutputDirectory="$(SolutionDir)\..\Build"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\Scripts\DeltaideCommonIncludesDebug.vsprops;..\..\Scripts\DeltaideCommonLibsDebug.vsprops;..\..\Scripts\CommonPropertiesForTools.vsprops"
+			InheritedPropertySheets="..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesDebug.vsprops;..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsDebug.vsprops;..\..\Scripts\CommonPropertiesForTools.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -98,7 +98,7 @@
 			OutputDirectory="$(SolutionDir)\..\Build"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\..\Scripts\DeltaideCommonIncludesRelease.vsprops;..\..\Scripts\DeltaideCommonLibsRelease.vsprops;..\..\Scripts\CommonPropertiesForTools.vsprops"
+			InheritedPropertySheets="..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesRelease.vsprops;..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsRelease.vsprops;..\..\Scripts\CommonPropertiesForTools.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>

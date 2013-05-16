@@ -40,14 +40,14 @@ namespace ide
 
 	///--- Action print
 	struct print :
-		public std::binary_function<const String::value_type*, const String::value_type*, void>
+		public std::binary_function<const tchar*, const tchar*, void>
 	{
 		result_type operator ()(first_argument_type first_, second_argument_type last_) const {
 			String symbol(first_, last_);
 			fprintf(stderr, "Symbol '%s' recognized\n", symbol.c_str());
 		}
 
-		void operator ()(const String::value_type* string) const {
+		void operator ()(const tchar* string) const {
 			fprintf(stderr, "Symbol '%s' recognized\n", string);
 		}
 
@@ -60,7 +60,7 @@ namespace ide
 
 	///--- Action InsertCommand
 	struct InsertCommand :
-		public std::binary_function<const String::value_type*, const String::value_type*, void>
+		public std::binary_function<const tchar*, const tchar*, void>
 	{
 		InsertCommand(const MenuParser& parser)
 			: parser(parser) {}
@@ -75,7 +75,7 @@ namespace ide
 
 	///--- Action MakeLeaf
 	struct MakeLeaf :
-		public std::binary_function<const String::value_type*, const String::value_type*, void>
+		public std::binary_function<const tchar*, const tchar*, void>
 	{
 		MakeLeaf(const MenuParser& parser)
 			: parser(parser) {}
@@ -169,7 +169,7 @@ namespace ide
 					| ID		[assign_a(self.state.label)]
 					;
 
-				ID			= *(anychar_p - String::value_type('/') - _T("--"));
+				ID			= *(anychar_p - tchar('/') - _T("--"));
 				SLASH		= str_p(_T("/"));
 				CHECK		= str_p(_T("@"));
 				L_CURLY		= str_p(_T("{"));
@@ -206,7 +206,7 @@ namespace ide
 #if defined(BOOST_MSVC) && (BOOST_MSVC <= 1200)
 				skip
 					=   space_p
-					|   _T("//") >> *(anychar_p - String::value_type('\n')) >> String::value_type('\n')
+					|   _T("//") >> *(anychar_p - tchar('\n')) >> tchar('\n')
 					|   _T("/*") >> *(anychar_p - _T("*/")) >> _T("*/")
 					;
 #else
@@ -234,9 +234,9 @@ namespace ide
 	bool parse(const GrammarT& g, const String& str, bool phrase=true)
 	{
 		SkipGrammar skip;
-		BOOST_SPIRIT_CLASS_PARSE_INFO(const String::value_type*) result;
+		BOOST_SPIRIT_CLASS_PARSE_INFO(const tchar*) result;
 		result.stop = str.c_str();
-		const String::value_type* end = str.c_str() + str.length();
+		const tchar* end = str.c_str() + str.length();
 
 		do {
 			result = (phrase)

@@ -9,6 +9,10 @@
 // Licence:     wxWindows license
 /////////////////////////////////////////////////////////////////////////////
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -2707,3 +2711,5 @@ void wxCustomPropertyClass::SetAttribute ( int id, wxVariant& value )
 }
 
 // -----------------------------------------------------------------------
+
+#endif //!defined wxUSE_PROPGRID

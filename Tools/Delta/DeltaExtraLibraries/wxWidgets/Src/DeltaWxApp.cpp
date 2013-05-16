@@ -12,6 +12,58 @@
 #include "wxWrapperUtilFunctions.h"
 
 ////////////////////////////////////////////////////////////////
+// Custom WIN32 handling to activate the propert execution context
+// and allow the dll manifest load the correct version of comctl32.
+#ifdef WIN32
+
+static HMODULE module;
+BOOL APIENTRY DllMain (HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+	switch (ul_reason_for_call) {
+		case DLL_PROCESS_ATTACH: module = (HMODULE) hModule; break;
+		case DLL_PROCESS_DETACH: module = (HMODULE) INVALID_HANDLE_VALUE; break;
+	}
+	return true;
+}
+
+class CMyContext {
+public:
+	BOOL Init() {
+		BOOL bRet = FALSE;
+		OSVERSIONINFO info = { 0 };
+		info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		//do special XP theme activation code only on XP or higher...
+		if (GetVersionEx(&info) && info.dwMajorVersion >= 5 && info.dwMinorVersion >= 1 && info.dwPlatformId == VER_PLATFORM_WIN32_NT) {
+			TCHAR szModule[MAX_PATH] = {0};
+			::GetModuleFileName(module, szModule, MAX_PATH);
+			ACTCTX actctx = {
+				sizeof(ACTCTX),
+				ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID,
+				szModule, 0, 0, 0, MAKEINTRESOURCE(2), 0, module
+			};
+			
+			bRet = (m_hActCtx = ::CreateActCtx(&actctx)) != INVALID_HANDLE_VALUE;
+		}
+		return bRet;
+	}
+
+	CMyContext() : m_ulActivationCookie(0), m_hActCtx(0) {
+		if (Init() && m_hActCtx && (m_hActCtx != INVALID_HANDLE_VALUE))
+			ActivateActCtx(m_hActCtx, &m_ulActivationCookie);
+	}
+	~CMyContext() {
+		if (m_hActCtx && (m_hActCtx != INVALID_HANDLE_VALUE)) {
+			DeactivateActCtx(0, m_ulActivationCookie);
+			ReleaseActCtx(m_hActCtx);
+		}
+	}
+private: 
+	ULONG_PTR m_ulActivationCookie;
+	HANDLE m_hActCtx;
+};
+
+#endif
+
+////////////////////////////////////////////////////////////////
 
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(app, name)
 #define WX_FUNC(name) WX_FUNC1(app, name)
@@ -356,8 +408,16 @@ WX_FUNC_ARGRANGE_START(app_setusebestvisual, 2, 3, Nil)
 DLIB_FUNC_START(app_start, 1, Nil)
 DLIB_WXGET_BASE(app, AppAdapter, app)
 if (!app->IsDelegate()) {
+#ifdef WIN32
+	CMyContext con;
+#endif
 	wxApp::SetInstance(app->GetApp());
+#if wxUSE_UNICODE
+	static char* argv[] = {0};
+	wxEntry(app->GetApp()->argc, argv);
+#else
 	wxEntry(app->GetApp()->argc, app->GetApp()->argv);
+#endif
 }
 DLIB_FUNC_END
 

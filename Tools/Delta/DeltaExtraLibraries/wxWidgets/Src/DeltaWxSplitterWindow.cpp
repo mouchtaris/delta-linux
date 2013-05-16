@@ -144,12 +144,14 @@ static bool GetMinimumPaneSize (void* val, DeltaValue* at)
 	return true;
 }
 
+#if !wxCHECK_VERSION(2, 9, 0)
 static bool GetNeedUpdating (void* val, DeltaValue* at) 
 {
 	wxSplitterWindow *window = DLIB_WXTYPECAST_BASE(SplitterWindow, val, splitterwindow);
 	WX_SETNUMBER_EX(*at, window->GetNeedUpdating())
 	return true;
 }
+#endif
 
 static bool GetBorderSize (void* val, DeltaValue* at) 
 {
@@ -168,7 +170,9 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 	{ "sashGravity",		&GetSashGravity,		DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "sashSize",			&GetSashSize,			DELTA_GETBYSTRING_NO_PRECOND	},
 	{ "minimumPaneSize",	&GetMinimumPaneSize,	DELTA_GETBYSTRING_NO_PRECOND	},
+#if !wxCHECK_VERSION(2, 9, 0)
 	{ "needUpdating",		&GetNeedUpdating,		DELTA_GETBYSTRING_NO_PRECOND	},
+#endif
 	{ "borderSize",			&GetBorderSize,			DELTA_GETBYSTRING_NO_PRECOND	}
 };
 

@@ -165,7 +165,7 @@ const Vertex & Graph::NewVertex (void) {
 //-----------------------------------------------------------------------
 
 const Vertex & Graph::GetVertex (const id_t & id) const{
-	if (id <= TotalNumberOfVertices())
+	if (id <= (id_t) TotalNumberOfVertices())
 		return *allVertices[id];
 	return Vertex::BadVertex ();
 }

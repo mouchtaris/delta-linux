@@ -58,8 +58,14 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(PaintDC,paintdc)
 WX_FUNC_ARGRANGE_START(paintdc_construct, 0, 1, Nil)
 	wxPaintDC *wxdc = (wxPaintDC*) 0;
 	DeltaWxPaintDC *dc = (DeltaWxPaintDC*) 0;
-	if (n == 0)
+	if (n == 0) {
+#if wxCHECK_VERSION(2, 9, 0)
+		DPTR(vm)->Error("in wxWidgets 2.9+ paintdc_construct should necessarily take a window argument");
+		DLIB_RESET_RETURN;
+#else
 		wxdc = new wxPaintDC();
+#endif
+	}
 	else {
 		DLIB_WXGET_BASE(window, Window, win)
 		wxdc = new wxPaintDC(win);

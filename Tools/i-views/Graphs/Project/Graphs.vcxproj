@@ -30,15 +30,15 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\Scripts\DeltaideCommonIncludesRelease.props" />
-    <Import Project="..\..\..\..\Scripts\DeltaideCommonLibsRelease.props" />
+    <Import Project="..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsRelease.props" />
     <Import Project="..\..\Scripts\CommonPropertiesForComponentsUsage.props" />
     <Import Project="..\..\Scripts\CommonProperties.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\Scripts\DeltaideCommonIncludesDebug.props" />
-    <Import Project="..\..\..\..\Scripts\DeltaideCommonLibsDebug.props" />
+    <Import Project="..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsDebug.props" />
     <Import Project="..\..\Scripts\CommonPropertiesForComponentsUsage.props" />
     <Import Project="..\..\Scripts\CommonProperties.props" />
   </ImportGroup>
@@ -102,10 +102,6 @@
     <ClInclude Include="..\Include\VertexToDebugInfoMapping.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Components\DeltaVM\DeltaVM_LocalCopy.vcxproj">
-      <Project>{a3b3f416-986c-4d90-ab38-48d757ee13bc}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\DebugInfo\Project\DebugInfo.vcxproj">
       <Project>{1d9f139c-1f01-400e-8473-64d3ecef376c}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

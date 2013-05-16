@@ -96,7 +96,7 @@ bool ScintillaBase::Command(int cmdId) {
 	if (cmdId >= idcmdUserDefined) {
 
 		cmdId -= (int) idcmdUserDefined;
-		assert(cmdId < contextUserActions.size());
+		assert(cmdId < (int) contextUserActions.size());
 
 		contextUserActions[cmdId].second.Action(contextMenuX, contextMenuY);	// Invoke respective user action.
 		return true;

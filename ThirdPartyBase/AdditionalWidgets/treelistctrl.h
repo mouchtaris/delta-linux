@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        treelistctrl.h
-// Purpose:     wxTreeListCtrl class
+// Purpose:     wxCustomTreeListCtrl class
 // Created:     01/02/97
 // Author:      Robert Roebling
 // Maintainer:  Ronan Chartois (pgriddev)
@@ -112,7 +112,7 @@ private:
 };
 
 //----------------------------------------------------------------------------
-// wxTreeListCtrl - the multicolumn tree control
+// wxCustomTreeListCtrl - the multicolumn tree control
 //----------------------------------------------------------------------------
 
 // modes for navigation
@@ -131,7 +131,7 @@ const int wxTREE_HITTEST_ONITEMCOLUMN = 0x2000;
 extern WXDLLIMPEXP_ADDITIONALWIDGETS const wxChar* wxTreeListCtrlNameStr;
 
 
-class WXDLLIMPEXP_ADDITIONALWIDGETS wxTreeListCtrl : public wxControl
+class WXDLLIMPEXP_ADDITIONALWIDGETS wxCustomTreeListCtrl : public wxControl
 {
 friend class wxTreeListHeaderWindow;
 friend class wxTreeListMainWindow;
@@ -140,11 +140,11 @@ public:
 
     // ---------- creation ----------
 
-    wxTreeListCtrl()
+    wxCustomTreeListCtrl()
         : m_header_win(0), m_main_win(0), m_headerHeight(0)
     {}
 
-    wxTreeListCtrl(wxWindow *parent, wxWindowID id = -1,
+    wxCustomTreeListCtrl(wxWindow *parent, wxWindowID id = -1,
                const wxPoint& pos = wxDefaultPosition,
                const wxSize& size = wxDefaultSize,
                long style = wxTR_DEFAULT_STYLE,
@@ -155,7 +155,7 @@ public:
         Create(parent, id, pos, size, style, validator, name);
     }
 
-    virtual ~wxTreeListCtrl() {}
+    virtual ~wxCustomTreeListCtrl() {}
 
     bool Create(wxWindow *parent, wxWindowID id = -1,
                 const wxPoint& pos = wxDefaultPosition,
@@ -555,7 +555,7 @@ private:
     int m_headerHeight;
 
     DECLARE_EVENT_TABLE()
-    DECLARE_DYNAMIC_CLASS(wxTreeListCtrl)
+    DECLARE_DYNAMIC_CLASS(wxCustomTreeListCtrl)
 };
 
 #endif // TREELISTCTRL_H

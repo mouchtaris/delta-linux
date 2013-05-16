@@ -61,7 +61,6 @@
 #pragma warning( disable : 4101 4786)
 #pragma warning( disable : 4786)
 
-#include <wx/setup.h>
 #include <wx/wx.h>
 #include <wx/variant.h>
 #include <wx/datetime.h>

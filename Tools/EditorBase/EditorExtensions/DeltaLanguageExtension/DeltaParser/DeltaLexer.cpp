@@ -39,7 +39,7 @@ DeltaLexer::~DeltaLexer (void)
 
 void DeltaLexer::LexFile (const String& uri)
 {
-	std::ifstream file(uri.c_str(), std::ios::binary | std::ios::in);
+	std::ifstream file(OFSTREAM_WXSTRING_INPUT(uri), std::ios::binary | std::ios::in);
 	this->lexStream(file);
 }
 

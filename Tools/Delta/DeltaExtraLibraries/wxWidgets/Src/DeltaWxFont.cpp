@@ -171,23 +171,23 @@ WX_FUNC_ARGRANGE_START(font_construct, 0, 7, Nil)
 			WX_GETDEFINE(style)
 			WX_GETDEFINE(weight)
 			if (n == 4)
-				wxfont = new wxFont(pointSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight);
+				wxfont = new wxFont((int) pointSize, (wxFontFamily)family,
+					(wxFontStyle) style, (wxFontWeight)weight);
 			else if (n == 5) {
 				WX_GETBOOL(underline)
-				wxfont = new wxFont(pointSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight, underline);
+				wxfont = new wxFont((int) pointSize, (wxFontFamily)family,
+					(wxFontStyle) style, (wxFontWeight)weight, underline);
 			} else if (n == 6) {
 				WX_GETBOOL(underline)
 				WX_GETSTRING(faceName)
-				wxfont = new wxFont(pointSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight, underline, faceName);
+				wxfont = new wxFont((int) pointSize, (wxFontFamily)family,
+					(wxFontStyle) style, (wxFontWeight)weight, underline, faceName);
 			} else {
 				WX_GETBOOL(underline)
 				WX_GETSTRING(faceName)
 				WX_GETDEFINE(encoding)
-				wxfont = new wxFont(pointSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight, underline, faceName, (wxFontEncoding)encoding);
+				wxfont = new wxFont((int) pointSize, (wxFontFamily)family,
+					(wxFontStyle) style, (wxFontWeight)weight, underline, faceName, (wxFontEncoding)encoding);
 			}
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 #if defined (__WXMSW__)
@@ -197,22 +197,22 @@ WX_FUNC_ARGRANGE_START(font_construct, 0, 7, Nil)
 			WX_GETDEFINE(weight)
 			if (n == 4)
 				wxfont = new wxFont(*pixelSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight);
+					(wxFontStyle) style, (wxFontWeight)weight);
 			else if (n == 5) {
 				WX_GETBOOL(underline)
 				wxfont = new wxFont(*pixelSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight, underline);
+					(wxFontStyle) style, (wxFontWeight)weight, underline);
 			} else if (n == 6) {
 				WX_GETBOOL(underline)
 				WX_GETSTRING(faceName)
 				wxfont = new wxFont(*pixelSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight, underline, faceName);
+					(wxFontStyle) style, (wxFontWeight)weight, underline, faceName);
 			} else {
 				WX_GETBOOL(underline)
 				WX_GETSTRING(faceName)
 				WX_GETDEFINE(encoding)
 				wxfont = new wxFont(*pixelSize, (wxFontFamily)family,
-					style, (wxFontWeight)weight, underline, faceName, (wxFontEncoding)encoding);
+					(wxFontStyle) style, (wxFontWeight)weight, underline, faceName, (wxFontEncoding)encoding);
 			}
 #else
 			DLIB_ERROR_CHECK(

@@ -3,12 +3,12 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>$(WXWIN28)\include;$(WXWIN28)\lib\vc_dll\mswud;$(DELTAIDEDEPS)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(WXWINDIR)\include;$(WXWINDIR)\lib\vc_dll\mswud;$(DELTAIDEDEPS)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>WXWIDGETS;WXUSINGDLL;WXDEBUG=1;_WIN32_WINNT=0x0501;_MT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(WXWIN28)\include;$(WXWIN28)\lib\vc_dll\mswud;$(DELTAIDEDEPS)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWINDIR)\include;$(WXWINDIR)\lib\vc_dll\mswud;$(DELTAIDEDEPS)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

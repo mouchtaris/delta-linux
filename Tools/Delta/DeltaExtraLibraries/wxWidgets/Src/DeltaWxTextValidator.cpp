@@ -180,13 +180,37 @@ DLIB_FUNC_START(textvalidator_setexcludes, 2, Nil)
 DLIB_FUNC_START(textvalidator_isincharincludes, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_GETSTRING(val)
-	WX_SETBOOL(validator->IsInCharIncludes(val))
+	bool retval;
+#if wxCHECK_VERSION(2, 9, 0)
+	retval = false;
+	wxArrayString& array = validator->GetIncludes();
+	for (unsigned i = 0; i < array.size(); ++i)
+		if (array.Item(i) == val) {
+			retval = true;
+			break;
+		}
+#else
+	retval = validator->IsInCharIncludes(val);
+#endif
+	WX_SETBOOL(retval)
 }
 
 DLIB_FUNC_START(textvalidator_isnotincharexcludes, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_GETSTRING(val)
-	WX_SETBOOL(validator->IsNotInCharExcludes(val))
+	bool retval;
+#if wxCHECK_VERSION(2, 9, 0)
+	retval = true;
+	wxArrayString& array = validator->GetExcludes();
+	for (unsigned i = 0; i < array.size(); ++i)
+		if (array.Item(i) == val) {
+			retval = false;
+			break;
+		}
+#else
+	retval = validator->IsNotInCharExcludes(val);
+#endif
+	WX_SETBOOL(retval)
 }
 
 DLIB_FUNC_START(textvalidator_onchar, 2, Nil)

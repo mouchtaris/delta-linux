@@ -11,12 +11,10 @@
 #include "LibraryAPIDecls.h"
 #include "PropertyVisitor.h"
 #include "PropertyTable.h"
+#include "PropertyGridPortability.h"
 
 #include <boost/ref.hpp>
 #include <vector>
-
-class wxPGProperty;
-class wxParentPropertyClass;
 
 namespace conf {
 

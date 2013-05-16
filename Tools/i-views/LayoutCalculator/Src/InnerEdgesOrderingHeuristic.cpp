@@ -175,7 +175,7 @@ void InnerEdgesOrderingHeuristic::MoveOverlappingElementInProperWidth (
 	) {
 	assert(edge);
 
-	if (edgesMinorRadius.size() <= nextRadius)
+	if (edgesMinorRadius.size() <= (unsigned) nextRadius)
 		edgesMinorRadius.resize(nextRadius + 1);
 
 	EdgesDistance & edgesDistance = edgesMinorRadius[nextRadius];

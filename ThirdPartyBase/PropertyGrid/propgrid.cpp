@@ -9,6 +9,10 @@
 // Licence:     wxWindows license
 /////////////////////////////////////////////////////////////////////////////
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma implementation "propgrid.h"
 #endif
@@ -67,7 +71,6 @@
 
 #ifdef __WXPYTHON__
     #include "advprops.h"
-    #include "extras.h"
 #endif
 
 #if wxPG_USE_RENDERER_NATIVE
@@ -13524,3 +13527,5 @@ wxPGId wxPropertyGridPopulator::AppendByType(const wxString& valuetype,
 }
 
 // -----------------------------------------------------------------------
+
+#endif //!defined wxUSE_PROPGRID

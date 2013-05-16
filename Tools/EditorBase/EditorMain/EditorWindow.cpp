@@ -254,7 +254,7 @@ bool EditorWindow::SaveToDisk (const String& uri)
 
 	SCOPED_BUSY(this);
 	IncrementInternalSaveCounter();
-	std::ofstream output(uri.c_str(), std::ios_base::out | std::ios_base::binary);
+	std::ofstream output(OFSTREAM_WXSTRING_INPUT(uri), std::ios_base::out | std::ios_base::binary);
 	if (output.is_open()) {
 		output << this->GetText();
 		output.close();
@@ -301,7 +301,7 @@ bool EditorWindow::save (const String& uri)
 
 	SCOPED_BUSY(this);
 	IncrementInternalSaveCounter();
-	std::ofstream output(uri.c_str(), std::ios_base::out | std::ios_base::binary);
+	std::ofstream output(OFSTREAM_WXSTRING_INPUT(uri), std::ios_base::out | std::ios_base::binary);
 	if (output.is_open()) {
 		output << this->GetText();
 		m_modified = false;

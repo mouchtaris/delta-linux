@@ -20,7 +20,7 @@
 			OutputDirectory=".\..\..\lib\debug"
 			IntermediateDirectory=".\..\..\objs\debug"
 			ConfigurationType="4"
-			InheritedPropertySheets="..\..\Scripts\CommonProperties.vsprops;..\..\Scripts\CommonPropertiesForComponentsUsage.vsprops;..\..\..\..\Scripts\DeltaideCommonIncludesDebug.vsprops;..\..\..\..\Scripts\DeltaideCommonLibsDebug.vsprops"
+			InheritedPropertySheets="..\..\Scripts\CommonProperties.vsprops;..\..\Scripts\CommonPropertiesForComponentsUsage.vsprops;..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesDebug.vsprops;..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsDebug.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -84,7 +84,7 @@
 			OutputDirectory=".\..\..\lib\release"
 			IntermediateDirectory=".\..\..\objs\release"
 			ConfigurationType="4"
-			InheritedPropertySheets="..\..\Scripts\CommonProperties.vsprops;..\..\Scripts\CommonPropertiesForComponentsUsage.vsprops;..\..\..\..\Scripts\DeltaideCommonIncludesRelease.vsprops;..\..\..\..\Scripts\DeltaideCommonLibsRelease.vsprops"
+			InheritedPropertySheets="..\..\Scripts\CommonProperties.vsprops;..\..\Scripts\CommonPropertiesForComponentsUsage.vsprops;..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesRelease.vsprops;..\..\..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsRelease.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>

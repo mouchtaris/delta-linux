@@ -131,12 +131,12 @@ WX_FUNC_ARGRANGE_START(icon_loadfile, 2, 5, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_GETSTRING(name)
-	long type = wxBITMAP_TYPE_ICO_RESOURCE;
+	int type = wxBITMAP_TYPE_ICO_RESOURCE;
 	int desiredWidth = -1, desiredHeight = -1;
 	if (n >= 3) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 4) { WX_GETDEFINE_DEFINED(desiredWidth) }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(desiredHeight) }
-	WX_SETBOOL(icon->LoadFile(name, type, desiredWidth, desiredHeight))
+	WX_SETBOOL(icon->LoadFile(name, (wxBitmapType) type, desiredWidth, desiredHeight))
 #else
 	DLIB_ERROR_CHECK(
 		true,

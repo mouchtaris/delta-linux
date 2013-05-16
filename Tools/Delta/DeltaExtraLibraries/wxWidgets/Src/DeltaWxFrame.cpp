@@ -129,6 +129,32 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 WX_LIBRARY_FUNCS_IMPLEMENTATION(Frame,frame)
 
 ////////////////////////////////////////////////////////////////
+// TODO: move this proper location and use the 
+// WX_SET_WINDOW_OBJECT macro to create adapter-aware objects
+template<typename T>
+class WrapperDestroyEventHandler : public wxEvtHandler {
+public:
+	void OnDestroy(wxWindowDestroyEvent& event)
+		{ DDELETE(static_cast<T*>(event.GetWindow()->GetClientData())); }
+	static WrapperDestroyEventHandler* Instance(void) {
+		static WrapperDestroyEventHandler<T> instance;
+		return &instance;
+	}
+};
+ #define WX_SET_WINDOW_OBJECT(_wxclass, _var, _wxvar)												\
+	if (_wxvar) {																					\
+		_var = DNEWCLASS(DeltaWx##_wxclass, (_wxvar));												\
+		_wxvar->SetClientData(_var);																\
+		_wxvar->Connect(																			\
+			wxEVT_DESTROY,																			\
+			wxWindowDestroyEventHandler(WrapperDestroyEventHandler<DeltaWx##_wxclass>::OnDestroy),	\
+			NULL,																					\
+			WrapperDestroyEventHandler<DeltaWx##_wxclass>::Instance()								\
+		);																							\
+	}																								\
+	WX_SETOBJECT(_wxclass, _var)
+
+////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(frame_construct, 0, 7, Nil)
 	wxFrame *wxframe = (wxFrame*) 0;
@@ -168,8 +194,7 @@ WX_FUNC_ARGRANGE_START(frame_construct, 0, 7, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxframe) frame = DNEWCLASS(DeltaWxFrame, (wxframe));
-	WX_SETOBJECT(Frame, frame)
+	WX_SET_WINDOW_OBJECT(Frame, frame, wxframe)
 }
 
 DLIB_FUNC_START(frame_destruct, 1, Nil)

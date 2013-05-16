@@ -227,7 +227,11 @@ WX_FUNC_ARGRANGE_START(toolbartoolbase_construct, 0, 8, Nil)
 				(wxItemKind)kind, NULL, shortHelpString, longHelpString);
 		} else if (n >= 2 && DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGET_BASE(control, Control, control)
-			wxtool = new wxToolBarToolBase(tbar, control);
+			wxtool = new wxToolBarToolBase(tbar, control
+#if wxCHECK_VERSION(2, 9, 0)
+				, wxEmptyString
+#endif
+			);
 		}
 	}
 	if (wxtool) tool = DNEWCLASS(DeltaWxToolBarToolBase, (wxtool));

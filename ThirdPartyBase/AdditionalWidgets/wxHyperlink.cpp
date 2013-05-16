@@ -127,11 +127,15 @@ void wxHyperLink::OnLinkActivate (wxMouseEvent &WXUNUSED(event)) {
 
 void wxHyperLink::OnPaint (wxPaintEvent &WXUNUSED(event)) {
     wxPaintDC dc(this);
+#if !wxCHECK_VERSION(2, 9, 0)
     dc.BeginDrawing();
+#endif
     dc.SetFont (GetFont());
     dc.SetTextForeground (GetForegroundColour());
     dc.DrawText (GetLabel(), 0, 0);
+#if !wxCHECK_VERSION(2, 9, 0)
     dc.EndDrawing();
+#endif
 }
 
 void wxHyperLink::OnWindowEnter (wxMouseEvent &WXUNUSED(event)) {

@@ -12,6 +12,10 @@
 #ifndef _WX_PROPGRID_MANAGER_H_
 #define _WX_PROPGRID_MANAGER_H_
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma interface "manager.cpp"
 #endif
@@ -1250,5 +1254,7 @@ private:
 #endif
 
 // -----------------------------------------------------------------------
+
+#endif //!defined wxUSE_PROPGRID
 
 #endif // _WX_PROPGRID_MANAGER_H_

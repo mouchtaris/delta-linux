@@ -269,35 +269,35 @@ DLIB_FUNC_START(size_assign, 2, Nil)
 DLIB_FUNC_START(size_equal, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
-	WX_SETBOOL(size->operator==(*size2))
+	WX_SETBOOL(*size == *size2)
 }
 
 DLIB_FUNC_START(size_notequal, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
-	WX_SETBOOL(size->operator!=(*size2))
+	WX_SETBOOL(*size != *size2)
 }
 
 DLIB_FUNC_START(size_plus, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
-	WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, operator+(*size2))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size + *size2))))
 }
 
 DLIB_FUNC_START(size_minus, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
-	WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, operator-(*size2))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size - *size2))))
 }
 
 DLIB_FUNC_START(size_divide, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	WX_GETNUMBER(factor)
-	WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, operator/(factor))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size / (int) factor))))
 }
 
 DLIB_FUNC_START(size_multiply, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	WX_GETNUMBER(factor)
-	WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, operator*(factor))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size * factor))))
 }

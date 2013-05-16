@@ -12,13 +12,15 @@
 #ifndef _WX_PROPGRID_ADVPROPS_H_
 #define _WX_PROPGRID_ADVPROPS_H_
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma interface "advprops.cpp"
 #endif
 
 // -----------------------------------------------------------------------
-
-
 //
 // Additional Value Type Handlers
 //
@@ -428,5 +430,7 @@ protected:
 //#endif // #ifndef SWIG
 
 #endif // _WX_PROPGRID_PROPDEV_H_
+
+#endif //!defined wxUSE_PROPGRID
 
 #endif // _WX_PROPGRID_ADVPROPS_H_

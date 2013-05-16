@@ -146,33 +146,33 @@ protected:
 
 private:
 	struct SymbEntry {
-		SymbEntry (const String& symbol, String::value_type type) :
+		SymbEntry (const String& symbol, tchar type) :
 			symbol(symbol), type(type) {}
 
 		bool operator< (const SymbEntry& e) const { return symbol < e.symbol; }
 		bool operator== (const SymbEntry& e) const { return symbol == e.symbol; }
 
-		void Type (String::value_type t) const { type = std::min(type, t); }
+		void Type (tchar t) const { type = std::min(type, t); }
 
 		String						symbol;
-		mutable String::value_type	type;
+		mutable tchar	type;
 	};
 	typedef std::set<const SymbEntry> StringSet;
 
 	struct SymbDeclEntry {
-		SymbDeclEntry (const String& symbol, const Range& range, String::value_type type) :
+		SymbDeclEntry (const String& symbol, const Range& range, tchar type) :
 			symbol(symbol), range(range), type(type) {}
 
-		void Type (String::value_type t) const { type = std::min(type, t); }
+		void Type (tchar t) const { type = std::min(type, t); }
 
 		String						symbol;
 		Range						range;
-		mutable String::value_type	type;
+		mutable tchar	type;
 	};
 	typedef std::list<const SymbDeclEntry> StringList;
 
-	inline void			AppendSymbol (const String& text, String::value_type type);
-	inline void			AppendSymbolDeclaration (const String& text, const Range& range, String::value_type type);
+	inline void			AppendSymbol (const String& text, tchar type);
+	inline void			AppendSymbolDeclaration (const String& text, const Range& range, tchar type);
 	inline const String	getText (DeltaASTNode* node);
 	inline const String getIdKey (DeltaASTNode* node);
 	inline const String getStringKey (DeltaASTNode* node);

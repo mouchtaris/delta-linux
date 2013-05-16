@@ -75,7 +75,11 @@ WX_FUNC_ARGRANGE_START(calendarevent_construct, 0, 2, Nil)
 	} else if (n == 2) {
 		DLIB_WXGET_BASE(calendarctrl, CalendarCtrl, cal)
 		WX_GETDEFINE(type)
-		wxevt = new wxCalendarEvent(cal, type);
+		wxevt = new wxCalendarEvent(cal,
+#if wxCHECK_VERSION(2, 9, 0)
+		wxDateTime::Now(),
+#endif
+		type);
 	}
 	if (wxevt) evt = DNEWCLASS(DeltaWxCalendarEvent, (wxevt));
 	WX_SETOBJECT(CalendarEvent, evt)

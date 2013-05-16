@@ -1,3 +1,5 @@
 ide_icon		ICON	"ide.ico"
 
 logo			BITMAP	"Resources\ide_logo.bmp"
+
+#include "wx/msw/wx.rc"

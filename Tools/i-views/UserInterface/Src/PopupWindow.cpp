@@ -70,7 +70,7 @@ void PopupWindow::OnRightDown (wxMouseEvent & event) {
 	
 	//if (vertexToDraw->HasFullContents()) {
 		Show(false);
-		GetParent()->ProcessEvent(event);
+		GetParent()->GetEventHandler()->ProcessEvent(event);
 	//}
 	//else
 	//	GotoSourcePoint()(vertexToDraw);	

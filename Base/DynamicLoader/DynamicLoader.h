@@ -17,6 +17,7 @@
 #ifdef WIN32
 #	define WIN32_LEAN_AND_MEAN		///< Exclude rarely-used stuff from Windows headers
 #	include <windows.h>
+#	include "UndefineAllWin32Shit.h"
 #endif	// WIN32
 
 namespace util

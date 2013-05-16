@@ -218,7 +218,12 @@ DLIB_FUNC_START(dialog_setescapeid, 2, Nil)
 DLIB_FUNC_START(dialog_setmodal, 2, Nil)
 	DLIB_WXGET_BASE(dialog, Dialog, dialog)
 	WX_GETBOOL(modal)
+#if wxCHECK_VERSION(2, 9, 0)	//TODO: maybe remove completely?
+	DPTR(vm)->PrimaryError("dialog_setmodal is deprecated, use dialog_showmodal instead");
+	DLIB_RESET_RETURN;
+#else
 	dialog->SetModal(modal);
+#endif
 }
 
 DLIB_FUNC_START(dialog_setreturncode, 2, Nil)

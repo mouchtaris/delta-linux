@@ -20,7 +20,6 @@
 #include "ProjectManagerCommon.h"
 
 #include "ComponentRegistry.h"
-#include "ComponentFactory.h"
 #include "ComponentEntry.h"
 #include "ComponentLoader.h"
 #include "ComponentFunctionCallerSafe.h"
@@ -30,8 +29,6 @@
 
 #include "BitmapRegistry.h"
 #include "ComponentConfigurationDialog.h"
-#include "GenericDialogs.h"
-#include "DynamicLoader.h"
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem/path.hpp>

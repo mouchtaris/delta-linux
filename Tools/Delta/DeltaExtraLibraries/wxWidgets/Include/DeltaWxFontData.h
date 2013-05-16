@@ -1,6 +1,9 @@
 #ifndef DELTAWXFONTDATA_H
 #define DELTAWXFONTDATA_H
 #include <wx/cmndata.h>
+#if wxCHECK_VERSION(2, 9, 0)
+#include <wx/fontdata.h>
+#endif
 #include "uvalidatable.h"
 #include "DeltaValue.h"
 #include "DeltaLibraryFuncArgsBinder.h"

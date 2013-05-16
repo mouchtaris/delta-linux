@@ -12,6 +12,11 @@
 #include "wxWrapperUtilFunctions.h"
 //
 
+#if !wxCHECK_VERSION(2, 9, 0)
+typedef int wxPenCap;
+typedef int wxPenJoin;
+#endif
+
 ////////////////////////////////////////////////////////////////
 
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(pen, name)
@@ -198,7 +203,7 @@ DLIB_FUNC_START(pen_isok, 1, Nil)
 DLIB_FUNC_START(pen_setcap, 2, Nil)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	WX_GETDEFINE(capStyle)
-	pen->SetCap(capStyle);
+	pen->SetCap( (wxPenCap) capStyle);
 }
 
 WX_FUNC_ARGRANGE_START(pen_setcolour, 2, 4, Nil)
@@ -232,7 +237,7 @@ DLIB_FUNC_START(pen_setdashes, 2, Nil)
 DLIB_FUNC_START(pen_setjoin, 2, Nil)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	WX_GETDEFINE(join_style)
-	pen->SetJoin(join_style);
+	pen->SetJoin((wxPenJoin) join_style);
 }
 
 DLIB_FUNC_START(pen_setstipple, 2, Nil)

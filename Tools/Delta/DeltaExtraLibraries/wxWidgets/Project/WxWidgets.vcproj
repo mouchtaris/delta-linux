@@ -19,6 +19,7 @@
 			OutputDirectory="..\lib\debug"
 			IntermediateDirectory="..\objs\debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="..\Scripts\$(WXWINVER)\wxWidgetsVersionDebug.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -39,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaVirtualMachine\Include;..\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaStdLib\Include;&quot;$(WXWIN28)\Include&quot;;&quot;$(WXWIN28)\lib\vc_dll\mswud&quot;"
+				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaVirtualMachine\Include;..\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaStdLib\Include;&quot;$(WXWINDIR)\Include&quot;;&quot;$(WXWINDIR)\lib\vc_dll\mswud&quot;"
 				PreprocessorDefinitions="WIN32; _DEBUG;DVM_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;DWXWIDGETS_EXPORT;WXUSINGDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -59,9 +60,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib rpcrt4.lib wxmsw28ud_adv.lib wxmsw28ud_aui.lib wxmsw28ud_html.lib wxmsw28ud_core.lib wxmsw28ud_richtext.lib wxbase28ud.lib wxbase28ud_xml.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxexpatd.lib"
+				AdditionalDependencies="comctl32.lib rpcrt4.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
-				AdditionalLibraryDirectories="&quot;$(WXWIN28)\lib\vc_dll&quot;"
+				AdditionalLibraryDirectories="&quot;$(WXWINDIR)\lib\vc_dll&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -95,6 +96,7 @@
 			OutputDirectory="..\lib\release"
 			IntermediateDirectory="..\objs\release"
 			ConfigurationType="2"
+			InheritedPropertySheets="..\Scripts\$(WXWINVER)\wxWidgetsVersionRelease.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -117,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaVirtualMachine\Include;..\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaStdLib\Include;&quot;$(WXWIN28)\Include&quot;;&quot;$(WXWIN28)\lib\vc_dll\mswu&quot;"
+				AdditionalIncludeDirectories="..\..\..\Common\Include;..\..\..\DebugLib\Include;..\..\..\UtilLib\Include;..\..\..\DeltaVirtualMachine\Include;..\Include;..\..\..\FileReadersLib\Include;..\..\..\DeltaStdLib\Include;&quot;$(WXWINDIR)\Include&quot;;&quot;$(WXWINDIR)\lib\vc_dll\mswu&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;DVM_IMPORT;UTILLIB_IMPORT;DDEBUG_IMPORT;DWXWIDGETS_EXPORT;WXUSINGDLL"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -136,8 +138,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib rpcrt4.lib wxmsw28u_adv.lib wxmsw28u_aui.lib wxmsw28u_html.lib wxmsw28u_core.lib wxmsw28u_richtext.lib wxbase28u.lib wxbase28u_xml.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxexpat.lib"
-				AdditionalLibraryDirectories="&quot;$(WXWIN28)\lib\vc_dll&quot;"
+				AdditionalDependencies="comctl32.lib rpcrt4.lib"
+				AdditionalLibraryDirectories="&quot;$(WXWINDIR)\lib\vc_dll&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

@@ -31,15 +31,15 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Scripts\CommonPropertiesForComponents.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonIncludesRelease.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonLibsRelease.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsRelease.props" />
     <Import Project="..\..\Scripts\CommonPropertiesForFindReplace.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Scripts\CommonPropertiesForComponents.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonIncludesDebug.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonLibsDebug.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsDebug.props" />
     <Import Project="..\..\Scripts\CommonPropertiesForFindReplace.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -67,8 +67,7 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
@@ -84,8 +83,7 @@
       <AdditionalIncludeDirectories>.\..\DeltaVM;.\..\..\Tools\i-views\Utility\Include;.\..\..\Tools\i-views\Graphs\Include;.\..\..\Tools\i-views\Features\Include;.\..\..\Tools\i-views\Common\Include;.\..\..\Tools\i-views\Geometry\Include;.\..\..\Tools\i-views\UndoRedo\Include;.\..\..\Tools\i-views\DebugInfo\Include;.\..\..\Tools\i-views\UserInterface\Include;.\..\..\Tools\i-views\GraphSerialisers\Include;.\..\..\Tools\i-views\LayoutCalculator\Include;.\..\..\Tools\i-views\LayredGraphRenderer\Include;.\..\..\Tools\i-views\LayoutRenderingPrimitives\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GRAPHDEBUGVISUALZATION_EXPORTS;_CRT_SECURE_NO_WARNINGS. ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>

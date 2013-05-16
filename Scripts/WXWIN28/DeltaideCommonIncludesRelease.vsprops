@@ -6,7 +6,7 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories="&quot;$(WXWIN28)\include&quot;;&quot;$(WXWIN28)\lib\vc_dll\mswu&quot;;&quot;$(DELTAIDEDEPS)\include&quot;"
+		AdditionalIncludeDirectories="&quot;$(WXWINDIR)\include&quot;;&quot;$(WXWINDIR)\lib\vc_dll\mswu&quot;;&quot;$(DELTAIDEDEPS)\include&quot;"
 		PreprocessorDefinitions="WXWIDGETS;WXUSINGDLL;_WIN32_WINNT=0x0501;_MT"
 	/>
 </VisualStudioPropertySheet>

@@ -14,6 +14,10 @@
 #include "wxWrapperUtilFunctions.h"
 //
 
+#if !wxCHECK_VERSION(2, 9, 0)
+typedef int wxPolygonFillMode;
+#endif
+
 ////////////////////////////////////////////////////////////////
 
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(region, name)
@@ -131,7 +135,7 @@ WX_FUNC_ARGRANGE_START(region_construct, 0, 4, Nil)
 			}
 			int fillStyle = wxODDEVEN_RULE;
 			if (n >= 3) { WX_GETDEFINE_DEFINED(fillStyle) }
-			wxregion = new wxRegion(size, pts, fillStyle);
+			wxregion = new wxRegion(size, pts, (wxPolygonFillMode) fillStyle);
 			DDELARR(pts);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();

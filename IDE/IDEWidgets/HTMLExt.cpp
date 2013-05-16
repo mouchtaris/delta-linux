@@ -30,7 +30,7 @@ TAG_HANDLER_BEGIN(COMPPROP, "COMPPROP")
 
 TAG_HANDLER_PROC(tag)
 {
-	String::value_type compBuff[512];
+	tchar compBuff[512];
 	int serial = 0;
 
 	tag.ScanParam(wxT("comp"), wxT("%s"), &compBuff);

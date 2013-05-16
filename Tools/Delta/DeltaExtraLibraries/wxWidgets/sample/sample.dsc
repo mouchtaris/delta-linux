@@ -1,6 +1,6 @@
 using wx;
 
-dll = std::dllimportdeltalib("..\\lib\\release\\" + wx::DLL);
+dll = std::dllimportdeltalib(wx::DLL);
 
 wxsize = size_construct(wx::DefaultSize);
 wxpoint = point_construct(wx::DefaultPosition);
@@ -10,11 +10,11 @@ function myFunc(frame, ev) {
 	msgdlg = messagedialog_construct(frame, "Are you sure you want to quit this exceptional program?",
 	"Quit this program", "YES_NO");
 	quit = msgdlg.showmodal();
+	msgdlg.destruct();
 	if (quit == flags("ID_YES")) {
 		std::print("Bye bye cruel world.\n");
 		frame.close(true);
 	}
-	msgdlg.destruct();
 }
 
 function myFunc2(frame, ev) {
@@ -333,8 +333,8 @@ function oninitfunc() {
 	sizer.add(calctrl, 0, "ALIGN_CENTER");
 	
 //CREATE DATEPICKERCTRL & ADD IT TO SIZER
-	datectrl = datepickerctrl_construct(frame, "ID_ANY");
-	sizer.add(datectrl, 0, "ALIGN_CENTER");
+	//datectrl = datepickerctrl_construct(frame, "ID_ANY");
+	//sizer.add(datectrl, 0, "ALIGN_CENTER");
 	
 //CREATE GENERICDIRCTRL & ADD IT TO SIZER
 	dirctrl = genericdirctrl_construct(frame);
@@ -347,11 +347,11 @@ function oninitfunc() {
 //CREATE TOGGLE BUTTON & ADD IT TO SIZER
 	tglbtn = togglebutton_construct(frame, "ID_ANY", "toggle button");
 	sizer.add(tglbtn, 0, "ALIGN_CENTER");
-/*
+
 //CREATE SPIN BUTTON BUTTON & ADD IT TO SIZER
-	spinbtn = spinbutton_construct(frame, 17);
-	sizer.add(spinbtn, 0, "ALIGN_CENTER");
-*/
+	//spinbtn = spinbutton_construct(frame, 17);
+	//sizer.add(spinbtn, 0, "ALIGN_CENTER");
+	
 //CREATE LOG WINDOW
 	logwin = logwindow_construct(frame, "My Log Window");
 	log_onlog("LOG_Status", "test", 0);
@@ -376,6 +376,8 @@ function oninitfunc() {
 
 app_oninitadd(app, oninitfunc);
 app_start(app);
+wxpoint.destruct();
+wxsize.destruct();
 
-std::dllunimport(dll);
+std::dllunimportdeltalib(dll);
 

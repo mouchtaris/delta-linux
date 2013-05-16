@@ -28,11 +28,22 @@
 /////////////////////////////////////////////////////////////////////////
 //                                WX
 // Acquiring a C-string from a wx::string
-#if		WX_VERSION_RELEASE == 2 && WX_VERSION_MAJOR == 8 && WX_VERSION_MINOR < 11
+#if		wxMAJOR_VERSION == 2 && wxMINOR_VERSION == 8 && wxRELEASE_NUMBER < 11
 #	define	WX_C_STR	str
 #else
 #	define	WX_C_STR	c_str
 #endif
+
+#if		wxMAJOR_VERSION == 2 && wxMINOR_VERSION == 9
+#	define	WX_DATE_TIME_PARSE_DATE(str)	ParseDate(str)
+#	define	OFSTREAM_WXSTRING_INPUT(str)	str.c_str().AsChar()
+#else
+#	define	WX_DATE_TIME_PARSE_DATE(str)	ParseDate(str.c_str())
+#	define	OFSTREAM_WXSTRING_INPUT(str)	str.c_str()
+#endif
+
+//
+
 
 /////////////////////////////////////////////////////////////////////////
 //                              Boost

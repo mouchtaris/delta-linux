@@ -13,7 +13,6 @@
 #include <wx/image.h>
 #include <wx/imaglist.h>
 #include <wx/tokenzr.h>
-
 #include "Platform.h"
 #include "PlatWX.h"
 

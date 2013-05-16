@@ -9,6 +9,10 @@
 // Licence:     wxWindows license
 /////////////////////////////////////////////////////////////////////////////
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma implementation "advprops.h"
 #endif
@@ -1877,3 +1881,5 @@ void wxPropertyContainerMethods::RegisterAdvancedPropertyClasses()
 // -----------------------------------------------------------------------
 
 #endif // wxPG_INCLUDE_ADVPROPS
+
+#endif //!defined wxUSE_PROPGRID

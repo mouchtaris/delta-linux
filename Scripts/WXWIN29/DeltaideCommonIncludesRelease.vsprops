@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="Deltaide Common Includes Release"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(WXWINDIR)\include&quot;;&quot;$(WXWINDIR)\lib\vc_dll\mswu&quot;;&quot;$(DELTAIDEDEPS)\include&quot;"
+		PreprocessorDefinitions="WXWIDGETS;WXUSINGDLL;_WIN32_WINNT=0x0501;_MT"
+	/>
+</VisualStudioPropertySheet>

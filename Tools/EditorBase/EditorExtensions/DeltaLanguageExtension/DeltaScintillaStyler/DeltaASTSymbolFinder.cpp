@@ -204,7 +204,7 @@ IMPLEMENT_EMPTY_VISIT_ENTER_AND_LEAVE(OtherStmtASTNode)
 
 //**********************************************************************
 
-void DeltaASTSymbolFinder::AppendSymbol (const String& text, String::value_type type)
+void DeltaASTSymbolFinder::AppendSymbol (const String& text, tchar type)
 {
 	if (m_hint.empty() || !STRNCASECMP(text.c_str(), m_hint.c_str(), m_hint.size()))
 		m_completionSet.insert(SymbEntry(text, type)).first->Type(type);
@@ -212,7 +212,7 @@ void DeltaASTSymbolFinder::AppendSymbol (const String& text, String::value_type 
 
 //**********************************************************************
 
-void DeltaASTSymbolFinder::AppendSymbolDeclaration (const String& text, const Range& range, String::value_type type)
+void DeltaASTSymbolFinder::AppendSymbolDeclaration (const String& text, const Range& range, tchar type)
 {
 	if (m_hint == text)
 		m_declarationList.push_back(SymbDeclEntry(text, range, type));

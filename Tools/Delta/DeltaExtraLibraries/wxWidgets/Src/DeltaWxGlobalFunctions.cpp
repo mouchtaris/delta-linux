@@ -167,17 +167,19 @@ WX_FUNC_ARGRANGE_START(wx_dirselector, 0, 5, Nil)
 	WX_SETSTRING(::wxDirSelector(message, defaultPath, style, pos, parent))
 }
 
+#define STRING_TO_CHAR_ARRAY(str)	(const wxChar*) str.c_str()
+
 WX_FUNC_ARGRANGE_START(wx_fileselector, 0, 9, Nil)
-	wxChar *message = (wxChar*)wxFileSelectorPromptStr, *default_path = NULL, *default_filename = NULL;
-	wxChar *default_extension = NULL, *wildcard = (wxChar*)wxFileSelectorDefaultWildcardStr;
+	const wxChar *message = (wxChar*)wxFileSelectorPromptStr, *default_path = NULL, *default_filename = NULL;
+	const wxChar *default_extension = NULL, *wildcard = (wxChar*)wxFileSelectorDefaultWildcardStr;
 	int flags = 0;
 	wxWindow *parent = NULL;
 	int x = wxDefaultCoord, y = wxDefaultCoord;
-	if (n >= 1) { WX_GETSTRING(_message) message = (wxChar*)_message.c_str(); }
-	if (n >= 2) { WX_GETSTRING(_default_path) default_path = (wxChar*)_default_path.c_str(); }
-	if (n >= 3) { WX_GETSTRING(_default_filename) default_filename = (wxChar*)_default_filename.c_str(); }
-	if (n >= 4) { WX_GETSTRING(_default_extension) default_extension = (wxChar*)_default_extension.c_str(); }
-	if (n >= 5) { WX_GETSTRING(_wildcard) wildcard = (wxChar*)_wildcard.c_str(); }
+	if (n >= 1) { WX_GETSTRING(_message) message = STRING_TO_CHAR_ARRAY(_message); }
+	if (n >= 2) { WX_GETSTRING(_default_path) default_path = STRING_TO_CHAR_ARRAY(_default_path); }
+	if (n >= 3) { WX_GETSTRING(_default_filename) default_filename = STRING_TO_CHAR_ARRAY(_default_filename); }
+	if (n >= 4) { WX_GETSTRING(_default_extension) default_extension = STRING_TO_CHAR_ARRAY(_default_extension); }
+	if (n >= 5) { WX_GETSTRING(_wildcard) wildcard = STRING_TO_CHAR_ARRAY(_wildcard); }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(flags) }
 	if (n >= 7) { DLIB_WXGET_BASE(window, Window, win) parent = win; }
 	if (n >= 8) { WX_GETNUMBER_DEFINED(x) }

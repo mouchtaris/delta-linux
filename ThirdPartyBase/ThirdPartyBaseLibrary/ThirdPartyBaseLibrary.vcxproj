@@ -31,15 +31,15 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Scripts\CommonPropertiesForThirdPartyBase.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonIncludesRelease.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonLibsRelease.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\CommonPropertiesForThirdPartyBase.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsRelease.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Scripts\CommonPropertiesForThirdPartyBase.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonIncludesDebug.props" />
-    <Import Project="..\..\Scripts\DeltaideCommonLibsDebug.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\CommonPropertiesForThirdPartyBase.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsDebug.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -63,7 +63,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;THIRDPARTYBASELIBRARY_EXPORTS;WXMAKINGDLL_PROPGRID;__WX__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;THIRDPARTYBASELIBRARY_EXPORTS;__WX__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -138,11 +138,10 @@
     <ClInclude Include="..\KeyBinder\menuutils.h" />
     <ClInclude Include="..\PropertyGrid\advprops.h" />
     <ClInclude Include="..\PropertyGrid\extraprops.h" />
-    <ClInclude Include="..\PropertyGrid\extras.h" />
     <ClInclude Include="..\PropertyGrid\manager.h" />
     <ClInclude Include="..\PropertyGrid\odcombo.h" />
-    <ClInclude Include="..\PropertyGrid\pg_dox_mainpage.h" />
     <ClInclude Include="..\PropertyGrid\propdev.h" />
+    <ClInclude Include="..\PropertyGrid\PropertyGridPortability.h" />
     <ClInclude Include="..\PropertyGrid\propgrid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

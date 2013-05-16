@@ -9,4 +9,6 @@ copy  "%DELTA%\DLLs\SyntaxTree\lib\debug\SyntaxTreeD.dll" "..\..\Build"
 copy  "%DELTA%\DLLs\CompilerComponents\lib\debug\CompilerComponentsD.dll" "..\..\Build"
 copy  "%DELTA%\DLLs\VirtualMachineComponents\lib\debug\VirtualMachineComponentsD.dll" "..\..\Build"
 copy  "%DELTA%\DeltaExtraLibraries\JSONParser\lib\debug\JSONParserD.dll" "..\..\Build"
+copy  "%DELTA%\DeltaExtraLibraries\XMLParser\lib\debug\XMLParserD.dll" "..\..\Build\extension_dlls"
+copy  "%DELTA%\DeltaExtraLibraries\JSONParser\lib\debug\JSONParserD.dll" "..\..\Build\extension_dlls"
 

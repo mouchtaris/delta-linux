@@ -84,7 +84,12 @@ DLIB_FUNC_START(idleevent_destruct, 1, Nil)
 
 DLIB_FUNC_START(idleevent_cansend, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETBOOL(wxIdleEvent::CanSend(window))
+#if wxCHECK_VERSION(2, 9, 0)	//does not provide the IdleEvent::CanSend function. TODO: maybe remove it totally?
+	bool retval = true;
+#else
+	bool retval = wxIdleEvent::CanSend(window);
+#endif
+	WX_SETBOOL(retval)
 }
 
 DLIB_FUNC_START(idleevent_getmode, 0, Nil)

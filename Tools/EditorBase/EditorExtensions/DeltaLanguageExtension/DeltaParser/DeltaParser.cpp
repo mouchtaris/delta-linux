@@ -42,7 +42,7 @@ bool DeltaParser::ParseFile (const String& uri)
 	yyFlexLexer lexer;
 	ParsingCtx ctx(uri, m_desc, lexer);
 
-	std::ifstream file(uri.c_str(), std::ios::binary | std::ios::in);
+	std::ifstream file(OFSTREAM_WXSTRING_INPUT(uri), std::ios::binary | std::ios::in);
 	return this->parseStream(ctx, file);
 }
 

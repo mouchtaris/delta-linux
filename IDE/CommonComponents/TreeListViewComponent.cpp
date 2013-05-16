@@ -37,7 +37,7 @@ namespace ide
 	DECLARE_LOCAL_EVENT_TYPE(EVENT_PRINT_TREE_LIST_VIEW, -1);
 	DEFINE_EVENT_TYPE(EVENT_PRINT_TREE_LIST_VIEW);
 
-	BEGIN_EVENT_TABLE(TreeListViewComponent, wxTreeListCtrl)
+	BEGIN_EVENT_TABLE(TreeListViewComponent, wxCustomTreeListCtrl)
 		EVT_COMMAND(wxID_ANY, EVENT_PRINT_TREE_LIST_VIEW, TreeListViewComponent::onDisplay)
 		EVT_MENU(wxID_ANY, TreeListViewComponent::onMenuCommand)
 		EVT_TREE_ITEM_RIGHT_CLICK(wxID_ANY, TreeListViewComponent::onContextMenu)
@@ -59,7 +59,7 @@ namespace ide
 		_T("Ioannis Lilis <lilis@ics.forth.gr>"),
 		_T("alpha")
 	);
-	IMPLEMENT_WX_COMPONENT_(TreeListViewComponent, wxTreeListCtrl, DockableComponent);
+	IMPLEMENT_WX_COMPONENT_(TreeListViewComponent, wxCustomTreeListCtrl, DockableComponent);
 
 	//-----------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ namespace ide
 
 	wxWindow* TreeListViewComponent::GenerateWindow(wxWindow* parent)
 	{
-		wxTreeListCtrl::Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 
+		wxCustomTreeListCtrl::Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 
 			wxLC_REPORT | wxTR_HAS_BUTTONS | wxTR_COLUMN_LINES | wxTR_ROW_LINES |
 			wxTR_FULL_ROW_HIGHLIGHT | wxTR_MULTIPLE);
 		menu = popupMenu.GenerateMenu(new ComponentMenu);
@@ -341,12 +341,12 @@ namespace ide
 			++ignoreCollapseAndExpandChanges;
 			bool hadChildren = HasChildren(node);
 			bool wasExpanded = IsExpanded(node);
-			wxTreeListCtrl::SetItemHasChildren(node);
-			wxTreeListCtrl::Collapse(node);
-			wxTreeListCtrl::Expand(node);
+			wxCustomTreeListCtrl::SetItemHasChildren(node);
+			wxCustomTreeListCtrl::Collapse(node);
+			wxCustomTreeListCtrl::Expand(node);
 			if (!wasExpanded)
-				wxTreeListCtrl::Collapse(node);
-			wxTreeListCtrl::SetItemHasChildren(node, hadChildren);
+				wxCustomTreeListCtrl::Collapse(node);
+			wxCustomTreeListCtrl::SetItemHasChildren(node, hadChildren);
 			--ignoreCollapseAndExpandChanges;
 		}
 	}
@@ -465,7 +465,7 @@ namespace ide
 	EXPORTED_FUNCTION(TreeListViewComponent, void, SetItemHasChildren, (uint serial, bool val))
 	{
 		if (wxTreeItemId node = GetNode(serial))
-			wxTreeListCtrl::SetItemHasChildren(node, val);
+			wxCustomTreeListCtrl::SetItemHasChildren(node, val);
 	}
 
 	//-----------------------------------------------------------------------
@@ -473,7 +473,7 @@ namespace ide
 	EXPORTED_FUNCTION(TreeListViewComponent, void, Collapse, (uint serial))
 	{
 		if (wxTreeItemId node = GetNode(serial))
-			wxTreeListCtrl::Collapse(node);
+			wxCustomTreeListCtrl::Collapse(node);
 	}
 
 	//-----------------------------------------------------------------------
@@ -481,7 +481,7 @@ namespace ide
 	EXPORTED_FUNCTION(TreeListViewComponent, void, Expand, (uint serial))
 	{
 		if (wxTreeItemId node = GetNode(serial))
-			wxTreeListCtrl::Expand(node);
+			wxCustomTreeListCtrl::Expand(node);
 	}
 
 	//-----------------------------------------------------------------------
@@ -489,7 +489,7 @@ namespace ide
 	EXPORTED_FUNCTION(TreeListViewComponent, void, EnsureVisible, (uint serial))
 	{
 		if (wxTreeItemId node = GetNode(serial))
-			wxTreeListCtrl::EnsureVisible(node);
+			wxCustomTreeListCtrl::EnsureVisible(node);
 	}
 
 	//-----------------------------------------------------------------------
@@ -497,7 +497,7 @@ namespace ide
 	EXPORTED_FUNCTION(TreeListViewComponent, void, ScrollTo, (uint serial))
 	{
 		if (wxTreeItemId node = GetNode(serial))
-			wxTreeListCtrl::ScrollTo(node);
+			wxCustomTreeListCtrl::ScrollTo(node);
 	}
 
 	//-----------------------------------------------------------------------

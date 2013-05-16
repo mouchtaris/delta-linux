@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="Deltaide Common Libs Debug"
+	>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="wxmsw29ud_adv.lib wxmsw29ud_aui.lib wxmsw29ud_html.lib wxmsw29ud_core.lib wxmsw29ud_richtext.lib wxbase29ud.lib wxbase29ud_xml.lib wxmsw29ud_propgrid.lib wxtiffd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxexpatd.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib oleacc.lib iphlpapi.lib"
+		AdditionalLibraryDirectories="&quot;$(DELTAIDEDEPS)\lib&quot;;&quot;$(WXWINDIR)\lib\vc_dll&quot;"
+	/>
+</VisualStudioPropertySheet>

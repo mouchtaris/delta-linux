@@ -261,7 +261,12 @@ void LensViewWindow::Display (
 
 	assert(IsInitialised());
 
-	int oldFunction = mainCanvasDC.GetLogicalFunction();
+#if wxCHECK_VERSION(2, 9, 0)
+	wxRasterOperationMode oldFunction;
+#else
+	int oldFunction;
+#endif
+	oldFunction = mainCanvasDC.GetLogicalFunction();
 	mainCanvasDC.SetLogicalFunction(wxXOR);
 	mainCanvasDC.SetBrush(*wxTRANSPARENT_BRUSH);
 	mainCanvasDC.SetPen(wxPen(*wxWHITE, 2, wxLONG_DASH));	

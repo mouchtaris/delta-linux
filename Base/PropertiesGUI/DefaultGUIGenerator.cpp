@@ -11,58 +11,11 @@
 
 #include "CreateGUIPropertiesVisitor.h"
 #include "ChangeGUIPropertiesVisitor.h"
+#include "PropertyGridPortability.h"
 
 #include "Adaptors.h"
 #include "Algorithms.h"
 #include "StringUtils.h"
-
-#include <wx/window.h>
-#include <wx/dialog.h>
-#include <wx/textctrl.h>
-#include <wx/toolbar.h>
-#include <wx/stattext.h>
-
-
-#if _MSC_VER == 1600 && defined (NO_THIRD_PARTY_BASE)
-#include <wx/propgrid/propgrid.h>
-#include <wx/propgrid/propdev.h>
-#include <wx/propgrid/advprops.h>
-#include <wx/propgrid/extras.h>
-#include <wx/propgrid/manager.h>
-
-typedef wxMultiChoiceProperty		wxMultiChoicePropertyClass;
-#define WX_ARRAY_INT_FROM_VARIANT	wxArrayIntFromVariant
-#define WX_PG_ID_IS_OK(ID)			((ID) != NULL)
-#define WX_PG_ID_GET_NAME(ID)		(ID)->GetName()
-#define wxPGIdToPtr(ID)				(ID)
-#define GET_NEXT_SIBLING_PROPERTY	GetNextSiblingProperty
-
-class wxParentPropertyClass: public wxPGProperty {
-public:
-	wxParentPropertyClass (String const& label) throw():
-		wxPGProperty(label, String::FromAscii(""))
-		{ }
-};
-
-#define WX_PARENT_PROPERTY__ADD_CHILD(PARENT, CHILD)	(PARENT)->AddPrivateChild(CHILD);
-
-#else
-#include "propgrid.h"
-#include "propdev.h"
-#include "advprops.h"
-#include "manager.h"
-
-#define WX_ARRAY_INT_FROM_VARIANT	wxPGVariantToArrayInt
-#define WX_PG_ID_IS_OK(ID)			ID.IsOk()
-#define WX_PG_ID_GET_NAME(ID)		ID.GetName()
-#define wxPGIdToPtr(ID)				ID.GetPropertyPtr()
-#define GET_NEXT_SIBLING_PROPERTY	GetNextSibling
-
-#define WX_PARENT_PROPERTY__ADD_CHILD(PARENT, CHILD)	(PARENT)->AddChild(CHILD);
-#endif
-#define wxPGIdGen(PTR)									wxPGId(PTR)
-
-#include "Streams.h"
 
 ////////////////////////////////////////////////////////////////////////
 // Properties dialog class
@@ -101,6 +54,31 @@ BEGIN_EVENT_TABLE(PropertiesDialog, wxDialog)
 EVT_PG_CHANGED(wxID_ANY, PropertiesDialog::OnPropertyGridChange)
 END_EVENT_TABLE()
 
+template<class T> static int CalculateShownProperties(T* pg) {
+	int count = 0;
+
+#if wxCHECK_VERSION(2, 9, 0)
+	const int flags = wxPG_PROP_PROPERTY | wxPG_PROP_AGGREGATE | wxPG_PROP_COLLAPSED | wxPG_PROP_CATEGORY;
+	for (wxPropertyGridIterator i = pg->GetIterator(flags); !i.AtEnd(); ++i) {
+		if (pg->IsPropertyShown(*i)) {
+			pg->Expand(*i);
+			count += (int) (*i)->GetChildCount() + 1;
+		}
+	}
+#else
+	wxPGId id = pg->GetFirst();
+	while(WX_PG_ID_IS_OK(id)) {
+		if (pg->IsPropertyShown(id)) {
+			pg->Expand(id);
+			count += (int) pg->GetChildrenCount(id) + 1;
+		}
+		id = pg->wxPropertyContainerMethods::GET_NEXT_SIBLING_PROPERTY(id);
+	}
+#endif
+
+	return count;
+}
+
 namespace conf {
 
 ////////////////////////////////////////////////////////////////////////
@@ -113,26 +91,20 @@ wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 	m_propGrid = new wxPropertyGrid(
 		parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
 			wxNO_BORDER | wxPG_BOLD_MODIFIED | wxTAB_TRAVERSAL | wxPG_TOOLTIPS
+#if wxCHECK_VERSION(2, 9, 0)
+			| wxPG_SPLITTER_AUTO_CENTER
+#endif
 	);
 	m_propGrid->SetExtraStyle(wxPG_EX_HELP_AS_TOOLTIPS);
 
 	this->generateGUI(propTable);
 	m_propGrid->SetPropertyAttributeAll(wxPG_BOOL_USE_CHECKBOX, (long) 1);
-	
-	int count = 0;
-	wxPGId id = m_propGrid->GetFirst();
-	while(WX_PG_ID_IS_OK(id)) {
-		if (m_propGrid->IsPropertyShown(id)) {
-			m_propGrid->Expand(id);
-			count += (int) m_propGrid->GetChildrenCount(id) + 1;
-		}
-		id = m_propGrid->wxPropertyContainerMethods::GET_NEXT_SIBLING_PROPERTY(id);
-	}
 
 	// The propertyGrid doesn't calculate the size correctly
+	int count = CalculateShownProperties(m_propGrid);
 	wxSize size(std::min(640, count * 100 + 100), std::min(480, count * 20 + 20));
-	m_propGrid->SetMinSize(size);
 	m_propGrid->SetSize(size);
+	m_propGrid->SetMinSize(size);
 
 	return m_propGrid;
 }
@@ -150,6 +122,9 @@ wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 		parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
 			wxNO_BORDER | wxPG_BOLD_MODIFIED | wxTAB_TRAVERSAL |
 				wxPG_TOOLTIPS | wxPG_TOOLBAR
+#if wxCHECK_VERSION(2, 9, 0)
+			| wxPG_SPLITTER_AUTO_CENTER
+#endif
 	);
 	mngr->SetExtraStyle(wxPG_EX_HELP_AS_TOOLTIPS);
 
@@ -161,21 +136,11 @@ wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 	}
 	mngr->SetPropertyAttributeAll(wxPG_BOOL_USE_CHECKBOX, (long) 1);
 
-	int count = 0;
-	wxPGId id = m_propGrid->GetFirst();
-	while(WX_PG_ID_IS_OK(id)) {
-		if (m_propGrid->IsPropertyShown(id)) {
-			m_propGrid->Expand(id);
-			count += (int) m_propGrid->GetChildrenCount(id) + 1;
-		}
-		id = m_propGrid->wxPropertyContainerMethods::GET_NEXT_SIBLING_PROPERTY(id);
-	}
-
 	// The propertyGrid doesn't calculate the size correctly
-	count = std::min(10, count);
+	int count = std::min(10, CalculateShownProperties(mngr));
 	wxSize size(640, std::min(480, count * 20 + 20));
-	m_propGrid->SetMinSize(size);
-	m_propGrid->SetSize(size);
+	mngr->SetSize(size);
+	mngr->SetMinSize(size);
 
 	return mngr;
 }
@@ -293,7 +258,7 @@ void DefaultGUIGenerator::createPGPropertyHelper(const AggregateProperty& proper
 			iter->second->Accept(iter->first, &visitor);
 			prop = visitor.GetGeneratedProperty();
 		}
-		WX_PARENT_PROPERTY__ADD_CHILD(parent, prop);
+		WX_PARENT_PROPERTY_ADD_CHILD(parent, prop);
 	}
 }
 
@@ -314,7 +279,9 @@ void DefaultGUIGenerator::generateGUI (const AggregateProperty& table, wxPGPrope
 			this->collapse(prop);
 		}
 	}
+#if !wxCHECK_VERSION(2, 9, 0)
 	setSplitterLeft();
+#endif
 }
 
 //**********************************************************************
@@ -362,6 +329,7 @@ bool DefaultGUIGenerator::getValuesFromGUI (
 
 static bool PropertyGridHasCategory(wxPropertyGrid* pg, const String& category)
 {
+#ifdef THIRD_PARTY_PROPGRID
 	wxPGId id = pg->GetFirstCategory();
 	while (WX_PG_ID_IS_OK(id)) {
 		if (WX_PG_ID_GET_NAME(id) == category)
@@ -369,6 +337,10 @@ static bool PropertyGridHasCategory(wxPropertyGrid* pg, const String& category)
 		id = pg->GetNextCategory(id);
 	}
 	return false;
+#else
+	wxPGProperty* p = pg->GetProperty(category);
+	return p && wxDynamicCast(p, wxPropertyCategory);
+#endif
 }
 
 //**********************************************************************
@@ -378,7 +350,7 @@ wxPGProperty* DefaultGUIGenerator::appendToGrid (wxPropertyGrid *pg, bool readOn
 	wxPGId id;
 	if (!category.empty()) {
 		if (!PropertyGridHasCategory(pg, category))
-			pg->AppendCategory(category);
+			pg->APPEND_CATEGORY(category);
 		pg->SetCurrentCategory(category);
 	}
 	if (!parent) {

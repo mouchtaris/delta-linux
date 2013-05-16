@@ -58,8 +58,14 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ClientDC,clientdc)
 WX_FUNC_ARGRANGE_START(clientdc_construct, 0, 1, Nil)
 	wxClientDC *wxdc = (wxClientDC*) 0;
 	DeltaWxClientDC *dc = (DeltaWxClientDC*) 0;
-	if (n == 0)
+	if (n == 0){
+#if wxCHECK_VERSION(2, 9, 0)
+		DPTR(vm)->Error("in wxWidgets 2.9+ clientdc_construct should necessarily take a window argument");
+		DLIB_RESET_RETURN;
+#else
 		wxdc = new wxClientDC();
+#endif
+	}
 	else {
 		DLIB_WXGET_BASE(window, Window, win)
 		wxdc = new wxClientDC(win);

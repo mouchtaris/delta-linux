@@ -107,7 +107,7 @@ void TipWindow::OnMouseClick(wxMouseEvent& event) {
 
 	Close(); 
 	if (event.RightIsDown())
-		parent->ProcessEvent(event);
+		parent->GetEventHandler()->ProcessEvent(event);
 }
 
 //-----------------------------------------------------------------------
@@ -245,7 +245,7 @@ void wxTipWindowView::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
 void wxTipWindowView::OnMouseClick(wxMouseEvent& event){ 
 	if (event.RightIsDown())
-		GetParent()->ProcessEvent(event);
+		GetParent()->GetEventHandler()->ProcessEvent(event);
 	else
 		m_parent->Close(); 
 }

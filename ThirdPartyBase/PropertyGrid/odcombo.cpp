@@ -17,6 +17,10 @@
 // headers
 // ----------------------------------------------------------------------------
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma implementation "odcombo.h"
 #endif
@@ -3799,3 +3803,5 @@ wxClientData* wxPGOwnerDrawnComboBox::DoGetItemClientObject(wxODCIndex n) const
 }
 
 #endif // wxUSE_COMBOBOX
+
+#endif //!defined wxUSE_PROPGRID

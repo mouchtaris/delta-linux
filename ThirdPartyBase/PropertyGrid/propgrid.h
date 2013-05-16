@@ -12,6 +12,10 @@
 #ifndef __WX_PROPGRID_PROPGRID_H__
 #define __WX_PROPGRID_PROPGRID_H__
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma interface "propgrid.cpp"
 #endif
@@ -44,7 +48,6 @@
 
 // Doxygen special includes
 #ifdef DOXYGEN
-    #include "pg_dox_mainpage.h"
     #include "propdev.h"
 #endif
 
@@ -7224,6 +7227,8 @@ protected:
 #endif
 
 // -----------------------------------------------------------------------
+
+#endif //!defined wxUSE_PROPGRID
 
 #endif // __WX_PROPGRID_PROPGRID_H__
 

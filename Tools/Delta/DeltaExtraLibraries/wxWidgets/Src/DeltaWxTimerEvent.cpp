@@ -68,8 +68,22 @@ WX_FUNC_ARGRANGE_START(timerevent_construct, 0, 2, Nil)
 	int timerid = 0;
 	int interval = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(timerid) }
-	if (n >= 2) { WX_GETNUMBER_DEFINED(interval) }
-	wxTimerEvent *wxtimerevt = new wxTimerEvent(timerid, interval);
+	if (n >= 2) {
+#if wxCHECK_VERSION(2, 9, 0)
+		DPTR(vm)->Error("in wxWidgets 2.9+ timerevent_construct cannot take an interval argument");
+		DLIB_RESET_RETURN;
+#else
+		WX_GETNUMBER_DEFINED(interval)
+#endif
+	}
+	wxTimerEvent *wxtimerevt;
+#if wxCHECK_VERSION(2, 9, 0)
+	wxtimerevt = new wxTimerEvent();
+	if (timerid)
+		wxtimerevt->SetId(timerid);
+#else
+	wxtimerevt = new wxTimerEvent(timerid, interval);
+#endif
 	DeltaWxTimerEvent *timerevt = DNEWCLASS(DeltaWxTimerEvent, (wxtimerevt));
 	WX_SETOBJECT(TimerEvent, timerevt)
 }

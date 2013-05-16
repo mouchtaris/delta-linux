@@ -50,11 +50,11 @@ IViewsFindDialog::IViewsFindDialog(
 	lookInSizer->Add(comboxLookIn, 0, wxALIGN_CENTER, 5);
 
 	findInFiles->Show(false);
-	staticSizer->Remove(findInFiles);
+	staticSizer->Detach(findInFiles);
 	staticSizer->Layout();
 
 	buttonBookmarkAll->Show(false);
-	buttonSizer->Remove(buttonBookmarkAll);
+	buttonSizer->Detach(buttonBookmarkAll);
 	buttonSizer->Layout();
 
 	gridSizer->Layout();

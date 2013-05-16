@@ -12,6 +12,10 @@
 #ifndef _WX_PROPGRID_PROPDEV_H_
 #define _WX_PROPGRID_PROPDEV_H_
 
+#include <wx/defs.h>
+
+#if !wxUSE_PROPGRID // Skip if available as native wx code (2.9+)
+
 // -----------------------------------------------------------------------
 
 #ifdef _WX_PROPGRID_ADVPROPS_H_
@@ -1690,5 +1694,7 @@ protected:
 // -----------------------------------------------------------------------
 
 #endif // !DOXYGEN
+
+#endif //!defined wxUSE_PROPGRID
 
 #endif // _WX_PROPGRID_PROPDEV_H_

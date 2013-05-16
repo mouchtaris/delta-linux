@@ -70,7 +70,7 @@ const String DateProperty::Serialize (void) const { return m_value.FormatDate();
 
 //**********************************************************************
 
-bool DateProperty::Deserialize (const String& str) { return m_value.ParseDate(str.c_str()) != NULL; }
+bool DateProperty::Deserialize (const String& str) { return m_value.WX_DATE_TIME_PARSE_DATE(str) != NULL; }
 
 ////////////////////////////////////////////////////////////////////////
 // FileListProperty class

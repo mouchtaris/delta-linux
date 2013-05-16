@@ -85,7 +85,7 @@ WX_FUNC_ARGRANGE_START(cursor_construct, 0, 4, Nil)
 			int hotSpotX = 0, hotSpotY = 0;
 			if (n >= 3) { WX_GETNUMBER_DEFINED(hotSpotX) }
 			if (n >= 4) { WX_GETNUMBER_DEFINED(hotSpotY) }
-			wxcursor = new wxCursor(cursorName, type, hotSpotX, hotSpotY);
+			wxcursor = new wxCursor(cursorName, (wxBitmapType) type, hotSpotX, hotSpotY);
 #else
 			DLIB_ERROR_CHECK(
 				true,

@@ -30,14 +30,14 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\Scripts\DeltaideCommonIncludesRelease.props" />
-    <Import Project="..\..\..\Scripts\DeltaideCommonLibsRelease.props" />
+    <Import Project="..\..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesRelease.props" />
+    <Import Project="..\..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsRelease.props" />
     <Import Project="..\..\..\Scripts\CommonPropertiesForEditorBase.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\Scripts\DeltaideCommonIncludesDebug.props" />
-    <Import Project="..\..\..\Scripts\DeltaideCommonLibsDebug.props" />
+    <Import Project="..\..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesDebug.props" />
+    <Import Project="..\..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsDebug.props" />
     <Import Project="..\..\..\Scripts\CommonPropertiesForEditorBase.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -220,6 +220,8 @@
     <ClInclude Include="..\WXScintilla\PlatWX.h" />
     <ClInclude Include="..\WXScintilla\ScintillaWX.h" />
     <ClInclude Include="..\WXScintilla\wxscintilla.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Base\BaseLibrary\BaseLibrary.vcxproj">

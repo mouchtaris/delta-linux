@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1253"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="CommonPropertiesForThirdPartyBase"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories=""
+		PreprocessorDefinitions="WXMAKINGDLL_ADDITIONALWIDGETS;WXMAKINGDLL_KEYBINDER;WXMAKINGDLL_SCI"
+	/>
+</VisualStudioPropertySheet>

@@ -15,6 +15,10 @@
 #include "wxWrapperUtilFunctions.h"
 //
 
+#if !wxCHECK_VERSION(2, 9, 0)
+typedef int wxImageResizeQuality;
+#endif
+
 ////////////////////////////////////////////////////////////////
 
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(image, name)
@@ -553,7 +557,7 @@ WX_FUNC_ARGRANGE_START(image_rescale, 3, 4, Nil)
 	WX_GETNUMBER(height)
 	int quality = wxIMAGE_QUALITY_NORMAL;
 	if (n >= 4) { WX_GETDEFINE_DEFINED(quality) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rescale(width, height, quality))
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rescale(width, height, (wxImageResizeQuality) quality))
 }
 
 WX_FUNC_ARGRANGE_START(image_resize, 3, 6, Nil)
@@ -622,7 +626,7 @@ WX_FUNC_ARGRANGE_START(image_scale, 3, 4, Nil)
 	WX_GETNUMBER(height)
 	int quality = wxIMAGE_QUALITY_NORMAL;
 	if (n >= 4) { WX_GETDEFINE_DEFINED(quality) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Scale(width, height, quality))
+	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Scale(width, height, (wxImageResizeQuality) quality))
 }
 
 WX_FUNC_ARGRANGE_START(image_size, 3, 6, Nil)

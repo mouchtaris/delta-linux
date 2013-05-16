@@ -26,23 +26,23 @@ typedef std::list<range_type>							range_type_list;
 
 ////////////////////////////////////////////////////////////////////////
 
-template <class TString>
+template <class TString, class TChar>
 const TString strip (
-		const TString&						in,
-		const typename TString::value_type* symbols
+		const TString&			in,
+		const typename TChar*	symbols
 	)
 {
 	TString result;
-	return strip<TString>(in, result, symbols);
+	return strip<TString, TChar>(in, result, symbols);
 }
 
 //**********************************************************************
 
-template <class TString>
+template <class TString, class TChar>
 const TString& strip (
-		const TString&						in,
-		TString&							storage,
-		const typename TString::value_type* symbols
+		const TString&			in,
+		TString&				storage,
+		const typename TChar*	symbols
 	)
 {
 	typename TString::size_type startPos = in.find_first_not_of(symbols);
@@ -69,11 +69,11 @@ _BASE_API void stringrangetokenizer (
 
 //**********************************************************************
 
-template <typename TContainer, class TString>
+template <typename TContainer, class TString, class TChar>
 void stringtokenizer (
-			TContainer&									container,
-			const TString&								in,
-			const typename TString::value_type* const	delimiters
+			TContainer&			container,
+			const TString&		in,
+			const TChar* const	delimiters
 ) {
 	const typename TString::size_type len = in.length();
 	typename TString::size_type i = 0;

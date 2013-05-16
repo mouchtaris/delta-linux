@@ -61,7 +61,15 @@ DLIB_FUNC_START(objectrefdata_construct, 0, Nil)
 }
 
 DLIB_FUNC_START(objectrefdata_destruct, 1, Nil)
+#if wxCHECK_VERSION(2, 9, 0)
+	DLIB_WXGET(objectrefdata, DeltaWxObjectRefData, objrefdata)
+	if (wxObjectRefData* nativeInst = (wxObjectRefData*) objrefdata->GetNativeInstance())
+		while(nativeInst->GetRefCount() > 0)	//loop equivalent to delete nativeInst; but used because of private dtor
+			nativeInst->DecRef();
+	DDELETE(objrefdata);
+#else
 	DLIB_WXDELETE(objectrefdata, ObjectRefData, objrefdata)
+#endif
 }
 
 DLIB_FUNC_START(objectrefdata_getrefcount, 1, Nil)

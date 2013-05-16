@@ -25,8 +25,7 @@ DELTA_LIBRARY_GETAPI_IMPL(wx_getapi,api)
 DWXWIDGETS_CFUNC void* Install (void) {
 	wxWidgets::DefineInit();
 
-	api = DeltaObject::NewObject();
-	DPTR(api)->IncRefCounter((DeltaValue*) 0);
+	api = DeltaLibraryObjectCreator::CreateAPI();
 	DeltaLibFuncBinder::Add("wx_getapi", wx_getapi_LibFunc);
 
 	Install_DeltaWxGlobalFunctions_Lib(api);

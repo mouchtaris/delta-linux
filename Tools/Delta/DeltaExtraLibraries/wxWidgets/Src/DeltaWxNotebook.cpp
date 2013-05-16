@@ -346,7 +346,7 @@ WX_FUNC_ARGRANGE_START(notebook_insertpage, 4, 6, Nil)
 }
 
 DLIB_FUNC_START(notebook_onselchange, 2, Nil)
-#if defined (__WXMSW__)
+#if defined (__WXMSW__) && wxVERSION_NUMBER < 2902	//TODO: maybe totally remove in wxWidgets 2.9?
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	DLIB_WXGET_BASE(notebookevent, NotebookEvent, ev)
 	notebk->OnSelChange(*ev);

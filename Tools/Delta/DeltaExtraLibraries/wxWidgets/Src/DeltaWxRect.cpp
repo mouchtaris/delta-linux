@@ -419,11 +419,11 @@ DLIB_FUNC_START(rect_union, 2, Nil)
 DLIB_FUNC_START(rect_equal, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, rect2)
-	WX_SETBOOL(rect->operator==(*rect2))
+	WX_SETBOOL(*rect ==*rect2)
 }
 
 DLIB_FUNC_START(rect_notequal, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, rect2)
-	WX_SETBOOL(rect->operator!=(*rect2))
+	WX_SETBOOL(*rect != *rect2)
 }

@@ -28,7 +28,7 @@
 namespace ide
 {
 	class _IDE_API TreeListViewComponent :
-		public wxTreeListCtrl,
+		public wxCustomTreeListCtrl,
 		public DockableComponent
 	{
 		DECLARE_IDE_COMPONENT(TreeListViewComponent);

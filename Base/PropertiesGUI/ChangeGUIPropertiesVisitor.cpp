@@ -13,34 +13,6 @@
 #include "Algorithms.h"
 #include "PropertyUtils.h"
 
-#include <wx/window.h>
-#include <wx/dialog.h>
-#include <wx/textctrl.h>
-#include <wx/toolbar.h>
-#include <wx/stattext.h>
-
-#if _MSC_VER == 1600 && defined (NO_THIRD_PARTY_BASE)
-#include <wx/propgrid/propgrid.h>
-#include <wx/propgrid/propdev.h>
-#include <wx/propgrid/advprops.h>
-#include <wx/propgrid/extras.h>
-#include <wx/propgrid/manager.h>
-
-typedef wxMultiChoiceProperty wxMultiChoicePropertyClass;
-#define WX_ARRAY_INT_FROM_VARIANT wxArrayIntFromVariant
-
-class wxParentPropertyClass: public wxPGProperty {};
-
-#else
-#include "propgrid.h"
-#include "propdev.h"
-#include "advprops.h"
-#include "extraprops.h"
-#include "manager.h"
-
-#define WX_ARRAY_INT_FROM_VARIANT wxPGVariantToArrayInt
-#endif
-
 namespace conf {
 
 ////////////////////////////////////////////////////////////////////////
@@ -52,10 +24,12 @@ namespace conf {
 		prop->SetValue(value)
 
 #define EXTRACT_VALUE_AS_VARIANT(type, method) \
-	EXTRACT_VALUE(type, m_guiProp->GetValueAsVariant().method())
+	EXTRACT_VALUE(type, m_guiProp->GET_VALUE_AS_VARIANT().method())
 
-#define EXTRACT_VALUE_AS_VARIANT_CAST(type) \
-	EXTRACT_VALUE(type, (*wxGetVariantCast(m_guiProp->GetValueAsVariant(), type)))
+#define EXTRACT_VALUE_AS_VARIANT_CAST(type)									\
+	type* __v = wxGetVariantCast(m_guiProp->GET_VALUE_AS_VARIANT(), type);	\
+	if (!__v) return;														\
+	EXTRACT_VALUE(type, *__v)
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -109,7 +83,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id), StringProperty* prop)
 {
 	// wxStringProperty
-	EXTRACT_VALUE(String, m_guiProp->GetValueAsString());
+	EXTRACT_VALUE(String, PG_GET_VALUE_AS_STRING(m_guiProp));
 }
 
 //**********************************************************************
@@ -117,7 +91,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id), StdStringProperty* prop)
 {
 	// wxStringProperty
-	EXTRACT_VALUE(std::string, util::str2std(m_guiProp->GetValueAsString()));
+	EXTRACT_VALUE(std::string, util::str2std(PG_GET_VALUE_AS_STRING(m_guiProp)));
 }
 
 //**********************************************************************
@@ -133,7 +107,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id), EnumStringProperty* prop)
 {
 	// wxEnumProperty
-	EXTRACT_VALUE(String, m_guiProp->GetValueAsString());
+	EXTRACT_VALUE(String, PG_GET_VALUE_AS_STRING(m_guiProp));
 }
 
 //**********************************************************************
@@ -169,7 +143,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id), FileProperty* prop)
 {
 	// wxFileProperty
-	EXTRACT_VALUE(String, m_guiProp->GetValueAsString());
+	EXTRACT_VALUE(String, PG_GET_VALUE_AS_STRING(m_guiProp));
 }
 
 //**********************************************************************
@@ -177,7 +151,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id), DirectoryProperty* prop)
 {
 	// wxDirProperty
-	EXTRACT_VALUE(String, m_guiProp->GetValueAsString());
+	EXTRACT_VALUE(String, PG_GET_VALUE_AS_STRING(m_guiProp));
 }
 
 //**********************************************************************
@@ -207,7 +181,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id), AggregateListProperty* prop)
 { 
 	// wxArrayStringProperty
-	wxArrayString const& value = m_guiProp->GetValueAsVariant().GetArrayString();
+	wxArrayString const& value = m_guiProp->GET_VALUE_AS_VARIANT().GetArrayString();
 	AggregateListProperty::AggregatePropertyList& l = prop->GetPropertyList();
 
 	m_changedValue = value.GetCount() != l.size();
@@ -215,7 +189,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 		AggregateListProperty::AggregatePropertyList::iterator iter = l.begin(), end = l.end();
 		for(uint i = 0; iter != end; ++iter, ++i) {
 			wxParentPropertyClass* p = DefaultGUIGenerator::CreatePGProperty(**iter);
-			m_changedValue = value[i] != p->GetValueAsString(0);
+			m_changedValue = value[i] != PG_GET_VALUE_AS_STRING(p);
 			delete p;
 			if (m_changedValue)
 				break;
@@ -242,14 +216,19 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id), MultiChoiceProperty* prop)
 {
 	// wxMultiChoiceProperty
-	wxMultiChoicePropertyClass* pg = static_cast<wxMultiChoicePropertyClass*>(m_guiProp);
-	wxPGChoiceInfo info;
-	pg->GetChoiceInfo(&info);
-	const wxArrayString& choices = info.m_choices->GetLabels();
-	const wxArrayInt& indices = WX_ARRAY_INT_FROM_VARIANT(pg->DoGetValue());
+	wxPG_PROPCLASS(wxMultiChoiceProperty)* pg = static_cast<wxPG_PROPCLASS(wxMultiChoiceProperty)*>(m_guiProp);
+#ifdef THIRD_PARTY_PROPGRID
+	wxPGChoiceInfo choiceInfo;
+	pg->GetChoiceInfo(&choiceInfo);
+	const wxArrayString& choices = choiceInfo.m_choices->GetLabels();
+	const wxArrayInt& indices = wxPGVariantToArrayInt(pg->DoGetValue());
 	wxArrayString selections;
 	for (uint i = 0; i < indices.GetCount(); ++i)
 		selections.Add(choices[indices[i]]);
+#else
+	const wxArrayString choices = pg->GetChoices().GetLabels();	
+	const wxArrayString selections = pg->GetValue().GetArrayString();
+#endif
 
 	const StringVec oldChoices = prop->GetAllChoices();
 	const StringVec oldSelections = prop->GetSelectedChoices();
@@ -284,7 +263,7 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 void ChangeGUIPropertiesVisitor::VisitStringListProperty (StringListProperty* prop)
 {
 	// wxArrayStringProperty
-	wxArrayString const& value = m_guiProp->GetValueAsVariant().GetArrayString();
+	const wxArrayString& value = m_guiProp->GET_VALUE_AS_VARIANT().GetArrayString();
 
 	m_changedValue = value.GetCount() != prop->GetValuesCount();
 	if (!m_changedValue) {

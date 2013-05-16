@@ -73,7 +73,7 @@ namespace ide
 			return true;
 
 		StringList tokens;
-		util::stringtokenizer(tokens, path, String(_T("/")));
+		util::stringtokenizer(tokens, path, _T("/"));
 
 		String last;
 		if (!tokens.empty())
@@ -111,7 +111,7 @@ namespace ide
 			return false;
 
 		StringList tokens;
-		util::stringtokenizer(tokens, path, String(_T("/")));
+		util::stringtokenizer(tokens, path, _T("/"));
 
 		String last;
 		if (!tokens.empty())
@@ -147,7 +147,7 @@ namespace ide
 			return false;
 
 		StringList tokens;
-		util::stringtokenizer(tokens, path, String(_T("/")));
+		util::stringtokenizer(tokens, path, _T("/"));
 
 		String last;
 		if (!tokens.empty())
@@ -280,7 +280,7 @@ namespace ide
 		static UserCommand null_UserCommand(UCT_INVALID);
 
 		StringList tokens;
-		util::stringtokenizer(tokens, path, String(_T("/")));
+		util::stringtokenizer(tokens, path, _T("/"));
 
 		if (tokens.empty())
 			return *this;
@@ -307,7 +307,7 @@ namespace ide
 		static UserCommand null_UserCommand(UCT_INVALID);
 
 		StringList tokens;
-		util::stringtokenizer(tokens, path, String(_T("/")));
+		util::stringtokenizer(tokens, path, _T("/"));
 
 		if (tokens.empty())
 			return *this;

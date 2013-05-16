@@ -212,7 +212,7 @@ const std::string IViewsTextSource::GetPath (void) const
 
 //-----------------------------------------------------------------------
 const std::string IViewsTextSource::GetLineText (const int line) const{
-	assert(line < lineHolder.size());
+	assert(line < (int) lineHolder.size());
 	return lineHolder[line];
 }
 
@@ -302,7 +302,7 @@ SlotRenderingInfo * IViewsTextSource::GetNthSlotRenderingInfoFromList(
 		SlotRenderingInfoPtrList &	slots,
 		const int					distance
 	){
-	assert(distance >= 0 && distance < slots.size());
+	assert(distance >= 0 && (size_t) distance < slots.size());
 
 	SlotRenderingInfoPtrList::iterator i = slots.begin();
 	std::advance(i, distance);

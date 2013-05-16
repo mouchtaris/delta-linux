@@ -114,15 +114,6 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Point, point,
 
 ////////////////////////////////////////////////////////////////
 
-#define WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, func)								\
-	const wxPoint &point##Ref = point->func;										\
-	if (&point##Ref == point) {														\
-		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);								\
-	} else {																		\
-		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(point##Ref)));	\
-		WX_SETOBJECT(Point, retval)													\
-	}
-
 WX_FUNC_ARGRANGE_START(point_construct, 0, 2, Nil)
 	wxPoint *wxpoint = (wxPoint*) 0;
 	DeltaWxPoint *point = (DeltaWxPoint*) 0;
@@ -172,11 +163,11 @@ DLIB_FUNC_START(point_plus, 2, Nil)
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
 		if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
 			wxPoint *point2 = (wxPoint*) point_wr->GetCastToNativeInstance();
-			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator+(*point2))
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point + *point2))))
 		} else
 		if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
 			wxSize *size = (wxSize*) size_wr->GetCastToNativeInstance();
-			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator+(*size))
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point + *size))))
 		}
 	}
 }
@@ -187,11 +178,11 @@ DLIB_FUNC_START(point_minus, 2, Nil)
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
 		if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
 			wxPoint *point2 = (wxPoint*) point_wr->GetCastToNativeInstance();
-			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator-(*point2))
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point - *point2))))
 		} else
 		if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
 			wxSize *size = (wxSize*) size_wr->GetCastToNativeInstance();
-			WXPOINT_AVOID_UNNECESSARY_OBJECTS(point, operator-(*size))
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point - *size))))
 		}
 	}
 }
@@ -199,13 +190,13 @@ DLIB_FUNC_START(point_minus, 2, Nil)
 DLIB_FUNC_START(point_equal, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
 	DLIB_WXGETPOINT_BASE(point2)
-	WX_SETBOOL(point->operator==(*point2))
+	WX_SETBOOL(*point == *point2)
 }
 
 DLIB_FUNC_START(point_notequal, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
 	DLIB_WXGETPOINT_BASE(point2)
-	WX_SETBOOL(point->operator!=(*point2))
+	WX_SETBOOL(*point != *point2)
 }
 
 DLIB_FUNC_START(point_assign, 2, Nil)

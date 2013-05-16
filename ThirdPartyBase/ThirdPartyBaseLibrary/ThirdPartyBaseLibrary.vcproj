@@ -20,7 +20,7 @@
 			OutputDirectory="$(SolutionDir)\..\Build"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\Scripts\CommonPropertiesForThirdPartyBase.vsprops;..\..\Scripts\DeltaideCommonIncludesDebug.vsprops;..\..\Scripts\DeltaideCommonLibsDebug.vsprops"
+			InheritedPropertySheets="..\..\Scripts\$(WXWINVER)\CommonPropertiesForThirdPartyBase.vsprops;..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesDebug.vsprops;..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsDebug.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;THIRDPARTYBASELIBRARY_EXPORTS;WXMAKINGDLL_PROPGRID;__WX__"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;THIRDPARTYBASELIBRARY_EXPORTS;__WX__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -100,7 +100,7 @@
 			OutputDirectory="$(SolutionDir)\..\Build"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\Scripts\CommonPropertiesForThirdPartyBase.vsprops;..\..\Scripts\DeltaideCommonIncludesRelease.vsprops;..\..\Scripts\DeltaideCommonLibsRelease.vsprops"
+			InheritedPropertySheets="..\..\Scripts\$(WXWINVER)\CommonPropertiesForThirdPartyBase.vsprops;..\..\Scripts\$(WXWINVER)\DeltaideCommonIncludesRelease.vsprops;..\..\Scripts\$(WXWINVER)\DeltaideCommonLibsRelease.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>

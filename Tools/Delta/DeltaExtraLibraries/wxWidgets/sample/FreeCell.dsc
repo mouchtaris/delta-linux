@@ -1010,6 +1010,7 @@ function oninitfunc()
 	frame.show(true);
 	
 	//CREATE MENUS
+	
 	gameMenu = menu_construct();
 	helpMenu = menu_construct();
 	helpMenu.append(11, "Help\tF1", "Help about FreeCell");
@@ -1025,7 +1026,7 @@ function oninitfunc()
 	titles = ["&Game", "&Help"];
 	menuBar = menubar_construct(2, menus, titles);
 	frame.setmenubar(menuBar);
-	menuBar.enabletop(2, true);
+	menuBar.enabletop(1, true);
 
 //Start New Game at startup.
 	frame.dc = clientdc_construct(frame);

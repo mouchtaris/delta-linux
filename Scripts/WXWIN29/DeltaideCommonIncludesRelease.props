@@ -2,11 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup>
+    <IncludePath>$(WXWINDIR)\include;$(WXWINDIR)\lib\vc_dll\mswud;$(DELTAIDEDEPS)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(WXWIN28)\include;$(WXWIN28)\lib\vc_dll\mswu;$(DELTAIDEDEPS)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WXWIDGETS;WXUSINGDLL;_WIN32_WINNT=0x0501;_MT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+	  <AdditionalIncludeDirectories>$(WXWINDIR)\include;$(WXWINDIR)\lib\vc_dll\mswu;$(DELTAIDEDEPS)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories> 
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

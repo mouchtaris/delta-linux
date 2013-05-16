@@ -57,7 +57,16 @@ protected:
 private:
 	DECLARE_EVENT_TABLE();
 
-	void onDisplay(wxCommandEvent& event)	{ this->DoLogString(event.GetString().c_str(), 0); }
+	void onDisplay(wxCommandEvent& event) {
+		this->DoLogString(
+#if wxCHECK_VERSION(2, 9, 0)
+			event.GetString().c_str().AsChar(),
+#else
+			event.GetString().c_str(),
+#endif
+			0
+		);
+	}
 
 	virtual void display(const char* buffer, size_t len) {
 		if (buffer[len - 1] == '\n')
@@ -80,6 +89,13 @@ END_EVENT_TABLE();
 
 //-----------------------------------------------------------------------
 
+#if wxCHECK_VERSION(2, 9, 0)
+#include <wx/apptrait.h>
+class MaintainCLocaleTraits : public wxGUIAppTraits {
+public:
+	virtual void SetLocale(void) {}
+};
+#endif
 
 //----------------------------
 //-- class IDE
@@ -88,6 +104,9 @@ class IDE :
 	public wxApp
 {
 public:
+#if wxCHECK_VERSION(2, 9, 0)
+	virtual wxAppTraits * CreateTraits(void) { return new MaintainCLocaleTraits; }
+#endif
 	bool OnInit(void)
 	{
 #ifndef NDEBUG

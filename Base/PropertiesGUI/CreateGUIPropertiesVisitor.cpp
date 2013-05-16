@@ -11,17 +11,7 @@
 #include "Adaptors.h"
 #include "Algorithms.h"
 
-#include <wx/window.h>
-#include <wx/dialog.h>
-#include <wx/textctrl.h>
-#include <wx/toolbar.h>
-#include <wx/stattext.h>
-
-#include "propgrid.h"
-#include "propdev.h"
-#include "advprops.h"
 #include "extraprops.h"
-#include "manager.h"
 
 namespace conf {
 
@@ -29,7 +19,7 @@ namespace conf {
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, IntProperty* prop)
 {
-	m_guiProp = wxIntProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxIntProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -37,7 +27,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, IntProperty* prop
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, BoolProperty* prop)
 {
-	m_guiProp = wxBoolProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxBoolProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -45,7 +35,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, BoolProperty* pro
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, RealProperty* prop)
 {
-	m_guiProp = wxFloatProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxFloatProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -53,7 +43,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, RealProperty* pro
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, StringProperty* prop)
 {
-	m_guiProp = wxStringProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxStringProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -61,7 +51,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, StringProperty* p
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, StdStringProperty* prop)
 {
-	m_guiProp = wxStringProperty(prop->GetLabel(), util::std2str(id),
+	m_guiProp = PG_CREATE_PROP(wxStringProperty)(prop->GetLabel(), util::std2str(id),
 		util::std2str(prop->GetValue()));
 	SetBaseProperties(prop);
 }
@@ -70,7 +60,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, StdStringProperty
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, IntRangeProperty* prop)
 {
-	m_guiProp = wxIntProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxIntProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -82,8 +72,11 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, EnumStringPropert
 	StringVec::const_iterator iter = prop->GetOptions().begin();
 	for (; iter != prop->GetOptions().end(); ++iter)
 		options.Add(*iter);
-	m_guiProp = wxEnumProperty(prop->GetLabel(), util::std2str(id), options,
-		(int) prop->GetOption());
+#ifdef THIRD_PARTY_PROPGRID
+	m_guiProp = PG_CREATE_PROP(wxEnumProperty)(prop->GetLabel(), util::std2str(id), options, (int) prop->GetOption());
+#else
+	m_guiProp = PG_CREATE_PROP(wxEnumProperty)(prop->GetLabel(), util::std2str(id), options, wxArrayInt(), (int) prop->GetOption());
+#endif
 	SetBaseProperties(prop);
 }
 
@@ -95,7 +88,10 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, StringListPropert
 	StringVec::const_iterator iter = prop->GetValues().begin();
 	for (; iter != prop->GetValues().end(); ++iter)
 		strings.Add(*iter);
-	m_guiProp = wxArrayStringProperty(prop->GetLabel(), util::std2str(id), strings);
+	m_guiProp = PG_CREATE_PROP(wxArrayStringProperty)(prop->GetLabel(), util::std2str(id), strings);
+#if wxCHECK_VERSION(2, 9, 0)
+	m_guiProp->SetAttribute(_T("Delimiter"), _T(";"));
+#endif
 	SetBaseProperties(prop);
 }
 
@@ -103,7 +99,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, StringListPropert
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, AggregateProperty* prop)
 {
-	m_guiProp = wxPropertyCategory(prop->GetLabel(), util::std2str(id));
+	m_guiProp = PG_CREATE_PROP(wxPropertyCategory)(prop->GetLabel(), util::std2str(id));
 	SetBaseProperties(prop);
 }
 
@@ -111,7 +107,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, AggregateProperty
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, FontProperty* prop)
 {
-	m_guiProp = wxFontProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxFontProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -119,7 +115,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FontProperty* pro
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, ColorProperty* prop)
 {
-	m_guiProp = wxColourProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxColourProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -127,7 +123,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, ColorProperty* pr
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileProperty* prop)
 {
-	m_guiProp = wxFileProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxFileProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -135,7 +131,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileProperty* pro
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryProperty* prop)
 {
-	m_guiProp = wxDirProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxDirProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -143,7 +139,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryProperty
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, DateProperty* prop)
 {
-	m_guiProp = wxDateProperty(prop->GetLabel(), util::std2str(id), prop->GetValue());
+	m_guiProp = PG_CREATE_PROP(wxDateProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue());
 	SetBaseProperties(prop);
 }
 
@@ -155,7 +151,10 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileListProperty*
 	StringVec::const_iterator iter = prop->GetValues().begin();
 	for (; iter != prop->GetValues().end(); ++iter)
 		strings.Add(*iter);
-	m_guiProp = wxFileListProperty(prop->GetLabel(), util::std2str(id), strings);
+	m_guiProp = PG_CREATE_PROP(wxFileListProperty)(prop->GetLabel(), util::std2str(id), strings);
+#if wxCHECK_VERSION(2, 9, 0)
+	m_guiProp->SetAttribute(_T("Delimiter"), _T(";"));
+#endif
 	SetBaseProperties(prop);
 }
 
@@ -167,7 +166,10 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryListProp
 	StringVec::const_iterator iter = prop->GetValues().begin();
 	for (; iter != prop->GetValues().end(); ++iter)
 		strings.Add(*iter);
-	m_guiProp = wxDirectoryListProperty(prop->GetLabel(), util::std2str(id), strings);
+	m_guiProp = PG_CREATE_PROP(wxDirectoryListProperty)(prop->GetLabel(), util::std2str(id), strings);
+#if wxCHECK_VERSION(2, 9, 0)
+	m_guiProp->SetAttribute(_T("Delimiter"), _T(";"));
+#endif
 	SetBaseProperties(prop);
 }
 
@@ -180,16 +182,19 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, AggregateListProp
 	AggregateListProperty::AggregatePropertyList::const_iterator iter = properties.begin(), end = properties.end();
 	for(; iter != end; ++iter) {
 		wxParentPropertyClass* p = DefaultGUIGenerator::CreatePGProperty(**iter);
-		strings.Add(p->GetValueAsString(0));
+		strings.Add(PG_GET_VALUE_AS_STRING(p));
 		delete p;
 	}
 
-	m_guiProp = wxGenericListProperty(
+	m_guiProp = PG_CREATE_PROP(wxGenericListProperty)(
 		prop->GetLabel(),
 		util::std2str(id),
 		strings,
 		DefaultGUIGenerator::CreatePGProperty(*prop->GetListType())
 	);
+#if wxCHECK_VERSION(2, 9, 0)
+	m_guiProp->SetAttribute(_T("Delimiter"), _T(";"));
+#endif
 	SetBaseProperties(prop);
 }
 
@@ -198,15 +203,25 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, AggregateListProp
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, MultiChoiceProperty* prop)
 {
 	wxArrayString choices;
+#ifdef THIRD_PARTY_PROPGRID
 	wxArrayInt values;
+#else
+	wxArrayString values;
+#endif
 	const MultiChoiceProperty::ChoiceMap& choiceMap = prop->GetChoiceMap();
 	MultiChoiceProperty::ChoiceMap::const_iterator iter = choiceMap.begin(), end = choiceMap.end();
 	for (int count = 0; iter != end; ++iter, ++count) {
 		choices.Add(iter->first);
 		if (iter->second)
-			values.Add(count);
+			values.Add(
+#ifdef THIRD_PARTY_PROPGRID
+				count
+#else
+				iter->first
+#endif
+			);
 	}
-	m_guiProp = wxMultiChoiceProperty(prop->GetLabel(), util::std2str(id), choices, values);
+	m_guiProp = PG_CREATE_PROP(wxMultiChoiceProperty)(prop->GetLabel(), util::std2str(id), choices, values);
 	SetBaseProperties(prop);
 }
 

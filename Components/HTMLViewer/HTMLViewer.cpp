@@ -63,7 +63,7 @@ EXPORTED_MEMBER(HTMLViewer, bool, SaveAs, (const String& uri))
 	if (!this->IsModified())
 		return true;
 
-	std::ofstream output(m_uri.c_str(), std::ios_base::out | std::ios_base::binary);
+	std::ofstream output(OFSTREAM_WXSTRING_INPUT(m_uri), std::ios_base::out | std::ios_base::binary);
 	if (output.is_open()) {
 		output << this->GetText();
 

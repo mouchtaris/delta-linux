@@ -820,10 +820,18 @@ DLIB_FUNC_START(datetime_isequalupto, 3, Nil)
 	WX_SETBOOL(datetime->IsEqualUpTo(*dt, *ts))
 }
 
+#if wxCHECK_VERSION(2, 9, 0)
+#define	PARSE_DATE_ARG(str)	(str)
+#define DEFAULT_FORMAT_TYPE char
+#else
+#define	PARSE_DATE_ARG(str)	(str.c_str())
+#define DEFAULT_FORMAT_TYPE wxChar
+#endif
+
 DLIB_FUNC_START(datetime_parserfc822date, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
-	wxChar *retval = (wxChar*)datetime->ParseRfc822Date(date.c_str());
+	const wxChar *retval = (const wxChar*)datetime->ParseRfc822Date(PARSE_DATE_ARG(date));
 	if (retval == NULL) {
 		DLIB_RETVAL_REF.FromNil();
 	} else {
@@ -834,11 +842,11 @@ DLIB_FUNC_START(datetime_parserfc822date, 2, Nil)
 WX_FUNC_ARGRANGE_START(datetime_parseformat, 2, 4, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
-	const wxChar *format = wxDefaultDateTimeFormat;
+	const DEFAULT_FORMAT_TYPE *format = wxDefaultDateTimeFormat;
 	wxDateTime dateDef = wxDefaultDateTime;
 	if (n >= 3) { WX_GETSTRING(_format) format = _format.c_str(); }
 	if (n >= 4) { DLIB_WXGET_BASE(datetime, DateTime, _dateDef) dateDef = *_dateDef; }
-	wxChar *retval = (wxChar*)datetime->ParseFormat(date.c_str(), format, dateDef);
+	const wxChar *retval = (const wxChar*)datetime->ParseFormat(PARSE_DATE_ARG(date), format, dateDef);
 	if (retval == NULL) {
 		DLIB_RETVAL_REF.FromNil();
 	} else {
@@ -849,7 +857,7 @@ WX_FUNC_ARGRANGE_START(datetime_parseformat, 2, 4, Nil)
 DLIB_FUNC_START(datetime_parsedatetime, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
-	wxChar *retval = (wxChar*)datetime->ParseDateTime(date.c_str());
+	const wxChar *retval = (const wxChar*)datetime->ParseDateTime(PARSE_DATE_ARG(date));
 	if (retval == NULL) {
 		DLIB_RETVAL_REF.FromNil();
 	} else {
@@ -860,7 +868,7 @@ DLIB_FUNC_START(datetime_parsedatetime, 2, Nil)
 DLIB_FUNC_START(datetime_parsedate, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
-	wxChar *retval = (wxChar*)datetime->ParseDate(date.c_str());
+	const wxChar *retval = (const wxChar*)datetime->ParseDate(PARSE_DATE_ARG(date));
 	if (retval == NULL) {
 		DLIB_RETVAL_REF.FromNil();
 	} else {
@@ -871,7 +879,7 @@ DLIB_FUNC_START(datetime_parsedate, 2, Nil)
 DLIB_FUNC_START(datetime_parsetime, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
-	wxChar *retval = (wxChar*)datetime->ParseTime(date.c_str());
+	const wxChar *retval = (const wxChar*)datetime->ParseTime(PARSE_DATE_ARG(date));
 	if (retval == NULL) {
 		DLIB_RETVAL_REF.FromNil();
 	} else {
@@ -881,7 +889,7 @@ DLIB_FUNC_START(datetime_parsetime, 2, Nil)
 
 WX_FUNC_ARGRANGE_START(datetime_format, 1, 3, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
-	const wxChar *format = wxDefaultDateTimeFormat;
+	const DEFAULT_FORMAT_TYPE *format = wxDefaultDateTimeFormat;
 	wxDateTime::TimeZone tz = wxDateTime::Local;
 	if (n >= 2) { WX_GETSTRING(_format) format = _format.c_str(); }
 	if (n >= 3) { WX_GETDEFINE(_tz) tz = (wxDateTime::TimeZone)_tz; }

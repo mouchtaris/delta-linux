@@ -908,7 +908,7 @@ public:
 		if (func.hasOut)
 		{
             int nArg = min(func.params.size(), pDispParams->cArgs);
-    		m_activeX->GetParent()->ProcessEvent(event);
+			m_activeX->GetParent()->GetEventHandler()->ProcessEvent(event);
             for (int i = 0; i < nArg; i++)
             {
                 VARIANTARG& va = pDispParams->rgvarg[i];
@@ -923,7 +923,7 @@ public:
 			};
 		}
 		else
-    		m_activeX->GetParent()->AddPendingEvent(event);
+    		m_activeX->GetParent()->GetEventHandler()->AddPendingEvent(event);
 
     };
 
@@ -1671,7 +1671,9 @@ void wxActiveX::OnPaint(wxPaintEvent& event)
 {
 	wxLogTrace(wxT(""),wxT("repainting activex win"));
 	wxPaintDC dc(this);
+#if !wxCHECK_VERSION(2, 9, 0)
 	dc.BeginDrawing();
+#endif
 	int w, h;
 	GetSize(&w, &h);
 	RECT posRect;
@@ -1696,7 +1698,9 @@ void wxActiveX::OnPaint(wxPaintEvent& event)
 		dc.DrawRectangle(0, 0, w, h);
 		dc.SetBrush(wxNullBrush);
 	}
+#if !wxCHECK_VERSION(2, 9, 0)
 	dc.EndDrawing();
+#endif
 }
 
 

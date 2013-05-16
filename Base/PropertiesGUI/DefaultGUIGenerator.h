@@ -17,18 +17,12 @@
 #include <vector>
 
 class wxWindow;
-
-#if _MSC_VER == 1600 && defined (NO_THIRD_PARTY_BASE)
-#include "ChangeGUIPropertiesVisitor.h" // for wxPropertyGrid types
-#include <wx/propgrid/propgrid.h>
-#else
 class wxPGProperty;
 class wxPropertyGrid;
 class wxParentPropertyClass;
-#endif
-
 class wxPropertyGridPage;
 class wxPropertyGridEvent;
+
 
 namespace gui {
 	class DialogBase;

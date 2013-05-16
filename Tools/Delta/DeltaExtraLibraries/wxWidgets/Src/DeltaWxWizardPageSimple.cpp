@@ -96,7 +96,11 @@ WX_FUNC_ARGRANGE_START(wizardpagesimple_construct, 0, 5, Nil)
 		if (n >= 3) { DLIB_WXGET_BASE(wizardpage, WizardPage, pg) next = pg; }
 		if (n >= 4) { DLIB_WXGET_BASE(bitmap, Bitmap, bmp) bitmap = *bmp; }
 		if (n >= 5) { WX_GETSTRING(str) resource = str.GetData(); }
-		page = new wxWizardPageSimple(parent, prev, next, bitmap, resource);
+		page = new wxWizardPageSimple(parent, prev, next, bitmap
+#if !wxCHECK_VERSION(2, 9, 0)	//TODO: maybe entirely remove the last arg in wxWidgets 2.9?
+			, resource
+#endif
+		);
 	}
 	if (page)
 		_page = DNEWCLASS(DeltaWxWizardPageSimple, (page));
