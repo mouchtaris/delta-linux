@@ -219,6 +219,8 @@ public:
 
 	virtual void CancelDisplayedInfo (void);
 
+	virtual void ClearIndicators (void);
+
 	virtual void SetExtraLibraryDefinitions (const StringList& keywords);
 	virtual void SetByteCodeLoadingPath (const std::string& path);
 

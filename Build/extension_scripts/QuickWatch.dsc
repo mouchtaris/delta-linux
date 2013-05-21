@@ -11,7 +11,7 @@
 
 using std;
 using #sparrowlib;
-spw  = sparrowlib::sparrow();
+spw = sparrowlib::sparrow();
 
 const classId = "QuickWatch";
 
@@ -22,7 +22,9 @@ quickWatches = [];
 
 function QuickWatchWindow(window, expr) {
 	window = spw.decorate(window);
-	local treeview = spw.decorate(window.GetTreeViewWindow());
+	window.AddNavigationButtons();
+	
+	local treeview = spw.decorate(window.CreateContainedComponent("ExpressionTreeListView"));
 	local treeviewBase = spw.decorate(spw::mostbasecomponent(treeview));
 	treeview.SetColumns(list_new("Expression:150", "Value:400"));
 	treeview.Append(0, list_new("", ""));
@@ -187,7 +189,7 @@ onevent onQuickWatchEvaluateExpression(invoker, expr) {
 
 onevent onQuickWatchAddWatch(invoker, expr)
 {
-	if (spw.components.ExpressionWatches)
+	if (spw.components.ExpressionWatches and MatchWindow(invoker))
 		spw.components.ExpressionWatches.AddWatch(expr);
 }
 
@@ -207,7 +209,7 @@ onevent onQuickWatchForward(invoker) {
 
 //-----------------------------------------------------------------------
 
-onevent onQuickWatchTreeviewWidthChanged(invoker, treeviewWidth) {
+onevent onQuickWatchViewerWidthChanged(invoker, treeviewWidth) {
 	if (local quickWatch = MatchWindow(invoker))
 		quickWatch.ExpandValueColumn(treeviewWidth);
 }
@@ -294,7 +296,7 @@ onevent ClassLoad
 	);
 
 	spw::registerimage("watch", spw::installationdir() + "/resources/watch.png");
-	
+
 	spw::class_decl_required_member_command(
 		[
 			{.class			: "UserCommandDesc"	},
@@ -306,13 +308,13 @@ onevent ClassLoad
 		"/{110}Debug/{140}Quick Watch\tShift+F9--",
 		"Show the Quick Watch dialog"
 	);
-		
+
 	spw::class_decl_required_member_handler(classId, "QuickWatchReevaluate");
 	spw::class_decl_required_member_handler(classId, "QuickWatchAddWatch");
 	spw::class_decl_required_member_handler(classId, "QuickWatchBack");
 	spw::class_decl_required_member_handler(classId, "QuickWatchForward");
 	spw::class_decl_required_member_handler(classId, "QuickWatchExpressionChanged");
-	spw::class_decl_required_member_handler(classId, "QuickWatchTreeviewWidthChanged");
+	spw::class_decl_required_member_handler(classId, "QuickWatchViewerWidthChanged");
 	spw::class_decl_required_member_handler(classId, "QuickWatchClosed");
 	spw::class_decl_required_member_handler(classId, "TreeListItemSelected");
 	spw::class_decl_required_member_handler(classId, "TreeListItemExpanding");
@@ -333,13 +335,13 @@ onevent ClassUnload {}
 onevent Constructor
 {
 	spw::inst_impl_required_member_command(classId, "ShowDialogCmd", ShowDialog);
-		
+
 	spw::inst_impl_required_member_handler(classId, "QuickWatchReevaluate", onQuickWatchEvaluateExpression);
 	spw::inst_impl_required_member_handler(classId, "QuickWatchAddWatch", onQuickWatchAddWatch);
 	spw::inst_impl_required_member_handler(classId, "QuickWatchBack", onQuickWatchBack);
 	spw::inst_impl_required_member_handler(classId, "QuickWatchForward", onQuickWatchForward);
 	spw::inst_impl_required_member_handler(classId, "QuickWatchExpressionChanged", onQuickWatchEvaluateExpression);
-	spw::inst_impl_required_member_handler(classId, "QuickWatchTreeviewWidthChanged", onQuickWatchTreeviewWidthChanged);
+	spw::inst_impl_required_member_handler(classId, "QuickWatchViewerWidthChanged", onQuickWatchViewerWidthChanged);
 	spw::inst_impl_required_member_handler(classId, "QuickWatchClosed", onQuickWatchClosed);
 	spw::inst_impl_required_member_handler(classId, "TreeListItemSelected", onTreeListItemSelected);
 	spw::inst_impl_required_member_handler(classId, "TreeListItemExpanding", onTreeListItemExpanding);

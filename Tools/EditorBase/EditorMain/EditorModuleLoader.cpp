@@ -87,6 +87,7 @@ public:
 	virtual void CharacterAdded (int keyCode) {}
 	virtual bool GetInfoForPosition (uint, uint*, uint*, int*, String*) { return false; }
 	virtual void CancelDisplayedInfo (void) {}
+	virtual void ClearIndicators (void) {}
 	virtual void SetExtraLibraryDefinitions (const StringList&) {}
 	virtual void SetByteCodeLoadingPath (const std::string& path) {}
 	virtual const IntList GetHotspots (void) const { return IntList(); }

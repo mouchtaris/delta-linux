@@ -440,6 +440,11 @@ EXPORTED_MEMBER(Editor, void, UserListShow, (int listType, const StringList& ite
 	m_editor->UserListShow (listType, itemList);
 }
 
+EXPORTED_MEMBER(Editor, void, ClearIndicators, (void))
+{
+	m_editor->GetLangIface()->ClearIndicators();
+}
+
 EXPORTED_MEMBER(Editor, void, SetExtraLibraryDefinitions, (const StringList& keywords))
 {
 	m_editor->GetLangIface()->SetExtraLibraryDefinitions(keywords);

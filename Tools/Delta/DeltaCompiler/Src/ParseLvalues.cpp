@@ -629,6 +629,8 @@ DeltaExpr* Translator::Translate_TableContent (DeltaExpr* table, DeltaExpr* inde
 	if (!TYPECHECKER.Check_Table(table) || !TYPECHECKER.Check_TableIndex(index))
 		return (DeltaExpr*) 0;
 
+	DPTR(index)->CheckUninitialised();
+
 	// The index should be nil.
 	//
 	DASSERT(!DPTR(table)->index);

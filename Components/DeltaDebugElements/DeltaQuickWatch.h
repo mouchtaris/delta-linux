@@ -19,6 +19,7 @@
 #include "IDEComponent.h"
 
 #include <wx/dialog.h>
+#include <wx/sizer.h>
 
 class wxComboBox;
 
@@ -47,12 +48,16 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION_(void, CloseDialog, (void),
 			_("Show this quick watch dialog"));
 
+		DECLARE_EXPORTED_FUNCTION_(const String, GetExpression, (void),
+			_("Get the treeview expression of the quick watch"));
 		DECLARE_EXPORTED_FUNCTION_(void, SetExpression, (const String& expr),
 			_("Set the actual treeview expression of the quick watch"));
 		DECLARE_EXPORTED_FUNCTION_(void, SetDisplayedExpression, (const String& expr),
 			_("Set the displayed expression in the combobox (no treeview change)"));
-		DECLARE_EXPORTED_FUNCTION_(Handle, GetTreeViewWindow, (void),
-			_("Get a handle to the treeview window of the quick watch"));
+		DECLARE_EXPORTED_FUNCTION_(Handle, CreateContainedComponent, (const std::string& classId),
+			_("Create the contained component of the quick watch"));
+		DECLARE_EXPORTED_FUNCTION_(void, AddNavigationButtons, (void),
+			_("Adds navagation buttons in the quick watch"));
 	private:
 		///--- event table
 		DECLARE_EVENT_TABLE();
@@ -64,7 +69,7 @@ namespace ide
 			BUTTON_BACK,
 			BUTTON_FORWARD,
 			COMBO_BOX_EXPRESSIONS,
-			TREEVIEW
+			VIEWER
 		};
 
 		///--- private API
@@ -77,7 +82,7 @@ namespace ide
 		void onForward					(wxCommandEvent& event);
 		void onExpressionChange			(wxCommandEvent& event);
 		void onExpressionFocusRequested	(wxCommandEvent& event);
-		void onTreeviewFocusRequested	(wxCommandEvent& event);
+		void onViewerFocusRequested		(wxCommandEvent& event);
 		void onClose					(wxCloseEvent& event);
 		void onShow						(wxShowEvent& event);
 		void onSize						(wxSizeEvent& event);
@@ -88,8 +93,10 @@ namespace ide
 		static unsigned totalInstances;
 
 		wxComboBox *expressions;
-		Component *watch;
+		Component *viewer;
 		String expression;
+		wxBoxSizer* valueSizer;
+		wxBoxSizer* bottomButtonSizer;
 		bool shown;
 	};
 }

@@ -356,6 +356,13 @@ void LanguageModule::CancelDisplayedInfo (void)
 	{ this->clearInfoIndicator(m_infoAtRange, wxSCI_INDIC2_MASK); }
 
 //**********************************************************************
+
+void LanguageModule::ClearIndicators (void) {
+	EditorWindow* editor = this->GetEditor();
+	ScintillaStyler::ClearIndicators(editor, m_progDesc, 0, editor->GetLength());
+}
+
+//**********************************************************************
 // Setting library functions.
 
 void LanguageModule::SetByteCodeLoadingPath (const std::string& path) {

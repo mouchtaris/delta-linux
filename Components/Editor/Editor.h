@@ -141,6 +141,8 @@ public:
 
 	DECLARE_EXPORTED_MEMBER(void,	UserListShow, (int listType, const StringList& items));
 
+	DECLARE_EXPORTED_MEMBER(void,	ClearIndicators, (void));
+
 	DECLARE_EXPORTED_MEMBER(void,	SetExtraLibraryDefinitions, (const StringList& keywords));
 	DECLARE_EXPORTED_MEMBER(void,	SetByteCodeLoadingPath, (const String& path));
 

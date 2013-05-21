@@ -74,6 +74,8 @@ public:
 
 	virtual void CancelDisplayedInfo (void) = 0;
 
+	virtual void ClearIndicators (void) = 0;
+
 	virtual void SetExtraLibraryDefinitions (const StringList& keywords) = 0;
 	virtual void SetByteCodeLoadingPath (const std::string& path) = 0;
 

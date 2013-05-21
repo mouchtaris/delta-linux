@@ -4,7 +4,9 @@
  *	-- Sparrow IDE AST View extension --
  *
  *	Custom visualizer for viewing ast values.
- *  (Requires graphviz dot executable).
+ *  (requires graphviz dot executable)
+ *	Also supports a textual AST representation
+ *	(not requiring any external tools)
  *
  *	Ioannis Lilis <lilis@ics.forth.gr>
  *	November 2011
@@ -12,11 +14,12 @@
 
 using std;
 using #sparrowlib;
-spw  = sparrowlib::sparrow();
+spw = sparrowlib::sparrow();
 
 const classId = "ASTView";
 
 inBreakpoint = false;
+editorWindows = [];
 id = 0;
 
 //-------------------------------------------------------//
@@ -124,12 +127,89 @@ function GenerateAST(expr)
 }
 
 //-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
-onevent onBreakpointHit(invoker, uri, line) { inBreakpoint = true; }
+function GetASTExpressionCode(expr) {
+	local debugger = spw::getclassproperty("DeltaVM", "debugger");
+	assert debugger;
+	local oldMax = debugger.properties.value.tostring_maxlength.value;
+	debugger.properties.value.tostring_maxlength.value = 0;	//get full message for this evaluation
+	spw::addclassproperty("DeltaVM", "debugger", debugger);
+	
+	local str = EvalExpr(expr);
+	
+	debugger.properties.value.tostring_maxlength.value = oldMax; //restore message limit
+	spw::addclassproperty("DeltaVM", "debugger", debugger);
 
-onevent onDebugResumed(invoker) { inBreakpoint = false; }
+	if (str) {
+		local start = 0, end = strlen(str) - 1;
+		while(strchar(str, start) != "\"") ++start;
+		while(strchar(str, end) != "\"") --end;
+		return strslice(str, start + 1, end - 1);
+	}
+	else
+		return nil;
+}
 
 //-----------------------------------------------------------------------
+
+function EditorWindow(window, expr) {
+	window = spw.decorate(window);
+	local editor = spw.decorate(window.CreateContainedComponent("Editor"));
+	const uri = "AST.dsc";
+	editor.SetURI(uri);
+	editor.SetLanguageSettings(uri);
+
+	local editorWindow = [
+		@window : window,
+		@editor : editor,
+		
+		method EvaluateExpression(expr) {
+			@window.SetExpression(expr);
+			@editor.SetReadOnly(false);
+			local text = (IsValidAST(expr) ? GetASTExpressionCode(expr) : "<Not a valid AST expression>");
+			@editor.SetText(text);
+			@editor.SetReadOnly(true);
+			@editor.SetModified(false);
+			@editor.ClearIndicators();
+		},
+		method Refresh { @EvaluateExpression(@window.GetExpression()); },
+				
+		method onClose {
+			editorWindows[@window.serial] = nil;
+			local shell = spw.components.Shell;
+			if (shell.serial != 0)
+				shell.RemoveComponent(@window);
+		}
+	];
+	editorWindow.EvaluateExpression(expr);
+	return editorWindow;
+}
+
+//-----------------------------------------------------------------------
+
+function MatchWindow(invoker) {
+	if (local editorWindow = editorWindows[invoker.serial]) {
+		local window = editorWindow.window;
+		assert window;
+		if (invoker.class_id == window.class_id and invoker.serial == window.serial)
+			return editorWindow;
+	}
+	return nil;
+}
+
+//-----------------------------------------------------------------------
+
+function CloseAllEditorWindows {
+	foreach(local editorWindow, editorWindows)
+		editorWindow.onClose();	//Use this instead of editorWindow.window.CloseDialog() to instantly
+								//close the editorWindow (no signals involved). This is usefull when
+								//sparrow closes during debugging and no pending signals are sent.
+	assert tablength(editorWindows) == 0;
+}
+
+//-------------------------------------------------------//
+//---- Exported API -------------------------------------//
 
 function GenerateAndShowAST
 {	
@@ -205,6 +285,60 @@ function GenerateAndShowAST
 		);
 }
 
+//-----------------------------------------------------------------------
+
+function ShowTextualAST
+{
+	if (not inBreakpoint or spw.components.EditorManager.serial == 0)
+		return;
+	local editor = spw.components.EditorManager.GetFocusedEditor();
+	if (not editor or editor.serial == 0)
+		return;
+
+	local window = spw.components.Shell.AddComponent("DeltaQuickWatch", 0);
+	local editorWindow = EditorWindow(window, editor.GetSelectedText());
+	editorWindows[editorWindow.window.serial] = editorWindow;
+	editorWindow.window.ShowDialog(false);
+}
+
+//-----------------------------------------------------------------------
+
+onevent onQuickWatchEvaluateExpression(invoker, expr) {
+	if (inBreakpoint and local editorWindow = MatchWindow(invoker))
+		editorWindow.EvaluateExpression(expr);
+}
+
+//-----------------------------------------------------------------------
+
+onevent onQuickWatchAddWatch(invoker, expr)
+{
+	if (spw.components.ExpressionWatches and MatchWindow(invoker))
+		spw.components.ExpressionWatches.AddWatch(expr);
+}
+
+//-----------------------------------------------------------------------
+
+onevent onQuickWatchClosed(invoker) {
+	if (local editorWindow = MatchWindow(invoker))
+		editorWindow.onClose();
+}
+
+//-----------------------------------------------------------------------
+
+onevent onBreakpointHit(invoker, uri, line) {
+	foreach(local editorWindow, editorWindows)
+		editorWindow.Refresh();
+	inBreakpoint = true;
+}
+
+//-----------------------------------------------------------------------
+
+onevent onDebugResumed(invoker) { inBreakpoint = false; }
+
+//-----------------------------------------------------------------------
+
+onevent onDebugStopped(classId, uri) { CloseAllEditorWindows(); }
+
 //-------------------------------------------------------//
 //---- Component Registration ---------------------------//
 
@@ -217,20 +351,42 @@ onevent ClassLoad
 		"Ioannis Lilis <lilis@ics.forth.gr>",
 		"alpha"
 	);
+	
+	local dir = spw::installationdir() + "/resources/";
+	spw::registerimage("ast", dir + "ast.png");
+	spw::registerimage("ast_text", dir + "ast_text.png");
 
 	spw::class_decl_required_member_command(
 		[
 			{.class			: "UserCommandDesc"	},
 			{.class_id		: classId			},
-			{.function_name	: "ShowASTCmd"		},
-			{.flags			: 7					}
+			{.function_name	: "ShowVisualAST"	},
+			{.flags			: 7					},
+			{.image			: "ast"				}
 		],
-		"/{110}Debug/{150}AST View\tShift+F8--",
+		"/{110}Debug/{150}Visual AST View\tShift+F8--",
 		"Show a visual representation of an AST value"
 	);
-	
+
+	spw::class_decl_required_member_command(
+		[
+			{.class			: "UserCommandDesc"	},
+			{.class_id		: classId			},
+			{.function_name	: "ShowTextualAST"	},
+			{.flags			: 7					},
+			{.image			: "ast_text"		}
+		],
+		"/{110}Debug/{160}Source Code AST View\tShift+F10--",
+		"Show the source code representation of an AST value"
+	);
+
+	spw::class_decl_required_member_handler(classId, "QuickWatchReevaluate");
+	spw::class_decl_required_member_handler(classId, "QuickWatchAddWatch");
+	spw::class_decl_required_member_handler(classId, "QuickWatchExpressionChanged");
+	spw::class_decl_required_member_handler(classId, "QuickWatchClosed");
 	spw::class_decl_required_member_handler(classId, "BreakpointHit");
-	spw::class_decl_required_member_handler(classId, "DebugResumed");	
+	spw::class_decl_required_member_handler(classId, "DebugResumed");
+	spw::class_decl_required_member_handler(classId, "DebugStopped");
 }
 
 //-----------------------------------------------------------------------
@@ -242,13 +398,19 @@ onevent ClassUnload {}
 
 onevent Constructor
 {
-	spw::inst_impl_required_member_command(classId, "ShowASTCmd", GenerateAndShowAST);	
+	spw::inst_impl_required_member_command(classId, "ShowVisualAST", GenerateAndShowAST);
+	spw::inst_impl_required_member_command(classId, "ShowTextualAST", ShowTextualAST);	
+	spw::inst_impl_required_member_handler(classId, "QuickWatchReevaluate", onQuickWatchEvaluateExpression);
+	spw::inst_impl_required_member_handler(classId, "QuickWatchAddWatch", onQuickWatchAddWatch);
+	spw::inst_impl_required_member_handler(classId, "QuickWatchExpressionChanged", onQuickWatchEvaluateExpression);
+	spw::inst_impl_required_member_handler(classId, "QuickWatchClosed", onQuickWatchClosed);	
 	spw::inst_impl_required_member_handler(classId, "BreakpointHit", onBreakpointHit);
 	spw::inst_impl_required_member_handler(classId, "DebugResumed", onDebugResumed);
+	spw::inst_impl_required_member_handler(classId, "DebugStopped", onDebugStopped);
 }
 
 //-----------------------------------------------------------------------
 
-onevent Destructor {}
+onevent Destructor { CloseAllEditorWindows(); }
 
 //-----------------------------------------------------------------------

@@ -208,7 +208,7 @@ namespace ide
 	protected:
 		//--- component signals
 		virtual void ComponentAppliedChangedProperties (const conf::PropertyTable& old, const conf::PropertyIdVec& changed);
-
+		virtual void ComponentAddedProperty(const std::string& id, conf::Property* prop);
 	private:
 		///--- private type definitions
 		typedef boost::tuple<String, int, String>	Breakpoint;
@@ -233,6 +233,8 @@ namespace ide
 		};
 
 		///--- private API
+		void HandleNewProperties (const conf::PropertyIdVec& changed);
+
 		static const DebugServer LocalDebugServer(unsigned long pid, const String& source, const String& directory, bool isCompilation);
 		static void DebugProcess (unsigned long pid, const String& source, const String& directory, bool isCompilation);
 

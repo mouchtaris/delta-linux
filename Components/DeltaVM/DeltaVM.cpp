@@ -1188,10 +1188,25 @@ namespace ide
 
 	void DeltaVM::ComponentAppliedChangedProperties (const conf::PropertyTable& old, const conf::PropertyIdVec& changed)
 	{
+		HandleNewProperties(changed);
+		IDEComponent::ComponentAppliedChangedProperties(old, changed);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void DeltaVM::ComponentAddedProperty(const std::string& id, conf::Property* prop)
+	{
+		HandleNewProperties(conf::PropertyIdVec(1, id));
+		IDEComponent::ComponentAddedProperty(id, prop);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void DeltaVM::HandleNewProperties (const conf::PropertyIdVec& changed) {
 		using namespace conf;
-		const ComponentEntry& entry = ComponentRegistry::Instance().GetComponentEntry(s_classId);
-		const AggregateProperty* vm = safe_prop_cast<const AggregateProperty>(entry.GetProperty("vm"));
 		if (std::find(changed.begin(), changed.end(), "vm.libdefs") != changed.end()) {
+			const ComponentEntry& entry = ComponentRegistry::Instance().GetComponentEntry(s_classId);
+			const AggregateProperty* vm = safe_prop_cast<const AggregateProperty>(entry.GetProperty("vm"));
 			const AggregateListProperty* libdefs = safe_prop_cast<const AggregateListProperty>(vm->GetProperty("libdefs"));
 
 			StringList newDefinitions;
@@ -1201,16 +1216,16 @@ namespace ide
 		}
 
 		if (debugRunningState == DEBUG_RUNNING) {
-			if (std::find(changed.begin(), changed.end(), "debugger.tostring_maxlength") != changed.end())
+			bool debuggerChanged = std::find(changed.begin(), changed.end(), "debugger") != changed.end();
+			if (debuggerChanged || std::find(changed.begin(), changed.end(), "debugger.tostring_maxlength") != changed.end())
 				SetToStringMaxLength();
-			if (std::find(changed.begin(), changed.end(), "debugger.break_on_thrown_exception") != changed.end())
+			if (debuggerChanged || std::find(changed.begin(), changed.end(), "debugger.break_on_thrown_exception") != changed.end())
 				SetBreakOnThrownException();
-			if (std::find(changed.begin(), changed.end(), "debugger.object_graph") != changed.end())
+			if (debuggerChanged || std::find(changed.begin(), changed.end(), "debugger.object_graph") != changed.end())
 				SetObjectGraphConfiguration();
-			if (std::find(changed.begin(), changed.end(), "debugger.expression_evaluation_format") != changed.end())
+			if (debuggerChanged || std::find(changed.begin(), changed.end(), "debugger.expression_evaluation_format") != changed.end())
 				SetExpressionEvaluationFormat();
 		}
-		IDEComponent::ComponentAppliedChangedProperties(old, changed);
 	}
 
 	//-----------------------------------------------------------------------

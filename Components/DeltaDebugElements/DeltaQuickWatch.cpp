@@ -16,7 +16,6 @@
 
 #include <wx/stattext.h>
 #include <wx/button.h>
-#include <wx/sizer.h>
 #include <wx/combobox.h>
 #include <wx/gdicmn.h>
 
@@ -35,7 +34,7 @@ namespace ide
 		EVT_TEXT_ENTER(wxID_ANY, DeltaQuickWatch::onExpressionChange)
 		EVT_COMBOBOX(wxID_ANY, DeltaQuickWatch::onExpressionChange)
 		EVT_MENU(COMBO_BOX_EXPRESSIONS, DeltaQuickWatch::onExpressionFocusRequested)
-		EVT_MENU(TREEVIEW, DeltaQuickWatch::onTreeviewFocusRequested)
+		EVT_MENU(VIEWER, DeltaQuickWatch::onViewerFocusRequested)
 		EVT_CLOSE(DeltaQuickWatch::onClose)
 		EVT_SHOW(DeltaQuickWatch::onShow)
 		EVT_SIZE(DeltaQuickWatch::onSize)
@@ -61,7 +60,7 @@ namespace ide
 	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchReevaluate, (const String& expression));
 	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchAddWatch, (const String& expression));
 	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchExpressionChanged, (const String& expression));
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchTreeviewWidthChanged, (uint width));
+	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchViewerWidthChanged, (uint width));
 	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchClosed, (void));
 
 	//-----------------------------------------------------------------------
@@ -81,7 +80,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	DeltaQuickWatch::DeltaQuickWatch(void) : expressions(0), watch(0), shown(false)
+	DeltaQuickWatch::DeltaQuickWatch(void) : expressions(0), viewer(0), valueSizer(0), bottomButtonSizer(0), shown(false)
 	{
 		++totalInstances;
 	}
@@ -90,9 +89,9 @@ namespace ide
 
 	DeltaQuickWatch::~DeltaQuickWatch(void)
 	{
-		if (watch) {
-			RemoveChild(watch->GetWindow());
-			watch->Destroy();
+		if (viewer) {
+			RemoveChild(viewer->GetWindow());
+			viewer->Destroy();
 		}
 		--totalInstances;
 	}
@@ -136,19 +135,9 @@ namespace ide
 			wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
 		wxButton *addWatchButton = new wxButton(this, BUTTON_ADD_WATCH, _("Add &Watch"),
 			wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
-		wxButton *backButton = new wxButton(this, BUTTON_BACK, _("Back"),
-			wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
-		wxButton *forwardButton = new wxButton(this, BUTTON_FORWARD, _("Forward"),
-			wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
 		wxButton *closeButton = new wxButton(this, wxID_CANCEL, _("Close"),
 			wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
 
-		//-- Expression TreeListView
-		watch = ComponentFactory::Instance().CreateComponent("ExpressionTreeListView");
-		if (!watch)
-			return (wxWindow *) 0;	//the QuickWatch won't be functional, but still avoids potential crashes
-		wxWindow *watchWindow = watch->GenerateWindow(this);
-	
 		////////////////////////////////////////////////////////////////////
 		// Layout stuff
 		//
@@ -159,57 +148,44 @@ namespace ide
 		exprSizer->Add(expressionText, flags);
 		exprSizer->Add(expressions, flags);
 
-		wxBoxSizer* buttonSizer = new wxBoxSizer(wxVERTICAL);
-		buttonSizer->AddSpacer(10);
-		buttonSizer->Add(reevaluateButton, wxSizerFlags().Align(wxALIGN_RIGHT));
-		buttonSizer->AddSpacer(5);
-		buttonSizer->Add(addWatchButton, wxSizerFlags().Align(wxALIGN_RIGHT));
+		wxBoxSizer* topButtonSizer = new wxBoxSizer(wxVERTICAL);
+		topButtonSizer->AddSpacer(10);
+		topButtonSizer->Add(reevaluateButton, wxSizerFlags().Align(wxALIGN_RIGHT));
+		topButtonSizer->AddSpacer(5);
+		topButtonSizer->Add(addWatchButton, wxSizerFlags().Align(wxALIGN_RIGHT));
 
 		wxBoxSizer* horizontalSizer1 = new wxBoxSizer(wxHORIZONTAL);
 		horizontalSizer1->AddSpacer(10);
 		horizontalSizer1->Add(exprSizer, wxSizerFlags(1));
 		horizontalSizer1->AddSpacer(5);
-		horizontalSizer1->Add(buttonSizer);
+		horizontalSizer1->Add(topButtonSizer);
 		horizontalSizer1->AddSpacer(10);
 
-		wxBoxSizer* valueSizer = new wxBoxSizer(wxVERTICAL);
+		valueSizer = new wxBoxSizer(wxVERTICAL);
 		valueSizer->Add(valueText, wxSizerFlags().Expand());
 		valueSizer->AddSpacer(5);
-		valueSizer->Add(watchWindow, flags);
 
 		wxBoxSizer* horizontalSizer2 = new wxBoxSizer(wxHORIZONTAL);
 		horizontalSizer2->AddSpacer(10);
 		horizontalSizer2->Add(valueSizer, flags);
 		horizontalSizer2->AddSpacer(10);
 
-		wxBoxSizer* navigationSizer = new wxBoxSizer(wxHORIZONTAL);
-		navigationSizer->Add(backButton, wxSizerFlags().Align(wxALIGN_LEFT));
-		navigationSizer->AddSpacer(5);
-		navigationSizer->Add(forwardButton, wxSizerFlags().Align(wxALIGN_LEFT));
-
-		wxBoxSizer* buttonSizer2 = new wxBoxSizer(wxHORIZONTAL);
-		buttonSizer2->Add(navigationSizer, wxSizerFlags(1));
-		buttonSizer2->AddSpacer(5);
-		buttonSizer2->Add(closeButton, wxSizerFlags().Align(wxALIGN_RIGHT));
+		bottomButtonSizer = new wxBoxSizer(wxHORIZONTAL);
+		bottomButtonSizer->Add(closeButton, wxSizerFlags().Align(wxALIGN_RIGHT));
 
 		wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
 		topSizer->Add(horizontalSizer1, wxSizerFlags().Expand());
 		topSizer->Add(horizontalSizer2, flags);
-		topSizer->Add(buttonSizer2, wxSizerFlags().Expand().Align(wxALIGN_BOTTOM | wxALIGN_RIGHT).Border(wxUP | wxDOWN | wxRIGHT | wxLEFT, 10));
+		topSizer->Add(bottomButtonSizer, wxSizerFlags().Expand().Align(wxALIGN_BOTTOM | wxALIGN_RIGHT).Border(wxUP | wxDOWN | wxRIGHT | wxLEFT, 10));
 
 		this->SetSizer(topSizer);
-		//set the min width so that all 3 bottom button fit in, and the height just the same
-		int minSize = backButton->GetSize().GetWidth() + forwardButton->GetSize().GetWidth() + 
-			closeButton->GetSize().GetWidth() + 38;	//for the spacing and borders
-		this->SetMinSize(wxSize(minSize, minSize));
+		this->SetMinSize(wxSize(272, 272));
 		if (position == wxDefaultPosition)
 			this->Centre(wxBOTH | wxCENTRE_ON_SCREEN);
 
-		wxAcceleratorEntry entries[4];
-		entries[0].Set(wxACCEL_ALT,	WXK_LEFT,	BUTTON_BACK);
-		entries[1].Set(wxACCEL_ALT,	WXK_RIGHT,	BUTTON_FORWARD);
-		entries[2].Set(wxACCEL_ALT,	(int) 'E',	COMBO_BOX_EXPRESSIONS);
-		entries[3].Set(wxACCEL_ALT,	(int) 'V',	TREEVIEW);
+		wxAcceleratorEntry entries[2];
+		entries[0].Set(wxACCEL_ALT,	(int) 'E',	COMBO_BOX_EXPRESSIONS);
+		entries[1].Set(wxACCEL_ALT,	(int) 'V',	VIEWER);
 		wxAcceleratorTable accel(4, entries);
 		this->SetAcceleratorTable(accel);
 
@@ -248,6 +224,13 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_FUNCTION(DeltaQuickWatch, const String, GetExpression, (void))
+	{
+		return expressions->GetValue();
+	}
+
+	//-----------------------------------------------------------------------
+
 	EXPORTED_FUNCTION(DeltaQuickWatch, void, SetExpression, (const String& expr))
 	{
 		if (choices.Index(expr) != wxNOT_FOUND)
@@ -268,9 +251,38 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_FUNCTION(DeltaQuickWatch, Handle, GetTreeViewWindow, (void))
+	EXPORTED_FUNCTION(DeltaQuickWatch, Handle, CreateContainedComponent, (const std::string& classId))
 	{
-		return watch ? Handle(watch) : Handle();
+		if (!(viewer = ComponentFactory::Instance().CreateComponent(classId)))
+			return Handle();
+		if (wxWindow *window = viewer->GenerateWindow(this))
+			valueSizer->Add(window, wxSizerFlags(1).Expand());
+		return Handle(viewer);
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, AddNavigationButtons, (void))
+	{
+		wxButton *backButton = new wxButton(this, BUTTON_BACK, _("Back"),
+			wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+		wxButton *forwardButton = new wxButton(this, BUTTON_FORWARD, _("Forward"),
+			wxDefaultPosition, wxDefaultSize, wxNO_BORDER);
+
+		wxBoxSizer* navigationSizer = new wxBoxSizer(wxHORIZONTAL);
+		navigationSizer->Add(backButton, wxSizerFlags().Align(wxALIGN_LEFT));
+		navigationSizer->AddSpacer(5);
+		navigationSizer->Add(forwardButton, wxSizerFlags().Align(wxALIGN_LEFT));
+		bottomButtonSizer->Insert(0, navigationSizer, wxSizerFlags(1));
+		bottomButtonSizer->InsertSpacer(1, 5);
+
+		wxAcceleratorEntry entries[4];
+		entries[0].Set(wxACCEL_ALT,	(int) 'E',	COMBO_BOX_EXPRESSIONS);
+		entries[1].Set(wxACCEL_ALT,	(int) 'V',	VIEWER);
+		entries[2].Set(wxACCEL_ALT,	WXK_LEFT,	BUTTON_BACK);
+		entries[3].Set(wxACCEL_ALT,	WXK_RIGHT,	BUTTON_FORWARD);
+		wxAcceleratorTable accel(4, entries);
+		this->SetAcceleratorTable(accel);
 	}
 
 	//-----------------------------------------------------------------------
@@ -343,10 +355,10 @@ namespace ide
 	
 	//-----------------------------------------------------------------------
 	
-	void DeltaQuickWatch::onTreeviewFocusRequested(wxCommandEvent& event)
+	void DeltaQuickWatch::onViewerFocusRequested(wxCommandEvent& event)
 	{
-		if (watch)
-			watch->GetWindow()->SetFocus();
+		if (viewer)
+			viewer->GetWindow()->SetFocus();
 	}
 	
 	//-----------------------------------------------------------------------
@@ -367,8 +379,8 @@ namespace ide
 		if (!event.GetShow())
 #endif
 			sigQuickWatchClosed(this);
-		else if (watch)
-			sigQuickWatchTreeviewWidthChanged(
+		else if (viewer)
+			sigQuickWatchViewerWidthChanged(
 				this,
 				conf::get_prop_value<conf::IntProperty>(
 					static_cast<const conf::AggregateProperty*>(GetProperty("size"))->GetProperty("width")
@@ -383,8 +395,8 @@ namespace ide
 	{
 		UpdatePosition();
 		UpdateSize();
-		if (watch)
-			sigQuickWatchTreeviewWidthChanged(this, watch->GetWindow()->GetSize().GetWidth());
+		if (viewer)
+			sigQuickWatchViewerWidthChanged(this, viewer->GetWindow()->GetSize().GetWidth());
 		event.Skip();
 	}
 
