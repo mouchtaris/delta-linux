@@ -55,14 +55,13 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ObjectRefData,objectrefdata)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(objectrefdata_construct, 0, Nil)
-	DeltaWxObjectRefData *wxobjrefdata = DNEWCLASS(DeltaWxObjectRefData, (new wxObjectRefData()));
-	WX_SETOBJECT(ObjectRefData, wxobjrefdata)
+WX_FUNC_START(objectrefdata_construct, 0, Nil)
+	WX_SETOBJECT(ObjectRefData, new wxObjectRefData())
 }
 
-DLIB_FUNC_START(objectrefdata_destruct, 1, Nil)
+WX_FUNC_START(objectrefdata_destruct, 1, Nil)
 #if wxCHECK_VERSION(2, 9, 0)
-	DLIB_WXGET(objectrefdata, DeltaWxObjectRefData, objrefdata)
+	DLIB_WXGET(objectrefdata, ObjectRefData, objrefdata)
 	if (wxObjectRefData* nativeInst = (wxObjectRefData*) objrefdata->GetNativeInstance())
 		while(nativeInst->GetRefCount() > 0)	//loop equivalent to delete nativeInst; but used because of private dtor
 			nativeInst->DecRef();
@@ -72,7 +71,7 @@ DLIB_FUNC_START(objectrefdata_destruct, 1, Nil)
 #endif
 }
 
-DLIB_FUNC_START(objectrefdata_getrefcount, 1, Nil)
+WX_FUNC_START(objectrefdata_getrefcount, 1, Nil)
 	DLIB_WXGET_BASE(objectrefdata, ObjectRefData, objrefdata)
 	WX_SETNUMBER(objrefdata->GetRefCount())
 }

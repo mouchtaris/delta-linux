@@ -21,7 +21,6 @@
 #define WX_FUNC(name) WX_FUNC1(staticbitmap, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getbitmap)
 WX_FUNC_DEF(geticon)
@@ -30,7 +29,6 @@ WX_FUNC_DEF(seticon)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getbitmap),
 	WX_FUNC(geticon),
@@ -40,7 +38,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "seticon")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "seticon")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(StaticBitmap, "staticbitmap", Control)
 
@@ -54,9 +52,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
@@ -70,10 +66,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticBitmap,staticbitmap)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(staticbitmap_construct, 0, 7, Nil)
-	wxStaticBitmap *wxbitmap = (wxStaticBitmap*) 0;
-	DeltaWxStaticBitmap *bitmap = (DeltaWxStaticBitmap*) 0;
+	wxStaticBitmap *bitmap = (wxStaticBitmap*) 0;
 	if (n == 0) {
-		wxbitmap = new wxStaticBitmap();
+		bitmap = new wxStaticBitmap();
 	} else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -94,7 +89,7 @@ WX_FUNC_ARGRANGE_START(staticbitmap_construct, 0, 7, Nil)
 		if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
-		wxbitmap = new wxStaticBitmap(parent, id, *label, pos, size, style, name);
+		bitmap = new wxStaticBitmap(parent, id, *label, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -103,12 +98,7 @@ WX_FUNC_ARGRANGE_START(staticbitmap_construct, 0, 7, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxbitmap) bitmap = DNEWCLASS(DeltaWxStaticBitmap, (wxbitmap));
-	WX_SETOBJECT(StaticBitmap, bitmap)
-}
-
-DLIB_FUNC_START(staticbitmap_destruct, 1, Nil)
-	DLIB_WXDELETE(staticbitmap, StaticBitmap, bitmap)
+	WX_SET_WINDOW_OBJECT(StaticBitmap, bitmap)
 }
 
 WX_FUNC_ARGRANGE_START(staticbitmap_create, 4, 8, Nil)
@@ -133,21 +123,20 @@ WX_FUNC_ARGRANGE_START(staticbitmap_create, 4, 8, Nil)
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(bitmap->Create(parent, id, *label, pos, size, style, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(bitmap);
 }
 
-DLIB_FUNC_START(staticbitmap_getbitmap, 1, Nil)
+WX_FUNC_START(staticbitmap_getbitmap, 1, Nil)
 	DLIB_WXGET_BASE(staticbitmap, StaticBitmap, bitmap)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bitmap->GetBitmap())));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(bitmap->GetBitmap()))
 }
 
-DLIB_FUNC_START(staticbitmap_geticon, 1, Nil)
+WX_FUNC_START(staticbitmap_geticon, 1, Nil)
 	DLIB_WXGET_BASE(staticbitmap, StaticBitmap, bitmap)
-	DeltaWxIcon *retval = DNEWCLASS(DeltaWxIcon, (new wxIcon(bitmap->GetIcon())));
-	WX_SETOBJECT(Icon, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Icon, new wxIcon(bitmap->GetIcon()))
 }
 
-DLIB_FUNC_START(staticbitmap_setbitmap, 2, Nil)
+WX_FUNC_START(staticbitmap_setbitmap, 2, Nil)
 	DLIB_WXGET_BASE(staticbitmap, StaticBitmap, staticbitmap)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	DLIB_ERROR_CHECK(
@@ -161,7 +150,7 @@ DLIB_FUNC_START(staticbitmap_setbitmap, 2, Nil)
 	staticbitmap->SetBitmap(*bitmap);
 }
 
-DLIB_FUNC_START(staticbitmap_seticon, 2, Nil)
+WX_FUNC_START(staticbitmap_seticon, 2, Nil)
 	DLIB_WXGET_BASE(staticbitmap, StaticBitmap, bitmap)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	DLIB_ERROR_CHECK(

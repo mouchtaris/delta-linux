@@ -21,7 +21,6 @@
 #define WX_FUNC(name) WX_FUNC1(splashscreen, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(onclosewindow)
 WX_FUNC_DEF(getbitmap)
 WX_FUNC_DEF(getsplashstyle)
@@ -30,7 +29,6 @@ WX_FUNC_DEF(setbitmap)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(onclosewindow),
 	WX_FUNC(getbitmap),
 	WX_FUNC(getsplashstyle),
@@ -40,7 +38,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setbitmap")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "onclosewindow", "setbitmap")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SplashScreen, "splashscreen", Frame)
 
@@ -54,9 +52,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxFrame *_parent = DLIB_WXTYPECAST_BASE(Frame, val, frame);
-	DeltaWxFrame *parent = DNEWCLASS(DeltaWxFrame, (_parent));
-	WX_SETOBJECT_EX(*at, Frame, parent)
+	WX_SET_BASECLASS_GETTER(at, Frame, val)
 	return true;
 }
 
@@ -97,39 +93,32 @@ WX_FUNC_ARGRANGE_START(splashscreen_construct, 5, 8, Nil)
 	if (n >= 6) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
 	if (n >= 7) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 8) { WX_GETDEFINE_DEFINED(style) }
-	DeltaWxSplashScreen *splash = DNEWCLASS(DeltaWxSplashScreen,
-		(new wxSplashScreen(*bitmap, splashStyle, milliseconds, parent, id, pos, size, style)));
-	WX_SETOBJECT(SplashScreen, splash)
+	wxSplashScreen* splash = new wxSplashScreen(*bitmap, splashStyle, milliseconds, parent, id, pos, size, style);
+	WX_SET_TOPLEVELWINDOW_OBJECT(SplashScreen, splash)
 }
 
-DLIB_FUNC_START(splashscreen_destruct, 1, Nil)
-	DLIB_WXDELETE(splashscreen, SplashScreen, splash)
-}
-
-DLIB_FUNC_START(splashscreen_onclosewindow, 2, Nil)
+WX_FUNC_START(splashscreen_onclosewindow, 2, Nil)
 	DLIB_WXGET_BASE(splashscreen, SplashScreen, splash)
 	DLIB_WXGET_BASE(closeevent, CloseEvent, evt)
 	splash->OnCloseWindow(*evt);
 }
 
-DLIB_FUNC_START(splashscreen_getbitmap, 1, Nil)
+WX_FUNC_START(splashscreen_getbitmap, 1, Nil)
 	DLIB_WXGET_BASE(splashscreen, SplashScreen, splash)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (
-		new wxBitmap(splash->GetSplashWindow()->GetBitmap())));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(splash->GetSplashWindow()->GetBitmap()))
 }
 
-DLIB_FUNC_START(splashscreen_getsplashstyle, 1, Nil)
+WX_FUNC_START(splashscreen_getsplashstyle, 1, Nil)
 	DLIB_WXGET_BASE(splashscreen, SplashScreen, splash)
 	WX_SETNUMBER(splash->GetSplashStyle())
 }
 
-DLIB_FUNC_START(splashscreen_gettimeout, 1, Nil)
+WX_FUNC_START(splashscreen_gettimeout, 1, Nil)
 	DLIB_WXGET_BASE(splashscreen, SplashScreen, splash)
 	WX_SETNUMBER(splash->GetTimeout())
 }
 
-DLIB_FUNC_START(splashscreen_setbitmap, 2, Nil)
+WX_FUNC_START(splashscreen_setbitmap, 2, Nil)
 	DLIB_WXGET_BASE(splashscreen, SplashScreen, splash)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	splash->GetSplashWindow()->SetBitmap(*bitmap);

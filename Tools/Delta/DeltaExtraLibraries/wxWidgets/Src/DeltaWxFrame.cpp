@@ -22,7 +22,6 @@
 #define WX_FUNC(name) WX_FUNC1(frame, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(centre)
 WX_FUNC_DEF(createstatusbar)
@@ -43,7 +42,6 @@ WX_FUNC_DEF(settoolbar)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(centre),
 	WX_FUNC(createstatusbar),
@@ -65,9 +63,11 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "settoolbar")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "settoolbar")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Frame, "frame", TopLevelWindow)
+
+////////////////////////////////////////////////////////////////
 
 static bool GetKeys (void* val, DeltaValue* at) 
 {
@@ -75,29 +75,23 @@ static bool GetKeys (void* val, DeltaValue* at)
 		DPTR(getter)->GetAllKeys(val, at) : false ;
 }
 
-static bool GetBaseClass (void* val, DeltaValue* at) 
+static bool GetBaseClass (void* val, DeltaValue* at)
 {
-	wxTopLevelWindow *_parent = DLIB_WXTYPECAST_BASE(TopLevelWindow, val, toplevelwindow);
-	DeltaWxTopLevelWindow *parent = DNEWCLASS(DeltaWxTopLevelWindow, (_parent));
-	WX_SETOBJECT_EX(*at, TopLevelWindow, parent)
+	WX_SET_BASECLASS_GETTER(at, TopLevelWindow, val)
 	return true;
 }
 
 static bool GetMenuBar (void* val, DeltaValue* at) 
 {
 	wxFrame *frame = DLIB_WXTYPECAST_BASE(Frame, val, frame);
-	wxMenuBar *menubar = frame->GetMenuBar();
-	DeltaWxMenuBar *retval = menubar ? DNEWCLASS(DeltaWxMenuBar, (menubar)) : (DeltaWxMenuBar*) 0;
-	WX_SETOBJECT_EX(*at, MenuBar, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, MenuBar, frame->GetMenuBar())
 	return true;
 }
 
 static bool GetStatusBar (void* val, DeltaValue* at) 
 {
 	wxFrame *frame = DLIB_WXTYPECAST_BASE(Frame, val, frame);
-	wxStatusBar *statusbar = frame->GetStatusBar();
-	DeltaWxStatusBar *retval = statusbar ? DNEWCLASS(DeltaWxStatusBar, (statusbar)) : (DeltaWxStatusBar*) 0;
-	WX_SETOBJECT_EX(*at, StatusBar, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, StatusBar, frame->GetStatusBar())
 	return true;
 }
 
@@ -111,9 +105,7 @@ static bool GetStatusBarPane (void* val, DeltaValue* at)
 static bool GetToolBar (void* val, DeltaValue* at) 
 {
 	wxFrame *frame = DLIB_WXTYPECAST_BASE(Frame, val, frame);
-	wxToolBar *toolbar = frame->GetToolBar();
-	DeltaWxToolBar *retval = toolbar ? DNEWCLASS(DeltaWxToolBar, (toolbar)) : (DeltaWxToolBar*) 0;
-	WX_SETOBJECT_EX(*at, ToolBar, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ToolBar, frame->GetToolBar())
 	return true;
 }
 
@@ -129,38 +121,11 @@ static DeltaExternIdFieldGetter::GetByStringFuncEntry getters[] = {
 WX_LIBRARY_FUNCS_IMPLEMENTATION(Frame,frame)
 
 ////////////////////////////////////////////////////////////////
-// TODO: move this proper location and use the 
-// WX_SET_WINDOW_OBJECT macro to create adapter-aware objects
-template<typename T>
-class WrapperDestroyEventHandler : public wxEvtHandler {
-public:
-	void OnDestroy(wxWindowDestroyEvent& event)
-		{ DDELETE(static_cast<T*>(event.GetWindow()->GetClientData())); }
-	static WrapperDestroyEventHandler* Instance(void) {
-		static WrapperDestroyEventHandler<T> instance;
-		return &instance;
-	}
-};
- #define WX_SET_WINDOW_OBJECT(_wxclass, _var, _wxvar)												\
-	if (_wxvar) {																					\
-		_var = DNEWCLASS(DeltaWx##_wxclass, (_wxvar));												\
-		_wxvar->SetClientData(_var);																\
-		_wxvar->Connect(																			\
-			wxEVT_DESTROY,																			\
-			wxWindowDestroyEventHandler(WrapperDestroyEventHandler<DeltaWx##_wxclass>::OnDestroy),	\
-			NULL,																					\
-			WrapperDestroyEventHandler<DeltaWx##_wxclass>::Instance()								\
-		);																							\
-	}																								\
-	WX_SETOBJECT(_wxclass, _var)
-
-////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(frame_construct, 0, 7, Nil)
-	wxFrame *wxframe = (wxFrame*) 0;
-	DeltaWxFrame *frame = (DeltaWxFrame*) 0;
+	wxFrame *frame = (wxFrame*) 0;
 	if (n == 0)
-		wxframe = new wxFrame();
+		frame = new wxFrame();
 	else if (n >= 3 && n <= 7) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -185,7 +150,7 @@ WX_FUNC_ARGRANGE_START(frame_construct, 0, 7, Nil)
 			WX_GETSTRING(wxVar)
 			name = wxVar;
 		}
-		wxframe = new wxFrame(parent, id, title, pos, size, style, name);
+		frame = new wxFrame(parent, id, title, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -194,11 +159,7 @@ WX_FUNC_ARGRANGE_START(frame_construct, 0, 7, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(Frame, frame, wxframe)
-}
-
-DLIB_FUNC_START(frame_destruct, 1, Nil)
-	DLIB_WXDELETE(frame, Frame, frame)
+	WX_SET_TOPLEVELWINDOW_OBJECT(Frame, frame);
 }
 
 WX_FUNC_ARGRANGE_START(frame_create, 4, 8, Nil)
@@ -232,17 +193,15 @@ WX_FUNC_ARGRANGE_START(frame_createstatusbar, 1, 5, Nil)
 	int number = 1;
 	long style = 0x0010 | 0x00010000;
 	int id = 0;
-	DeltaWxStatusBar *retval = (DeltaWxStatusBar*) 0;
+	wxStatusBar *retval = (wxStatusBar*) 0;
 	if (n >= 2) { WX_GETNUMBER_DEFINED(number) }
 	if (n >= 3) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 4) { WX_GETDEFINE_DEFINED(id) }
 	if (n < 5) {
-		retval = DNEWCLASS(DeltaWxStatusBar, (frame->CreateStatusBar(
-			number, style, id)));
+		retval = frame->CreateStatusBar(number, style, id);
 	} else {
 		WX_GETSTRING(name)
-		retval = DNEWCLASS(DeltaWxStatusBar, (frame->CreateStatusBar(
-			number, style, id, name)));
+		retval = frame->CreateStatusBar(number, style, id, name);
 	}
 	WX_SETOBJECT(StatusBar, retval)
 }
@@ -255,63 +214,63 @@ WX_FUNC_ARGRANGE_START(frame_createtoolbar, 1, 4, Nil)
 	if (n >= 2) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 3) { WX_GETDEFINE_DEFINED(winid) }
 	if (n >= 4) { WX_GETSTRING_DEFINED(name) }
-	DeltaWxToolBar *retval = DNEWCLASS(DeltaWxToolBar, (frame->CreateToolBar(style, winid, name)));
+	wxToolBar *retval = frame->CreateToolBar(style, winid, name);
 	WX_SETOBJECT(ToolBar, retval)
 }
 
-DLIB_FUNC_START(frame_getclientareaorigin, 1, Nil)
+WX_FUNC_START(frame_getclientareaorigin, 1, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(frame->GetClientAreaOrigin())));
+	wxPoint *retval = new wxPoint(frame->GetClientAreaOrigin());
 	WX_SETOBJECT(Point, retval)
 }
 
-DLIB_FUNC_START(frame_getmenubar, 1, Nil)
+WX_FUNC_START(frame_getmenubar, 1, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
-	WXNEWCLASS(DeltaWxMenuBar, retval, wxMenuBar, frame->GetMenuBar());
+	wxMenuBar* retval	= frame->GetMenuBar();;
 	WX_SETOBJECT(MenuBar, retval)
 }
 
-DLIB_FUNC_START(frame_getstatusbar, 1, Nil)
+WX_FUNC_START(frame_getstatusbar, 1, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
-	WXNEWCLASS(DeltaWxStatusBar, retval, wxStatusBar, frame->GetStatusBar());
+	wxStatusBar* retval	= frame->GetStatusBar();;
 	WX_SETOBJECT(StatusBar, retval)
 }
 
-DLIB_FUNC_START(frame_getstatusbarpane, 1, Nil)
+WX_FUNC_START(frame_getstatusbarpane, 1, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	WX_SETNUMBER(frame->GetStatusBarPane())
 }
 
-DLIB_FUNC_START(frame_gettoolbar, 1, Nil)
+WX_FUNC_START(frame_gettoolbar, 1, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
-	WXNEWCLASS(DeltaWxToolBar, retval, wxToolBar, frame->GetToolBar());
+	wxToolBar* retval	= frame->GetToolBar();;
 	WX_SETOBJECT(ToolBar, retval)
 }
 
-DLIB_FUNC_START(frame_processcommand, 2, Nil)
+WX_FUNC_START(frame_processcommand, 2, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	WX_GETNUMBER(id)
 	frame->ProcessCommand(id);
 }
 
-DLIB_FUNC_START(frame_sendsizeevent, 1, Nil)
+WX_FUNC_START(frame_sendsizeevent, 1, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	frame->SendSizeEvent();
 }
 
-DLIB_FUNC_START(frame_setmenubar, 2, Nil)
+WX_FUNC_START(frame_setmenubar, 2, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	frame->SetMenuBar(mbar);
 }
 
-DLIB_FUNC_START(frame_setstatusbar, 2, Nil)
+WX_FUNC_START(frame_setstatusbar, 2, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	DLIB_WXGET_BASE(statusbar, StatusBar, stbar)
 	frame->SetStatusBar(stbar);
 }
 
-DLIB_FUNC_START(frame_setstatusbarpane, 2, Nil)
+WX_FUNC_START(frame_setstatusbarpane, 2, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	WX_GETNUMBER(n)
 	frame->SetStatusBarPane(n);
@@ -328,7 +287,7 @@ WX_FUNC_ARGRANGE_START(frame_setstatustext, 2, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(frame_setstatuswidths, 3, Nil)
+WX_FUNC_START(frame_setstatuswidths, 3, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	WX_GETNUMBER(n)
 	WX_GETTABLE(d_widths)
@@ -344,7 +303,7 @@ DLIB_FUNC_START(frame_setstatuswidths, 3, Nil)
 	DDELARR(widths);
 }
 
-DLIB_FUNC_START(frame_settoolbar, 2, Nil)
+WX_FUNC_START(frame_settoolbar, 2, Nil)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	DLIB_WXGET_BASE(toolbar, ToolBar, toolbar)
 	frame->SetToolBar(toolbar);

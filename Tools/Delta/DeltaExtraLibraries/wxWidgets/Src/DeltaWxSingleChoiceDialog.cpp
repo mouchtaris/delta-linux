@@ -18,7 +18,6 @@
 #define WX_FUNC(name) WX_FUNC1(singlechoicedialog, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getselection)
 WX_FUNC_DEF(getselectionclientdata)
 WX_FUNC_DEF(getstringselection)
@@ -27,7 +26,6 @@ WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getselection),
 	WX_FUNC(getselectionclientdata),
 	WX_FUNC(getstringselection),
@@ -37,7 +35,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getselection", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SingleChoiceDialog, "singlechoicedialog", Dialog)
 
@@ -51,9 +49,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
-	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
-	WX_SETOBJECT_EX(*at, Dialog, parent)
+	WX_SET_BASECLASS_GETTER(at, Dialog, val)
 	return true;
 }
 
@@ -83,10 +79,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(SingleChoiceDialog,singlechoicedialog)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(singlechoicedialog_construct, 0, 7, Nil)
-	wxSingleChoiceDialog *wxdialog = (wxSingleChoiceDialog*) 0;
-	DeltaWxSingleChoiceDialog *dialog = (DeltaWxSingleChoiceDialog*) 0;
+	wxSingleChoiceDialog *dialog = (wxSingleChoiceDialog*) 0;
 	if (n == 0)
-		wxdialog = new wxSingleChoiceDialog();
+		dialog = new wxSingleChoiceDialog();
 	else if (n >= 4) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETSTRING(message)
@@ -121,40 +116,35 @@ WX_FUNC_ARGRANGE_START(singlechoicedialog_construct, 0, 7, Nil)
 		}
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
-		wxdialog = new wxSingleChoiceDialog(parent, message, caption, choices, clientData, style, pos);
+		dialog = new wxSingleChoiceDialog(parent, message, caption, choices, clientData, style, pos);
 		if (clientData)
 			DDELARR(clientData);
 	}
-	if (wxdialog) dialog = DNEWCLASS(DeltaWxSingleChoiceDialog, (wxdialog));
-	WX_SETOBJECT(SingleChoiceDialog, dialog)
+	WX_SET_TOPLEVELWINDOW_OBJECT(SingleChoiceDialog, dialog)
 }
 
-DLIB_FUNC_START(singlechoicedialog_destruct, 1, Nil)
-	DLIB_WXDELETE(singlechoicedialog, SingleChoiceDialog, dialog)
-}
-
-DLIB_FUNC_START(singlechoicedialog_getselection, 1, Nil)
+WX_FUNC_START(singlechoicedialog_getselection, 1, Nil)
 	DLIB_WXGET_BASE(singlechoicedialog, SingleChoiceDialog, dialog)
 	WX_SETNUMBER(dialog->GetSelection())
 }
 
-DLIB_FUNC_START(singlechoicedialog_getselectionclientdata, 1, Nil)
+WX_FUNC_START(singlechoicedialog_getselectionclientdata, 1, Nil)
 	DLIB_WXGET_BASE(singlechoicedialog, SingleChoiceDialog, dialog)
 	DLIB_RETVAL_REF.FromString(std::string(dialog->GetSelectionClientData()));
 }
 
-DLIB_FUNC_START(singlechoicedialog_getstringselection, 1, Nil)
+WX_FUNC_START(singlechoicedialog_getstringselection, 1, Nil)
 	DLIB_WXGET_BASE(singlechoicedialog, SingleChoiceDialog, dialog)
 	WX_SETSTRING(dialog->GetStringSelection())
 }
 
-DLIB_FUNC_START(singlechoicedialog_setselection, 2, Nil)
+WX_FUNC_START(singlechoicedialog_setselection, 2, Nil)
 	DLIB_WXGET_BASE(singlechoicedialog, SingleChoiceDialog, dialog)
 	WX_GETNUMBER(selection)
 	dialog->SetSelection(selection);
 }
 
-DLIB_FUNC_START(singlechoicedialog_showmodal, 1, Nil)
+WX_FUNC_START(singlechoicedialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(singlechoicedialog, SingleChoiceDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

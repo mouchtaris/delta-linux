@@ -15,7 +15,6 @@
 #define WX_FUNC(name) WX_FUNC1(gbspan, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getcolspan)
 WX_FUNC_DEF(getrowspan)
 WX_FUNC_DEF(setcolspan)
@@ -25,7 +24,6 @@ WX_FUNC_DEF(notequal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getcolspan),
 	WX_FUNC(getrowspan),
 	WX_FUNC(setcolspan),
@@ -36,7 +34,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "notequal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getcolspan", "notequal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(GBSpan, "gbspan")
 
@@ -83,14 +81,13 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(GBSpan, gbspan,
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(gbspan_construct, 0, 2, Nil)
-	wxGBSpan *wxgbspan = (wxGBSpan*) 0;
-	DeltaWxGBSpan *gbspan = (DeltaWxGBSpan*) 0;
+	wxGBSpan *gbspan = (wxGBSpan*) 0;
 	if (n == 0)
-		wxgbspan = new wxGBSpan();
+		gbspan = new wxGBSpan();
 	else if (n == 2) {
 		WX_GETNUMBER(rowSpan)
 		WX_GETNUMBER(colSpan)
-		wxgbspan = new wxGBSpan(rowSpan, colSpan);
+		gbspan = new wxGBSpan(rowSpan, colSpan);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -99,43 +96,38 @@ WX_FUNC_ARGRANGE_START(gbspan_construct, 0, 2, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxgbspan) gbspan = DNEWCLASS(DeltaWxGBSpan, (wxgbspan));
-	WX_SETOBJECT(GBSpan, gbspan)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(GBSpan, gbspan)
 }
 
-DLIB_FUNC_START(gbspan_destruct, 1, Nil)
-	DLIB_WXDELETE(gbspan, GBSpan, gbspan)
-}
-
-DLIB_FUNC_START(gbspan_getcolspan, 1, Nil)
+WX_FUNC_START(gbspan_getcolspan, 1, Nil)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan)
 	WX_SETNUMBER(wxgbspan->GetColspan());
 }
 
-DLIB_FUNC_START(gbspan_getrowspan, 1, Nil)
+WX_FUNC_START(gbspan_getrowspan, 1, Nil)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan)
 	WX_SETNUMBER(wxgbspan->GetRowspan());
 }
 
-DLIB_FUNC_START(gbspan_setcolspan, 2, Nil)
+WX_FUNC_START(gbspan_setcolspan, 2, Nil)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan)
 	WX_GETNUMBER(colSpan)
 	wxgbspan->SetColspan(colSpan);
 }
 
-DLIB_FUNC_START(gbspan_setrowspan, 2, Nil)
+WX_FUNC_START(gbspan_setrowspan, 2, Nil)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan)
 	WX_GETNUMBER(rowSpan)
 	wxgbspan->SetRowspan(rowSpan);
 }
 
-DLIB_FUNC_START(gbspan_equal, 2, Nil)
+WX_FUNC_START(gbspan_equal, 2, Nil)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan2)
 	WX_SETBOOL(wxgbspan->operator==(*wxgbspan2))
 }
 
-DLIB_FUNC_START(gbspan_notequal, 2, Nil)
+WX_FUNC_START(gbspan_notequal, 2, Nil)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan)
 	DLIB_WXGET_BASE(gbspan, GBSpan, wxgbspan2)
 	WX_SETBOOL(wxgbspan->operator!=(*wxgbspan2))

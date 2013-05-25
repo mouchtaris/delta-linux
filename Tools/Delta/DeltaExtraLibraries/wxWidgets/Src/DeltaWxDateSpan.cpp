@@ -15,7 +15,6 @@
 #define WX_FUNC(name) WX_FUNC1(datespan, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(add)
 WX_FUNC_DEF(day)
 WX_FUNC_DEF(days)
@@ -53,7 +52,6 @@ WX_FUNCS_START
 	WX_FUNC(weeks),
 	WX_FUNC(year),
 	WX_FUNC(years),
-	WX_FUNC(destruct),
 	WX_FUNC(add),
 	WX_FUNC(getdays),
 	WX_FUNC(getmonths),
@@ -76,7 +74,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(9, uarraysize(funcs) - 9, "destruct", "minus")
+DELTALIBFUNC_DECLARECONSTS(9, uarraysize(funcs) - 9, "add", "minus")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(DateSpan, "datespan")
 
@@ -140,167 +138,141 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateSpan, datespan, DeltaWxDateSpanInitFunc()
 
 ////////////////////////////////////////////////////////////////
 
-#define WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespanRef)						\
-	if (&datespanRef == datespan) {																\
-		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
-	} else {																					\
-		DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(datespanRef)));	\
-		WX_SETOBJECT(DateSpan, retval)															\
-	}
-
-#define WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, func)									\
-	const wxDateSpan& datespan##Ref = datespan->func;											\
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespan##Ref)
-
 WX_FUNC_ARGRANGE_START(datespan_construct, 0, 4, Nil)
 	int years = 0, months = 0, weeks = 0, days = 0;
 	if (n >= 1) { WX_GETNUMBER_DEFINED(years) }
 	if (n >= 2) { WX_GETNUMBER_DEFINED(months) }
 	if (n >= 3) { WX_GETNUMBER_DEFINED(weeks) }
 	if (n >= 4) { WX_GETNUMBER_DEFINED(days) }
-	DeltaWxDateSpan *datespan = DNEWCLASS(DeltaWxDateSpan,
-		(new wxDateSpan(years, months, weeks, days)));
-	WX_SETOBJECT(DateSpan, datespan)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(years, months, weeks, days))
 }
 
-DLIB_FUNC_START(datespan_destruct, 1, Nil)
-	DLIB_WXDELETE(datespan, DateSpan, datespan)
-}
-
-DLIB_FUNC_START(datespan_add, 2, Nil)
+WX_FUNC_START(datespan_add, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	DLIB_WXGET_BASE(datespan, DateSpan, other)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Add(*other))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->Add(*other)))
 }
 
-DLIB_FUNC_START(datespan_day, 0, Nil)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Day())));
-	WX_SETOBJECT(DateSpan, retval)
+WX_FUNC_START(datespan_day, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Day()))
 }
 
-DLIB_FUNC_START(datespan_days, 1, Nil)
+WX_FUNC_START(datespan_days, 1, Nil)
 	WX_GETNUMBER(days)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Days(days))));
-	WX_SETOBJECT(DateSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Days(days)))
 }
 
-DLIB_FUNC_START(datespan_getdays, 1, Nil)
+WX_FUNC_START(datespan_getdays, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_SETNUMBER(datespan->GetDays())
 }
 
-DLIB_FUNC_START(datespan_getmonths, 1, Nil)
+WX_FUNC_START(datespan_getmonths, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_SETNUMBER(datespan->GetMonths())
 }
 
-DLIB_FUNC_START(datespan_gettotaldays, 1, Nil)
+WX_FUNC_START(datespan_gettotaldays, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_SETNUMBER(datespan->GetTotalDays())
 }
 
-DLIB_FUNC_START(datespan_getweeks, 1, Nil)
+WX_FUNC_START(datespan_getweeks, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_SETNUMBER(datespan->GetWeeks())
 }
 
-DLIB_FUNC_START(datespan_getyears, 1, Nil)
+WX_FUNC_START(datespan_getyears, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_SETNUMBER(datespan->GetYears())
 }
 
-DLIB_FUNC_START(datespan_month, 0, Nil)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Month())));
-	WX_SETOBJECT(DateSpan, retval)
+WX_FUNC_START(datespan_month, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Month()))
 }
 
-DLIB_FUNC_START(datespan_months, 1, Nil)
+WX_FUNC_START(datespan_months, 1, Nil)
 	WX_GETNUMBER(months)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Months(months))));
-	WX_SETOBJECT(DateSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Months(months)))
 }
 
-DLIB_FUNC_START(datespan_multiply, 2, Nil)
+WX_FUNC_START(datespan_multiply, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(factor)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Multiply(factor))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->Multiply(factor)))
 }
 
-DLIB_FUNC_START(datespan_negate, 1, Nil)
+WX_FUNC_START(datespan_negate, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Negate())
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->Negate()))
 }
 
-DLIB_FUNC_START(datespan_neg, 1, Nil)
+WX_FUNC_START(datespan_neg, 1, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Neg())
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->Neg()))
 }
 
-DLIB_FUNC_START(datespan_setdays, 2, Nil)
+WX_FUNC_START(datespan_setdays, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(days)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetDays(days))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->SetDays(days)))
 }
 
-DLIB_FUNC_START(datespan_setyears, 2, Nil)
+WX_FUNC_START(datespan_setyears, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(years)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetYears(years))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->SetYears(years)))
 }
 
-DLIB_FUNC_START(datespan_setmonths, 2, Nil)
+WX_FUNC_START(datespan_setmonths, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(months)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetMonths(months))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->SetMonths(months)))
 }
 
-DLIB_FUNC_START(datespan_setweeks, 2, Nil)
+WX_FUNC_START(datespan_setweeks, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	WX_GETNUMBER(weeks)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, SetWeeks(weeks))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->SetWeeks(weeks)))
 }
 
-DLIB_FUNC_START(datespan_subtract, 2, Nil)
+WX_FUNC_START(datespan_subtract, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	DLIB_WXGET_BASE(datespan, DateSpan, other)
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS(datespan, Subtract(*other))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespan->Subtract(*other)))
 }
 
-DLIB_FUNC_START(datespan_week, 0, Nil)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Week())));
-	WX_SETOBJECT(DateSpan, retval)
+WX_FUNC_START(datespan_week, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Week()))
 }
 
-DLIB_FUNC_START(datespan_weeks, 1, Nil)
+WX_FUNC_START(datespan_weeks, 1, Nil)
 	WX_GETNUMBER(weeks)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Weeks(weeks))));
-	WX_SETOBJECT(DateSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Weeks(weeks)))
 }
 
-DLIB_FUNC_START(datespan_year, 0, Nil)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Year())));
-	WX_SETOBJECT(DateSpan, retval)
+WX_FUNC_START(datespan_year, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Year()))
 }
 
-DLIB_FUNC_START(datespan_years, 1, Nil)
+WX_FUNC_START(datespan_years, 1, Nil)
 	WX_GETNUMBER(years)
-	DeltaWxDateSpan *retval = DNEWCLASS(DeltaWxDateSpan, (new wxDateSpan(wxDateSpan::Years(years))));
-	WX_SETOBJECT(DateSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(wxDateSpan::Years(years)))
 }
 
-DLIB_FUNC_START(datespan_equal, 2, Nil)
+WX_FUNC_START(datespan_equal, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	DLIB_WXGET_BASE(datespan, DateSpan, other)
 	WX_SETBOOL(datespan->operator==(*other))
 }
 
-DLIB_FUNC_START(datespan_notequal, 2, Nil)
+WX_FUNC_START(datespan_notequal, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	DLIB_WXGET_BASE(datespan, DateSpan, other)
 	WX_SETBOOL(datespan->operator!=(*other))
 }
 
-DLIB_FUNC_START(datespan_assign, 2, Nil)
+WX_FUNC_START(datespan_assign, 2, Nil)
 	DLIB_WXGET_BASE(datespan, DateSpan, datespan)
 	DLIB_WXGET_BASE(datespan, DateSpan, other)
 	datespan->operator=(*other);
@@ -315,5 +287,5 @@ WX_FUNC_ARGRANGE_START(datespan_minus, 1, 2, Nil)
 		DLIB_WXGET_BASE(datespan, DateSpan, other)
 		datespanRef = datespan->operator-(*other);
 	}
-	WXDATESPAN_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(datespan, datespanRef)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateSpan, new wxDateSpan(datespanRef))
 }

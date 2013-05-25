@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(rect, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(centrein)
 WX_FUNC_DEF(contains)
 WX_FUNC_DEF(deflate)
@@ -52,7 +51,6 @@ WX_FUNC_DEF(notequal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(centrein),
 	WX_FUNC(contains),
 	WX_FUNC(deflate),
@@ -88,7 +86,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "notequal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "centrein", "notequal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(Rect, "rect")
 
@@ -148,42 +146,27 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Rect, rect, DeltaWxRectInitFunc();, UEMPTY);
 
 ////////////////////////////////////////////////////////////////
 
-#define WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef)					\
-	if (&rectRef == rect) {														\
-		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);							\
-	} else {																	\
-		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rectRef)));	\
-		WX_SETOBJECT(Rect, retval)												\
-	}
-
-#define WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, func)							\
-	const wxRect& rect##Ref = rect->func;										\
-	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rect##Ref)
-
 WX_FUNC_ARGRANGE_START(rect_construct, 0, 4, Nil)
-	wxRect *wxrect = (wxRect*) 0;
-	DeltaWxRect *rect = (DeltaWxRect*) 0;
+	wxRect *rect = (wxRect*) 0;
 	if (n == 0) {
-		wxrect = new wxRect();
+		rect = new wxRect();
 	} else if (n == 1) {
 		DLIB_WXGETSIZE_BASE(size)
-		wxrect = new wxRect(*size);
+		rect = new wxRect(*size);
 	} else if (n == 4) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
 		WX_GETNUMBER(width)
 		WX_GETNUMBER(height)
-		wxrect = new wxRect(x, y, width, height);
+		rect = new wxRect(x, y, width, height);
 	} else if (n == 2) {
 		DLIB_WXGET_BASE(point, Point, pt)
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Point, serial_no, point, point)) {
-			wxPoint *pt2 = (wxPoint*) point->GetCastToNativeInstance();
-			wxrect = new wxRect(*pt, *pt2);
+		if (DLIB_WXISBASE(Point, serial_no, point, pt2)) {
+			rect = new wxRect(*pt, *pt2);
 		} else
-		if (DLIB_WXISBASE(Size, serial_no, size, size)) {
-			wxSize *sz = (wxSize*) size->GetCastToNativeInstance();
-			wxrect = new wxRect(*pt, *sz);
+		if (DLIB_WXISBASE(Size, serial_no, size, sz)) {
+			rect = new wxRect(*pt, *sz);
 		}
 	} else {
 		DPTR(vm)->PrimaryError(
@@ -193,12 +176,7 @@ WX_FUNC_ARGRANGE_START(rect_construct, 0, 4, Nil)
 		);
 		return;
 	}
-	if (wxrect) rect = DNEWCLASS(DeltaWxRect, (wxrect));
-	WX_SETOBJECT(Rect, rect)
-}
-
-DLIB_FUNC_START(rect_destruct, 1, Nil)
-	DLIB_WXDELETE(rect, Rect, rect)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, rect)
 }
 
 WX_FUNC_ARGRANGE_START(rect_centrein, 2, 3, Nil)
@@ -206,7 +184,7 @@ WX_FUNC_ARGRANGE_START(rect_centrein, 2, 3, Nil)
 	DLIB_WXGET_BASE(rect, Rect, r)
 	int dir = wxBOTH;
 	if (n >= 3) { WX_GETDEFINE_DEFINED(dir) }
-	WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, CenterIn(*r, dir))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(rect->CenterIn(*r, dir)))
 }
 
 WX_FUNC_ARGRANGE_START(rect_contains, 2, 3, Nil)
@@ -217,13 +195,11 @@ WX_FUNC_ARGRANGE_START(rect_contains, 2, 3, Nil)
 		WX_SETBOOL(rect->Contains(x, y))
 	} else {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Point, serial_no, point, point)) {
-			wxPoint *pt = (wxPoint*) point->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Point, serial_no, point, pt)) {
 			WX_SETBOOL(rect->Contains(*pt))
 		}
 		else
-		if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
-			wxRect *r = (wxRect*) rect_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Rect, serial_no, rect, r)) {
 			WX_SETBOOL(rect->Contains(*r))
 		}
 	}
@@ -246,81 +222,75 @@ WX_FUNC_ARGRANGE_START(rect_deflate, 2, 3, Nil)
 			rectRef = rect->Deflate(*diff);
 		}
 	}
-	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef);
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(rectRef));
 }
 
-DLIB_FUNC_START(rect_getbottom, 1, Nil)
+WX_FUNC_START(rect_getbottom, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetBottom())
 }
 
-DLIB_FUNC_START(rect_getheight, 1, Nil)
+WX_FUNC_START(rect_getheight, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetHeight())
 }
 
-DLIB_FUNC_START(rect_getleft, 1, Nil)
+WX_FUNC_START(rect_getleft, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetLeft())
 }
 
-DLIB_FUNC_START(rect_getposition, 1, Nil)
+WX_FUNC_START(rect_getposition, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(rect->GetPosition())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(rect->GetPosition()))
 }
 
-DLIB_FUNC_START(rect_gettopleft, 1, Nil)
+WX_FUNC_START(rect_gettopleft, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(rect->GetTopLeft())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(rect->GetTopLeft()))
 }
 
-DLIB_FUNC_START(rect_gettopright, 1, Nil)
+WX_FUNC_START(rect_gettopright, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(rect->GetTopRight())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(rect->GetTopRight()))
 }
 
-DLIB_FUNC_START(rect_getbottomleft, 1, Nil)
+WX_FUNC_START(rect_getbottomleft, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(rect->GetBottomLeft())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(rect->GetBottomLeft()))
 }
 
-DLIB_FUNC_START(rect_getbottomright, 1, Nil)
+WX_FUNC_START(rect_getbottomright, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(rect->GetBottomRight())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(rect->GetBottomRight()))
 }
 
-DLIB_FUNC_START(rect_getright, 1, Nil)
+WX_FUNC_START(rect_getright, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetRight())
 }
 
-DLIB_FUNC_START(rect_getsize, 1, Nil)
+WX_FUNC_START(rect_getsize, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(rect->GetSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(rect->GetSize()))
 }
 
-DLIB_FUNC_START(rect_gettop, 1, Nil)
+WX_FUNC_START(rect_gettop, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetTop())
 }
 
-DLIB_FUNC_START(rect_getwidth, 1, Nil)
+WX_FUNC_START(rect_getwidth, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetWidth())
 }
 
-DLIB_FUNC_START(rect_getx, 1, Nil)
+WX_FUNC_START(rect_getx, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetX())
 }
 
-DLIB_FUNC_START(rect_gety, 1, Nil)
+WX_FUNC_START(rect_gety, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETNUMBER(rect->GetY())
 }
@@ -342,22 +312,22 @@ WX_FUNC_ARGRANGE_START(rect_inflate, 2, 3, Nil)
 			rectRef = rect->Inflate(*diff);
 		}
 	}
-	WXRECT_AVOID_UNNECESSARY_OBJECTS_NO_FUNC(rect, rectRef);
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(rectRef));
 }
 
-DLIB_FUNC_START(rect_intersect, 2, Nil)
+WX_FUNC_START(rect_intersect, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, r)
-	WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, Intersect(*r))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(rect->Intersect(*r)))
 }
 
-DLIB_FUNC_START(rect_intersects, 2, Nil)
+WX_FUNC_START(rect_intersects, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, r)
 	WX_SETBOOL(rect->Intersects(*r))
 }
 
-DLIB_FUNC_START(rect_isempty, 1, Nil)
+WX_FUNC_START(rect_isempty, 1, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETBOOL(rect->IsEmpty())
 }
@@ -374,55 +344,55 @@ WX_FUNC_ARGRANGE_START(rect_offset, 2, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(rect_setheight, 2, Nil)
+WX_FUNC_START(rect_setheight, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_GETNUMBER(height)
 	rect->SetHeight(height);
 }
 
-DLIB_FUNC_START(rect_setposition, 2, Nil)
+WX_FUNC_START(rect_setposition, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGETPOINT_BASE(point)
 	rect->SetPosition(*point);
 }
 
-DLIB_FUNC_START(rect_setsize, 2, Nil)
+WX_FUNC_START(rect_setsize, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGETSIZE_BASE(s)
 	rect->SetSize(*s);
 }
 
-DLIB_FUNC_START(rect_setwidth, 2, Nil)
+WX_FUNC_START(rect_setwidth, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_GETNUMBER(width)
 	rect->SetWidth(width);
 }
 
-DLIB_FUNC_START(rect_setx, 2, Nil)
+WX_FUNC_START(rect_setx, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_GETNUMBER(x)
 	rect->SetX(x);
 }
 
-DLIB_FUNC_START(rect_sety, 2, Nil)
+WX_FUNC_START(rect_sety, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_GETNUMBER(y)
 	rect->SetY(y);
 }
 
-DLIB_FUNC_START(rect_union, 2, Nil)
+WX_FUNC_START(rect_union, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, r)
-	WXRECT_AVOID_UNNECESSARY_OBJECTS(rect, Union(*r))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(rect->Union(*r)))
 }
 
-DLIB_FUNC_START(rect_equal, 2, Nil)
+WX_FUNC_START(rect_equal, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, rect2)
 	WX_SETBOOL(*rect ==*rect2)
 }
 
-DLIB_FUNC_START(rect_notequal, 2, Nil)
+WX_FUNC_START(rect_notequal, 2, Nil)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	DLIB_WXGET_BASE(rect, Rect, rect2)
 	WX_SETBOOL(*rect != *rect2)

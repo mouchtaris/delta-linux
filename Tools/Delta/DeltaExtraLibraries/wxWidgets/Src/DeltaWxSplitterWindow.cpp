@@ -18,7 +18,6 @@
 #define WX_FUNC(name) WX_FUNC1(splitterwindow, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getminimumpanesize)
 WX_FUNC_DEF(getsashgravity)
@@ -44,7 +43,6 @@ WX_FUNC_DEF(updatesize)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getminimumpanesize),
 	WX_FUNC(getsashgravity),
@@ -71,7 +69,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "updatesize")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "updatesize")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SplitterWindow, "splitterwindow", Window)
 
@@ -85,9 +83,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxWindow *_parent = DLIB_WXTYPECAST_BASE(Window, val, window);
-	DeltaWxWindow *parent = DNEWCLASS(DeltaWxWindow, (_parent));
-	WX_SETOBJECT_EX(*at, Window, parent)
+	WX_SET_BASECLASS_GETTER(at, Window, val)
 	return true;
 }
 
@@ -101,18 +97,14 @@ static bool GetSplitMode (void* val, DeltaValue* at)
 static bool GetWindow1 (void* val, DeltaValue* at) 
 {
 	wxSplitterWindow *window = DLIB_WXTYPECAST_BASE(SplitterWindow, val, splitterwindow);
-	wxWindow *win = window->GetWindow1();
-	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-	WX_SETOBJECT_EX(*at, Window, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, window->GetWindow1())
 	return true;
 }
 
 static bool GetWindow2 (void* val, DeltaValue* at) 
 {
 	wxSplitterWindow *window = DLIB_WXTYPECAST_BASE(SplitterWindow, val, splitterwindow);
-	wxWindow *win = window->GetWindow2();
-	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-	WX_SETOBJECT_EX(*at, Window, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, window->GetWindow2())
 	return true;
 }
 
@@ -181,10 +173,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(SplitterWindow,splitterwindow)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(splitterwindow_construct, 0, 6, Nil)
-	wxSplitterWindow* wxwindow = (wxSplitterWindow*) 0;
-	DeltaWxSplitterWindow* window = (DeltaWxSplitterWindow*) 0;
+	wxSplitterWindow* window = (wxSplitterWindow*) 0;
 	if (n == 0)
-		wxwindow = new wxSplitterWindow();
+		window = new wxSplitterWindow();
 	else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int id = wxID_ANY;
@@ -197,15 +188,9 @@ WX_FUNC_ARGRANGE_START(splitterwindow_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		wxwindow = new wxSplitterWindow(parent, id, pos, size, style, name);
+		window = new wxSplitterWindow(parent, id, pos, size, style, name);
 	}
-	if (wxwindow)
-		window = DNEWCLASS(DeltaWxSplitterWindow, (wxwindow));
-	WX_SETOBJECT(SplitterWindow, window)
-}
-
-DLIB_FUNC_START(splitterwindow_destruct, 1, Nil)
-	DLIB_WXDELETE(splitterwindow, SplitterWindow, window)
+	WX_SET_WINDOW_OBJECT(SplitterWindow, window)
 }
 
 WX_FUNC_ARGRANGE_START(splitterwindow_create, 2, 6, Nil)
@@ -222,78 +207,77 @@ WX_FUNC_ARGRANGE_START(splitterwindow_create, 2, 6, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(window->Create(parent, id, pos, size, style, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(window);
 }
 
-DLIB_FUNC_START(splitterwindow_getminimumpanesize, 1, Nil)
+WX_FUNC_START(splitterwindow_getminimumpanesize, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_SETNUMBER(window->GetMinimumPaneSize())
 }
 
-DLIB_FUNC_START(splitterwindow_getsashgravity, 1, Nil)
+WX_FUNC_START(splitterwindow_getsashgravity, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_SETNUMBER(window->GetSashGravity())
 }
 
-DLIB_FUNC_START(splitterwindow_getsashposition, 1, Nil)
+WX_FUNC_START(splitterwindow_getsashposition, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_SETNUMBER(window->GetSashPosition())
 }
 
-DLIB_FUNC_START(splitterwindow_getsplitmode, 1, Nil)
+WX_FUNC_START(splitterwindow_getsplitmode, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_SETNUMBER(window->GetSplitMode())
 }
 
-DLIB_FUNC_START(splitterwindow_getwindow1, 1, Nil)
+WX_FUNC_START(splitterwindow_getwindow1, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
-	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (window->GetWindow1()));
-	WX_SETOBJECT(Window, retval)
+	WX_SETOBJECT(Window, window->GetWindow1())
 }
 
-DLIB_FUNC_START(splitterwindow_getwindow2, 1, Nil)
+WX_FUNC_START(splitterwindow_getwindow2, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
-	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (window->GetWindow2()));
-	WX_SETOBJECT(Window, retval)
+	WX_SETOBJECT(Window, window->GetWindow2())
 }
 
-DLIB_FUNC_START(splitterwindow_initialize, 2, Nil)
+WX_FUNC_START(splitterwindow_initialize, 2, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	DLIB_WXGET_BASE(window, Window, win)
 	window->Initialize(win);
 }
 
-DLIB_FUNC_START(splitterwindow_issplit, 1, Nil)
+WX_FUNC_START(splitterwindow_issplit, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_SETBOOL(window->IsSplit())
 }
 
-DLIB_FUNC_START(splitterwindow_ondoubleclicksash, 3, Nil)
+WX_FUNC_START(splitterwindow_ondoubleclicksash, 3, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	window->OnDoubleClickSash(x, y);
 }
 
-DLIB_FUNC_START(splitterwindow_onunsplit, 2, Nil)
+WX_FUNC_START(splitterwindow_onunsplit, 2, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	DLIB_WXGET_BASE(window, Window, removed)
 	window->OnUnsplit(removed);
 }
 
-DLIB_FUNC_START(splitterwindow_onsashpositionchange, 2, Nil)
+WX_FUNC_START(splitterwindow_onsashpositionchange, 2, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_GETNUMBER(newSashPosition)
 	WX_SETBOOL(window->OnSashPositionChange(newSashPosition))
 }
 
-DLIB_FUNC_START(splitterwindow_replacewindow, 3, Nil)
+WX_FUNC_START(splitterwindow_replacewindow, 3, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	DLIB_WXGET_BASE(window, Window, windowOld)
 	DLIB_WXGET_BASE(window, Window, windowNew)
 	WX_SETBOOL(window->ReplaceWindow(windowOld, windowNew))
 }
 
-DLIB_FUNC_START(splitterwindow_setsashgravity, 2, Nil)
+WX_FUNC_START(splitterwindow_setsashgravity, 2, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_GETNUMBER(gravity)
 	window->SetSashGravity(gravity);
@@ -307,19 +291,19 @@ WX_FUNC_ARGRANGE_START(splitterwindow_setsashposition, 2, 3, Nil)
 	window->SetSashPosition(position, redraw);
 }
 
-DLIB_FUNC_START(splitterwindow_setsashsize, 2, Nil)
+WX_FUNC_START(splitterwindow_setsashsize, 2, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_GETNUMBER(size)
 	window->SetSashSize(size);
 }
 
-DLIB_FUNC_START(splitterwindow_setminimumpanesize, 2, Nil)
+WX_FUNC_START(splitterwindow_setminimumpanesize, 2, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_GETNUMBER(paneSize)
 	window->SetMinimumPaneSize(paneSize);
 }
 
-DLIB_FUNC_START(splitterwindow_setsplitmode, 2, Nil)
+WX_FUNC_START(splitterwindow_setsplitmode, 2, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	WX_GETDEFINE(mode)
 	window->SetSplitMode(mode);
@@ -350,7 +334,7 @@ WX_FUNC_ARGRANGE_START(splitterwindow_unsplit, 1, 2, Nil)
 	WX_SETBOOL(window->Unsplit(toRemove))
 }
 
-DLIB_FUNC_START(splitterwindow_updatesize, 1, Nil)
+WX_FUNC_START(splitterwindow_updatesize, 1, Nil)
 	DLIB_WXGET_BASE(splitterwindow, SplitterWindow, window)
 	window->UpdateSize();
 }

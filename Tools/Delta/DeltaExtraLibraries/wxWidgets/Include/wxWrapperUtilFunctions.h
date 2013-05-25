@@ -1,93 +1,85 @@
 #ifndef WXWRAPPERUTILFUNCTIONS_H
 #define WXWRAPPERUTILFUNCTIONS_H
 
+#include "DeltaWxWrapper.h"
+#include "DeltaLibraryFunctionContext.h"
+#include "DeltaWxLibraryTemplates.h"
+#include "DeltaWxDefineMap.h"
+#include "DeltaWxNativeInstanceToWrapperMap.h"
+#include "DeltaWxWrapperToExternIdMap.h"
+#include "DeltaWxCollectableDestructors.h"
 #include "uvalidatable.h"
+#include "usingleton.h"
 #include "DeltaStdLibTemplates.h"
 #include "DeltaStdLibTemplatesUtils.h"
+#include "DeltaCollectableSimple.h"
 #include "DDebug.h"
 #include "DeltaExternId.h"
 #include <map>
+#include <list>
+#include <algorithm>
 
-// _wxclassid is the string const you choose to identify wx classes.
-// _wxclass is the native wx class.
+///////////////////////////////////////////////////////////
 
-// Returns an ExternId. _wxvar is _wxclass* (native wx object).
-// Must create wx2String(DeltaString* at, void* val).
+using namespace wxWidgets;
 
-#define	DLIB_WXMAKE_EX(arg, _wxvar, _classid, _tostring)								\
-	arg.FromExternId(																	\
-		(void*) DNEWCLASS(ValidatableUntypedValue, (_wxvar, _classid))->GetSerialNo(),	\
-		DeltaExternId_NonCollectable,													\
-		_tostring,																		\
-		_classid																		\
-	);
+///////////////////////////////////////////////////////////
 
-#define	DLIB_WXMAKE(_wxvar, _classid, _tostring)	DLIB_WXMAKE_EX(DLIB_RETVAL_REF, _wxvar, _classid, _tostring)
-
-#define	WXNEWCLASS_DEFINED(T,val,Tbase,Arg)		\
-	Tbase *_##val = (Arg);						\
-	if (_##val == (Tbase*)0) {					\
-		val = (T*)0;							\
-	} else {									\
-		val = DNEWCLASS(T, (_##val));			\
-	}
-
-#define WXNEWCLASS(T,val,Tbase,Arg)		\
-	T* val;								\
-	WXNEWCLASS_DEFINED(T,val,Tbase,Arg)
-
-// wxVal is the var defined via DLIB_ARGEX_BASECLASS(wxVal).
-
-#define	DLIB_WXGETCLASSID(wxVal)	\
-			VALIDATABLE_VGET_INST(DLIB_ARGVAL(wxVal))->GetExtClassString()
-
-// wxVar's class is classIdFrom and must become classIdTo.
-// classIdFrom* tmp = (classIdFrom*) wxVar; is safe.
-
-#define	DLIB_WXGET_WRAPPER(sn) VGET_INST(wxWidgets::Wrapper, sn, "wxInstance")
-
-#define DLIB_WXTYPECAST(wxclass, var, wxclassid)			\
-	VGET_INST(DeltaWx##wxclass, var, "wx::"#wxclassid)
-
-#define DLIB_WXTYPECAST_BASE(wxclass, var, wxclassid)							\
-	(wx##wxclass*)DLIB_WXTYPECAST(wxclass, var, wxclassid)->GetNativeInstance()
-
-#define DLIB_WXISBASE(class, var, classid, obj)								\
-	DeltaWx##class *obj = VGET_INST(DeltaWx##class, var, "wx::"#classid)
-
-#define	DLIB_WXGET_DEFINED(_wxclassid, _wxclass, _var)					\
-	DLIB_ARGEX_BASECLASS(_##_var);										\
-	_var = VGET_INST(_wxclass, DLIB_ARGVAL(_##_var), _wxclassid);		\
-	DLIB_ERROR_CHECK(													\
-		!_var,															\
-		uconstructstr(													\
-			"invalid %s handle 0x%x, probably destroyed",				\
-			_wxclassid,													\
-			(util_ui32) DLIB_ARGVAL(_##_var)							\
-		)																\
+#define WX_INVALID_ARGUMENT_TYPE_ERROR(errorMsg)		\
+	DLIB_ERROR_CHECK(									\
+		true,											\
+		uconstructstr(									\
+			"Invalid argument passed (%s). " errorMsg,	\
+			DPTR(vm)->GetActualArg(_argNo)->TypeStr()	\
+		)												\
 	)
 
-#define	DLIB_WXGET(_wxclassid, _wxclass, _var)				\
-	_wxclass* _var;											\
-	DLIB_WXGET_DEFINED("wx::"#_wxclassid, _wxclass, _var)	\
+///////////////////////////////////////////////////////////
+
+#define WX_CONSTRUCT_WINDOW_OBJECT(_class, _var, _wxvar)	\
+	if (_wxvar) {											\
+		var		= DNEWCLASS(DeltaWx##_class, (_wxvar));		\
+		_wxvar->SetClientData(_var);						\
+	}														\
+	WX_SETOBJECT(_class, _var)
+
+///////////////////////////////////////////////////////////
+// wxclassid arg is not used
+#define DLIB_WXTYPECAST(wxclass, var, wxclassid)								\
+	GetWrapperFromExternIdValue<DeltaWx##wxclass##ClassId, DeltaWx##wxclass>((void*)var)
+
+#define DLIB_WXTYPECAST_BASE(wxclass, var, wxclassid)							\
+	GetNativeInstanceFromExternIdValue											\
+		<DeltaWx##wxclass##ClassId, DeltaWx##wxclass, wx##wxclass>((void*)var)
+
+///////////////////////////////////////////////////////////
+
+#define DLIB_WXISBASE(class, var, classid, obj)								\
+	wx##class *obj = DLIB_WXTYPECAST_BASE(class, var, classid)
+
+///////////////////////////////////////////////////////////
+
+#define	DLIB_WXGET(_wxclassid, _wxclass, _var)									\
+	DeltaWx##_wxclass* _var = (DeltaWx##_wxclass*)0;							\
+	context.UpdateContext(_argNo, _sig1, _sig2);								\
+	if (GetWrapperFromArgument<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass>	\
+		(#_var, &_var, &context))												\
+		context.UpdateLocals(NULL, NULL, &_argNo, &_sig1, &_sig2);				\
+	else																		\
+		return;
 
 #define	DLIB_WXGET_BASE(_classid, _class, _var)									\
-	wx##_class* _var;															\
-	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Nil) {				\
-		_var = (wx##_class*) 0;													\
-		++_argNo;																\
-	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {	\
-		DLIB_WXGET(_classid, DeltaWx##_class, _##_var)							\
-		_var = (wx##_class*) DPTR(_##_var)->GetNativeInstance();				\
-	} else {																	\
-		DLIB_ERROR_CHECK(														\
-			true,																\
-			uconstructstr(														\
-				"invalid argument passed (%s). Expected externid or nil",		\
-				DPTR(vm)->GetActualArg(_argNo)->TypeStr()						\
-			)																	\
-		)																		\
-	}
+	wx##_class* _var = (wx##_class*)0;											\
+	context.UpdateContext(_argNo, _sig1, _sig2);								\
+	if (GetNativeInstanceFromArgument											\
+		<DeltaWx##_class##ClassId, DeltaWx##_class, wx##_class>					\
+		(#_var, &_var, &context))												\
+		context.UpdateLocals(NULL, NULL, &_argNo, &_sig1, &_sig2);				\
+	else																		\
+		return;
+
+#define DLIB_WXGETPOINT_INVALID_ARGUMENT_MESSAGE									\
+	"Expected externid of type 'point' or String with value \"[wx]DefaultPosition\""
 
 #define DLIB_WXGETPOINT_BASE(_var)													\
 	wxPoint *_var;																	\
@@ -96,29 +88,16 @@
 		if (_var##_ == "DefaultPosition" || _var##_ == "wxDefaultPosition")			\
 			_var = new wxPoint(wxDefaultPosition);									\
 		else																		\
-			DLIB_ERROR_CHECK(														\
-				true,																\
-				uconstructstr(														\
-					"invalid argument passed (%s)."									\
-					" Expected externid of type 'point' or"							\
-					" String with value \"[wx]DefaultPosition\"",					\
-					DPTR(vm)->GetActualArg(_argNo)->TypeStr()						\
-				)																	\
-			)																		\
-	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Nil) {			\
-		DLIB_ERROR_CHECK(															\
-			true,																	\
-			uconstructstr(															\
-				"invalid argument passed (%s)."										\
-				" Expected externid of type 'point' or"								\
-				" String with value \"[wx]DefaultPosition\"",						\
-				DPTR(vm)->GetActualArg(_argNo)->TypeStr()							\
-			)																		\
-		)																			\
-	} else {																		\
+			WX_INVALID_ARGUMENT_TYPE_ERROR(DLIB_WXGETPOINT_INVALID_ARGUMENT_MESSAGE)\
+	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {		\
 		DLIB_WXGET_BASE(point, Point, _var##_)										\
 		_var = _var##_;																\
+	} else {																		\
+		WX_INVALID_ARGUMENT_TYPE_ERROR(DLIB_WXGETPOINT_INVALID_ARGUMENT_MESSAGE)	\
 	}
+
+#define DLIB_WXGETSIZE_INVALID_ARGUMENT_MESSAGE										\
+	"Expected externid of type 'size' or String with value \"[wx]DefaultSize\""
 
 #define DLIB_WXGETSIZE_BASE(_var)													\
 	wxSize *_var;																	\
@@ -127,36 +106,23 @@
 		if (_var##_ == "DefaultSize" || _var##_ == "wxDefaultSize")					\
 			_var = new wxSize(wxDefaultSize);										\
 		else																		\
-			DLIB_ERROR_CHECK(														\
-				true,																\
-				uconstructstr(														\
-					"invalid argument passed (%s)."									\
-					" Expected externid of type 'size' or"							\
-					" String with value \"[wx]DefaultSize\"",						\
-					DPTR(vm)->GetActualArg(_argNo)->TypeStr()						\
-				)																	\
-			)																		\
-	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Nil) {			\
-		DLIB_ERROR_CHECK(															\
-			true,																	\
-			uconstructstr(															\
-				"invalid argument passed (%s)."										\
-				" Expected externid of type 'size' or"								\
-				" String with value \"[wx]DefaultSize\"",							\
-				DPTR(vm)->GetActualArg(_argNo)->TypeStr()							\
-			)																		\
-		)																			\
-	} else {																		\
+			WX_INVALID_ARGUMENT_TYPE_ERROR(DLIB_WXGETSIZE_INVALID_ARGUMENT_MESSAGE)	\
+	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {		\
 		DLIB_WXGET_BASE(size, Size, _var##_)										\
 		_var = _var##_;																\
+	} else {																		\
+		WX_INVALID_ARGUMENT_TYPE_ERROR(DLIB_WXGETSIZE_INVALID_ARGUMENT_MESSAGE)		\
 	}
 
+///////////////////////////////////////////////////////////
+
 #define DLIB_WXDELETE(_wxclassid, _wxclass, _var)							\
-	DLIB_WXGET(_wxclassid, DeltaWx##_wxclass, _var)							\
-	wx##_wxclass* nativeInst = (wx##_wxclass*)_var->GetNativeInstance();	\
-	if (nativeInst)															\
-		delete nativeInst;													\
-	DDELETE(_var);
+	DLIB_WXGET(_wxclassid, _wxclass, _var)									\
+	DestroyWrapperAndNativeInstance											\
+		<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass, wx##_wxclass>		\
+		((void*)_var->GetSerialNo());
+
+///////////////////////////////////////////////////////////
 
 #define WX_GETDEFINE(_var)		\
 	int _var = 0;				\
@@ -166,7 +132,7 @@
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number)				\
 		_var = (int) DPTR(vm)->GetActualArg(_argNo)->ToNumber();					\
 	else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {			\
-		_var = wxWidgets::DefineSearch(DPTR(vm)->GetActualArg(_argNo)->ToString());	\
+		_var = wxWidgets::DefineMapGet().Search(DPTR(vm)->GetActualArg(_argNo)->ToString());	\
 	} else {																		\
 		DLIB_ERROR_CHECK(															\
 			true,																	\
@@ -262,20 +228,104 @@
 
 #define WX_SETBOOL(_var)		WX_SETBOOL_EX(DLIB_RETVAL_REF, _var)
 
-#define WX_SETOBJECT_EX(_arg, _wxclass, _var)									\
-	if (_var && _var->GetNativeInstance()) {									\
-	_wxclass##Utils::To##_wxclass(&(_arg), _var);								\
-	} else {																	\
-		if (_var) {																\
-			DDELETE(_var);														\
-		}																		\
-		(_arg).FromNil();														\
-	}
+///////////////////////////////////////////////////////////
 
-#define WX_SETOBJECT(_wxclass, _var)	WX_SETOBJECT_EX(DLIB_RETVAL_REF, _wxclass, _var)
-
-#define WX_SETTABLE_RETVAL(table, value)								\
+#define WX_SETTABLE_RETVAL(table, value)							\
 	DPTR(table)->Set(DeltaValue((DeltaNumberValueType)0), value);
+
+///////////////////////////////////////////////////////////
+
+#define WX_SETOBJECT_NO_CONTEXT_EX2(_arg, _wxclass, _var, _destructor)	\
+	SetValueFromNativeInstance											\
+		<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass, wx##_wxclass>	\
+		(_var, &(_arg), &_destructor,									\
+		&_wxclass##Utils::GetGetter, &_wxclass##Utils::GetMethods, NULL);
+
+#define WX_SETOBJECT_NO_CONTEXT_EX(_arg, _wxclass, _var)				\
+	WX_SETOBJECT_NO_CONTEXT_EX2(_arg, _wxclass, _var, LetWrapperLive)
+
+#define WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(_arg, _wxclass, _var)	\
+	SetValueFromNativeInstance															\
+		<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass, wx##_wxclass>					\
+		(_var, &(_arg), &DestroyWrapperAndNativeInstance								\
+		<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass, wx##_wxclass>,					\
+		&_wxclass##Utils::GetGetter, &_wxclass##Utils::GetMethods, NULL);
+
+///////////////////////////////////////////////////////////
+
+#define WX_SETOBJECT_EX2(_arg, _wxclass, _var, _destructor)				\
+	context.UpdateContext(_argNo, _sig1, _sig2);						\
+	if (SetValueFromNativeInstance										\
+		<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass, wx##_wxclass>	\
+		(_var, &(_arg), &_destructor,									\
+		&_wxclass##Utils::GetGetter, &_wxclass##Utils::GetMethods,		\
+		&context)) {													\
+		context.UpdateLocals(NULL, NULL, &_argNo, &_sig1, &_sig2);		\
+	} else																\
+		return;
+
+#define WX_SETOBJECT_EX(_arg, _wxclass, _var)							\
+	WX_SETOBJECT_EX2(_arg, _wxclass, _var, LetWrapperLive)
+
+#define WX_SETOBJECT(_wxclass, _var)									\
+	WX_SETOBJECT_EX(DLIB_RETVAL_REF, _wxclass, _var)
+
+#define WX_SET_WINDOW_OBJECT(_wxclass, _var)							\
+	WX_SETOBJECT(_wxclass, _var)										\
+	if (_var)															\
+		SetWrapperChild													\
+		<																\
+			DeltaWx##_wxclass##ClassId,									\
+			DeltaWx##_wxclass,											\
+			wx##_wxclass												\
+		>(_var);
+
+#define WX_SET_TOPLEVELWINDOW_OBJECT(_wxclass, _var)						\
+	WX_SET_WINDOW_OBJECT(_wxclass, _var)									\
+	if (_var)																\
+		_var->Connect(														\
+			wxEVT_DESTROY,													\
+			(wxObjectEventFunction)(wxEventFunction)static_cast				\
+			<wxWindowDestroyEventFunction>									\
+			(&TopLevelWrapperDestroyEventHandler::OnDestroy					\
+			<DeltaWx##_wxclass##ClassId,DeltaWx##_wxclass,wx##_wxclass>),	\
+			NULL,															\
+			TopLevelWrapperDestroyEventHandler::Instance()					\
+		);
+
+///////////////////////////////////////////////////////////
+
+#define WX_SETOBJECT_COLLECTABLE_WRAPPER_EX(_arg, _wxclass, _var)		\
+	SetValueFromWrapper<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass>	\
+	(																	\
+		_var, _arg,														\
+		&DestroyWrapper<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass>,	\
+		&_wxclass##Utils::GetGetter, &_wxclass##Utils::GetMethods		\
+	);
+
+#define WX_SET_BASECLASS_GETTER(_arg, _wxclass, _val)							\
+	wx##_wxclass* parent	= DLIB_WXTYPECAST_BASE(_wxclass, _val, "unused");	\
+	DeltaWx##_wxclass* wrapper	= DNEWCLASS(DeltaWx##_wxclass, (parent));		\
+	WX_SETOBJECT_COLLECTABLE_WRAPPER_EX(_arg, _wxclass, wrapper)
+
+///////////////////////////////////////////////////////////
+
+#define WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE_EX(_arg, _wxclass, _var)	\
+	context.UpdateContext(_argNo, _sig1, _sig2);							\
+	if (SetValueFromNativeInstance											\
+		<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass, wx##_wxclass>		\
+		(_var, &(_arg), &DestroyWrapperAndNativeInstance					\
+			<DeltaWx##_wxclass##ClassId, DeltaWx##_wxclass, wx##_wxclass>,	\
+		&_wxclass##Utils::GetGetter, &_wxclass##Utils::GetMethods,			\
+		&context)) {														\
+		context.UpdateLocals(NULL, NULL, &_argNo, &_sig1, &_sig2);			\
+	} else																	\
+		return;
+
+#define WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(_wxclass, _var)			\
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE_EX(DLIB_RETVAL_REF, _wxclass, _var)
+
+///////////////////////////////////////////////////////////
 
 #define WX_FUNC_ARGRANGE_START(name, atleast, atmost, reset)		\
 	static void name##_LibFunc (DeltaVirtualMachine* vm) {			\
@@ -285,14 +335,19 @@
 		DeltaAtLeastTotalArgsCheck(atleast, CURR_FUNC, RESET_EMPTY)	\
 		DeltaAtMostTotalArgsCheck(atmost, CURR_FUNC, RESET_EMPTY)	\
 		int n = DPTR(vm)->TotalActualArgs();						\
-		std::string _sig1, _sig2;
+		std::string _sig1, _sig2;									\
+		WX_CREATE_CONTEXT(context);
+
+#define WX_FUNC_START(name, n, reset)								\
+	DLIB_FUNC_START(name, n, reset)									\
+	WX_CREATE_CONTEXT(context);
 
 #define WX_WRAPPER_UTIL_FUNCS_DEFINITION(T)							\
 	namespace T##Utils{												\
-		void ToString (DeltaString* at, void* val);					\
-		void InstallAll(DeltaTable *methods);						\
-		void To##T (DeltaValue* at, DeltaWx##T* b);					\
+		void InstallAll (DeltaTable *methods);						\
+		bool IsValidArg (DeltaValue arg);							\
 		DeltaObject* GetMethods();									\
+		DeltaExternIdFieldGetter* GetGetter();						\
 	}																\
 	extern void Install_DeltaWx##T##_Lib (DeltaObject* mainAPI);	\
 	extern void CleanUp_DeltaWx##T##_Lib (void);
@@ -348,72 +403,25 @@
 		cleanup																\
 	)
 
-#define DLIB_WX_TOSTRING(T, wxclassid)								\
-	void T##Utils::ToString (DeltaString* at, void* val) {			\
-	DeltaWx##T* b = VGET_INST(DeltaWx##T, val, "wx::"wxclassid);	\
-		if (!b)														\
-			DPTR(at)->Add(											\
-				uconstructstr("%s(handle 0x%x, destroyed!)",		\
-					DeltaWx##T##ClassId::ID, (util_ui32) val)		\
-			);														\
-		else {														\
-			DASSERT((util_ui32) val == DPTR(b)->GetSerialNo());		\
-			DPTR(at)->Add(											\
-				uconstructstr(										\
-					"%s(0x%x)",										\
-					DPTR(b)->GetExtClassString(),					\
-					DPTR(b)->GetSerialNo()							\
-				)													\
-			);														\
-		}															\
-	}
-
-#define DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)							\
-	static DeltaExternIdFieldGetter* getter = (DeltaExternIdFieldGetter*) 0;					\
-	inline bool VAL_IS_##wxclass (DeltaValue val)												\
-	{																							\
-		return (val.Type() == DeltaValue_ExternId &&											\
-				VGET_INST(DeltaWx##wxclass,														\
-						  val.ToExternId(),														\
-						  "wx::"wxclassid));													\
-	}																							\
-	DELTALIBFUNC_DEFINE_METHODS_TABLE_AND_CALLER_CHECKER(VAL_IS_##wxclass(val), "wx::"wxclassid)\
-	DeltaObject* wxclass##Utils::GetMethods() { return methods; }
-
-#define DLIB_WX_TOEXTERNID(wxclass)												\
-	void wxclass##Utils::To##wxclass (DeltaValue* at, DeltaWx##wxclass* b)		\
-	{																			\
-		at->FromExternId(														\
-			(void*) b->GetSerialNo(),											\
-			DeltaExternId_NonCollectable,										\
-			wxclass##Utils::ToString,											\
-			"wxInstance",														\
-			getter																\
-		);																		\
-		DELTALIBFUNC_DELEGATE_METHODS(*at);										\
-	}
-
-#define DLIB_WX_INSTALLALL_FUNC(wxclassid)										\
-	util_ui16 from = METHODS_START_INDEX;										\
-	util_ui16 to = METHODS_START_INDEX + METHODS_TOTAL;							\
-	DASSERT(!strcmp(funcs[from].name, METHODS_FIRST));							\
-	DASSERT(!strcmp(funcs[to-1].name, METHODS_LAST));							\
-	DeltaLibraryObjectCreator::FuncEntry *functions = funcs;					\
-	DeltaTable* table = DNEW(DELTA_OBJECT);										\
-	for (functions += from; from != to; ++from, ++functions) {					\
-		DeltaValue index(functions->name), content(functions->func, binder);	\
-		bool result = DPTR(methods)->Set(index, content);						\
-		DASSERT(result);														\
-		result = DPTR(table)->Set(index, content);								\
-		DASSERT(result);														\
+#define DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)			\
+	static DeltaExternIdFieldGetter* getter = (DeltaExternIdFieldGetter*) 0;	\
+	bool wxclass##Utils::IsValidArg (DeltaValue val) {							\
+		return	val.Type() == DeltaValue_ExternId &&							\
+				VGET_INST(														\
+					DeltaWx##wxclass,											\
+					DELTA_EGC_SIMPLE_GETVALUE(val.ToExternId()),				\
+					DeltaWx##wxclass##ClassId::ID								\
+				);																\
 	}																			\
-	DPTR(methods)->Set(DeltaValue(wxclassid), DeltaValue(table));
+	DELTALIBFUNC_DEFINE_METHODS_TABLE_AND_CALLER_CHECKER(						\
+		wxclass##Utils::IsValidArg(val),										\
+		DeltaWx##wxclass##ClassId::ID)											\
+	DeltaObject* wxclass##Utils::GetMethods() { return methods; }				\
+	DeltaExternIdFieldGetter* wxclass##Utils::GetGetter() { return getter; }
 
 #define DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(wxclass, wxclassid, baseclass)	\
 	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"wxclassid)					\
-	DLIB_WX_TOSTRING(wxclass, wxclassid)										\
 	DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)				\
-	DLIB_WX_TOEXTERNID(wxclass)													\
 	void wxclass##Utils::InstallAll(DeltaTable *methods)						\
 	{																			\
 		DELTALIBFUNC_INSTALL_METHODS(funcs);									\
@@ -422,9 +430,7 @@
 
 #define DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(wxclass, wxclassid)		\
 	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"wxclassid)					\
-	DLIB_WX_TOSTRING(wxclass, wxclassid)										\
 	DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)				\
-	DLIB_WX_TOEXTERNID(wxclass)													\
 	void wxclass##Utils::InstallAll(DeltaTable *methods)						\
 	{																			\
 		DELTALIBFUNC_INSTALL_METHODS(funcs);									\
@@ -438,14 +444,5 @@
 #define WX_FUNCS_END };
 
 ////////////////////////////////////////////////////////////////
-
-namespace wxWidgets {
-	void DefineInit(void);
-	void DefineExit(void);
-	int DefineSearch(std::string str, bool *found = NULL);
-
-	VCLASSID_HEADER(WrapperClassId)
-	typedef DeltaNativeClassWrapperSuperclass<wxWidgets::WrapperClassId> Wrapper;
-}
 
 #endif

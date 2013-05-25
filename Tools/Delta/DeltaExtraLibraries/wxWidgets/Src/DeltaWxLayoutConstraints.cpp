@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(layoutconstraints, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getbottom)
 WX_FUNC_DEF(getcentrex)
 WX_FUNC_DEF(getcentrey)
@@ -37,7 +36,6 @@ WX_FUNC_DEF(setwidth)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getbottom),
 	WX_FUNC(getcentrex),
 	WX_FUNC(getcentrey),
@@ -58,7 +56,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setwidth")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getbottom", "setwidth")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(LayoutConstraints, "layoutconstraints", Object)
 
@@ -72,81 +70,63 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
 static bool GetLeft (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->left)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->left))
 	return true;
 }
 
 static bool GetTop (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->top)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->top))
 	return true;
 }
 
 static bool GetRight (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->right)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->right))
 	return true;
 }
 
 static bool GetBottom (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->bottom)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->bottom))
 	return true;
 }
 
 static bool GetWidth (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->width)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->width))
 	return true;
 }
 
 static bool GetHeight (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->height)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->height))
 	return true;
 }
 
 static bool GetCentreX (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->centreX)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->centreX))
 	return true;
 }
 
 static bool GetCentreY (void* val, DeltaValue* at) 
 {
 	wxLayoutConstraints *constr = DLIB_WXTYPECAST_BASE(LayoutConstraints, val, layoutconstraints);
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(constr->centreY)));
-	WX_SETOBJECT_EX(*at, IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, IndividualLayoutConstraint, new wxIndividualLayoutConstraint(constr->centreY))
 	return true;
 }
 
@@ -167,114 +147,93 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(LayoutConstraints,layoutconstraints)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(layoutconstraints_construct, 0, Nil)
-	DeltaWxLayoutConstraints *retval = DNEWCLASS(DeltaWxLayoutConstraints, (new wxLayoutConstraints()));
-	WX_SETOBJECT(LayoutConstraints, retval)
+WX_FUNC_START(layoutconstraints_construct, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(LayoutConstraints, new wxLayoutConstraints())
 }
 
-DLIB_FUNC_START(layoutconstraints_destruct, 1, Nil)
-	DLIB_WXDELETE(layoutconstraints, LayoutConstraints, layoutconstr)
-}
-
-DLIB_FUNC_START(layoutconstraints_getbottom, 1, Nil)
+WX_FUNC_START(layoutconstraints_getbottom, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->bottom)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->bottom))
 }
 
-DLIB_FUNC_START(layoutconstraints_getcentrex, 1, Nil)
+WX_FUNC_START(layoutconstraints_getcentrex, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->centreX)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->centreX))
 }
 
-DLIB_FUNC_START(layoutconstraints_getcentrey, 1, Nil)
+WX_FUNC_START(layoutconstraints_getcentrey, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->centreY)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->centreY))
 }
 
-DLIB_FUNC_START(layoutconstraints_getheight, 1, Nil)
+WX_FUNC_START(layoutconstraints_getheight, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->height)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->height))
 }
 
-DLIB_FUNC_START(layoutconstraints_getleft, 1, Nil)
+WX_FUNC_START(layoutconstraints_getleft, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->left)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->left))
 }
 
-DLIB_FUNC_START(layoutconstraints_getright, 1, Nil)
+WX_FUNC_START(layoutconstraints_getright, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->right)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->right))
 }
 
-DLIB_FUNC_START(layoutconstraints_gettop, 1, Nil)
+WX_FUNC_START(layoutconstraints_gettop, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->top)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->top))
 }
 
-DLIB_FUNC_START(layoutconstraints_getwidth, 1, Nil)
+WX_FUNC_START(layoutconstraints_getwidth, 1, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
-	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
-		(new wxIndividualLayoutConstraint(layoutconstr->width)));
-	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, new wxIndividualLayoutConstraint(layoutconstr->width))
 }
 
-DLIB_FUNC_START(layoutconstraints_setbottom, 2, Nil)
+WX_FUNC_START(layoutconstraints_setbottom, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->bottom = *indconstr;
 }
 
-DLIB_FUNC_START(layoutconstraints_setcentrex, 2, Nil)
+WX_FUNC_START(layoutconstraints_setcentrex, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->centreX = *indconstr;
 }
 
-DLIB_FUNC_START(layoutconstraints_setcentrey, 2, Nil)
+WX_FUNC_START(layoutconstraints_setcentrey, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->centreY = *indconstr;
 }
 
-DLIB_FUNC_START(layoutconstraints_setheight, 2, Nil)
+WX_FUNC_START(layoutconstraints_setheight, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->height = *indconstr;
 }
 
-DLIB_FUNC_START(layoutconstraints_setleft, 2, Nil)
+WX_FUNC_START(layoutconstraints_setleft, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->left = *indconstr;
 }
 
-DLIB_FUNC_START(layoutconstraints_setright, 2, Nil)
+WX_FUNC_START(layoutconstraints_setright, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->right = *indconstr;
 }
 
-DLIB_FUNC_START(layoutconstraints_settop, 2, Nil)
+WX_FUNC_START(layoutconstraints_settop, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->top = *indconstr;
 }
 
-DLIB_FUNC_START(layoutconstraints_setwidth, 2, Nil)
+WX_FUNC_START(layoutconstraints_setwidth, 2, Nil)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, layoutconstr)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indconstr)
 	layoutconstr->width = *indconstr;

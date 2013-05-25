@@ -20,14 +20,12 @@
 #define WX_FUNC(name) WX_FUNC1(dirpickerctrl, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getpath)
 WX_FUNC_DEF(setpath)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getpath),
 	WX_FUNC(setpath)
@@ -35,7 +33,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setpath")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setpath")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(DirPickerCtrl, "dirpickerctrl", PickerBase)
 
@@ -49,9 +47,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxPickerBase *_parent = DLIB_WXTYPECAST_BASE(PickerBase, val, pickerbase);
-	DeltaWxPickerBase *parent = DNEWCLASS(DeltaWxPickerBase, (_parent));
-	WX_SETOBJECT_EX(*at, PickerBase, parent)
+	WX_SET_BASECLASS_GETTER(at, PickerBase, val)
 	return true;
 }
 
@@ -73,10 +69,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(DirPickerCtrl,dirpickerctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(dirpickerctrl_construct, 0, 9, Nil)
-	wxDirPickerCtrl *wxctrl = (wxDirPickerCtrl*) 0;
-	DeltaWxDirPickerCtrl *ctrl = (DeltaWxDirPickerCtrl*) 0;
+	wxDirPickerCtrl *ctrl = (wxDirPickerCtrl*) 0;
 	if (n == 0) {
-		wxctrl = new wxDirPickerCtrl();
+		ctrl = new wxDirPickerCtrl();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -94,7 +89,7 @@ WX_FUNC_ARGRANGE_START(dirpickerctrl_construct, 0, 9, Nil)
 		if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 9) { WX_GETSTRING_DEFINED(name) }
-		wxctrl = new wxDirPickerCtrl(parent, id, path, message, pos, size, style, *validator, name);
+		ctrl = new wxDirPickerCtrl(parent, id, path, message, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -103,12 +98,7 @@ WX_FUNC_ARGRANGE_START(dirpickerctrl_construct, 0, 9, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxctrl) ctrl = DNEWCLASS(DeltaWxDirPickerCtrl, (wxctrl));
-	WX_SETOBJECT(DirPickerCtrl, ctrl)
-}
-
-DLIB_FUNC_START(dirpickerctrl_destruct, 1, Nil)
-	DLIB_WXDELETE(dirpickerctrl, DirPickerCtrl, ctrl)
+	WX_SET_WINDOW_OBJECT(DirPickerCtrl, ctrl)
 }
 
 WX_FUNC_ARGRANGE_START(dirpickerctrl_create, 3, 10, Nil)
@@ -130,14 +120,15 @@ WX_FUNC_ARGRANGE_START(dirpickerctrl_create, 3, 10, Nil)
 	if (n >= 9) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 10) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(ctrl->Create(parent, id, path, message, pos, size, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(ctrl);
 }
 
-DLIB_FUNC_START(dirpickerctrl_getpath, 1, Nil)
+WX_FUNC_START(dirpickerctrl_getpath, 1, Nil)
 	DLIB_WXGET_BASE(dirpickerctrl, DirPickerCtrl, ctrl)
 	WX_SETSTRING(ctrl->GetPath())
 }
 
-DLIB_FUNC_START(dirpickerctrl_setpath, 2, Nil)
+WX_FUNC_START(dirpickerctrl_setpath, 2, Nil)
 	DLIB_WXGET_BASE(dirpickerctrl, DirPickerCtrl, ctrl)
 	WX_GETSTRING(dirname)
 	ctrl->SetPath(dirname);

@@ -17,20 +17,18 @@
 #define WX_FUNC(name) WX_FUNC1(calendarevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getweekday)
 WX_FUNC_DEF(setweekday)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getweekday),
 	WX_FUNC(setweekday)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setweekday")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getweekday", "setweekday")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(CalendarEvent, "calendarevent", DateEvent)
 
@@ -44,9 +42,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxDateEvent *_parent = DLIB_WXTYPECAST_BASE(DateEvent, val, dateevent);
-	DeltaWxDateEvent *parent = DNEWCLASS(DeltaWxDateEvent, (_parent));
-	WX_SETOBJECT_EX(*at, DateEvent, parent)
+	WX_SET_BASECLASS_GETTER(at, DateEvent, val)
 	return true;
 }
 
@@ -68,33 +64,27 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(CalendarEvent,calendarevent)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(calendarevent_construct, 0, 2, Nil)
-	wxCalendarEvent *wxevt = (wxCalendarEvent*) 0;
-	DeltaWxCalendarEvent *evt = (DeltaWxCalendarEvent*) 0;
+	wxCalendarEvent *evt = (wxCalendarEvent*) 0;
 	if (n == 0) {
-		wxevt = new wxCalendarEvent();
+		evt = new wxCalendarEvent();
 	} else if (n == 2) {
 		DLIB_WXGET_BASE(calendarctrl, CalendarCtrl, cal)
 		WX_GETDEFINE(type)
-		wxevt = new wxCalendarEvent(cal,
+		evt = new wxCalendarEvent(cal,
 #if wxCHECK_VERSION(2, 9, 0)
 		wxDateTime::Now(),
 #endif
 		type);
 	}
-	if (wxevt) evt = DNEWCLASS(DeltaWxCalendarEvent, (wxevt));
-	WX_SETOBJECT(CalendarEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(CalendarEvent, evt)
 }
 
-DLIB_FUNC_START(calendarevent_destruct, 1, Nil)
-	DLIB_WXDELETE(calendarevent, CalendarEvent, evt)
-}
-
-DLIB_FUNC_START(calendarevent_getweekday, 1, Nil)
+WX_FUNC_START(calendarevent_getweekday, 1, Nil)
 	DLIB_WXGET_BASE(calendarevent, CalendarEvent, evt)
 	WX_SETNUMBER(evt->GetWeekDay())
 }
 
-DLIB_FUNC_START(calendarevent_setweekday, 2, Nil)
+WX_FUNC_START(calendarevent_setweekday, 2, Nil)
 	DLIB_WXGET_BASE(calendarevent, CalendarEvent, evt)
 	WX_GETDEFINE(day)
 	evt->SetWeekDay((wxDateTime::WeekDay)day);

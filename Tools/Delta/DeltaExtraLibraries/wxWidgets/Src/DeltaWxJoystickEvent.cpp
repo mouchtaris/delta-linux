@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(joystickevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(buttondown)
 WX_FUNC_DEF(buttonisdown)
 WX_FUNC_DEF(buttonup)
@@ -32,7 +31,6 @@ WX_FUNC_DEF(iszmove)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(buttondown),
 	WX_FUNC(buttonisdown),
 	WX_FUNC(buttonup),
@@ -48,7 +46,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "iszmove")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "buttondown", "iszmove")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(JoystickEvent, "joystickevent", Event)
 
@@ -62,9 +60,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
-	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
-	WX_SETOBJECT_EX(*at, Event, parent)
+	WX_SET_BASECLASS_GETTER(at, Event, val)
 	return true;
 }
 
@@ -92,8 +88,7 @@ static bool GetJoystick (void* val, DeltaValue* at)
 static bool GetPosition (void* val, DeltaValue* at) 
 {
 	wxJoystickEvent *ev = DLIB_WXTYPECAST_BASE(JoystickEvent, val, joystickevent);
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(ev->GetPosition())));
-	WX_SETOBJECT_EX(*at, Point, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(ev->GetPosition()))
 	return true;
 }
 
@@ -151,13 +146,7 @@ WX_FUNC_ARGRANGE_START(joystickevent_construct, 0, 4, Nil)
 	if (n >= 2) { WX_GETDEFINE_DEFINED(state) }
 	if (n >= 3) { WX_GETDEFINE_DEFINED(joystick) }
 	if (n >= 4) { WX_GETDEFINE_DEFINED(change) }
-	DeltaWxJoystickEvent *evt = DNEWCLASS(DeltaWxJoystickEvent,
-		(new wxJoystickEvent(type, state, joystick, change)));
-	WX_SETOBJECT(JoystickEvent, evt)
-}
-
-DLIB_FUNC_START(joystickevent_destruct, 1, Nil)
-	DLIB_WXDELETE(joystickevent, JoystickEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(JoystickEvent, new wxJoystickEvent(type, state, joystick, change))
 }
 
 WX_FUNC_ARGRANGE_START(joystickevent_buttondown, 1, 2, Nil)
@@ -181,43 +170,42 @@ WX_FUNC_ARGRANGE_START(joystickevent_buttonup, 1, 2, Nil)
 	WX_SETBOOL(evt->ButtonUp(but))
 }
 
-DLIB_FUNC_START(joystickevent_getbuttonchange, 1, Nil)
+WX_FUNC_START(joystickevent_getbuttonchange, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
 	WX_SETNUMBER(evt->GetButtonChange())
 }
 
-DLIB_FUNC_START(joystickevent_getbuttonstate, 1, Nil)
+WX_FUNC_START(joystickevent_getbuttonstate, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
 	WX_SETNUMBER(evt->GetButtonState())
 }
 
-DLIB_FUNC_START(joystickevent_getjoystick, 1, Nil)
+WX_FUNC_START(joystickevent_getjoystick, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
 	WX_SETNUMBER(evt->GetJoystick())
 }
 
-DLIB_FUNC_START(joystickevent_getposition, 1, Nil)
+WX_FUNC_START(joystickevent_getposition, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(evt->GetPosition())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(evt->GetPosition()))
 }
 
-DLIB_FUNC_START(joystickevent_getzposition, 1, Nil)
+WX_FUNC_START(joystickevent_getzposition, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
 	WX_SETNUMBER(evt->GetZPosition())
 }
 
-DLIB_FUNC_START(joystickevent_isbutton, 1, Nil)
+WX_FUNC_START(joystickevent_isbutton, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
 	WX_SETBOOL(evt->IsButton())
 }
 
-DLIB_FUNC_START(joystickevent_ismove, 1, Nil)
+WX_FUNC_START(joystickevent_ismove, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
 	WX_SETBOOL(evt->IsMove())
 }
 
-DLIB_FUNC_START(joystickevent_iszmove, 1, Nil)
+WX_FUNC_START(joystickevent_iszmove, 1, Nil)
 	DLIB_WXGET_BASE(joystickevent, JoystickEvent, evt)
 	WX_SETBOOL(evt->IsZMove())
 }

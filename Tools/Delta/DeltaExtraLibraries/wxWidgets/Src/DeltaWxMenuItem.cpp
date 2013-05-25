@@ -117,9 +117,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
@@ -133,18 +131,14 @@ static bool GetId (void* val, DeltaValue* at)
 static bool GetParentMenu (void* val, DeltaValue* at) 
 {
 	wxMenuItem *mitem = DLIB_WXTYPECAST_BASE(MenuItem, val, menuitem);
-	wxMenu *parent = mitem->GetMenu();
-	DeltaWxMenu *retval = parent ? DNEWCLASS(DeltaWxMenu, (parent)) : (DeltaWxMenu*) 0;
-	WX_SETOBJECT_EX(*at, Menu, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Menu, mitem->GetMenu())
 	return true;
 }
 
 static bool GetSubMenu (void* val, DeltaValue* at) 
 {
 	wxMenuItem *mitem = DLIB_WXTYPECAST_BASE(MenuItem, val, menuitem);
-	wxMenu *submenu = mitem->GetSubMenu();
-	DeltaWxMenu *retval = submenu ? DNEWCLASS(DeltaWxMenu, (submenu)) : (DeltaWxMenu*) 0;
-	WX_SETOBJECT_EX(*at, Menu, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Menu, mitem->GetSubMenu())
 	return true;
 }
 
@@ -201,10 +195,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(MenuItem,menuitem)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(menuitem_construct, 0, 6, Nil)
-	wxMenuItem *wxmitem = (wxMenuItem*) 0;
-	DeltaWxMenuItem *mitem = (DeltaWxMenuItem*) 0;
+	wxMenuItem *mitem = (wxMenuItem*) 0;
 	if (n == 0)
-		wxmitem = new wxMenuItem();
+		mitem = new wxMenuItem();
 	else {
 		wxMenu *parentMenu = (wxMenu*) NULL;
 		int id = wxID_SEPARATOR;
@@ -218,13 +211,12 @@ WX_FUNC_ARGRANGE_START(menuitem_construct, 0, 6, Nil)
 		if (n >= 4) { WX_GETSTRING_DEFINED(help) }
 		if (n >= 5) { WX_GETDEFINE(_kind) kind = (wxItemKind)_kind; }
 		if (n >= 6) { DLIB_WXGET_BASE(menu, Menu, menu) subMenu = menu; }
-		wxmitem = new wxMenuItem(parentMenu, id, name, help, (wxItemKind)kind, subMenu);
+		mitem = new wxMenuItem(parentMenu, id, name, help, (wxItemKind)kind, subMenu);
 	}
-	if (wxmitem) mitem = DNEWCLASS(DeltaWxMenuItem, (wxmitem));
 	WX_SETOBJECT(MenuItem, mitem)
 }
 
-DLIB_FUNC_START(menuitem_destruct, 1, Nil)
+WX_FUNC_START(menuitem_destruct, 1, Nil)
 	DLIB_WXDELETE(menuitem, MenuItem, mitem)
 }
 
@@ -248,11 +240,10 @@ WX_FUNC_ARGRANGE_START(menuitem_enable, 1, 2, Nil)
 	}
 }
 
-DLIB_FUNC_START(menuitem_getbackgroundcolour, 1, Nil)
+WX_FUNC_START(menuitem_getbackgroundcolour, 1, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(mitem->GetBackgroundColour())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(mitem->GetBackgroundColour()))
 #else
 	DLIB_ERROR_CHECK(
 		true,
@@ -261,11 +252,10 @@ DLIB_FUNC_START(menuitem_getbackgroundcolour, 1, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_getfont, 1, Nil)
+WX_FUNC_START(menuitem_getfont, 1, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(mitem->GetFont())));
-	WX_SETOBJECT(Font, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(mitem->GetFont()))
 #else
 	DLIB_ERROR_CHECK(
 		true,
@@ -274,7 +264,7 @@ DLIB_FUNC_START(menuitem_getfont, 1, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_getmarginwidth, 1, Nil)
+WX_FUNC_START(menuitem_getmarginwidth, 1, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETNUMBER(mitem->GetMarginWidth())
@@ -286,11 +276,10 @@ DLIB_FUNC_START(menuitem_getmarginwidth, 1, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_gettextcolour, 1, Nil)
+WX_FUNC_START(menuitem_gettextcolour, 1, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(mitem->GetTextColour())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(mitem->GetTextColour()))
 #else
 	DLIB_ERROR_CHECK(
 		true,
@@ -299,79 +288,79 @@ DLIB_FUNC_START(menuitem_gettextcolour, 1, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_gethelp, 1, Nil)
+WX_FUNC_START(menuitem_gethelp, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETSTRING(mitem->GetHelp())
 }
 
-DLIB_FUNC_START(menuitem_getid, 1, Nil)
+WX_FUNC_START(menuitem_getid, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETNUMBER(mitem->GetId())
 }
 
-DLIB_FUNC_START(menuitem_getkind, 1, Nil)
+WX_FUNC_START(menuitem_getkind, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETNUMBER(mitem->GetKind())
 }
 
-DLIB_FUNC_START(menuitem_getlabel, 1, Nil)
+WX_FUNC_START(menuitem_getlabel, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETSTRING(mitem->GetLabel())
 }
 
-DLIB_FUNC_START(menuitem_getlabelfromtext, 1, Nil)
+WX_FUNC_START(menuitem_getlabelfromtext, 1, Nil)
 	WX_GETSTRING(text)
 	WX_SETSTRING(wxMenuItem::GetLabelFromText(text))
 }
 
-DLIB_FUNC_START(menuitem_getmenu, 1, Nil)
+WX_FUNC_START(menuitem_getmenu, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
-	WXNEWCLASS(DeltaWxMenu, retval, wxMenu, mitem->GetMenu());
+	wxMenu* retval	= mitem->GetMenu();;
 	WX_SETOBJECT(Menu, retval)
 }
 
-DLIB_FUNC_START(menuitem_getname, 1, Nil)
+WX_FUNC_START(menuitem_getname, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETSTRING(mitem->wxMenuItemBase::GetName())
 }
 
-DLIB_FUNC_START(menuitem_gettext, 1, Nil)
+WX_FUNC_START(menuitem_gettext, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETSTRING(mitem->GetText())
 }
 
-DLIB_FUNC_START(menuitem_getsubmenu, 1, Nil)
+WX_FUNC_START(menuitem_getsubmenu, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
-	WXNEWCLASS(DeltaWxMenu, retval, wxMenu, mitem->GetSubMenu());
+	wxMenu* retval	= mitem->GetSubMenu();;
 	WX_SETOBJECT(Menu, retval)
 }
 
-DLIB_FUNC_START(menuitem_ischeckable, 1, Nil)
+WX_FUNC_START(menuitem_ischeckable, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETBOOL(mitem->IsCheckable())
 }
 
-DLIB_FUNC_START(menuitem_ischecked, 1, Nil)
+WX_FUNC_START(menuitem_ischecked, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETBOOL(mitem->IsChecked())
 }
 
-DLIB_FUNC_START(menuitem_isenabled, 1, Nil)
+WX_FUNC_START(menuitem_isenabled, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETBOOL(mitem->IsEnabled())
 }
 
-DLIB_FUNC_START(menuitem_isseparator, 1, Nil)
+WX_FUNC_START(menuitem_isseparator, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETBOOL(mitem->IsSeparator())
 }
 
-DLIB_FUNC_START(menuitem_issubmenu, 1, Nil)
+WX_FUNC_START(menuitem_issubmenu, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETBOOL(mitem->IsSubMenu())
 }
 
-DLIB_FUNC_START(menuitem_setbackgroundcolour, 2, Nil)
+WX_FUNC_START(menuitem_setbackgroundcolour, 2, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(colour, Colour, colour)
@@ -384,7 +373,7 @@ DLIB_FUNC_START(menuitem_setbackgroundcolour, 2, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_setfont, 2, Nil)
+WX_FUNC_START(menuitem_setfont, 2, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(font, Font, font)
@@ -397,7 +386,7 @@ DLIB_FUNC_START(menuitem_setfont, 2, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_setmarginwidth, 2, Nil)
+WX_FUNC_START(menuitem_setmarginwidth, 2, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETNUMBER(width)
@@ -410,7 +399,7 @@ DLIB_FUNC_START(menuitem_setmarginwidth, 2, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_settextcolour, 2, Nil)
+WX_FUNC_START(menuitem_settextcolour, 2, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(colour, Colour, colour)
@@ -423,7 +412,7 @@ DLIB_FUNC_START(menuitem_settextcolour, 2, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_setbitmap, 2, Nil)
+WX_FUNC_START(menuitem_setbitmap, 2, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
@@ -451,66 +440,66 @@ WX_FUNC_ARGRANGE_START(menuitem_setbitmaps, 2, 3, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(menuitem_sethelp, 2, Nil)
+WX_FUNC_START(menuitem_sethelp, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETSTRING(helpString)
 	mitem->SetHelp(helpString);
 }
 
-DLIB_FUNC_START(menuitem_setmenu, 2, Nil)
+WX_FUNC_START(menuitem_setmenu, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	mitem->SetMenu(menu);
 }
 
-DLIB_FUNC_START(menuitem_setsubmenu, 2, Nil)
+WX_FUNC_START(menuitem_setsubmenu, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	mitem->SetSubMenu(menu);
 }
 
-DLIB_FUNC_START(menuitem_settext, 2, Nil)
+WX_FUNC_START(menuitem_settext, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETSTRING(text)
 	mitem->SetText(text);
 }
 
-DLIB_FUNC_START(menuitem_setid, 2, Nil)
+WX_FUNC_START(menuitem_setid, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETDEFINE(id)
 	mitem->SetId(id);
 }
 
-DLIB_FUNC_START(menuitem_setkind, 2, Nil)
+WX_FUNC_START(menuitem_setkind, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETDEFINE(kind)
 	mitem->SetKind((wxItemKind)kind);
 }
 
-DLIB_FUNC_START(menuitem_setcheckable, 2, Nil)
+WX_FUNC_START(menuitem_setcheckable, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETBOOL(checkable)
 	mitem->SetCheckable(checkable);
 }
 
-DLIB_FUNC_START(menuitem_toggle, 1, Nil)
+WX_FUNC_START(menuitem_toggle, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	mitem->Toggle();
 }
 
-DLIB_FUNC_START(menuitem_setname, 2, Nil)
+WX_FUNC_START(menuitem_setname, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETSTRING(name)
 	mitem->wxMenuItemBase::SetName(name);
 }
 
-DLIB_FUNC_START(menuitem_setitemlabel, 2, Nil)
+WX_FUNC_START(menuitem_setitemlabel, 2, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_GETSTRING(str)
 	mitem->SetItemLabel(str);
 }
 
-DLIB_FUNC_START(menuitem_getitemlabeltext, 1, Nil)
+WX_FUNC_START(menuitem_getitemlabeltext, 1, Nil)
 	DLIB_WXGET_BASE(menuitem, MenuItem, mitem)
 	WX_SETSTRING(mitem->GetItemLabelText())
 }

@@ -43,18 +43,14 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxBoxSizer *_parent = DLIB_WXTYPECAST_BASE(BoxSizer, val, boxsizer);
-	DeltaWxBoxSizer *parent = DNEWCLASS(DeltaWxBoxSizer, (_parent));
-	WX_SETOBJECT_EX(*at, BoxSizer, parent)
+	WX_SET_BASECLASS_GETTER(at, BoxSizer, val)
 	return true;
 }
 
 static bool GetStaticBox (void* val, DeltaValue* at) 
 {
 	wxStaticBoxSizer *sizer = DLIB_WXTYPECAST_BASE(StaticBoxSizer, val, staticboxsizer);
-	wxStaticBox *staticbox = sizer->GetStaticBox();
-	DeltaWxStaticBox *retval = staticbox ? DNEWCLASS(DeltaWxStaticBox, (staticbox)) : (DeltaWxStaticBox*) 0;
-	WX_SETOBJECT_EX(*at, StaticBox, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, StaticBox, sizer->GetStaticBox())
 	return true;
 }
 
@@ -69,30 +65,27 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticBoxSizer,staticboxsizer)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(staticboxsizer_construct, 2, 3, Nil)
-	wxStaticBoxSizer *wxsizer = (wxStaticBoxSizer*) 0;
-	DeltaWxStaticBoxSizer *sizer = (DeltaWxStaticBoxSizer*) 0;
+	wxStaticBoxSizer *sizer = (wxStaticBoxSizer*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGET_BASE(staticbox, StaticBox, statbox)
 		WX_GETDEFINE(orient)
-		wxsizer = new wxStaticBoxSizer(statbox, orient);
+		sizer = new wxStaticBoxSizer(statbox, orient);
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number ||
 			   DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		WX_GETDEFINE(orient)
 		DLIB_WXGET_BASE(window, Window, parent)
 		wxString label = wxEmptyString;
 		if (n >= 3) { WX_GETSTRING_DEFINED(label) }
-		wxsizer = new wxStaticBoxSizer(orient, parent, label);
+		sizer = new wxStaticBoxSizer(orient, parent, label);
 	}
-	if (wxsizer) sizer = DNEWCLASS(DeltaWxStaticBoxSizer, (wxsizer));
 	WX_SETOBJECT(StaticBoxSizer, sizer)
 }
 
-DLIB_FUNC_START(staticboxsizer_destruct, 1, Nil)
+WX_FUNC_START(staticboxsizer_destruct, 1, Nil)
 	DLIB_WXDELETE(staticboxsizer, StaticBoxSizer, sizer)
 }
 
-DLIB_FUNC_START(staticboxsizer_getstaticbox, 1, Nil)
+WX_FUNC_START(staticboxsizer_getstaticbox, 1, Nil)
 	DLIB_WXGET_BASE(staticboxsizer, StaticBoxSizer, sizer)
-	DeltaWxStaticBox *retval = DNEWCLASS(DeltaWxStaticBox, (sizer->GetStaticBox()));
-	WX_SETOBJECT(StaticBox, retval)
+	WX_SETOBJECT(StaticBox, sizer->GetStaticBox())
 }

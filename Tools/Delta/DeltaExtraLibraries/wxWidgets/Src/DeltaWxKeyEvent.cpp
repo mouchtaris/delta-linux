@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(keyevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(altdown)
 WX_FUNC_DEF(cmddown)
 WX_FUNC_DEF(controldown)
@@ -37,7 +36,6 @@ WX_FUNC_DEF(shiftdown)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(altdown),
 	WX_FUNC(cmddown),
 	WX_FUNC(controldown),
@@ -58,7 +56,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "shiftdown")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "altdown", "shiftdown")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(KeyEvent, "keyevent", Event)
 
@@ -72,9 +70,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
-	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
-	WX_SETOBJECT_EX(*at, Event, parent)
+	WX_SET_BASECLASS_GETTER(at, Event, val)
 	return true;
 }
 
@@ -172,81 +168,75 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(KeyEvent,keyevent)
 WX_FUNC_ARGRANGE_START(keyevent_construct, 0, 1, Nil)
 	int keyType = wxEVT_NULL;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(keyType) }
-	DeltaWxKeyEvent *evt = DNEWCLASS(DeltaWxKeyEvent, (new wxKeyEvent(keyType)));
-	WX_SETOBJECT(KeyEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(KeyEvent, new wxKeyEvent(keyType))
 }
 
-DLIB_FUNC_START(keyevent_destruct, 1, Nil)
-	DLIB_WXDELETE(keyevent, KeyEvent, evt)
-}
-
-DLIB_FUNC_START(keyevent_altdown, 1, Nil)
+WX_FUNC_START(keyevent_altdown, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETBOOL(evt->AltDown())
 }
 
-DLIB_FUNC_START(keyevent_cmddown, 1, Nil)
+WX_FUNC_START(keyevent_cmddown, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETBOOL(evt->CmdDown())
 }
 
-DLIB_FUNC_START(keyevent_controldown, 1, Nil)
+WX_FUNC_START(keyevent_controldown, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETBOOL(evt->ControlDown())
 }
 
-DLIB_FUNC_START(keyevent_getkeycode, 1, Nil)
+WX_FUNC_START(keyevent_getkeycode, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETNUMBER(evt->GetKeyCode())
 }
 
-DLIB_FUNC_START(keyevent_getmodifiers, 1, Nil)
+WX_FUNC_START(keyevent_getmodifiers, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETNUMBER(evt->GetModifiers())
 }
 
-DLIB_FUNC_START(keyevent_getposition, 1, Nil)
+WX_FUNC_START(keyevent_getposition, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(evt->GetPosition())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(evt->GetPosition()))
 }
 
-DLIB_FUNC_START(keyevent_getrawkeycode, 1, Nil)
+WX_FUNC_START(keyevent_getrawkeycode, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETNUMBER(evt->GetRawKeyCode())
 }
 
-DLIB_FUNC_START(keyevent_getrawkeyflags, 1, Nil)
+WX_FUNC_START(keyevent_getrawkeyflags, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETNUMBER(evt->GetRawKeyFlags())
 }
 #if wxUSE_UNICODE
-DLIB_FUNC_START(keyevent_getunicodekey, 1, Nil)
+WX_FUNC_START(keyevent_getunicodekey, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETSTRING(wxString(evt->GetUnicodeKey()))
 }
 #endif // wxUSE_UNICODE
-DLIB_FUNC_START(keyevent_getx, 1, Nil)
+WX_FUNC_START(keyevent_getx, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETNUMBER(evt->GetX())
 }
 
-DLIB_FUNC_START(keyevent_gety, 1, Nil)
+WX_FUNC_START(keyevent_gety, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETNUMBER(evt->GetY())
 }
 
-DLIB_FUNC_START(keyevent_hasmodifiers, 1, Nil)
+WX_FUNC_START(keyevent_hasmodifiers, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETBOOL(evt->HasModifiers())
 }
 
-DLIB_FUNC_START(keyevent_metadown, 1, Nil)
+WX_FUNC_START(keyevent_metadown, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETBOOL(evt->MetaDown())
 }
 
-DLIB_FUNC_START(keyevent_shiftdown, 1, Nil)
+WX_FUNC_START(keyevent_shiftdown, 1, Nil)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETBOOL(evt->ShiftDown())
 }

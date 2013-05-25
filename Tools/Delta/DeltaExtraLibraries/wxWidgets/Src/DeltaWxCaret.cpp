@@ -18,7 +18,6 @@
 #define WX_FUNC(name) WX_FUNC1(caret, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getblinktime)
 WX_FUNC_DEF(getposition)
@@ -36,7 +35,6 @@ WX_FUNCS_START
 	WX_FUNC(construct),
 	WX_FUNC(getblinktime),
 	WX_FUNC(setblinktime),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getposition),
 	WX_FUNC(getsize),
@@ -51,7 +49,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(3, uarraysize(funcs) - 3, "destruct", "show")
+DELTALIBFUNC_DECLARECONSTS(3, uarraysize(funcs) - 3, "create", "show")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(Caret, "caret")
 
@@ -94,9 +92,7 @@ static bool GetY (void* val, DeltaValue* at)
 static bool GetWindow (void* val, DeltaValue* at) 
 {
 	wxCaret *caret = DLIB_WXTYPECAST_BASE(Caret, val, caret);
-	wxWindow *window = caret->GetWindow();
-	DeltaWxWindow *retval = window ? DNEWCLASS(DeltaWxWindow, (window)) : (DeltaWxWindow*)0;
-	WX_SETOBJECT_EX(*at, Window, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, caret->GetWindow())
 	return true;
 }
 
@@ -122,19 +118,18 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Caret,caret)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(caret_construct, 0, 3, Nil)
-	wxCaret *wxcaret = (wxCaret*) 0;
-	DeltaWxCaret *caret = (DeltaWxCaret*) 0;
+	wxCaret *caret = (wxCaret*) 0;
 	if (n == 0) {
-		wxcaret = new wxCaret();
+		caret = new wxCaret();
 	} else if (n == 2) {
 		DLIB_WXGET_BASE(window, Window, window)
 		DLIB_WXGETSIZE_BASE(size)
-		wxcaret = new wxCaret(window, *size);
+		caret = new wxCaret(window, *size);
 	} else if (n == 3) {
 		DLIB_WXGET_BASE(window, Window, window)
 		WX_GETNUMBER(width)
 		WX_GETNUMBER(height)
-		wxcaret = new wxCaret(window, width, height);
+		caret = new wxCaret(window, width, height);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -143,12 +138,7 @@ WX_FUNC_ARGRANGE_START(caret_construct, 0, 3, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxcaret) caret = DNEWCLASS(DeltaWxCaret, (wxcaret));
 	WX_SETOBJECT(Caret, caret)
-}
-
-DLIB_FUNC_START(caret_destruct, 1, Nil)
-	DLIB_WXDELETE(caret, Caret, caret)
 }
 
 WX_FUNC_ARGRANGE_START(caret_create, 3, 4, Nil)
@@ -164,39 +154,37 @@ WX_FUNC_ARGRANGE_START(caret_create, 3, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(caret_getblinktime, 0, Nil)
+WX_FUNC_START(caret_getblinktime, 0, Nil)
 	WX_SETNUMBER(wxCaret::GetBlinkTime());
 }
 
-DLIB_FUNC_START(caret_getposition, 1, Nil)
+WX_FUNC_START(caret_getposition, 1, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(caret->GetPosition())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(caret->GetPosition()))
 }
 
-DLIB_FUNC_START(caret_getsize, 1, Nil)
+WX_FUNC_START(caret_getsize, 1, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(caret->GetSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(caret->GetSize()))
 }
 
-DLIB_FUNC_START(caret_getwindow, 1, Nil)
+WX_FUNC_START(caret_getwindow, 1, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
-	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, caret->GetWindow());
+	wxWindow* retval	= caret->GetWindow();;
 	WX_SETOBJECT(Window, retval)
 }
 
-DLIB_FUNC_START(caret_hide, 1, Nil)
+WX_FUNC_START(caret_hide, 1, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
 	caret->Hide();
 }
 
-DLIB_FUNC_START(caret_isok, 1, Nil)
+WX_FUNC_START(caret_isok, 1, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
 	WX_SETBOOL(caret->IsOk());
 }
 
-DLIB_FUNC_START(caret_isvisible, 1, Nil)
+WX_FUNC_START(caret_isvisible, 1, Nil)
 	DLIB_WXGET_BASE(caret, Caret, caret)
 	WX_SETBOOL(caret->IsVisible());
 }
@@ -213,7 +201,7 @@ WX_FUNC_ARGRANGE_START(caret_move, 2, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(caret_setblinktime, 1, Nil)
+WX_FUNC_START(caret_setblinktime, 1, Nil)
 	WX_GETNUMBER(milliseconds)
 	wxCaret::SetBlinkTime(milliseconds);
 }

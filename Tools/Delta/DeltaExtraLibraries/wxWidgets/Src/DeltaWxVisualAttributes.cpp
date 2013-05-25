@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(visualattributes, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getcolbg)
 WX_FUNC_DEF(getcolfg)
 WX_FUNC_DEF(getfont)
@@ -27,7 +26,6 @@ WX_FUNC_DEF(setfont)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getcolbg),
 	WX_FUNC(getcolfg),
 	WX_FUNC(getfont),
@@ -38,7 +36,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setfont")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getcolbg", "setfont")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(VisualAttributes, "visualattributes")
 
@@ -53,24 +51,21 @@ static bool GetKeys (void* val, DeltaValue* at)
 static bool GetFont (void* val, DeltaValue* at) 
 {
 	wxVisualAttributes *attr = DLIB_WXTYPECAST_BASE(VisualAttributes, val, visualattributes);
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(attr->font)));
-	WX_SETOBJECT_EX(*at, Font, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Font, new wxFont(attr->font))
 	return true;
 }
 
 static bool GetForegroundColour (void* val, DeltaValue* at) 
 {
 	wxVisualAttributes *attr = DLIB_WXTYPECAST_BASE(VisualAttributes, val, visualattributes);
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(attr->colFg)));
-	WX_SETOBJECT_EX(*at, Colour, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(attr->colFg))
 	return true;
 }
 
 static bool GetBackgroundColour (void* val, DeltaValue* at) 
 {
 	wxVisualAttributes *attr = DLIB_WXTYPECAST_BASE(VisualAttributes, val, visualattributes);
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(attr->colBg)));
-	WX_SETOBJECT_EX(*at, Colour, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(attr->colBg))
 	return true;
 }
 
@@ -86,18 +81,17 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(VisualAttributes,visualattributes)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(visualattributes_construct, 0, 3, Nil)
-	wxVisualAttributes *wxattr = (wxVisualAttributes*) 0;
-	DeltaWxVisualAttributes *attr = (DeltaWxVisualAttributes*) 0;
+	wxVisualAttributes *attr = (wxVisualAttributes*) 0;
 	if (n == 0)
-		wxattr = new wxVisualAttributes();
+		attr = new wxVisualAttributes();
 	else if (n == 3) {
 		DLIB_WXGET_BASE(font, Font, font)
 		DLIB_WXGET_BASE(colour, Colour, colFg)
 		DLIB_WXGET_BASE(colour, Colour, colBg)
-		wxattr = new wxVisualAttributes();
-		wxattr->font = *font;
-		wxattr->colFg = *colFg;
-		wxattr->colBg = *colBg;
+		attr = new wxVisualAttributes();
+		attr->font = *font;
+		attr->colFg = *colFg;
+		attr->colBg = *colBg;
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -106,45 +100,37 @@ WX_FUNC_ARGRANGE_START(visualattributes_construct, 0, 3, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxattr) attr = DNEWCLASS(DeltaWxVisualAttributes, (wxattr));
-	WX_SETOBJECT(VisualAttributes, attr)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(VisualAttributes, attr)
 }
 
-DLIB_FUNC_START(visualattributes_destruct, 1, Nil)
-	DLIB_WXDELETE(visualattributes, VisualAttributes, attr)
-}
-
-DLIB_FUNC_START(visualattributes_getcolbg, 1, Nil)
+WX_FUNC_START(visualattributes_getcolbg, 1, Nil)
 	DLIB_WXGET_BASE(visualattributes, VisualAttributes, attr)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(attr->colBg)));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(attr->colBg))
 }
 
-DLIB_FUNC_START(visualattributes_getcolfg, 1, Nil)
+WX_FUNC_START(visualattributes_getcolfg, 1, Nil)
 	DLIB_WXGET_BASE(visualattributes, VisualAttributes, attr)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(attr->colFg)));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(attr->colFg))
 }
 
-DLIB_FUNC_START(visualattributes_getfont, 1, Nil)
+WX_FUNC_START(visualattributes_getfont, 1, Nil)
 	DLIB_WXGET_BASE(visualattributes, VisualAttributes, attr)
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(attr->font)));
-	WX_SETOBJECT(Font, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(attr->font))
 }
 
-DLIB_FUNC_START(visualattributes_setcolbg, 2, Nil)
+WX_FUNC_START(visualattributes_setcolbg, 2, Nil)
 	DLIB_WXGET_BASE(visualattributes, VisualAttributes, attr)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	attr->colBg = *colour;
 }
 
-DLIB_FUNC_START(visualattributes_setcolfg, 2, Nil)
+WX_FUNC_START(visualattributes_setcolfg, 2, Nil)
 	DLIB_WXGET_BASE(visualattributes, VisualAttributes, attr)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	attr->colFg = *colour;
 }
 
-DLIB_FUNC_START(visualattributes_setfont, 2, Nil)
+WX_FUNC_START(visualattributes_setfont, 2, Nil)
 	DLIB_WXGET_BASE(visualattributes, VisualAttributes, attr)
 	DLIB_WXGET_BASE(font, Font, font)
 	attr->font = *font;

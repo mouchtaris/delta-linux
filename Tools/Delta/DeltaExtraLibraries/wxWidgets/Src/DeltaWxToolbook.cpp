@@ -24,7 +24,6 @@
 #define WX_FUNC(name) WX_FUNC1(toolbook, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addpage)
 WX_FUNC_DEF(advanceselection)
 WX_FUNC_DEF(assignimagelist)
@@ -52,7 +51,6 @@ WX_FUNC_DEF(setselection)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(addpage),
 	WX_FUNC(advanceselection),
 	WX_FUNC(assignimagelist),
@@ -81,7 +79,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setselection")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addpage", "setselection")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Toolbook, "toolbook", Control)
 
@@ -95,9 +93,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
@@ -107,9 +103,7 @@ static bool GetPages (void* val, DeltaValue* at)
 	at->FromTable(DNEW(DELTA_OBJECT));
 	for (int i = 0, pageSize = (int)book->GetPageCount(); i < pageSize; ++i) {
 		DeltaValue value;
-		wxWindow *win = book->GetPage(i);
-		DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-		WX_SETOBJECT_EX(value, Window, retval)
+		WX_SETOBJECT_NO_CONTEXT_EX(value, Window, book->GetPage(i))
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -118,11 +112,7 @@ static bool GetPages (void* val, DeltaValue* at)
 static bool GetImageList (void* val, DeltaValue* at) 
 {
 	wxToolbook *book = DLIB_WXTYPECAST_BASE(Toolbook, val, toolbook);
-	wxImageList *imagelist = book->GetImageList();
-	DeltaWxImageList *retval = imagelist ?
-		DNEWCLASS(DeltaWxImageList, (imagelist)) :
-		(DeltaWxImageList*) 0;
-	WX_SETOBJECT_EX(*at, ImageList, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, book->GetImageList())
 	return true;
 }
 
@@ -179,10 +169,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Toolbook,toolbook)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(toolbook_construct, 0, 6, Nil)
-	wxToolbook *wxtoolbk = (wxToolbook*) 0;
-	DeltaWxToolbook *toolbk = (DeltaWxToolbook*) 0;
+	wxToolbook *toolbk = (wxToolbook*) 0;
 	if (n == 0)
-		wxtoolbk = new wxToolbook();
+		toolbk = new wxToolbook();
 	else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -194,7 +183,7 @@ WX_FUNC_ARGRANGE_START(toolbook_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		wxtoolbk = new wxToolbook(parent, id, pos, size, style, name);
+		toolbk = new wxToolbook(parent, id, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -203,12 +192,7 @@ WX_FUNC_ARGRANGE_START(toolbook_construct, 0, 6, Nil)
 		);
 		return;
 	}
-	if (wxtoolbk) toolbk = DNEWCLASS(DeltaWxToolbook, (wxtoolbk));
-	WX_SETOBJECT(Toolbook, toolbk)
-}
-
-DLIB_FUNC_START(toolbook_destruct, 1, Nil)
-	DLIB_WXDELETE(toolbook, Toolbook, toolbk)
+	WX_SET_WINDOW_OBJECT(Toolbook, toolbk)
 }
 
 WX_FUNC_ARGRANGE_START(toolbook_addpage, 3, 5, Nil)
@@ -229,13 +213,13 @@ WX_FUNC_ARGRANGE_START(toolbook_advanceselection, 1, 2, Nil)
 	toolbk->AdvanceSelection(forward);
 }
 
-DLIB_FUNC_START(toolbook_assignimagelist, 2, Nil)
+WX_FUNC_START(toolbook_assignimagelist, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	toolbk->AssignImageList(imageList);
 }
 
-DLIB_FUNC_START(toolbook_changeselection, 2, Nil)
+WX_FUNC_START(toolbook_changeselection, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(size)
 	WX_SETNUMBER(toolbk->ChangeSelection(size))
@@ -254,70 +238,76 @@ WX_FUNC_ARGRANGE_START(toolbook_create, 3, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(toolbk->Create(parent, winid, pos, size, style, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(toolbk);
 }
 
-DLIB_FUNC_START(toolbook_deleteallpages, 1, Nil)
+WX_FUNC_START(toolbook_deleteallpages, 1, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_SETBOOL(toolbk->DeleteAllPages())
 }
 
-DLIB_FUNC_START(toolbook_deletepage, 2, Nil)
+WX_FUNC_START(toolbook_deletepage, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(toolbk->DeletePage(page))
 }
 
-DLIB_FUNC_START(toolbook_getcontrolsizer, 1, Nil)
+WX_FUNC_START(toolbook_getcontrolsizer, 1, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
-	DeltaWxSizer *retval = DNEWCLASS(DeltaWxSizer, (toolbk->GetControlSizer()));
-	WX_SETOBJECT(Sizer, retval)
+	WX_SETOBJECT(Sizer, toolbk->GetControlSizer())
 }
 
-DLIB_FUNC_START(toolbook_getcurrentpage, 1, Nil)
+WX_FUNC_START(toolbook_getcurrentpage, 1, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
-	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, toolbk->GetCurrentPage())
+	wxWindow* retval	= toolbk->GetCurrentPage();
 	WX_SETOBJECT(Window, retval)
 }
 
-DLIB_FUNC_START(toolbook_getimagelist, 1, Nil)
+WX_FUNC_START(toolbook_getimagelist, 1, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
-	WXNEWCLASS(DeltaWxImageList, retval, wxImageList, toolbk->GetImageList())
+	wxImageList* retval	= toolbk->GetImageList();
 	WX_SETOBJECT(ImageList, retval)
 }
 
-DLIB_FUNC_START(toolbook_getpage, 2, Nil)
+WX_FUNC_START(toolbook_getpage, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(page)
-	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, toolbk->GetPage(page))
+	wxWindow* retval	= toolbk->GetPage(page);
 	WX_SETOBJECT(Window, retval)
 }
 
-DLIB_FUNC_START(toolbook_getpagecount, 1, Nil)
+WX_FUNC_START(toolbook_getpagecount, 1, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_SETNUMBER(toolbk->GetPageCount())
 }
 
-DLIB_FUNC_START(toolbook_getpageimage, 2, Nil)
+WX_FUNC_START(toolbook_getpageimage, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(nPage)
 	WX_SETNUMBER(toolbk->GetPageImage(nPage))
 }
 
-DLIB_FUNC_START(toolbook_getpagetext, 2, Nil)
+WX_FUNC_START(toolbook_getpagetext, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(page)
 	WX_SETSTRING(toolbk->GetPageText(page))
 }
 
-DLIB_FUNC_START(toolbook_getselection, 1, Nil)
+WX_FUNC_START(toolbook_getselection, 1, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_SETNUMBER(toolbk->GetSelection())
 }
 
-DLIB_FUNC_START(toolbook_gettoolbar, 1, Nil)
+WX_FUNC_START(toolbook_gettoolbar, 1, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
-	DeltaWxToolBar *retval = DNEWCLASS(DeltaWxToolBar, (toolbk->GetToolBar()));
-	WX_SETOBJECT(ToolBar, retval)
+	context.UpdateContext(_argNo, _sig1, _sig2);
+	if (SetValueFromNativeInstance
+		<DeltaWxToolBarClassId, DeltaWxToolBar, wxToolBarBase>
+		(toolbk->GetToolBar(), DLIB_RETVAL_PTR, &LetWrapperLive,
+		&ToolBarUtils::GetGetter, &ToolBarUtils::GetMethods, &context)) {
+		context.UpdateLocals(NULL, NULL, &_argNo, &_sig1, &_sig2);
+	} else
+		return;
 }
 
 WX_FUNC_ARGRANGE_START(toolbook_hittest, 2, 3, Nil)
@@ -343,39 +333,39 @@ WX_FUNC_ARGRANGE_START(toolbook_insertpage, 4, 6, Nil)
 	WX_SETBOOL(toolbk->InsertPage(index, page, text, select, imageId))
 }
 
-DLIB_FUNC_START(toolbook_removepage, 2, Nil)
+WX_FUNC_START(toolbook_removepage, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(toolbk->RemovePage(page))
 }
 
-DLIB_FUNC_START(toolbook_setimagelist, 2, Nil)
+WX_FUNC_START(toolbook_setimagelist, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	toolbk->SetImageList(imageList);
 }
 
-DLIB_FUNC_START(toolbook_setpagesize, 2, Nil)
+WX_FUNC_START(toolbook_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	DLIB_WXGETSIZE_BASE(size)
 	toolbk->SetPageSize(*size);
 }
 
-DLIB_FUNC_START(toolbook_setpageimage, 3, Nil)
+WX_FUNC_START(toolbook_setpageimage, 3, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(page)
 	WX_GETNUMBER(image)
 	WX_SETBOOL(toolbk->SetPageImage(page, image))
 }
 
-DLIB_FUNC_START(toolbook_setpagetext, 3, Nil)
+WX_FUNC_START(toolbook_setpagetext, 3, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(page)
 	WX_GETSTRING(text)
 	WX_SETBOOL(toolbk->SetPageText(page, text))
 }
 
-DLIB_FUNC_START(toolbook_setselection, 2, Nil)
+WX_FUNC_START(toolbook_setselection, 2, Nil)
 	DLIB_WXGET_BASE(toolbook, Toolbook, toolbk)
 	WX_GETNUMBER(page)
 	WX_SETNUMBER(toolbk->SetSelection(page))

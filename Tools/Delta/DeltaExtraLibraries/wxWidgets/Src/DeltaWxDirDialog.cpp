@@ -19,7 +19,6 @@
 #define WX_FUNC(name) WX_FUNC1(dirdialog, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getpath)
 WX_FUNC_DEF(getmessage)
 WX_FUNC_DEF(setmessage)
@@ -28,7 +27,6 @@ WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getpath),
 	WX_FUNC(getmessage),
 	WX_FUNC(setmessage),
@@ -38,7 +36,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getpath", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(DirDialog, "dirdialog", Dialog)
 
@@ -52,9 +50,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
-	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
-	WX_SETOBJECT_EX(*at, Dialog, parent)
+	WX_SET_BASECLASS_GETTER(at, Dialog, val)
 	return true;
 }
 
@@ -95,38 +91,33 @@ WX_FUNC_ARGRANGE_START(dirdialog_construct, 1, 7, Nil)
 	if (n >= 5) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
 	if (n >= 6) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
-	DeltaWxDirDialog *dialog = DNEWCLASS(DeltaWxDirDialog,
-		(new wxDirDialog(parent, message, defaultPath, style, pos, size, name)));
-	WX_SETOBJECT(DirDialog, dialog)
+	wxDirDialog* dialog		= new wxDirDialog(parent, message, defaultPath, style, pos, size, name);
+	WX_SET_TOPLEVELWINDOW_OBJECT(DirDialog, dialog)
 }
 
-DLIB_FUNC_START(dirdialog_destruct, 1, Nil)
-	DLIB_WXDELETE(dirdialog, DirDialog, dialog)
-}
-
-DLIB_FUNC_START(dirdialog_getpath, 1, Nil)
+WX_FUNC_START(dirdialog_getpath, 1, Nil)
 	DLIB_WXGET_BASE(dirdialog, DirDialog, dialog)
 	WX_SETSTRING(dialog->GetPath())
 }
 
-DLIB_FUNC_START(dirdialog_getmessage, 1, Nil)
+WX_FUNC_START(dirdialog_getmessage, 1, Nil)
 	DLIB_WXGET_BASE(dirdialog, DirDialog, dialog)
 	WX_SETSTRING(dialog->GetMessage())
 }
 
-DLIB_FUNC_START(dirdialog_setmessage, 2, Nil)
+WX_FUNC_START(dirdialog_setmessage, 2, Nil)
 	DLIB_WXGET_BASE(dirdialog, DirDialog, dialog)
 	WX_GETSTRING(message)
 	dialog->SetMessage(message);
 }
 
-DLIB_FUNC_START(dirdialog_setpath, 2, Nil)
+WX_FUNC_START(dirdialog_setpath, 2, Nil)
 	DLIB_WXGET_BASE(dirdialog, DirDialog, dialog)
 	WX_GETSTRING(path)
 	dialog->SetPath(path);
 }
 
-DLIB_FUNC_START(dirdialog_showmodal, 1, Nil)
+WX_FUNC_START(dirdialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(dirdialog, DirDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

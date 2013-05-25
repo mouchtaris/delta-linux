@@ -16,7 +16,6 @@
 #define WX_FUNC(name) WX_FUNC1(findreplacedata, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getfindstring)
 WX_FUNC_DEF(getreplacestring)
 WX_FUNC_DEF(getflags)
@@ -26,7 +25,6 @@ WX_FUNC_DEF(setreplacestring)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getfindstring),
 	WX_FUNC(getreplacestring),
 	WX_FUNC(getflags),
@@ -37,7 +35,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setreplacestring")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getfindstring", "setreplacestring")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FindReplaceData, "findreplacedata", Object)
 
@@ -51,9 +49,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
@@ -91,50 +87,44 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(FindReplaceData,findreplacedata)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(findreplacedata_construct, 0, 1, Nil)
-	wxFindReplaceData *wxdata = (wxFindReplaceData*) 0;
-	DeltaWxFindReplaceData *data = (DeltaWxFindReplaceData*) 0;
+	wxFindReplaceData *data = (wxFindReplaceData*) 0;
 	if (n == 0) {
-		wxdata = new wxFindReplaceData();
+		data = new wxFindReplaceData();
 	} else {
 		WX_GETDEFINE(flags)
-		wxdata = new wxFindReplaceData(flags);
+		data = new wxFindReplaceData(flags);
 	}
-	if (wxdata) data = DNEWCLASS(DeltaWxFindReplaceData, (wxdata));
-	WX_SETOBJECT(FindReplaceData, data)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(FindReplaceData, data)
 }
 
-DLIB_FUNC_START(findreplacedata_destruct, 1, Nil)
-	DLIB_WXDELETE(findreplacedata, FindReplaceData, data)
-}
-
-DLIB_FUNC_START(findreplacedata_getfindstring, 1, Nil)
+WX_FUNC_START(findreplacedata_getfindstring, 1, Nil)
 	DLIB_WXGET_BASE(findreplacedata, FindReplaceData, data)
 	WX_SETSTRING(data->GetFindString())
 }
 
-DLIB_FUNC_START(findreplacedata_getreplacestring, 1, Nil)
+WX_FUNC_START(findreplacedata_getreplacestring, 1, Nil)
 	DLIB_WXGET_BASE(findreplacedata, FindReplaceData, data)
 	WX_SETSTRING(data->GetReplaceString())
 }
 
-DLIB_FUNC_START(findreplacedata_getflags, 1, Nil)
+WX_FUNC_START(findreplacedata_getflags, 1, Nil)
 	DLIB_WXGET_BASE(findreplacedata, FindReplaceData, data)
 	WX_SETNUMBER(data->GetFlags())
 }
 
-DLIB_FUNC_START(findreplacedata_setflags, 2, Nil)
+WX_FUNC_START(findreplacedata_setflags, 2, Nil)
 	DLIB_WXGET_BASE(findreplacedata, FindReplaceData, data)
 	WX_GETDEFINE(flags)
 	data->SetFlags(flags);
 }
 
-DLIB_FUNC_START(findreplacedata_setfindstring, 2, Nil)
+WX_FUNC_START(findreplacedata_setfindstring, 2, Nil)
 	DLIB_WXGET_BASE(findreplacedata, FindReplaceData, data)
 	WX_GETSTRING(str)
 	data->SetFindString(str);
 }
 
-DLIB_FUNC_START(findreplacedata_setreplacestring, 2, Nil)
+WX_FUNC_START(findreplacedata_setreplacestring, 2, Nil)
 	DLIB_WXGET_BASE(findreplacedata, FindReplaceData, data)
 	WX_GETSTRING(str)
 	data->SetReplaceString(str);

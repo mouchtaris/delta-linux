@@ -71,27 +71,21 @@ static bool GetSize (void* val, DeltaValue* at)
 static bool GetBaseClass1 (void* val, DeltaValue* at) 
 {
 	wxClassInfo *info = DLIB_WXTYPECAST_BASE(ClassInfo, val, classinfo);
-	wxClassInfo *classinfo = (wxClassInfo*)info->GetBaseClass1();
-	DeltaWxClassInfo *retval = classinfo ? DNEWCLASS(DeltaWxClassInfo, (classinfo)) : (DeltaWxClassInfo*) 0;
-	WX_SETOBJECT_EX(*at, ClassInfo, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ClassInfo, (wxClassInfo*)info->GetBaseClass1())
 	return true;
 }
 
 static bool GetBaseClass2 (void* val, DeltaValue* at) 
 {
 	wxClassInfo *info = DLIB_WXTYPECAST_BASE(ClassInfo, val, classinfo);
-	wxClassInfo *classinfo = (wxClassInfo*)info->GetBaseClass2();
-	DeltaWxClassInfo *retval = classinfo ? DNEWCLASS(DeltaWxClassInfo, (classinfo)) : (DeltaWxClassInfo*) 0;
-	WX_SETOBJECT_EX(*at, ClassInfo, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ClassInfo, (wxClassInfo*)info->GetBaseClass2())
 	return true;
 }
 
 static bool GetNext (void* val, DeltaValue* at) 
 {
 	wxClassInfo *info = DLIB_WXTYPECAST_BASE(ClassInfo, val, classinfo);
-	wxClassInfo *classinfo = (wxClassInfo*)info->GetNext();
-	DeltaWxClassInfo *retval = classinfo ? DNEWCLASS(DeltaWxClassInfo, (classinfo)) : (DeltaWxClassInfo*) 0;
-	WX_SETOBJECT_EX(*at, ClassInfo, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ClassInfo, (wxClassInfo*)info->GetNext())
 	return true;
 }
 
@@ -108,58 +102,56 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ClassInfo,classinfo)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(classinfo_construct, 4, Nil)
+WX_FUNC_START(classinfo_construct, 4, Nil)
 	WX_GETSTRING(className)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, baseClass1)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, baseClass2)
 	WX_GETNUMBER(size)
-	DeltaWxClassInfo *wxinfo = DNEWCLASS(DeltaWxClassInfo,
-		(new wxClassInfo(className.GetData(), baseClass1, baseClass2, size, NULL)));
-	WX_SETOBJECT(ClassInfo, wxinfo)
+	WX_SETOBJECT(ClassInfo, new wxClassInfo(className.GetData(), baseClass1, baseClass2, size, NULL))
 }
 
-DLIB_FUNC_START(classinfo_destruct, 1, Nil)
+WX_FUNC_START(classinfo_destruct, 1, Nil)
 	DLIB_WXDELETE(classinfo, ClassInfo, info)
 }
 
-DLIB_FUNC_START(classinfo_createobject, 1, Nil)
+WX_FUNC_START(classinfo_createobject, 1, Nil)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, info)
-	WXNEWCLASS(DeltaWxObject, retval, wxObject, info->CreateObject());
+	wxObject* retval	= info->CreateObject();;
 	WX_SETOBJECT(Object, retval)
 }
 
-DLIB_FUNC_START(classinfo_findclass, 1, Nil)
+WX_FUNC_START(classinfo_findclass, 1, Nil)
 	WX_GETSTRING(name)
-	WXNEWCLASS(DeltaWxClassInfo, retval, wxClassInfo, wxClassInfo::FindClass(name));
+	wxClassInfo* retval	= wxClassInfo::FindClass(name);;
 	WX_SETOBJECT(ClassInfo, retval)
 }
 
-DLIB_FUNC_START(classinfo_getbaseclassname1, 1, Nil)
+WX_FUNC_START(classinfo_getbaseclassname1, 1, Nil)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, info)
 	WX_SETSTRING(wxString(info->GetBaseClassName1()))
 }
 
-DLIB_FUNC_START(classinfo_getbaseclassname2, 1, Nil)
+WX_FUNC_START(classinfo_getbaseclassname2, 1, Nil)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, info)
 	WX_SETSTRING(wxString(info->GetBaseClassName2()))
 }
 
-DLIB_FUNC_START(classinfo_getclassname, 1, Nil)
+WX_FUNC_START(classinfo_getclassname, 1, Nil)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, info)
 	WX_SETSTRING(wxString(info->GetClassName()))
 }
 
-DLIB_FUNC_START(classinfo_getsize, 1, Nil)
+WX_FUNC_START(classinfo_getsize, 1, Nil)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, info)
 	WX_SETNUMBER(info->GetSize())
 }
 
-DLIB_FUNC_START(classinfo_isdynamic, 1, Nil)
+WX_FUNC_START(classinfo_isdynamic, 1, Nil)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, info)
 	WX_SETBOOL(info->IsDynamic())
 }
 
-DLIB_FUNC_START(classinfo_iskindof, 2, Nil)
+WX_FUNC_START(classinfo_iskindof, 2, Nil)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, info)
 	DLIB_WXGET_BASE(classinfo, ClassInfo, other)
 	WX_SETBOOL(info->IsKindOf(other))

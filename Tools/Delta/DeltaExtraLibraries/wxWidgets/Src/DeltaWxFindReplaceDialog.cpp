@@ -18,20 +18,18 @@
 #define WX_FUNC(name) WX_FUNC1(findreplacedialog, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getdata)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getdata)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getdata")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "getdata")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FindReplaceDialog, "findreplacedialog", Dialog)
 
@@ -45,18 +43,14 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
-	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
-	WX_SETOBJECT_EX(*at, Dialog, parent)
+	WX_SET_BASECLASS_GETTER(at, Dialog, val)
 	return true;
 }
 
 static bool GetFindReplaceData (void* val, DeltaValue* at) 
 {
 	wxFindReplaceDialog *dialog = DLIB_WXTYPECAST_BASE(FindReplaceDialog, val, findreplacedialog);
-	DeltaWxFindReplaceData *retval = DNEWCLASS(DeltaWxFindReplaceData,
-		((wxFindReplaceData*)dialog->GetData()));
-	WX_SETOBJECT_EX(*at, FindReplaceData, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, FindReplaceData, (wxFindReplaceData*)dialog->GetData())
 	return true;
 }
 
@@ -71,24 +65,18 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(FindReplaceDialog,findreplacedialog)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(findreplacedialog_construct, 0, 4, Nil)
-	wxFindReplaceDialog *wxdialog = (wxFindReplaceDialog*) 0;
-	DeltaWxFindReplaceDialog *dialog = (DeltaWxFindReplaceDialog*) 0;
+	wxFindReplaceDialog *dialog = (wxFindReplaceDialog*) 0;
 	if (n == 0)
-		wxdialog = new wxFindReplaceDialog();
+		dialog = new wxFindReplaceDialog();
 	else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		DLIB_WXGET_BASE(findreplacedata, FindReplaceData, data)
 		WX_GETSTRING(title)
 		int style = 0;
 		if (n >= 4) { WX_GETDEFINE_DEFINED(style) }
-		wxdialog = new wxFindReplaceDialog(parent, data, title, style);
+		dialog = new wxFindReplaceDialog(parent, data, title, style);
 	}
-	if (wxdialog) dialog = DNEWCLASS(DeltaWxFindReplaceDialog, (wxdialog));
-	WX_SETOBJECT(FindReplaceDialog, dialog)
-}
-
-DLIB_FUNC_START(findreplacedialog_destruct, 1, Nil)
-	DLIB_WXDELETE(findreplacedialog, FindReplaceDialog, dialog)
+	WX_SET_TOPLEVELWINDOW_OBJECT(FindReplaceDialog, dialog)
 }
 
 WX_FUNC_ARGRANGE_START(findreplacedialog_create, 4, 5, Nil)
@@ -99,11 +87,10 @@ WX_FUNC_ARGRANGE_START(findreplacedialog_create, 4, 5, Nil)
 	int style = 0;
 	if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 	WX_SETBOOL(dialog->Create(parent, data, title, style))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(dialog);
 }
 
-DLIB_FUNC_START(findreplacedialog_getdata, 1, Nil)
+WX_FUNC_START(findreplacedialog_getdata, 1, Nil)
 	DLIB_WXGET_BASE(findreplacedialog, FindReplaceDialog, dialog)
-	DeltaWxFindReplaceData *retval = DNEWCLASS(DeltaWxFindReplaceData,
-		((wxFindReplaceData*)dialog->GetData()));
-	WX_SETOBJECT(FindReplaceData, retval)
+	WX_SETOBJECT(FindReplaceData, (wxFindReplaceData*)dialog->GetData())
 }

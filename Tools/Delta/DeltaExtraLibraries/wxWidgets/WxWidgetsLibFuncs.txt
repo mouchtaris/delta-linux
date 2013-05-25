@@ -4606,7 +4606,6 @@ artprovider_geticon							(id:String):icon (id:String,client:String):icon (id:St
 artprovider_getsizehint						(client:String):size (client:String,platformDependent:Bool):size
 #group(wxabout)
 aboutdialoginfo_construct					() : aboutdialoginfo
-aboutdialoginfo_destruct					(info:aboutdialoginfo)
 aboutdialoginfo_addartist					(info:aboutdialoginfo,artist:String)
 aboutdialoginfo_adddeveloper				(info:aboutdialoginfo,developer:String)
 aboutdialoginfo_adddocwriter				(info:aboutdialoginfo,docwriter:String)
@@ -4625,16 +4624,13 @@ aboutdialoginfo_setversion					(info:aboutdialoginfo,version:String)
 aboutdialoginfo_setwebsite					(info:aboutdialoginfo,url:String) (info:aboutdialoginfo,url:String,description:String)
 #group(wxaccel)
 acceleratorentry_construct					():acceleratorentry (flags:+{Number,String},keyCode:+{Number,String},cmd:+{Number,String}):acceleratorentry
-acceleratorentry_destruct					(e:acceleratorentry)
 acceleratorentry_getcommand					(e:acceleratorentry) : Number
 acceleratorentry_getflags					(e:acceleratorentry) : Number
 acceleratorentry_getkeycode					(e:acceleratorentry) : Number
 acceleratorentry_set						(e:acceleratorentry,flags:+{Number,String},keyCode:+{Number,String},cmd:+{Number,String})
 acceleratortable_construct					():acceleratortable (resource:String):acceleratortable (num:Number,entries:Object):acceleratortable
-acceleratortable_destruct					(acceltable:acceleratortable)
 acceleratortable_isok						(acceltable:acceleratortable) : Bool
 activateevent_construct						():activateevent (type:+{Number,String}):activateevent (type:+{Number,String},active:Bool):activateevent (type:+{Number,String},active:Bool,id:+{Number,String}):activateevent
-activateevent_destruct						(e:activateevent)
 activateevent_getactive						(e:activateevent) : Bool
 #group(wxapp)
 app_construct								() : app
@@ -4670,7 +4666,6 @@ app_start									(a:app)
 app_yield									(a:app) (a:app,onlyIfNeeded:Bool) : Bool
 #group(wxbitmap)
 bitmap_construct							():bitmap (name:String):bitmap (name:String,type:+{Number,String}):bitmap (image:image):bitmap (image:image,depth:Number):bitmap (icon:icon):bitmap (width:Number,height:Number,dc:dc):bitmap (width:Number,height:Number):bitmap (width:Number,height:Number,depth:Number):bitmap
-bitmap_destruct								(b:bitmap)
 bitmap_converttoimage						(b:bitmap) : image
 bitmap_copyfromicon							(b:bitmap,icon:icon) : Bool
 bitmap_create								(b:bitmap,width:Number,height:Number):Bool (b:bitmap,width:Number,height:Number,dc:dc):Bool (b:bitmap,width:Number,height:Number,depth:Number):Bool
@@ -4689,7 +4684,6 @@ bitmap_setmask								(b:bitmap,mask:+{mask,Nil})
 bitmap_setpalette							(b:bitmap,palette:palette)
 bitmap_setwidth								(b:bitmap,width:Number)
 bitmapbutton_construct						():bitmapbutton (parent:+{window,Nil},id:+{Number,String},b:bitmap):bitmapbutton (parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String}):bitmapbutton (parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String}):bitmapbutton (parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String}):bitmapbutton (parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):bitmapbutton (parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):bitmapbutton
-bitmapbutton_destruct						(bb:bitmapbutton)
 bitmapbutton_create							(bb:bitmapbutton,parent:+{window,Nil},id:+{Number,String},b:bitmap):Bool (bb:bitmapbutton,parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String}):Bool (bb:bitmapbutton,parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String}):Bool (bb:bitmapbutton,parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (bb:bitmapbutton,parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (bb:bitmapbutton,parent:+{window,Nil},id:+{Number,String},b:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 bitmapbutton_getbitmapdisabled				(bb:bitmapbutton) : bitmap
 bitmapbutton_getbitmapfocus					(bb:bitmapbutton) : bitmap
@@ -4710,7 +4704,6 @@ boxsizer_getorientation						(sizer:boxsizer) : Number
 boxsizer_setorientation						(sizer:boxsizer,orientation:+{Number,String})
 #group(wxbrush)
 brush_construct								():brush (colour:colour):brush (colour:colour,style:+{Number,String}):brush (stippleBitmap:bitmap):brush (colourName:String,style:+{Number,String}):brush
-brush_destruct								(br:brush)
 brush_getcolour								(br:brush) : colour
 brush_getstipple							(br:brush) : bitmap
 brush_getstyle								(br:brush) : Number
@@ -4723,13 +4716,10 @@ brush_equal									(br:brush,otherBrush:brush) : Bool
 brush_notequal								(br:brush,otherBrush:brush) : Bool
 #group(wxdc)
 buffereddc_construct						():buffereddc (dc:dc):buffereddc (dc:dc,b:bitmap):buffereddc (dc:dc,b:bitmap,style:+{Number,String}):buffereddc (dc:dc,size:size):buffereddc (dc:dc,size:size,style:+{Number,String}):buffereddc
-buffereddc_destruct							(buffereddc:buffereddc)
 buffereddc_init								(buffereddc:buffereddc,dc:dc) (buffereddc:buffereddc,dc:dc,b:bitmap) (buffereddc:buffereddc,dc:dc,b:bitmap,style:+{Number,String}) (buffereddc:buffereddc,dc:dc,size:size) (buffereddc:buffereddc,dc:dc,size:size,style:+{Number,String})
 bufferedpaintdc_construct					(window:window):bufferedpaintdc (window:window,buffer:bitmap):bufferedpaintdc (window:window,buffer:bitmap,style:+{Number,String}):bufferedpaintdc (window:window,style:+{Number,String}):bufferedpaintdc
-bufferedpaintdc_destruct					(bufferedpaintdc:bufferedpaintdc)
 #group(wxbutton)
 button_construct							():button (parent:+{window,Nil},id:+{Number,String}):button (parent:+{window,Nil},id:+{Number,String},label:String):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):button (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):button
-button_destruct								(b:button)
 button_create								(b:button,parent:+{window,Nil},id:+{Number,String}):Bool (b:button,parent:+{window,Nil},id:+{Number,String},label:String):Bool (b:button,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (b:button,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (b:button,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (b:button,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (b:button,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},v:validator,name:String):Bool
 button_getlabel								(b:button) : String
 button_getdefaultsize						(b:button) : size
@@ -4737,7 +4727,6 @@ button_setdefault							(b:button)
 button_setlabel								(b:button,label:String)
 #group(wxcal)
 calendarctrl_construct						():calendarctrl (parent:+{window,Nil},id:+{Number,String}):calendarctrl (parent:+{window,Nil},id:+{Number,String},date:datetime):calendarctrl (parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String}):calendarctrl (parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String},size:+{size,String}):calendarctrl (parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String}):calendarctrl (parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):calendarctrl
-calendarctrl_destruct						(cc:calendarctrl)
 calendarctrl_create							(cc:calendarctrl,parent:+{window,Nil},id:+{Number,String}):Bool (cc:calendarctrl,parent:+{window,Nil},id:+{Number,String},date:datetime):Bool (cc:calendarctrl,parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String}):Bool (cc:calendarctrl,parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String},size:+{size,String}):Bool (cc:calendarctrl,parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (cc:calendarctrl,parent:+{window,Nil},id:+{Number,String},date:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 calendarctrl_setdate						(cc:calendarctrl,date:datetime)
 calendarctrl_getdate						(cc:calendarctrl) : datetime
@@ -4759,7 +4748,6 @@ calendarctrl_setholiday						(cc:calendarctrl,day:Number)
 calendarctrl_resetattr						(cc:calendarctrl,day:Number)
 calendarctrl_hittest						(cc:calendarctrl,pos:+{point,String}) (cc:calendarctrl,pos:+{point,String},date:Object) (cc:calendarctrl,pos:+{point,String},date:Object,weekday:Object)
 calendardateattr_construct					():calendardateattr (colText:colour):calendardateattr (colText:colour,colBack:colour):calendardateattr (colText:colour,colBack:colour,colBorder:colour):calendardateattr (colText:colour,colBack:colour,colBorder:colour,font:font):calendardateattr (colText:colour,colBack:colour,colBorder:colour,font:font,border:+{Number,String}):calendardateattr (border:+{Number,String}):calendardateattr (border:+{Number,String},colBorder:colour):calendardateattr
-calendardateattr_destruct					(cd:calendardateattr)
 calendardateattr_settextcolour				(cd:calendardateattr,colText:colour)
 calendardateattr_setbackgroundcolour		(cd:calendardateattr,colBack:colour)
 calendardateattr_setbordercolour			(cd:calendardateattr,colBorder:colour)
@@ -4778,14 +4766,12 @@ calendardateattr_getbordercolour			(cd:calendardateattr) : colour
 calendardateattr_getfont					(cd:calendardateattr) : font
 calendardateattr_getborder					(cd:calendardateattr) : Number
 calendarevent_construct						():calendarevent (cc:+{calendarctrl,Nil},type:+{Number,String}):calendarevent
-calendarevent_destruct						(e:calendarevent)
 calendarevent_getweekday					(e:calendarevent) : Number
 calendarevent_setweekday					(e:calendarevent,weekday:+{Number,String})
 #group(wxcaret)
 caret_construct								():caret (window:+{window,Nil},size:+{size,String}):caret (window:+{window,Nil},width:Number,height:Number):caret
 caret_getblinktime							() : Number
 caret_setblinktime							(milliseconds:Number)
-caret_destruct								(ct:caret)
 caret_create								(ct:caret,window:+{window,Nil},size:+{size,String}):Bool (ct:caret,window:+{window,Nil},width:Number,height:Number):Bool
 caret_getposition							(ct:caret) : point
 caret_getsize								(ct:caret) : size
@@ -4798,10 +4784,8 @@ caret_setsize								(ct:caret,size:+{size,String}) (ct:caret,x:Number,y:Number)
 caret_show									(ct:caret) (ct:caret,show:Bool)
 #group(wxmisc)
 clientdc_construct							():clientdc (window:+{window,Nil}):clientdc
-clientdc_destruct							(clientdc:clientdc)
 #group(wxcheck)
 checkbox_construct							():checkbox (parent:+{window,Nil},id:+{Number,String},label:String):checkbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):checkbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):checkbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):checkbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):checkbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):checkbox
-checkbox_destruct							(cb:checkbox)
 checkbox_create								(cb:checkbox,parent:+{window,Nil},id:+{Number,String},label:String):Bool (cb:checkbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (cb:checkbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (cb:checkbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (cb:checkbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (cb:checkbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 checkbox_getvalue							(cb:checkbox) : Bool
 checkbox_get3statevalue						(cb:checkbox) : Number
@@ -4811,22 +4795,18 @@ checkbox_ischecked							(cb:checkbox) : Bool
 checkbox_setvalue							(cb:checkbox,value:Bool)
 checkbox_set3statevalue						(cb:checkbox,state:+{Number,String})
 checklistbox_construct						():checklistbox (parent:+{window,Nil},id:+{Number,String}):checklistbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):checklistbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):checklistbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object):checklistbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String}):checklistbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator):checklistbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator,name:String):checklistbox
-checklistbox_destruct						(clb:checklistbox)
 checklistbox_check							(clb:checklistbox,item:Number) (clb:checklistbox,item:Number,check:Bool)
 checklistbox_ischecked						(clb:checklistbox,item:Number) : Bool
 #group(wxmisc)
 childfocusevent_construct					():childfocusevent (window:+{window,Nil}):childfocusevent
-childfocusevent_destruct					(childfocusevent:childfocusevent)
 childfocusevent_getwindow					(childfocusevent:childfocusevent) : window
 #group(wxchoice)
 choice_construct							():choice (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):choice (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object):choice (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String}):choice (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator):choice (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator,name:String):choice
-choice_destruct								(c:choice)
 choice_create								(c:choice,parent:+{window,Nil},id:+{Number,String}):Bool (c:choice,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (c:choice,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (c:choice,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object):Bool (c:choice,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String}):Bool (c:choice,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator):Bool (c:choice,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator,name:String):Bool
 choice_getcolumns							(c:choice) : Number
 choice_getcurrentselection					(c:choice) : Number
 choice_setcolumns							(c:choice) (c:choice,num:Number)
 choicebook_construct						():choicebook (parent:+{window,Nil},id:+{Number,String}):choicebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):choicebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):choicebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):choicebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):choicebook
-choicebook_destruct							(cb:choicebook)
 choicebook_addpage							(cb:choicebook,page:+{window,Nil},text:String):Bool (cb:choicebook,page:+{window,Nil},text:String,select:Bool):Bool (cb:choicebook,page:+{window,Nil},text:String,select:Bool,imageId:+{Number,String}):Bool
 choicebook_advanceselection					(cb:choicebook) (cb:choicebook,forward:Bool)
 choicebook_assignimagelist					(cb:choicebook,imageList:+{imagelist,Nil})
@@ -4852,7 +4832,6 @@ choicebook_setpageimage						(cb:choicebook,page:Number,image:Number)
 choicebook_setpagetext						(cb:choicebook,page:Number,text:String)
 choicebook_setselection						(cb:choicebook,page:Number) : Number
 choicebookevent_construct					():choicebookevent (type:+{Number,String}):choicebookevent (type:+{Number,String},winid:+{Number,String}):choicebookevent (type:+{Number,String},winid:+{Number,String},selection:Number):choicebookevent (type:+{Number,String},winid:+{Number,String},selection:Number,oldSelection:Number):choicebookevent
-choicebookevent_destruct					(choicebookevent:choicebookevent)
 choicebookevent_getoldselection				(choicebookevent:choicebookevent) : Number
 choicebookevent_getselection				(choicebookevent:choicebookevent) : Number
 choicebookevent_setoldselection				(choicebookevent:choicebookevent,oldSelection:Number)
@@ -4870,9 +4849,7 @@ classinfo_isdynamic							(classinfo:classinfo) : Bool
 classinfo_iskindof							(classinfo:classinfo,other:classinfo) : Bool
 #group(wxevent)
 clipboardtextevent_construct				():clipboardtextevent (type:+{Number,String}):clipboardtextevent (type:+{Number,String},id:+{Number,String}):clipboardtextevent
-clipboardtextevent_destruct					(clipboardtextevent:clipboardtextevent)
 closeevent_construct						():closeevent (type:+{Number,String}):closeevent (type:+{Number,String},winid:+{Number,String}):closeevent
-closeevent_destruct							(closeevent:closeevent)
 closeevent_canveto							(closeevent:closeevent) : Bool
 closeevent_getloggingoff					(closeevent:closeevent) : Bool
 closeevent_setcanveto						(closeevent:closeevent,canVeto:Bool)
@@ -4880,7 +4857,6 @@ closeevent_setloggingoff					(closeevent:closeevent,loggingOff:Bool)
 closeevent_veto								(closeevent:closeevent) (closeevent:closeevent,veto:Bool)
 #group(wxpan)
 collapsiblepane_construct					():collapsiblepane (parent:+{window,Nil},id:+{Number,String},label:String):collapsiblepane (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):collapsiblepane (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):collapsiblepane (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):collapsiblepane (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):collapsiblepane (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):collapsiblepane
-collapsiblepane_destruct					(collapsiblepane:collapsiblepane)
 collapsiblepane_create						(collapsiblepane:collapsiblepane,parent:+{window,Nil},id:+{Number,String},label:String):Bool (collapsiblepane:collapsiblepane,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (collapsiblepane:collapsiblepane,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (collapsiblepane:collapsiblepane,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (collapsiblepane:collapsiblepane,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (collapsiblepane:collapsiblepane,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 collapsiblepane_iscollapsed					(collapsiblepane:collapsiblepane) : Bool
 collapsiblepane_isexpanded					(collapsiblepane:collapsiblepane) : Bool
@@ -4888,12 +4864,10 @@ collapsiblepane_collapse					(collapsiblepane:collapsiblepane) (collapsiblepane:
 collapsiblepane_expand						(collapsiblepane:collapsiblepane)
 collapsiblepane_getpane						(collapsiblepane:collapsiblepane) : window
 collapsiblepaneevent_construct				():collapsiblepaneevent (generator:+{object,Nil},id:+{Number,String},collapsed:Bool):collapsiblepaneevent
-collapsiblepaneevent_destruct				(collapsiblepaneevent:collapsiblepaneevent)
 collapsiblepaneevent_getcollapsed			(collapsiblepaneevent:collapsiblepaneevent) : Bool
 collapsiblepaneevent_setcollapsed			(collapsiblepaneevent:collapsiblepaneevent,collapsed:Bool)
 #group(wxcol)
 colour_construct							():colour (colour:colour):colour (colourName:String):colour (red:Number,green:Number,blue:Number):colour (red:Number,green:Number,blue:Number,alpha:Number):colour
-colour_destruct								(colour:colour)
 colour_alpha								(colour:colour) : Number
 colour_blue									(colour:colour) : Number
 colour_getasstring							(colour:colour,flags:+{Number,String}) : String
@@ -4905,7 +4879,6 @@ colour_set									(colour:colour,RGB:Number) (colour:colour,str:String) (colour
 colour_equal								(colour:colour,otherColour:colour) : Bool
 colour_notequal								(colour:colour,otherColour:colour) : Bool
 colourdata_construct						() : colourdata
-colourdata_destruct							(colourdata:colourdata)
 colourdata_getchoosefull					(colourdata:colourdata) : Bool
 colourdata_getcolour						(colourdata:colourdata) : colour
 colourdata_getcustomcolour					(colourdata:colourdata,i:Number) : colour
@@ -4913,22 +4886,18 @@ colourdata_setchoosefull					(colourdata:colourdata,flag:Bool)
 colourdata_setcolour						(colourdata:colourdata,colour:colour)
 colourdata_setcustomcolour					(colourdata:colourdata,i:Number,colour:colour)
 colourdialog_construct						():colourdialog (parent:+{window,Nil}):colourdialog (parent:+{window,Nil},data:+{colourdata,Nil}):colourdialog
-colourdialog_destruct						(colourdialog:colourdialog)
 colourdialog_create							(colourdialog:colourdialog,parent:+{window,Nil}):Bool (colourdialog:colourdialog,parent:+{window,Nil},data:+{colourdata,Nil}):Bool
 colourdialog_getcolourdata					(colourdialog:colourdialog) : colourdata
 colourdialog_showmodal						(colourdialog:colourdialog) : Number
 colourpickerctrl_construct					():colourpickerctrl (parent:+{window,Nil},id:+{Number,String}):colourpickerctrl (parent:+{window,Nil},id:+{Number,String},colour:colour):colourpickerctrl (parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String}):colourpickerctrl (parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String}):colourpickerctrl (parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String},style:+{Number,String}):colourpickerctrl (parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):colourpickerctrl (parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):colourpickerctrl
-colourpickerctrl_destruct					(colourpickerctrl:colourpickerctrl)
 colourpickerctrl_create						(colourpickerctrl:colourpickerctrl,parent:+{window,Nil},id:+{Number,String}):Bool (colourpickerctrl:colourpickerctrl,parent:+{window,Nil},id:+{Number,String},colour:colour):Bool (colourpickerctrl:colourpickerctrl,parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String}):Bool (colourpickerctrl:colourpickerctrl,parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String}):Bool (colourpickerctrl:colourpickerctrl,parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (colourpickerctrl:colourpickerctrl,parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (colourpickerctrl:colourpickerctrl,parent:+{window,Nil},id:+{Number,String},colour:colour,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 colourpickerctrl_getcolour					(colourpickerctrl:colourpickerctrl) : colour
 colourpickerctrl_setcolour					(colourpickerctrl:colourpickerctrl,colour:colour) (colourpickerctrl:colourpickerctrl,colourName:String)
 colourpickerevent_construct					():colourpickerevent (generator:+{object,Nil},id:+{Number,String},colour:colour):colourpickerevent
-colourpickerevent_destruct					(colourpickerevent:colourpickerevent)
 colourpickerevent_getcolour					(colourpickerevent:colourpickerevent) : colour
 colourpickerevent_setcolour					(colourpickerevent:colourpickerevent,colour:colour)
 #group(wxcombo)
 combobox_construct							():combobox (parent:+{window,Nil},id:+{Number,String}):combobox (parent:+{window,Nil},id:+{Number,String},value:String):combobox (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String}):combobox (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String}):combobox (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object):combobox (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String}):combobox (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator):combobox (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator,name:String):combobox
-combobox_destruct							(combobox:combobox)
 combobox_create								(combobox:combobox,parent:+{window,Nil},id:+{Number,String}):Bool (combobox:combobox,parent:+{window,Nil},id:+{Number,String},value:String):Bool (combobox:combobox,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String}):Bool (combobox:combobox,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String}):Bool (combobox:combobox,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object):Bool (combobox:combobox,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String}):Bool (combobox:combobox,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator):Bool
 combobox_create								(combobox:combobox,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator,name:String):Bool
 combobox_cancopy							(combobox:combobox) : Bool
@@ -4954,7 +4923,6 @@ combobox_setvalue							(combobox:combobox,value:String) : Number
 combobox_undo								(combobox:combobox)
 #group(wxevent)
 commandevent_construct						():commandevent (commandType:+{Number,String}):commandevent (commandType:+{Number,String},winid:+{Number,String}):commandevent
-commandevent_destruct						(commandevent:commandevent)
 commandevent_getextralong					(commandevent:commandevent) : Number
 commandevent_getint							(commandevent:commandevent) : Number
 commandevent_getselection					(commandevent:commandevent) : Number
@@ -4965,17 +4933,14 @@ commandevent_setextralong					(commandevent:commandevent,extraLong:Number)
 commandevent_setint							(commandevent:commandevent,int:Number)
 commandevent_setstring						(commandevent:commandevent,string:String)
 contextmenuevent_construct					():contextmenuevent (type:+{Number,String}):contextmenuevent (type:+{Number,String},id:+{Number,String}):contextmenuevent (type:+{Number,String},id:+{Number,String},pt:+{point,String}):contextmenuevent
-contextmenuevent_destruct					(contextmenuevent:contextmenuevent)
 contextmenuevent_getposition				(contextmenuevent:contextmenuevent) : point
 contextmenuevent_setposition				(contextmenuevent:contextmenuevent,pt:+{point,String})
 #group(wxcontrol)
 control_construct							() : control
-control_destruct							(control:control)
 control_command								(control:control,commandevent:commandevent)
 control_getlabel							(control:control) : String
 control_getlabeltext						(control:control):String (label:String):String
 control_setlabel							(control:control,label:String)
-controlwithitems_destruct					(controlwithitems:controlwithitems)
 controlwithitems_append						(controlwithitems:controlwithitems,item:String):Number (controlwithitems:controlwithitems,strings:Object):Void
 controlwithitems_clear						(controlwithitems:controlwithitems)
 controlwithitems_delete						(controlwithitems:controlwithitems,num:Number)
@@ -4993,15 +4958,12 @@ controlwithitems_setstring					(controlwithitems:controlwithitems,num:Number,str
 controlwithitems_setstringselection			(controlwithitems:controlwithitems,string:String) : Bool
 #group(wxmisc)
 cursor_construct							():cursor (cursorId:+{Number,String}):cursor (image:image):cursor (cursorName:String,type:+{Number,String}):cursor (cursorName:String,type:+{Number,String},hotSpotX:Number):cursor (cursorName:String,type:+{Number,String},hotSpotX:Number,hotSpotY:Number):cursor
-cursor_destruct								(cursor:cursor)
 cursor_isok									(cursor:cursor) : Bool
 #group(wxdate)
 dateevent_construct							():dateevent (window:+{window,Nil},datetime:datetime,type:+{Number,String}):dateevent
-dateevent_destruct							(dateevent:dateevent)
 dateevent_getdate							(dateevent:dateevent) : datetime
 dateevent_setdate							(dateevent:dateevent,datetime:datetime)
 datepickerctrl_construct					():datepickerctrl (parent:+{window,Nil},id:+{Number,String}):datepickerctrl (parent:+{window,Nil},id:+{Number,String},datetime:datetime):datepickerctrl (parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String}):datepickerctrl (parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String}):datepickerctrl (parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String}):datepickerctrl (parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):datepickerctrl (parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):datepickerctrl
-datepickerctrl_destruct						(datepickerctrl:datepickerctrl)
 datepickerctrl_create						(datepickerctrl:datepickerctrl,parent:+{window,Nil},id:+{Number,String}):Bool (datepickerctrl:datepickerctrl,parent:+{window,Nil},id:+{Number,String},datetime:datetime):Bool (datepickerctrl:datepickerctrl,parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String}):Bool (datepickerctrl:datepickerctrl,parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String}):Bool (datepickerctrl:datepickerctrl,parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (datepickerctrl:datepickerctrl,parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (datepickerctrl:datepickerctrl,parent:+{window,Nil},id:+{Number,String},datetime:datetime,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 datepickerctrl_getrange						(datepickerctrl:datepickerctrl,datetime1:Object,datetime2:Object) : Bool
 datepickerctrl_getvalue						(datepickerctrl:datepickerctrl) : datetime
@@ -5016,7 +4978,6 @@ datespan_week								() : datespan
 datespan_weeks								(weeks:Number) : datespan
 datespan_year								() : datespan
 datespan_years								(years:Number) : datespan
-datespan_destruct							(datespan:datespan)
 datespan_add								(datespan:datespan,other:datespan) : datespan
 datespan_getdays							(datespan:datespan) : Number
 datespan_getmonths							(datespan:datespan) : Number
@@ -5061,7 +5022,6 @@ datetime_setcountry							(country:+{Number,String})
 datetime_today								() : datetime
 datetime_unow								() : datetime
 datetime_settoweekofyear					(year:+{Number,String},numWeek:Number):datetime (year:+{Number,String},numWeek:Number,weekday:+{Number,String}):datetime
-datetime_destruct							(datetime:datetime)
 datetime_settocurrent						(datetime:datetime) : datetime
 datetime_settimet							(datetime:datetime,timet:Number) : datetime
 datetime_setjdn								(datetime:datetime,jdn:Number) : datetime
@@ -5141,7 +5101,6 @@ datetime_subtract							(datetime:datetime,other:datetime):timespan (datetime:da
 datetime_lessequalthan						(datetime:datetime,other:datetime) : Bool
 datetime_greaterequalthan					(datetime:datetime,other:datetime) : Bool
 #group(wxdc)
-dc_destruct									(dc:dc)
 dc_blit										(dc:dc,xDest:Number,yDest:Number,w:Number,h:Number,src:dc,xSrc:Number,ySrc:Number):Bool (dc:dc,xDest:Number,yDest:Number,w:Number,h:Number,src:dc,xSrc:Number,ySrc:Number,rop:+{Number,String}):Bool (dc:dc,xDest:Number,yDest:Number,w:Number,h:Number,src:dc,xSrc:Number,ySrc:Number,rop:+{Number,String},useMask:Bool):Bool (dc:dc,xDest:Number,yDest:Number,w:Number,h:Number,src:dc,xSrc:Number,ySrc:Number,rop:+{Number,String},useMask:Bool,xSrcMask:+{Number,String}):Bool (dc:dc,xDest:Number,yDest:Number,w:Number,h:Number,src:dc,xSrc:Number,ySrc:Number,rop:+{Number,String},useMask:Bool,xSrcMask:+{Number,String},ySrcMask:+{Number,String}):Bool (dc:dc,destPt:+{point,String},size:+{size,String},src:dc,srcPt:+{point,String}):Bool (dc:dc,destPt:+{point,String},size:+{size,String},src:dc,srcPt:+{point,String},rop:+{Number,String}):Bool (dc:dc,destPt:+{point,String},size:+{size,String},src:dc,srcPt:+{point,String},rop:+{Number,String},useMask:Bool):Bool
 dc_blit										(dc:dc,destPt:+{point,String},size:+{size,String},src:dc,srcPt:+{point,String},rop:+{Number,String},useMask:Bool,srcPtMask:+{point,String}):Bool
 dc_calcboundingbox							(dc:dc,x:Number,y:Number)
@@ -5227,7 +5186,6 @@ dc_startdoc									(dc:dc,msg:String) : Bool
 dc_startpage								(dc:dc)
 #group(wxdialog)
 dialog_construct							():dialog (parent:+{window,Nil},id:+{Number,String},title:String):dialog (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String}):dialog (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String}):dialog (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):dialog (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):dialog
-dialog_destruct								(dialog:dialog)
 dialog_create								(dialog:dialog,parent:+{window,Nil},id:+{Number,String},title:String):Bool (dialog:dialog,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String}):Bool (dialog:dialog,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String}):Bool (dialog:dialog,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (dialog:dialog,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 dialog_createbuttonsizer					(dialog:dialog,flag:+{Number,String}) : sizer
 dialog_createseparatedbuttonsizer			(dialog:dialog,flag:+{Number,String}) : sizer
@@ -5244,30 +5202,25 @@ dialog_setreturncode						(dialog:dialog,code:+{Number,String})
 dialog_show									(dialog:dialog):Bool (dialog:dialog,show:Bool):Bool
 dialog_showmodal							(dialog:dialog) : Number
 dirdialog_construct							(parent:+{window,Nil}):dirdialog (parent:+{window,Nil},msg:String):dirdialog (parent:+{window,Nil},msg:String,defaultPath:String):dirdialog (parent:+{window,Nil},msg:String,defaultPath:String,style:+{Number,String}):dirdialog (parent:+{window,Nil},msg:String,defaultPath:String,style:+{Number,String},pos:+{point,String}):dirdialog (parent:+{window,Nil},msg:String,defaultPath:String,style:+{Number,String},pos:+{point,String},size:+{size,String}):dirdialog (parent:+{window,Nil},msg:String,defaultPath:String,style:+{Number,String},pos:+{point,String},size:+{size,String},name:String):dirdialog
-dirdialog_destruct							(dirdialog:dirdialog)
 dirdialog_getpath							(dirdialog:dirdialog) : String
 dirdialog_getmessage						(dirdialog:dirdialog) : String
 dirdialog_setmessage						(dirdialog:dirdialog,msg:String)
 dirdialog_setpath							(dirdialog:dirdialog,path:String)
 dirdialog_showmodal							(dirdialog:dirdialog) : Number
 dirfilterlistctrl_construct					():dirfilterlistctrl (parent:+{genericdirctrl,Nil}):dirfilterlistctrl (parent:+{genericdirctrl,Nil},id:+{Number,String}):dirfilterlistctrl (parent:+{genericdirctrl,Nil},id:+{Number,String},pos:+{point,String}):dirfilterlistctrl (parent:+{genericdirctrl,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):dirfilterlistctrl (parent:+{genericdirctrl,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):dirfilterlistctrl
-dirfilterlistctrl_destruct					(dirfilterlistctrl:dirfilterlistctrl)
 dirfilterlistctrl_create					(dirfilterlistctrl:dirfilterlistctrl,parent:+{genericdirctrl,Nil}):Bool (dirfilterlistctrl:dirfilterlistctrl,parent:+{genericdirctrl,Nil},id:+{Number,String}):Bool (dirfilterlistctrl:dirfilterlistctrl,parent:+{genericdirctrl,Nil},id:+{Number,String},pos:+{point,String}):Bool (dirfilterlistctrl:dirfilterlistctrl,parent:+{genericdirctrl,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (dirfilterlistctrl:dirfilterlistctrl,parent:+{genericdirctrl,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool
 dirfilterlistctrl_fillfilterlist			(dirfilterlistctrl:dirfilterlistctrl,filter:String,defaultFilter:Number)
 dirfilterlistctrl_init						(dirfilterlistctrl:dirfilterlistctrl)
 dirfilterlistctrl_onselfilter				(dirfilterlistctrl:dirfilterlistctrl,commandevent:commandevent)
 dirpickerctrl_construct						():dirpickerctrl (parent:+{window,Nil},id:+{Number,String}):dirpickerctrl (parent:+{window,Nil},id:+{Number,String},path:String):dirpickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:+{Number,String}):dirpickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:+{Number,String},pos:+{point,String}):dirpickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:+{Number,String},pos:+{point,String},size:+{size,String}):dirpickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):dirpickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):dirpickerctrl
 dirpickerctrl_construct						(parent:+{window,Nil},id:+{Number,String},path:String,msg:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):dirpickerctrl
-dirpickerctrl_destruct						(dirpickerctrl:dirpickerctrl)
 dirpickerctrl_create						(dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String}):Bool (dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String},path:String):Bool (dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String):Bool (dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,pos:+{point,String}):Bool (dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,pos:+{point,String},size:+{size,String}):Bool (dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool
 dirpickerctrl_create						(dirpickerctrl:dirpickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 dirpickerctrl_getpath						(dirpickerctrl:dirpickerctrl) : String
 dirpickerctrl_setpath						(dirpickerctrl:dirpickerctrl,dirname:String)
 #group(wxevent)
 displaychangedevent_construct				():displaychangedevent
-displaychangedevent_destruct				(displaychangedevent:displaychangedevent)
 dropfilesevent_construct					():dropfilesevent (type:+{Number,String}):dropfilesevent (type:+{Number,String},noFiles:Number):dropfilesevent (type:+{Number,String},noFiles:Number,files:Object):dropfilesevent
-dropfilesevent_destruct						(dropfilesevent:dropfilesevent)
 dropfilesevent_getfiles						(dropfilesevent:dropfilesevent) : Object
 dropfilesevent_getnumberoffiles				(dropfilesevent:dropfilesevent) : Number
 dropfilesevent_getposition					(dropfilesevent:dropfilesevent) : point
@@ -5283,9 +5236,7 @@ droptarget_ondropadd						(droptarget:droptarget,...)
 droptarget_ondropremove						(droptarget:droptarget,...)
 #group(wxevent)
 eraseevent_construct						():eraseevent (id:+{Number,String}):eraseevent (id:+{Number,String},dc:dc):eraseevent
-eraseevent_destruct							(eraseevent:eraseevent)
 eraseevent_getdc							(eraseevent:eraseevent):dc
-event_destruct								(event:event)
 event_geteventobject						(event:event) : object
 event_geteventtype							(event:event) : Number
 event_getid									(event:event) : Number
@@ -5301,7 +5252,6 @@ event_shouldpropagate						(event:event) : Bool
 event_skip									(event:event) (event:event,skip:Bool)
 event_stoppropagation						(event:event) : Number
 evthandler_construct						() : evthandler
-evthandler_destruct							(evthandler:evthandler)
 evthandler_addpendingevent					(evthandler:evthandler,event:event)
 evthandler_connect							(evthandler:evthandler,eventType:+{Number,String},function) (evthandler:evthandler,id:+{Number,String},eventType:+{Number,String},function)
 evthandler_disconnect						(evthandler:evthandler) (evthandler:evthandler,id:+{Number,String}) (evthandler:evthandler,id:+{Number,String},function) (evthandler:evthandler,id:+{Number,String},eventType:+{Number,String}) (evthandler:evthandler,id:+{Number,String},eventType:+{Number,String},function)
@@ -5312,7 +5262,6 @@ evthandler_processevent						(evthandler:evthandler,event:event) : Bool
 evthandler_setevthandlerenabled				(evthandler:evthandler,enabled:Bool)
 #group(wxdialog)
 filedialog_construct						(parent:+{window,Nil}):filedialog (parent:+{window,Nil},msg:String):filedialog (parent:+{window,Nil},msg:String,defaultDir:String):filedialog (parent:+{window,Nil},msg:String,defaultDir:String,defaultFile:String):filedialog (parent:+{window,Nil},msg:String,defaultDir:String,defaultFile:String,wildcard:String):filedialog (parent:+{window,Nil},msg:String,defaultDir:String,defaultFile:String,wildcard:String,style:+{Number,String}):filedialog (parent:+{window,Nil},msg:String,defaultDir:String,defaultFile:String,wildcard:String,style:+{Number,String},pos:+{point,String}):filedialog (parent:+{window,Nil},msg:String,defaultDir:String,defaultFile:String,wildcard:String,style:+{Number,String},pos:+{point,String},size:+{size,String}):filedialog (parent:+{window,Nil},msg:String,defaultDir:String,defaultFile:String,wildcard:String,style:+{Number,String},pos:+{point,String},size:+{size,String},name:String):filedialog
-filedialog_destruct							(filedialog:filedialog)
 filedialog_getdirectory						(filedialog:filedialog) : String
 filedialog_getfilename						(filedialog:filedialog) : String
 filedialog_getfilenames						(filedialog:filedialog) : Object
@@ -5330,26 +5279,22 @@ filedialog_setwildcard						(filedialog:filedialog,wildcard:String)
 filedialog_showmodal						(filedialog:filedialog) : Number
 #group(wxevent)
 filedirpickerevent_construct				():filedirpickerevent (type:+{Number,String},generator:+{object,Nil},id:+{Number,String},path:String):filedirpickerevent
-filedirpickerevent_destruct					(filedirpickerevent:filedirpickerevent)
 filedirpickerevent_getpath					(filedirpickerevent:filedirpickerevent) : String
 filedirpickerevent_setpath					(filedirpickerevent:filedirpickerevent,path:String)
 #group(wxcontrol)
 filepickerctrl_construct					():filepickerctrl (parent:+{window,Nil},id:+{Number,String}):filepickerctrl (parent:+{window,Nil},id:+{Number,String},path:String):filepickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:String):filepickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String):filepickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String}):filepickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String}):filepickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):filepickerctrl (parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):filepickerctrl
 filepickerctrl_construct					(parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):filepickerctrl
-filepickerctrl_destruct						(filepickerctrl:filepickerctrl)
 filepickerctrl_create						(filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String}):Bool (filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String):Bool (filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String):Bool (filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String):Bool (filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String}):Bool (filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String}):Bool (filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool
 filepickerctrl_create						(filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool (filepickerctrl:filepickerctrl,parent:+{window,Nil},id:+{Number,String},path:String,msg:String,wildcard:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool
 filepickerctrl_getpath						(filepickerctrl:filepickerctrl) : String
 filepickerctrl_setpath						(filepickerctrl:filepickerctrl,filename:String)
 #group(wxdialog)
 finddialogevent_construct					():finddialogevent (commandType:+{Number,String}):finddialogevent (commandType:+{Number,String},id:+{Number,String}):finddialogevent
-finddialogevent_destruct					(finddialogevent:finddialogevent)
 finddialogevent_getflags					(finddialogevent:finddialogevent) : Number
 finddialogevent_getfindstring				(finddialogevent:finddialogevent) : String
 finddialogevent_getreplacestring			(finddialogevent:finddialogevent) : String
 finddialogevent_getdialog					(finddialogevent:finddialogevent) : findreplacedialog
 findreplacedata_construct					():findreplacedata (flags:+{Number,String}):findreplacedata
-findreplacedata_destruct					(findreplacedata:findreplacedata)
 findreplacedata_getfindstring				(findreplacedata:findreplacedata) : String
 findreplacedata_getreplacestring			(findreplacedata:findreplacedata) : String
 findreplacedata_getflags					(findreplacedata:findreplacedata) : Number
@@ -5357,7 +5302,6 @@ findreplacedata_setflags					(findreplacedata:findreplacedata,flags:+{Number,Str
 findreplacedata_setfindstring				(findreplacedata:findreplacedata,string:String)
 findreplacedata_setreplacestring			(findreplacedata:findreplacedata,string:String)
 findreplacedialog_construct					():findreplacedialog (parent:+{window,Nil},data:+{findreplacedata,Nil},title:String):findreplacedialog (parent:+{window,Nil},data:+{findreplacedata,Nil},title:String,style:+{Number,String}):findreplacedialog
-findreplacedialog_destruct					(findreplacedialog:findreplacedialog)
 findreplacedialog_create					(findreplacedialog:findreplacedialog,parent:+{window,Nil},data:+{findreplacedata,Nil},title:String):Bool (findreplacedialog:findreplacedialog,parent:+{window,Nil},data:+{findreplacedata,Nil},title:String,style:+{Number,String}):Bool
 findreplacedialog_getdata					(findreplacedialog:findreplacedialog) : findreplacedata
 #group(wxsizer)
@@ -5373,7 +5317,6 @@ flexgridsizer_setflexibledirection			(flexgridsizer:flexgridsizer,direction:+{Nu
 flexgridsizer_setnonflexiblegrowmode		(flexgridsizer:flexgridsizer,mode:+{Number,String})
 #group(wxevent)
 focusevent_construct						():focusevent (type:+{Number,String}):focusevent (type:+{Number,String},id:+{Number,String}):focusevent
-focusevent_destruct							(focusevent:focusevent)
 focusevent_getwindow						(focusevent:focusevent) : window
 focusevent_setwindow						(focusevent:focusevent,window:+{window,Nil})
 #group(wxfont)
@@ -5381,7 +5324,6 @@ font_construct								():font (font:font):font (fontDesc:String):font (pointSize
 font_construct								(pixelSize:+{size,String},family:+{Number,String},style:+{Number,String},weight:+{Number,String},underline:Bool,name:String,enc:+{Number,String}):font
 font_getdefaultencoding						() : Number
 font_setdefaultencoding						(encoding:+{Number,String})
-font_destruct								(font:font)
 font_isfixedwidth							(font:font) : Bool
 font_getfacename							(font:font) : String
 font_getfamily								(font:font) : Number
@@ -5403,7 +5345,6 @@ font_setweight								(font:font,weight:+{Number,String})
 font_equal									(font:font,other:font) : Bool
 font_notequal								(font:font,other:font) : Bool
 fontdata_construct							() : fontdata
-fontdata_destruct							(fontdata:fontdata)
 fontdata_enableeffects						(fontdata:fontdata,enable:Bool)
 fontdata_getallowsymbols					(fontdata:fontdata) : Bool
 fontdata_getcolour							(fontdata:fontdata) : colour
@@ -5418,24 +5359,20 @@ fontdata_setinitialfont						(fontdata:fontdata,font:font)
 fontdata_setrange							(fontdata:fontdata,min:Number,max:Number)
 fontdata_setshowhelp						(fontdata:fontdata,help:Bool)
 fontdialog_construct						():fontdialog (parent:+{window,Nil}):fontdialog (parent:+{window,Nil},fontdata:fontdata):fontdialog
-fontdialog_destruct							(fontdialog:fontdialog)
 fontdialog_create							(fontdialog:fontdialog,parent:+{window,Nil}):Bool (fontdialog:fontdialog,parent:+{window,Nil},fontdata:fontdata):Bool
 fontdialog_getfontdata						(fontdialog:fontdialog) : fontdata
 fontdialog_showmodal						(fontdialog:fontdialog) : Number
 fontpickerctrl_construct					():fontpickerctrl (parent:+{window,Nil},id:+{Number,String}):fontpickerctrl (parent:+{window,Nil},id:+{Number,String},font:font):fontpickerctrl (parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String}):fontpickerctrl (parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String}):fontpickerctrl (parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String},style:+{Number,String}):fontpickerctrl (parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):fontpickerctrl (parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):fontpickerctrl
-fontpickerctrl_destruct						(fontpickerctrl:fontpickerctrl)
 fontpickerctrl_create						(fontpickerctrl:fontpickerctrl,parent:+{window,Nil},id:+{Number,String}):Bool (fontpickerctrl:fontpickerctrl,parent:+{window,Nil},id:+{Number,String},font:font):Bool (fontpickerctrl:fontpickerctrl,parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String}):Bool (fontpickerctrl:fontpickerctrl,parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String}):Bool (fontpickerctrl:fontpickerctrl,parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (fontpickerctrl:fontpickerctrl,parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (fontpickerctrl:fontpickerctrl,parent:+{window,Nil},id:+{Number,String},font:font,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 fontpickerctrl_getselectedfont				(fontpickerctrl:fontpickerctrl) : font
 fontpickerctrl_setselectedfont				(fontpickerctrl:fontpickerctrl,font:font)
 fontpickerctrl_getmaxpointsize				(fontpickerctrl:fontpickerctrl) : Number
 fontpickerctrl_setmaxpointsize				(fontpickerctrl:fontpickerctrl,maxPointSize:Number)
 fontpickerevent_construct					():fontpickerevent (generator:+{object,Nil},id:+{Number,String},font:font):fontpickerevent
-fontpickerevent_destruct					(fontpickerevent:fontpickerevent)
 fontpickerevent_getfont						(fontpickerevent:fontpickerevent) : font
 fontpickerevent_setfont						(fontpickerevent:fontpickerevent,font:font)
 #group(wxframe)
 frame_construct								():frame (parent:+{window,Nil},id:+{Number,String},title:String):frame (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String}):frame (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String}):frame (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):frame (parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):frame
-frame_destruct								(frame:frame)
 frame_create								(frame:frame,parent:+{window,Nil},id:+{Number,String},title:String):Bool (frame:frame,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String}):Bool (frame:frame,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String}):Bool (frame:frame,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (frame:frame,parent:+{window,Nil},id:+{Number,String},title:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 frame_centre								(frame:frame) (frame:frame,direction:+{Number,String})
 frame_createstatusbar						(frame:frame):statusbar (frame:frame,number:Number):statusbar (frame:frame,number:Number,style:+{Number,String}):statusbar (frame:frame,number:Number,style:+{Number,String},id:+{Number,String}):statusbar (frame:frame,number:Number,style:+{Number,String},id:+{Number,String},name:String):statusbar
@@ -5455,7 +5392,6 @@ frame_setstatuswidths						(frame:frame,n:Number,widths:Object)
 frame_settoolbar							(frame:frame,toolbar:+{toolbar,Nil})
 #group(wxgauge)
 gauge_construct								():gauge (parent:+{window,Nil},id:+{Number,String},range:Number):gauge (parent:+{window,Nil},id:+{Number,String},range:Number,pos:+{point,String}):gauge (parent:+{window,Nil},id:+{Number,String},range:Number,pos:+{point,String},size:+{size,String}):gauge (parent:+{window,Nil},id:+{Number,String},range:Number,pos:+{point,String},size:+{size,String},style:+{Number,String}):gauge (parent:+{window,Nil},id:+{Number,String},range:Number,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):gauge (parent:+{window,Nil},id:+{Number,String},range:Number,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):gauge
-gauge_destruct								(gauge:gauge)
 gauge_create								(gauge:gauge,parent:+{window,Nil},id:+{Number,String},range:String):Bool (gauge:gauge,parent:+{window,Nil},id:+{Number,String},range:String,pos:+{point,String}):Bool (gauge:gauge,parent:+{window,Nil},id:+{Number,String},range:String,pos:+{point,String},size:+{size,String}):Bool (gauge:gauge,parent:+{window,Nil},id:+{Number,String},range:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (gauge:gauge,parent:+{window,Nil},id:+{Number,String},range:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (gauge:gauge,parent:+{window,Nil},id:+{Number,String},range:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 gauge_getbezelface							(gauge:gauge) : Number
 gauge_getrange								(gauge:gauge) : Number
@@ -5469,7 +5405,6 @@ gauge_setvalue								(gauge:gauge,pos:Number)
 gauge_pulse									(gauge:gauge)
 #group(wxsizer)
 gbposition_construct						():gbposition (row:Number,column:Number):gbposition
-gbposition_destruct							(gbposition:gbposition)
 gbposition_getcol							(gbposition:gbposition) : Number
 gbposition_getrow							(gbposition:gbposition) : Number
 gbposition_setcol							(gbposition:gbposition,column:Number)
@@ -5485,7 +5420,6 @@ gbsizeritem_intersects						(item:gbsizeritem,other:gbsizeritem):Bool (item:gbsi
 gbsizeritem_setpos							(item:gbsizeritem,pos:gbposition) : Bool
 gbsizeritem_setspan							(item:gbsizeritem,span:gbspan) : Bool
 gbspan_construct							():gbspan (rowspan:Number,columnspan:Number):gbspan
-gbspan_destruct								(gbspan:gbspan)
 gbspan_getcolspan							(gbspan:gbspan) : Number
 gbspan_getrowspan							(gbspan:gbspan) : Number
 gbspan_setcolspan							(gbspan:gbspan,columnspan:Number)
@@ -5495,7 +5429,6 @@ gbspan_notequal								(gbspan:gbspan,other:gbspan) : Bool
 #group(wxcontrol)
 genericdirctrl_construct					():genericdirctrl (parent:+{window,Nil}):genericdirctrl (parent:+{window,Nil},id:+{Number,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String):genericdirctrl (parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String,defaultFilter:Number):genericdirctrl
 genericdirctrl_construct					(parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String,defaultFilter:Number,name:String):genericdirctrl
-genericdirctrl_destruct						(genericdirctrl:genericdirctrl)
 genericdirctrl_create						(genericdirctrl:genericdirctrl,parent:+{window,Nil}):Bool (genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String}):Bool (genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String},dir:String):Bool (genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String}):Bool (genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String}):Bool (genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String):Bool (genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String,defaultFilter:Number):Bool
 genericdirctrl_create						(genericdirctrl:genericdirctrl,parent:+{window,Nil},id:+{Number,String},dir:String,pos:+{point,String},size:+{size,String},style:+{Number,String},filter:String,defaultFilter:Number,name:String):Bool
 genericdirctrl_init							(genericdirctrl:genericdirctrl)
@@ -5551,14 +5484,12 @@ gridsizer_setrows							(gridsizer:gridsizer,rows:Number)
 gridsizer_setvgap							(gridsizer:gridsizer,verticalGap:Number)
 #group(wxevent)
 helpevent_construct							():helpevent (type:+{Number,String}):helpevent (type:+{Number,String},id:+{Number,String}):helpevent (type:+{Number,String},id:+{Number,String},pt:+{point,String}):helpevent (type:+{Number,String},id:+{Number,String},pt:+{point,String},origin:+{Number,String}):helpevent
-helpevent_destruct							(helpevent:helpevent)
 helpevent_getorigin							(helpevent:helpevent) : Number
 helpevent_getposition						(helpevent:helpevent) : point
 helpevent_setorigin							(helpevent:helpevent,origin:+{Number,String})
 helpevent_setposition						(helpevent:helpevent,pt:+{point,String})
 #group(wxicon)
 icon_construct								():icon (name:String):icon (name:String,type:+{Number,String}):icon (name:String,type:+{Number,String},desiredWidth:+{Number,String}):icon (name:String,type:+{Number,String},desiredWidth:+{Number,String},desiredHeight:+{Number,String}):icon (iconlocation:iconlocation):icon
-icon_destruct								(icon:icon)
 icon_copyfrombitmap							(icon:icon,b:bitmap)
 icon_getdepth								(icon:icon) : Number
 icon_getheight								(icon:icon) : Number
@@ -5569,14 +5500,11 @@ icon_setdepth								(icon:icon,depth:Number)
 icon_setheight								(icon:icon,height:Number)
 icon_setwidth								(icon:icon,width:Number)
 iconbundle_construct						():iconbundle (icon:icon):iconbundle (file:String):iconbundle
-iconbundle_destruct							(iconbundle:iconbundle)
 iconbundle_addicon							(iconbundle:iconbundle,icon:icon) (iconbundle:iconbundle,file:String,type:+{Number,String})
 iconbundle_geticon							(iconbundle:iconbundle):icon (iconbundle:iconbundle,size:+{size,String}):icon (iconbundle:iconbundle,size:+{Number,String}):icon
 iconizeevent_construct						():iconizeevent (id:+{Number,String}):iconizeevent (id:+{Number,String},iconized:Bool):iconizeevent
-iconizeevent_destruct						(iconizeevent:iconizeevent)
 iconizeevent_iconized						(iconizeevent:iconizeevent) : Bool
 iconlocation_construct						():iconlocation (file:String):iconlocation (file:String,num:Number):iconlocation
-iconlocation_destruct						(iconlocation:iconlocation)
 iconlocation_getfilename					(iconlocation:iconlocation) : String
 iconlocation_getindex						(iconlocation:iconlocation) : Number
 iconlocation_isok							(iconlocation:iconlocation) : Bool
@@ -5587,14 +5515,12 @@ idleevent_construct							():idleevent
 idleevent_cansend							(window:window) : Bool
 idleevent_getmode							() : Number
 idleevent_setmode							(mode:+{Number,String})
-idleevent_destruct							(idleevent:idleevent)
 idleevent_requestmore						(idleevent:idleevent) (idleevent:idleevent,needMore:Bool)
 idleevent_morerequested						(idleevent:idleevent) : Bool
 #group(wximage)
 image_construct								():image (name:String):image (name:String,type:+{Number,String}):image (name:String,type:+{Number,String},index:Number):image (width:Number,height:Number):image (width:Number,height:Number,clear:Bool):image
 image_hsvtorgb								(hsv:Object):Object (hue:Number):Object (hue:Number,saturation:Number):Object (hue:Number,saturation:Number,value:Number):Object
 image_rgbtohsv								(rgb:Object):Object (red:Number):Object (red:Number,green:Number):Object (red:Number,green:Number,blue:Number):Object
-image_destruct								(image:image)
 image_blur									(image:image,blurRadius:Number) : image
 image_blurhorizontal						(image:image,blurRadius:Number) : image
 image_blurvertical							(image:image,blurRadius:Number) : image
@@ -5644,7 +5570,6 @@ image_setoption								(image:image,name:String,value:+{Number,String})
 image_setpalette							(image:image,palette:palette)
 image_setrgb								(image:image,rect:rect,red:Number,green:Number,blue:Number) (image:image,x:Number,y:Number,red:Number,green:Number,blue:Number)
 imagelist_construct							():imagelist (width:Number,height:Number):imagelist (width:Number,height:Number,mask:Bool):imagelist (width:Number,height:Number,mask:Bool,initialCount:Number):imagelist
-imagelist_destruct							(imagelist:imagelist)
 imagelist_add								(imagelist:imagelist,b:bitmap):Number (imagelist:imagelist,b:bitmap,mask:bitmap):Number (imagelist:imagelist,b:bitmap,maskColour:colour):Number (imagelist:imagelist,icon:icon):Number
 imagelist_create							(imagelist:imagelist,width:Number,height:Number):Bool (imagelist:imagelist,width:Number,height:Number,mask:Bool):Bool (imagelist:imagelist,width:Number,height:Number,mask:Bool,initialCount:Number):Bool
 imagelist_draw								(imagelist:imagelist,index:Number,dc:dc,x:Number,y:Number):Bool (imagelist:imagelist,index:Number,dc:dc,x:Number,y:Number,flags:+{Number,String}):Bool (imagelist:imagelist,index:Number,dc:dc,x:Number,y:Number,flags:+{Number,String},solidBackground:Bool):Bool
@@ -5657,7 +5582,6 @@ imagelist_removeall							(imagelist:imagelist) : Bool
 imagelist_replace							(imagelist:imagelist,index:Number,b:bitmap):Bool (imagelist:imagelist,index:Number,b:bitmap,mask:bitmap):Bool (imagelist:imagelist,index:Number,icon:icon):Bool
 #group(wxlay)
 individuallayoutconstraint_construct		() : individuallayoutconstraint
-individuallayoutconstraint_destruct			(individuallayoutconstraint:individuallayoutconstraint)
 individuallayoutconstraint_above			(individuallayoutconstraint:individuallayoutconstraint,otherWin:+{window,Nil}) (individuallayoutconstraint:individuallayoutconstraint,otherWin:+{window,Nil},margin:Number)
 individuallayoutconstraint_absolute			(individuallayoutconstraint:individuallayoutconstraint,value:Number)
 individuallayoutconstraint_asis				(individuallayoutconstraint:individuallayoutconstraint)
@@ -5669,11 +5593,9 @@ individuallayoutconstraint_rightof			(individuallayoutconstraint:individuallayou
 individuallayoutconstraint_sameas			(individuallayoutconstraint:individuallayoutconstraint,otherWin:+{window,Nil},edge:+{Number,String}) (individuallayoutconstraint:individuallayoutconstraint,otherWin:+{window,Nil},edge:+{Number,String},margin:Number)
 individuallayoutconstraint_set				(individuallayoutconstraint:individuallayoutconstraint,rel:+{Number,String},otherWin:+{window,Nil},otherEdge:+{Number,String}) (individuallayoutconstraint:individuallayoutconstraint,rel:+{Number,String},otherWin:+{window,Nil},otherEdge:+{Number,String},value:Number) (individuallayoutconstraint:individuallayoutconstraint,rel:+{Number,String},otherWin:+{window,Nil},otherEdge:+{Number,String},value:Number,margin:Number)
 initdialogevent_construct					():initdialogevent (id:+{Number,String}):initdialogevent
-initdialogevent_destruct					(initdialogevent:initdialogevent)
 #group(wxjoy)
 joystick_construct							():joystick (joystick:+{Number,String}):joystick
 joystick_getnumberjoysticks					() : Number
-joystick_destruct							(joystick:joystick)
 joystick_getbuttonstate						(joystick:joystick) : Number
 joystick_getmanufacturerid					(joystick:joystick) : Number
 joystick_getmovementthreshold				(joystick:joystick) : Number
@@ -5715,7 +5637,6 @@ joystick_setcapture							(joystick:joystick,window:window):Bool (joystick:joyst
 joystick_setmovementthreshold				(joystick:joystick,threshold:Number)
 #group(wxevent)
 joystickevent_construct						():joystickevent (type:+{Number,String}):joystickevent (type:+{Number,String},state:+{Number,String}):joystickevent (type:+{Number,String},state:+{Number,String},joystick:+{Number,String}):joystickevent (type:+{Number,String},state:+{Number,String},joystick:+{Number,String},change:+{Number,String}):joystickevent
-joystickevent_destruct						(joystickevent:joystickevent)
 joystickevent_buttondown					(joystickevent:joystickevent):Bool (joystickevent:joystickevent,button:+{Number,String}):Bool
 joystickevent_buttonisdown					(joystickevent:joystickevent):Bool (joystickevent:joystickevent,button:+{Number,String}):Bool
 joystickevent_buttonup						(joystickevent:joystickevent):Bool (joystickevent:joystickevent,button:+{Number,String}):Bool
@@ -5729,7 +5650,6 @@ joystickevent_ismove						(joystickevent:joystickevent) : Bool
 joystickevent_iszmove						(joystickevent:joystickevent) : Bool
 #group(wxevent)
 keyevent_construct							():keyevent (keyType:+{Number,String}):keyevent
-keyevent_destruct							(keyevent:keyevent)
 keyevent_altdown							(keyevent:keyevent) : Bool
 keyevent_cmddown							(keyevent:keyevent) : Bool
 keyevent_controldown						(keyevent:keyevent) : Bool
@@ -5746,7 +5666,6 @@ keyevent_metadown							(keyevent:keyevent) : Bool
 keyevent_shiftdown							(keyevent:keyevent) : Bool
 #group(wxlay)
 layoutconstraints_construct					() : layoutconstraints
-layoutconstraints_destruct					(layoutconstraints:layoutconstraints)
 layoutconstraints_getbottom					(layoutconstraints:layoutconstraints) : individuallayoutconstraint
 layoutconstraints_getcentrex				(layoutconstraints:layoutconstraints) : individuallayoutconstraint
 layoutconstraints_getcentrey				(layoutconstraints:layoutconstraints) : individuallayoutconstraint
@@ -5765,7 +5684,6 @@ layoutconstraints_settop					(layoutconstraints:layoutconstraints,individuallayo
 layoutconstraints_setwidth					(layoutconstraints:layoutconstraints,individuallayoutconstraint:individuallayoutconstraint)
 #group(wxlist)
 listbook_construct							():listbook (parent:+{window,Nil},id:+{Number,String}):listbook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):listbook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):listbook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):listbook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):listbook
-listbook_destruct							(listbook:listbook)
 listbook_addpage							(listbook:listbook,page:+{window,Nil},text:String):Bool (listbook:listbook,page:+{window,Nil},text:String,select:Bool):Bool (listbook:listbook,page:+{window,Nil},text:String,select:Bool,id:+{Number,String}):Bool
 listbook_advanceselection					(listbook:listbook) (listbook:listbook,forward:Bool)
 listbook_assignimagelist					(listbook:listbook,imagelist:+{imagelist,Nil})
@@ -5791,13 +5709,11 @@ listbook_setpageimage						(listbook:listbook,page:Number,image:Number) : Bool
 listbook_setpagetext						(listbook:listbook,page:Number,text:String) : Bool
 listbook_setselection						(listbook:listbook,page:Number) : Number
 listbookevent_construct						():listbookevent (commandType:+{Number,String}):listbookevent (commandType:+{Number,String},id:+{Number,String}):listbookevent (commandType:+{Number,String},id:+{Number,String},selection:Number):listbookevent (commandType:+{Number,String},id:+{Number,String},selection:Number,oldSelection:Number):listbookevent
-listbookevent_destruct						(listbookevent:listbookevent)
 listbookevent_getoldselection				(listbookevent:listbookevent) : Number
 listbookevent_getselection					(listbookevent:listbookevent) : Number
 listbookevent_setoldselection				(listbookevent:listbookevent,oldSelection:Number)
 listbookevent_setselection					(listbookevent:listbookevent,selection:Number)
 listbox_construct							():listbox (parent:+{window,Nil},id:+{Number,String}):listbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):listbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):listbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object):listbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String}):listbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator):listbox (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator,name:String):listbox
-listbox_destruct							(listbox:listbox)
 listbox_create								(listbox:listbox,parent:+{window,Nil},id:+{Number,String}):Bool (listbox:listbox,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (listbox:listbox,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (listbox:listbox,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object):Bool (listbox:listbox,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String}):Bool (listbox:listbox,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator):Bool (listbox:listbox,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},choices:Object,style:+{Number,String},validator:validator,name:String):Bool
 listbox_deselect							(listbox:listbox,num:Number)
 listbox_getselections						(listbox:listbox,selections:Object) : Number
@@ -5807,7 +5723,6 @@ listbox_isselected							(listbox:listbox,num:Number) : Bool
 listbox_set									(listbox:listbox,choices:Object)
 listbox_setfirstitem						(listbox:listbox,string:String) (listbox:listbox,num:Number)
 listctrl_construct							():listctrl (parent:+{window,Nil},id:+{Number,String}):listctrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):listctrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):listctrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):listctrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):listctrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):listctrl
-listctrl_destruct							(listctrl:listctrl)
 listctrl_arrange							(listctrl:listctrl):Bool (listctrl:listctrl,flag:+{Number,String}):Bool
 listctrl_assignimagelist					(listctrl:listctrl,imagelist:+{imagelist,Nil},which:Number)
 listctrl_clearall							(listctrl:listctrl)
@@ -5864,7 +5779,6 @@ listctrl_setsinglestyle						(listctrl:listctrl,style:+{Number,String}) (listctr
 listctrl_settextcolour						(listctrl:listctrl,colour:colour)
 listctrl_setwindowstyleflag					(listctrl:listctrl,style:+{Number,String})
 listview_construct							():listview (parent:+{window,Nil}):listview (parent:+{window,Nil},id:+{Number,String}):listview (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):listview (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):listview (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):listview (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):listview (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):listview
-listview_destruct							(listview:listview)
 listview_clearcolumnimage					(listview:listview,column:Number)
 listview_focus								(listview:listview,index:Number)
 listview_getfirstselected					(listview:listview) : Number
@@ -5920,14 +5834,11 @@ logwindow_show								(logwindow:logwindow) (logwindow:logwindow,show:Bool)
 logwindow_getframe							(logwindow:logwindow) : frame
 #group(wxmisc)
 mask_construct								():mask (b:bitmap):mask (b:bitmap,index:Number):mask (b:bitmap,colour:colour):mask
-mask_destruct								(mask:mask)
 mask_create									(mask:mask,b:bitmap):Bool (mask:mask,b:bitmap,index:Number):Bool (mask:mask,b:bitmap,colour:colour):Bool
 #group(wxevent)
 maximizeevent_construct						():maximizeevent (id:+{Number,String}):maximizeevent
-maximizeevent_destruct						(maximizeevent:maximizeevent)
 #group(wxdc)
 memorydc_construct							():memorydc (b:bitmap):memorydc
-memorydc_destruct							(memorydc:memorydc)
 memorydc_selectobject						(memorydc:memorydc,b:bitmap)
 memorydc_selectobjectassource				(memorydc:memorydc,b:bitmap)
 #group(wxmenu)
@@ -5966,7 +5877,6 @@ menu_setlabel								(menu:menu,id:+{Number,String},label:String)
 menu_settitle								(menu:menu,title:String)
 menu_updateui								(menu:menu) (menu:menu,evthandler:+{evthandler,Nil})
 menubar_construct							():menubar (style:+{Number,String}):menubar (size:Number,menus:Object,titles:Object):menubar (size:Number,menus:Object,titles:Object,style:+{Number,String}):menubar
-menubar_destruct							(menubar:menubar)
 menubar_append								(menubar:menubar,menu:+{menu,Nil},title:String) : Bool
 menubar_check								(menubar:menubar,id:+{Number,String},check:Bool)
 menubar_enable								(menubar:menubar,id:+{Number,String},enable:Bool)
@@ -5989,7 +5899,6 @@ menubar_sethelpstring						(menubar:menubar,id:+{Number,String},helpString:Strin
 menubar_setlabel							(menubar:menubar,id:+{Number,String},label:String)
 menubar_setlabeltop							(menubar:menubar,position:Number,label:String)
 menuevent_construct							():menuevent (type:+{Number,String}):menuevent (type:+{Number,String},id:+{Number,String}):menuevent (type:+{Number,String},id:+{Number,String},menu:+{menu,Nil}):menuevent
-menuevent_destruct							(menuevent:menuevent)
 menuevent_getmenu							(menuevent:menuevent) : menu
 menuevent_getmenuid							(menuevent:menuevent) : Number
 menuevent_ispopup							(menuevent:menuevent) : Bool
@@ -6034,16 +5943,12 @@ menuitem_settext							(menuitem:menuitem,text:String)
 menuitem_toggle								(menuitem:menuitem)
 #group(wxdialog)
 messagedialog_construct						(parent:+{window,Nil},msg:String):messagedialog (parent:+{window,Nil},msg:String,caption:String):messagedialog (parent:+{window,Nil},msg:String,caption:String,style:+{Number,String}):messagedialog (parent:+{window,Nil},msg:String,caption:String,style:+{Number,String},pos:+{point,String}):messagedialog
-messagedialog_destruct						(messagedialog:messagedialog)
 messagedialog_showmodal						(messagedialog:messagedialog) : Number
 #group(wxevent)
 mousecapturechangedevent_construct			():mousecapturechangedevent (id:+{Number,String}):mousecapturechangedevent (id:+{Number,String},gainedCapture:+{window,Nil}):mousecapturechangedevent
-mousecapturechangedevent_destruct			(mousecapturechangedevent:mousecapturechangedevent)
 mousecapturechangedevent_getcapturedwindow	(mousecapturechangedevent:mousecapturechangedevent) : window
 mousecapturelostevent_construct				():mousecapturelostevent (id:+{Number,String}):mousecapturelostevent
-mousecapturelostevent_destruct				(mousecapturelostevent:mousecapturelostevent)
 mouseevent_construct						():mouseevent (mouseType:+{Number,String}):mouseevent
-mouseevent_destruct							(mouseevent:mouseevent)
 mouseevent_altdown							(mouseevent:mouseevent) : Bool
 mouseevent_button							(mouseevent:mouseevent,button:+{Number,String}) : Bool
 mouseevent_buttondclick						(mouseevent:mouseevent):Bool (mouseevent:mouseevent,button:+{Number,String}):Bool
@@ -6080,20 +5985,17 @@ mouseevent_rightisdown						(mouseevent:mouseevent) : Bool
 mouseevent_rightup							(mouseevent:mouseevent) : Bool
 mouseevent_shiftdown						(mouseevent:mouseevent) : Bool
 moveevent_construct							():moveevent (pt:point):moveevent (pt:point,id:+{Number,String}):moveevent (rect:rect):moveevent (rect:rect,id:+{Number,String}):moveevent
-moveevent_destruct							(moveevent:moveevent)
 moveevent_getposition						(moveevent:moveevent) : point
 moveevent_getrect							(moveevent:moveevent) : rect
 moveevent_setposition						(moveevent:moveevent,pt:+{point,String})
 moveevent_setrect							(moveevent:moveevent,rect:rect)
 #group(wxdialog)
 multichoicedialog_construct					():multichoicedialog (parent:+{window,Nil},msg:String,caption:String,choices:Object):multichoicedialog (parent:+{window,Nil},msg:String,caption:String,choices:Object,style:+{Number,String}):multichoicedialog (parent:+{window,Nil},msg:String,caption:String,choices:Object,style:+{Number,String},pos:+{point,String}):multichoicedialog
-multichoicedialog_destruct					(multichoicedialog:multichoicedialog)
 multichoicedialog_getselections				(multichoicedialog:multichoicedialog) : Object
 multichoicedialog_setselections				(multichoicedialog:multichoicedialog,selections:Object)
 multichoicedialog_showmodal					(multichoicedialog:multichoicedialog) : Number
 #group(wxevent)
 navigationkeyevent_construct				():navigationkeyevent
-navigationkeyevent_destruct					(navigationkeyevent:navigationkeyevent)
 navigationkeyevent_getdirection				(navigationkeyevent:navigationkeyevent) : Bool
 navigationkeyevent_setdirection				(navigationkeyevent:navigationkeyevent,direction:Bool)
 navigationkeyevent_iswindowchange			(navigationkeyevent:navigationkeyevent) : Bool
@@ -6105,7 +6007,6 @@ navigationkeyevent_setcurrentfocus			(navigationkeyevent:navigationkeyevent,curr
 navigationkeyevent_setflags					(navigationkeyevent:navigationkeyevent,flags:+{Number,String})
 #group(wxnote)
 notebook_construct							():notebook (parent:+{window,Nil},id:+{Number,String}):notebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):notebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):notebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):notebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):notebook
-notebook_destruct							(notebook:notebook)
 notebook_addpage							(notebook:notebook,page:+{window,Nil},text:String):Bool (notebook:notebook,page:+{window,Nil},text:String,select:Bool):Bool (notebook:notebook,page:+{window,Nil},text:String,select:Bool,imageId:+{Number,String}):Bool
 notebook_advanceselection					(notebook:notebook) (notebook:notebook,forward:Bool)
 notebook_assignimagelist					(notebook:notebook,imagelist:+{imagelist,Nil})
@@ -6133,26 +6034,22 @@ notebook_setpageimage						(notebook:notebook,page:Number,image:Number) : Bool
 notebook_setpagetext						(notebook:notebook,page:Number,text:String) : Bool
 notebook_setselection						(notebook:notebook,page:Number) : Number
 notebookevent_construct						():notebookevent (commandType:+{Number,String}):notebookevent (commandType:+{Number,String},id:+{Number,String}):notebookevent (commandType:+{Number,String},id:+{Number,String},selection:Number):notebookevent (commandType:+{Number,String},id:+{Number,String},selection:Number,oldSelection:Number):notebookevent
-notebookevent_destruct						(notebookevent:notebookevent)
 notebookevent_getoldselection				(notebookevent:notebookevent) : Number
 notebookevent_getselection					(notebookevent:notebookevent) : Number
 notebookevent_setoldselection				(notebookevent:notebookevent,oldSelection:Number)
 notebookevent_setselection					(notebookevent:notebookevent,selection:Number)
 #group(wxevent)
 notifyevent_construct						():notifyevent (commandType:+{Number,String}):notifyevent (commandType:+{Number,String},id:+{Number,String}):notifyevent
-notifyevent_destruct						(notifyevent:notifyevent)
 notifyevent_allow							(notifyevent:notifyevent)
 notifyevent_isallowed						(notifyevent:notifyevent) : Bool
 notifyevent_veto							(notifyevent:notifyevent)
 #group(wxdialog)
 numberentrydialog_construct					(parent:+{window,Nil},msg:String,prompt:String,caption:String,value:Number,min:Number,max:Number):numberentrydialog (parent:+{window,Nil},msg:String,prompt:String,caption:String,value:Number,min:Number,max:Number,pos:+{point,String}):numberentrydialog
-numberentrydialog_destruct					(numberentrydialog:numberentrydialog)
 numberentrydialog_getvalue					(numberentrydialog:numberentrydialog) : Number
 numberentrydialog_onok						(numberentrydialog:numberentrydialog,commandevent:commandevent)
 numberentrydialog_oncancel					(numberentrydialog:numberentrydialog,commandevent:commandevent)
 #group(wxobj)
 object_construct							():object
-object_destruct								(object:object)
 object_getclassinfo							(object:object) : classinfo
 object_getrefdata							(object:object) : objectrefdata
 object_iskindof								(object:object,classinfo:+{classinfo,Nil}) : Bool
@@ -6166,11 +6063,9 @@ objectrefdata_destruct						(objectrefdata:objectrefdata)
 objectrefdata_getrefcount					(objectrefdata:objectrefdata) : Number
 #group(wxdialog)
 pagesetupdialog_construct					(parent:+{window,Nil}):pagesetupdialog (parent:+{window,Nil},pagesetupdialogdata:+{pagesetupdialogdata,Nil}):pagesetupdialog
-pagesetupdialog_destruct					(pagesetupdialog:pagesetupdialog)
 pagesetupdialog_getpagesetupdata			(pagesetupdialog:pagesetupdialog) : pagesetupdialogdata
 pagesetupdialog_showmodal					(pagesetupdialog:pagesetupdialog) : Number
 pagesetupdialogdata_construct				():pagesetupdialogdata (printdata:printdata):pagesetupdialogdata
-pagesetupdialogdata_destruct				(pagesetupdialogdata:pagesetupdialogdata)
 pagesetupdialogdata_enablehelp				(pagesetupdialogdata:pagesetupdialogdata,flag:Bool)
 pagesetupdialogdata_enablemargins			(pagesetupdialogdata:pagesetupdialogdata,flag:Bool)
 pagesetupdialogdata_enableorientation		(pagesetupdialogdata:pagesetupdialogdata,flag:Bool)
@@ -6202,33 +6097,26 @@ pagesetupdialogdata_setpapersize			(pagesetupdialogdata:pagesetupdialogdata,size
 pagesetupdialogdata_setprintdata			(pagesetupdialogdata:pagesetupdialogdata,printdata:printdata)
 #group(wxdc)
 paintdc_construct							():paintdc (window:+{window,Nil}):paintdc
-paintdc_destruct							(paintdc:paintdc)
 paintevent_construct						():paintevent (id:+{Number,String}):paintevent
-paintevent_destruct							(paintevent:paintevent)
 #group(wxpal)
 palette_construct							():palette (num:Number,red:Object,green:Object,blue:Object):palette
-palette_destruct							(palette:palette)
 palette_create								(palette:palette,num:Number,red:Object,green:Object,blue:Object) : Bool
 palette_getcolourscount						(palette:palette) : Number
 palette_getpixel							(palette:palette,red:Number,green:Number,blue:Number) : Number
 palette_getrgb								(palette:palette,pixel:Number,red:Object,green:Object,blue:Object) : Bool
 palette_isok								(palette:palette) : Bool
 palettechangedevent_construct				():palettechangedevent (id:+{Number,String}):palettechangedevent
-palettechangedevent_destruct				(palettechangedevent:palettechangedevent)
 palettechangedevent_getchangedwindow		(palettechangedevent:palettechangedevent) : window
 palettechangedevent_setchangedwindow		(palettechangedevent:palettechangedevent,window:+{window,Nil})
 #group(wxpan)
 panel_construct								():panel (parent:+{window,Nil}):panel (parent:+{window,Nil},id:+{Number,String}):panel (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):panel (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):panel (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):panel (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):panel
-panel_destruct								(panel:panel)
 panel_create								(panel:panel,parent:+{window,Nil}):Bool (panel:panel,parent:+{window,Nil},id:+{Number,String}):Bool (panel:panel,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (panel:panel,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (panel:panel,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (panel:panel,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 panel_initdialog							(panel:panel)
 panel_setfocus								(panel:panel)
 #group(wxdialog)
 passwordentrydialog_construct				(parent:+{window,Nil},msg:String):passwordentrydialog (parent:+{window,Nil},msg:String,caption:String):passwordentrydialog (parent:+{window,Nil},msg:String,caption:String,value:String):passwordentrydialog (parent:+{window,Nil},msg:String,caption:String,value:String,style:+{Number,String}):passwordentrydialog (parent:+{window,Nil},msg:String,caption:String,value:String,style:+{Number,String},pos:+{point,String}):passwordentrydialog
-passwordentrydialog_destruct				(passwordentrydialog:passwordentrydialog)
 #group(wxpen)
 pen_construct								():pen (colour:colour):pen (colour:colour,width:Number):pen (colour:colour,width:Number,style:+{Number,String}):pen (b:bitmap,width:Number):pen (colourName:String,width:+{Number,String},style:+{Number,String}):pen
-pen_destruct								(pen:pen)
 pen_getcap									(pen:pen) : Number
 pen_getcolour								(pen:pen) : colour
 pen_getdashes								(pen:pen,dashes:Object) : Number
@@ -6247,7 +6135,6 @@ pen_setwidth								(pen:pen,width:Number)
 pen_equal									(pen:pen,other:pen) : Bool
 pen_notequal								(pen:pen,other:pen) : Bool
 #group(wxpick)
-pickerbase_destruct							(pickerbase:pickerbase)
 pickerbase_setinternalmargin				(pickerbase:pickerbase,margin:Number)
 pickerbase_getinternalmargin				(pickerbase:pickerbase) : Number
 pickerbase_settextctrlproportion			(pickerbase:pickerbase,proportion:Number)
@@ -6262,7 +6149,6 @@ pickerbase_settextctrlgrowable				(pickerbase:pickerbase) (pickerbase:pickerbase
 pickerbase_ispickerctrlgrowable				(pickerbase:pickerbase) : Bool
 #group(wxpoint)
 point_construct								():point (x:+{Number,String},y:+{Number,String}):point (defineString:+{String,point}):point
-point_destruct								(pt:point)
 point_getx									(pt:point) : Number
 point_gety									(pt:point) : Number
 point_setx									(pt:point,x:Number)
@@ -6274,7 +6160,6 @@ point_notequal								(pt:point,other:+{point,String}) : Bool
 point_assign								(pt:point,other:+{point,String})
 #group(wxprint)
 printdata_construct							() : printdata
-printdata_destruct							(printdata:printdata)
 printdata_getcollate						(printdata:printdata) : Bool
 printdata_getbin							(printdata:printdata) : Number
 printdata_getcolour							(printdata:printdata) : Bool
@@ -6295,11 +6180,9 @@ printdata_setpaperid						(printdata:printdata,paperId:+{Number,String})
 printdata_setprintername					(printdata:printdata,printerName:String)
 printdata_setquality						(printdata:printdata,quality:+{Number,String})
 printdialog_construct						(parent:+{window,Nil}):printdialog (parent:+{window,Nil},printdialogdata:+{printdialogdata,Nil}):printdialog (parent:+{window,Nil},printdata:printdata):printdialog
-printdialog_destruct						(printdialog:printdialog)
 printdialog_getprintdc						(printdialog:printdialog) : dc
 printdialog_showmodal						(printdialog:printdialog) : Number
 printdialogdata_construct					():printdialogdata (printdata:printdata):printdialogdata
-printdialogdata_destruct					(printdialogdata:printdialogdata)
 printdialogdata_enablehelp					(printdialogdata:printdialogdata,flag:Bool)
 printdialogdata_enablepagenumbers			(printdialogdata:printdialogdata,flag:Bool)
 printdialogdata_enableprinttofile			(printdialogdata:printdialogdata,flag:Bool)
@@ -6326,19 +6209,16 @@ printdialogdata_setselection				(printdialogdata:printdialogdata,flag:Bool)
 printdialogdata_settopage					(printdialogdata:printdialogdata,page:Number)
 #group(wxdialog)
 progressdialog_construct					(title:String,msg:String):progressdialog (title:String,msg:String,maximum:Number):progressdialog (title:String,msg:String,maximum:Number,parent:+{window,Nil}):progressdialog (title:String,msg:String,maximum:Number,parent:+{window,Nil},style:+{Number,String}):progressdialog
-progressdialog_destruct						(progressdialog:progressdialog)
 progressdialog_resume						(progressdialog:progressdialog)
 progressdialog_update						(progressdialog:progressdialog,value:Number):Bool (progressdialog:progressdialog,newmsg:String):Bool (progressdialog:progressdialog,newmsg:String,skip:Object):Bool
 progressdialog_pulse						(progressdialog:progressdialog):Bool (progressdialog:progressdialog,newmsg:String):Bool (progressdialog:progressdialog,newmsg:String,skip:Object):Bool
 #group(wxevent)
 querynewpaletteevent_construct				():querynewpaletteevent (id:+{Number,String}):querynewpaletteevent
-querynewpaletteevent_destruct				(querynewpaletteevent:querynewpaletteevent)
 querynewpaletteevent_getpaletterealized		(querynewpaletteevent:querynewpaletteevent) : Bool
 querynewpaletteevent_setpaletterealized		(querynewpaletteevent:querynewpaletteevent,realized:Bool)
 #group(wxradio)
 radiobox_construct							():radiobox (parent:+{window,Nil},id:+{Number,String},label:String):radiobox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):radiobox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):radiobox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object):radiobox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number):radiobox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number,style:+{Number,String}):radiobox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number,style:+{Number,String},validator:validator):radiobox
 radiobox_construct							(parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number,style:+{Number,String},validator:validator,name:String):radiobox
-radiobox_destruct							(radiobox:radiobox)
 radiobox_create								(radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String):Bool (radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object):Bool (radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number):Bool (radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number,style:+{Number,String}):Bool (radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number,style:+{Number,String},validator:validator):Bool
 radiobox_create								(radiobox:radiobox,paren:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},choices:Object,majorDim:Number,style:+{Number,String},validator:validator,name:String):Bool
 radiobox_enable								(radiobox:radiobox):Bool (radiobox:radiobox,enable:Bool):Bool (radiobox:radiobox,num:Number):Bool (radiobox:radiobox,num:Number,enable:Bool):Bool
@@ -6361,13 +6241,11 @@ radiobox_setstringselection					(radiobox:radiobox,selection:Number)
 radiobox_setitemtooltip						(radiobox:radiobox,item:Number,text:String)
 radiobox_show								(radiobox:radiobox):Bool (radiobox:radiobox,show:Bool):Bool (radiobox:radiobox,num:Number):Bool (radiobox:radiobox,num:Number,show:Bool):Bool
 radiobutton_construct						():radiobutton (parent:+{window,Nil},id:+{Number,String},label:String):radiobutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):radiobutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):radiobutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):radiobutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):radiobutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):radiobutton
-radiobutton_destruct						(radiobutton:radiobutton)
 radiobutton_create							(radiobutton:radiobutton,parent:+{window,Nil},id:+{Number,String},label:String):Bool (radiobutton:radiobutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (radiobutton:radiobutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (radiobutton:radiobutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (radiobutton:radiobutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (radiobutton:radiobutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 radiobutton_getvalue						(radiobutton:radiobutton) : Bool
 radiobutton_setvalue						(radiobutton:radiobutton,value:Bool)
 #group(wxrect)
 rect_construct								():rect (size:+{size,String}):rect (x:Number,y:Number,width:Number,height:Number):rect (pt:point,point2:point):rect (pt:point,size:+{size,String}):rect
-rect_destruct								(rect:rect)
 rect_centrein								(rect:rect,other:rect):rect (rect:rect,other:rect,dir:+{Number,String}):rect
 rect_contains								(rect:rect,x:Number,y:Number):Bool (rect:rect,pt:+{point,String}):Bool (rect:rect,other:rect):Bool
 rect_deflate								(rect:rect,x:Number,y:Number):rect (rect:rect,diff:Number):rect (rect:rect,diff:+{size,String}):rect
@@ -6400,7 +6278,6 @@ rect_equal									(rect:rect,other:rect) : Bool
 rect_notequal								(rect:rect,other:rect) : Bool
 #group(wxreg)
 region_construct							():region (x:Number,y:Number,width:Number,height:Number):region (rect:rect):region (b:bitmap):region (size:Number,points:Object):region (size:Number,points:Object,fillStyle:+{Number,String}):region (topLeft:point,bottomRight:point):region (b:bitmap,transColour,colour):region (b:bitmap,transColour,tolerance:Number):region
-region_destruct								(region:region)
 region_clear								(region:region)
 region_contains								(region:region,pt:point):Number (region:region,rect:rect):Number (region:region,x:Number,y:Number):Number (region:region,x:Number,y:Number,width:Number,height:Number):Number
 region_converttobitmap						(region:region) : bitmap
@@ -6415,7 +6292,6 @@ region_xor									(region:region,x:Number,y:Number,width:Number,height:Number):
 region_notequal								(region:region,other:region) : Bool
 #group(wxscroll)
 scrollbar_construct							():scrollbar (parent:+{window,Nil},id:+{Number,String}):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):scrollbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):scrollbar
-scrollbar_destruct							(scrollbar:scrollbar)
 scrollbar_create							(scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String}):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (scrollbar:scrollbar,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 scrollbar_getrange							(scrollbar:scrollbar) : Number
 scrollbar_getpagesize						(scrollbar:scrollbar) : Number
@@ -6427,7 +6303,6 @@ scrollbar_setscrollbar						(scrollbar:scrollbar,position:Number,thumbSize:Numbe
 scrollbar_setthumbposition					(scrollbar:scrollbar,viewStart:Number)
 scrollbar_setthumbsize						(scrollbar:scrollbar,thumbSize:Number)
 scrolledwindow_construct					():scrolledwindow (parent:+{window,Nil}):scrolledwindow (parent:+{window,Nil},id:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):scrolledwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):scrolledwindow
-scrolledwindow_destruct						(scrolledwindow:scrolledwindow)
 scrolledwindow_calcscrolledposition			(scrolledwindow:scrolledwindow,pt:+{point,String}):point (scrolledwindow:scrolledwindow,x:Number,y:Number):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void
 scrolledwindow_calcunscrolledposition		(scrolledwindow:scrolledwindow,pt:+{point,String}):point (scrolledwindow:scrolledwindow,x:Number,y:Number):point (scrolledwindow:scrolledwindow,x:Number,y:Number,xx:Object,yy:Object):Void
 scrolledwindow_create						(scrolledwindow:scrolledwindow,parent:+{window,Nil}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (scrolledwindow:scrolledwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
@@ -6442,16 +6317,13 @@ scrolledwindow_setscrollbars				(scrolledwindow:scrolledwindow,pixelsPerUnitX:Nu
 scrolledwindow_setscrollrate				(scrolledwindow:scrolledwindow,xStep:Number,yStep:Number)
 scrolledwindow_settargetwindow				(scrolledwindow:scrolledwindow,window:+{window,Nil})
 scrollevent_construct						():scrollevent (commandType:+{Number,String}):scrollevent (commandType:+{Number,String},id:+{Number,String}):scrollevent (commandType:+{Number,String},id:+{Number,String},position:Number):scrollevent (commandType:+{Number,String},id:+{Number,String},position:Number,orientation:+{Number,String}):scrollevent
-scrollevent_destruct						(scrollevent:scrollevent)
 scrollevent_getorientation					(scrollevent:scrollevent) : Number
 scrollevent_getposition						(scrollevent:scrollevent) : Number
 scrollwinevent_construct					():scrollwinevent (commandType:+{Number,String}):scrollwinevent (commandType:+{Number,String},position:Number):scrollwinevent (commandType:+{Number,String},position:Number,orientation:+{Number,String}):scrollwinevent
-scrollwinevent_destruct						(scrollwinevent:scrollwinevent)
 scrollwinevent_getorientation				(scrollwinevent:scrollwinevent) : Number
 scrollwinevent_getposition					(scrollwinevent:scrollwinevent) : Number
 #group(wxcontrol)
 searchctrl_construct						():searchctrl (parent:+{window,Nil},id:+{Number,String}):searchctrl (parent:+{window,Nil},id:+{Number,String},value:String):searchctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String}):searchctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String}):searchctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):searchctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):searchctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):searchctrl
-searchctrl_destruct							(searchctrl:searchctrl)
 searchctrl_setmenu							(searchctrl:searchctrl,menu:+{menu,Nil})
 searchctrl_getmenu							(searchctrl:searchctrl) : menu
 searchctrl_showsearchbutton					(searchctrl:searchctrl,show:Bool)
@@ -6460,19 +6332,16 @@ searchctrl_showcancelbutton					(searchctrl:searchctrl,show:Bool)
 searchctrl_iscancelbuttonvisible			(searchctrl:searchctrl) : Bool
 #group(wxevent)
 setcursorevent_construct					():setcursorevent (x:Number):setcursorevent (x:Number,y:Number):setcursorevent
-setcursorevent_destruct						(setcursorevent:setcursorevent)
 setcursorevent_getcursor					(setcursorevent:setcursorevent) : cursor
 setcursorevent_getx							(setcursorevent:setcursorevent) : Number
 setcursorevent_gety							(setcursorevent:setcursorevent) : Number
 setcursorevent_hascursor					(setcursorevent:setcursorevent) : Bool
 setcursorevent_setcursor					(setcursorevent:setcursorevent,cursor:cursor)
 showevent_construct							():showevent (id:+{Number,String}):showevent (id:+{Number,String},show:Bool):showevent
-showevent_destruct							(showevent:showevent)
 showevent_getshow							(showevent:showevent) : Bool
 showevent_setshow							(showevent:showevent,show:Bool)
 #group(wxdialog)
 singlechoicedialog_construct				():singlechoicedialog (parent:+{window,Nil},msg:String,caption:String,choices:Object):singlechoicedialog (parent:+{window,Nil},msg:String,caption:String,choices:Object,clientData:Object):singlechoicedialog (parent:+{window,Nil},msg:String,caption:String,choices:Object,clientData:Object,style:+{Number,String}):singlechoicedialog (parent:+{window,Nil},msg:String,caption:String,choices:Object,clientData:Object,style:+{Number,String},pos:+{point,String}):singlechoicedialog
-singlechoicedialog_destruct					(singlechoicedialog:singlechoicedialog)
 singlechoicedialog_getselection				(singlechoicedialog:singlechoicedialog) : Number
 singlechoicedialog_getselectionclientdata	(singlechoicedialog:singlechoicedialog) : String
 singlechoicedialog_getstringselection		(singlechoicedialog:singlechoicedialog) : String
@@ -6480,7 +6349,6 @@ singlechoicedialog_setselection				(singlechoicedialog:singlechoicedialog,select
 singlechoicedialog_showmodal				(singlechoicedialog:singlechoicedialog) : Number
 #group(wxsizer)
 size_construct								():size (width:+{Number,String},height:+{Number,String}):size (define:String):size
-size_destruct								(size:size)
 size_decby									(size:size,other:+{size,String}) (size:size,d:Number) (size:size,dx:Number,dy:Number)
 size_decto									(size:size,other:+{size,String})
 size_isfullyspecified						(size:size) : Bool
@@ -6502,7 +6370,6 @@ size_divide									(size:size,factor:Number) : size
 size_multiply								(size:size,factor:Number) : size
 #group(wxevent)
 sizeevent_construct							():sizeevent (size:size):sizeevent (size:size,id:+{Number,String}):sizeevent (rect:rect):sizeevent (rect:rect,id:+{Number,String}):sizeevent
-sizeevent_destruct							(sizeevent:sizeevent)
 sizeevent_getsize							(sizeevent:sizeevent) : size
 sizeevent_getrect							(sizeevent:sizeevent) : rect
 sizeevent_setrect							(sizeevent:sizeevent,rect:rect)
@@ -6545,7 +6412,6 @@ sizer_setvirtualsizehints					(sizer:sizer,window:+{window,Nil})
 sizer_show									(sizer:sizer,window:+{window,Nil}):Bool (sizer:sizer,window:+{window,Nil},show:Bool):Bool (sizer:sizer,window:+{window,Nil},show:Bool,recursive:Bool):Bool (sizer:sizer,other:sizer):Bool (sizer:sizer,other:sizer,show:Bool):Bool (sizer:sizer,other:sizer,show:Bool,recursive:Bool):Bool (sizer:sizer,index:Number):Bool (sizer:sizer,index:Number,show:Bool):Bool
 sizerflags_construct						():sizerflags (proportion:Number):sizerflags
 sizerflags_getdefaultborder					() : Number
-sizerflags_destruct							(sizerflags:sizerflags)
 sizerflags_align							(sizerflags:sizerflags,align:+{Number,String}) : sizerflags
 sizerflags_border							(sizerflags:sizerflags):sizerflags (sizerflags:sizerflags,direction:+{Number,String}):sizerflags (sizerflags:sizerflags,direction:+{Number,String},borderInPixels:Number):sizerflags
 sizerflags_center							(sizerflags:sizerflags) : sizerflags
@@ -6592,7 +6458,6 @@ sizeritem_setwindow							(sizeritem:sizeritem,window:+{window,Nil})
 sizeritem_show								(sizeritem:sizeritem,show:Bool)
 #group(wxslider)
 slider_construct							():slider (parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number):slider (parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String}):slider (parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String}):slider (parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String},style:+{Number,String}):slider (parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):slider (parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):slider
-slider_destruct								(slider:slider)
 slider_clearsel								(slider:slider)
 slider_clearticks							(slider:slider)
 slider_create								(slider:slider,parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number):Bool (slider:slider,parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String}):Bool (slider:slider,parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String}):Bool (slider:slider,parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (slider:slider,parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (slider:slider,parent:+{window,Nil},id:+{Number,String},value:Number,minValue:Number,maxValue:Number,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
@@ -6615,7 +6480,6 @@ slider_settickfreq							(slider:slider,num:Number,pos:Number)
 slider_setvalue								(slider:slider,value:Number)
 #group(wxspin)
 spinbutton_construct						():spinbutton (parent:+{window,Nil}):spinbutton (parent:+{window,Nil},id:+{Number,String}):spinbutton (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):spinbutton (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):spinbutton (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):spinbutton (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):spinbutton
-spinbutton_destruct							(spinbutton:spinbutton)
 spinbutton_create							(spinbutton:spinbutton,parent:+{window,Nil}):Bool (spinbutton:spinbutton,parent:+{window,Nil},id:+{Number,String}):Bool (spinbutton:spinbutton,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (spinbutton:spinbutton,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (spinbutton:spinbutton,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (spinbutton:spinbutton,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 spinbutton_getmax							(spinbutton:spinbutton) : Number
 spinbutton_getmin							(spinbutton:spinbutton) : Number
@@ -6624,7 +6488,6 @@ spinbutton_setrange							(spinbutton:spinbutton,min:Number,max:Number)
 spinbutton_setvalue							(spinbutton:spinbutton,value:Number)
 spinctrl_construct							():spinctrl (parent:+{window,Nil}):spinctrl (parent:+{window,Nil},id:+{Number,String}):spinctrl (parent:+{window,Nil},id:+{Number,String},value:String):spinctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String}):spinctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String}):spinctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):spinctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number):spinctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number,max:Number):spinctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number,max:Number,initial:Number):spinctrl
 spinctrl_construct							(parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number,max:Number,initial:Number,name:String):spinctrl
-spinctrl_destruct							(spinctrl:spinctrl)
 spinctrl_create								(ctrl:spinctrl,parent:+{window,Nil}):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String}):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String}):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String}):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number,max:Number):Bool
 spinctrl_create								(ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number,max:Number,initial:Number):Bool (ctrl:spinctrl,parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},min:Number,max:Number,initial:Number,name:String):Bool
 spinctrl_setvalue							(spinctrl:spinctrl,text:String) (spinctrl:spinctrl,value:Number)
@@ -6634,12 +6497,10 @@ spinctrl_setselection						(spinctrl:spinctrl,from:Number,to:Number)
 spinctrl_getmin								(spinctrl:spinctrl) : Number
 spinctrl_getmax								(spinctrl:spinctrl) : Number
 spinevent_construct							():spinevent (commandType:+{Number,String}):spinevent (commandType:+{Number,String},id:+{Number,String}):spinevent
-spinevent_destruct							(spinevent:spinevent)
 spinevent_getposition						(spinevent:spinevent) : Number
 spinevent_setposition						(spinevent:spinevent,position:Number)
 #group(wxsplash)
 splashscreen_construct						(b:bitmap,splashStyle:+{Number,String},milliseconds:Number,parent:+{window,Nil},id:+{Number,String}):splashscreen (b:bitmap,splashStyle:+{Number,String},milliseconds:Number,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):splashscreen (b:bitmap,splashStyle:+{Number,String},milliseconds:Number,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):splashscreen (b:bitmap,splashStyle:+{Number,String},milliseconds:Number,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):splashscreen
-splashscreen_destruct						(splashscreen:splashscreen)
 splashscreen_onclosewindow					(splashscreen:splashscreen,closeevent:closeevent)
 splashscreen_getbitmap						(splashscreen:splashscreen) : bitmap
 splashscreen_getsplashstyle					(splashscreen:splashscreen) : Number
@@ -6647,14 +6508,12 @@ splashscreen_gettimeout						(splashscreen:splashscreen) : Number
 splashscreen_setbitmap						(splashscreen:splashscreen,b:bitmap)
 #group(wxsplitter)
 splitterevent_construct						():splitterevent (type:+{Number,String}):splitterevent (type:+{Number,String},splitterwindow:+{splitterwindow,Nil}):splitterevent
-splitterevent_destruct						(splitterevent:splitterevent)
 splitterevent_getsashposition				(splitterevent:splitterevent) : Number
 splitterevent_getx							(splitterevent:splitterevent) : Number
 splitterevent_gety							(splitterevent:splitterevent) : Number
 splitterevent_getwindowbeingremoved			(splitterevent:splitterevent) : window
 splitterevent_setsashposition				(splitterevent:splitterevent,position:Number)
 splitterwindow_construct					():splitterwindow (parent:+{window,Nil}):splitterwindow (parent:+{window,Nil},id:+{Number,String}):splitterwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):splitterwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):splitterwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):splitterwindow (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):splitterwindow
-splitterwindow_destruct						(splitterwindow:splitterwindow)
 splitterwindow_create						(splitterwindow:splitterwindow,parent:+{window,Nil}):Bool (splitterwindow:splitterwindow,parent:+{window,Nil},id:+{Number,String}):Bool (splitterwindow:splitterwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (splitterwindow:splitterwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (splitterwindow:splitterwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (splitterwindow:splitterwindow,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 splitterwindow_getminimumpanesize			(splitterwindow:splitterwindow) : Number
 splitterwindow_getsashgravity				(splitterwindow:splitterwindow) : Number
@@ -6679,33 +6538,28 @@ splitterwindow_unsplit						(splitterwindow:splitterwindow):Bool (splitterwindow
 splitterwindow_updatesize					(splitterwindow:splitterwindow)
 #group(wxbox)
 staticbitmap_construct						():staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String}):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String}):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String}):staticbitmap (parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):staticbitmap
-staticbitmap_destruct						(bitmap:staticbitmap)
 staticbitmap_create							(bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String}):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String}):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (bitmap:staticbitmap,parent:+{window,Nil},id:+{Number,String},label:bitmap,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 staticbitmap_getbitmap						(bitmap:staticbitmap) : bitmap
 staticbitmap_geticon						(bitmap:staticbitmap) : icon
 staticbitmap_setbitmap						(bitmap:staticbitmap,bmp:bitmap)
 staticbitmap_seticon						(bitmap:staticbitmap,icon:icon)
 staticbox_construct							():staticbox (parent:+{window,Nil},id:+{Number,String},label:String):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):staticbox (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):staticbox
-staticbox_destruct							(staticbox:staticbox)
 staticbox_create							(staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (staticbox:staticbox,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 staticboxsizer_construct					(staticbox:+{staticbox,Nil},orientation:+{Number,String}):staticboxsizer (orientation:+{Number,String},parent:+{window,Nil}):staticboxsizer (orientation:+{Number,String},parent:+{window,Nil},label:String):staticboxsizer
 staticboxsizer_destruct						(staticboxsizer:staticboxsizer)
 staticboxsizer_getstaticbox					(staticboxsizer:staticboxsizer) : staticbox
 staticline_construct						():staticline (parent:+{window,Nil}):staticline (parent:+{window,Nil},id:+{Number,String}):staticline (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):staticline (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):staticline (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):staticline (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):staticline
-staticline_destruct							(staticline:staticline)
 staticline_create							(staticline:staticline,parent:+{window,Nil}):Bool (staticline:staticline,parent:+{window,Nil},id:+{Number,String}):Bool (staticline:staticline,parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):Bool (staticline:staticline,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):Bool (staticline:staticline,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (staticline:staticline,parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 staticline_isvertical						(staticline:staticline) : Bool
 staticline_getdefaultsize					(staticline:staticline) : Number
 #group(wxtext)
 statictext_construct						():statictext (parent:+{window,Nil},id:+{Number,String},label:String):statictext (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):statictext (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):statictext (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):statictext (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):statictext
-statictext_destruct							(statictext:statictext)
 statictext_create							(statictext:statictext,parent:+{window,Nil},id:+{Number,String},label:String):Bool (statictext:statictext,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (statictext:statictext,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (statictext:statictext,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (statictext:statictext,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):Bool
 statictext_getlabel							(statictext:statictext) : String
 statictext_setlabel							(statictext:statictext,label:String)
 statictext_wrap								(statictext:statictext,width:Number)
 #group(wxstatus)
 statusbar_construct							():statusbar (parent:+{window,Nil}):statusbar (parent:+{window,Nil},id:+{Number,String}):statusbar (parent:+{window,Nil},id:+{Number,String},style:+{Number,String}):statusbar (parent:+{window,Nil},id:+{Number,String},style:+{Number,String},name:String):statusbar
-statusbar_destruct							(statusbar:statusbar)
 statusbar_create							(statusbar:statusbar,parent:+{window,Nil}):Bool (statusbar:statusbar,parent:+{window,Nil},id:+{Number,String}):Bool (statusbar:statusbar,parent:+{window,Nil},id:+{Number,String},style:+{Number,String}):Bool (statusbar:statusbar,parent:+{window,Nil},id:+{Number,String},style:+{Number,String},name:String):Bool
 statusbar_getfieldrect						(statusbar:statusbar,i:Number,rect:rect) : Bool
 statusbar_getfieldscount					(statusbar:statusbar) : Number
@@ -6732,10 +6586,8 @@ stddialogbuttonsizer_setcancelbutton		(stddialogbuttonsizer:stddialogbuttonsizer
 stddialogbuttonsizer_setnegativebutton		(stddialogbuttonsizer:stddialogbuttonsizer,button:+{button,Nil})
 #group(wxevent)
 syscolourchangedevent_construct				() : syscolourchangedevent
-syscolourchangedevent_destruct				(syscolourchangedevent:syscolourchangedevent)
 #group(wxtext)
 textattr_construct							() (colourText:colour) (colourText:colour,colourBack:colour) (colourText:colour,colourBack:colour,font:font) (colourText:colour,colourBack:colour,font:font,alignment:+{Number,String}) : textattr
-textattr_destruct							(textattr:textattr)
 textattr_getalignment						(textattr:textattr) : Number
 textattr_getbackgroundcolour				(textattr:textattr) : colour
 textattr_getfont							(textattr:textattr) : font
@@ -6763,7 +6615,6 @@ textattr_setrightindent						(textattr:textattr,indent:Number)
 textattr_settabs							(textattr:textattr,tabs:Object)
 textattr_settextcolour						(textattr:textattr,colour:colour)
 textctrl_construct							():textctrl (parent:+{window,Nil},id:+{Number,String}):textctrl (parent:+{window,Nil},id:+{Number,String},value:String):textctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String}):textctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String}):textctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):textctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):textctrl (parent:+{window,Nil},id:+{Number,String},value:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):textctrl
-textctrl_destruct							(textctrl:textctrl)
 textctrl_appendtext							(textctrl:textctrl,text:String)
 textctrl_cancopy							(textctrl:textctrl) : Bool
 textctrl_cancut								(textctrl:textctrl) : Bool
@@ -6817,7 +6668,6 @@ textctrl_undo								(textctrl:textctrl)
 textctrl_writetext							(textctrl:textctrl,text:String)
 textctrl_xytoposition						(textctrl:textctrl,x:Number,y:Number) : Number
 textentrydialog_construct					(parent:+{window,Nil},msg:String):textentrydialog (parent:+{window,Nil},msg:String,caption:String):textentrydialog (parent:+{window,Nil},msg:String,caption:String,value:String):textentrydialog (parent:+{window,Nil},msg:String,caption:String,value:String,style:+{Number,String}):textentrydialog
-textentrydialog_destruct					(textentrydialog:textentrydialog)
 textentrydialog_getvalue					(textentrydialog:textentrydialog) : String
 textentrydialog_setvalue					(textentrydialog:textentrydialog,value:String)
 textentrydialog_showmodal					(textentrydialog:textentrydialog) : Number
@@ -6846,7 +6696,6 @@ timer_setowner								(timer:timer,owner:evthandler) (timer:timer,owner:evthandl
 timer_start									(timer:timer):Bool (timer:timer,milliseconds:Number):Bool (timer:timer,milliseconds:Number,oneShot:Bool):Bool
 timer_stop									(timer:timer)
 timerevent_construct						():timerevent (timerid:+{Number,String}):timerevent (timerid:+{Number,String},interval:Number):timerevent
-timerevent_destruct							(timerevent:timerevent)
 timerevent_getinterval						(timerevent:timerevent) : Number
 timespan_construct							():timespan (hours:Number):timespan (hours:Number,minutes:Number):timespan (hours:Number,minutes:Number,seconds:Number):timespan (hours:Number,minutes:Number,seconds:Number,milliseconds:Number):timespan
 timespan_days								(days:Number) : timespan
@@ -6861,7 +6710,6 @@ timespan_seconds							(seconds:Number) : timespan
 timespan_second								() : timespan
 timespan_weeks								(weeks:Number) : timespan
 timespan_week								() : timespan
-timespan_destruct							(timespan:timespan)
 timespan_abs								(timespan:timespan) : timespan
 timespan_add								(timespan:timespan,other:timespan) : timespan
 timespan_format								(timespan:timespan):String (timespan:timespan,format:String):String
@@ -6890,13 +6738,11 @@ timespan_greaterequalthan					(timespan:timespan,other:timespan) : Bool
 timespan_greaterthan						(timespan:timespan,other:timespan) : Bool
 #group(wxtoggle)
 togglebutton_construct						():togglebutton (parent:+{window,Nil},id:+{Number,String},label:String):togglebutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):togglebutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):togglebutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):togglebutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):togglebutton (parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):togglebutton
-togglebutton_destruct						(togglebutton:togglebutton)
 togglebutton_create							(togglebutton:togglebutton,parent:+{window,Nil},id:+{Number,String},label:String):Bool (togglebutton:togglebutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String}):Bool (togglebutton:togglebutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String}):Bool (togglebutton:togglebutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String}):Bool (togglebutton:togglebutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):Bool (togglebutton:togglebutton,parent:+{window,Nil},id:+{Number,String},label:String,pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):Bool
 togglebutton_getvalue						(togglebutton:togglebutton) : Bool
 togglebutton_setvalue						(togglebutton:togglebutton,state:Bool)
 #group(wxtool)
 toolbar_construct							():toolbar (parent:+{window,Nil},id:+{Number,String}):toolbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):toolbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):toolbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):toolbar (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):toolbar
-toolbar_destruct							(toolbar:toolbar)
 toolbar_addcontrol							(toolbar:toolbar,control:+{control,Nil}) : toolbartoolbase
 toolbar_addseparator						(toolbar:toolbar) : toolbartoolbase
 toolbar_addtool								(toolbar:toolbar,toolbartoolbase:+{toolbartoolbase,Nil}):toolbartoolbase (toolbar:toolbar,toolid:+{Number,String},label:String,b:bitmap):toolbartoolbase (toolbar:toolbar,toolid:+{Number,String},label:String,b:bitmap,shortHelp:String):toolbartoolbase (toolbar:toolbar,toolid:+{Number,String},label:String,b:bitmap,shortHelp:String,kind:+{Number,String}):toolbartoolbase (toolbar:toolbar,toolid:+{Number,String},label:String,b:bitmap,bitmapDisabled:bitmap):toolbartoolbase (toolbar:toolbar,toolid:+{Number,String},label:String,b:bitmap,bitmapDisabled:bitmap,kind:+{Number,String}):toolbartoolbase (toolbar:toolbar,toolid:+{Number,String},label:String,b:bitmap,bitmapDisabled:bitmap,kind:+{Number,String},shortHelp:String):toolbartoolbase (toolbar:toolbar,toolid:+{Number,String},label:String,b:bitmap,bitmapDisabled:bitmap,kind:+{Number,String},shortHelp:String,longHelp:String):toolbartoolbase
@@ -6964,7 +6810,6 @@ toolbartoolbase_setshorthelp				(toolbartoolbase:toolbartoolbase,help:String) : 
 toolbartoolbase_settoggle					(toolbartoolbase:toolbartoolbase,toggle:Bool) : Bool
 toolbartoolbase_toggle						(toolbartoolbase:toolbartoolbase):Void (toolbartoolbase:toolbartoolbase,toggle:Bool):Bool
 toolbook_construct							():toolbook (parent:window,id:+{Number,String}):toolbook (parent:window,id:+{Number,String},pos:+{point,String}):toolbook (parent:window,id:+{Number,String},pos:+{point,String},size:+{size,String}):toolbook (parent:window,id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):toolbook (parent:window,id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):toolbook
-toolbook_destruct							(toolbook:toolbook)
 toolbook_addpage							(toolbook:toolbook,page:window,text:String):Bool (toolbook:toolbook,page:window,text:String,select:Bool):Bool (toolbook:toolbook,page:window,text:String,select:Bool,imageId:+{Number,String}):Bool
 toolbook_advanceselection					(toolbook:toolbook) (toolbook:toolbook,forward:Bool)
 toolbook_assignimagelist					(toolbook:toolbook,imagelist:imagelist)
@@ -6990,7 +6835,6 @@ toolbook_setpageimage						(toolbook:toolbook,page:Number,image:Number) : Bool
 toolbook_setpagetext						(toolbook:toolbook,page:Number,text:String) : Bool
 toolbook_setselection						(toolbook:toolbook,selection:Number) : Number
 toolbookevent_construct						():toolbookevent (commandType:+{Number,String}):toolbookevent (commandType:+{Number,String},id:+{Number,String}):toolbookevent (commandType:+{Number,String},id:+{Number,String},selection:Number):toolbookevent (commandType:+{Number,String},id:+{Number,String},selection:Number,oldSelection:Number):toolbookevent
-toolbookevent_destruct						(toolbookevent:toolbookevent)
 toolbookevent_getoldselection				(toolbookevent:toolbookevent) : Number
 toolbookevent_getselection					(toolbookevent:toolbookevent) : Number
 toolbookevent_setoldselection				(toolbookevent:toolbookevent,selection:Number)
@@ -7003,7 +6847,6 @@ tooltip_settip								(tooltip:tooltip,tip:String)
 tooltip_gettip								(tooltip:tooltip) : String
 tooltip_getwindow							(tooltip:tooltip) : window
 #group(wxtop)
-toplevelwindow_destruct						(toplevelwindow:toplevelwindow)
 toplevelwindow_cansettransparent			(toplevelwindow:toplevelwindow) : Bool
 toplevelwindow_enableclosebutton			(toplevelwindow:toplevelwindow):Bool (toplevelwindow:toplevelwindow,enable:Bool):Bool
 toplevelwindow_getdefaultitem				(toplevelwindow:toplevelwindow) : window
@@ -7030,7 +6873,6 @@ toplevelwindow_shouldpreventappexit			(toplevelwindow:toplevelwindow) : Bool
 toplevelwindow_showfullscreen				(toplevelwindow:toplevelwindow,show:Bool):Bool (toplevelwindow:toplevelwindow,show:Bool,style:+{Number,String}):Bool
 #group(wxtree)
 treebook_construct							():treebook (parent:+{window,Nil},id:+{Number,String}):treebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):treebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):treebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):treebook (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},name:String):treebook
-treebook_destruct							(treebook:treebook)
 treebook_addpage							(treebook:treebook,page:+{window,Nil},text:String):Bool (treebook:treebook,page:+{window,Nil},text:String,select:Bool):Bool (treebook:treebook,page:+{window,Nil},text:String,select:Bool,imageId:+{Number,String}):Bool
 treebook_addsubpage							(treebook:treebook,page:+{window,Nil},text:String):Bool (treebook:treebook,page:+{window,Nil},text:String,select:Bool):Bool (treebook:treebook,page:+{window,Nil},text:String,select:Bool,imageId:+{Number,String}):Bool
 treebook_assignimagelist					(treebook:treebook,imagelest:+{imagelist,Nil})
@@ -7052,13 +6894,11 @@ treebook_setpageimage						(treebook:treebook,page:Number,image:Number) : Bool
 treebook_setpagetext						(treebook:treebook,page:Number,text:String) : Bool
 treebook_setselection						(treebook:treebook,page:Number) : Number
 treebookevent_construct						():treebookevent (commandType:+{Number,String}):treebookevent (commandType:+{Number,String},id:+{Number,String}):treebookevent (commandType:+{Number,String},id:+{Number,String},selection:Number):treebookevent (commandType:+{Number,String},id:+{Number,String},selection:Number,oldSelection:Number):treebookevent
-treebookevent_destruct						(treebookevent:treebookevent)
 treebookevent_getoldselection				(treebookevent:treebookevent) : Number
 treebookevent_getselection					(treebookevent:treebookevent) : Number
 treebookevent_setoldselection				(treebookevent:treebookevent,oldSelection:Number)
 treebookevent_setselection					(treebookevent:treebookevent,selection:Number)
 treectrl_construct							():treectrl (parent:+{window,Nil}):treectrl (parent:+{window,Nil},id:+{Number,String}):treectrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String}):treectrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String}):treectrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String}):treectrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator):treectrl (parent:+{window,Nil},id:+{Number,String},pos:+{point,String},size:+{size,String},style:+{Number,String},validator:validator,name:String):treectrl
-treectrl_destruct							(treectrl:treectrl)
 treectrl_addroot							(treectrl:treectrl,text:String):treeitemid (treectrl:treectrl,text:String,image:Number):treeitemid (treectrl:treectrl,text:String,image:Number,selectedImage:Number):treeitemid (treectrl:treectrl,text:String,image:Number,selectedImage:Number,treeitemdata:+{treeitemdata,Nil}):treeitemid
 treectrl_appenditem							(treectrl:treectrl,parent:treeitemid,text:String):treeitemid (treectrl:treectrl,parent:treeitemid,text:String,image:Number):treeitemid (treectrl:treectrl,parent:treeitemid,text:String,image:Number,selectedImage:Number):treeitemid (treectrl:treectrl,parent:treeitemid,text:String,image:Number,selectedImage:Number,treeitemdata:+{treeitemdata,Nil}):treeitemid
 treectrl_assignimagelist					(treectrl:treectrl,imagelist:+{imagelist,Nil})
@@ -7135,7 +6975,6 @@ treectrl_unselect							(treectrl:treectrl)
 treectrl_unselectall						(treectrl:treectrl)
 treectrl_unselectitem						(treectrl:treectrl,treeitemid:treeitemid)
 treeevent_construct							():treeevent (commandType:+{Number,String}):treeevent (commandType:+{Number,String},treectrl:+{treectrl,Nil}):treeevent (commandType:+{Number,String},treectrl:treectrl,treeitemid:treeitemid):treeevent (commandType:+{Number,String},id:+{Number,String}):treeevent
-treeevent_destruct							(treeevent:treeevent)
 treeevent_getkeycode						(treeevent:treeevent) : Number
 treeevent_getitem							(treeevent:treeevent) : treeitemid
 treeevent_getkeyevent						(treeevent:treeevent) : keyevent
@@ -7145,11 +6984,9 @@ treeevent_getpoint							(treeevent:treeevent) : point
 treeevent_iseditcancelled					(treeevent:treeevent) : Bool
 treeevent_settooltip						(treeevent:treeevent,tooltip:String)
 treeitemdata_construct						() : treeitemdata
-treeitemdata_destruct						(treeitemdata:treeitemdata)
 treeitemdata_getid							(treeitemdata:treeitemdata) : treeitemid
 treeitemdata_setid							(treeitemdata:treeitemdata,treeitemid:treeitemid)
 treeitemid_construct						() : treeitemid
-treeitemid_destruct							(treeitemid:treeitemid)
 treeitemid_isok								(treeitemid:treeitemid) : Bool
 treeitemid_equal							(treeitemid:treeitemid,other:treeitemid) : Bool
 treeitemid_notequal							(treeitemid:treeitemid,other:treeitemid) : Bool
@@ -7161,7 +6998,6 @@ updateuievent_getupdateinterval				() : Number
 updateuievent_resetupdatetime				()
 updateuievent_setmode						(mode:+{Number,String})
 updateuievent_setupdateinterval				(interval:Number)
-updateuievent_destruct						(updateuievent:updateuievent)
 updateuievent_check							(updateuievent:updateuievent,check:Bool)
 updateuievent_enable						(updateuievent:updateuievent,enable:Bool)
 updateuievent_show							(updateuievent:updateuievent,show:Bool)
@@ -7184,7 +7020,6 @@ validator_getwindow							(validator:validator) : window
 validator_setwindow							(validator:validator,window:+{window,Nil})
 #group(wxmisc)
 visualattributes_construct					():visualattributes (font:font,colourFg:colour,colourBg:colour):visualattributes
-visualattributes_destruct					(visualattributes:visualattributes)
 visualattributes_getcolbg					(visualattributes:visualattributes) : colour
 visualattributes_getcolfg					(visualattributes:visualattributes) : colour
 visualattributes_getfont					(visualattributes:visualattributes) : font
@@ -7199,7 +7034,6 @@ window_findwindowbylabel					(label:String):window (label:String,parent:+{window
 window_findwindowbyname						(name:String):window (name:String,parent:+{window,Nil}):window
 window_getcapture							() : window
 window_getclassdefaultattributes			():visualattributes (variant:+{Number,String}):visualattributes
-window_destruct								(window:window)
 window_addchild								(window:window,child:+{window,Nil})
 window_cachebestsize						(window:window,size:+{size,String})
 window_capturemouse							(window:window)
@@ -7362,16 +7196,12 @@ window_updatewindowui						(window:window) (window:window,flags:+{Number,String}
 window_validate								(window:window) : Bool
 window_warppointer							(window:window,x:Number,y:Number)
 windowcreateevent_construct					():windowcreateevent (window:window):windowcreateevent
-windowcreateevent_destruct					(windowcreateevent:windowcreateevent)
 windowcreateevent_getwindow					(windowcreateevent:windowcreateevent) : window
 windowdc_construct							():windowdc (window:+{window,Nil}):windowdc
-windowdc_destruct							(windowdc:windowdc)
 windowdestroyevent_construct				():windowdestroyevent (window:window):windowdestroyevent
-windowdestroyevent_destruct					(windowdestroyevent:windowdestroyevent)
 windowdestroyevent_getwindow				(windowdestroyevent:windowdestroyevent) : window
 #group(wxwiz)
 wizard_construct							():wizard (parent:+{window,Nil}):wizard (parent:+{window,Nil},id:+{Number,String}):wizard (parent:+{window,Nil},id:+{Number,String},title:String):wizard (parent:+{window,Nil},id:+{Number,String},title:String,b:bitmap):wizard (parent:+{window,Nil},id:+{Number,String},title:String,b:bitmap,pos:+{point,String}):wizard (parent:+{window,Nil},id:+{Number,String},title:String,b:bitmap,pos:+{point,String},style:+{Number,String}):wizard
-wizard_destruct								(wizard:wizard)
 wizard_create								(wizard:wizard,parent:+{window,Nil}):Bool (wizard:wizard,parent:+{window,Nil},id:+{Number,String}):Bool (wizard:wizard,parent:+{window,Nil},id:+{Number,String},title:String):Bool (wizard:wizard,parent:+{window,Nil},id:+{Number,String},title:String,b:bitmap):Bool (wizard:wizard,parent:+{window,Nil},id:+{Number,String},title:String,b:bitmap,pos:+{point,String}):Bool (wizard:wizard,parent:+{window,Nil},id:+{Number,String},title:String,b:bitmap,pos:+{point,String},style:+{Number,String}):Bool
 wizard_fittopage							(wizard:wizard,firstPage:+{wizardpage,Nil})
 wizard_getcurrentpage						(wizard:wizard) : wizardpage
@@ -7383,16 +7213,13 @@ wizard_runwizard							(wizard:wizard,firstPage:+{wizardpage,Nil}) : Bool
 wizard_setpagesize							(wizard:wizard,size:+{size,String})
 wizard_setborder							(wizard:wizard,border:Number)
 wizardevent_construct						():wizardevent (type:+{Number,String}):wizardevent (type:+{Number,String},id:+{Number,String}):wizardevent (type:+{Number,String},id:+{Number,String},direction:Bool):wizardevent (type:+{Number,String},id:+{Number,String},direction:Bool,wizardpage:+{wizardpage,Nil}):wizardevent
-wizardevent_destruct						(wizardevent:wizardevent)
 wizardevent_getdirection					(wizardevent:wizardevent) : Bool
 wizardevent_getpage							(wizardevent:wizardevent) : wizardpage
-wizardpage_destruct							(wizardpage:wizardpage)
 wizardpage_getprev							(wizardpage:wizardpage) : wizardpage
 wizardpage_getnext							(wizardpage:wizardpage) : wizardpage
 wizardpage_getbitmap						(wizardpage:wizardpage) : bitmap
 wizardpagesimple_construct					():wizardpagesimple (parent:wizard):wizardpagesimple (parent:wizard,wizardpage1:+{wizardpage,Nil}):wizardpagesimple (parent:wizard,wizardpage1:+{wizardpage,Nil},wizardpage2:+{wizardpage,Nil}):wizardpagesimple (parent:wizard,wizardpage1:+{wizardpage,Nil},wizardpage2:+{wizardpage,Nil},b:bitmap):wizardpagesimple (parent:wizard,wizardpage1:+{wizardpage,Nil},wizardpage2:+{wizardpage,Nil},b:bitmap,resource:String):wizardpagesimple
 wizardpagesimple_chain						(first:wizardpagesimple,second:wizardpagesimple)
-wizardpagesimple_destruct					(wizardpagesimple:wizardpagesimple)
 wizardpagesimple_setprev					(wizardpagesimple:wizardpagesimple,previous:+{wizardpage,Nil})
 wizardpagesimple_setnext					(wizardpagesimple:wizardpagesimple,next:+{wizardpage,Nil})
 @exit

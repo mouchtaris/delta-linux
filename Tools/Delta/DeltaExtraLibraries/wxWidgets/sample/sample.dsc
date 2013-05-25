@@ -10,7 +10,7 @@ function myFunc(frame, ev) {
 	msgdlg = messagedialog_construct(frame, "Are you sure you want to quit this exceptional program?",
 	"Quit this program", "YES_NO");
 	quit = msgdlg.showmodal();
-	msgdlg.destruct();
+	msgdlg.destroy();
 	if (quit == flags("ID_YES")) {
 		std::print("Bye bye cruel world.\n");
 		frame.close(true);
@@ -30,7 +30,7 @@ function myFunc2(frame, ev) {
 function create_dialog(frame)
 {
 	dialog = progressdialog_construct("Progress dialog example", "An informative message", 100, frame,
-	flags("PD_CAN_ABORT", "PD_AUTO_HIDE", "PD_APP_MODAL", "PD_ELAPSED_TIME", "PD_ESTIMATED_TIME",
+	flags("PD_CAN_ABORT", "PD_APP_MODAL", "PD_ELAPSED_TIME", "PD_ESTIMATED_TIME",
 		"PD_REMAINING_TIME", "PD_SMOOTH")/*0x007F*/);
 	time = std::currenttime();
 	i = 0;
@@ -46,7 +46,7 @@ function create_dialog(frame)
 		time = std::currenttime();
 	}
 	log_onlog("LOG_Status", "You must wait a little longer next time.", 0);
-	dialog.destruct();
+	dialog.destroy();
 }
 
 function create_filedialog(frame)
@@ -171,6 +171,7 @@ function change_textcolourdialog(frame, ev)
 function onCheckboxClicked(frame, ev)
 {
 	log_onlog("LOG_Status", "Checkbox clicked: " + ev.ischecked(), 0);
+	frame.settitle("test2");
 }
 
 function onScrollFunc(scrollbar, ev)
@@ -244,7 +245,7 @@ function oninitfunc() {
 	menuitem.setkind(ITEM_NORMAL);
 	menuitem.settext("&Change Background...\tAlt-C");
 	menuitem.sethelp("Change the frame background colour");
-//	menuitem.setbitmap(fileopen_bmp);
+	menuitem.setbitmap(fileopen_bmp);
 	helpMenu.append(menuitem);
 	helpMenu.append(0, "Show Modal &Dialog\tAlt-D", "Show an empty modal dialog");
 	fileMenu.append("ID_OPEN", "O&pen\tAlt-O", "Open a file dialog");
@@ -285,8 +286,10 @@ function oninitfunc() {
 	scrollbar.scrollbarPos = scrollbarPos;
 	
 //CREATE BUTTON & ADD IT TO SIZER
-	staticbitmap = staticbitmap_construct(frame, wx::ID_ANY, fileopen_bmp);
+	staticbitmap = staticbitmap_construct(frame, ID_ANY, fileopen_bmp);
 	sizer.add(staticbitmap, 0, wx::ALIGN_CENTER);
+	bitmapbutton = bitmapbutton_construct(frame, ID_ANY, fileopen_bmp);
+	sizer.add(bitmapbutton, 0, wx::ALIGN_CENTER);
 	okButton = button_construct(frame, "ID_OK", "Quit");
 	okButton.setdefault();
 	sizer.add(okButton, 0, "ALIGN_CENTER");
@@ -333,8 +336,8 @@ function oninitfunc() {
 	sizer.add(calctrl, 0, "ALIGN_CENTER");
 	
 //CREATE DATEPICKERCTRL & ADD IT TO SIZER
-	//datectrl = datepickerctrl_construct(frame, "ID_ANY");
-	//sizer.add(datectrl, 0, "ALIGN_CENTER");
+	datectrl = datepickerctrl_construct(frame, "ID_ANY");
+	sizer.add(datectrl, 0, "ALIGN_CENTER");
 	
 //CREATE GENERICDIRCTRL & ADD IT TO SIZER
 	dirctrl = genericdirctrl_construct(frame);
@@ -349,8 +352,8 @@ function oninitfunc() {
 	sizer.add(tglbtn, 0, "ALIGN_CENTER");
 
 //CREATE SPIN BUTTON BUTTON & ADD IT TO SIZER
-	//spinbtn = spinbutton_construct(frame, 17);
-	//sizer.add(spinbtn, 0, "ALIGN_CENTER");
+	spinbtn = spinbutton_construct(frame, 17);
+	sizer.add(spinbtn, 0, "ALIGN_CENTER");
 	
 //CREATE LOG WINDOW
 	logwin = logwindow_construct(frame, "My Log Window");
@@ -369,6 +372,7 @@ function oninitfunc() {
 	frame.connect(15, "EVT_COMMAND_CHECKBOX_CLICKED", onCheckboxClicked);
 	frame.connect(16, "EVT_COMMAND_MENU_SELECTED", create_treebook);
 	frame.connect(17, "EVT_SPIN_UP", spinup_evtfunction);
+
 	frame.fit();
 	frame.refresh();
 	frame.centre();
@@ -376,8 +380,6 @@ function oninitfunc() {
 
 app_oninitadd(app, oninitfunc);
 app_start(app);
-wxpoint.destruct();
-wxsize.destruct();
 
 std::dllunimportdeltalib(dll);
 

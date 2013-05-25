@@ -20,20 +20,18 @@
 #define WX_FUNC(name) WX_FUNC1(checklistbox, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(check)
 WX_FUNC_DEF(ischecked)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(check),
 	WX_FUNC(ischecked)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "ischecked")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "check", "ischecked")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(CheckListBox, "checklistbox", ListBox)
 
@@ -47,9 +45,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxListBox *_parent = DLIB_WXTYPECAST_BASE(ListBox, val, listbox);
-	DeltaWxListBox *parent = DNEWCLASS(DeltaWxListBox, (_parent));
-	WX_SETOBJECT_EX(*at, ListBox, parent)
+	WX_SET_BASECLASS_GETTER(at, ListBox, val)
 	return true;
 }
 
@@ -63,10 +59,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(CheckListBox,checklistbox)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(checklistbox_construct, 0, 8, Nil)
-	wxCheckListBox *wxlistbox = (wxCheckListBox*) 0;
-	DeltaWxCheckListBox *listbox = (DeltaWxCheckListBox*) 0;
+	wxCheckListBox *listbox = (wxCheckListBox*) 0;
 	if (n == 0) {
-		wxlistbox = new wxCheckListBox();
+		listbox = new wxCheckListBox();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -92,14 +87,9 @@ WX_FUNC_ARGRANGE_START(checklistbox_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		wxlistbox = new wxCheckListBox(parent, id, pos, size, choices, style, *validator, name);
+		listbox = new wxCheckListBox(parent, id, pos, size, choices, style, *validator, name);
 	}
-	if (wxlistbox) listbox = DNEWCLASS(DeltaWxCheckListBox, (wxlistbox));
-	WX_SETOBJECT(CheckListBox, listbox)
-}
-
-DLIB_FUNC_START(checklistbox_destruct, 1, Nil)
-	DLIB_WXDELETE(checklistbox, CheckListBox, listbox)
+	WX_SET_WINDOW_OBJECT(CheckListBox, listbox)
 }
 
 WX_FUNC_ARGRANGE_START(checklistbox_check, 2, 3, Nil)
@@ -110,7 +100,7 @@ WX_FUNC_ARGRANGE_START(checklistbox_check, 2, 3, Nil)
 	listbox->Check(item, bCheck);
 }
 
-DLIB_FUNC_START(checklistbox_ischecked, 2, Nil)
+WX_FUNC_START(checklistbox_ischecked, 2, Nil)
 	DLIB_WXGET_BASE(checklistbox, CheckListBox, listbox)
 	WX_GETNUMBER(item)
 	WX_SETBOOL(listbox->IsChecked(item))

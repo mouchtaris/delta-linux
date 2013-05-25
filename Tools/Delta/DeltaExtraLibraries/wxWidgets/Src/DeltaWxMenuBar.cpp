@@ -20,7 +20,6 @@
 #define WX_FUNC(name) WX_FUNC1(menubar, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(append)
 WX_FUNC_DEF(check)
 WX_FUNC_DEF(enable)
@@ -45,7 +44,6 @@ WX_FUNC_DEF(setlabeltop)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(append),
 	WX_FUNC(check),
 	WX_FUNC(enable),
@@ -71,7 +69,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setlabeltop")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "append", "setlabeltop")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MenuBar, "menubar", Window)
 
@@ -85,9 +83,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxWindow *_parent = DLIB_WXTYPECAST_BASE(Window, val, window);
-	DeltaWxWindow *parent = DNEWCLASS(DeltaWxWindow, (_parent));
-	WX_SETOBJECT_EX(*at, Window, parent)
+	WX_SET_BASECLASS_GETTER(at, Window, val)
 	return true;
 }
 
@@ -98,8 +94,7 @@ static bool GetMenus (void* val, DeltaValue* at)
 	for (int i = 0, n = (int)mbar->GetMenuCount(); i < n; ++i) {
 		DeltaValue value;
 		wxMenu *menu = mbar->GetMenu(i);
-		DeltaWxMenu *retval = menu ? DNEWCLASS(DeltaWxMenu, (menu)) : (DeltaWxMenu*) 0;
-		WX_SETOBJECT_EX(value, Menu, retval)
+		WX_SETOBJECT_NO_CONTEXT_EX(value, Menu, menu)
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -108,9 +103,7 @@ static bool GetMenus (void* val, DeltaValue* at)
 static bool GetMenuBarFrame (void* val, DeltaValue* at) 
 {
 	wxMenuBar *mbar = DLIB_WXTYPECAST_BASE(MenuBar, val, menubar);
-	wxFrame *frame = mbar->GetFrame();
-	DeltaWxFrame *retval = frame ? DNEWCLASS(DeltaWxFrame, (frame)) : (DeltaWxFrame*) 0;
-	WX_SETOBJECT_EX(*at, Frame, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Frame, mbar->GetFrame())
 	return true;
 }
 
@@ -126,13 +119,12 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(MenuBar,menubar)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(menubar_construct, 0, 4, Nil)
-	wxMenuBar *wxmbar = (wxMenuBar*) 0;
-	DeltaWxMenuBar *mbar = (DeltaWxMenuBar*) 0;
+	wxMenuBar *mbar = (wxMenuBar*) 0;
 	if (n == 0)
-		wxmbar = new wxMenuBar();
+		mbar = new wxMenuBar();
 	else if (n == 1) {
 		WX_GETDEFINE(style)
-		wxmbar = new wxMenuBar(style);
+		mbar = new wxMenuBar(style);
 	} else if (n >= 3) {
 		WX_GETNUMBER(size)
 		WX_GETTABLE(menus_table)
@@ -142,8 +134,7 @@ WX_FUNC_ARGRANGE_START(menubar_construct, 0, 4, Nil)
 			menus_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 			if (value.Type() == DeltaValue_ExternId) {
 				util_ui32 serial_no = (util_ui32)value.ToExternId();
-				if (DLIB_WXISBASE(Menu, serial_no, menu, menu_wr)) {
-					wxMenu *menu = (wxMenu*) menu_wr->GetCastToNativeInstance();
+				if (DLIB_WXISBASE(Menu, serial_no, menu, menu)) {
 					menus[i] = menu;
 				}
 			}
@@ -160,53 +151,48 @@ WX_FUNC_ARGRANGE_START(menubar_construct, 0, 4, Nil)
 		}
 		long style = 0;
 		if (n >= 4) { WX_GETDEFINE_DEFINED(style) }
-		wxmbar = new wxMenuBar(size, menus, titles, style);
+		mbar = new wxMenuBar(size, menus, titles, style);
 		DDELARR(menus);
 		DDELARR(titles);
 	}
-	if (wxmbar) mbar = DNEWCLASS(DeltaWxMenuBar, (wxmbar));
-	WX_SETOBJECT(MenuBar, mbar)
+	WX_SET_WINDOW_OBJECT(MenuBar, mbar)
 }
 
-DLIB_FUNC_START(menubar_destruct, 1, Nil)
-	DLIB_WXDELETE(menubar, MenuBar, mbar)
-}
-
-DLIB_FUNC_START(menubar_append, 3, Nil)
+WX_FUNC_START(menubar_append, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETSTRING(title)
 	WX_SETBOOL(mbar->Append(menu, title))
 }
 
-DLIB_FUNC_START(menubar_check, 3, Nil)
+WX_FUNC_START(menubar_check, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_GETBOOL(check)
 	mbar->Check(id, check);
 }
 
-DLIB_FUNC_START(menubar_enable, 3, Nil)
+WX_FUNC_START(menubar_enable, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_GETBOOL(enable)
 	mbar->Enable(id, enable);
 }
 
-DLIB_FUNC_START(menubar_enabletop, 3, Nil)
+WX_FUNC_START(menubar_enabletop, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETNUMBER(pos)
 	WX_GETBOOL(enable)
 	mbar->EnableTop(pos, enable);
 }
 
-DLIB_FUNC_START(menubar_findmenu, 2, Nil)
+WX_FUNC_START(menubar_findmenu, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETSTRING(title)
 	WX_SETNUMBER(mbar->FindMenu(title));
 }
 
-DLIB_FUNC_START(menubar_findmenuitem, 3, Nil)
+WX_FUNC_START(menubar_findmenuitem, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETSTRING(menustring)
 	WX_GETSTRING(itemstring)
@@ -216,50 +202,51 @@ DLIB_FUNC_START(menubar_findmenuitem, 3, Nil)
 WX_FUNC_ARGRANGE_START(menubar_finditem, 2, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
-	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
+	wxMenuItem *retval = (wxMenuItem*) 0;
 	if (n == 2) {
-		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, mbar->FindItem(id));
+		retval	= mbar->FindItem(id);;
 	} else {
 		WX_GETTABLE(menu_table)
 		wxMenu *arg;
-		retval = DNEWCLASS(DeltaWxMenuItem, (mbar->FindItem(id, &arg)));
-		WXNEWCLASS(DeltaWxMenu, menu, wxMenu, arg);
+		retval = mbar->FindItem(id, &arg);
+		DeltaValue menu;
+		WX_SETOBJECT_EX(menu, Menu, arg)
 		WX_SETTABLE_RETVAL(menu_table, menu)
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-DLIB_FUNC_START(menubar_gethelpstring, 2, Nil)
+WX_FUNC_START(menubar_gethelpstring, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_SETSTRING(mbar->GetHelpString(id))
 }
 
-DLIB_FUNC_START(menubar_getlabel, 2, Nil)
+WX_FUNC_START(menubar_getlabel, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_SETSTRING(mbar->GetLabel(id))
 }
 
-DLIB_FUNC_START(menubar_getlabeltop, 2, Nil)
+WX_FUNC_START(menubar_getlabeltop, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETNUMBER(pos)
 	WX_SETSTRING(mbar->GetLabelTop(pos))
 }
 
-DLIB_FUNC_START(menubar_getmenu, 2, Nil)
+WX_FUNC_START(menubar_getmenu, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETNUMBER(menuIndex)
-	WXNEWCLASS(DeltaWxMenu, retval, wxMenu, mbar->GetMenu(menuIndex));
+	wxMenu* retval	= mbar->GetMenu(menuIndex);;
 	WX_SETOBJECT(Menu, retval)
 }
 
-DLIB_FUNC_START(menubar_getmenucount, 1, Nil)
+WX_FUNC_START(menubar_getmenucount, 1, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_SETNUMBER(mbar->GetMenuCount())
 }
 
-DLIB_FUNC_START(menubar_insert, 4, Nil)
+WX_FUNC_START(menubar_insert, 4, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETNUMBER(pos)
 	DLIB_WXGET_BASE(menu, Menu, menu)
@@ -267,54 +254,54 @@ DLIB_FUNC_START(menubar_insert, 4, Nil)
 	WX_SETBOOL(mbar->Insert(pos, menu, title))
 }
 
-DLIB_FUNC_START(menubar_ischecked, 2, Nil)
+WX_FUNC_START(menubar_ischecked, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_SETBOOL(mbar->IsChecked(id))
 }
 
-DLIB_FUNC_START(menubar_isenabled, 2, Nil)
+WX_FUNC_START(menubar_isenabled, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_SETBOOL(mbar->IsEnabled(id))
 }
 
-DLIB_FUNC_START(menubar_refresh, 1, Nil)
+WX_FUNC_START(menubar_refresh, 1, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	mbar->Refresh();
 }
 
-DLIB_FUNC_START(menubar_remove, 2, Nil)
+WX_FUNC_START(menubar_remove, 2, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETNUMBER(pos)
-	WXNEWCLASS(DeltaWxMenu, retval, wxMenu, mbar->Remove(pos));
+	wxMenu* retval	= mbar->Remove(pos);;
 	WX_SETOBJECT(Menu, retval)
 }
 
-DLIB_FUNC_START(menubar_replace, 4, Nil)
+WX_FUNC_START(menubar_replace, 4, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETNUMBER(pos)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETSTRING(title)
-	WXNEWCLASS(DeltaWxMenu, retval, wxMenu, mbar->Replace(pos, menu, title));
+	wxMenu* retval	= mbar->Replace(pos, menu, title);;
 	WX_SETOBJECT(Menu, retval)
 }
 
-DLIB_FUNC_START(menubar_sethelpstring, 3, Nil)
+WX_FUNC_START(menubar_sethelpstring, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_GETSTRING(helpstring)
 	mbar->SetHelpString(id, helpstring);
 }
 
-DLIB_FUNC_START(menubar_setlabel, 3, Nil)
+WX_FUNC_START(menubar_setlabel, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETDEFINE(id)
 	WX_GETSTRING(label)
 	mbar->SetLabel(id, label);
 }
 
-DLIB_FUNC_START(menubar_setlabeltop, 3, Nil)
+WX_FUNC_START(menubar_setlabeltop, 3, Nil)
 	DLIB_WXGET_BASE(menubar, MenuBar, mbar)
 	WX_GETNUMBER(pos)
 	WX_GETSTRING(label)

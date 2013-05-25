@@ -21,7 +21,6 @@
 #define WX_FUNC(name) WX_FUNC1(bitmapbutton, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getbitmapdisabled)
 WX_FUNC_DEF(getbitmapfocus)
@@ -36,7 +35,6 @@ WX_FUNC_DEF(setbitmapselected)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getbitmapdisabled),
 	WX_FUNC(getbitmapfocus),
@@ -52,7 +50,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setbitmapselected")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setbitmapselected")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(BitmapButton, "bitmapbutton", Button)
 
@@ -66,49 +64,42 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxButton *_parent = DLIB_WXTYPECAST_BASE(Button, val, button);
-	DeltaWxButton *parent = DNEWCLASS(DeltaWxButton, (_parent));
-	WX_SETOBJECT_EX(*at, Button, parent)
+	WX_SET_BASECLASS_GETTER(at, Button, val)
 	return true;
 }
 
 static bool GetBmpNormal (void* val, DeltaValue* at) 
 {
 	wxBitmapButton *bmpbutton = DLIB_WXTYPECAST_BASE(BitmapButton, val, bitmapbutton);
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapLabel())));
-	WX_SETOBJECT_EX(*at, Bitmap, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Bitmap, new wxBitmap(bmpbutton->GetBitmapLabel()))
 	return true;
 }
 
 static bool GetBmpSelected (void* val, DeltaValue* at) 
 {
 	wxBitmapButton *bmpbutton = DLIB_WXTYPECAST_BASE(BitmapButton, val, bitmapbutton);
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapSelected())));
-	WX_SETOBJECT_EX(*at, Bitmap, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Bitmap, new wxBitmap(bmpbutton->GetBitmapSelected()))
 	return true;
 }
 
 static bool GetBmpFocus (void* val, DeltaValue* at) 
 {
 	wxBitmapButton *bmpbutton = DLIB_WXTYPECAST_BASE(BitmapButton, val, bitmapbutton);
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapFocus())));
-	WX_SETOBJECT_EX(*at, Bitmap, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Bitmap, new wxBitmap(bmpbutton->GetBitmapFocus()))
 	return true;
 }
 
 static bool GetBmpDisabled (void* val, DeltaValue* at) 
 {
 	wxBitmapButton *bmpbutton = DLIB_WXTYPECAST_BASE(BitmapButton, val, bitmapbutton);
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapDisabled())));
-	WX_SETOBJECT_EX(*at, Bitmap, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Bitmap, new wxBitmap(bmpbutton->GetBitmapDisabled()))
 	return true;
 }
 
 static bool GetBmpHover (void* val, DeltaValue* at) 
 {
 	wxBitmapButton *bmpbutton = DLIB_WXTYPECAST_BASE(BitmapButton, val, bitmapbutton);
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapHover())));
-	WX_SETOBJECT_EX(*at, Bitmap, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Bitmap, new wxBitmap(bmpbutton->GetBitmapHover()))
 	return true;
 }
 
@@ -143,10 +134,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(BitmapButton,bitmapbutton)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(bitmapbutton_construct, 0, 8, Nil)
-	wxBitmapButton *wxbmpbutton = (wxBitmapButton*) 0;
-	DeltaWxBitmapButton *bmpbutton = (DeltaWxBitmapButton*) 0;
+	wxBitmapButton *bmpbutton = (wxBitmapButton*) 0;
 	if (n == 0) {
-		wxbmpbutton = new wxBitmapButton();
+		bmpbutton = new wxBitmapButton();
 	} else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -161,7 +151,7 @@ WX_FUNC_ARGRANGE_START(bitmapbutton_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		wxbmpbutton = new wxBitmapButton(parent, id, *bitmap, pos, size, style, *validator, name);
+		bmpbutton = new wxBitmapButton(parent, id, *bitmap, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -170,12 +160,7 @@ WX_FUNC_ARGRANGE_START(bitmapbutton_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxbmpbutton) bmpbutton = DNEWCLASS(DeltaWxBitmapButton, (wxbmpbutton));
-	WX_SETOBJECT(BitmapButton, bmpbutton)
-}
-
-DLIB_FUNC_START(bitmapbutton_destruct, 1, Nil)
-	DLIB_WXDELETE(bitmapbutton, BitmapButton, bmpbutton)
+	WX_SET_WINDOW_OBJECT(BitmapButton, bmpbutton)
 }
 
 WX_FUNC_ARGRANGE_START(bitmapbutton_create, 4, 9, Nil)
@@ -194,63 +179,59 @@ WX_FUNC_ARGRANGE_START(bitmapbutton_create, 4, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(bmpbutton->Create(parent, id, *bitmap, pos, size, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(bmpbutton);
 }
 
-DLIB_FUNC_START(bitmapbutton_getbitmapdisabled, 1, Nil)
+WX_FUNC_START(bitmapbutton_getbitmapdisabled, 1, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapDisabled())));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(bmpbutton->GetBitmapDisabled()))
 }
 
-DLIB_FUNC_START(bitmapbutton_getbitmapfocus, 1, Nil)
+WX_FUNC_START(bitmapbutton_getbitmapfocus, 1, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapFocus())));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(bmpbutton->GetBitmapFocus()))
 }
 
-DLIB_FUNC_START(bitmapbutton_getbitmaphover, 1, Nil)
+WX_FUNC_START(bitmapbutton_getbitmaphover, 1, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapHover())));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(bmpbutton->GetBitmapHover()))
 }
 
-DLIB_FUNC_START(bitmapbutton_getbitmaplabel, 1, Nil)
+WX_FUNC_START(bitmapbutton_getbitmaplabel, 1, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapLabel())));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(bmpbutton->GetBitmapLabel()))
 }
 
-DLIB_FUNC_START(bitmapbutton_getbitmapselected, 1, Nil)
+WX_FUNC_START(bitmapbutton_getbitmapselected, 1, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(bmpbutton->GetBitmapSelected())));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(bmpbutton->GetBitmapSelected()))
 }
 
-DLIB_FUNC_START(bitmapbutton_setbitmapdisabled, 2, Nil)
+WX_FUNC_START(bitmapbutton_setbitmapdisabled, 2, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	bmpbutton->SetBitmapDisabled(*bitmap);
 }
 
-DLIB_FUNC_START(bitmapbutton_setbitmapfocus, 2, Nil)
+WX_FUNC_START(bitmapbutton_setbitmapfocus, 2, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	bmpbutton->SetBitmapFocus(*bitmap);
 }
 
-DLIB_FUNC_START(bitmapbutton_setbitmaphover, 2, Nil)
+WX_FUNC_START(bitmapbutton_setbitmaphover, 2, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	bmpbutton->SetBitmapHover(*bitmap);
 }
 
-DLIB_FUNC_START(bitmapbutton_setbitmaplabel, 2, Nil)
+WX_FUNC_START(bitmapbutton_setbitmaplabel, 2, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	bmpbutton->SetBitmapLabel(*bitmap);
 }
 
-DLIB_FUNC_START(bitmapbutton_setbitmapselected, 2, Nil)
+WX_FUNC_START(bitmapbutton_setbitmapselected, 2, Nil)
 	DLIB_WXGET_BASE(bitmapbutton, BitmapButton, bmpbutton)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	bmpbutton->SetBitmapSelected(*bitmap);

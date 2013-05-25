@@ -20,7 +20,6 @@
 #define WX_FUNC(name) WX_FUNC1(collapsiblepane, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(iscollapsed)
 WX_FUNC_DEF(isexpanded)
@@ -30,7 +29,6 @@ WX_FUNC_DEF(getpane)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(iscollapsed),
 	WX_FUNC(isexpanded),
@@ -41,7 +39,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getpane")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "getpane")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(CollapsiblePane, "collapsiblepane", Control)
 
@@ -55,9 +53,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
@@ -78,9 +74,7 @@ static bool GetIsExpanded (void* val, DeltaValue* at)
 static bool GetPane (void* val, DeltaValue* at) 
 {
 	wxCollapsiblePane *pane = DLIB_WXTYPECAST_BASE(CollapsiblePane, val, collapsiblepane);
-	wxWindow *win = pane->GetPane();
-	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-	WX_SETOBJECT_EX(*at, Window, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, pane->GetPane())
 	return true;
 }
 
@@ -97,10 +91,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(CollapsiblePane,collapsiblepane)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(collapsiblepane_construct, 0, 8, Nil)
-	wxCollapsiblePane *wxpane = (wxCollapsiblePane*) 0;
-	DeltaWxCollapsiblePane *pane = (DeltaWxCollapsiblePane*) 0;
+	wxCollapsiblePane *pane = (wxCollapsiblePane*) 0;
 	if (n == 0) {
-		wxpane = new wxCollapsiblePane();
+		pane = new wxCollapsiblePane();
 	} else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(winid)
@@ -115,7 +108,7 @@ WX_FUNC_ARGRANGE_START(collapsiblepane_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		wxpane = new wxCollapsiblePane(parent, winid, label, pos, size, style, *validator, name);
+		pane = new wxCollapsiblePane(parent, winid, label, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -124,12 +117,7 @@ WX_FUNC_ARGRANGE_START(collapsiblepane_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxpane) pane = DNEWCLASS(DeltaWxCollapsiblePane, (wxpane));
-	WX_SETOBJECT(CollapsiblePane, pane)
-}
-
-DLIB_FUNC_START(collapsiblepane_destruct, 1, Nil)
-	DLIB_WXDELETE(collapsiblepane, CollapsiblePane, pane)
+	WX_SET_WINDOW_OBJECT(CollapsiblePane, pane)
 }
 
 WX_FUNC_ARGRANGE_START(collapsiblepane_create, 4, 9, Nil)
@@ -148,14 +136,15 @@ WX_FUNC_ARGRANGE_START(collapsiblepane_create, 4, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(pane->Create(parent, winid, label, pos, size, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(pane);
 }
 
-DLIB_FUNC_START(collapsiblepane_iscollapsed, 1, Nil)
+WX_FUNC_START(collapsiblepane_iscollapsed, 1, Nil)
 	DLIB_WXGET_BASE(collapsiblepane, CollapsiblePane, pane)
 	WX_SETBOOL(pane->IsCollapsed())
 }
 
-DLIB_FUNC_START(collapsiblepane_isexpanded, 1, Nil)
+WX_FUNC_START(collapsiblepane_isexpanded, 1, Nil)
 	DLIB_WXGET_BASE(collapsiblepane, CollapsiblePane, pane)
 	WX_SETBOOL(pane->IsExpanded())
 }
@@ -167,13 +156,12 @@ WX_FUNC_ARGRANGE_START(collapsiblepane_collapse, 1, 2, Nil)
 	pane->Collapse(collapse);
 }
 
-DLIB_FUNC_START(collapsiblepane_expand, 1, Nil)
+WX_FUNC_START(collapsiblepane_expand, 1, Nil)
 	DLIB_WXGET_BASE(collapsiblepane, CollapsiblePane, pane)
 	pane->Expand();
 }
 
-DLIB_FUNC_START(collapsiblepane_getpane, 1, Nil)
+WX_FUNC_START(collapsiblepane_getpane, 1, Nil)
 	DLIB_WXGET_BASE(collapsiblepane, CollapsiblePane, pane)
-	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (pane->GetPane()));
-	WX_SETOBJECT(Window, retval)
+	WX_SETOBJECT(Window, pane->GetPane())
 }

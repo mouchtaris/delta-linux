@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(printdialogdata, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(enablehelp)
 WX_FUNC_DEF(enablepagenumbers)
 WX_FUNC_DEF(enableprinttofile)
@@ -45,7 +44,6 @@ WX_FUNC_DEF(settopage)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(enablehelp),
 	WX_FUNC(enablepagenumbers),
 	WX_FUNC(enableprinttofile),
@@ -74,7 +72,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "settopage")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "enablehelp", "settopage")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PrintDialogData, "printdialogdata", Object)
 
@@ -88,9 +86,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
@@ -188,8 +184,7 @@ static bool GetPrintEnablePrintToFile (void* val, DeltaValue* at)
 static bool GetPrintData (void* val, DeltaValue* at) 
 {
 	wxPrintDialogData *data = DLIB_WXTYPECAST_BASE(PrintDialogData, val, printdialogdata);
-	DeltaWxPrintData *retval = DNEWCLASS(DeltaWxPrintData, (new wxPrintData(data->GetPrintData())));
-	WX_SETOBJECT_EX(*at, PrintData, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, PrintData, new wxPrintData(data->GetPrintData()))
 	return true;
 }
 
@@ -217,151 +212,144 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(PrintDialogData,printdialogdata)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(printdialogdata_construct, 0, 1, Nil)
-	wxPrintDialogData *wxdata = (wxPrintDialogData*) 0;
-	DeltaWxPrintDialogData *data = (DeltaWxPrintDialogData*) 0;
+	wxPrintDialogData *data = (wxPrintDialogData*) 0;
 	if (n == 0)
-		wxdata = new wxPrintDialogData();
+		data = new wxPrintDialogData();
 	else {
 		DLIB_WXGET_BASE(printdata, PrintData, printData)
-		wxdata = new wxPrintDialogData(*printData);
+		data = new wxPrintDialogData(*printData);
 	}
-	if (wxdata) data = DNEWCLASS(DeltaWxPrintDialogData, (wxdata));
-	WX_SETOBJECT(PrintDialogData, data)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(PrintDialogData, data)
 }
 
-DLIB_FUNC_START(printdialogdata_destruct, 1, Nil)
-	DLIB_WXDELETE(printdialogdata, PrintDialogData, data)
-}
-
-DLIB_FUNC_START(printdialogdata_enablehelp, 2, Nil)
+WX_FUNC_START(printdialogdata_enablehelp, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETBOOL(flag)
 	data->EnableHelp(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_enablepagenumbers, 2, Nil)
+WX_FUNC_START(printdialogdata_enablepagenumbers, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETBOOL(flag)
 	data->EnablePageNumbers(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_enableprinttofile, 2, Nil)
+WX_FUNC_START(printdialogdata_enableprinttofile, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETBOOL(flag)
 	data->EnablePrintToFile(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_enableselection, 2, Nil)
+WX_FUNC_START(printdialogdata_enableselection, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETBOOL(flag)
 	data->EnableSelection(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_getallpages, 1, Nil)
+WX_FUNC_START(printdialogdata_getallpages, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETBOOL(data->GetAllPages())
 }
 
-DLIB_FUNC_START(printdialogdata_getcollate, 1, Nil)
+WX_FUNC_START(printdialogdata_getcollate, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETBOOL(data->GetCollate())
 }
 
-DLIB_FUNC_START(printdialogdata_getfrompage, 1, Nil)
+WX_FUNC_START(printdialogdata_getfrompage, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETNUMBER(data->GetFromPage())
 }
 
-DLIB_FUNC_START(printdialogdata_getmaxpage, 1, Nil)
+WX_FUNC_START(printdialogdata_getmaxpage, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETNUMBER(data->GetMaxPage())
 }
 
-DLIB_FUNC_START(printdialogdata_getminpage, 1, Nil)
+WX_FUNC_START(printdialogdata_getminpage, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETNUMBER(data->GetMinPage())
 }
 
-DLIB_FUNC_START(printdialogdata_getnocopies, 1, Nil)
+WX_FUNC_START(printdialogdata_getnocopies, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETNUMBER(data->GetNoCopies())
 }
 
-DLIB_FUNC_START(printdialogdata_getprintdata, 1, Nil)
+WX_FUNC_START(printdialogdata_getprintdata, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
-	DeltaWxPrintData *retval = DNEWCLASS(DeltaWxPrintData, (new wxPrintData(data->GetPrintData())));
-	WX_SETOBJECT(PrintData, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(PrintData, new wxPrintData(data->GetPrintData()))
 }
 
-DLIB_FUNC_START(printdialogdata_getprinttofile, 1, Nil)
+WX_FUNC_START(printdialogdata_getprinttofile, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETBOOL(data->GetPrintToFile())
 }
 
-DLIB_FUNC_START(printdialogdata_getselection, 1, Nil)
+WX_FUNC_START(printdialogdata_getselection, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETBOOL(data->GetSelection())
 }
 
-DLIB_FUNC_START(printdialogdata_gettopage, 1, Nil)
+WX_FUNC_START(printdialogdata_gettopage, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETNUMBER(data->GetToPage())
 }
 
-DLIB_FUNC_START(printdialogdata_isok, 1, Nil)
+WX_FUNC_START(printdialogdata_isok, 1, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_SETBOOL(data->IsOk())
 }
 
-DLIB_FUNC_START(printdialogdata_setcollate, 2, Nil)
+WX_FUNC_START(printdialogdata_setcollate, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETBOOL(flag)
 	data->SetCollate(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_setfrompage, 2, Nil)
+WX_FUNC_START(printdialogdata_setfrompage, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETNUMBER(flag)
 	data->SetFromPage(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_setmaxpage, 2, Nil)
+WX_FUNC_START(printdialogdata_setmaxpage, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETNUMBER(flag)
 	data->SetMaxPage(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_setminpage, 2, Nil)
+WX_FUNC_START(printdialogdata_setminpage, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETNUMBER(flag)
 	data->SetMinPage(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_setnocopies, 2, Nil)
+WX_FUNC_START(printdialogdata_setnocopies, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETNUMBER(num)
 	data->SetNoCopies(num);
 }
 
-DLIB_FUNC_START(printdialogdata_setprintdata, 2, Nil)
+WX_FUNC_START(printdialogdata_setprintdata, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	DLIB_WXGET_BASE(printdata, PrintData, printData)
 	data->SetPrintData(*printData);
 }
 
-DLIB_FUNC_START(printdialogdata_setprinttofile, 2, Nil)
+WX_FUNC_START(printdialogdata_setprinttofile, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETBOOL(flag)
 	data->SetPrintToFile(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_setselection, 2, Nil)
+WX_FUNC_START(printdialogdata_setselection, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETBOOL(flag)
 	data->SetSelection(flag);
 }
 
-DLIB_FUNC_START(printdialogdata_settopage, 2, Nil)
+WX_FUNC_START(printdialogdata_settopage, 2, Nil)
 	DLIB_WXGET_BASE(printdialogdata, PrintDialogData, data)
 	WX_GETNUMBER(page)
 	data->SetToPage(page);

@@ -21,14 +21,12 @@
 #define WX_FUNC(name) WX_FUNC1(colourpickerctrl, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getcolour)
 WX_FUNC_DEF(setcolour)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getcolour),
 	WX_FUNC(setcolour)
@@ -36,7 +34,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setcolour")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setcolour")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ColourPickerCtrl, "colourpickerctrl", PickerBase)
 
@@ -50,17 +48,14 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxPickerBase *_parent = DLIB_WXTYPECAST_BASE(PickerBase, val, pickerbase);
-	DeltaWxPickerBase *parent = DNEWCLASS(DeltaWxPickerBase, (_parent));
-	WX_SETOBJECT_EX(*at, PickerBase, parent)
+	WX_SET_BASECLASS_GETTER(at, PickerBase, val)
 	return true;
 }
 
 static bool GetColour (void* val, DeltaValue* at) 
 {
 	wxColourPickerCtrl *ctrl = DLIB_WXTYPECAST_BASE(ColourPickerCtrl, val, colourpickerctrl);
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(ctrl->GetColour())));
-	WX_SETOBJECT_EX(*at, Colour, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(ctrl->GetColour()))
 	return true;
 }
 
@@ -75,10 +70,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourPickerCtrl,colourpickerctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(colourpickerctrl_construct, 0, 8, Nil)
-	wxColourPickerCtrl *wxctrl = (wxColourPickerCtrl*) 0;
-	DeltaWxColourPickerCtrl *ctrl = (DeltaWxColourPickerCtrl*) 0;
+	wxColourPickerCtrl *ctrl = (wxColourPickerCtrl*) 0;
 	if (n == 0) {
-		wxctrl = new wxColourPickerCtrl();
+		ctrl = new wxColourPickerCtrl();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -94,7 +88,7 @@ WX_FUNC_ARGRANGE_START(colourpickerctrl_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		wxctrl = new wxColourPickerCtrl(parent, id, col, pos, size, style, *validator, name);
+		ctrl = new wxColourPickerCtrl(parent, id, col, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -103,12 +97,7 @@ WX_FUNC_ARGRANGE_START(colourpickerctrl_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxctrl) ctrl = DNEWCLASS(DeltaWxColourPickerCtrl, (wxctrl));
-	WX_SETOBJECT(ColourPickerCtrl, ctrl)
-}
-
-DLIB_FUNC_START(colourpickerctrl_destruct, 1, Nil)
-	DLIB_WXDELETE(colourpickerctrl, ColourPickerCtrl, ctrl)
+	WX_SET_WINDOW_OBJECT(ColourPickerCtrl, ctrl)
 }
 
 WX_FUNC_ARGRANGE_START(colourpickerctrl_create, 3, 9, Nil)
@@ -128,14 +117,15 @@ WX_FUNC_ARGRANGE_START(colourpickerctrl_create, 3, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(ctrl->Create(parent, id, col, pos, size, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(ctrl);
 }
 
-DLIB_FUNC_START(colourpickerctrl_getcolour, 1, Nil)
+WX_FUNC_START(colourpickerctrl_getcolour, 1, Nil)
 	DLIB_WXGET_BASE(colourpickerctrl, ColourPickerCtrl, ctrl)
 	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(ctrl->GetColour())));
 }
 
-DLIB_FUNC_START(colourpickerctrl_setcolour, 2, Nil)
+WX_FUNC_START(colourpickerctrl_setcolour, 2, Nil)
 	DLIB_WXGET_BASE(colourpickerctrl, ColourPickerCtrl, ctrl)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGET_BASE(colour, Colour, col)

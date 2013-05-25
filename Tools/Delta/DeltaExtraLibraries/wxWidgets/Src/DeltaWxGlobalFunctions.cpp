@@ -137,19 +137,19 @@ WX_FUNC_ARGRANGE_START(wx_beginbusycursor, 0, 1, Nil)
 	::wxBeginBusyCursor(cursor);
 }
 
-DLIB_FUNC_START(wx_endbusycursor, 0, Nil)
+WX_FUNC_START(wx_endbusycursor, 0, Nil)
 	::wxEndBusyCursor();
 }
 
-DLIB_FUNC_START(wx_isbusy, 0, Nil)
+WX_FUNC_START(wx_isbusy, 0, Nil)
 	WX_SETBOOL(::wxIsBusy())
 }
 
-DLIB_FUNC_START(wx_bell, 0, Nil)
+WX_FUNC_START(wx_bell, 0, Nil)
 	::wxBell();
 }
 
-DLIB_FUNC_START(wx_aboutbox, 1, Nil)
+WX_FUNC_START(wx_aboutbox, 1, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	::wxAboutBox(*info);
 }
@@ -193,9 +193,7 @@ WX_FUNC_ARGRANGE_START(wx_getcolourfromuser, 2, 3, Nil)
 	DLIB_WXGET_BASE(colour, Colour, colInit)
 	wxString caption = wxEmptyString;
 	if (n >= 3) { WX_GETSTRING_DEFINED(caption) }
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (
-		new wxColour(::wxGetColourFromUser(parent, *colInit, caption))));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(::wxGetColourFromUser(parent, *colInit, caption)))
 }
 
 WX_FUNC_ARGRANGE_START(wx_getfontfromuser, 2, 3, Nil)
@@ -203,9 +201,7 @@ WX_FUNC_ARGRANGE_START(wx_getfontfromuser, 2, 3, Nil)
 	DLIB_WXGET_BASE(font, Font, fontInit)
 	wxString caption = wxEmptyString;
 	if (n >= 3) { WX_GETSTRING_DEFINED(caption) }
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (
-		new wxFont(::wxGetFontFromUser(parent, *fontInit, caption))));
-	WX_SETOBJECT(Font, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(::wxGetFontFromUser(parent, *fontInit, caption)))
 }
 
 WX_FUNC_ARGRANGE_START(wx_getmultiplechoices, 4, 10, Nil)
@@ -334,41 +330,38 @@ WX_FUNC_ARGRANGE_START(wx_getsinglechoiceindex, 3, 9, Nil)
 	WX_SETNUMBER(::wxGetSingleChoiceIndex(message, caption, choices, parent, x, y, centre, width, height))
 }
 
-DLIB_FUNC_START(wx_clientdisplayrect, 0, Nil)
-	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(::wxGetClientDisplayRect())));
-	WX_SETOBJECT(Rect, retval)
+WX_FUNC_START(wx_clientdisplayrect, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(::wxGetClientDisplayRect()))
 }
 
-DLIB_FUNC_START(wx_colourdisplay, 0, Nil)
+WX_FUNC_START(wx_colourdisplay, 0, Nil)
 	WX_SETBOOL(::wxColourDisplay())
 }
 
-DLIB_FUNC_START(wx_displaydepth, 0, Nil)
+WX_FUNC_START(wx_displaydepth, 0, Nil)
 	WX_SETNUMBER(::wxDisplayDepth())
 }
 
-DLIB_FUNC_START(wx_displaysize, 0, Nil)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(::wxGetDisplaySize())));
-	WX_SETOBJECT(Size, retval)
+WX_FUNC_START(wx_displaysize, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(::wxGetDisplaySize()))
 }
 
-DLIB_FUNC_START(wx_displaysizemm, 0, Nil)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(::wxGetDisplaySizeMM())));
-	WX_SETOBJECT(Size, retval)
+WX_FUNC_START(wx_displaysizemm, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(::wxGetDisplaySizeMM()))
 }
 
-DLIB_FUNC_START(wx_setcursor, 1, Nil)
+WX_FUNC_START(wx_setcursor, 1, Nil)
 	DLIB_WXGET_BASE(cursor, Cursor, cursor)
 	::wxSetCursor(*cursor);
 }
 
-DLIB_FUNC_START(wx_safeshowmessage, 2, Nil)
+WX_FUNC_START(wx_safeshowmessage, 2, Nil)
 	WX_GETSTRING(title)
 	WX_GETSTRING(text)
 	::wxSafeShowMessage(title, text);
 }
 
-DLIB_FUNC_START(wx_syserrorcode, 0, Nil)
+WX_FUNC_START(wx_syserrorcode, 0, Nil)
 	WX_SETNUMBER(::wxSysErrorCode())
 }
 
@@ -378,7 +371,7 @@ WX_FUNC_ARGRANGE_START(wx_syserrormsg, 0, 1, Nil)
 	WX_SETSTRING(wxString(::wxSysErrorMsg(nErrCode)))
 }
 
-DLIB_FUNC_START(wx_initallimagehandlers, 0, Nil)
+WX_FUNC_START(wx_initallimagehandlers, 0, Nil)
 	::wxInitAllImageHandlers();
 }
 
@@ -393,9 +386,7 @@ WX_FUNC_ARGRANGE_START(wx_artprovider_getbitmap, 1, 3, Nil)
 	if (client.Find(_T("wx")) != 0 && client.Length() > 0)
 		client = client.Prepend(_T("wx"));
 	wxART_MAKE_CLIENT_ID_FROM_STR(client);
-	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (
-		new wxBitmap(wxArtProvider::GetBitmap(id, client, size))));
-	WX_SETOBJECT(Bitmap, retval)
+	WX_SETOBJECT(Bitmap, new wxBitmap(wxArtProvider::GetBitmap(id, client, size)))
 }
 
 WX_FUNC_ARGRANGE_START(wx_artprovider_geticon, 1, 3, Nil)
@@ -409,8 +400,7 @@ WX_FUNC_ARGRANGE_START(wx_artprovider_geticon, 1, 3, Nil)
 	if (client.Find(_T("wx")) != 0 && client.Length() > 0)
 		client = client.Prepend(_T("wx"));
 	wxART_MAKE_CLIENT_ID_FROM_STR(client);
-	DeltaWxIcon *retval = DNEWCLASS(DeltaWxIcon, (new wxIcon(wxArtProvider::GetIcon(id, client, size))));
-	WX_SETOBJECT(Icon, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Icon, new wxIcon(wxArtProvider::GetIcon(id, client, size)))
 }
 
 WX_FUNC_ARGRANGE_START(wx_artprovider_getsizehint, 1, 2, Nil)
@@ -420,7 +410,5 @@ WX_FUNC_ARGRANGE_START(wx_artprovider_getsizehint, 1, 2, Nil)
 	if (client.Find(_T("wx")) != 0 && client.Length() > 0)
 		client = client.Prepend(_T("wx"));
 	wxART_MAKE_CLIENT_ID_FROM_STR(client);
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (
-		new wxSize(wxArtProvider::GetSizeHint(client, platform_dependent))));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(wxArtProvider::GetSizeHint(client, platform_dependent)))
 }
