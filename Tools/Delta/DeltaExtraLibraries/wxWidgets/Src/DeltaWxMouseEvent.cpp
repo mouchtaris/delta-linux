@@ -18,6 +18,7 @@
 #define WX_FUNC(name) WX_FUNC1(mouseevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(altdown)
 WX_FUNC_DEF(button)
 WX_FUNC_DEF(buttondclick)
@@ -56,6 +57,7 @@ WX_FUNC_DEF(shiftdown)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(altdown),
 	WX_FUNC(button),
 	WX_FUNC(buttondclick),
@@ -95,7 +97,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "altdown", "shiftdown")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "shiftdown")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MouseEvent, "mouseevent", Event)
 
@@ -109,7 +111,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
@@ -158,7 +162,8 @@ static bool GetButton (void* val, DeltaValue* at)
 static bool GetPosition (void* val, DeltaValue* at) 
 {
 	wxMouseEvent *ev = DLIB_WXTYPECAST_BASE(MouseEvent, val, mouseevent);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(ev->GetPosition()))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(ev->GetPosition())));
+	WX_SETOBJECT_EX(*at, Point, retval)
 	return true;
 }
 
@@ -269,15 +274,20 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseEvent,mouseevent)
 WX_FUNC_ARGRANGE_START(mouseevent_construct, 0, 1, Nil)
 	int mouseType = wxEVT_NULL;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(mouseType) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(MouseEvent, new wxMouseEvent(mouseType))
+	DeltaWxMouseEvent *evt = DNEWCLASS(DeltaWxMouseEvent, (new wxMouseEvent(mouseType)));
+	WX_SETOBJECT(MouseEvent, evt)
 }
 
-WX_FUNC_START(mouseevent_altdown, 1, Nil)
+DLIB_FUNC_START(mouseevent_destruct, 1, Nil)
+	DLIB_WXDELETE(mouseevent, MouseEvent, evt)
+}
+
+DLIB_FUNC_START(mouseevent_altdown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->AltDown())
 }
 
-WX_FUNC_START(mouseevent_button, 2, Nil)
+DLIB_FUNC_START(mouseevent_button, 2, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_GETDEFINE(button)
 	WX_SETBOOL(evt->Button(button))
@@ -304,27 +314,27 @@ WX_FUNC_ARGRANGE_START(mouseevent_buttonup, 1, 2, Nil)
 	WX_SETBOOL(evt->ButtonUp(button))
 }
 
-WX_FUNC_START(mouseevent_cmddown, 1, Nil)
+DLIB_FUNC_START(mouseevent_cmddown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->CmdDown())
 }
 
-WX_FUNC_START(mouseevent_controldown, 1, Nil)
+DLIB_FUNC_START(mouseevent_controldown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->ControlDown())
 }
 
-WX_FUNC_START(mouseevent_dragging, 1, Nil)
+DLIB_FUNC_START(mouseevent_dragging, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->Dragging())
 }
 
-WX_FUNC_START(mouseevent_entering, 1, Nil)
+DLIB_FUNC_START(mouseevent_entering, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->Entering())
 }
 
-WX_FUNC_START(mouseevent_getbutton, 1, Nil)
+DLIB_FUNC_START(mouseevent_getbutton, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETNUMBER(evt->GetButton())
 }
@@ -332,7 +342,8 @@ WX_FUNC_START(mouseevent_getbutton, 1, Nil)
 WX_FUNC_ARGRANGE_START(mouseevent_getposition, 1, 3, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	if (n == 1) {
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(evt->GetPosition()))
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(evt->GetPosition())));
+		WX_SETOBJECT(Point, retval)
 	} else if (n == 3) {
 		long x, y;
 		evt->GetPosition(&x, &y);
@@ -343,123 +354,124 @@ WX_FUNC_ARGRANGE_START(mouseevent_getposition, 1, 3, Nil)
 	}
 }
 
-WX_FUNC_START(mouseevent_getlogicalposition, 2, Nil)
+DLIB_FUNC_START(mouseevent_getlogicalposition, 2, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(evt->GetLogicalPosition(*dc)))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(evt->GetLogicalPosition(*dc))));
+	WX_SETOBJECT(Point, retval)
 }
 
-WX_FUNC_START(mouseevent_getlinesperaction, 1, Nil)
+DLIB_FUNC_START(mouseevent_getlinesperaction, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETNUMBER(evt->GetLinesPerAction())
 }
 
-WX_FUNC_START(mouseevent_getwheelrotation, 1, Nil)
+DLIB_FUNC_START(mouseevent_getwheelrotation, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETNUMBER(evt->GetWheelRotation())
 }
 
-WX_FUNC_START(mouseevent_getwheeldelta, 1, Nil)
+DLIB_FUNC_START(mouseevent_getwheeldelta, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETNUMBER(evt->GetWheelDelta())
 }
 
-WX_FUNC_START(mouseevent_getx, 1, Nil)
+DLIB_FUNC_START(mouseevent_getx, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETNUMBER(evt->GetX())
 }
 
-WX_FUNC_START(mouseevent_gety, 1, Nil)
+DLIB_FUNC_START(mouseevent_gety, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETNUMBER(evt->GetY())
 }
 
-WX_FUNC_START(mouseevent_isbutton, 1, Nil)
+DLIB_FUNC_START(mouseevent_isbutton, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->IsButton())
 }
 
-WX_FUNC_START(mouseevent_ispagescroll, 1, Nil)
+DLIB_FUNC_START(mouseevent_ispagescroll, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->IsPageScroll())
 }
 
-WX_FUNC_START(mouseevent_leaving, 1, Nil)
+DLIB_FUNC_START(mouseevent_leaving, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->Leaving())
 }
 
-WX_FUNC_START(mouseevent_leftdclick, 1, Nil)
+DLIB_FUNC_START(mouseevent_leftdclick, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->LeftDClick())
 }
 
-WX_FUNC_START(mouseevent_leftdown, 1, Nil)
+DLIB_FUNC_START(mouseevent_leftdown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->LeftDown())
 }
 
-WX_FUNC_START(mouseevent_leftisdown, 1, Nil)
+DLIB_FUNC_START(mouseevent_leftisdown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->LeftIsDown())
 }
 
-WX_FUNC_START(mouseevent_leftup, 1, Nil)
+DLIB_FUNC_START(mouseevent_leftup, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->LeftUp())
 }
 
-WX_FUNC_START(mouseevent_metadown, 1, Nil)
+DLIB_FUNC_START(mouseevent_metadown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->MetaDown())
 }
 
-WX_FUNC_START(mouseevent_middledclick, 1, Nil)
+DLIB_FUNC_START(mouseevent_middledclick, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->MiddleDClick())
 }
 
-WX_FUNC_START(mouseevent_middledown, 1, Nil)
+DLIB_FUNC_START(mouseevent_middledown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->MiddleDown())
 }
 
-WX_FUNC_START(mouseevent_middleisdown, 1, Nil)
+DLIB_FUNC_START(mouseevent_middleisdown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->MiddleIsDown())
 }
 
-WX_FUNC_START(mouseevent_middleup, 1, Nil)
+DLIB_FUNC_START(mouseevent_middleup, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->MiddleUp())
 }
 
-WX_FUNC_START(mouseevent_moving, 1, Nil)
+DLIB_FUNC_START(mouseevent_moving, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->Moving())
 }
 
-WX_FUNC_START(mouseevent_rightdclick, 1, Nil)
+DLIB_FUNC_START(mouseevent_rightdclick, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->RightDClick())
 }
 
-WX_FUNC_START(mouseevent_rightdown, 1, Nil)
+DLIB_FUNC_START(mouseevent_rightdown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->RightDown())
 }
 
-WX_FUNC_START(mouseevent_rightisdown, 1, Nil)
+DLIB_FUNC_START(mouseevent_rightisdown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->RightIsDown())
 }
 
-WX_FUNC_START(mouseevent_rightup, 1, Nil)
+DLIB_FUNC_START(mouseevent_rightup, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->RightUp())
 }
 
-WX_FUNC_START(mouseevent_shiftdown, 1, Nil)
+DLIB_FUNC_START(mouseevent_shiftdown, 1, Nil)
 	DLIB_WXGET_BASE(mouseevent, MouseEvent, evt)
 	WX_SETBOOL(evt->ShiftDown())
 }

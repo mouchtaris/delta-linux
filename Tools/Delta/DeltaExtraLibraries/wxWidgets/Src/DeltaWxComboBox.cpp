@@ -21,6 +21,7 @@
 #define WX_FUNC(name) WX_FUNC1(combobox, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(cancopy)
 WX_FUNC_DEF(cancut)
@@ -46,6 +47,7 @@ WX_FUNC_DEF(undo)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(cancopy),
 	WX_FUNC(cancut),
@@ -72,7 +74,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "undo")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "undo")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ComboBox, "combobox", ControlWithItems)
 
@@ -86,7 +88,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, ControlWithItems, val)
+	wxControlWithItems *_parent = DLIB_WXTYPECAST_BASE(ControlWithItems, val, controlwithitems);
+	DeltaWxControlWithItems *parent = DNEWCLASS(DeltaWxControlWithItems, (_parent));
+	WX_SETOBJECT_EX(*at, ControlWithItems, parent)
 	return true;
 }
 
@@ -100,9 +104,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ComboBox,combobox)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(combobox_construct, 0, 9, Nil)
-	wxComboBox *combo = (wxComboBox*) 0;
+	wxComboBox *wxcombo = (wxComboBox*) 0;
+	DeltaWxComboBox *combo = (DeltaWxComboBox*) 0;
 	if (n == 0) {
-		combo = new wxComboBox();
+		wxcombo = new wxComboBox();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -132,10 +137,15 @@ WX_FUNC_ARGRANGE_START(combobox_construct, 0, 9, Nil)
 		if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 9) { WX_GETSTRING_DEFINED(name) }
-		combo = new wxComboBox(parent, id, value, pos, size, choices_size, choices, style, *validator, name);
+		wxcombo = new wxComboBox(parent, id, value, pos, size, choices_size, choices, style, *validator, name);
 		if (n >= 6) { DDELARR(choices); }
 	}
-	WX_SET_WINDOW_OBJECT(ComboBox, combo)
+	if (wxcombo) combo = DNEWCLASS(DeltaWxComboBox, (wxcombo));
+	WX_SETOBJECT(ComboBox, combo)
+}
+
+DLIB_FUNC_START(combobox_destruct, 1, Nil)
+	DLIB_WXDELETE(combobox, ComboBox, combo)
 }
 
 WX_FUNC_ARGRANGE_START(combobox_create, 3, 10, Nil)
@@ -170,60 +180,59 @@ WX_FUNC_ARGRANGE_START(combobox_create, 3, 10, Nil)
 	if (n >= 10) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(combo->Create(parent, id, value, pos, size, choices_size, choices, style, *validator, name))
 	if (n >= 7) { DDELARR(choices); }
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(combo);
 }
 
-WX_FUNC_START(combobox_cancopy, 1, Nil)
+DLIB_FUNC_START(combobox_cancopy, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETBOOL(combo->CanCopy());
 }
 
-WX_FUNC_START(combobox_cancut, 1, Nil)
+DLIB_FUNC_START(combobox_cancut, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETBOOL(combo->CanCut());
 }
 
-WX_FUNC_START(combobox_canpaste, 1, Nil)
+DLIB_FUNC_START(combobox_canpaste, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETBOOL(combo->CanPaste());
 }
 
-WX_FUNC_START(combobox_canredo, 1, Nil)
+DLIB_FUNC_START(combobox_canredo, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETBOOL(combo->CanRedo());
 }
 
-WX_FUNC_START(combobox_canundo, 1, Nil)
+DLIB_FUNC_START(combobox_canundo, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETBOOL(combo->CanUndo());
 }
 
-WX_FUNC_START(combobox_copy, 1, Nil)
+DLIB_FUNC_START(combobox_copy, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	combo->Copy();
 }
 
-WX_FUNC_START(combobox_cut, 1, Nil)
+DLIB_FUNC_START(combobox_cut, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	combo->Cut();
 }
 
-WX_FUNC_START(combobox_getcurrentselection, 1, Nil)
+DLIB_FUNC_START(combobox_getcurrentselection, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETNUMBER(combo->GetCurrentSelection());
 }
 
-WX_FUNC_START(combobox_getinsertionpoint, 1, Nil)
+DLIB_FUNC_START(combobox_getinsertionpoint, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETNUMBER(combo->GetInsertionPoint());
 }
 
-WX_FUNC_START(combobox_getlastposition, 1, Nil)
+DLIB_FUNC_START(combobox_getlastposition, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETNUMBER(combo->GetLastPosition());
 }
 
-WX_FUNC_START(combobox_getselection, 3, Nil)
+DLIB_FUNC_START(combobox_getselection, 3, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	long from, to;
 	combo->GetSelection(&from, &to);
@@ -233,22 +242,22 @@ WX_FUNC_START(combobox_getselection, 3, Nil)
 	WX_SETTABLE_RETVAL(_to, DeltaValue(DeltaNumberValueType(to)))
 }
 
-WX_FUNC_START(combobox_getvalue, 1, Nil)
+DLIB_FUNC_START(combobox_getvalue, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_SETSTRING(combo->GetValue());
 }
 
-WX_FUNC_START(combobox_paste, 1, Nil)
+DLIB_FUNC_START(combobox_paste, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	combo->Paste();
 }
 
-WX_FUNC_START(combobox_redo, 1, Nil)
+DLIB_FUNC_START(combobox_redo, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	combo->Redo();
 }
 
-WX_FUNC_START(combobox_replace, 4, Nil)
+DLIB_FUNC_START(combobox_replace, 4, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_GETNUMBER(from)
 	WX_GETNUMBER(to)
@@ -256,38 +265,38 @@ WX_FUNC_START(combobox_replace, 4, Nil)
 	combo->Replace(from, to, text);
 }
 
-WX_FUNC_START(combobox_remove, 3, Nil)
+DLIB_FUNC_START(combobox_remove, 3, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_GETNUMBER(from)
 	WX_GETNUMBER(to)
 	combo->Remove(from, to);
 }
 
-WX_FUNC_START(combobox_setinsertionpoint, 2, Nil)
+DLIB_FUNC_START(combobox_setinsertionpoint, 2, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_GETNUMBER(pos)
 	combo->SetInsertionPoint(pos);
 }
 
-WX_FUNC_START(combobox_setinsertionpointend, 1, Nil)
+DLIB_FUNC_START(combobox_setinsertionpointend, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	combo->SetInsertionPointEnd();
 }
 
-WX_FUNC_START(combobox_setselection, 3, Nil)
+DLIB_FUNC_START(combobox_setselection, 3, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_GETNUMBER(from)
 	WX_GETNUMBER(to)
 	combo->SetSelection(from, to);
 }
 
-WX_FUNC_START(combobox_setvalue, 2, Nil)
+DLIB_FUNC_START(combobox_setvalue, 2, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	WX_GETSTRING(text)
 	combo->SetValue(text);
 }
 
-WX_FUNC_START(combobox_undo, 1, Nil)
+DLIB_FUNC_START(combobox_undo, 1, Nil)
 	DLIB_WXGET_BASE(combobox, ComboBox, combo)
 	combo->Undo();
 }

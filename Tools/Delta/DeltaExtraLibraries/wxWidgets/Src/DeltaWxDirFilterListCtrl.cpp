@@ -20,6 +20,7 @@
 #define WX_FUNC(name) WX_FUNC1(dirfilterlistctrl, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(fillfilterlist)
 WX_FUNC_DEF(init)
@@ -27,6 +28,7 @@ WX_FUNC_DEF(onselfilter)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(fillfilterlist),
 	WX_FUNC(init),
@@ -35,7 +37,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "onselfilter")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "onselfilter")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(DirFilterListCtrl, "dirfilterlistctrl", Choice)
 
@@ -49,7 +51,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Choice, val)
+	wxChoice *_parent = DLIB_WXTYPECAST_BASE(Choice, val, choice);
+	DeltaWxChoice *parent = DNEWCLASS(DeltaWxChoice, (_parent));
+	WX_SETOBJECT_EX(*at, Choice, parent)
 	return true;
 }
 
@@ -63,9 +67,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(DirFilterListCtrl,dirfilterlistctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(dirfilterlistctrl_construct, 0, 5, Nil)
-	wxDirFilterListCtrl *dirctrl = (wxDirFilterListCtrl*) 0;
+	wxDirFilterListCtrl *wxdirctrl = (wxDirFilterListCtrl*) 0;
+	DeltaWxDirFilterListCtrl *dirctrl = (DeltaWxDirFilterListCtrl*) 0;
 	if (n == 0) {
-		dirctrl = new wxDirFilterListCtrl();
+		wxdirctrl = new wxDirFilterListCtrl();
 	} else {
 		DLIB_WXGET_BASE(genericdirctrl, GenericDirCtrl, parent)
 		int id = wxID_ANY;
@@ -76,9 +81,14 @@ WX_FUNC_ARGRANGE_START(dirfilterlistctrl_construct, 0, 5, Nil)
 		if (n >= 3) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
-		dirctrl = new wxDirFilterListCtrl(parent, id, pos, size, style);
+		wxdirctrl = new wxDirFilterListCtrl(parent, id, pos, size, style);
 	}
-	WX_SET_WINDOW_OBJECT(DirFilterListCtrl, dirctrl)
+	if (wxdirctrl) dirctrl = DNEWCLASS(DeltaWxDirFilterListCtrl, (wxdirctrl));
+	WX_SETOBJECT(DirFilterListCtrl, dirctrl)
+}
+
+DLIB_FUNC_START(dirfilterlistctrl_destruct, 1, Nil)
+	DLIB_WXDELETE(dirfilterlistctrl, DirFilterListCtrl, dirctrl)
 }
 
 WX_FUNC_ARGRANGE_START(dirfilterlistctrl_create, 2, 6, Nil)
@@ -93,22 +103,21 @@ WX_FUNC_ARGRANGE_START(dirfilterlistctrl_create, 2, 6, Nil)
 	if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	WX_SETBOOL(dirctrl->Create(parent, id, pos, size, style))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(dirctrl);
 }
 
-WX_FUNC_START(dirfilterlistctrl_fillfilterlist, 3, Nil)
+DLIB_FUNC_START(dirfilterlistctrl_fillfilterlist, 3, Nil)
 	DLIB_WXGET_BASE(dirfilterlistctrl, DirFilterListCtrl, dirctrl)
 	WX_GETSTRING(filter)
 	WX_GETNUMBER(defaultFilter)
 	dirctrl->FillFilterList(filter, defaultFilter);
 }
 
-WX_FUNC_START(dirfilterlistctrl_init, 1, Nil)
+DLIB_FUNC_START(dirfilterlistctrl_init, 1, Nil)
 	DLIB_WXGET_BASE(dirfilterlistctrl, DirFilterListCtrl, dirctrl)
 	dirctrl->Init();
 }
 
-WX_FUNC_START(dirfilterlistctrl_onselfilter, 2, Nil)
+DLIB_FUNC_START(dirfilterlistctrl_onselfilter, 2, Nil)
 	DLIB_WXGET_BASE(dirfilterlistctrl, DirFilterListCtrl, dirctrl)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	dirctrl->OnSelFilter(*evt);

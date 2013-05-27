@@ -28,14 +28,13 @@
 #include "wxWrapperUtilFunctions.h"
 //
 
-using namespace wxWidgets;
-
 ////////////////////////////////////////////////////////////////
 
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(window, name)
 #define WX_FUNC(name) WX_FUNC1(window, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addchild)
 WX_FUNC_DEF(cachebestsize)
 WX_FUNC_DEF(capturemouse)
@@ -212,6 +211,7 @@ WX_FUNCS_START
 	WX_FUNC(findwindowbyname),
 	WX_FUNC(getcapture),
 	WX_FUNC(getclassdefaultattributes),
+	WX_FUNC(destruct),
 	WX_FUNC(addchild),
 	WX_FUNC(cachebestsize),
 	WX_FUNC(capturemouse),
@@ -377,7 +377,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(7, uarraysize(funcs) - 7, "addchild", "warppointer")
+DELTALIBFUNC_DECLARECONSTS(7, uarraysize(funcs) - 7, "destruct", "warppointer")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Window, "window", EvtHandler)
 
@@ -391,7 +391,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at)
 {
-	WX_SET_BASECLASS_GETTER(at, EvtHandler, val)
+	wxEvtHandler *_parent = DLIB_WXTYPECAST_BASE(EvtHandler, val, evthandler);
+	DeltaWxEvtHandler *parent = DNEWCLASS(DeltaWxEvtHandler, (_parent));
+	WX_SETOBJECT_EX(*at, EvtHandler, parent)
 	return true;
 }
 
@@ -405,7 +407,9 @@ static bool GetWindowId (void* val, DeltaValue* at)
 static bool GetParent (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, win->GetParent())
+	wxWindow *parent = win->GetParent();
+	DeltaWxWindow *retval = parent ? DNEWCLASS(DeltaWxWindow, (parent)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
@@ -418,7 +422,8 @@ static bool GetChildren (void* val, DeltaValue* at)
 	for (wxWindowList::iterator it = windowlist.begin(); it != windowlist.end(); ++it) {
 		DeltaValue val;
 		wxWindow *child = *it;
-		WX_SETOBJECT_NO_CONTEXT_EX(val, Window, child)
+		DeltaWxWindow *deltawindow = DNEWCLASS(DeltaWxWindow, (child));
+		WX_SETOBJECT_EX(val, Window, deltawindow)
 		list->push_back(val);
 	}
 	return true;
@@ -455,84 +460,106 @@ static bool GetMaxHeight (void* val, DeltaValue* at)
 static bool GetEventHandler (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, EvtHandler, win->GetEventHandler())
+	wxEvtHandler *evthandler = win->GetEventHandler();
+	DeltaWxEvtHandler *retval = evthandler ? DNEWCLASS(DeltaWxEvtHandler, (evthandler)) :
+		(DeltaWxEvtHandler*) 0;
+	WX_SETOBJECT_EX(*at, EvtHandler, retval)
 	return true;
 }
 
 static bool GetCursor (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Cursor, new wxCursor(win->GetCursor()))
+	DeltaWxCursor *retval = DNEWCLASS(DeltaWxCursor, (new wxCursor(win->GetCursor())));
+	WX_SETOBJECT_EX(*at, Cursor, retval)
 	return true;
 }
 
 static bool GetFont (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Font, new wxFont(win->GetFont()))
+	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(win->GetFont())));
+	WX_SETOBJECT_EX(*at, Font, retval)
 	return true;
 }
 
 static bool GetBackgroundColour (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(win->GetBackgroundColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(win->GetBackgroundColour())));
+	WX_SETOBJECT_EX(*at, Colour, retval)
 	return true;
 }
 
 static bool GetForegroundColour (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(win->GetForegroundColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(win->GetForegroundColour())));
+	WX_SETOBJECT_EX(*at, Colour, retval)
 	return true;
 }
 
 static bool GetCaret (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Caret, win->GetCaret())
+	wxCaret *caret = win->GetCaret();
+	DeltaWxCaret *retval = caret ? DNEWCLASS(DeltaWxCaret, (caret)) : (DeltaWxCaret*)0;
+	WX_SETOBJECT_EX(*at, Caret, retval)
 	return true;
 }
 
 static bool GetUpdateRegion (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Region, new wxRegion(win->GetUpdateRegion()))
+	DeltaWxRegion *retval = DNEWCLASS(DeltaWxRegion, (new wxRegion(win->GetUpdateRegion())));
+	WX_SETOBJECT_EX(*at, Region, retval)
 	return true;
 }
 
 static bool GetAcceleratorTable (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, AcceleratorTable, win->GetAcceleratorTable())
+	DeltaWxAcceleratorTable *retval = DNEWCLASS(DeltaWxAcceleratorTable,
+		(win->GetAcceleratorTable()));
+	WX_SETOBJECT_EX(*at, AcceleratorTable, retval)
 	return true;
 }
 
 static bool GetToolTip (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, ToolTip, win->GetToolTip())
+	wxToolTip *tooltip = win->GetToolTip();
+	DeltaWxToolTip *retval = tooltip ? DNEWCLASS(DeltaWxToolTip, (tooltip)) : (DeltaWxToolTip*)0;
+	WX_SETOBJECT_EX(*at, ToolTip, retval)
 	return true;
 }
 
 static bool GetConstraints (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, LayoutConstraints, win->GetConstraints())
+	wxLayoutConstraints *constraints = win->GetConstraints();
+	DeltaWxLayoutConstraints *retval = constraints
+		? DNEWCLASS(DeltaWxLayoutConstraints, (constraints))
+		: (DeltaWxLayoutConstraints*)0;
+	WX_SETOBJECT_EX(*at, LayoutConstraints, retval)
 	return true;
 }
 
 static bool GetWindowSizer (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Sizer, win->GetSizer())
+	wxSizer *sizer = win->GetSizer();
+	DeltaWxSizer *retval = sizer ? DNEWCLASS(DeltaWxSizer, (sizer)) : (DeltaWxSizer*)0;
+	WX_SETOBJECT_EX(*at, Sizer, retval)
 	return true;
 }
 
 static bool GetContainingSizer (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Sizer, win->GetContainingSizer())
+	wxSizer *sizer = win->GetContainingSizer();
+	DeltaWxSizer *retval = sizer ? DNEWCLASS(DeltaWxSizer, (sizer)) : (DeltaWxSizer*)0;
+	WX_SETOBJECT_EX(*at, Sizer, retval)
 	return true;
 }
 
@@ -616,7 +643,8 @@ static bool GetBackgroundStyle (void* val, DeltaValue* at)
 static bool GetPalette (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Palette, new wxPalette(win->GetPalette()))
+	DeltaWxPalette *retval = DNEWCLASS(DeltaWxPalette, (new wxPalette(win->GetPalette())));
+	WX_SETOBJECT_EX(*at, Palette, retval)
 	return true;
 }
 
@@ -630,7 +658,8 @@ static bool GetHasCustomPalette (void* val, DeltaValue* at)
 static bool GetVirtualSize (void* val, DeltaValue* at)
 {
 	wxWindow *win = DLIB_WXTYPECAST_BASE(Window, val, window);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Size, new wxSize(win->GetVirtualSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(win->GetVirtualSize())));
+	WX_SETOBJECT_EX(*at, Size, retval)
 	return true;
 }
 
@@ -709,9 +738,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Window,window)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(window_construct, 0, 6, Nil)
-	wxWindow *window = (wxWindow*) 0;
+	wxWindow *wxwindow = (wxWindow*) 0;
+	DeltaWxWindow *window = (DeltaWxWindow*) 0;
 	if (n == 0)
-		window = new wxWindow();
+		wxwindow = new wxWindow();
 	else if (n >= 2 && n <= 6) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -735,7 +765,7 @@ WX_FUNC_ARGRANGE_START(window_construct, 0, 6, Nil)
 			WX_GETSTRING(wxVar)
 			name = wxVar;
 		}
-		window = new wxWindow(parent, id, pos, size, style, name);
+		wxwindow = new wxWindow(parent, id, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -744,23 +774,28 @@ WX_FUNC_ARGRANGE_START(window_construct, 0, 6, Nil)
 		);
 		return;
 	}
-	WX_SET_WINDOW_OBJECT(Window, window)
+	if (wxwindow)
+		window = DNEWCLASS(DeltaWxWindow, (wxwindow));
+	WX_SETOBJECT(Window, window)
 }
 
-WX_FUNC_START(window_addchild, 2, Nil)
+DLIB_FUNC_START(window_destruct, 1, Nil)
+	DLIB_WXDELETE(window, Window, window)
+}
+
+DLIB_FUNC_START(window_addchild, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(window, Window, child)
 	window->AddChild(child);
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(child);
 }
 
-WX_FUNC_START(window_cachebestsize, 2, Nil)
+DLIB_FUNC_START(window_cachebestsize, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGETSIZE_BASE(size)
 	window->CacheBestSize(*size);
 }
 
-WX_FUNC_START(window_capturemouse, 1, Nil)
+DLIB_FUNC_START(window_capturemouse, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->CaptureMouse();
 }
@@ -805,26 +840,26 @@ WX_FUNC_ARGRANGE_START(window_centreonparent, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_clearbackground, 1, Nil)
+DLIB_FUNC_START(window_clearbackground, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->ClearBackground();
 }
 
 WX_FUNC_ARGRANGE_START(window_clienttoscreen, 2, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxPoint *pt = (wxPoint*) 0;
+	DeltaWxPoint *pt = (DeltaWxPoint*) 0;
 	if (n == 2) {
 		DLIB_WXGET_BASE(point, Point, point)
-		pt = new wxPoint(window->ClientToScreen(*point));
+		pt = DNEWCLASS(DeltaWxPoint, (new wxPoint(window->ClientToScreen(*point))));
 	} else {
 		WX_GETNUMBER(db_x)
 		WX_GETNUMBER(db_y)
 		int x = (int) db_x;
 		int y = (int) db_y;
 		window->ClientToScreen(&x, &y);
-		pt = new wxPoint(x, y);
+		pt = DNEWCLASS(DeltaWxPoint, (new wxPoint(x, y)));
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, pt)
+	WX_SETOBJECT(Point, pt)
 }
 
 WX_FUNC_ARGRANGE_START(window_close, 1, 2, Nil)
@@ -839,59 +874,65 @@ WX_FUNC_ARGRANGE_START(window_close, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_convertdialogtopixels, 2, Nil)
+DLIB_FUNC_START(window_convertdialogtopixels, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-	if (DLIB_WXISBASE(Point, serial_no, point, pt)) {
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(window->ConvertDialogToPixels(*pt)))
+	if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
+		wxPoint *pt = (wxPoint*) point_wr->GetCastToNativeInstance();
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint,
+						(new wxPoint(window->ConvertDialogToPixels(*pt))));
+		WX_SETOBJECT(Point, retval)
 	} else
-	if (DLIB_WXISBASE(Size, serial_no, size, sz)) {
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->ConvertDialogToPixels(*sz)))
+	if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
+		wxSize *sz = (wxSize*) size_wr->GetCastToNativeInstance();
+		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize,
+						(new wxSize(window->ConvertDialogToPixels(*sz))));
+		WX_SETOBJECT(Size, retval)
 	}
 }
 
-WX_FUNC_START(window_convertpixelstodialog, 2, Nil)
+DLIB_FUNC_START(window_convertpixelstodialog, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-	if (DLIB_WXISBASE(Point, serial_no, point, pt)) {
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(window->ConvertPixelsToDialog(*pt)))
+	if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
+		wxPoint *pt = (wxPoint*) point_wr->GetCastToNativeInstance();
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint,
+						(new wxPoint(window->ConvertPixelsToDialog(*pt))));
+		WX_SETOBJECT(Point, retval)
 	} else
-	if (DLIB_WXISBASE(Size, serial_no, size, sz)) {
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->ConvertPixelsToDialog(*sz)))
+	if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
+		wxSize *sz = (wxSize*) size_wr->GetCastToNativeInstance();
+		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize,
+						(new wxSize(window->ConvertPixelsToDialog(*sz))));
+		WX_SETOBJECT(Size, retval)
 	}
 }
 
-WX_FUNC_START(window_destroy, 1, Nil)
+DLIB_FUNC_START(window_destroy, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	DeltaWxWindow* wrapper	= GetWrapperFromNativeInstance
-		<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(window);
-	DDELETE(wrapper);
 	bool retval = window->Destroy();
 	WX_SETBOOL(retval);
 }
 
-WX_FUNC_START(window_destroychildren, 1, Nil)
+DLIB_FUNC_START(window_destroychildren, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	DeltaWxWindow* wrapper	= GetWrapperFromNativeInstance
-		<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(window);
-	DPTR(wrapper)->DeleteChildren();
 	bool retval = window->DestroyChildren();
 	WX_SETBOOL(retval);
 }
 
-WX_FUNC_START(window_disable, 1, Nil)
+DLIB_FUNC_START(window_disable, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	bool retval = window->Disable();
 	WX_SETBOOL(retval);
 }
 
-WX_FUNC_START(window_doupdatewindowui, 1, Nil)
+DLIB_FUNC_START(window_doupdatewindowui, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, ev)
 	window->DoUpdateWindowUI(*ev);
 }
 
-WX_FUNC_START(window_dragacceptfiles, 2, Nil)
+DLIB_FUNC_START(window_dragacceptfiles, 2, Nil)
 #if defined(__WXMSW__)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETBOOL(accept)
@@ -914,124 +955,127 @@ WX_FUNC_ARGRANGE_START(window_enable, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_findfocus, 0, Nil)
-	wxWindow* retval	= wxWindow::FindFocus();;
+DLIB_FUNC_START(window_findfocus, 0, Nil)
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, wxWindow::FindFocus());
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(window_findwindow, 2, Nil)
+DLIB_FUNC_START(window_findwindow, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxWindow *retval = (wxWindow*) 0;
+	DeltaWxWindow *retval = (DeltaWxWindow*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(id)
-		retval	= window->FindWindow((long)id);
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, window->FindWindow((long)id));
 	} else
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		WX_GETSTRING(name)
-		retval	= window->FindWindow(name);
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, window->FindWindow(name));
 	}
 	WX_SETOBJECT(Window, retval)
 }
 
 WX_FUNC_ARGRANGE_START(window_findwindowbyid, 1, 2, Nil)
 	WX_GETNUMBER(id)
-	wxWindow *retval = (wxWindow*) 0;
+	DeltaWxWindow *retval = (DeltaWxWindow*) 0;
 	if (n == 1) {
-		retval	= wxWindow::FindWindowById(id);
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, wxWindow::FindWindowById(id));
 	} else {
 		DLIB_WXGET_BASE(window, Window, parent)
-		retval	= wxWindow::FindWindowById(id, parent);;
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, wxWindow::FindWindowById(id, parent));
 	}
 	WX_SETOBJECT(Window, retval)
 }
 
 WX_FUNC_ARGRANGE_START(window_findwindowbylabel, 1, 2, Nil)
 	WX_GETSTRING(label)
-	wxWindow *retval = (wxWindow*) 0;
+	DeltaWxWindow *retval = (DeltaWxWindow*) 0;
 	if (n == 1) {
-		retval	= wxWindow::FindWindowByLabel(label);
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, wxWindow::FindWindowByLabel(label));
 	} else {
 		DLIB_WXGET_BASE(window, Window, parent)
-		retval	= wxWindow::FindWindowByLabel(label, parent);;
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, wxWindow::FindWindowByLabel(label, parent));
 	}
 	WX_SETOBJECT(Window, retval)
 }
 
 WX_FUNC_ARGRANGE_START(window_findwindowbyname, 1, 2, Nil)
 	WX_GETSTRING(name)
-	wxWindow *retval = (wxWindow*) 0;
+	DeltaWxWindow *retval = (DeltaWxWindow*) 0;
 	if (n == 1) {
-		retval	= wxWindow::FindWindowByName(name);;
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, wxWindow::FindWindowByName(name));
 	} else {
 		DLIB_WXGET_BASE(window, Window, parent)
-		retval	= wxWindow::FindWindowByName(name, parent);;
+		WXNEWCLASS_DEFINED(DeltaWxWindow, retval, wxWindow, wxWindow::FindWindowByName(name, parent));
 	}
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(window_fit, 1, Nil)
+DLIB_FUNC_START(window_fit, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->Fit();
 }
 
-WX_FUNC_START(window_fitinside, 1, Nil)
+DLIB_FUNC_START(window_fitinside, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->FitInside();
 }
 
-WX_FUNC_START(window_freeze, 1, Nil)
+DLIB_FUNC_START(window_freeze, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->Freeze();
 }
 
-WX_FUNC_START(window_getacceleratortable, 1, Nil)
+DLIB_FUNC_START(window_getacceleratortable, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxAcceleratorTable* retval	= window->GetAcceleratorTable();;
+	WXNEWCLASS(DeltaWxAcceleratorTable, retval, wxAcceleratorTable,	window->GetAcceleratorTable());
 	WX_SETOBJECT(AcceleratorTable, retval)
 }
 
-WX_FUNC_START(window_getbackgroundcolour, 1, Nil)
+DLIB_FUNC_START(window_getbackgroundcolour, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(window->GetBackgroundColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(window->GetBackgroundColour())));
+	WX_SETOBJECT(Colour, retval)
 }
 
-WX_FUNC_START(window_getbackgroundstyle, 1, Nil)
+DLIB_FUNC_START(window_getbackgroundstyle, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETNUMBER(window->GetBackgroundStyle());
 }
 
-WX_FUNC_START(window_geteffectiveminsize, 1, Nil)
+DLIB_FUNC_START(window_geteffectiveminsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetEffectiveMinSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetEffectiveMinSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getbestsize, 1, Nil)
+DLIB_FUNC_START(window_getbestsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetBestSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetBestSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getcapture, 0, Nil)
-	wxWindow* retval	= wxWindow::GetCapture();;
+DLIB_FUNC_START(window_getcapture, 0, Nil)
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, wxWindow::GetCapture());
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(window_getcaret, 1, Nil)
+DLIB_FUNC_START(window_getcaret, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxCaret* retval	= window->GetCaret();;
+	WXNEWCLASS(DeltaWxCaret, retval, wxCaret, window->GetCaret());
 	WX_SETOBJECT(Caret, retval)
 }
 
-WX_FUNC_START(window_getcharheight, 1, Nil)
+DLIB_FUNC_START(window_getcharheight, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETNUMBER(window->GetCharHeight());
 }
 
-WX_FUNC_START(window_getcharwidth, 1, Nil)
+DLIB_FUNC_START(window_getcharwidth, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETNUMBER(window->GetCharWidth());
 }
 
-WX_FUNC_START(window_getchildren, 1, Nil)
+DLIB_FUNC_START(window_getchildren, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	wxWindowList windowlist = window->GetChildren();
 	DeltaList_Make(DLIB_RETVAL_REF);
@@ -1039,7 +1083,8 @@ WX_FUNC_START(window_getchildren, 1, Nil)
 	for (wxWindowList::iterator it = windowlist.begin(); it != windowlist.end(); ++it) {
 		DeltaValue val;
 		wxWindow *child = *it;
-		WX_SETOBJECT_EX(val, Window, child)
+		DeltaWxWindow *deltawindow = DNEWCLASS(DeltaWxWindow, (child));
+		WX_SETOBJECT_EX(val, Window, deltawindow)
 		list->push_back(val);
 	}
 }
@@ -1047,159 +1092,173 @@ WX_FUNC_START(window_getchildren, 1, Nil)
 WX_FUNC_ARGRANGE_START(window_getclassdefaultattributes, 0, 1, Nil)
 	int variant = wxWINDOW_VARIANT_NORMAL;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(variant) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(VisualAttributes,
-		new wxVisualAttributes(
-		wxWindow::GetClassDefaultAttributes((wxWindowVariant)variant)))
+	DeltaWxVisualAttributes *retval = DNEWCLASS(DeltaWxVisualAttributes,
+		(new wxVisualAttributes(wxWindow::GetClassDefaultAttributes((wxWindowVariant)variant))));
+	WX_SETOBJECT(VisualAttributes, retval)
 }
 
-WX_FUNC_START(window_getclientsize, 1, Nil)
+DLIB_FUNC_START(window_getclientsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetClientSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetClientSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getconstraints, 1, Nil)
+DLIB_FUNC_START(window_getconstraints, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxLayoutConstraints* retval	= window->GetConstraints();;
+	WXNEWCLASS(DeltaWxLayoutConstraints, retval, wxLayoutConstraints, window->GetConstraints());
 	WX_SETOBJECT(LayoutConstraints, retval)
 }
 
-WX_FUNC_START(window_getcontainingsizer, 1, Nil)
+DLIB_FUNC_START(window_getcontainingsizer, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxSizer* retval	= window->GetContainingSizer();;
+	WXNEWCLASS(DeltaWxSizer, retval, wxSizer, window->GetContainingSizer());
 	WX_SETOBJECT(Sizer, retval)
 }
 
-WX_FUNC_START(window_getcursor, 1, Nil)
+DLIB_FUNC_START(window_getcursor, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Cursor, new wxCursor(window->GetCursor()))
+	DeltaWxCursor *retval = DNEWCLASS(DeltaWxCursor, (new wxCursor(window->GetCursor())));
+	WX_SETOBJECT(Cursor, retval)
 }
 
-WX_FUNC_START(window_getdefaultattributes, 1, Nil)
+DLIB_FUNC_START(window_getdefaultattributes, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(VisualAttributes, new wxVisualAttributes(window->GetDefaultAttributes()))
+	DeltaWxVisualAttributes *retval = DNEWCLASS(DeltaWxVisualAttributes, (
+		new wxVisualAttributes(window->GetDefaultAttributes())));
+	WX_SETOBJECT(VisualAttributes, retval)
 }
 
-WX_FUNC_START(window_getdroptarget, 1, Nil)
+DLIB_FUNC_START(window_getdroptarget, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT(DropTarget, window->GetDropTarget())
+	DeltaWxDropTarget *retval = DNEWCLASS(DeltaWxDropTarget, (window->GetDropTarget()));
+	WX_SETOBJECT(DropTarget, retval)
 }
 
-WX_FUNC_START(window_geteventhandler, 1, Nil)
+DLIB_FUNC_START(window_geteventhandler, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DeltaWxEvtHandler *retval = DNEWCLASS(DeltaWxEvtHandler, (window->GetEventHandler()));
 	WX_SETNUMBER(window->GetExtraStyle());
 }
 
-WX_FUNC_START(window_getextrastyle, 1, Nil)
+DLIB_FUNC_START(window_getextrastyle, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETNUMBER(window->GetExtraStyle());
 }
 
-WX_FUNC_START(window_getfont, 1, Nil)
+DLIB_FUNC_START(window_getfont, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(window->GetFont()))
+	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(window->GetFont())));
+	WX_SETOBJECT(Font, retval)
 }
 
-WX_FUNC_START(window_getforegroundcolour, 1, Nil)
+DLIB_FUNC_START(window_getforegroundcolour, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(window->GetForegroundColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(window->GetForegroundColour())));
+	WX_SETOBJECT(Colour, retval)
 }
 
-WX_FUNC_START(window_getgrandparent, 1, Nil)
+DLIB_FUNC_START(window_getgrandparent, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxWindow* retval	= window->GetGrandParent();;
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, window->GetGrandParent());
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(window_gethelptextatpoint, 3, Nil)
+DLIB_FUNC_START(window_gethelptextatpoint, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGETPOINT_BASE(point)
 	WX_GETDEFINE(origin)
 	WX_SETSTRING(window->GetHelpTextAtPoint(*point, (wxHelpEvent::Origin)origin))
 }
 
-WX_FUNC_START(window_gethelptext, 1, Nil)
+DLIB_FUNC_START(window_gethelptext, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETSTRING(window->GetHelpText())
 }
 
-WX_FUNC_START(window_getid, 1, Nil)
+DLIB_FUNC_START(window_getid, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETNUMBER(window->GetId());
 }
 
-WX_FUNC_START(window_getlabel, 1, Nil)
+DLIB_FUNC_START(window_getlabel, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETSTRING(window->GetLabel())
 }
 
-WX_FUNC_START(window_getmaxsize, 1, Nil)
+DLIB_FUNC_START(window_getmaxsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetMaxSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetMaxSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getminsize, 1, Nil)
+DLIB_FUNC_START(window_getminsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetMinSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetMinSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getname, 1, Nil)
+DLIB_FUNC_START(window_getname, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETSTRING(window->GetName())
 }
 
-WX_FUNC_START(window_getparent, 1, Nil)
+DLIB_FUNC_START(window_getparent, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxWindow* retval	= window->GetParent();;
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, window->GetParent());
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(window_getposition, 1, Nil)
+DLIB_FUNC_START(window_getposition, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(window->GetPosition()))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(window->GetPosition())));
+	WX_SETOBJECT(Point, retval)
 }
 
-WX_FUNC_START(window_getrect, 1, Nil)
+DLIB_FUNC_START(window_getrect, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(window->GetRect()))
+	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(window->GetRect())));
+	WX_SETOBJECT(Rect, retval)
 }
 
-WX_FUNC_START(window_getscreenposition, 1, Nil)
+DLIB_FUNC_START(window_getscreenposition, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(window->GetScreenPosition()))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(window->GetScreenPosition())));
+	WX_SETOBJECT(Point, retval)
 }
 
-WX_FUNC_START(window_getscreenrect, 1, Nil)
+DLIB_FUNC_START(window_getscreenrect, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(window->GetScreenRect()))
+	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(window->GetScreenRect())));
+	WX_SETOBJECT(Rect, retval)
 }
 
-WX_FUNC_START(window_getscrollpos, 2, Nil)
+DLIB_FUNC_START(window_getscrollpos, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(orientation)
 	WX_SETNUMBER(window->GetScrollPos(orientation));
 }
 
-WX_FUNC_START(window_getscrollrange, 2, Nil)
+DLIB_FUNC_START(window_getscrollrange, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(orientation)
 	WX_SETNUMBER(window->GetScrollRange(orientation));
 }
 
-WX_FUNC_START(window_getscrollthumb, 2, Nil)
+DLIB_FUNC_START(window_getscrollthumb, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(orientation)
 	WX_SETNUMBER(window->GetScrollThumb(orientation));
 }
 
-WX_FUNC_START(window_getsize, 1, Nil)
+DLIB_FUNC_START(window_getsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getsizer, 1, Nil)
+DLIB_FUNC_START(window_getsizer, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxSizer* retval	= (window->GetSizer());;
+	WXNEWCLASS(DeltaWxSizer, retval, wxSizer, (window->GetSizer()));
 	WX_SETOBJECT(Sizer, retval)
 }
 
@@ -1222,94 +1281,99 @@ WX_FUNC_ARGRANGE_START(window_gettextextent, 4, 7, Nil)
 	if (n >= 6) { WX_SETTABLE_RETVAL(_externalLeading, DeltaValue((DeltaNumberValueType)externalLeading)); }
 }
 
-WX_FUNC_START(window_gettooltip, 1, Nil)
+DLIB_FUNC_START(window_gettooltip, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT(ToolTip, window->GetToolTip())
+	DeltaWxToolTip *retval = DNEWCLASS(DeltaWxToolTip, (window->GetToolTip()));
+	WX_SETOBJECT(ToolTip, retval)
 }
 
-WX_FUNC_START(window_getupdateregion, 1, Nil)
+DLIB_FUNC_START(window_getupdateregion, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Region, new wxRegion(window->GetUpdateRegion()))
+	DeltaWxRegion *retval = DNEWCLASS(DeltaWxRegion, (new wxRegion(window->GetUpdateRegion())));
+	WX_SETOBJECT(Region, retval)
 }
 
-WX_FUNC_START(window_getvalidator, 1, Nil)
+DLIB_FUNC_START(window_getvalidator, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT(Validator, window->GetValidator())
+	DeltaWxValidator *retval = DNEWCLASS(DeltaWxValidator, (window->GetValidator()));
+	WX_SETOBJECT(Validator, retval)
 }
 
-WX_FUNC_START(window_getvirtualsize, 1, Nil)
+DLIB_FUNC_START(window_getvirtualsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetVirtualSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetVirtualSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getwindowbordersize, 1, Nil)
+DLIB_FUNC_START(window_getwindowbordersize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(window->GetWindowBorderSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(window->GetWindowBorderSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(window_getwindowstyleflag, 1, Nil)
+DLIB_FUNC_START(window_getwindowstyleflag, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETNUMBER((double)window->GetWindowStyleFlag());
 }
 
-WX_FUNC_START(window_getwindowvariant, 1, Nil)
+DLIB_FUNC_START(window_getwindowvariant, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETNUMBER(window->GetWindowVariant())
 }
 
-WX_FUNC_START(window_hascapture, 1, Nil)
+DLIB_FUNC_START(window_hascapture, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->HasCapture());
 }
 
-WX_FUNC_START(window_hasflag, 2, Nil)
+DLIB_FUNC_START(window_hasflag, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(flag)
 	WX_SETBOOL(window->HasFlag(flag));
 }
 
-WX_FUNC_START(window_hasmultiplepages, 1, Nil)
+DLIB_FUNC_START(window_hasmultiplepages, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->HasMultiplePages());
 }
 
-WX_FUNC_START(window_hasscrollbar, 2, Nil)
+DLIB_FUNC_START(window_hasscrollbar, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(orientation)
 	WX_SETBOOL(window->HasScrollbar(orientation));
 }
 
-WX_FUNC_START(window_hastransparentbackground, 1, Nil)
+DLIB_FUNC_START(window_hastransparentbackground, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->HasTransparentBackground());
 }
 
-WX_FUNC_START(window_hide, 1, Nil)
+DLIB_FUNC_START(window_hide, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->Hide());
 }
 
-WX_FUNC_START(window_inheritattributes, 1, Nil)
+DLIB_FUNC_START(window_inheritattributes, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->InheritAttributes();
 }
 
-WX_FUNC_START(window_initdialog, 1, Nil)
+DLIB_FUNC_START(window_initdialog, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->InitDialog();
 }
 
-WX_FUNC_START(window_invalidatebestsize, 1, Nil)
+DLIB_FUNC_START(window_invalidatebestsize, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->InvalidateBestSize();
 }
 
-WX_FUNC_START(window_isdoublebuffered, 1, Nil)
+DLIB_FUNC_START(window_isdoublebuffered, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->IsDoubleBuffered());
 }
 
-WX_FUNC_START(window_isenabled, 1, Nil)
+DLIB_FUNC_START(window_isenabled, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->IsEnabled());
 }
@@ -1328,10 +1392,12 @@ WX_FUNC_ARGRANGE_START(window_isexposed, 1, 5, Nil)
 		WX_SETBOOL(window->IsExposed(x, y, w, h));
 	} else if (n == 2) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Point, serial_no, point, pt)) {
+		if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
+			wxPoint *pt = (wxPoint*) point_wr->GetCastToNativeInstance();
 			WX_SETBOOL(window->IsExposed(*pt));
 		} else
-		if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
+		if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+			wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
 			WX_SETBOOL(window->IsExposed(*rect))
 		}
 	} else {
@@ -1344,52 +1410,52 @@ WX_FUNC_ARGRANGE_START(window_isexposed, 1, 5, Nil)
 	}
 }
 
-WX_FUNC_START(window_isfrozen, 1, Nil)
+DLIB_FUNC_START(window_isfrozen, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->IsFrozen());
 }
 
-WX_FUNC_START(window_isretained, 1, Nil)
+DLIB_FUNC_START(window_isretained, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->IsRetained());
 }
 
-WX_FUNC_START(window_isshown, 1, Nil)
+DLIB_FUNC_START(window_isshown, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->IsShown());
 }
 
-WX_FUNC_START(window_isshownonscreen, 1, Nil)
+DLIB_FUNC_START(window_isshownonscreen, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->IsShownOnScreen());
 }
 
-WX_FUNC_START(window_istoplevel, 1, Nil)
+DLIB_FUNC_START(window_istoplevel, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->IsTopLevel());
 }
 
-WX_FUNC_START(window_layout, 1, Nil)
+DLIB_FUNC_START(window_layout, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->Layout();
 }
 
-WX_FUNC_START(window_linedown, 1, Nil)
+DLIB_FUNC_START(window_linedown, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->LineDown());
 }
 
-WX_FUNC_START(window_lineup, 1, Nil)
+DLIB_FUNC_START(window_lineup, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->LineUp());
 }
 
-WX_FUNC_START(window_lower, 1, Nil)
+DLIB_FUNC_START(window_lower, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->Lower();
 }
 
-WX_FUNC_START(window_makemodal, 2, Nil)
+DLIB_FUNC_START(window_makemodal, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETBOOL(flag)
 	window->MakeModal(flag);
@@ -1407,13 +1473,13 @@ WX_FUNC_ARGRANGE_START(window_move, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(window_moveafterintaborder, 2, Nil)
+DLIB_FUNC_START(window_moveafterintaborder, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(window, Window, win)
 	window->MoveAfterInTabOrder(win);
 }
 
-WX_FUNC_START(window_movebeforeintaborder, 2, Nil)
+DLIB_FUNC_START(window_movebeforeintaborder, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(window, Window, win)
 	window->MoveBeforeInTabOrder(win);
@@ -1429,17 +1495,17 @@ WX_FUNC_ARGRANGE_START(window_navigate, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_oninternalidle, 1, Nil)
+DLIB_FUNC_START(window_oninternalidle, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->OnInternalIdle();
 }
 
-WX_FUNC_START(window_pagedown, 1, Nil)
+DLIB_FUNC_START(window_pagedown, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->PageDown());
 }
 
-WX_FUNC_START(window_pageup, 1, Nil)
+DLIB_FUNC_START(window_pageup, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->PageUp());
 }
@@ -1448,7 +1514,8 @@ WX_FUNC_ARGRANGE_START(window_popeventhandler, 1, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	bool deleteHandler = false;
 	if (n >= 2) { WX_GETBOOL_DEFINED(deleteHandler) }
-	WX_SETOBJECT(EvtHandler, window->PopEventHandler(deleteHandler))
+	DeltaWxEvtHandler *retval = DNEWCLASS(DeltaWxEvtHandler, (window->PopEventHandler(deleteHandler)));
+	WX_SETOBJECT(EvtHandler, retval)
 }
 
 WX_FUNC_ARGRANGE_START(window_popupmenu, 2, 4, Nil)
@@ -1465,13 +1532,13 @@ WX_FUNC_ARGRANGE_START(window_popupmenu, 2, 4, Nil)
 	}
 }
 
-WX_FUNC_START(window_pusheventhandler, 2, Nil)
+DLIB_FUNC_START(window_pusheventhandler, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	window->PushEventHandler(handler);
 }
 
-WX_FUNC_START(window_raise, 1, Nil)
+DLIB_FUNC_START(window_raise, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->Raise();
 }
@@ -1501,7 +1568,7 @@ WX_FUNC_ARGRANGE_START(window_refreshrect, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(window_registerhotkey, 4, Nil)
+DLIB_FUNC_START(window_registerhotkey, 4, Nil)
 #if defined(__WXMSW__)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETNUMBER(hotkeyId)
@@ -1517,7 +1584,7 @@ WX_FUNC_START(window_registerhotkey, 4, Nil)
 #endif //__WXMSW__
 }
 
-WX_FUNC_START(window_unregisterhotkey, 2, Nil)
+DLIB_FUNC_START(window_unregisterhotkey, 2, Nil)
 #if defined(__WXMSW__)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(hotkeyId)
@@ -1530,55 +1597,53 @@ WX_FUNC_START(window_unregisterhotkey, 2, Nil)
 #endif //__WXMSW__
 }
 
-WX_FUNC_START(window_releasemouse, 1, Nil)
+DLIB_FUNC_START(window_releasemouse, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->ReleaseMouse();
 }
 
-WX_FUNC_START(window_removechild, 2, Nil)
+DLIB_FUNC_START(window_removechild, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(window, Window, child)
 	window->RemoveChild(child);
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(child);
 }
 
-WX_FUNC_START(window_removeeventhandler, 2, Nil)
+DLIB_FUNC_START(window_removeeventhandler, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	WX_SETBOOL(window->RemoveEventHandler(handler))
 }
 
-WX_FUNC_START(window_reparent, 2, Nil)
+DLIB_FUNC_START(window_reparent, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(window, Window, newParent)
 	window->Reparent(newParent);
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(window);
 }
 
 WX_FUNC_ARGRANGE_START(window_screentoclient, 2, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
-	wxPoint *retval = (wxPoint*) 0;
+	DeltaWxPoint *retval = (DeltaWxPoint*) 0;
 	if (n == 2) {
 		DLIB_WXGET_BASE(point, Point, pt)
-		retval = new wxPoint(window->ScreenToClient(*pt));
+		retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(window->ScreenToClient(*pt))));
 	} else {
 		WX_GETNUMBER(db_x)
 		WX_GETNUMBER(db_y)
 		int x = (int) db_x;
 		int y = (int) db_y;
 		window->ScreenToClient(&x, &y);
-		retval = new wxPoint(x, y);
+		retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(x, y)));
 	}
 	WX_SETOBJECT(Point, retval)
 }
 
-WX_FUNC_START(window_scrolllines, 2, Nil)
+DLIB_FUNC_START(window_scrolllines, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETNUMBER(lines)
 	WX_SETBOOL(window->ScrollLines(lines));
 }
 
-WX_FUNC_START(window_scrollpages, 2, Nil)
+DLIB_FUNC_START(window_scrollpages, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETNUMBER(pages)
 	WX_SETBOOL(window->ScrollPages(pages));
@@ -1596,25 +1661,25 @@ WX_FUNC_ARGRANGE_START(window_scrollwindow, 3, 4, Nil)
 	}
 }
 
-WX_FUNC_START(window_setacceleratortable, 2, Nil)
+DLIB_FUNC_START(window_setacceleratortable, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(acceleratortable, AcceleratorTable, accel)
 	window->SetAcceleratorTable(*accel);
 }
 
-WX_FUNC_START(window_setautolayout, 2, Nil)
+DLIB_FUNC_START(window_setautolayout, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETBOOL(autoLayout)
 	window->SetAutoLayout(autoLayout);
 }
 
-WX_FUNC_START(window_setbackgroundcolour, 2, Nil)
+DLIB_FUNC_START(window_setbackgroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	WX_SETBOOL(window->SetBackgroundColour(*colour));
 }
 
-WX_FUNC_START(window_setbackgroundstyle, 2, Nil)
+DLIB_FUNC_START(window_setbackgroundstyle, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(style)
 	window->SetBackgroundStyle((wxBackgroundStyle) style);
@@ -1630,7 +1695,7 @@ WX_FUNC_ARGRANGE_START(window_setinitialsize, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_setcaret, 2, Nil)
+DLIB_FUNC_START(window_setcaret, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(caret, Caret, caret)
 	window->SetCaret(caret);
@@ -1648,113 +1713,113 @@ WX_FUNC_ARGRANGE_START(window_setclientsize, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(window_setconstraints, 2, Nil)
+DLIB_FUNC_START(window_setconstraints, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(layoutconstraints, LayoutConstraints, constraints)
 	window->SetConstraints(constraints);
 }
 
-WX_FUNC_START(window_setcontainingsizer, 2, Nil)
+DLIB_FUNC_START(window_setcontainingsizer, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	window->SetContainingSizer(sizer);
 }
 
-WX_FUNC_START(window_setcursor, 2, Nil)
+DLIB_FUNC_START(window_setcursor, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(cursor, Cursor, cursor)
 	WX_SETBOOL(window->SetCursor(*cursor));
 }
 
-WX_FUNC_START(window_setdroptarget, 2, Nil)
+DLIB_FUNC_START(window_setdroptarget, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(droptarget, DropTarget, target)
 	window->SetDropTarget(target);
 }
 
-WX_FUNC_START(window_seteventhandler, 2, Nil)
+DLIB_FUNC_START(window_seteventhandler, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	window->SetEventHandler(handler);
 }
 
-WX_FUNC_START(window_setextrastyle, 2, Nil)
+DLIB_FUNC_START(window_setextrastyle, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(exStyle)
 	window->SetExtraStyle(exStyle);
 }
 
-WX_FUNC_START(window_setfocus, 1, Nil)
+DLIB_FUNC_START(window_setfocus, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->SetFocus();
 }
 
-WX_FUNC_START(window_setfocusfromkbd, 1, Nil)
+DLIB_FUNC_START(window_setfocusfromkbd, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->SetFocusFromKbd();
 }
 
-WX_FUNC_START(window_setfont, 2, Nil)
+DLIB_FUNC_START(window_setfont, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(font, Font, font)
 	window->SetFont(*font);
 }
 
-WX_FUNC_START(window_setforegroundcolour, 2, Nil)
+DLIB_FUNC_START(window_setforegroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	window->SetForegroundColour(*colour);
 }
 
-WX_FUNC_START(window_sethelptext, 2, Nil)
+DLIB_FUNC_START(window_sethelptext, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETSTRING(helpText)
 	window->SetHelpText(helpText);
 }
 
-WX_FUNC_START(window_setid, 2, Nil)
+DLIB_FUNC_START(window_setid, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(id)
 	window->SetId(id);
 }
 
-WX_FUNC_START(window_setlabel, 2, Nil)
+DLIB_FUNC_START(window_setlabel, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETSTRING(label)
 	window->SetLabel(label);
 }
 
-WX_FUNC_START(window_setmaxsize, 2, Nil)
+DLIB_FUNC_START(window_setmaxsize, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGETSIZE_BASE(size)
 	window->SetMaxSize(*size);
 }
 
-WX_FUNC_START(window_setminsize, 2, Nil)
+DLIB_FUNC_START(window_setminsize, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGETSIZE_BASE(size)
 	window->SetMinSize(*size);
 }
 
-WX_FUNC_START(window_setname, 2, Nil)
+DLIB_FUNC_START(window_setname, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETSTRING(name)
 	window->SetName(name);
 }
 
-WX_FUNC_START(window_setownbackgroundcolour, 2, Nil)
+DLIB_FUNC_START(window_setownbackgroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	window->SetOwnBackgroundColour(*colour);
 }
 
-WX_FUNC_START(window_setownfont, 2, Nil)
+DLIB_FUNC_START(window_setownfont, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(font, Font, font)
 	window->SetOwnFont(*font);
 }
 
-WX_FUNC_START(window_setownforegroundcolour, 2, Nil)
+DLIB_FUNC_START(window_setownforegroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	window->SetOwnForegroundColour(*colour);
@@ -1805,10 +1870,12 @@ WX_FUNC_ARGRANGE_START(window_setsize, 2, 6, Nil)
 		}
 	} else if (n == 2) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Size, serial_no, size, size)) {
+		if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
+			wxSize *size = (wxSize*) size_wr->GetCastToNativeInstance();
 			window->SetSize(*size);
 		} else
-		if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
+		if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+			wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
 			window->SetSize(*rect);
 		}
 	} else {
@@ -1837,13 +1904,13 @@ WX_FUNC_ARGRANGE_START(window_setsizerandfit, 2, 3, Nil)
 	window->SetSizerAndFit(sizer, deleteOld);
 }
 
-WX_FUNC_START(window_setthemeenabled, 2, Nil)
+DLIB_FUNC_START(window_setthemeenabled, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETBOOL(enable)
 	window->SetThemeEnabled(enable);
 }
 
-WX_FUNC_START(window_settooltip, 2, Nil)
+DLIB_FUNC_START(window_settooltip, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		WX_GETSTRING(tip)
@@ -1854,7 +1921,7 @@ WX_FUNC_START(window_settooltip, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_setvalidator, 2, Nil)
+DLIB_FUNC_START(window_setvalidator, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	DLIB_WXGET_BASE(validator, Validator, validator)
 	window->SetValidator(*validator);
@@ -1898,25 +1965,25 @@ WX_FUNC_ARGRANGE_START(window_setvirtualsizehints, 2, 5, Nil)
 	}
 }
 
-WX_FUNC_START(window_setwindowstyle, 2, Nil)
+DLIB_FUNC_START(window_setwindowstyle, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(style)
 	window->SetWindowStyle(style);
 }
 
-WX_FUNC_START(window_setwindowstyleflag, 2, Nil)
+DLIB_FUNC_START(window_setwindowstyleflag, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(style)
 	window->SetWindowStyleFlag(style);
 }
 
-WX_FUNC_START(window_setwindowvariant, 2, Nil)
+DLIB_FUNC_START(window_setwindowvariant, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(variant)
 	window->SetWindowVariant((wxWindowVariant) variant);
 }
 
-WX_FUNC_START(window_shouldinheritcolours, 1, Nil)
+DLIB_FUNC_START(window_shouldinheritcolours, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->ShouldInheritColours());
 }
@@ -1931,28 +1998,28 @@ WX_FUNC_ARGRANGE_START(window_show, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_thaw, 1, Nil)
+DLIB_FUNC_START(window_thaw, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->Thaw();
 }
 
-WX_FUNC_START(window_togglewindowstyle, 2, Nil)
+DLIB_FUNC_START(window_togglewindowstyle, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(flag)
 	WX_SETBOOL(window->ToggleWindowStyle(flag));
 }
 
-WX_FUNC_START(window_transferdatafromwindow, 1, Nil)
+DLIB_FUNC_START(window_transferdatafromwindow, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->TransferDataFromWindow());
 }
 
-WX_FUNC_START(window_transferdatatowindow, 1, Nil)
+DLIB_FUNC_START(window_transferdatatowindow, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->TransferDataToWindow());
 }
 
-WX_FUNC_START(window_update, 1, Nil)
+DLIB_FUNC_START(window_update, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	window->Update();
 }
@@ -1967,12 +2034,12 @@ WX_FUNC_ARGRANGE_START(window_updatewindowui, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(window_validate, 1, Nil)
+DLIB_FUNC_START(window_validate, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(window->Validate());
 }
 
-WX_FUNC_START(window_warppointer, 3, Nil)
+DLIB_FUNC_START(window_warppointer, 3, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)

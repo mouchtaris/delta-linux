@@ -18,12 +18,14 @@
 #define WX_FUNC(name) WX_FUNC1(textentrydialog, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getvalue)
 WX_FUNC_DEF(setvalue)
 WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getvalue),
 	WX_FUNC(setvalue),
 	WX_FUNC(showmodal)
@@ -31,7 +33,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getvalue", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(TextEntryDialog, "textentrydialog", Dialog)
 
@@ -45,7 +47,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Dialog, val)
+	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
+	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
+	WX_SETOBJECT_EX(*at, Dialog, parent)
 	return true;
 }
 
@@ -76,22 +80,27 @@ WX_FUNC_ARGRANGE_START(textentrydialog_construct, 2, 6, Nil)
 	if (n >= 4) { WX_GETSTRING_DEFINED(value) }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 6) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
-	wxTextEntryDialog* dialog = new wxTextEntryDialog(parent, message, caption, value, style, pos);
-	WX_SET_TOPLEVELWINDOW_OBJECT(TextEntryDialog, dialog)
+	DeltaWxTextEntryDialog *dialog = DNEWCLASS(DeltaWxTextEntryDialog,
+		(new wxTextEntryDialog(parent, message, caption, value, style, pos)));
+	WX_SETOBJECT(TextEntryDialog, dialog)
 }
 
-WX_FUNC_START(textentrydialog_getvalue, 1, Nil)
+DLIB_FUNC_START(textentrydialog_destruct, 1, Nil)
+	DLIB_WXDELETE(textentrydialog, TextEntryDialog, dialog)
+}
+
+DLIB_FUNC_START(textentrydialog_getvalue, 1, Nil)
 	DLIB_WXGET_BASE(textentrydialog, TextEntryDialog, dialog)
 	WX_SETSTRING(dialog->GetValue())
 }
 
-WX_FUNC_START(textentrydialog_setvalue, 2, Nil)
+DLIB_FUNC_START(textentrydialog_setvalue, 2, Nil)
 	DLIB_WXGET_BASE(textentrydialog, TextEntryDialog, dialog)
 	WX_GETSTRING(value)
 	dialog->SetValue(value);
 }
 
-WX_FUNC_START(textentrydialog_showmodal, 1, Nil)
+DLIB_FUNC_START(textentrydialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(textentrydialog, TextEntryDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

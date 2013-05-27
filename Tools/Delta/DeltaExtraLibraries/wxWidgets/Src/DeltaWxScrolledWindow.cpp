@@ -21,6 +21,7 @@
 #define WX_FUNC(name) WX_FUNC1(scrolledwindow, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(calcscrolledposition)
 WX_FUNC_DEF(calcunscrolledposition)
 WX_FUNC_DEF(create)
@@ -37,6 +38,7 @@ WX_FUNC_DEF(settargetwindow)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(calcscrolledposition),
 	WX_FUNC(calcunscrolledposition),
 	WX_FUNC(create),
@@ -54,7 +56,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "calcscrolledposition", "settargetwindow")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "settargetwindow")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ScrolledWindow, "scrolledwindow", Panel)
 
@@ -68,7 +70,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Panel, val)
+	wxPanel *_parent = DLIB_WXTYPECAST_BASE(Panel, val, panel);
+	DeltaWxPanel *parent = DNEWCLASS(DeltaWxPanel, (_parent));
+	WX_SETOBJECT_EX(*at, Panel, parent)
 	return true;
 }
 
@@ -89,14 +93,17 @@ static bool GetScaleY (void* val, DeltaValue* at)
 static bool GetTargetWindow (void* val, DeltaValue* at) 
 {
 	wxScrolledWindow *win = DLIB_WXTYPECAST_BASE(ScrolledWindow, val, scrolledwindow);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, win->GetTargetWindow())
+	wxWindow *target = win->GetTargetWindow();
+	DeltaWxWindow *retval = target ? DNEWCLASS(DeltaWxWindow, (target)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
 static bool GetRectToScroll (void* val, DeltaValue* at) 
 {
 	wxScrolledWindow *win = DLIB_WXTYPECAST_BASE(ScrolledWindow, val, scrolledwindow);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Rect, new wxRect(win->GetTargetRect()))
+	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(win->GetTargetRect())));
+	WX_SETOBJECT_EX(*at, Rect, retval)
 	return true;
 }
 
@@ -146,9 +153,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ScrolledWindow,scrolledwindow)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(scrolledwindow_construct, 0, 6, Nil)
-	wxScrolledWindow *win = (wxScrolledWindow*) 0;
+	wxScrolledWindow *wxwin = (wxScrolledWindow*) 0;
+	DeltaWxScrolledWindow *win = (DeltaWxScrolledWindow*) 0;
 	if (n == 0) {
-		win = new wxScrolledWindow();
+		wxwin = new wxScrolledWindow();
 	} else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int winid = wxID_ANY;
@@ -161,9 +169,15 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		win = new wxScrolledWindow(parent, winid, pos, size, style, name);
+		wxwin = new wxScrolledWindow(parent, winid, pos, size, style, name);
 	}
-	WX_SET_WINDOW_OBJECT(ScrolledWindow, win)
+	if (wxwin)
+		win = DNEWCLASS(DeltaWxScrolledWindow, (wxwin));
+	WX_SETOBJECT(ScrolledWindow, win)
+}
+
+DLIB_FUNC_START(scrolledwindow_destruct, 1, Nil)
+	DLIB_WXDELETE(scrolledwindow, ScrolledWindow, win)
 }
 
 WX_FUNC_ARGRANGE_START(scrolledwindow_calcscrolledposition, 2, 5, Nil)
@@ -172,13 +186,15 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_calcscrolledposition, 2, 5, Nil)
 		DLIB_WXGETPOINT_BASE(point)
 		wxPoint* newPoint = new wxPoint();
 		win->CalcScrolledPosition(point->x, point->y, &newPoint->x, &newPoint->y);
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, newPoint)
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (newPoint));
+		WX_SETOBJECT(Point, retval)
 	} else if (n == 3) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
 		int xx, yy;
 		win->CalcScrolledPosition(x, y, &xx, &yy);
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(xx, yy))
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(xx, yy)));
+		WX_SETOBJECT(Point, retval)
 	} else if (n == 5) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
@@ -195,13 +211,15 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_calcunscrolledposition, 2, 5, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	if (n == 2) {
 		DLIB_WXGETPOINT_BASE(point)
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(win->CalcUnscrolledPosition(*point)))
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(win->CalcUnscrolledPosition(*point))));
+		WX_SETOBJECT(Point, retval)
 	} else if (n == 3) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
 		int xx, yy;
 		win->CalcUnscrolledPosition(x, y, &xx, &yy);
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(xx, yy))
+		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(xx, yy)));
+		WX_SETOBJECT(Point, retval)
 	} else if (n == 5) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
@@ -228,17 +246,16 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_create, 2, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(win->Create(parent, winid, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(win);
 }
 
-WX_FUNC_START(scrolledwindow_enablescrolling, 3, Nil)
+DLIB_FUNC_START(scrolledwindow_enablescrolling, 3, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	WX_GETBOOL(xScrolling)
 	WX_GETBOOL(yScrolling)
 	win->EnableScrolling(xScrolling, yScrolling);
 }
 
-WX_FUNC_START(scrolledwindow_getscrollpixelsperunit, 3, Nil)
+DLIB_FUNC_START(scrolledwindow_getscrollpixelsperunit, 3, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	int xUnit, yUnit;
 	win->GetScrollPixelsPerUnit(&xUnit, &yUnit);
@@ -248,7 +265,7 @@ WX_FUNC_START(scrolledwindow_getscrollpixelsperunit, 3, Nil)
 	WX_SETTABLE_RETVAL(yUnit_table, DeltaValue(DeltaNumberValueType(yUnit)))
 }
 
-WX_FUNC_START(scrolledwindow_getviewstart, 3, Nil)
+DLIB_FUNC_START(scrolledwindow_getviewstart, 3, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	int x, y;
 	win->GetViewStart(&x, &y);
@@ -258,7 +275,7 @@ WX_FUNC_START(scrolledwindow_getviewstart, 3, Nil)
 	WX_SETTABLE_RETVAL(y_table, DeltaValue(DeltaNumberValueType(y)))
 }
 
-WX_FUNC_START(scrolledwindow_getvirtualsize, 3, Nil)
+DLIB_FUNC_START(scrolledwindow_getvirtualsize, 3, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	int x, y;
 	win->GetVirtualSize(&x, &y);
@@ -268,18 +285,18 @@ WX_FUNC_START(scrolledwindow_getvirtualsize, 3, Nil)
 	WX_SETTABLE_RETVAL(y_table, DeltaValue(DeltaNumberValueType(y)))
 }
 
-WX_FUNC_START(scrolledwindow_isretained, 1, Nil)
+DLIB_FUNC_START(scrolledwindow_isretained, 1, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	WX_SETBOOL(win->IsRetained())
 }
 
-WX_FUNC_START(scrolledwindow_preparedc, 2, Nil)
+DLIB_FUNC_START(scrolledwindow_preparedc, 2, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	win->PrepareDC(*dc);
 }
 
-WX_FUNC_START(scrolledwindow_scroll, 3, Nil)
+DLIB_FUNC_START(scrolledwindow_scroll, 3, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
@@ -300,14 +317,14 @@ WX_FUNC_ARGRANGE_START(scrolledwindow_setscrollbars, 5, 8, Nil)
 	win->SetScrollbars(pixelsPerUnitX, pixelsPerUnitY, noUnitsX, noUnitsY, xPos, yPos, noRefresh);
 }
 
-WX_FUNC_START(scrolledwindow_setscrollrate, 3, Nil)
+DLIB_FUNC_START(scrolledwindow_setscrollrate, 3, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	WX_GETNUMBER(xstep)
 	WX_GETNUMBER(ystep)
 	win->SetScrollRate(xstep, ystep);
 }
 
-WX_FUNC_START(scrolledwindow_settargetwindow, 2, Nil)
+DLIB_FUNC_START(scrolledwindow_settargetwindow, 2, Nil)
 	DLIB_WXGET_BASE(scrolledwindow, ScrolledWindow, win)
 	DLIB_WXGET_BASE(window, Window, window)
 	win->SetTargetWindow(window);

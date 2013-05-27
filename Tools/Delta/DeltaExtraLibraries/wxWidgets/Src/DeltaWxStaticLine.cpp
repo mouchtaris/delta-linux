@@ -19,12 +19,14 @@
 #define WX_FUNC(name) WX_FUNC1(staticline, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(isvertical)
 WX_FUNC_DEF(getdefaultsize)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(isvertical),
 	WX_FUNC(getdefaultsize)
@@ -32,7 +34,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "getdefaultsize")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getdefaultsize")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(StaticLine, "staticline", Control)
 
@@ -46,7 +48,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -60,9 +64,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticLine,staticline)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(staticline_construct, 0, 6, Nil)
-	wxStaticLine *statline = (wxStaticLine*) 0;
+	wxStaticLine *wxstatline = (wxStaticLine*) 0;
+	DeltaWxStaticLine *statline = (DeltaWxStaticLine*) 0;
 	if (n == 0) {
-		statline = new wxStaticLine();
+		wxstatline = new wxStaticLine();
 	} else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int id = wxID_ANY;
@@ -75,9 +80,14 @@ WX_FUNC_ARGRANGE_START(staticline_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		statline = new wxStaticLine(parent, id, pos, size, style, name);
+		wxstatline = new wxStaticLine(parent, id, pos, size, style, name);
 	}
-	WX_SET_WINDOW_OBJECT(StaticLine, statline)
+	if (wxstatline) statline = DNEWCLASS(DeltaWxStaticLine, (wxstatline));
+	WX_SETOBJECT(StaticLine, statline)
+}
+
+DLIB_FUNC_START(staticline_destruct, 1, Nil)
+	DLIB_WXDELETE(staticline, StaticLine, statline)
 }
 
 WX_FUNC_ARGRANGE_START(staticline_create, 2, 7, Nil)
@@ -94,15 +104,14 @@ WX_FUNC_ARGRANGE_START(staticline_create, 2, 7, Nil)
 	if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 6) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(statline->Create(parent, id, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(statline);
 }
 
-WX_FUNC_START(staticline_isvertical, 1, Nil)
+DLIB_FUNC_START(staticline_isvertical, 1, Nil)
 	DLIB_WXGET_BASE(staticline, StaticLine, statline)
 	WX_SETBOOL(statline->IsVertical())
 }
 
-WX_FUNC_START(staticline_getdefaultsize, 1, Nil)
+DLIB_FUNC_START(staticline_getdefaultsize, 1, Nil)
 	DLIB_WXGET_BASE(staticline, StaticLine, statline)
 	WX_SETNUMBER(statline->GetDefaultSize())
 }

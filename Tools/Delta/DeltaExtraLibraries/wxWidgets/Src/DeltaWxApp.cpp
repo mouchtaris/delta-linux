@@ -153,78 +153,79 @@ DELTA_LIBRARY_SUBAPI_INSTALLER_EX(DeltaWxAppAdapter, "app", "wx::app_",
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(app_construct, 0, Nil)
-wxAppAdapter *wxapp;
+DLIB_FUNC_START(app_construct, 0, Nil)
+DeltaWxAppAdapter *wxapp;
 if (wxApp* app = (wxApp*) wxApp::GetInstance())
-	wxapp = new wxAppAdapter(app);
+	wxapp = DNEWCLASS(DeltaWxAppAdapter, (new wxAppAdapter(app)));
 else
-	wxapp = new wxAppAdapter();
+	wxapp = DNEWCLASS(DeltaWxAppAdapter, (new wxAppAdapter()));
 WX_SETOBJECT(AppAdapter, wxapp)
 DLIB_FUNC_END
 
-WX_FUNC_START(app_destruct, 1, Nil)
+DLIB_FUNC_START(app_destruct, 1, Nil)
 DLIB_WXDELETE(app, AppAdapter, app)
 DLIB_FUNC_END
 
-WX_FUNC_START(app_dispatch, 1, Nil)
+DLIB_FUNC_START(app_dispatch, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	app->Dispatch();
 }
 
-WX_FUNC_START(app_exitmainloop, 1, Nil)
+DLIB_FUNC_START(app_exitmainloop, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	app->ExitMainLoop();
 }
 
-WX_FUNC_START(app_getappname, 1, Nil)
+DLIB_FUNC_START(app_getappname, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_SETSTRING(app->GetAppName())
 }
 
-WX_FUNC_START(app_getclassname, 1, Nil)
+DLIB_FUNC_START(app_getclassname, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_SETSTRING(app->GetClassName())
 }
 
-WX_FUNC_START(app_getinstance, 0, Nil)
+DLIB_FUNC_START(app_getinstance, 0, Nil)
 	if (wxApp* app = (wxApp*) wxApp::GetInstance()) {
-		wxAppAdapter *wxapp = new wxAppAdapter(app);
+		DeltaWxAppAdapter *wxapp = DNEWCLASS(DeltaWxAppAdapter, (new wxAppAdapter(app)));
 		WX_SETOBJECT(AppAdapter, wxapp)
 	} else {
 		DLIB_RETVAL_REF.FromNil();
 	}
 }
 
-WX_FUNC_START(app_getexitonframedelete, 1, Nil)
+DLIB_FUNC_START(app_getexitonframedelete, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_SETBOOL(app->GetExitOnFrameDelete())
 }
 
-WX_FUNC_START(app_gettopwindow, 1, Nil)
+DLIB_FUNC_START(app_gettopwindow, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
-	WX_SETOBJECT(Window, app->GetTopWindow())
+	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (app->GetTopWindow()));
+	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(app_getusebestvisual, 1, Nil)
+DLIB_FUNC_START(app_getusebestvisual, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_SETBOOL(app->GetUseBestVisual())
 }
 
-WX_FUNC_START(app_getvendorname, 1, Nil)
+DLIB_FUNC_START(app_getvendorname, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_SETSTRING(app->GetVendorName())
 }
 
-WX_FUNC_START(app_isactive, 1, Nil)
+DLIB_FUNC_START(app_isactive, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_SETBOOL(app->IsActive())
 }
 
-WX_FUNC_START(app_ismainlooprunning, 0, Nil)
+DLIB_FUNC_START(app_ismainlooprunning, 0, Nil)
 	WX_SETBOOL(wxApp::IsMainLoopRunning())
 }
 
-WX_FUNC_START(app_oninit, 1, Nil)
+DLIB_FUNC_START(app_oninit, 1, Nil)
 DLIB_WXGET_BASE(app, AppAdapter, wxVar)
 WX_SETBOOL(wxVar->OnInit());
 DLIB_FUNC_END
@@ -237,7 +238,6 @@ static void app_oninitadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(app, AppAdapter, _app)
 	wxAppAdapter *app = (wxAppAdapter*)_app;
 	for (int i = 1; i < n; ++i) {
@@ -255,7 +255,6 @@ static void app_oninitremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(app, AppAdapter, _app)
 	wxAppAdapter *app = (wxAppAdapter*)_app;
 	std::list<DeltaValue> *onInit = app->GetOnInitFuncs();
@@ -273,7 +272,7 @@ static void app_oninitremove_LibFunc (DeltaVirtualMachine* vm)
 	}
 }
 
-WX_FUNC_START(app_onexit, 1, Nil)
+DLIB_FUNC_START(app_onexit, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, wxVar)
 	WX_SETNUMBER(wxVar->OnExit());
 }
@@ -286,7 +285,6 @@ static void app_onexitadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	for (int i = 1; i < n; ++i) {
 		DeltaValue *arg = DPTR(vm)->GetActualArg(i);
@@ -303,7 +301,6 @@ static void app_onexitremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	std::list<DeltaValue> *onExit = app->GetOnExitFuncs();
 	for (int i = 1; i < n; ++i) {
@@ -320,7 +317,7 @@ static void app_onexitremove_LibFunc (DeltaVirtualMachine* vm)
 	}
 }
 
-WX_FUNC_START(app_onrun, 1, Nil)
+DLIB_FUNC_START(app_onrun, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, wxVar)
 	WX_SETNUMBER(wxVar->OnRun());
 }
@@ -333,7 +330,6 @@ static void app_onrunadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	for (int i = 1; i < n; ++i) {
 		DeltaValue *arg = DPTR(vm)->GetActualArg(i);
@@ -350,7 +346,6 @@ static void app_onrunremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	std::list<DeltaValue> *onRun = app->GetOnRunFuncs();
 	for (int i = 1; i < n; ++i) {
@@ -367,36 +362,36 @@ static void app_onrunremove_LibFunc (DeltaVirtualMachine* vm)
 	}
 }
 
-WX_FUNC_START(app_pending, 1, Nil)
+DLIB_FUNC_START(app_pending, 1, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_SETBOOL(app->Pending())
 }
 
-WX_FUNC_START(app_setappname, 2, Nil)
+DLIB_FUNC_START(app_setappname, 2, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_GETSTRING(name)
 	app->SetAppName(name);
 }
 
-WX_FUNC_START(app_setclassname, 2, Nil)
+DLIB_FUNC_START(app_setclassname, 2, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_GETSTRING(name)
 	app->SetClassName(name);
 }
 
-WX_FUNC_START(app_setexitonframedelete, 2, Nil)
+DLIB_FUNC_START(app_setexitonframedelete, 2, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_GETBOOL(flag)
 	app->SetExitOnFrameDelete(flag);
 }
 
-WX_FUNC_START(app_settopwindow, 2, Nil)
+DLIB_FUNC_START(app_settopwindow, 2, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	DLIB_WXGET_BASE(window, Window, window)
 	app->SetTopWindow(window);
 }
 
-WX_FUNC_START(app_setvendorname, 2, Nil)
+DLIB_FUNC_START(app_setvendorname, 2, Nil)
 	DLIB_WXGET_BASE(app, AppAdapter, app)
 	WX_GETSTRING(name)
 	app->SetVendorName(name);
@@ -410,7 +405,7 @@ WX_FUNC_ARGRANGE_START(app_setusebestvisual, 2, 3, Nil)
 	app->SetUseBestVisual(flag, forceTrueColour);
 }
 
-WX_FUNC_START(app_start, 1, Nil)
+DLIB_FUNC_START(app_start, 1, Nil)
 DLIB_WXGET_BASE(app, AppAdapter, app)
 if (!app->IsDelegate()) {
 #ifdef WIN32
@@ -438,7 +433,8 @@ WX_FUNC_ARGRANGE_START(app_yield, 1, 2, Nil)
 bool wxAppAdapter::NotifyInit()
 {
 	DeltaValue arg;
-	WX_SETOBJECT_NO_CONTEXT_EX(arg, AppAdapter, this)
+	DeltaWxAppAdapter *app = DNEWCLASS(DeltaWxAppAdapter, (this));
+	WX_SETOBJECT_EX(arg, AppAdapter, app)
 
 	bool retval = true;
 	std::list<DeltaValue>::iterator it;
@@ -451,13 +447,15 @@ bool wxAppAdapter::NotifyInit()
 			retval = retval && obj_result.ToBool();
 	}
 
+	DDELETE(app);
 	return retval;
 }
 
 void wxAppAdapter::NotifyExit()
 {
 	DeltaValue arg;
-	WX_SETOBJECT_NO_CONTEXT_EX(arg, AppAdapter, this)
+	DeltaWxAppAdapter *app = DNEWCLASS(DeltaWxAppAdapter, (this));
+	WX_SETOBJECT_EX(arg, AppAdapter, app)
 
 	std::list<DeltaValue>::iterator it;
 	std::list<DeltaValue> *exitFuncs = this->GetOnExitFuncs();
@@ -466,12 +464,15 @@ void wxAppAdapter::NotifyExit()
 		DASSERT(obj.IsCallable());
 		obj(arg);
 	}
+
+	DDELETE(app);
 }
 
 void wxAppAdapter::NotifyRun()
 {
 	DeltaValue arg;
-	WX_SETOBJECT_NO_CONTEXT_EX(arg, AppAdapter, this)
+	DeltaWxAppAdapter *app = DNEWCLASS(DeltaWxAppAdapter, (this));
+	WX_SETOBJECT_EX(arg, AppAdapter, app)
 
 	std::list<DeltaValue>::iterator it;
 	std::list<DeltaValue> *runFuncs = this->GetOnRunFuncs();
@@ -480,4 +481,6 @@ void wxAppAdapter::NotifyRun()
 		DASSERT(obj.IsCallable());
 		obj(arg);
 	}
+
+	DDELETE(app);
 }

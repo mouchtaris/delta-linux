@@ -22,6 +22,7 @@
 #define WX_FUNC(name) WX_FUNC1(radiobox, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(enable)
 WX_FUNC_DEF(findstring)
@@ -45,6 +46,7 @@ WX_FUNC_DEF(show)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(enable),
 	WX_FUNC(findstring),
@@ -69,7 +71,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "show")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "show")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(RadioBox, "radiobox", Control)
 
@@ -83,7 +85,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -107,7 +111,9 @@ static bool GetItemTooltips (void* val, DeltaValue* at)
 	at->FromTable(DNEW(DELTA_OBJECT));
 	for (int i = 0, n = radiobox->GetCount(); i < n; ++i) {
 		DeltaValue value;
-		WX_SETOBJECT_NO_CONTEXT_EX(value, ToolTip, radiobox->GetItemToolTip(i))
+		wxToolTip *tooltip = radiobox->GetItemToolTip(i);
+		DeltaWxToolTip *retval = tooltip ? DNEWCLASS(DeltaWxToolTip, (tooltip)) : (DeltaWxToolTip*) 0;
+		WX_SETOBJECT_EX(value, ToolTip, retval)
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -150,9 +156,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(RadioBox,radiobox)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(radiobox_construct, 0, 10, Nil)
-	wxRadioBox *box = (wxRadioBox*) 0;
+	wxRadioBox *wxbox = (wxRadioBox*) 0;
+	DeltaWxRadioBox *box = (DeltaWxRadioBox*) 0;
 	if (n == 0) {
-		box = new wxRadioBox;
+		wxbox = new wxRadioBox;
 	} else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -183,10 +190,15 @@ WX_FUNC_ARGRANGE_START(radiobox_construct, 0, 10, Nil)
 		if (n >= 8) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 9) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 10) { WX_GETSTRING_DEFINED(name) }
-		box = new wxRadioBox(parent, id, label, pos, size, choices_size, choices, majorDim, style, *validator, name);
+		wxbox = new wxRadioBox(parent, id, label, pos, size, choices_size, choices, majorDim, style, *validator, name);
 		if (n >= 6) { DDELARR(choices); }
 	}
-	WX_SET_WINDOW_OBJECT(RadioBox, box)
+	if (wxbox) box = DNEWCLASS(DeltaWxRadioBox, (wxbox));
+	WX_SETOBJECT(RadioBox, box)
+}
+
+DLIB_FUNC_START(radiobox_destruct, 1, Nil)
+	DLIB_WXDELETE(radiobox, RadioBox, box)
 }
 
 WX_FUNC_ARGRANGE_START(radiobox_create, 4, 11, Nil)
@@ -222,7 +234,6 @@ WX_FUNC_ARGRANGE_START(radiobox_create, 4, 11, Nil)
 	if (n >= 11) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(rdbox->Create(parent, id, label, pos, size, choices_size, choices, majorDim, style, *validator, name));
 	if (n >= 7) { DDELARR(choices); }
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(rdbox);
 }
 
 WX_FUNC_ARGRANGE_START(radiobox_enable, 1, 3, Nil)
@@ -239,100 +250,100 @@ WX_FUNC_ARGRANGE_START(radiobox_enable, 1, 3, Nil)
 	}
 }
 
-WX_FUNC_START(radiobox_findstring, 2, Nil)
+DLIB_FUNC_START(radiobox_findstring, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETSTRING(str)
 	WX_SETNUMBER(rdbox->FindString(str))
 }
 
-WX_FUNC_START(radiobox_getcolumncount, 1, Nil)
+DLIB_FUNC_START(radiobox_getcolumncount, 1, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_SETNUMBER(rdbox->GetColumnCount())
 }
 
-WX_FUNC_START(radiobox_getitemhelptext, 2, Nil)
+DLIB_FUNC_START(radiobox_getitemhelptext, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(item)
 	WX_SETSTRING(rdbox->GetItemHelpText(item))
 }
 
-WX_FUNC_START(radiobox_getitemtooltip, 2, Nil)
+DLIB_FUNC_START(radiobox_getitemtooltip, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(item)
-	wxToolTip* retval	= rdbox->GetItemToolTip(item);
+	WXNEWCLASS(DeltaWxToolTip, retval, wxToolTip, rdbox->GetItemToolTip(item))
 	WX_SETOBJECT(ToolTip, retval)
 }
 
-WX_FUNC_START(radiobox_getitemfrompoint, 2, Nil)
+DLIB_FUNC_START(radiobox_getitemfrompoint, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	DLIB_WXGETPOINT_BASE(pt)
 	WX_SETNUMBER(rdbox->GetItemFromPoint(*pt))
 }
 
-WX_FUNC_START(radiobox_getlabel, 1, Nil)
+DLIB_FUNC_START(radiobox_getlabel, 1, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_SETSTRING(rdbox->GetLabel())
 }
 
-WX_FUNC_START(radiobox_getrowcount, 1, Nil)
+DLIB_FUNC_START(radiobox_getrowcount, 1, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_SETNUMBER(rdbox->GetRowCount())
 }
 
-WX_FUNC_START(radiobox_getselection, 1, Nil)
+DLIB_FUNC_START(radiobox_getselection, 1, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_SETNUMBER(rdbox->GetSelection())
 }
 
-WX_FUNC_START(radiobox_getstringselection, 1, Nil)
+DLIB_FUNC_START(radiobox_getstringselection, 1, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_SETSTRING(rdbox->GetStringSelection())
 }
 
-WX_FUNC_START(radiobox_getstring, 2, Nil)
+DLIB_FUNC_START(radiobox_getstring, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(num)
 	WX_SETSTRING(rdbox->GetString(num))
 }
 
-WX_FUNC_START(radiobox_isitemenabled, 2, Nil)
+DLIB_FUNC_START(radiobox_isitemenabled, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(num)
 	WX_SETBOOL(rdbox->IsItemEnabled(num))
 }
 
-WX_FUNC_START(radiobox_isitemshown, 2, Nil)
+DLIB_FUNC_START(radiobox_isitemshown, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(num)
 	WX_SETBOOL(rdbox->IsItemShown(num))
 }
 
-WX_FUNC_START(radiobox_setitemhelptext, 3, Nil)
+DLIB_FUNC_START(radiobox_setitemhelptext, 3, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(item)
 	WX_GETSTRING(helptext)
 	rdbox->SetItemHelpText(item, helptext);
 }
 
-WX_FUNC_START(radiobox_setlabel, 2, Nil)
+DLIB_FUNC_START(radiobox_setlabel, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETSTRING(label)
 	rdbox->SetLabel(label);
 }
 
-WX_FUNC_START(radiobox_setselection, 2, Nil)
+DLIB_FUNC_START(radiobox_setselection, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(sel)
 	rdbox->SetSelection(sel);
 }
 
-WX_FUNC_START(radiobox_setstringselection, 2, Nil)
+DLIB_FUNC_START(radiobox_setstringselection, 2, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETSTRING(sel)
 	rdbox->SetStringSelection(sel);
 }
 
-WX_FUNC_START(radiobox_setitemtooltip, 3, Nil)
+DLIB_FUNC_START(radiobox_setitemtooltip, 3, Nil)
 	DLIB_WXGET_BASE(radiobox, RadioBox, rdbox)
 	WX_GETNUMBER(item)
 	WX_GETSTRING(text)

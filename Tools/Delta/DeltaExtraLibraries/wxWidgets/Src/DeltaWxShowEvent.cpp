@@ -16,18 +16,20 @@
 #define WX_FUNC(name) WX_FUNC1(showevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getshow)
 WX_FUNC_DEF(setshow)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getshow),
 	WX_FUNC(setshow)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getshow", "setshow")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setshow")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ShowEvent, "showevent", Event)
 
@@ -41,7 +43,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
@@ -67,15 +71,20 @@ WX_FUNC_ARGRANGE_START(showevent_construct, 0, 2, Nil)
 	bool show = false;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(winid) }
 	if (n >= 2) { WX_GETBOOL_DEFINED(show) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ShowEvent, new wxShowEvent(winid, show))
+	DeltaWxShowEvent *evt = DNEWCLASS(DeltaWxShowEvent, (new wxShowEvent(winid, show)));
+	WX_SETOBJECT(ShowEvent, evt)
 }
 
-WX_FUNC_START(showevent_getshow, 1, Nil)
+DLIB_FUNC_START(showevent_destruct, 1, Nil)
+	DLIB_WXDELETE(showevent, ShowEvent, evt)
+}
+
+DLIB_FUNC_START(showevent_getshow, 1, Nil)
 	DLIB_WXGET_BASE(showevent, ShowEvent, evt)
 	WX_SETBOOL(evt->GetShow())
 }
 
-WX_FUNC_START(showevent_setshow, 2, Nil)
+DLIB_FUNC_START(showevent_setshow, 2, Nil)
 	DLIB_WXGET_BASE(showevent, ShowEvent, evt)
 	WX_GETBOOL(show)
 	evt->SetShow(show);

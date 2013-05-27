@@ -96,14 +96,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
 static bool GetToolBar (void* val, DeltaValue* at) 
 {
 	wxToolBarToolBase *tool = DLIB_WXTYPECAST_BASE(ToolBarToolBase, val, toolbartoolbase);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, ToolBar, (wxToolBar*)tool->GetToolBar())
+	wxToolBar *tbar = (wxToolBar*)tool->GetToolBar();
+	DeltaWxToolBar *retval = tbar ? DNEWCLASS(DeltaWxToolBar, (tbar)) : (DeltaWxToolBar*) 0;
+	WX_SETOBJECT_EX(*at, ToolBar, retval)
 	return true;
 }
 
@@ -145,14 +149,16 @@ static bool GetIsEnabled (void* val, DeltaValue* at)
 static bool GetNormalBitmap (void* val, DeltaValue* at) 
 {
 	wxToolBarToolBase *tool = DLIB_WXTYPECAST_BASE(ToolBarToolBase, val, toolbartoolbase);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Bitmap, new wxBitmap(tool->GetNormalBitmap()))
+	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(tool->GetNormalBitmap())));
+	WX_SETOBJECT_EX(*at, Bitmap, retval)
 	return true;
 }
 
 static bool GetDisabledBitmap (void* val, DeltaValue* at) 
 {
 	wxToolBarToolBase *tool = DLIB_WXTYPECAST_BASE(ToolBarToolBase, val, toolbartoolbase);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Bitmap, new wxBitmap(tool->GetDisabledBitmap()))
+	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(tool->GetDisabledBitmap())));
+	WX_SETOBJECT_EX(*at, Bitmap, retval)
 	return true;
 }
 
@@ -198,9 +204,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ToolBarToolBase,toolbartoolbase)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(toolbartoolbase_construct, 0, 8, Nil)
-	wxToolBarToolBase *tool = (wxToolBarToolBase*) 0;
+	wxToolBarToolBase *wxtool = (wxToolBarToolBase*) 0;
+	DeltaWxToolBarToolBase *tool = (DeltaWxToolBarToolBase*) 0;
 	if (n == 0) {
-		tool = new wxToolBarToolBase();
+		wxtool = new wxToolBarToolBase();
 	} else {
 		DLIB_WXGET_BASE(toolbar, ToolBar, tbar)
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number ||
@@ -216,159 +223,163 @@ WX_FUNC_ARGRANGE_START(toolbartoolbase_construct, 0, 8, Nil)
 			if (n >= 6) { WX_GETDEFINE_DEFINED(kind) }
 			if (n >= 7) { WX_GETSTRING_DEFINED(shortHelpString) }
 			if (n >= 8) { WX_GETSTRING_DEFINED(longHelpString) }
-			tool = new wxToolBarToolBase(tbar, toolid, label, bmpNormal, bmpDisabled,
+			wxtool = new wxToolBarToolBase(tbar, toolid, label, bmpNormal, bmpDisabled,
 				(wxItemKind)kind, NULL, shortHelpString, longHelpString);
 		} else if (n >= 2 && DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGET_BASE(control, Control, control)
-			tool = new wxToolBarToolBase(tbar, control
+			wxtool = new wxToolBarToolBase(tbar, control
 #if wxCHECK_VERSION(2, 9, 0)
 				, wxEmptyString
 #endif
 			);
 		}
 	}
+	if (wxtool) tool = DNEWCLASS(DeltaWxToolBarToolBase, (wxtool));
 	WX_SETOBJECT(ToolBarToolBase, tool)
 }
 
-WX_FUNC_START(toolbartoolbase_destruct, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_destruct, 1, Nil)
 	DLIB_WXDELETE(toolbartoolbase, ToolBarToolBase, tool)
 }
 
-WX_FUNC_START(toolbartoolbase_attach, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_attach, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	DLIB_WXGET_BASE(toolbar, ToolBar, tbar)
 	tool->Attach((wxToolBar*) tbar);
 }
 
-WX_FUNC_START(toolbartoolbase_canbetoggled, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_canbetoggled, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETBOOL(tool->CanBeToggled())
 }
 
-WX_FUNC_START(toolbartoolbase_detach, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_detach, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	tool->Detach();
 }
 
-WX_FUNC_START(toolbartoolbase_enable, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_enable, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_GETBOOL(enable)
 	WX_SETBOOL(tool->Enable(enable))
 }
 
-WX_FUNC_START(toolbartoolbase_isbutton, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_isbutton, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETBOOL(tool->IsButton())
 }
 
-WX_FUNC_START(toolbartoolbase_iscontrol, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_iscontrol, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETBOOL(tool->IsControl())
 }
 
-WX_FUNC_START(toolbartoolbase_isenabled, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_isenabled, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETBOOL(tool->IsEnabled())
 }
 
-WX_FUNC_START(toolbartoolbase_isseparator, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_isseparator, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETBOOL(tool->IsSeparator())
 }
 
-WX_FUNC_START(toolbartoolbase_istoggled, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_istoggled, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETBOOL(tool->IsToggled())
 }
 
-WX_FUNC_START(toolbartoolbase_getbitmap, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getbitmap, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
-	WX_SETOBJECT(Bitmap, new wxBitmap(tool->GetBitmap()))
+	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(tool->GetBitmap())));
+	WX_SETOBJECT(Bitmap, retval)
 }
 
-WX_FUNC_START(toolbartoolbase_getcontrol, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getcontrol, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
-	wxControl* retval	= tool->GetControl();
+	WXNEWCLASS(DeltaWxControl, retval, wxControl, tool->GetControl())
 	WX_SETOBJECT(Control, retval)
 }
 
-WX_FUNC_START(toolbartoolbase_getdisabledbitmap, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getdisabledbitmap, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
-	WX_SETOBJECT(Bitmap, new wxBitmap(tool->GetDisabledBitmap()))
+	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(tool->GetDisabledBitmap())));
+	WX_SETOBJECT(Bitmap, retval)
 }
 
-WX_FUNC_START(toolbartoolbase_getid, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getid, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETNUMBER(tool->GetId())
 }
 
-WX_FUNC_START(toolbartoolbase_getkind, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getkind, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETNUMBER(tool->GetKind())
 }
 
-WX_FUNC_START(toolbartoolbase_getlabel, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getlabel, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETSTRING(tool->GetLabel())
 }
 
-WX_FUNC_START(toolbartoolbase_getlonghelp, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getlonghelp, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETSTRING(tool->GetLongHelp())
 }
 
-WX_FUNC_START(toolbartoolbase_getnormalbitmap, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getnormalbitmap, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
-	WX_SETOBJECT(Bitmap, new wxBitmap(tool->GetNormalBitmap()))
+	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(tool->GetNormalBitmap())));
+	WX_SETOBJECT(Bitmap, retval)
 }
 
-WX_FUNC_START(toolbartoolbase_getshorthelp, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getshorthelp, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETSTRING(tool->GetShortHelp())
 }
 
-WX_FUNC_START(toolbartoolbase_getstyle, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_getstyle, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_SETNUMBER(tool->GetStyle())
 }
 
-WX_FUNC_START(toolbartoolbase_gettoolbar, 1, Nil)
+DLIB_FUNC_START(toolbartoolbase_gettoolbar, 1, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
-	wxToolBar* retval	= (wxToolBar*)tool->GetToolBar();
+	WXNEWCLASS(DeltaWxToolBar, retval, wxToolBar, (wxToolBar*)tool->GetToolBar())
 	WX_SETOBJECT(ToolBar, retval)
 }
 
-WX_FUNC_START(toolbartoolbase_setdisabledbitmap, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_setdisabledbitmap, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 	tool->SetDisabledBitmap(*bmp);
 }
 
-WX_FUNC_START(toolbartoolbase_setlabel, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_setlabel, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_GETSTRING(label)
 	tool->SetLabel(label);
 }
 
-WX_FUNC_START(toolbartoolbase_setlonghelp, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_setlonghelp, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_GETSTRING(help)
 	WX_SETBOOL(tool->SetLongHelp(help))
 }
 
-WX_FUNC_START(toolbartoolbase_setnormalbitmap, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_setnormalbitmap, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 	tool->SetNormalBitmap(*bmp);
 }
 
-WX_FUNC_START(toolbartoolbase_setshorthelp, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_setshorthelp, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_GETSTRING(help)
 	WX_SETBOOL(tool->SetShortHelp(help))
 }
 
-WX_FUNC_START(toolbartoolbase_settoggle, 2, Nil)
+DLIB_FUNC_START(toolbartoolbase_settoggle, 2, Nil)
 	DLIB_WXGET_BASE(toolbartoolbase, ToolBarToolBase, tool)
 	WX_GETBOOL(toggle)
 	WX_SETBOOL(tool->SetToggle(toggle))

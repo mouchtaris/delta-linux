@@ -15,6 +15,7 @@
 #define WX_FUNC(name) WX_FUNC1(iconlocation, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getfilename)
 WX_FUNC_DEF(getindex)
 WX_FUNC_DEF(setindex)
@@ -23,6 +24,7 @@ WX_FUNC_DEF(setfilename)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getfilename),
 	WX_FUNC(getindex),
 	WX_FUNC(setindex),
@@ -32,7 +34,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getfilename", "setfilename")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setfilename")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(IconLocation, "iconlocation")
 
@@ -76,19 +78,23 @@ WX_FUNC_ARGRANGE_START(iconlocation_construct, 0, 2, Nil)
 	if (n >= 1) { WX_GETSTRING_DEFINED(file) }
 #if defined (__WXMSW__)
 	if (n >= 2) { WX_GETNUMBER_DEFINED(num) }
-	wxIconLocation *iconloc = new wxIconLocation(file, num);
+	DeltaWxIconLocation *iconloc = DNEWCLASS(DeltaWxIconLocation, (new wxIconLocation(file, num)));
 #else
-	wxIconLocation *iconloc = new wxIconLocation(file);
+	DeltaWxIconLocation *iconloc = DNEWCLASS(DeltaWxIconLocation, (new wxIconLocation(file)));
 #endif
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IconLocation, iconloc)
+	WX_SETOBJECT(IconLocation, iconloc)
 }
 
-WX_FUNC_START(iconlocation_getfilename, 1, Nil)
+DLIB_FUNC_START(iconlocation_destruct, 1, Nil)
+	DLIB_WXDELETE(iconlocation, IconLocation, iconloc)
+}
+
+DLIB_FUNC_START(iconlocation_getfilename, 1, Nil)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_SETSTRING(iconloc->GetFileName())
 }
 
-WX_FUNC_START(iconlocation_getindex, 1, Nil)
+DLIB_FUNC_START(iconlocation_getindex, 1, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_SETNUMBER(iconloc->GetIndex())
@@ -100,7 +106,7 @@ WX_FUNC_START(iconlocation_getindex, 1, Nil)
 #endif //__WXMSW__
 }
 
-WX_FUNC_START(iconlocation_setindex, 2, Nil)
+DLIB_FUNC_START(iconlocation_setindex, 2, Nil)
 #if defined (__WXMSW__)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_GETNUMBER(index)
@@ -113,12 +119,12 @@ WX_FUNC_START(iconlocation_setindex, 2, Nil)
 #endif //__WXMSW__
 }
 
-WX_FUNC_START(iconlocation_isok, 1, Nil)
+DLIB_FUNC_START(iconlocation_isok, 1, Nil)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_SETBOOL(iconloc->IsOk())
 }
 
-WX_FUNC_START(iconlocation_setfilename, 2, Nil)
+DLIB_FUNC_START(iconlocation_setfilename, 2, Nil)
 	DLIB_WXGET_BASE(iconlocation, IconLocation, iconloc)
 	WX_GETSTRING(filename)
 	iconloc->SetFileName(filename);

@@ -27,6 +27,7 @@
 #define WX_FUNC(name) WX_FUNC1(treectrl, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addroot)
 WX_FUNC_DEF(appenditem)
 WX_FUNC_DEF(assignimagelist)
@@ -106,6 +107,7 @@ WX_FUNC_DEF(unselectitem)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(addroot),
 	WX_FUNC(appenditem),
 	WX_FUNC(assignimagelist),
@@ -180,7 +182,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addroot", "unselectitem")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "unselectitem")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(TreeCtrl, "treectrl", Control)
 
@@ -194,21 +196,27 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
 static bool GetNormalImageList (void* val, DeltaValue* at) 
 {
 	wxTreeCtrl *ctrl = DLIB_WXTYPECAST_BASE(TreeCtrl, val, treectrl);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, ctrl->GetImageList())
+	wxImageList *imagelist = ctrl->GetImageList();
+	DeltaWxImageList *retval = imagelist ? DNEWCLASS(DeltaWxImageList, (imagelist)) : (DeltaWxImageList*) 0;
+	WX_SETOBJECT_EX(*at, ImageList, retval)
 	return true;
 }
 
 static bool GetStateImageList (void* val, DeltaValue* at) 
 {
 	wxTreeCtrl *ctrl = DLIB_WXTYPECAST_BASE(TreeCtrl, val, treectrl);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, ctrl->GetStateImageList())
+	wxImageList *imagelist = ctrl->GetStateImageList();
+	DeltaWxImageList *retval = imagelist ? DNEWCLASS(DeltaWxImageList, (imagelist)) : (DeltaWxImageList*) 0;
+	WX_SETOBJECT_EX(*at, ImageList, retval)
 	return true;
 }
 
@@ -229,7 +237,9 @@ static bool GetQuickBestSize (void* val, DeltaValue* at)
 static bool GetTextCtrl (void* val, DeltaValue* at) 
 {
 	wxTreeCtrl *ctrl = DLIB_WXTYPECAST_BASE(TreeCtrl, val, treectrl);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, TextCtrl, ctrl->GetEditControl())
+	wxTextCtrl *textctrl = ctrl->GetEditControl();
+	DeltaWxTextCtrl *retval = textctrl ? DNEWCLASS(DeltaWxTextCtrl, (textctrl)) : (DeltaWxTextCtrl*) 0;
+	WX_SETOBJECT_EX(*at, TextCtrl, retval)
 	return true;
 }
 
@@ -248,9 +258,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeCtrl, treectrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(treectrl_construct, 0, 7, Nil)
-	wxTreeCtrl *ctrl = (wxTreeCtrl*) 0;
+	wxTreeCtrl *wxctrl = (wxTreeCtrl*) 0;
+	DeltaWxTreeCtrl *ctrl = (DeltaWxTreeCtrl*) 0;
 	if (n == 0)
-		ctrl = new wxTreeCtrl();
+		wxctrl = new wxTreeCtrl();
 	else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int id = wxID_ANY;
@@ -265,9 +276,14 @@ WX_FUNC_ARGRANGE_START(treectrl_construct, 0, 7, Nil)
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
-		ctrl = new wxTreeCtrl(parent, id, pos, size, style, *validator, name);
+		wxctrl = new wxTreeCtrl(parent, id, pos, size, style, *validator, name);
 	}
-	WX_SET_WINDOW_OBJECT(TreeCtrl, ctrl)
+	if (wxctrl) ctrl = DNEWCLASS(DeltaWxTreeCtrl, (wxctrl));
+	WX_SETOBJECT(TreeCtrl, ctrl)
+}
+
+DLIB_FUNC_START(treectrl_destruct, 1, Nil)
+	DLIB_WXDELETE(treectrl, TreeCtrl, ctrl)
 }
 
 WX_FUNC_ARGRANGE_START(treectrl_addroot, 2, 5, Nil)
@@ -278,7 +294,9 @@ WX_FUNC_ARGRANGE_START(treectrl_addroot, 2, 5, Nil)
 	if (n >= 3) { WX_GETNUMBER(image) }
 	if (n >= 4) { WX_GETNUMBER(selectedImage) }
 	if (n >= 5) { DLIB_WXGET_BASE(treeitemdata, TreeItemData, _data) data = _data; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->AddRoot(text, image, selectedImage, data)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->AddRoot(
+		text, image, selectedImage, data))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
 WX_FUNC_ARGRANGE_START(treectrl_appenditem, 3, 6, Nil)
@@ -290,39 +308,41 @@ WX_FUNC_ARGRANGE_START(treectrl_appenditem, 3, 6, Nil)
 	if (n >= 4) { WX_GETNUMBER(image) }
 	if (n >= 5) { WX_GETNUMBER(selectedImage) }
 	if (n >= 6) { DLIB_WXGET_BASE(treeitemdata, TreeItemData, _data) data = _data; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->AppendItem(*parent, text, image, selectedImage, data)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->AppendItem(
+		*parent, text, image, selectedImage, data))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_assignimagelist, 2, Nil)
+DLIB_FUNC_START(treectrl_assignimagelist, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	ctrl->AssignImageList(imageList);
 }
 
-WX_FUNC_START(treectrl_assignstateimagelist, 2, Nil)
+DLIB_FUNC_START(treectrl_assignstateimagelist, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	ctrl->AssignStateImageList(imageList);
 }
 
-WX_FUNC_START(treectrl_collapse, 2, Nil)
+DLIB_FUNC_START(treectrl_collapse, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->Collapse(*item);
 }
 
-WX_FUNC_START(treectrl_collapseall, 1, Nil)
+DLIB_FUNC_START(treectrl_collapseall, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	ctrl->CollapseAll();
 }
 
-WX_FUNC_START(treectrl_collapseallchildren, 2, Nil)
+DLIB_FUNC_START(treectrl_collapseallchildren, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->CollapseAllChildren(*item);
 }
 
-WX_FUNC_START(treectrl_collapseandreset, 2, Nil)
+DLIB_FUNC_START(treectrl_collapseandreset, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->CollapseAndReset(*item);
@@ -344,27 +364,26 @@ WX_FUNC_ARGRANGE_START(treectrl_create, 2, 8, Nil)
 	if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(ctrl->Create(parent, id, pos, size, style, *validator, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(ctrl);
 }
 
-WX_FUNC_START(treectrl_delete, 2, Nil)
+DLIB_FUNC_START(treectrl_delete, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->Delete(*item);
 }
 
-WX_FUNC_START(treectrl_deleteallitems, 1, Nil)
+DLIB_FUNC_START(treectrl_deleteallitems, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	ctrl->DeleteAllItems();
 }
 
-WX_FUNC_START(treectrl_deletechildren, 2, Nil)
+DLIB_FUNC_START(treectrl_deletechildren, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->DeleteChildren(*item);
 }
 
-WX_FUNC_START(treectrl_editlabel, 2, Nil)
+DLIB_FUNC_START(treectrl_editlabel, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->EditLabel(*item);
@@ -378,24 +397,24 @@ WX_FUNC_ARGRANGE_START(treectrl_endeditlabel, 2, 3, Nil)
 	ctrl->EndEditLabel(*item, discardChanges);
 }
 
-WX_FUNC_START(treectrl_ensurevisible, 2, Nil)
+DLIB_FUNC_START(treectrl_ensurevisible, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->EnsureVisible(*item);
 }
 
-WX_FUNC_START(treectrl_expand, 2, Nil)
+DLIB_FUNC_START(treectrl_expand, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->Expand(*item);
 }
 
-WX_FUNC_START(treectrl_expandall, 1, Nil)
+DLIB_FUNC_START(treectrl_expandall, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	ctrl->ExpandAll();
 }
 
-WX_FUNC_START(treectrl_expandallchildren, 2, Nil)
+DLIB_FUNC_START(treectrl_expandallchildren, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->ExpandAllChildren(*item);
@@ -411,7 +430,7 @@ WX_FUNC_ARGRANGE_START(treectrl_getboundingrect, 3, 4, Nil)
 	WX_SETBOOL(ctrl->GetBoundingRect(*item, rect, textOnly))
 	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect)));
 	DeltaValue value;
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE_EX(value, Rect, new wxRect(rect))
+	WX_SETOBJECT_EX(value, Rect, retval)
 	WX_SETTABLE_RETVAL(rect_table, value)
 }
 
@@ -423,59 +442,68 @@ WX_FUNC_ARGRANGE_START(treectrl_getchildrencount, 2, 3, Nil)
 	WX_SETNUMBER(ctrl->GetChildrenCount(*item, recursively))
 }
 
-WX_FUNC_START(treectrl_getcount, 1, Nil)
+DLIB_FUNC_START(treectrl_getcount, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetCount())
 }
 
-WX_FUNC_START(treectrl_geteditcontrol, 1, Nil)
+DLIB_FUNC_START(treectrl_geteditcontrol, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
-	WX_SETOBJECT(TextCtrl, ctrl->GetEditControl())
+	DeltaWxTextCtrl *retval = DNEWCLASS(DeltaWxTextCtrl, (ctrl->GetEditControl()));
+	WX_SETOBJECT(TextCtrl, retval)
 }
 
-WX_FUNC_START(treectrl_getfirstchild, 3, Nil)
+DLIB_FUNC_START(treectrl_getfirstchild, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_GETTABLE(cookie_table)
 	wxTreeItemIdValue cookie;
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetFirstChild(*item, cookie)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(
+		ctrl->GetFirstChild(*item, cookie))));
+	WX_SETOBJECT(TreeItemId, retval)
 	wxTreeItemId fromCookie(cookie);
+	DeltaWxTreeItemId *wxvalue = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(fromCookie)));
 	DeltaValue value;
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE_EX(value, TreeItemId, new wxTreeItemId(fromCookie))
+	WX_SETOBJECT_EX(value, TreeItemId, wxvalue)
 	WX_SETTABLE_RETVAL(cookie_table, value)
 }
 
-WX_FUNC_START(treectrl_getfirstvisibleitem, 1, Nil)
+DLIB_FUNC_START(treectrl_getfirstvisibleitem, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetFirstVisibleItem()))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetFirstVisibleItem())));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getimagelist, 1, Nil)
+DLIB_FUNC_START(treectrl_getimagelist, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
-	WX_SETOBJECT(ImageList, ctrl->GetImageList())
+	DeltaWxImageList *retval = DNEWCLASS(DeltaWxImageList, (ctrl->GetImageList()));
+	WX_SETOBJECT(ImageList, retval)
 }
 
-WX_FUNC_START(treectrl_getindent, 1, Nil)
+DLIB_FUNC_START(treectrl_getindent, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetIndent())
 }
 
-WX_FUNC_START(treectrl_getitembackgroundcolour, 2, Nil)
+DLIB_FUNC_START(treectrl_getitembackgroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(ctrl->GetItemBackgroundColour(*item)))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(ctrl->GetItemBackgroundColour(*item))));
+	WX_SETOBJECT(Colour, retval)
 }
 
-WX_FUNC_START(treectrl_getitemdata, 2, Nil)
+DLIB_FUNC_START(treectrl_getitemdata, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT(TreeItemData, ctrl->GetItemData(*item))
+	DeltaWxTreeItemData *retval = DNEWCLASS(DeltaWxTreeItemData, (ctrl->GetItemData(*item)));
+	WX_SETOBJECT(TreeItemData, retval)
 }
 
-WX_FUNC_START(treectrl_getitemfont, 2, Nil)
+DLIB_FUNC_START(treectrl_getitemfont, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(ctrl->GetItemFont(*item)))
+	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(ctrl->GetItemFont(*item))));
+	WX_SETOBJECT(Font, retval)
 }
 
 WX_FUNC_ARGRANGE_START(treectrl_getitemimage, 2, 3, Nil)
@@ -486,104 +514,118 @@ WX_FUNC_ARGRANGE_START(treectrl_getitemimage, 2, 3, Nil)
 	WX_SETNUMBER(ctrl->GetItemImage(*item, (wxTreeItemIcon)which))
 }
 
-WX_FUNC_START(treectrl_getitemtext, 2, Nil)
+DLIB_FUNC_START(treectrl_getitemtext, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_SETSTRING(ctrl->GetItemText(*item))
 }
 
-WX_FUNC_START(treectrl_getitemtextcolour, 2, Nil)
+DLIB_FUNC_START(treectrl_getitemtextcolour, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(ctrl->GetItemTextColour(*item)))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(ctrl->GetItemTextColour(*item))));
+	WX_SETOBJECT(Colour, retval)
 }
 
-WX_FUNC_START(treectrl_getlastchild, 2, Nil)
+DLIB_FUNC_START(treectrl_getlastchild, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetLastChild(*item)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetLastChild(*item))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getnextchild, 3, Nil)
+DLIB_FUNC_START(treectrl_getnextchild, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_GETTABLE(cookie_table)
 	wxTreeItemIdValue cookie;
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetNextChild(*item, cookie)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetNextChild(*item, cookie))));
+	WX_SETOBJECT(TreeItemId, retval)
 	wxTreeItemId fromCookie(cookie);
+	DeltaWxTreeItemId *wxvalue = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(fromCookie)));
 	DeltaValue value;
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE_EX(value, TreeItemId, new wxTreeItemId(fromCookie))
+	WX_SETOBJECT_EX(value, TreeItemId, wxvalue)
 	WX_SETTABLE_RETVAL(cookie_table, value)
 }
 
-WX_FUNC_START(treectrl_getnextsibling, 2, Nil)
+DLIB_FUNC_START(treectrl_getnextsibling, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetNextSibling(*item)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetNextSibling(*item))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getnextvisible, 2, Nil)
+DLIB_FUNC_START(treectrl_getnextvisible, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetNextVisible(*item)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetNextVisible(*item))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getitemparent, 2, Nil)
+DLIB_FUNC_START(treectrl_getitemparent, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetItemParent(*item)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetItemParent(*item))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getprevsibling, 2, Nil)
+DLIB_FUNC_START(treectrl_getprevsibling, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetPrevSibling(*item)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetPrevSibling(*item))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getprevvisible, 2, Nil)
+DLIB_FUNC_START(treectrl_getprevvisible, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetPrevVisible(*item)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetPrevVisible(*item))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getquickbestsize, 1, Nil)
+DLIB_FUNC_START(treectrl_getquickbestsize, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	WX_SETBOOL(ctrl->GetQuickBestSize())
 }
 
-WX_FUNC_START(treectrl_getrootitem, 1, Nil)
+DLIB_FUNC_START(treectrl_getrootitem, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetRootItem()))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetRootItem())));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getselection, 1, Nil)
+DLIB_FUNC_START(treectrl_getselection, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->GetSelection()))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->GetSelection())));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_getselections, 1, Nil)
+DLIB_FUNC_START(treectrl_getselections, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	wxArrayTreeItemIds selection;
 	ctrl->GetSelections(selection);
 	DeltaObject *retval = DNEW(DeltaObject);
 	for (int i = 0, num = (int)selection.capacity(); i < num; ++i) {
+		DeltaWxTreeItemId *wxvalue = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(selection[i])));
 		DeltaValue value;
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE_EX(value, TreeItemId, new wxTreeItemId(selection[i]))
+		WX_SETOBJECT_EX(value, TreeItemId, wxvalue)
 		retval->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	DLIB_RETVAL_REF.FromTable(retval);
 }
 
-WX_FUNC_START(treectrl_getstateimagelist, 1, Nil)
+DLIB_FUNC_START(treectrl_getstateimagelist, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
-	WX_SETOBJECT(ImageList, ctrl->GetStateImageList())
+	DeltaWxImageList *retval = DNEWCLASS(DeltaWxImageList, (ctrl->GetStateImageList()));
+	WX_SETOBJECT(ImageList, retval)
 }
 
 WX_FUNC_ARGRANGE_START(treectrl_hittest, 2, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGETPOINT_BASE(point)
 	int flags;
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->HitTest(*point, flags)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->HitTest(*point, flags))));
+	WX_SETOBJECT(TreeItemId, retval)
 	if (n >= 3) {
 		WX_GETTABLE(flags_table)
 		WX_SETTABLE_RETVAL(flags_table, DeltaValue(DeltaNumberValueType(flags)))
@@ -591,7 +633,7 @@ WX_FUNC_ARGRANGE_START(treectrl_hittest, 2, 3, Nil)
 }
 
 WX_FUNC_ARGRANGE_START(treectrl_insertitem, 4, 7, Nil)
-	wxTreeItemId *retval = (wxTreeItemId*) 0;
+	DeltaWxTreeItemId *retval = (DeltaWxTreeItemId*) 0;
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, parent)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
@@ -602,8 +644,8 @@ WX_FUNC_ARGRANGE_START(treectrl_insertitem, 4, 7, Nil)
 		if (n >= 5) { WX_GETDEFINE_DEFINED(image) }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(selImage) }
 		if (n >= 7) { DLIB_WXGET_BASE(treeitemdata, TreeItemData, _data) data = _data; }
-		retval = new wxTreeItemId(ctrl->InsertItem(
-			parent, previous, text, image, selImage, data));
+		retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->InsertItem(
+			parent, previous, text, image, selImage, data))));
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(before)
 		WX_GETSTRING(text)
@@ -612,42 +654,42 @@ WX_FUNC_ARGRANGE_START(treectrl_insertitem, 4, 7, Nil)
 		if (n >= 5) { WX_GETDEFINE_DEFINED(image) }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(selImage) }
 		if (n >= 7) { DLIB_WXGET_BASE(treeitemdata, TreeItemData, _data) data = _data; }
-		retval = new wxTreeItemId(ctrl->InsertItem(
-			parent, before, text, image, selImage, data));
+		retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->InsertItem(
+			parent, before, text, image, selImage, data))));
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, retval)
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_isbold, 2, Nil)
+DLIB_FUNC_START(treectrl_isbold, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_SETBOOL(ctrl->IsBold(*item))
 }
 
-WX_FUNC_START(treectrl_isempty, 1, Nil)
+DLIB_FUNC_START(treectrl_isempty, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	WX_SETBOOL(ctrl->IsEmpty())
 }
 
-WX_FUNC_START(treectrl_isexpanded, 2, Nil)
+DLIB_FUNC_START(treectrl_isexpanded, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_SETBOOL(ctrl->IsExpanded(*item))
 }
 
-WX_FUNC_START(treectrl_isselected, 2, Nil)
+DLIB_FUNC_START(treectrl_isselected, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_SETBOOL(ctrl->IsSelected(*item))
 }
 
-WX_FUNC_START(treectrl_isvisible, 2, Nil)
+DLIB_FUNC_START(treectrl_isvisible, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_SETBOOL(ctrl->IsVisible(*item))
 }
 
-WX_FUNC_START(treectrl_itemhaschildren, 2, Nil)
+DLIB_FUNC_START(treectrl_itemhaschildren, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_SETBOOL(ctrl->ItemHasChildren(*item))
@@ -662,11 +704,12 @@ WX_FUNC_ARGRANGE_START(treectrl_prependitem, 3, 6, Nil)
 	if (n >= 4) { WX_GETDEFINE_DEFINED(image) }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(selImage) }
 	if (n >= 6) { DLIB_WXGET_BASE(treeitemdata, TreeItemData, _data) data = _data; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(ctrl->PrependItem(
-			parent, text, image, selImage, data)))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ctrl->PrependItem(
+			parent, text, image, selImage, data))));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treectrl_scrollto, 2, Nil)
+DLIB_FUNC_START(treectrl_scrollto, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->ScrollTo(*item);
@@ -680,19 +723,19 @@ WX_FUNC_ARGRANGE_START(treectrl_selectitem, 2, 3, Nil)
 	ctrl->SelectItem(*item, select);
 }
 
-WX_FUNC_START(treectrl_setindent, 2, Nil)
+DLIB_FUNC_START(treectrl_setindent, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	WX_GETNUMBER(indent)
 	ctrl->SetIndent(indent);
 }
 
-WX_FUNC_START(treectrl_setimagelist, 2, Nil)
+DLIB_FUNC_START(treectrl_setimagelist, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	ctrl->SetImageList(imageList);
 }
 
-WX_FUNC_START(treectrl_setitembackgroundcolour, 3, Nil)
+DLIB_FUNC_START(treectrl_setitembackgroundcolour, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	DLIB_WXGET_BASE(colour, Colour, col)
@@ -707,7 +750,7 @@ WX_FUNC_ARGRANGE_START(treectrl_setitembold, 2, 3, Nil)
 	ctrl->SetItemBold(*item, bold);
 }
 
-WX_FUNC_START(treectrl_setitemdata, 3, Nil)
+DLIB_FUNC_START(treectrl_setitemdata, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	DLIB_WXGET_BASE(treeitemdata, TreeItemData, data)
@@ -722,7 +765,7 @@ WX_FUNC_ARGRANGE_START(treectrl_setitemdrophighlight, 2, 3, Nil)
 	ctrl->SetItemDropHighlight(*item, highlight);
 }
 
-WX_FUNC_START(treectrl_setitemfont, 3, Nil)
+DLIB_FUNC_START(treectrl_setitemfont, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	DLIB_WXGET_BASE(font, Font, font)
@@ -746,67 +789,67 @@ WX_FUNC_ARGRANGE_START(treectrl_setitemimage, 3, 4, Nil)
 	ctrl->SetItemImage(*item, image, (wxTreeItemIcon)which);
 }
 
-WX_FUNC_START(treectrl_setitemtext, 3, Nil)
+DLIB_FUNC_START(treectrl_setitemtext, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	WX_GETSTRING(text)
 	ctrl->SetItemText(*item, text);
 }
 
-WX_FUNC_START(treectrl_setitemtextcolour, 3, Nil)
+DLIB_FUNC_START(treectrl_setitemtextcolour, 3, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	DLIB_WXGET_BASE(colour, Colour, col)
 	ctrl->SetItemTextColour(*item, *col);
 }
 
-WX_FUNC_START(treectrl_setquickbestsize, 2, Nil)
+DLIB_FUNC_START(treectrl_setquickbestsize, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	WX_GETBOOL(quickBestSize)
 	ctrl->SetQuickBestSize(quickBestSize);
 }
 
-WX_FUNC_START(treectrl_setstateimagelist, 2, Nil)
+DLIB_FUNC_START(treectrl_setstateimagelist, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	ctrl->SetStateImageList(imageList);
 }
 
-WX_FUNC_START(treectrl_setwindowstyle, 2, Nil)
+DLIB_FUNC_START(treectrl_setwindowstyle, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	WX_GETDEFINE(styles)
 	ctrl->SetWindowStyle(styles);
 }
 
-WX_FUNC_START(treectrl_sortchildren, 2, Nil)
+DLIB_FUNC_START(treectrl_sortchildren, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->SortChildren(*item);
 }
 
-WX_FUNC_START(treectrl_toggle, 2, Nil)
+DLIB_FUNC_START(treectrl_toggle, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->Toggle(*item);
 }
 
-WX_FUNC_START(treectrl_toggleitemselection, 2, Nil)
+DLIB_FUNC_START(treectrl_toggleitemselection, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->ToggleItemSelection(*item);
 }
 
-WX_FUNC_START(treectrl_unselect, 1, Nil)
+DLIB_FUNC_START(treectrl_unselect, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	ctrl->Unselect();
 }
 
-WX_FUNC_START(treectrl_unselectall, 1, Nil)
+DLIB_FUNC_START(treectrl_unselectall, 1, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	ctrl->UnselectAll();
 }
 
-WX_FUNC_START(treectrl_unselectitem, 2, Nil)
+DLIB_FUNC_START(treectrl_unselectitem, 2, Nil)
 	DLIB_WXGET_BASE(treectrl, TreeCtrl, ctrl)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, item)
 	ctrl->UnselectItem(*item);

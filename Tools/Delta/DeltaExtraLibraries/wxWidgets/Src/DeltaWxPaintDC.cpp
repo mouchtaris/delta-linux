@@ -17,20 +17,18 @@
 #define WX_FUNC(name) WX_FUNC1(paintdc, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 
 WX_FUNCS_START
-	WX_FUNC(construct)
+	WX_FUNC(construct),
+	WX_FUNC(destruct)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-//DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PaintDC, "paintdc", ClientDC)
-VCLASSID_IMPL(DeltaWxPaintDCClassId, "wx::paintdc")
-DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(PaintDC, "paintdc")
-void PaintDCUtils::InstallAll(DeltaTable *methods)
-{
-	DPTR(methods)->DelegateInternal(ClientDCUtils::GetMethods());
-}
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "destruct")
+
+DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PaintDC, "paintdc", ClientDC)
 
 ////////////////////////////////////////////////////////////////
 
@@ -42,7 +40,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, ClientDC, val)
+	wxClientDC *_parent = DLIB_WXTYPECAST_BASE(ClientDC, val, clientdc);
+	DeltaWxClientDC *parent = DNEWCLASS(DeltaWxClientDC, (_parent));
+	WX_SETOBJECT_EX(*at, ClientDC, parent)
 	return true;
 }
 
@@ -56,18 +56,24 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(PaintDC,paintdc)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(paintdc_construct, 0, 1, Nil)
-	wxPaintDC *dc = (wxPaintDC*) 0;
+	wxPaintDC *wxdc = (wxPaintDC*) 0;
+	DeltaWxPaintDC *dc = (DeltaWxPaintDC*) 0;
 	if (n == 0) {
 #if wxCHECK_VERSION(2, 9, 0)
 		DPTR(vm)->Error("in wxWidgets 2.9+ paintdc_construct should necessarily take a window argument");
 		DLIB_RESET_RETURN;
 #else
-		dc = new wxPaintDC();
+		wxdc = new wxPaintDC();
 #endif
 	}
 	else {
 		DLIB_WXGET_BASE(window, Window, win)
-		dc = new wxPaintDC(win);
+		wxdc = new wxPaintDC(win);
 	}
+	if (wxdc) dc = DNEWCLASS(DeltaWxPaintDC, (wxdc));
 	WX_SETOBJECT(PaintDC, dc)
+}
+
+DLIB_FUNC_START(paintdc_destruct, 1, Nil)
+	DLIB_WXDELETE(paintdc, PaintDC, dc)
 }

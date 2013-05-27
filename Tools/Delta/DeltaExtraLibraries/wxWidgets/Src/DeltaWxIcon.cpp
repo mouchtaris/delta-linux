@@ -18,6 +18,7 @@
 #define WX_FUNC(name) WX_FUNC1(icon, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(copyfrombitmap)
 WX_FUNC_DEF(getdepth)
 WX_FUNC_DEF(getheight)
@@ -30,6 +31,7 @@ WX_FUNC_DEF(setwidth)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(copyfrombitmap),
 	WX_FUNC(getdepth),
 	WX_FUNC(getheight),
@@ -43,7 +45,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "copyfrombitmap", "setwidth")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setwidth")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Icon, "icon", Bitmap)
 
@@ -57,7 +59,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Bitmap, val)
+	wxBitmap *_parent = DLIB_WXTYPECAST_BASE(Bitmap, val, bitmap);
+	DeltaWxBitmap *parent = DNEWCLASS(DeltaWxBitmap, (_parent));
+	WX_SETOBJECT_EX(*at, Bitmap, parent)
 	return true;
 }
 
@@ -71,9 +75,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Icon,icon)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(icon_construct, 0, 4, Nil)
-	wxIcon *icon = (wxIcon*) 0;
+	wxIcon *wxicon = (wxIcon*) 0;
+	DeltaWxIcon *icon = (DeltaWxIcon*) 0;
 	if (n == 0) {
-		icon = new wxIcon();
+		wxicon = new wxIcon();
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 			WX_GETSTRING(name)
@@ -82,37 +87,42 @@ WX_FUNC_ARGRANGE_START(icon_construct, 0, 4, Nil)
 			if (n >= 2) { WX_GETDEFINE_DEFINED(type) }
 			if (n >= 3) { WX_GETDEFINE_DEFINED(desiredWidth) }
 			if (n >= 4) { WX_GETDEFINE_DEFINED(desiredHeight) }
-			icon = new wxIcon(name, (wxBitmapType)type, desiredWidth, desiredHeight);
+			wxicon = new wxIcon(name, (wxBitmapType)type, desiredWidth, desiredHeight);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGET_BASE(iconlocation, IconLocation, loc)
-			icon = new wxIcon(*loc);
+			wxicon = new wxIcon(*loc);
 		}
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Icon, icon)
+	if (wxicon) icon = DNEWCLASS(DeltaWxIcon, (wxicon));
+	WX_SETOBJECT(Icon, icon)
 }
 
-WX_FUNC_START(icon_copyfrombitmap, 2, Nil)
+DLIB_FUNC_START(icon_destruct, 1, Nil)
+	DLIB_WXDELETE(icon, Icon, icon)
+}
+
+DLIB_FUNC_START(icon_copyfrombitmap, 2, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 	icon->CopyFromBitmap(*bmp);
 }
 
-WX_FUNC_START(icon_getdepth, 1, Nil)
+DLIB_FUNC_START(icon_getdepth, 1, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_SETNUMBER(icon->GetDepth())
 }
 
-WX_FUNC_START(icon_getheight, 1, Nil)
+DLIB_FUNC_START(icon_getheight, 1, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_SETNUMBER(icon->GetHeight())
 }
 
-WX_FUNC_START(icon_getwidth, 1, Nil)
+DLIB_FUNC_START(icon_getwidth, 1, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_SETNUMBER(icon->GetWidth())
 }
 
-WX_FUNC_START(icon_isok, 1, Nil)
+DLIB_FUNC_START(icon_isok, 1, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_SETBOOL(icon->IsOk())
 }
@@ -135,19 +145,19 @@ WX_FUNC_ARGRANGE_START(icon_loadfile, 2, 5, Nil)
 #endif //__WXMSW__
 }
 
-WX_FUNC_START(icon_setdepth, 2, Nil)
+DLIB_FUNC_START(icon_setdepth, 2, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_GETNUMBER(depth)
 	icon->SetDepth(depth);
 }
 
-WX_FUNC_START(icon_setheight, 2, Nil)
+DLIB_FUNC_START(icon_setheight, 2, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_GETNUMBER(height)
 	icon->SetHeight(height);
 }
 
-WX_FUNC_START(icon_setwidth, 2, Nil)
+DLIB_FUNC_START(icon_setwidth, 2, Nil)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	WX_GETNUMBER(width)
 	icon->SetWidth(width);

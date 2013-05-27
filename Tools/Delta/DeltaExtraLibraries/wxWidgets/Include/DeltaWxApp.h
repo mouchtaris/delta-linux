@@ -11,16 +11,6 @@
 #include <DeltaWxEvtHandler.h>
 
 ////////////////////////////////////////////////////////
-
-#if wxCHECK_VERSION(2, 9, 0)
-#include <wx/apptrait.h>
-class MaintainCLocaleTraits : public wxGUIAppTraits {
-public:
-	virtual void SetLocale(void) {}
-};
-#endif
-
-////////////////////////////////////////////////////////
 // AS, 2010. Wrapper class that can support either an externally created xwApp
 // instance or an internally created one (derivative).
 
@@ -39,10 +29,6 @@ class wxAppAdapter  {
 		wxAppAdapter* app;
 
 		public:
-
-#if wxCHECK_VERSION(2, 9, 0)
-		virtual wxAppTraits * CreateTraits(void) { return new MaintainCLocaleTraits; }
-#endif
 		virtual bool	OnInit (void) { return wxApp::OnInit() && app->NotifyInit(); }
 		virtual int		OnExit (void) { app->NotifyExit(); return wxApp::OnExit(); }
 		virtual int		OnRun (void)  { app->NotifyRun(); return wxApp::OnRun(); }

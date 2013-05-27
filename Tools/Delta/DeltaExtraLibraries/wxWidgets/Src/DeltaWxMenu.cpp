@@ -107,21 +107,27 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, EvtHandler, val)
+	wxEvtHandler *_parent = DLIB_WXTYPECAST_BASE(EvtHandler, val, evthandler);
+	DeltaWxEvtHandler *parent = DNEWCLASS(DeltaWxEvtHandler, (_parent));
+	WX_SETOBJECT_EX(*at, EvtHandler, parent)
 	return true;
 }
 
 static bool GetMenuBar (void* val, DeltaValue* at) 
 {
 	wxMenu *menu = DLIB_WXTYPECAST_BASE(Menu, val, menu);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, MenuBar, menu->GetMenuBar())
+	wxMenuBar *menubar = menu->GetMenuBar();
+	DeltaWxMenuBar *retval = menubar ? DNEWCLASS(DeltaWxMenuBar, (menubar)) : (DeltaWxMenuBar*) 0;
+	WX_SETOBJECT_EX(*at, MenuBar, retval)
 	return true;
 }
 
 static bool GetParent (void* val, DeltaValue* at) 
 {
 	wxMenu *menu = DLIB_WXTYPECAST_BASE(Menu, val, menu);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Menu, menu->GetParent())
+	wxMenu *parent = menu->GetParent();
+	DeltaWxMenu *retval = parent ? DNEWCLASS(DeltaWxMenu, (parent)) : (DeltaWxMenu*) 0;
+	WX_SETOBJECT_EX(*at, Menu, retval)
 	return true;
 }
 
@@ -141,7 +147,8 @@ static bool GetItems (void* val, DeltaValue* at)
 	for (wxMenuItemList::iterator it = itemlist.begin(); it != itemlist.end(); ++it) {
 		DeltaValue val;
 		wxMenuItem *item = *it;
-		WX_SETOBJECT_NO_CONTEXT_EX(val, MenuItem, item)
+		DeltaWxMenuItem *dmenuitem = DNEWCLASS(DeltaWxMenuItem, (item));
+		WX_SETOBJECT_EX(val, MenuItem, dmenuitem)
 		list->push_back(val);
 	}
 	return true;
@@ -150,7 +157,9 @@ static bool GetItems (void* val, DeltaValue* at)
 static bool GetInvokingWindow (void* val, DeltaValue* at) 
 {
 	wxMenu *menu = DLIB_WXTYPECAST_BASE(Menu, val, menu);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, menu->GetInvokingWindow())
+	wxWindow *win = menu->GetInvokingWindow();
+	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
@@ -164,7 +173,9 @@ static bool GetStyle (void* val, DeltaValue* at)
 static bool GetEventHandler (void* val, DeltaValue* at) 
 {
 	wxMenu *menu = DLIB_WXTYPECAST_BASE(Menu, val, menu);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, EvtHandler, menu->GetEventHandler())
+	wxEvtHandler *handler = menu->GetEventHandler();
+	DeltaWxEvtHandler *retval = handler ? DNEWCLASS(DeltaWxEvtHandler, (handler)) : (DeltaWxEvtHandler*) 0;
+	WX_SETOBJECT_EX(*at, EvtHandler, retval)
 	return true;
 }
 
@@ -185,58 +196,60 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Menu,menu)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(menu_construct, 0, 2, Nil)
-	wxMenu *menu = (wxMenu*) 0;
+	wxMenu *wxmenu = (wxMenu*) 0;
+	DeltaWxMenu *menu = (DeltaWxMenu*) 0;
 	if (n == 0)
-		menu = new wxMenu();
+		wxmenu = new wxMenu();
 	else if (n == 1) {
 		WX_GETSTRING(title)
-		menu = new wxMenu(title);
+		wxmenu = new wxMenu(title);
 	} else {
 		WX_GETSTRING(title)
 		WX_GETDEFINE(style)
-		menu = new wxMenu(title, style);
+		wxmenu = new wxMenu(title, style);
 	}
+	if (wxmenu) menu = DNEWCLASS(DeltaWxMenu, (wxmenu));
 	WX_SETOBJECT(Menu, menu)
 }
 
-WX_FUNC_START(menu_destruct, 1, Nil)
+DLIB_FUNC_START(menu_destruct, 1, Nil)
 	DLIB_WXDELETE(menu, Menu, menu)
 }
 
 WX_FUNC_ARGRANGE_START(menu_append, 2, 5, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	if (n == 2 && (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId)) {
 		DLIB_WXGET_BASE(menuitem, MenuItem, menuItem)
-		retval	= menu->Append(menuItem);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Append(menuItem));
 	} else {
 		WX_GETDEFINE(id)
 		if (n == 2) {
-			retval	= menu->Append(id);;
+			WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Append(id));
 		} else if (n == 3) {
 			WX_GETSTRING(item)
-			retval	= menu->Append(id, item);;
+			WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Append(id, item));
 		} else if (n == 4) {
 			WX_GETSTRING(item)
 			if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 				DLIB_WXGET_BASE(menu, Menu, submenu)
-				retval	= menu->Append(id, item, submenu);;
+				WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Append(id, item, submenu));
 			} else
 			if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 				WX_GETSTRING(helpString)
-				retval	= menu->Append(id, item, helpString);;
+				WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Append(id, item, helpString));
 			}
 		} else {
 			WX_GETSTRING(item)
 			if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 				DLIB_WXGET_BASE(menu, Menu, submenu)
 				WX_GETSTRING(helpString)
-				retval	= menu->Append(id, item, submenu, helpString);;
+				WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Append(id, item, submenu, helpString));
 			} else
 			if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 				WX_GETSTRING(helpString)
 				WX_GETDEFINE(kind)
-				retval	= menu->Append(id, item, helpString, (wxItemKind)kind);;
+				WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Append(id, item, helpString, (wxItemKind)kind));
 			}
 		}
 	}
@@ -245,65 +258,64 @@ WX_FUNC_ARGRANGE_START(menu_append, 2, 5, Nil)
 
 WX_FUNC_ARGRANGE_START(menu_appendcheckitem, 3, 4, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	WX_GETDEFINE(id)
 	WX_GETSTRING(item)
 	if (n == 3) {
-		retval	= menu->AppendCheckItem(id, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->AppendCheckItem(id, item));
 	} else {
 		WX_GETSTRING(helpString)
-		retval	= menu->AppendCheckItem(id, item, helpString);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->AppendCheckItem(id, item, helpString));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
 WX_FUNC_ARGRANGE_START(menu_appendradioitem, 3, 4, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval;
+	DeltaWxMenuItem *retval;
 	WX_GETDEFINE(id)
 	WX_GETSTRING(item)
 	if (n == 3) {
-		retval	= menu->AppendRadioItem(id, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->AppendRadioItem(id, item));
 	} else {
 		WX_GETSTRING(helpString)
-		retval	= menu->AppendRadioItem(id, item, helpString);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->AppendRadioItem(id, item, helpString));
 	}
-	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_appendseparator, 1, Nil)
+DLIB_FUNC_START(menu_appendseparator, 1, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem* retval	= menu->AppendSeparator();;
+	WXNEWCLASS(DeltaWxMenuItem, retval, wxMenuItem, menu->AppendSeparator());
 	WX_SETOBJECT(MenuItem, retval)
 }
 
 WX_FUNC_ARGRANGE_START(menu_appendsubmenu, 3, 4, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	DLIB_WXGET_BASE(menu, Menu, submenu)
 	WX_GETSTRING(text)
 	if (n == 3) {
-		retval	= menu->AppendSubMenu(submenu, text);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->AppendSubMenu(submenu, text));
 	} else {
 		WX_GETSTRING(help)
-		retval	= menu->AppendSubMenu(submenu, text, help);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->AppendSubMenu(submenu, text, help));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_break, 1, Nil)
+DLIB_FUNC_START(menu_break, 1, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	menu->Break();
 }
 
-WX_FUNC_START(menu_check, 3, Nil)
+DLIB_FUNC_START(menu_check, 3, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_GETBOOL(check)
 	menu->Check(id, check);
 }
 
-WX_FUNC_START(menu_delete, 2, Nil)
+DLIB_FUNC_START(menu_delete, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGET_BASE(menuitem, MenuItem, item)
@@ -314,7 +326,7 @@ WX_FUNC_START(menu_delete, 2, Nil)
 	}
 }
 
-WX_FUNC_START(menu_destroy, 2, Nil)
+DLIB_FUNC_START(menu_destroy, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGET_BASE(menuitem, MenuItem, item)
@@ -325,7 +337,7 @@ WX_FUNC_START(menu_destroy, 2, Nil)
 	}
 }
 
-WX_FUNC_START(menu_enable, 3, Nil)
+DLIB_FUNC_START(menu_enable, 3, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_GETBOOL(enable)
@@ -339,44 +351,45 @@ WX_FUNC_ARGRANGE_START(menu_finditem, 2, 3, Nil)
 		WX_SETNUMBER(menu->FindItem(itemString))
 	} else {
 		WX_GETDEFINE(id)
-		wxMenuItem *retval = (wxMenuItem*) 0;
+		DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 		if (n == 2) {
-			retval	= menu->FindItem(id);;
+			WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->FindItem(id));
 		} else {
 			WX_GETTABLE(menu_table)
 			wxMenu *arg;
-			retval = menu->FindItem(id, &arg);
+			retval = DNEWCLASS(DeltaWxMenuItem, (menu->FindItem(id, &arg)));
+			WXNEWCLASS(DeltaWxMenu, menu, wxMenu, arg)
 			WX_SETTABLE_RETVAL(menu_table, menu)
 		}
 		WX_SETOBJECT(MenuItem, retval)
 	}
 }
 
-WX_FUNC_START(menu_finditembyposition, 2, Nil)
+DLIB_FUNC_START(menu_finditembyposition, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETNUMBER(position)
-	wxMenuItem* retval	= menu->FindItemByPosition(position);;
+	WXNEWCLASS(DeltaWxMenuItem, retval, wxMenuItem, menu->FindItemByPosition(position));
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_gethelpstring, 2, Nil)
+DLIB_FUNC_START(menu_gethelpstring, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_SETSTRING(menu->GetHelpString(id))
 }
 
-WX_FUNC_START(menu_getlabel, 2, Nil)
+DLIB_FUNC_START(menu_getlabel, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_SETSTRING(menu->GetLabel(id))
 }
 
-WX_FUNC_START(menu_getmenuitemcount, 1, Nil)
+DLIB_FUNC_START(menu_getmenuitemcount, 1, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_SETNUMBER(menu->GetMenuItemCount())
 }
 
-WX_FUNC_START(menu_getmenuitems, 1, Nil)
+DLIB_FUNC_START(menu_getmenuitems, 1, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	wxMenuItemList itemlist = menu->GetMenuItems();
 	DeltaList_Make(DLIB_RETVAL_REF);
@@ -384,89 +397,90 @@ WX_FUNC_START(menu_getmenuitems, 1, Nil)
 	for (wxMenuItemList::iterator it = itemlist.begin(); it != itemlist.end(); ++it) {
 		DeltaValue val;
 		wxMenuItem *item = *it;
-		WX_SETOBJECT_EX(val, MenuItem, item)
+		DeltaWxMenuItem *dmenuitem = DNEWCLASS(DeltaWxMenuItem, (item));
+		WX_SETOBJECT_EX(val, MenuItem, dmenuitem)
 		list->push_back(val);
 	}
 }
 
-WX_FUNC_START(menu_gettitle, 1, Nil)
+DLIB_FUNC_START(menu_gettitle, 1, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_SETSTRING(menu->GetTitle())
 }
 
 WX_FUNC_ARGRANGE_START(menu_insert, 3, 6, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	WX_GETNUMBER(pos)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId && n == 3) {
 		DLIB_WXGET_BASE(menuitem, MenuItem, item)
-		retval	= menu->Insert(pos, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Insert(pos, item));
 	} else if (n == 3) {
 		WX_GETDEFINE(id)
-		retval	= menu->Insert(pos, id);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Insert(pos, id));
 	} else if (n == 4) {
 		WX_GETDEFINE(id)
 		WX_GETSTRING(item)
-		retval	= menu->Insert(pos, id, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Insert(pos, id, item));
 	} else if (n == 5) {
 		WX_GETDEFINE(id)
 		WX_GETSTRING(item)
 		WX_GETSTRING(helpString)
-		retval	= menu->Insert(pos, id, item, helpString);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Insert(pos, id, item, helpString));
 	} else {
 		WX_GETDEFINE(id)
 		WX_GETSTRING(item)
 		WX_GETSTRING(helpString)
 		WX_GETDEFINE(kind)
-		retval	= menu->Insert(pos, id, item, helpString, (wxItemKind)kind);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Insert(pos, id, item, helpString, (wxItemKind)kind));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
 WX_FUNC_ARGRANGE_START(menu_insertcheckitem, 4, 5, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	WX_GETNUMBER(pos)
 	WX_GETDEFINE(id)
 	WX_GETSTRING(item)
 	if (n == 4) {
-		retval	= menu->InsertCheckItem(pos, id, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->InsertCheckItem(pos, id, item));
 	} else {
 		WX_GETSTRING(helpString)
-		retval	= menu->InsertCheckItem(pos, id, item, helpString);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->InsertCheckItem(pos, id, item, helpString));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
 WX_FUNC_ARGRANGE_START(menu_insertradioitem, 4, 5, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	WX_GETNUMBER(pos)
 	WX_GETDEFINE(id)
 	WX_GETSTRING(item)
 	if (n == 4) {
-		retval	= menu->InsertRadioItem(pos, id, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->InsertRadioItem(pos, id, item));
 	} else {
 		WX_GETSTRING(helpString)
-		retval	= menu->InsertRadioItem(pos, id, item, helpString);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->InsertRadioItem(pos, id, item, helpString));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_insertseparator, 2, Nil)
+DLIB_FUNC_START(menu_insertseparator, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETNUMBER(pos)
-	wxMenuItem* retval	= menu->InsertSeparator(pos);;
+	WXNEWCLASS(DeltaWxMenuItem, retval, wxMenuItem, menu->InsertSeparator(pos));
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_ischecked, 2, Nil)
+DLIB_FUNC_START(menu_ischecked, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_SETBOOL(menu->IsChecked(id))
 }
 
-WX_FUNC_START(menu_isenabled, 2, Nil)
+DLIB_FUNC_START(menu_isenabled, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_SETBOOL(menu->IsEnabled(id))
@@ -474,26 +488,26 @@ WX_FUNC_START(menu_isenabled, 2, Nil)
 
 WX_FUNC_ARGRANGE_START(menu_prepend, 2, 5, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	if (n == 2 && DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGET_BASE(menuitem, MenuItem, item)
-		retval	= menu->Prepend(item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Prepend(item));
 	} else {
 		WX_GETDEFINE(id)
 		if (n == 2) {
-			retval	= menu->Prepend(id);;
+			WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Prepend(id));
 		} else if (n == 3) {
 			WX_GETSTRING(item)
-			retval	= menu->Prepend(id, item);;
+			WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Prepend(id, item));
 		} else if (n == 4) {
 			WX_GETSTRING(item)
 			WX_GETSTRING(helpString)
-			retval	= menu->Prepend(id, item, helpString);;
+			WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Prepend(id, item, helpString));
 		} else {
 			WX_GETSTRING(item)
 			WX_GETSTRING(helpString)
 			WX_GETDEFINE(kind)
-			retval	= menu->Prepend(id, item, helpString, (wxItemKind)kind);;
+			WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Prepend(id, item, helpString, (wxItemKind)kind));
 		}
 	}
 	WX_SETOBJECT(MenuItem, retval)
@@ -501,66 +515,66 @@ WX_FUNC_ARGRANGE_START(menu_prepend, 2, 5, Nil)
 
 WX_FUNC_ARGRANGE_START(menu_prependcheckitem, 3, 4, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	WX_GETDEFINE(id)
 	WX_GETSTRING(item)
 	if (n == 3) {
-		retval	= menu->PrependCheckItem(id, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->PrependCheckItem(id, item));
 	} else {
 		WX_GETSTRING(helpString)
-		retval	= menu->PrependCheckItem(id, item, helpString);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->PrependCheckItem(id, item, helpString));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
 WX_FUNC_ARGRANGE_START(menu_prependradioitem, 3, 4, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	WX_GETDEFINE(id)
 	WX_GETSTRING(item)
 	if (n == 3) {
-		retval	= menu->PrependRadioItem(id, item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->PrependRadioItem(id, item));
 	} else {
 		WX_GETSTRING(helpString)
-		retval	= menu->PrependRadioItem(id, item, helpString);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->PrependRadioItem(id, item, helpString));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_prependseparator, 1, Nil)
+DLIB_FUNC_START(menu_prependseparator, 1, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem* retval	= menu->PrependSeparator();;
+	WXNEWCLASS(DeltaWxMenuItem, retval, wxMenuItem, menu->PrependSeparator());
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_remove, 2, Nil)
+DLIB_FUNC_START(menu_remove, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
-	wxMenuItem *retval = (wxMenuItem*) 0;
+	DeltaWxMenuItem *retval = (DeltaWxMenuItem*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGET_BASE(menuitem, MenuItem, item)
-		retval	= menu->Remove(item);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Remove(item));
 	} else {
 		WX_GETDEFINE(id)
-		retval	= menu->Remove(id);;
+		WXNEWCLASS_DEFINED(DeltaWxMenuItem, retval, wxMenuItem, menu->Remove(id));
 	}
 	WX_SETOBJECT(MenuItem, retval)
 }
 
-WX_FUNC_START(menu_sethelpstring, 3, Nil)
+DLIB_FUNC_START(menu_sethelpstring, 3, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_GETSTRING(helpString)
 	menu->SetHelpString(id, helpString);
 }
 
-WX_FUNC_START(menu_setlabel, 3, Nil)
+DLIB_FUNC_START(menu_setlabel, 3, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETDEFINE(id)
 	WX_GETSTRING(label)
 	menu->SetLabel(id, label);
 }
 
-WX_FUNC_START(menu_settitle, 2, Nil)
+DLIB_FUNC_START(menu_settitle, 2, Nil)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	WX_GETSTRING(title)
 	menu->SetTitle(title);

@@ -16,18 +16,20 @@
 #define WX_FUNC(name) WX_FUNC1(spinevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getposition)
 WX_FUNC_DEF(setposition)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getposition),
 	WX_FUNC(setposition)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getposition", "setposition")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setposition")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SpinEvent, "spinevent", NotifyEvent)
 
@@ -41,7 +43,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, NotifyEvent, val)
+	wxNotifyEvent *_parent = DLIB_WXTYPECAST_BASE(NotifyEvent, val, notifyevent);
+	DeltaWxNotifyEvent *parent = DNEWCLASS(DeltaWxNotifyEvent, (_parent));
+	WX_SETOBJECT_EX(*at, NotifyEvent, parent)
 	return true;
 }
 
@@ -58,15 +62,20 @@ WX_FUNC_ARGRANGE_START(spinevent_construct, 0, 2, Nil)
 	int commandType = wxEVT_NULL, winid = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(commandType) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(SpinEvent, new wxSpinEvent(commandType, winid))
+	DeltaWxSpinEvent *evt = DNEWCLASS(DeltaWxSpinEvent, (new wxSpinEvent(commandType, winid)));
+	WX_SETOBJECT(SpinEvent, evt)
 }
 
-WX_FUNC_START(spinevent_getposition, 1, Nil)
+DLIB_FUNC_START(spinevent_destruct, 1, Nil)
+	DLIB_WXDELETE(spinevent, SpinEvent, evt)
+}
+
+DLIB_FUNC_START(spinevent_getposition, 1, Nil)
 	DLIB_WXGET_BASE(spinevent, SpinEvent, evt)
 	WX_SETNUMBER(evt->GetPosition())
 }
 
-WX_FUNC_START(spinevent_setposition, 2, Nil)
+DLIB_FUNC_START(spinevent_setposition, 2, Nil)
 	DLIB_WXGET_BASE(spinevent, SpinEvent, evt)
 	WX_GETNUMBER(pos)
 	evt->SetPosition(pos);

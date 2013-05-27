@@ -19,6 +19,7 @@
 
 WX_FUNC_DEF(construct)
 WX_FUNC_DEF(getnumberjoysticks)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getbuttonstate)
 WX_FUNC_DEF(getmanufacturerid)
 WX_FUNC_DEF(getmovementthreshold)
@@ -62,6 +63,7 @@ WX_FUNC_DEF(setmovementthreshold)
 WX_FUNCS_START
 	WX_FUNC(construct),
 	WX_FUNC(getnumberjoysticks),
+	WX_FUNC(destruct),
 	WX_FUNC(getbuttonstate),
 	WX_FUNC(getmanufacturerid),
 	WX_FUNC(getmovementthreshold),
@@ -105,7 +107,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(2, uarraysize(funcs) - 2, "getbuttonstate", "setmovementthreshold")
+DELTALIBFUNC_DECLARECONSTS(2, uarraysize(funcs) - 2, "destruct", "setmovementthreshold")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Joystick, "joystick", Object)
 
@@ -119,7 +121,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -189,7 +193,8 @@ static bool GetProductName (void* val, DeltaValue* at)
 static bool GetPosition (void* val, DeltaValue* at) 
 {
 	wxJoystick *joystick = DLIB_WXTYPECAST_BASE(Joystick, val, joystick);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(joystick->GetPosition()))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(joystick->GetPosition())));
+	WX_SETOBJECT_EX(*at, Point, retval)
 	return true;
 }
 
@@ -423,194 +428,200 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Joystick,joystick)
 WX_FUNC_ARGRANGE_START(joystick_construct, 0, 1, Nil)
 	int joystick = wxJOYSTICK1;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(joystick) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Joystick, new wxJoystick(joystick))
+	DeltaWxJoystick *retval = DNEWCLASS(DeltaWxJoystick, (new wxJoystick(joystick)));
+	WX_SETOBJECT(Joystick, retval)
 }
 
-WX_FUNC_START(joystick_getbuttonstate, 1, Nil)
+DLIB_FUNC_START(joystick_destruct, 1, Nil)
+	DLIB_WXDELETE(joystick, Joystick, joystick)
+}
+
+DLIB_FUNC_START(joystick_getbuttonstate, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetButtonState())
 }
 
-WX_FUNC_START(joystick_getmanufacturerid, 1, Nil)
+DLIB_FUNC_START(joystick_getmanufacturerid, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetManufacturerId())
 }
 
-WX_FUNC_START(joystick_getmovementthreshold, 1, Nil)
+DLIB_FUNC_START(joystick_getmovementthreshold, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetMovementThreshold())
 }
 
-WX_FUNC_START(joystick_getnumberaxes, 1, Nil)
+DLIB_FUNC_START(joystick_getnumberaxes, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetNumberAxes())
 }
 
-WX_FUNC_START(joystick_getnumberbuttons, 1, Nil)
+DLIB_FUNC_START(joystick_getnumberbuttons, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetNumberButtons())
 }
 
-WX_FUNC_START(joystick_getnumberjoysticks, 0, Nil)
+DLIB_FUNC_START(joystick_getnumberjoysticks, 0, Nil)
 	WX_SETNUMBER(wxJoystick::GetNumberJoysticks())
 }
 
-WX_FUNC_START(joystick_getpollingmax, 1, Nil)
+DLIB_FUNC_START(joystick_getpollingmax, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetPollingMax())
 }
 
-WX_FUNC_START(joystick_getpollingmin, 1, Nil)
+DLIB_FUNC_START(joystick_getpollingmin, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetPollingMin())
 }
 
-WX_FUNC_START(joystick_getproductid, 1, Nil)
+DLIB_FUNC_START(joystick_getproductid, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetProductId())
 }
 
-WX_FUNC_START(joystick_getproductname, 1, Nil)
+DLIB_FUNC_START(joystick_getproductname, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETSTRING(joystick->GetProductName())
 }
 
-WX_FUNC_START(joystick_getposition, 1, Nil)
+DLIB_FUNC_START(joystick_getposition, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(joystick->GetPosition()))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(joystick->GetPosition())));
+	WX_SETOBJECT(Point, retval)
 }
 
-WX_FUNC_START(joystick_getpovposition, 1, Nil)
+DLIB_FUNC_START(joystick_getpovposition, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetPOVPosition())
 }
 
-WX_FUNC_START(joystick_getpovctsposition, 1, Nil)
+DLIB_FUNC_START(joystick_getpovctsposition, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetPOVCTSPosition())
 }
 
-WX_FUNC_START(joystick_getruddermax, 1, Nil)
+DLIB_FUNC_START(joystick_getruddermax, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetRudderMax())
 }
 
-WX_FUNC_START(joystick_getruddermin, 1, Nil)
+DLIB_FUNC_START(joystick_getruddermin, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetRudderMin())
 }
 
-WX_FUNC_START(joystick_getrudderposition, 1, Nil)
+DLIB_FUNC_START(joystick_getrudderposition, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetRudderPosition())
 }
 
-WX_FUNC_START(joystick_getumax, 1, Nil)
+DLIB_FUNC_START(joystick_getumax, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetUMax())
 }
 
-WX_FUNC_START(joystick_getumin, 1, Nil)
+DLIB_FUNC_START(joystick_getumin, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetUMin())
 }
 
-WX_FUNC_START(joystick_getuposition, 1, Nil)
+DLIB_FUNC_START(joystick_getuposition, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetUPosition())
 }
 
-WX_FUNC_START(joystick_getvmax, 1, Nil)
+DLIB_FUNC_START(joystick_getvmax, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetVMax())
 }
 
-WX_FUNC_START(joystick_getvmin, 1, Nil)
+DLIB_FUNC_START(joystick_getvmin, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetVMin())
 }
 
-WX_FUNC_START(joystick_getvposition, 1, Nil)
+DLIB_FUNC_START(joystick_getvposition, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetVPosition())
 }
 
-WX_FUNC_START(joystick_getxmax, 1, Nil)
+DLIB_FUNC_START(joystick_getxmax, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetXMax())
 }
 
-WX_FUNC_START(joystick_getxmin, 1, Nil)
+DLIB_FUNC_START(joystick_getxmin, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetXMin())
 }
 
-WX_FUNC_START(joystick_getymax, 1, Nil)
+DLIB_FUNC_START(joystick_getymax, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetYMax())
 }
 
-WX_FUNC_START(joystick_getymin, 1, Nil)
+DLIB_FUNC_START(joystick_getymin, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetYMin())
 }
 
-WX_FUNC_START(joystick_getzmax, 1, Nil)
+DLIB_FUNC_START(joystick_getzmax, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetZMax())
 }
 
-WX_FUNC_START(joystick_getzmin, 1, Nil)
+DLIB_FUNC_START(joystick_getzmin, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetZMin())
 }
 
-WX_FUNC_START(joystick_getzposition, 1, Nil)
+DLIB_FUNC_START(joystick_getzposition, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETNUMBER(joystick->GetZPosition())
 }
 
-WX_FUNC_START(joystick_haspov, 1, Nil)
+DLIB_FUNC_START(joystick_haspov, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->HasPOV())
 }
 
-WX_FUNC_START(joystick_haspov4dir, 1, Nil)
+DLIB_FUNC_START(joystick_haspov4dir, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->HasPOV4Dir())
 }
 
-WX_FUNC_START(joystick_haspovcts, 1, Nil)
+DLIB_FUNC_START(joystick_haspovcts, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->HasPOVCTS())
 }
 
-WX_FUNC_START(joystick_hasrudder, 1, Nil)
+DLIB_FUNC_START(joystick_hasrudder, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->HasRudder())
 }
 
-WX_FUNC_START(joystick_hasu, 1, Nil)
+DLIB_FUNC_START(joystick_hasu, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->HasU())
 }
 
-WX_FUNC_START(joystick_hasv, 1, Nil)
+DLIB_FUNC_START(joystick_hasv, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->HasV())
 }
 
-WX_FUNC_START(joystick_hasz, 1, Nil)
+DLIB_FUNC_START(joystick_hasz, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->HasZ())
 }
 
-WX_FUNC_START(joystick_isok, 1, Nil)
+DLIB_FUNC_START(joystick_isok, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->IsOk())
 }
 
-WX_FUNC_START(joystick_releasecapture, 1, Nil)
+DLIB_FUNC_START(joystick_releasecapture, 1, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_SETBOOL(joystick->ReleaseCapture())
 }
@@ -623,7 +634,7 @@ WX_FUNC_ARGRANGE_START(joystick_setcapture, 2, 3, Nil)
 	WX_SETBOOL(joystick->SetCapture(window, pollingFreq))
 }
 
-WX_FUNC_START(joystick_setmovementthreshold, 2, Nil)
+DLIB_FUNC_START(joystick_setmovementthreshold, 2, Nil)
 	DLIB_WXGET_BASE(joystick, Joystick, joystick)
 	WX_GETNUMBER(threshold)
 	joystick->SetMovementThreshold(threshold);

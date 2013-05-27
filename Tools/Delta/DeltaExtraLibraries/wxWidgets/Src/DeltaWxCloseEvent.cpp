@@ -16,6 +16,7 @@
 #define WX_FUNC(name) WX_FUNC1(closeevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(canveto)
 WX_FUNC_DEF(getloggingoff)
 WX_FUNC_DEF(setcanveto)
@@ -24,6 +25,7 @@ WX_FUNC_DEF(veto)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(canveto),
 	WX_FUNC(getloggingoff),
 	WX_FUNC(setcanveto),
@@ -33,7 +35,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "canveto", "veto")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "veto")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(CloseEvent, "closeevent", Event)
 
@@ -47,7 +49,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
@@ -88,26 +92,31 @@ WX_FUNC_ARGRANGE_START(closeevent_construct, 0, 2, Nil)
 	int type = wxEVT_NULL, winid = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(CloseEvent, new wxCloseEvent(type, winid))
+	DeltaWxCloseEvent *evt = DNEWCLASS(DeltaWxCloseEvent, (new wxCloseEvent(type, winid)));
+	WX_SETOBJECT(CloseEvent, evt)
 }
 
-WX_FUNC_START(closeevent_canveto, 1, Nil)
+DLIB_FUNC_START(closeevent_destruct, 1, Nil)
+	DLIB_WXDELETE(closeevent, CloseEvent, evt)
+}
+
+DLIB_FUNC_START(closeevent_canveto, 1, Nil)
 	DLIB_WXGET_BASE(closeevent, CloseEvent, evt)
 	WX_SETBOOL(evt->CanVeto())
 }
 
-WX_FUNC_START(closeevent_getloggingoff, 1, Nil)
+DLIB_FUNC_START(closeevent_getloggingoff, 1, Nil)
 	DLIB_WXGET_BASE(closeevent, CloseEvent, evt)
 	WX_SETBOOL(evt->GetLoggingOff())
 }
 
-WX_FUNC_START(closeevent_setcanveto, 2, Nil)
+DLIB_FUNC_START(closeevent_setcanveto, 2, Nil)
 	DLIB_WXGET_BASE(closeevent, CloseEvent, evt)
 	WX_GETBOOL(canVeto)
 	evt->SetCanVeto(canVeto);
 }
 
-WX_FUNC_START(closeevent_setloggingoff, 2, Nil)
+DLIB_FUNC_START(closeevent_setloggingoff, 2, Nil)
 	DLIB_WXGET_BASE(closeevent, CloseEvent, evt)
 	WX_GETBOOL(loggingOff)
 	evt->SetLoggingOff(loggingOff);

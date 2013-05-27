@@ -17,6 +17,7 @@
 #define WX_FUNC(name) WX_FUNC1(statusbar, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getfieldrect)
 WX_FUNC_DEF(getfieldscount)
@@ -31,6 +32,7 @@ WX_FUNC_DEF(setstatusstyles)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getfieldrect),
 	WX_FUNC(getfieldscount),
@@ -46,7 +48,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setstatusstyles")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setstatusstyles")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(StatusBar, "statusbar", Window)
 
@@ -60,7 +62,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Window, val)
+	wxWindow *_parent = DLIB_WXTYPECAST_BASE(Window, val, window);
+	DeltaWxWindow *parent = DNEWCLASS(DeltaWxWindow, (_parent));
+	WX_SETOBJECT_EX(*at, Window, parent)
 	return true;
 }
 
@@ -83,6 +87,7 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(StatusBar,statusbar)
 
 WX_FUNC_ARGRANGE_START(statusbar_construct, 0, 4, Nil)
 	wxStatusBar *stbar = (wxStatusBar*) 0;
+	DeltaWxStatusBar *wxstbar = (DeltaWxStatusBar*) 0;
 	if (n == 0) {
 		stbar = new wxStatusBar();
 	} else {
@@ -98,7 +103,13 @@ WX_FUNC_ARGRANGE_START(statusbar_construct, 0, 4, Nil)
 			stbar = new wxStatusBar(parent, id, style);
 		}
 	}
-	WX_SET_WINDOW_OBJECT(StatusBar, stbar)
+	if (stbar)
+		wxstbar = DNEWCLASS(DeltaWxStatusBar, (stbar));
+	WX_SETOBJECT(StatusBar, wxstbar)
+}
+
+DLIB_FUNC_START(statusbar_destruct, 1, Nil)
+	DLIB_WXDELETE(statusbar, StatusBar, stbar)
 }
 
 WX_FUNC_ARGRANGE_START(statusbar_create, 2, 5, Nil)
@@ -114,17 +125,16 @@ WX_FUNC_ARGRANGE_START(statusbar_create, 2, 5, Nil)
 	} else {
 		WX_SETBOOL(stbar->Create(parent, id, style))
 	}
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(stbar);
 }
 
-WX_FUNC_START(statusbar_getfieldrect, 3, Nil)
+DLIB_FUNC_START(statusbar_getfieldrect, 3, Nil)
 	DLIB_WXGET_BASE(statusbar, StatusBar, stbar)
 	WX_GETNUMBER(i)
 	DLIB_WXGET_BASE(rect, Rect, rect)
 	WX_SETBOOL(stbar->GetFieldRect(i, *rect))
 }
 
-WX_FUNC_START(statusbar_getfieldscount, 1, Nil)
+DLIB_FUNC_START(statusbar_getfieldscount, 1, Nil)
 	DLIB_WXGET_BASE(statusbar, StatusBar, stbar)
 	WX_SETNUMBER(stbar->GetFieldsCount())
 }
@@ -183,7 +193,7 @@ WX_FUNC_ARGRANGE_START(statusbar_setfieldscount, 1, 3, Nil)
 	}
 }
 
-WX_FUNC_START(statusbar_setminheight, 2, Nil)
+DLIB_FUNC_START(statusbar_setminheight, 2, Nil)
 	DLIB_WXGET_BASE(statusbar, StatusBar, stbar)
 	WX_GETNUMBER(height)
 	stbar->SetMinHeight(height);
@@ -200,7 +210,7 @@ WX_FUNC_ARGRANGE_START(statusbar_setstatustext, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(statusbar_setstatuswidths, 3, Nil)
+DLIB_FUNC_START(statusbar_setstatuswidths, 3, Nil)
 	DLIB_WXGET_BASE(statusbar, StatusBar, stbar)
 	WX_GETNUMBER(n)
 	WX_GETTABLE(d_widths)
@@ -216,7 +226,7 @@ WX_FUNC_START(statusbar_setstatuswidths, 3, Nil)
 	DDELARR(widths);
 }
 
-WX_FUNC_START(statusbar_setstatusstyles, 3, Nil)
+DLIB_FUNC_START(statusbar_setstatusstyles, 3, Nil)
 	DLIB_WXGET_BASE(statusbar, StatusBar, stbar)
 	WX_GETNUMBER(n)
 	WX_GETTABLE(d_styles)

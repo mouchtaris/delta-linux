@@ -18,12 +18,14 @@
 #define WX_FUNC(name) WX_FUNC1(multichoicedialog, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getselections)
 WX_FUNC_DEF(setselections)
 WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getselections),
 	WX_FUNC(setselections),
 	WX_FUNC(showmodal)
@@ -31,7 +33,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getselections", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MultiChoiceDialog, "multichoicedialog", Dialog)
 
@@ -45,7 +47,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Dialog, val)
+	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
+	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
+	WX_SETOBJECT_EX(*at, Dialog, parent)
 	return true;
 }
 
@@ -73,9 +77,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(MultiChoiceDialog,multichoicedialog)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(multichoicedialog_construct, 0, 6, Nil)
-	wxMultiChoiceDialog *dialog = (wxMultiChoiceDialog*) 0;
+	wxMultiChoiceDialog *wxdialog = (wxMultiChoiceDialog*) 0;
+	DeltaWxMultiChoiceDialog *dialog = (DeltaWxMultiChoiceDialog*) 0;
 	if (n == 0)
-		dialog = new wxMultiChoiceDialog();
+		wxdialog = new wxMultiChoiceDialog();
 	else if (n >= 4) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETSTRING(message)
@@ -93,12 +98,17 @@ WX_FUNC_ARGRANGE_START(multichoicedialog_construct, 0, 6, Nil)
 		wxPoint pos = wxDefaultPosition;
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { DLIB_WXGETPOINT_BASE(_pos) pos = *_pos; }
-		dialog = new wxMultiChoiceDialog(parent, message, caption, choices, style, pos);
+		wxdialog = new wxMultiChoiceDialog(parent, message, caption, choices, style, pos);
 	}
-	WX_SET_TOPLEVELWINDOW_OBJECT(MultiChoiceDialog, dialog)
+	if (wxdialog) dialog = DNEWCLASS(DeltaWxMultiChoiceDialog, (wxdialog));
+	WX_SETOBJECT(MultiChoiceDialog, dialog)
 }
 
-WX_FUNC_START(multichoicedialog_getselections, 1, Nil)
+DLIB_FUNC_START(multichoicedialog_destruct, 1, Nil)
+	DLIB_WXDELETE(multichoicedialog, MultiChoiceDialog, dialog)
+}
+
+DLIB_FUNC_START(multichoicedialog_getselections, 1, Nil)
 	DLIB_WXGET_BASE(multichoicedialog, MultiChoiceDialog, dialog)
 	wxArrayInt retval = dialog->GetSelections();
 	DLIB_RETVAL_REF.FromTable(DNEW(DELTA_OBJECT));
@@ -107,7 +117,7 @@ WX_FUNC_START(multichoicedialog_getselections, 1, Nil)
 	}
 }
 
-WX_FUNC_START(multichoicedialog_setselections, 2, Nil)
+DLIB_FUNC_START(multichoicedialog_setselections, 2, Nil)
 	DLIB_WXGET_BASE(multichoicedialog, MultiChoiceDialog, dialog)
 	WX_GETTABLE(selections_table)
 	wxArrayInt selections;
@@ -121,7 +131,7 @@ WX_FUNC_START(multichoicedialog_setselections, 2, Nil)
 	dialog->SetSelections(selections);
 }
 
-WX_FUNC_START(multichoicedialog_showmodal, 1, Nil)
+DLIB_FUNC_START(multichoicedialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(multichoicedialog, MultiChoiceDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

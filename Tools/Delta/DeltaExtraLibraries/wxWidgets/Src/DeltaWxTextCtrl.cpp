@@ -23,6 +23,7 @@
 #define WX_FUNC(name) WX_FUNC1(textctrl, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(appendtext)
 WX_FUNC_DEF(cancopy)
 WX_FUNC_DEF(cancut)
@@ -78,6 +79,7 @@ WX_FUNC_DEF(xytoposition)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(appendtext),
 	WX_FUNC(cancopy),
 	WX_FUNC(cancut),
@@ -134,7 +136,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "appendtext", "xytoposition")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "xytoposition")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(TextCtrl, "textctrl", Control)
 
@@ -148,14 +150,17 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
 static bool GetDefaultStyle (void* val, DeltaValue* at) 
 {
 	wxTextCtrl *textctrl = DLIB_WXTYPECAST_BASE(TextCtrl, val, textctrl);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, TextAttr, new wxTextAttr(textctrl->GetDefaultStyle()))
+	DeltaWxTextAttr *retval = DNEWCLASS(DeltaWxTextAttr, (new wxTextAttr(textctrl->GetDefaultStyle())));
+	WX_SETOBJECT_EX(*at, TextAttr, retval)
 	return true;
 }
 
@@ -170,9 +175,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(TextCtrl,textctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(textctrl_construct, 0, 8, Nil)
-	wxTextCtrl *textctrl = (wxTextCtrl*) 0;
+	wxTextCtrl *wxtextctrl = (wxTextCtrl*) 0;
+	DeltaWxTextCtrl *textctrl = (DeltaWxTextCtrl*) 0;
 	if (n == 0) {
-		textctrl = new wxTextCtrl();
+		wxtextctrl = new wxTextCtrl();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -187,7 +193,7 @@ WX_FUNC_ARGRANGE_START(textctrl_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		textctrl = new wxTextCtrl(parent, id, value, pos, size, style, *validator, name);
+		wxtextctrl = new wxTextCtrl(parent, id, value, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -196,46 +202,51 @@ WX_FUNC_ARGRANGE_START(textctrl_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(TextCtrl, textctrl)
+	if (wxtextctrl) textctrl = DNEWCLASS(DeltaWxTextCtrl, (wxtextctrl));
+	WX_SETOBJECT(TextCtrl, textctrl)
 }
 
-WX_FUNC_START(textctrl_appendtext, 2, Nil)
+DLIB_FUNC_START(textctrl_destruct, 1, Nil)
+	DLIB_WXDELETE(textctrl, TextCtrl, textctrl)
+}
+
+DLIB_FUNC_START(textctrl_appendtext, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETSTRING(text)
 	textctrl->AppendText(text);
 }
 
-WX_FUNC_START(textctrl_cancopy, 1, Nil)
+DLIB_FUNC_START(textctrl_cancopy, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->CanCopy())
 }
 
-WX_FUNC_START(textctrl_cancut, 1, Nil)
+DLIB_FUNC_START(textctrl_cancut, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->CanCut())
 }
 
-WX_FUNC_START(textctrl_canpaste, 1, Nil)
+DLIB_FUNC_START(textctrl_canpaste, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->CanPaste())
 }
 
-WX_FUNC_START(textctrl_canredo, 1, Nil)
+DLIB_FUNC_START(textctrl_canredo, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->CanRedo())
 }
 
-WX_FUNC_START(textctrl_canundo, 1, Nil)
+DLIB_FUNC_START(textctrl_canundo, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->CanUndo())
 }
 
-WX_FUNC_START(textctrl_clear, 1, Nil)
+DLIB_FUNC_START(textctrl_clear, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->Clear();
 }
 
-WX_FUNC_START(textctrl_copy, 1, Nil)
+DLIB_FUNC_START(textctrl_copy, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->Copy();
 }
@@ -256,65 +267,65 @@ WX_FUNC_ARGRANGE_START(textctrl_create, 3, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(textctrl->Create(parent, id, value, pos, size, style, *validator, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(textctrl);
 }
 
-WX_FUNC_START(textctrl_cut, 1, Nil)
+DLIB_FUNC_START(textctrl_cut, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->Cut();
 }
 
-WX_FUNC_START(textctrl_discardedits, 1, Nil)
+DLIB_FUNC_START(textctrl_discardedits, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->DiscardEdits();
 }
 
-WX_FUNC_START(textctrl_emulatekeypress, 2, Nil)
+DLIB_FUNC_START(textctrl_emulatekeypress, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, evt)
 	WX_SETBOOL(textctrl->EmulateKeyPress(*evt))
 }
 
-WX_FUNC_START(textctrl_getdefaultstyle, 1, Nil)
+DLIB_FUNC_START(textctrl_getdefaultstyle, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TextAttr, new wxTextAttr(textctrl->GetDefaultStyle()))
+	DeltaWxTextAttr *retval = DNEWCLASS(DeltaWxTextAttr, (new wxTextAttr(textctrl->GetDefaultStyle())));
+	WX_SETOBJECT(TextAttr, retval)
 }
 
-WX_FUNC_START(textctrl_getinsertionpoint, 1, Nil)
+DLIB_FUNC_START(textctrl_getinsertionpoint, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETNUMBER(textctrl->GetInsertionPoint())
 }
 
-WX_FUNC_START(textctrl_getlastposition, 1, Nil)
+DLIB_FUNC_START(textctrl_getlastposition, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETNUMBER(textctrl->GetLastPosition())
 }
 
-WX_FUNC_START(textctrl_getlinelength, 2, Nil)
+DLIB_FUNC_START(textctrl_getlinelength, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(lineNo)
 	WX_SETNUMBER(textctrl->GetLineLength(lineNo))
 }
 
-WX_FUNC_START(textctrl_getlinetext, 2, Nil)
+DLIB_FUNC_START(textctrl_getlinetext, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(lineNo)
 	WX_SETSTRING(textctrl->GetLineText(lineNo))
 }
 
-WX_FUNC_START(textctrl_getnumberoflines, 1, Nil)
+DLIB_FUNC_START(textctrl_getnumberoflines, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETNUMBER(textctrl->GetNumberOfLines())
 }
 
-WX_FUNC_START(textctrl_getrange, 3, Nil)
+DLIB_FUNC_START(textctrl_getrange, 3, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(from)
 	WX_GETNUMBER(to)
 	WX_SETSTRING(textctrl->GetRange(from, to))
 }
 
-WX_FUNC_START(textctrl_getselection, 3, Nil)
+DLIB_FUNC_START(textctrl_getselection, 3, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETTABLE(from_table)
 	WX_GETTABLE(to_table)
@@ -324,28 +335,29 @@ WX_FUNC_START(textctrl_getselection, 3, Nil)
 	WX_SETTABLE_RETVAL(to_table, DeltaValue((DeltaNumberValueType)to))
 }
 
-WX_FUNC_START(textctrl_getstringselection, 1, Nil)
+DLIB_FUNC_START(textctrl_getstringselection, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETSTRING(textctrl->GetStringSelection())
 }
 
-WX_FUNC_START(textctrl_getstyle, 3, Nil)
+DLIB_FUNC_START(textctrl_getstyle, 3, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(position)
 	WX_GETTABLE(style_table)
 	wxTextAttr style;
 	WX_SETBOOL(textctrl->GetStyle(position, style))
+	DeltaWxTextAttr *retval = DNEWCLASS(DeltaWxTextAttr, (new wxTextAttr(style)));
 	DeltaValue value;
-	WX_SETOBJECT_EX(value, TextAttr, new wxTextAttr(style))
+	WX_SETOBJECT_EX(value, TextAttr, retval)
 	WX_SETTABLE_RETVAL(style_table, value)
 }
 
-WX_FUNC_START(textctrl_getvalue, 1, Nil)
+DLIB_FUNC_START(textctrl_getvalue, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETSTRING(textctrl->GetValue())
 }
 
-WX_FUNC_START(textctrl_hittest, 4, Nil)
+DLIB_FUNC_START(textctrl_hittest, 4, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	DLIB_WXGETPOINT_BASE(pt)
 	WX_GETTABLE(col_table)
@@ -356,27 +368,27 @@ WX_FUNC_START(textctrl_hittest, 4, Nil)
 	WX_SETTABLE_RETVAL(row_table, DeltaValue((DeltaNumberValueType)row))
 }
 
-WX_FUNC_START(textctrl_iseditable, 1, Nil)
+DLIB_FUNC_START(textctrl_iseditable, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->IsEditable())
 }
 
-WX_FUNC_START(textctrl_isempty, 1, Nil)
+DLIB_FUNC_START(textctrl_isempty, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->IsEmpty())
 }
 
-WX_FUNC_START(textctrl_ismodified, 1, Nil)
+DLIB_FUNC_START(textctrl_ismodified, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->IsModified())
 }
 
-WX_FUNC_START(textctrl_issingleline, 1, Nil)
+DLIB_FUNC_START(textctrl_issingleline, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->IsSingleLine())
 }
 
-WX_FUNC_START(textctrl_ismultiline, 1, Nil)
+DLIB_FUNC_START(textctrl_ismultiline, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_SETBOOL(textctrl->IsMultiLine())
 }
@@ -389,23 +401,23 @@ WX_FUNC_ARGRANGE_START(textctrl_loadfile, 2, 3, Nil)
 	WX_SETBOOL(textctrl->LoadFile(filename, fileType))
 }
 
-WX_FUNC_START(textctrl_markdirty, 1, Nil)
+DLIB_FUNC_START(textctrl_markdirty, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->MarkDirty();
 }
 
-WX_FUNC_START(textctrl_ondropfiles, 2, Nil)
+DLIB_FUNC_START(textctrl_ondropfiles, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	DLIB_WXGET_BASE(dropfilesevent, DropFilesEvent, evt)
 	textctrl->OnDropFiles(*evt);
 }
 
-WX_FUNC_START(textctrl_paste, 1, Nil)
+DLIB_FUNC_START(textctrl_paste, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->Paste();
 }
 
-WX_FUNC_START(textctrl_positiontoxy, 4, Nil)
+DLIB_FUNC_START(textctrl_positiontoxy, 4, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(pos)
 	WX_GETTABLE(x_table)
@@ -416,19 +428,19 @@ WX_FUNC_START(textctrl_positiontoxy, 4, Nil)
 	WX_SETTABLE_RETVAL(y_table, DeltaValue((DeltaNumberValueType)y))
 }
 
-WX_FUNC_START(textctrl_redo, 1, Nil)
+DLIB_FUNC_START(textctrl_redo, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->Redo();
 }
 
-WX_FUNC_START(textctrl_remove, 3, Nil)
+DLIB_FUNC_START(textctrl_remove, 3, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(from)
 	WX_GETNUMBER(to)
 	textctrl->Remove(from, to);
 }
 
-WX_FUNC_START(textctrl_replace, 4, Nil)
+DLIB_FUNC_START(textctrl_replace, 4, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(from)
 	WX_GETNUMBER(to)
@@ -444,49 +456,49 @@ WX_FUNC_ARGRANGE_START(textctrl_savefile, 2, 3, Nil)
 	WX_SETBOOL(textctrl->SaveFile(filename, fileType))
 }
 
-WX_FUNC_START(textctrl_setdefaultstyle, 2, Nil)
+DLIB_FUNC_START(textctrl_setdefaultstyle, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	DLIB_WXGET_BASE(textattr, TextAttr, style)
 	WX_SETBOOL(textctrl->SetDefaultStyle(*style))
 }
 
-WX_FUNC_START(textctrl_seteditable, 2, Nil)
+DLIB_FUNC_START(textctrl_seteditable, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETBOOL(editable)
 	textctrl->SetEditable(editable);
 }
 
-WX_FUNC_START(textctrl_setinsertionpoint, 2, Nil)
+DLIB_FUNC_START(textctrl_setinsertionpoint, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(pos)
 	textctrl->SetInsertionPoint(pos);
 }
 
-WX_FUNC_START(textctrl_setinsertionpointend, 1, Nil)
+DLIB_FUNC_START(textctrl_setinsertionpointend, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->SetInsertionPointEnd();
 }
 
-WX_FUNC_START(textctrl_setmaxlength, 2, Nil)
+DLIB_FUNC_START(textctrl_setmaxlength, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(len)
 	textctrl->SetMaxLength(len);
 }
 
-WX_FUNC_START(textctrl_setmodified, 2, Nil)
+DLIB_FUNC_START(textctrl_setmodified, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETBOOL(modified)
 	textctrl->SetModified(modified);
 }
 
-WX_FUNC_START(textctrl_setselection, 3, Nil)
+DLIB_FUNC_START(textctrl_setselection, 3, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(from)
 	WX_GETNUMBER(to)
 	textctrl->SetSelection(from, to);
 }
 
-WX_FUNC_START(textctrl_setstyle, 4, Nil)
+DLIB_FUNC_START(textctrl_setstyle, 4, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(start)
 	WX_GETNUMBER(end)
@@ -494,36 +506,36 @@ WX_FUNC_START(textctrl_setstyle, 4, Nil)
 	WX_SETBOOL(textctrl->SetStyle(start, end, *style))
 }
 
-WX_FUNC_START(textctrl_setvalue, 2, Nil)
+DLIB_FUNC_START(textctrl_setvalue, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETSTRING(value)
 	textctrl->SetValue(value);
 }
 
-WX_FUNC_START(textctrl_changevalue, 2, Nil)
+DLIB_FUNC_START(textctrl_changevalue, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETSTRING(value)
 	textctrl->ChangeValue(value);
 }
 
-WX_FUNC_START(textctrl_showposition, 2, Nil)
+DLIB_FUNC_START(textctrl_showposition, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(pos)
 	textctrl->ShowPosition(pos);
 }
 
-WX_FUNC_START(textctrl_undo, 1, Nil)
+DLIB_FUNC_START(textctrl_undo, 1, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	textctrl->Undo();
 }
 
-WX_FUNC_START(textctrl_writetext, 2, Nil)
+DLIB_FUNC_START(textctrl_writetext, 2, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETSTRING(text)
 	textctrl->WriteText(text);
 }
 
-WX_FUNC_START(textctrl_xytoposition, 3, Nil)
+DLIB_FUNC_START(textctrl_xytoposition, 3, Nil)
 	DLIB_WXGET_BASE(textctrl, TextCtrl, textctrl)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)

@@ -16,6 +16,7 @@
 #define WX_FUNC(name) WX_FUNC1(palette, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getcolourscount)
 WX_FUNC_DEF(getpixel)
@@ -24,6 +25,7 @@ WX_FUNC_DEF(isok)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getcolourscount),
 	WX_FUNC(getpixel),
@@ -33,7 +35,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "isok")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "isok")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Palette, "palette", Object)
 
@@ -47,7 +49,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -61,9 +65,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Palette,palette)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(palette_construct, 0, 4, Nil)
-	wxPalette *palette = (wxPalette*) 0;
+	wxPalette *wxpalette = (wxPalette*) 0;
+	DeltaWxPalette *palette = (DeltaWxPalette*) 0;
 	if (n == 0) {
-		palette = new wxPalette();
+		wxpalette = new wxPalette();
 	} else if (n == 4) {
 		WX_GETNUMBER(num_d)
 		WX_GETTABLE(red_table)
@@ -82,15 +87,20 @@ WX_FUNC_ARGRANGE_START(palette_construct, 0, 4, Nil)
 			if (g_value.Type() == DeltaValue_Number) { green[i] = (unsigned char)g_value.ToNumber(); }
 			if (b_value.Type() == DeltaValue_Number) { blue[i] = (unsigned char)b_value.ToNumber(); }
 		}
-		palette = new wxPalette(num, red, green, blue);
+		wxpalette = new wxPalette(num, red, green, blue);
 		DDELARR(red);
 		DDELARR(green);
 		DDELARR(blue);
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Palette, palette)
+	if (wxpalette) palette = DNEWCLASS(DeltaWxPalette, (wxpalette));
+	WX_SETOBJECT(Palette, palette)
 }
 
-WX_FUNC_START(palette_create, 5, Nil)
+DLIB_FUNC_START(palette_destruct, 1, Nil)
+	DLIB_WXDELETE(palette, Palette, palette)
+}
+
+DLIB_FUNC_START(palette_create, 5, Nil)
 	DLIB_WXGET_BASE(palette, Palette, palette)
 	WX_GETNUMBER(num_d)
 	WX_GETTABLE(red_table)
@@ -115,12 +125,12 @@ WX_FUNC_START(palette_create, 5, Nil)
 	DDELARR(blue);
 }
 
-WX_FUNC_START(palette_getcolourscount, 1, Nil)
+DLIB_FUNC_START(palette_getcolourscount, 1, Nil)
 	DLIB_WXGET_BASE(palette, Palette, palette)
 	WX_SETNUMBER(palette->GetColoursCount())
 }
 
-WX_FUNC_START(palette_getpixel, 4, Nil)
+DLIB_FUNC_START(palette_getpixel, 4, Nil)
 	DLIB_WXGET_BASE(palette, Palette, palette)
 	WX_GETNUMBER(red)
 	WX_GETNUMBER(green)
@@ -128,7 +138,7 @@ WX_FUNC_START(palette_getpixel, 4, Nil)
 	WX_SETNUMBER(palette->GetPixel(red, green, blue))
 }
 
-WX_FUNC_START(palette_getrgb, 5, Nil)
+DLIB_FUNC_START(palette_getrgb, 5, Nil)
 	DLIB_WXGET_BASE(palette, Palette, palette)
 	WX_GETNUMBER(pixel)
 	WX_GETTABLE(red_table)
@@ -141,7 +151,7 @@ WX_FUNC_START(palette_getrgb, 5, Nil)
 	WX_SETTABLE_RETVAL(blue_table, DeltaValue((DeltaNumberValueType)blue))
 }
 
-WX_FUNC_START(palette_isok, 1, Nil)
+DLIB_FUNC_START(palette_isok, 1, Nil)
 	DLIB_WXGET_BASE(palette, Palette, palette)
 	WX_SETBOOL(palette->IsOk())
 }

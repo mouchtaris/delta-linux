@@ -24,6 +24,7 @@ typedef int wxPolygonFillMode;
 #define WX_FUNC(name) WX_FUNC1(region, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(clear)
 WX_FUNC_DEF(contains)
 WX_FUNC_DEF(converttobitmap)
@@ -39,6 +40,7 @@ WX_FUNC_DEF(notequal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(clear),
 	WX_FUNC(contains),
 	WX_FUNC(converttobitmap),
@@ -55,7 +57,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "clear", "notequal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "notequal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Region, "region", Object)
 
@@ -69,7 +71,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -91,22 +95,25 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Region, region, DeltaWxRegionInitFunc();, UEM
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(region_construct, 0, 4, Nil)
-	wxRegion *region = (wxRegion*) 0;
+	wxRegion *wxregion = (wxRegion*) 0;
+	DeltaWxRegion *region = (DeltaWxRegion*) 0;
 	if (n == 0)
-		region = new wxRegion();
+		wxregion = new wxRegion();
 	else if (n == 4) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
 		WX_GETNUMBER(width)
 		WX_GETNUMBER(height)
-		region = new wxRegion(x, y, width, height);
+		wxregion = new wxRegion(x, y, width, height);
 	} else if (n == 1) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
-				region = new wxRegion(*rect);
-			} else if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bmp)) {
-				region = new wxRegion(*bmp);
+			if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+				wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
+				wxregion = new wxRegion(*rect);
+			} else if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bitmap)) {
+				wxBitmap *bmp = (wxBitmap*) bitmap->GetCastToNativeInstance();
+				wxregion = new wxRegion(*bmp);
 			}
 		}
 	} else {
@@ -120,34 +127,42 @@ WX_FUNC_ARGRANGE_START(region_construct, 0, 4, Nil)
 				points->Get(DeltaValue((DeltaNumberValueType)i), &value);
 				if (value.Type() == DeltaValue_ExternId) {
 					util_ui32 serial_no = (util_ui32)value.ToExternId();
-					if (DLIB_WXISBASE(Point, serial_no, point, point)) {
+					if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
+						wxPoint *point = (wxPoint*) point_wr->GetCastToNativeInstance();
 						pts[i] = *point;
 					}
 				}
 			}
 			int fillStyle = wxODDEVEN_RULE;
 			if (n >= 3) { WX_GETDEFINE_DEFINED(fillStyle) }
-			region = new wxRegion(size, pts, (wxPolygonFillMode) fillStyle);
+			wxregion = new wxRegion(size, pts, (wxPolygonFillMode) fillStyle);
 			DDELARR(pts);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Point, serial_no, point, topLeft)) {
+			if (DLIB_WXISBASE(Point, serial_no, point, point)) {
 				if (n == 2) {
+					wxPoint *topLeft = (wxPoint*) point->GetCastToNativeInstance();
 					DLIB_WXGET_BASE(point, Point, bottomRight)
-					region = new wxRegion(*topLeft, *bottomRight);
+					wxregion = new wxRegion(*topLeft, *bottomRight);
 				}
-			} else if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bmp)) {
+			} else if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bitmap)) {
+				wxBitmap *bmp = (wxBitmap*) bitmap->GetCastToNativeInstance();
 				DLIB_WXGET_BASE(colour, Colour, transColour)
 				int tolerance = 0;
 				if (n >= 3) { WX_GETNUMBER_DEFINED(tolerance) }
-				region = new wxRegion(*bmp, *transColour, tolerance);
+				wxregion = new wxRegion(*bmp, *transColour, tolerance);
 			}
 		}
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Region, region)
+	if (wxregion) region = DNEWCLASS(DeltaWxRegion, (wxregion));
+	WX_SETOBJECT(Region, region)
 }
 
-WX_FUNC_START(region_clear, 1, Nil)
+DLIB_FUNC_START(region_destruct, 1, Nil)
+	DLIB_WXDELETE(region, Region, region)
+}
+
+DLIB_FUNC_START(region_clear, 1, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
 	region->Clear();
 }
@@ -157,9 +172,11 @@ WX_FUNC_ARGRANGE_START(region_contains, 2, 5, Nil)
 	if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Point, serial_no, point, pt)) {
+			if (DLIB_WXISBASE(Point, serial_no, point, point)) {
+				wxPoint *pt = (wxPoint*) point->GetCastToNativeInstance();
 				WX_SETNUMBER(region->Contains(*pt))
-			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
+			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+				wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
 				WX_SETNUMBER(region->Contains(*rect))
 			}
 		}
@@ -176,15 +193,17 @@ WX_FUNC_ARGRANGE_START(region_contains, 2, 5, Nil)
 	}
 }
 
-WX_FUNC_START(region_converttobitmap, 1, Nil)
+DLIB_FUNC_START(region_converttobitmap, 1, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
-	WX_SETOBJECT(Bitmap, new wxBitmap(region->ConvertToBitmap()))
+	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (new wxBitmap(region->ConvertToBitmap())));
+	WX_SETOBJECT(Bitmap, retval)
 }
 
 WX_FUNC_ARGRANGE_START(region_getbox, 1, 5, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
 	if (n == 1) {
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(region->GetBox()))
+		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(region->GetBox())));
+		WX_SETOBJECT(Rect, retval)
 	} else if (n == 5) {
 		int x, y, width, height;
 		region->GetBox(x, y, width, height);
@@ -204,9 +223,11 @@ WX_FUNC_ARGRANGE_START(region_intersect, 2, 5, Nil)
 	if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Region, serial_no, region, reg)) {
+			if (DLIB_WXISBASE(Region, serial_no, region, region_wr)) {
+				wxRegion *reg = (wxRegion*) region_wr->GetCastToNativeInstance();
 				WX_SETBOOL(region->Intersect(*reg))
-			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
+			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+				wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
 				WX_SETBOOL(region->Intersect(*rect))
 			}
 		}
@@ -219,24 +240,26 @@ WX_FUNC_ARGRANGE_START(region_intersect, 2, 5, Nil)
 	}
 }
 
-WX_FUNC_START(region_isempty, 1, Nil)
+DLIB_FUNC_START(region_isempty, 1, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
 	WX_SETBOOL(region->IsEmpty())
 }
 
-WX_FUNC_START(region_isequal, 2, Nil)
+DLIB_FUNC_START(region_isequal, 2, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
 	DLIB_WXGET_BASE(region, Region, reg)
 	WX_SETBOOL(region->IsEqual(*reg))
 }
 
-WX_FUNC_START(region_subtract, 2, Nil)
+DLIB_FUNC_START(region_subtract, 2, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Region, serial_no, region, reg)) {
+		if (DLIB_WXISBASE(Region, serial_no, region, region_wr)) {
+			wxRegion *reg = (wxRegion*) region_wr->GetCastToNativeInstance();
 			WX_SETBOOL(region->Subtract(*reg))
-		} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
+		} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+			wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
 			WX_SETBOOL(region->Subtract(*rect))
 		}
 	}
@@ -265,11 +288,14 @@ WX_FUNC_ARGRANGE_START(region_union, 2, 5, Nil)
 	} else if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Region, serial_no, region, reg)) {
+			if (DLIB_WXISBASE(Region, serial_no, region, region_wr)) {
+				wxRegion *reg = (wxRegion*) region_wr->GetCastToNativeInstance();
 				WX_SETBOOL(region->Union(*reg))
-			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
+			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+				wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
 				WX_SETBOOL(region->Union(*rect))
-			} else if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bmp)) {
+			} else if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bitmap)) {
+				wxBitmap *bmp = (wxBitmap*) bitmap->GetCastToNativeInstance();
 				WX_SETBOOL(region->Union(*bmp))
 			}
 		}
@@ -293,16 +319,18 @@ WX_FUNC_ARGRANGE_START(region_xor, 2, 5, Nil)
 	} else if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Region, serial_no, region, reg)) {
+			if (DLIB_WXISBASE(Region, serial_no, region, region_wr)) {
+				wxRegion *reg = (wxRegion*) region_wr->GetCastToNativeInstance();
 				WX_SETBOOL(region->Xor(*reg))
-			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
+			} else if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
+				wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
 				WX_SETBOOL(region->Xor(*rect))
 			}
 		}
 	}
 }
 
-WX_FUNC_START(region_notequal, 2, Nil)
+DLIB_FUNC_START(region_notequal, 2, Nil)
 	DLIB_WXGET_BASE(region, Region, region)
 	DLIB_WXGET_BASE(region, Region, region2)
 	WX_SETBOOL(region->operator!=(*region2))

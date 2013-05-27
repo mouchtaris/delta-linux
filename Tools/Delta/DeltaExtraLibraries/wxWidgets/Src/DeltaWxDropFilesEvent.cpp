@@ -17,12 +17,14 @@
 #define WX_FUNC(name) WX_FUNC1(dropfilesevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getfiles)
 WX_FUNC_DEF(getnumberoffiles)
 WX_FUNC_DEF(getposition)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getfiles),
 	WX_FUNC(getnumberoffiles),
 	WX_FUNC(getposition)
@@ -30,7 +32,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getfiles", "getposition")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getposition")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(DropFilesEvent, "dropfilesevent", Event)
 
@@ -44,7 +46,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
@@ -58,7 +62,8 @@ static bool GetNoFiles (void* val, DeltaValue* at)
 static bool GetPosition (void* val, DeltaValue* at) 
 {
 	wxDropFilesEvent *ev = DLIB_WXTYPECAST_BASE(DropFilesEvent, val, dropfilesevent);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(ev->GetPosition()))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(ev->GetPosition())));
+	WX_SETOBJECT_EX(*at, Point, retval)
 	return true;
 }
 
@@ -105,11 +110,17 @@ WX_FUNC_ARGRANGE_START(dropfilesevent_construct, 0, 3, Nil)
 			}
 		}
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DropFilesEvent, new wxDropFilesEvent(type, noFiles, files))
+	DeltaWxDropFilesEvent *evt = DNEWCLASS(DeltaWxDropFilesEvent,
+		(new wxDropFilesEvent(type, noFiles, files)));
+	WX_SETOBJECT(DropFilesEvent, evt)
 	if (n >= 3) { DDELARR(files); }
 }
 
-WX_FUNC_START(dropfilesevent_getfiles, 1, Nil)
+DLIB_FUNC_START(dropfilesevent_destruct, 1, Nil)
+	DLIB_WXDELETE(dropfilesevent, DropFilesEvent, evt)
+}
+
+DLIB_FUNC_START(dropfilesevent_getfiles, 1, Nil)
 	DLIB_WXGET_BASE(dropfilesevent, DropFilesEvent, evt)
 	wxString *strings = evt->GetFiles();
 	DeltaObject *retval = DNEW(DeltaObject);
@@ -121,12 +132,13 @@ WX_FUNC_START(dropfilesevent_getfiles, 1, Nil)
 	DLIB_RETVAL_REF.FromTable(retval);
 }
 
-WX_FUNC_START(dropfilesevent_getnumberoffiles, 1, Nil)
+DLIB_FUNC_START(dropfilesevent_getnumberoffiles, 1, Nil)
 	DLIB_WXGET_BASE(dropfilesevent, DropFilesEvent, evt)
 	WX_SETNUMBER(evt->GetNumberOfFiles())
 }
 
-WX_FUNC_START(dropfilesevent_getposition, 1, Nil)
+DLIB_FUNC_START(dropfilesevent_getposition, 1, Nil)
 	DLIB_WXGET_BASE(dropfilesevent, DropFilesEvent, evt)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(evt->GetPosition()))
+	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(evt->GetPosition())));
+	WX_SETOBJECT(Point, retval)
 }

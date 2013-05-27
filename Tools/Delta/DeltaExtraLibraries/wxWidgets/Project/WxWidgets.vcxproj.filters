@@ -74,6 +74,9 @@
     <ClCompile Include="..\Src\DeltaWxWidgetsLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\wxWrapperUtilFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\Src\DeltaWxBitmapButton.cpp">
       <Filter>Source Files\Controls</Filter>
     </ClCompile>
@@ -673,27 +676,6 @@
     </ClCompile>
     <ClCompile Include="..\Src\DeltaWxStaticBitmap.cpp">
       <Filter>Source Files\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DeltaWxWidgetsLibStarter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DeltaWxDefineMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DeltaWxNativeInstanceToWrapperMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DeltaWxWrapperToExternIdMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DeltaWxWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DeltaLibraryFunctionContext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Src\DeltaWxCollectableDestructors.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1305,30 +1287,6 @@
     </ClInclude>
     <ClInclude Include="..\Include\DeltaWxStaticBitmap.h">
       <Filter>Header Files\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaWxWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaWxWidgetsLibStarter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaWxDefineMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaWxNativeInstanceToWrapperMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaWxWrapperToExternIdMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaLibraryFunctionContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaWxCollectableDestructors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\DeltaWxLibraryTemplates.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

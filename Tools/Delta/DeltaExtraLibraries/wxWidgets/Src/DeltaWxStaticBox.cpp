@@ -19,16 +19,18 @@
 #define WX_FUNC(name) WX_FUNC1(staticbox, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "create")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "create")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(StaticBox, "staticbox", Control)
 
@@ -42,7 +44,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -56,9 +60,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticBox,staticbox)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(staticbox_construct, 0, 7, Nil)
-	wxStaticBox *statbox = (wxStaticBox*) 0;
+	wxStaticBox *wxstatbox = (wxStaticBox*) 0;
+	DeltaWxStaticBox *statbox = (DeltaWxStaticBox*) 0;
 	if (n == 0) {
-		statbox = new wxStaticBox();
+		wxstatbox = new wxStaticBox();
 	} else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -71,7 +76,7 @@ WX_FUNC_ARGRANGE_START(staticbox_construct, 0, 7, Nil)
 		if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
-		statbox = new wxStaticBox(parent, id, label, pos, size, style, name);
+		wxstatbox = new wxStaticBox(parent, id, label, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -80,7 +85,12 @@ WX_FUNC_ARGRANGE_START(staticbox_construct, 0, 7, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(StaticBox, statbox)
+	if (wxstatbox) statbox = DNEWCLASS(DeltaWxStaticBox, (wxstatbox));
+	WX_SETOBJECT(StaticBox, statbox)
+}
+
+DLIB_FUNC_START(staticbox_destruct, 1, Nil)
+	DLIB_WXDELETE(staticbox, StaticBox, statbox)
 }
 
 WX_FUNC_ARGRANGE_START(staticbox_create, 4, 8, Nil)
@@ -97,5 +107,4 @@ WX_FUNC_ARGRANGE_START(staticbox_create, 4, 8, Nil)
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(statbox->Create(parent, id, label, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(statbox);
 }

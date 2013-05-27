@@ -17,18 +17,20 @@
 #define WX_FUNC(name) WX_FUNC1(focusevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getwindow)
 WX_FUNC_DEF(setwindow)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getwindow),
 	WX_FUNC(setwindow)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getwindow", "setwindow")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setwindow")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FocusEvent, "focusevent", Event)
 
@@ -42,14 +44,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
 static bool GetWindow (void* val, DeltaValue* at) 
 {
 	wxFocusEvent *ev = DLIB_WXTYPECAST_BASE(FocusEvent, val, focusevent);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, ev->GetWindow())
+	wxWindow *win = ev->GetWindow();
+	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
@@ -67,15 +73,21 @@ WX_FUNC_ARGRANGE_START(focusevent_construct, 0, 2, Nil)
 	int type = wxEVT_NULL, winid = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(FocusEvent, new wxFocusEvent(type, winid))
+	DeltaWxFocusEvent *evt = DNEWCLASS(DeltaWxFocusEvent, (new wxFocusEvent(type, winid)));
+	WX_SETOBJECT(FocusEvent, evt)
 }
 
-WX_FUNC_START(focusevent_getwindow, 1, Nil)
+DLIB_FUNC_START(focusevent_destruct, 1, Nil)
+	DLIB_WXDELETE(focusevent, FocusEvent, evt)
+}
+
+DLIB_FUNC_START(focusevent_getwindow, 1, Nil)
 	DLIB_WXGET_BASE(focusevent, FocusEvent, evt)
-	WX_SETOBJECT(Window, evt->GetWindow())
+	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (evt->GetWindow()));
+	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(focusevent_setwindow, 2, Nil)
+DLIB_FUNC_START(focusevent_setwindow, 2, Nil)
 	DLIB_WXGET_BASE(focusevent, FocusEvent, evt)
 	DLIB_WXGET_BASE(window, Window, window)
 	evt->SetWindow(window);

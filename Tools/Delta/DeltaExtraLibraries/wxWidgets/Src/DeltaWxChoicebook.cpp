@@ -22,6 +22,7 @@
 #define WX_FUNC(name) WX_FUNC1(choicebook, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addpage)
 WX_FUNC_DEF(advanceselection)
 WX_FUNC_DEF(assignimagelist)
@@ -49,6 +50,7 @@ WX_FUNC_DEF(setselection)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(addpage),
 	WX_FUNC(advanceselection),
 	WX_FUNC(assignimagelist),
@@ -77,7 +79,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addpage", "setselection")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setselection")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Choicebook, "choicebook", Control)
 
@@ -91,7 +93,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -102,7 +106,8 @@ static bool GetPages (void* val, DeltaValue* at)
 	for (int i = 0, pageSize = (int)book->GetPageCount(); i < pageSize; ++i) {
 		DeltaValue value;
 		wxWindow *win = book->GetPage(i);
-		WX_SETOBJECT_NO_CONTEXT_EX(value, Window, win)
+		DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
+		WX_SETOBJECT_EX(value, Window, retval)
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -112,7 +117,10 @@ static bool GetImageList (void* val, DeltaValue* at)
 {
 	wxChoicebook *book = DLIB_WXTYPECAST_BASE(Choicebook, val, choicebook);
 	wxImageList *imagelist = book->GetImageList();
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, imagelist)
+	DeltaWxImageList *retval = imagelist ?
+		DNEWCLASS(DeltaWxImageList, (imagelist)) :
+		(DeltaWxImageList*) 0;
+	WX_SETOBJECT_EX(*at, ImageList, retval)
 	return true;
 }
 
@@ -169,9 +177,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Choicebook,choicebook)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(choicebook_construct, 0, 6, Nil)
-	wxChoicebook *choicebk = (wxChoicebook*) 0;
+	wxChoicebook *wxchoicebk = (wxChoicebook*) 0;
+	DeltaWxChoicebook *choicebk = (DeltaWxChoicebook*) 0;
 	if (n == 0)
-		choicebk = new wxChoicebook();
+		wxchoicebk = new wxChoicebook();
 	else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -183,7 +192,7 @@ WX_FUNC_ARGRANGE_START(choicebook_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		choicebk = new wxChoicebook(parent, id, pos, size, style, name);
+		wxchoicebk = new wxChoicebook(parent, id, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -192,7 +201,12 @@ WX_FUNC_ARGRANGE_START(choicebook_construct, 0, 6, Nil)
 		);
 		return;
 	}
-	WX_SET_WINDOW_OBJECT(Choicebook, choicebk)
+	if (wxchoicebk) choicebk = DNEWCLASS(DeltaWxChoicebook, (wxchoicebk));
+	WX_SETOBJECT(Choicebook, choicebk)
+}
+
+DLIB_FUNC_START(choicebook_destruct, 1, Nil)
+	DLIB_WXDELETE(choicebook, Choicebook, choicebk)
 }
 
 WX_FUNC_ARGRANGE_START(choicebook_addpage, 3, 5, Nil)
@@ -213,19 +227,20 @@ WX_FUNC_ARGRANGE_START(choicebook_advanceselection, 1, 2, Nil)
 	choicebk->AdvanceSelection(forward);
 }
 
-WX_FUNC_START(choicebook_assignimagelist, 2, Nil)
+DLIB_FUNC_START(choicebook_assignimagelist, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	choicebk->AssignImageList(imageList);
 }
 
-WX_FUNC_START(choicebook_calcsizefrompage, 2, Nil)
+DLIB_FUNC_START(choicebook_calcsizefrompage, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	DLIB_WXGETSIZE_BASE(sizePage)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(choicebk->CalcSizeFromPage(*sizePage)))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(choicebk->CalcSizeFromPage(*sizePage))));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(choicebook_changeselection, 2, Nil)
+DLIB_FUNC_START(choicebook_changeselection, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(size)
 	WX_SETNUMBER(choicebk->ChangeSelection(size))
@@ -244,62 +259,62 @@ WX_FUNC_ARGRANGE_START(choicebook_create, 3, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(choicebk->Create(parent, id, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(choicebk);
 }
 
-WX_FUNC_START(choicebook_deleteallpages, 1, Nil)
+DLIB_FUNC_START(choicebook_deleteallpages, 1, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_SETBOOL(choicebk->DeleteAllPages())
 }
 
-WX_FUNC_START(choicebook_deletepage, 2, Nil)
+DLIB_FUNC_START(choicebook_deletepage, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(choicebk->DeletePage(page))
 }
 
-WX_FUNC_START(choicebook_getchoicectrl, 1, Nil)
+DLIB_FUNC_START(choicebook_getchoicectrl, 1, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
-	WX_SETOBJECT(Choice, choicebk->GetChoiceCtrl())
+	DeltaWxChoice *retval = DNEWCLASS(DeltaWxChoice, (choicebk->GetChoiceCtrl()));
+	WX_SETOBJECT(Choice, retval)
 }
 
-WX_FUNC_START(choicebook_getcurrentpage, 1, Nil)
+DLIB_FUNC_START(choicebook_getcurrentpage, 1, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
-	wxWindow* retval	= choicebk->GetCurrentPage();
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, choicebk->GetCurrentPage())
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(choicebook_getimagelist, 1, Nil)
+DLIB_FUNC_START(choicebook_getimagelist, 1, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
-	wxImageList* retval	= choicebk->GetImageList();
+	WXNEWCLASS(DeltaWxImageList, retval, wxImageList, choicebk->GetImageList())
 	WX_SETOBJECT(ImageList, retval)
 }
 
-WX_FUNC_START(choicebook_getpage, 2, Nil)
+DLIB_FUNC_START(choicebook_getpage, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(page)
-	wxWindow* retval	= choicebk->GetPage(page);
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, choicebk->GetPage(page))
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(choicebook_getpagecount, 1, Nil)
+DLIB_FUNC_START(choicebook_getpagecount, 1, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_SETNUMBER(choicebk->GetPageCount())
 }
 
-WX_FUNC_START(choicebook_getpageimage, 2, Nil)
+DLIB_FUNC_START(choicebook_getpageimage, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(nPage)
 	WX_SETNUMBER(choicebk->GetPageImage(nPage))
 }
 
-WX_FUNC_START(choicebook_getpagetext, 2, Nil)
+DLIB_FUNC_START(choicebook_getpagetext, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(page)
 	WX_SETSTRING(choicebk->GetPageText(page))
 }
 
-WX_FUNC_START(choicebook_getselection, 1, Nil)
+DLIB_FUNC_START(choicebook_getselection, 1, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_SETNUMBER(choicebk->GetSelection())
 }
@@ -327,39 +342,39 @@ WX_FUNC_ARGRANGE_START(choicebook_insertpage, 4, 6, Nil)
 	WX_SETBOOL(choicebk->InsertPage(index, page, text, select, imageId))
 }
 
-WX_FUNC_START(choicebook_removepage, 2, Nil)
+DLIB_FUNC_START(choicebook_removepage, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(choicebk->RemovePage(page))
 }
 
-WX_FUNC_START(choicebook_setimagelist, 2, Nil)
+DLIB_FUNC_START(choicebook_setimagelist, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	choicebk->SetImageList(imageList);
 }
 
-WX_FUNC_START(choicebook_setpagesize, 2, Nil)
+DLIB_FUNC_START(choicebook_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	DLIB_WXGETSIZE_BASE(size)
 	choicebk->SetPageSize(*size);
 }
 
-WX_FUNC_START(choicebook_setpageimage, 3, Nil)
+DLIB_FUNC_START(choicebook_setpageimage, 3, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(page)
 	WX_GETNUMBER(image)
 	WX_SETBOOL(choicebk->SetPageImage(page, image))
 }
 
-WX_FUNC_START(choicebook_setpagetext, 3, Nil)
+DLIB_FUNC_START(choicebook_setpagetext, 3, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(page)
 	WX_GETSTRING(text)
 	WX_SETBOOL(choicebk->SetPageText(page, text))
 }
 
-WX_FUNC_START(choicebook_setselection, 2, Nil)
+DLIB_FUNC_START(choicebook_setselection, 2, Nil)
 	DLIB_WXGET_BASE(choicebook, Choicebook, choicebk)
 	WX_GETNUMBER(page)
 	WX_SETNUMBER(choicebk->SetSelection(page))

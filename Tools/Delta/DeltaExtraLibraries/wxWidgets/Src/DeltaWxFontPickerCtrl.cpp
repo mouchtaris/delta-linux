@@ -21,6 +21,7 @@
 #define WX_FUNC(name) WX_FUNC1(fontpickerctrl, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getselectedfont)
 WX_FUNC_DEF(setselectedfont)
@@ -29,6 +30,7 @@ WX_FUNC_DEF(setmaxpointsize)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getselectedfont),
 	WX_FUNC(setselectedfont),
@@ -38,7 +40,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setmaxpointsize")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setmaxpointsize")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FontPickerCtrl, "fontpickerctrl", PickerBase)
 
@@ -52,14 +54,17 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, PickerBase, val)
+	wxPickerBase *_parent = DLIB_WXTYPECAST_BASE(PickerBase, val, pickerbase);
+	DeltaWxPickerBase *parent = DNEWCLASS(DeltaWxPickerBase, (_parent));
+	WX_SETOBJECT_EX(*at, PickerBase, parent)
 	return true;
 }
 
 static bool GetSelectedFont (void* val, DeltaValue* at) 
 {
 	wxFontPickerCtrl *ctrl = DLIB_WXTYPECAST_BASE(FontPickerCtrl, val, fontpickerctrl);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Font, new wxFont(ctrl->GetSelectedFont()))
+	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(ctrl->GetSelectedFont())));
+	WX_SETOBJECT_EX(*at, Font, retval)
 	return true;
 }
 
@@ -82,9 +87,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(FontPickerCtrl,fontpickerctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(fontpickerctrl_construct, 0, 8, Nil)
-	wxFontPickerCtrl *ctrl = (wxFontPickerCtrl*) 0;
+	wxFontPickerCtrl *wxctrl = (wxFontPickerCtrl*) 0;
+	DeltaWxFontPickerCtrl *ctrl = (DeltaWxFontPickerCtrl*) 0;
 	if (n == 0) {
-		ctrl = new wxFontPickerCtrl();
+		wxctrl = new wxFontPickerCtrl();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -100,7 +106,7 @@ WX_FUNC_ARGRANGE_START(fontpickerctrl_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		ctrl = new wxFontPickerCtrl(parent, id, initial, pos, size, style, *validator, name);
+		wxctrl = new wxFontPickerCtrl(parent, id, initial, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -109,7 +115,12 @@ WX_FUNC_ARGRANGE_START(fontpickerctrl_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(FontPickerCtrl, ctrl)
+	if (wxctrl) ctrl = DNEWCLASS(DeltaWxFontPickerCtrl, (wxctrl));
+	WX_SETOBJECT(FontPickerCtrl, ctrl)
+}
+
+DLIB_FUNC_START(fontpickerctrl_destruct, 1, Nil)
+	DLIB_WXDELETE(fontpickerctrl, FontPickerCtrl, ctrl)
 }
 
 WX_FUNC_ARGRANGE_START(fontpickerctrl_create, 3, 9, Nil)
@@ -129,26 +140,26 @@ WX_FUNC_ARGRANGE_START(fontpickerctrl_create, 3, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(ctrl->Create(parent, id, initial, pos, size, style, *validator, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(ctrl);
 }
 
-WX_FUNC_START(fontpickerctrl_getselectedfont, 1, Nil)
+DLIB_FUNC_START(fontpickerctrl_getselectedfont, 1, Nil)
 	DLIB_WXGET_BASE(fontpickerctrl, FontPickerCtrl, ctrl)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(ctrl->GetSelectedFont()))
+	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(ctrl->GetSelectedFont())));
+	WX_SETOBJECT(Font, retval)
 }
 
-WX_FUNC_START(fontpickerctrl_setselectedfont, 2, Nil)
+DLIB_FUNC_START(fontpickerctrl_setselectedfont, 2, Nil)
 	DLIB_WXGET_BASE(fontpickerctrl, FontPickerCtrl, ctrl)
 	DLIB_WXGET_BASE(font, Font, font)
 	ctrl->SetSelectedFont(*font);
 }
 
-WX_FUNC_START(fontpickerctrl_getmaxpointsize, 1, Nil)
+DLIB_FUNC_START(fontpickerctrl_getmaxpointsize, 1, Nil)
 	DLIB_WXGET_BASE(fontpickerctrl, FontPickerCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetMaxPointSize())
 }
 
-WX_FUNC_START(fontpickerctrl_setmaxpointsize, 2, Nil)
+DLIB_FUNC_START(fontpickerctrl_setmaxpointsize, 2, Nil)
 	DLIB_WXGET_BASE(fontpickerctrl, FontPickerCtrl, ctrl)
 	WX_GETNUMBER(max)
 	ctrl->SetMaxPointSize(max);

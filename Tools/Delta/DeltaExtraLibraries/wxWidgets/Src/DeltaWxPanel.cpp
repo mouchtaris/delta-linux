@@ -19,12 +19,14 @@
 #define WX_FUNC(name) WX_FUNC1(panel, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(initdialog)
 WX_FUNC_DEF(setfocus)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(initdialog),
 	WX_FUNC(setfocus)
@@ -32,7 +34,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setfocus")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setfocus")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Panel, "panel", Window)
 
@@ -46,7 +48,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Window, val)
+	wxWindow *_parent = DLIB_WXTYPECAST_BASE(Window, val, window);
+	DeltaWxWindow *parent = DNEWCLASS(DeltaWxWindow, (_parent));
+	WX_SETOBJECT_EX(*at, Window, parent)
 	return true;
 }
 
@@ -60,9 +64,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Panel,panel)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(panel_construct, 0, 6, Nil)
-	wxPanel* panel = (wxPanel*) 0;
+	wxPanel* wxpanel = (wxPanel*) 0;
+	DeltaWxPanel* panel = (DeltaWxPanel*) 0;
 	if (n == 0)
-		panel = new wxPanel();
+		wxpanel = new wxPanel();
 	else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int winid = wxID_ANY;
@@ -75,9 +80,14 @@ WX_FUNC_ARGRANGE_START(panel_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		panel = new wxPanel(parent, winid, pos, size, style, name);
+		wxpanel = new wxPanel(parent, winid, pos, size, style, name);
 	}
-	WX_SET_WINDOW_OBJECT(Panel, panel)
+	if (wxpanel) panel = DNEWCLASS(DeltaWxPanel, (wxpanel));
+	WX_SETOBJECT(Panel, panel)
+}
+
+DLIB_FUNC_START(panel_destruct, 1, Nil)
+	DLIB_WXDELETE(panel, Panel, panel)
 }
 
 WX_FUNC_ARGRANGE_START(panel_create, 2, 7, Nil)
@@ -94,15 +104,14 @@ WX_FUNC_ARGRANGE_START(panel_create, 2, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(panel->Create(parent, winid, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(panel);
 }
 
-WX_FUNC_START(panel_initdialog, 1, Nil)
+DLIB_FUNC_START(panel_initdialog, 1, Nil)
 	DLIB_WXGET_BASE(panel, Panel, panel)
 	panel->InitDialog();
 }
 
-WX_FUNC_START(panel_setfocus, 1, Nil)
+DLIB_FUNC_START(panel_setfocus, 1, Nil)
 	DLIB_WXGET_BASE(panel, Panel, panel)
 	panel->SetFocus();
 }

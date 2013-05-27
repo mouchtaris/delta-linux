@@ -17,16 +17,18 @@
 #define WX_FUNC(name) WX_FUNC1(acceleratortable, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(isok)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(isok)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "isok", "isok")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "isok")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(AcceleratorTable, "acceleratortable", Object)
 
@@ -40,7 +42,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -54,13 +58,14 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(AcceleratorTable,acceleratortable)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(acceleratortable_construct, 0, 2, Nil)
-	wxAcceleratorTable *acceltable = (wxAcceleratorTable*) 0;
+	wxAcceleratorTable *wxacceltable = (wxAcceleratorTable*) 0;
+	DeltaWxAcceleratorTable *acceltable = (DeltaWxAcceleratorTable*) 0;
 	if (n == 0) {
-		acceltable = new wxAcceleratorTable();
+		wxacceltable = new wxAcceleratorTable();
 	} else if (n == 1) {
 #if defined (__WXMSW__)
 		WX_GETSTRING(resource)
-		acceltable = new wxAcceleratorTable(resource);
+		wxacceltable = new wxAcceleratorTable(resource);
 #else
 		DLIB_ERROR_CHECK(
 			true,
@@ -77,12 +82,13 @@ WX_FUNC_ARGRANGE_START(acceleratortable_construct, 0, 2, Nil)
 			entr->Get(DeltaValue((DeltaNumberValueType)i), &value);
 			if (value.Type() == DeltaValue_ExternId) {
 				util_ui32 serial_no = (util_ui32)value.ToExternId();
-				if (DLIB_WXISBASE(AcceleratorEntry, serial_no, acceleratorentry, accelentry)) {
+				if (DLIB_WXISBASE(AcceleratorEntry, serial_no, acceleratorentry, entry)) {
+					wxAcceleratorEntry *accelentry = (wxAcceleratorEntry*) entry->GetCastToNativeInstance();
 					entries[i] = *accelentry;
 				}
 			}
 		}
-		acceltable = new wxAcceleratorTable(num, entries);
+		wxacceltable = new wxAcceleratorTable(num, entries);
 		DDELARR(entries);
 	} else {
 		DPTR(vm)->PrimaryError(
@@ -92,10 +98,15 @@ WX_FUNC_ARGRANGE_START(acceleratortable_construct, 0, 2, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(AcceleratorTable, acceltable)
+	if (wxacceltable) acceltable = DNEWCLASS(DeltaWxAcceleratorTable, (wxacceltable));
+	WX_SETOBJECT(AcceleratorTable, acceltable)
 }
 
-WX_FUNC_START(acceleratortable_isok, 1, Nil)
+DLIB_FUNC_START(acceleratortable_destruct, 1, Nil)
+	DLIB_WXDELETE(acceleratortable, AcceleratorTable, acceltable)
+}
+
+DLIB_FUNC_START(acceleratortable_isok, 1, Nil)
 	DLIB_WXGET_BASE(acceleratortable, AcceleratorTable, acceltable)
 	WX_SETBOOL(acceltable->IsOk());
 }

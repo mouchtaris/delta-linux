@@ -18,16 +18,18 @@
 #define WX_FUNC(name) WX_FUNC1(mask, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "create")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "create")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Mask, "mask", Object)
 
@@ -41,7 +43,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -55,22 +59,28 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Mask,mask)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(mask_construct, 0, 2, Nil)
-	wxMask *mask = (wxMask*) 0;
+	wxMask *wxmask = (wxMask*) 0;
+	DeltaWxMask *mask = (DeltaWxMask*) 0;
 	if (n == 0) {
-		mask = new wxMask();
+		wxmask = new wxMask();
 	} else {
 		DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 		if (n == 1)
-			mask = new wxMask(*bitmap);
+			wxmask = new wxMask(*bitmap);
 		else if (n == 2 && DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(index)
-			mask = new wxMask(*bitmap, index);
+			wxmask = new wxMask(*bitmap, index);
 		} else if (n == 2 && DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			DLIB_WXGET_BASE(colour, Colour, colour)
-			mask = new wxMask(*bitmap, *colour);
+			wxmask = new wxMask(*bitmap, *colour);
 		}
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Mask, mask)
+	if (wxmask) mask = DNEWCLASS(DeltaWxMask, (wxmask));
+	WX_SETOBJECT(Mask, mask)
+}
+
+DLIB_FUNC_START(mask_destruct, 1, Nil)
+	DLIB_WXDELETE(mask, Mask, mask)
 }
 
 WX_FUNC_ARGRANGE_START(mask_create, 1, 3, Nil)

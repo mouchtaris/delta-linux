@@ -17,6 +17,7 @@
 #define WX_FUNC(name) WX_FUNC1(textattr, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getalignment)
 WX_FUNC_DEF(getbackgroundcolour)
 WX_FUNC_DEF(getfont)
@@ -46,6 +47,7 @@ WX_FUNC_DEF(settextcolour)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getalignment),
 	WX_FUNC(getbackgroundcolour),
 	WX_FUNC(getfont),
@@ -76,7 +78,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getalignment", "settextcolour")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "settextcolour")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(TextAttr, "textattr")
 
@@ -98,21 +100,24 @@ static bool GetFlags (void* val, DeltaValue* at)
 static bool GetTextColour (void* val, DeltaValue* at) 
 {
 	wxTextAttr *textattr = DLIB_WXTYPECAST_BASE(TextAttr, val, textattr);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(textattr->GetTextColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(textattr->GetTextColour())));
+	WX_SETOBJECT_EX(*at, Colour, retval)
 	return true;
 }
 
 static bool GetBackgroundColour (void* val, DeltaValue* at) 
 {
 	wxTextAttr *textattr = DLIB_WXTYPECAST_BASE(TextAttr, val, textattr);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(textattr->GetBackgroundColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(textattr->GetBackgroundColour())));
+	WX_SETOBJECT_EX(*at, Colour, retval)
 	return true;
 }
 
 static bool GetFont (void* val, DeltaValue* at) 
 {
 	wxTextAttr *textattr = DLIB_WXTYPECAST_BASE(TextAttr, val, textattr);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Font, new wxFont(textattr->GetFont()))
+	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(textattr->GetFont())));
+	WX_SETOBJECT_EX(*at, Font, retval)
 	return true;
 }
 
@@ -175,9 +180,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(TextAttr,textattr)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(textattr_construct, 0, 4, Nil)
-	wxTextAttr *attr = (wxTextAttr*) 0;
+	wxTextAttr *wxattr = (wxTextAttr*) 0;
+	DeltaWxTextAttr *attr = (DeltaWxTextAttr*) 0;
 	if (n == 0) {
-		attr = new wxTextAttr();
+		wxattr = new wxTextAttr();
 	} else {
 		DLIB_WXGET_BASE(colour, Colour, colText)
 		wxColour colBack = wxNullColour;
@@ -186,42 +192,49 @@ WX_FUNC_ARGRANGE_START(textattr_construct, 0, 4, Nil)
 		if (n >= 2) { DLIB_WXGET_BASE(colour, Colour, colour) colBack = *colour; }
 		if (n >= 3) { DLIB_WXGET_BASE(font, Font, f) font = *f; }
 		if (n >= 4) { WX_GETDEFINE_DEFINED(alignment) }
-		attr = new wxTextAttr(*colText, colBack, font, (wxTextAttrAlignment)alignment);
+		wxattr = new wxTextAttr(*colText, colBack, font, (wxTextAttrAlignment)alignment);
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TextAttr, attr)
+	if (wxattr) attr = DNEWCLASS(DeltaWxTextAttr, (wxattr));
+	WX_SETOBJECT(TextAttr, attr)
 }
 
-WX_FUNC_START(textattr_getalignment, 1, Nil)
+DLIB_FUNC_START(textattr_destruct, 1, Nil)
+	DLIB_WXDELETE(textattr, TextAttr, attr)
+}
+
+DLIB_FUNC_START(textattr_getalignment, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETNUMBER(attr->GetAlignment())
 }
 
-WX_FUNC_START(textattr_getbackgroundcolour, 1, Nil)
+DLIB_FUNC_START(textattr_getbackgroundcolour, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(attr->GetBackgroundColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(attr->GetBackgroundColour())));
+	WX_SETOBJECT(Colour, retval)
 }
 
-WX_FUNC_START(textattr_getfont, 1, Nil)
+DLIB_FUNC_START(textattr_getfont, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(attr->GetFont()))
+	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(attr->GetFont())));
+	WX_SETOBJECT(Font, retval)
 }
 
-WX_FUNC_START(textattr_getleftindent, 1, Nil)
+DLIB_FUNC_START(textattr_getleftindent, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETNUMBER(attr->GetLeftIndent())
 }
 
-WX_FUNC_START(textattr_getleftsubindent, 1, Nil)
+DLIB_FUNC_START(textattr_getleftsubindent, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETNUMBER(attr->GetLeftSubIndent())
 }
 
-WX_FUNC_START(textattr_getrightindent, 1, Nil)
+DLIB_FUNC_START(textattr_getrightindent, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETNUMBER(attr->GetRightIndent())
 }
 
-WX_FUNC_START(textattr_gettabs, 1, Nil)
+DLIB_FUNC_START(textattr_gettabs, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	wxArrayInt tabs = attr->GetTabs();
 	DLIB_RETVAL_REF.FromTable(DNEW(DELTA_OBJECT));
@@ -230,81 +243,82 @@ WX_FUNC_START(textattr_gettabs, 1, Nil)
 	}
 }
 
-WX_FUNC_START(textattr_gettextcolour, 1, Nil)
+DLIB_FUNC_START(textattr_gettextcolour, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(attr->GetTextColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(attr->GetTextColour())));
+	WX_SETOBJECT(Colour, retval)
 }
 
-WX_FUNC_START(textattr_hasalignment, 1, Nil)
+DLIB_FUNC_START(textattr_hasalignment, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->HasAlignment())
 }
 
-WX_FUNC_START(textattr_hasbackgroundcolour, 1, Nil)
+DLIB_FUNC_START(textattr_hasbackgroundcolour, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->HasBackgroundColour())
 }
 
-WX_FUNC_START(textattr_hasfont, 1, Nil)
+DLIB_FUNC_START(textattr_hasfont, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->HasFont())
 }
 
-WX_FUNC_START(textattr_hasleftindent, 1, Nil)
+DLIB_FUNC_START(textattr_hasleftindent, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->HasLeftIndent())
 }
 
-WX_FUNC_START(textattr_hasrightindent, 1, Nil)
+DLIB_FUNC_START(textattr_hasrightindent, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->HasRightIndent())
 }
 
-WX_FUNC_START(textattr_hastabs, 1, Nil)
+DLIB_FUNC_START(textattr_hastabs, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->HasTabs())
 }
 
-WX_FUNC_START(textattr_hastextcolour, 1, Nil)
+DLIB_FUNC_START(textattr_hastextcolour, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->HasTextColour())
 }
 
-WX_FUNC_START(textattr_getflags, 1, Nil)
+DLIB_FUNC_START(textattr_getflags, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETNUMBER(attr->GetFlags())
 }
 
-WX_FUNC_START(textattr_isdefault, 1, Nil)
+DLIB_FUNC_START(textattr_isdefault, 1, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_SETBOOL(attr->IsDefault())
 }
 
-WX_FUNC_START(textattr_merge, 2, Nil)
+DLIB_FUNC_START(textattr_merge, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	DLIB_WXGET_BASE(textattr, TextAttr, overlay)
 	attr->Merge(*overlay);
 }
 
-WX_FUNC_START(textattr_setalignment, 2, Nil)
+DLIB_FUNC_START(textattr_setalignment, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_GETDEFINE(alignment)
 	attr->SetAlignment((wxTextAttrAlignment)alignment);
 }
 
-WX_FUNC_START(textattr_setbackgroundcolour, 2, Nil)
+DLIB_FUNC_START(textattr_setbackgroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	attr->SetBackgroundColour(*colour);
 }
 
-WX_FUNC_START(textattr_setflags, 2, Nil)
+DLIB_FUNC_START(textattr_setflags, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_GETDEFINE(flags)
 	attr->SetFlags(flags);
 }
 
-WX_FUNC_START(textattr_setfont, 2, Nil)
+DLIB_FUNC_START(textattr_setfont, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	DLIB_WXGET_BASE(font, Font, font)
 	attr->SetFont(*font);
@@ -318,13 +332,13 @@ WX_FUNC_ARGRANGE_START(textattr_setleftindent, 2, 3, Nil)
 	attr->SetLeftIndent(indent, subindent);
 }
 
-WX_FUNC_START(textattr_setrightindent, 2, Nil)
+DLIB_FUNC_START(textattr_setrightindent, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_GETNUMBER(indent)
 	attr->SetRightIndent(indent);
 }
 
-WX_FUNC_START(textattr_settabs, 2, Nil)
+DLIB_FUNC_START(textattr_settabs, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	WX_GETTABLE(tab_table)
 	wxArrayInt tabs;
@@ -338,7 +352,7 @@ WX_FUNC_START(textattr_settabs, 2, Nil)
 	attr->SetTabs(tabs);
 }
 
-WX_FUNC_START(textattr_settextcolour, 2, Nil)
+DLIB_FUNC_START(textattr_settextcolour, 2, Nil)
 	DLIB_WXGET_BASE(textattr, TextAttr, attr)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	attr->SetTextColour(*colour);

@@ -17,6 +17,7 @@
 #define WX_FUNC(name) WX_FUNC1(setcursorevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getcursor)
 WX_FUNC_DEF(getx)
 WX_FUNC_DEF(gety)
@@ -25,6 +26,7 @@ WX_FUNC_DEF(setcursor)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getcursor),
 	WX_FUNC(getx),
 	WX_FUNC(gety),
@@ -34,7 +36,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getcursor", "setcursor")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setcursor")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SetCursorEvent, "setcursorevent", Event)
 
@@ -48,14 +50,17 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
 static bool GetCursor (void* val, DeltaValue* at) 
 {
 	wxSetCursorEvent *ev = DLIB_WXTYPECAST_BASE(SetCursorEvent, val, setcursorevent);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Cursor, new wxCursor(ev->GetCursor()))
+	DeltaWxCursor *retval = DNEWCLASS(DeltaWxCursor, (new wxCursor(ev->GetCursor())));
+	WX_SETOBJECT_EX(*at, Cursor, retval)
 	return true;
 }
 
@@ -97,30 +102,36 @@ WX_FUNC_ARGRANGE_START(setcursorevent_construct, 0, 2, Nil)
 	int x = 0, y = 0;
 	if (n >= 1) { WX_GETNUMBER_DEFINED(x) }
 	if (n >= 2) { WX_GETNUMBER_DEFINED(y) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(SetCursorEvent, new wxSetCursorEvent(x, y))
+	DeltaWxSetCursorEvent *evt = DNEWCLASS(DeltaWxSetCursorEvent, (new wxSetCursorEvent(x, y)));
+	WX_SETOBJECT(SetCursorEvent, evt)
 }
 
-WX_FUNC_START(setcursorevent_getcursor, 1, Nil)
+DLIB_FUNC_START(setcursorevent_destruct, 1, Nil)
+	DLIB_WXDELETE(setcursorevent, SetCursorEvent, evt)
+}
+
+DLIB_FUNC_START(setcursorevent_getcursor, 1, Nil)
 	DLIB_WXGET_BASE(setcursorevent, SetCursorEvent, evt)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Cursor, new wxCursor(evt->GetCursor()))
+	DeltaWxCursor *retval = DNEWCLASS(DeltaWxCursor, (new wxCursor(evt->GetCursor())));
+	WX_SETOBJECT(Cursor, retval)
 }
 
-WX_FUNC_START(setcursorevent_getx, 1, Nil)
+DLIB_FUNC_START(setcursorevent_getx, 1, Nil)
 	DLIB_WXGET_BASE(setcursorevent, SetCursorEvent, evt)
 	WX_SETNUMBER(evt->GetX())
 }
 
-WX_FUNC_START(setcursorevent_gety, 1, Nil)
+DLIB_FUNC_START(setcursorevent_gety, 1, Nil)
 	DLIB_WXGET_BASE(setcursorevent, SetCursorEvent, evt)
 	WX_SETNUMBER(evt->GetY())
 }
 
-WX_FUNC_START(setcursorevent_hascursor, 1, Nil)
+DLIB_FUNC_START(setcursorevent_hascursor, 1, Nil)
 	DLIB_WXGET_BASE(setcursorevent, SetCursorEvent, evt)
 	WX_SETBOOL(evt->HasCursor())
 }
 
-WX_FUNC_START(setcursorevent_setcursor, 2, Nil)
+DLIB_FUNC_START(setcursorevent_setcursor, 2, Nil)
 	DLIB_WXGET_BASE(setcursorevent, SetCursorEvent, evt)
 	DLIB_WXGET_BASE(cursor, Cursor, cursor)
 	evt->SetCursor(*cursor);

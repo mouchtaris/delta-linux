@@ -16,6 +16,7 @@
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(pickerbase, name)
 #define WX_FUNC(name) WX_FUNC1(pickerbase, name)
 
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(setinternalmargin)
 WX_FUNC_DEF(getinternalmargin)
 WX_FUNC_DEF(settextctrlproportion)
@@ -30,6 +31,7 @@ WX_FUNC_DEF(settextctrlgrowable)
 WX_FUNC_DEF(ispickerctrlgrowable)
 
 WX_FUNCS_START
+	WX_FUNC(destruct),
 	WX_FUNC(setinternalmargin),
 	WX_FUNC(getinternalmargin),
 	WX_FUNC(settextctrlproportion),
@@ -46,7 +48,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "setinternalmargin", "ispickerctrlgrowable")
+DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "destruct", "ispickerctrlgrowable")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PickerBase, "pickerbase", Control)
 
@@ -60,7 +62,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -88,7 +92,9 @@ static bool GetPickerCtrlProportion (void* val, DeltaValue* at)
 static bool GetTextCtrl (void* val, DeltaValue* at) 
 {
 	wxPickerBase *picker = DLIB_WXTYPECAST_BASE(PickerBase, val, pickerbase);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, TextCtrl, picker->GetTextCtrl())
+	wxTextCtrl *textctrl = picker->GetTextCtrl();
+	DeltaWxTextCtrl *retval = textctrl ? DNEWCLASS(DeltaWxTextCtrl, (textctrl)) : (DeltaWxTextCtrl*) 0;
+	WX_SETOBJECT_EX(*at, TextCtrl, retval)
 	return true;
 }
 
@@ -121,50 +127,55 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(PickerBase,pickerbase)
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(pickerbase_setinternalmargin, 2, Nil)
+DLIB_FUNC_START(pickerbase_destruct, 1, Nil)
+	DLIB_WXDELETE(pickerbase, PickerBase, picker)
+}
+
+DLIB_FUNC_START(pickerbase_setinternalmargin, 2, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_GETNUMBER(margin)
 	picker->SetInternalMargin(margin);
 }
 
-WX_FUNC_START(pickerbase_getinternalmargin, 1, Nil)
+DLIB_FUNC_START(pickerbase_getinternalmargin, 1, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_SETNUMBER(picker->GetInternalMargin())
 }
 
-WX_FUNC_START(pickerbase_settextctrlproportion, 2, Nil)
+DLIB_FUNC_START(pickerbase_settextctrlproportion, 2, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_GETNUMBER(proportion)
 	picker->SetTextCtrlProportion(proportion);
 }
 
-WX_FUNC_START(pickerbase_setpickerctrlproportion, 2, Nil)
+DLIB_FUNC_START(pickerbase_setpickerctrlproportion, 2, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_GETNUMBER(proportion)
 	picker->SetPickerCtrlProportion(proportion);
 }
 
-WX_FUNC_START(pickerbase_gettextctrlproportion, 1, Nil)
+DLIB_FUNC_START(pickerbase_gettextctrlproportion, 1, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_SETNUMBER(picker->GetTextCtrlProportion())
 }
 
-WX_FUNC_START(pickerbase_getpickerctrlproportion, 1, Nil)
+DLIB_FUNC_START(pickerbase_getpickerctrlproportion, 1, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_SETNUMBER(picker->GetPickerCtrlProportion())
 }
 
-WX_FUNC_START(pickerbase_hastextctrl, 1, Nil)
+DLIB_FUNC_START(pickerbase_hastextctrl, 1, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_SETBOOL(picker->HasTextCtrl())
 }
 
-WX_FUNC_START(pickerbase_gettextctrl, 1, Nil)
+DLIB_FUNC_START(pickerbase_gettextctrl, 1, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
-	WX_SETOBJECT(TextCtrl, picker->GetTextCtrl())
+	DeltaWxTextCtrl *retval = DNEWCLASS(DeltaWxTextCtrl, (picker->GetTextCtrl()));
+	WX_SETOBJECT(TextCtrl, retval)
 }
 
-WX_FUNC_START(pickerbase_istextctrlgrowable, 1, Nil)
+DLIB_FUNC_START(pickerbase_istextctrlgrowable, 1, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_SETBOOL(picker->IsTextCtrlGrowable())
 }
@@ -183,7 +194,7 @@ WX_FUNC_ARGRANGE_START(pickerbase_settextctrlgrowable, 1, 2, Nil)
 	picker->SetTextCtrlGrowable(grow);
 }
 
-WX_FUNC_START(pickerbase_ispickerctrlgrowable, 1, Nil)
+DLIB_FUNC_START(pickerbase_ispickerctrlgrowable, 1, Nil)
 	DLIB_WXGET_BASE(pickerbase, PickerBase, picker)
 	WX_SETBOOL(picker->IsPickerCtrlGrowable())
 }

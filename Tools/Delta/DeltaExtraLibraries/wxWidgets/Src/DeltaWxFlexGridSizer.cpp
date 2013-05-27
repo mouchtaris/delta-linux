@@ -55,7 +55,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, GridSizer, val)
+	wxGridSizer *_parent = DLIB_WXTYPECAST_BASE(GridSizer, val, gridsizer);
+	DeltaWxGridSizer *parent = DNEWCLASS(DeltaWxGridSizer, (_parent));
+	WX_SETOBJECT_EX(*at, GridSizer, parent)
 	return true;
 }
 
@@ -85,24 +87,26 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(FlexGridSizer,flexgridsizer)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(flexgridsizer_construct, 1, 4, Nil)
-	wxFlexGridSizer *sizer = (wxFlexGridSizer*) 0;
+	wxFlexGridSizer *wxsizer = (wxFlexGridSizer*) 0;
+	DeltaWxFlexGridSizer *sizer = (DeltaWxFlexGridSizer*) 0;
 	if (n == 4) {
 		WX_GETNUMBER(rows)
 		WX_GETNUMBER(cols)
 		WX_GETNUMBER(vgap)
 		WX_GETNUMBER(hgap)
-		sizer = new wxFlexGridSizer(rows, cols, vgap, hgap);
+		wxsizer = new wxFlexGridSizer(rows, cols, vgap, hgap);
 	} else {
 		WX_GETNUMBER(cols)
 		int vgap = 0, hgap = 0;
 		if (n >= 2) { WX_GETNUMBER_DEFINED(vgap) }
 		if (n >= 3) { WX_GETNUMBER_DEFINED(hgap) }
-		sizer = new wxFlexGridSizer(cols, vgap, hgap);
+		wxsizer = new wxFlexGridSizer(cols, vgap, hgap);
 	}
+	if (wxsizer) sizer = DNEWCLASS(DeltaWxFlexGridSizer, (wxsizer));
 	WX_SETOBJECT(FlexGridSizer, sizer)
 }
 
-WX_FUNC_START(flexgridsizer_destruct, 1, Nil)
+DLIB_FUNC_START(flexgridsizer_destruct, 1, Nil)
 	DLIB_WXDELETE(flexgridsizer, FlexGridSizer, sizer)
 }
 
@@ -122,35 +126,35 @@ WX_FUNC_ARGRANGE_START(flexgridsizer_addgrowablerow, 2, 3, Nil)
 	sizer->AddGrowableRow(idx, proportion);
 }
 
-WX_FUNC_START(flexgridsizer_getflexibledirection, 1, Nil)
+DLIB_FUNC_START(flexgridsizer_getflexibledirection, 1, Nil)
 	DLIB_WXGET_BASE(flexgridsizer, FlexGridSizer, sizer)
 	WX_SETNUMBER(sizer->GetFlexibleDirection())
 }
 
-WX_FUNC_START(flexgridsizer_getnonflexiblegrowmode, 1, Nil)
+DLIB_FUNC_START(flexgridsizer_getnonflexiblegrowmode, 1, Nil)
 	DLIB_WXGET_BASE(flexgridsizer, FlexGridSizer, sizer)
 	WX_SETNUMBER(sizer->GetNonFlexibleGrowMode())
 }
 
-WX_FUNC_START(flexgridsizer_removegrowablecol, 2, Nil)
+DLIB_FUNC_START(flexgridsizer_removegrowablecol, 2, Nil)
 	DLIB_WXGET_BASE(flexgridsizer, FlexGridSizer, sizer)
 	WX_GETNUMBER(idx)
 	sizer->RemoveGrowableCol(idx);
 }
 
-WX_FUNC_START(flexgridsizer_removegrowablerow, 2, Nil)
+DLIB_FUNC_START(flexgridsizer_removegrowablerow, 2, Nil)
 	DLIB_WXGET_BASE(flexgridsizer, FlexGridSizer, sizer)
 	WX_GETNUMBER(idx)
 	sizer->RemoveGrowableRow(idx);
 }
 
-WX_FUNC_START(flexgridsizer_setflexibledirection, 2, Nil)
+DLIB_FUNC_START(flexgridsizer_setflexibledirection, 2, Nil)
 	DLIB_WXGET_BASE(flexgridsizer, FlexGridSizer, sizer)
 	WX_GETDEFINE(direction)
 	sizer->SetFlexibleDirection(direction);
 }
 
-WX_FUNC_START(flexgridsizer_setnonflexiblegrowmode, 2, Nil)
+DLIB_FUNC_START(flexgridsizer_setnonflexiblegrowmode, 2, Nil)
 	DLIB_WXGET_BASE(flexgridsizer, FlexGridSizer, sizer)
 	WX_GETDEFINE(mode)
 	sizer->SetNonFlexibleGrowMode((wxFlexSizerGrowMode)mode);

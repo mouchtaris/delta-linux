@@ -21,6 +21,7 @@
 #define WX_FUNC(name) WX_FUNC1(searchctrl, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(setmenu)
 WX_FUNC_DEF(getmenu)
 WX_FUNC_DEF(showsearchbutton)
@@ -30,6 +31,7 @@ WX_FUNC_DEF(iscancelbuttonvisible)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(setmenu),
 	WX_FUNC(getmenu),
 	WX_FUNC(showsearchbutton),
@@ -40,7 +42,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "setmenu", "iscancelbuttonvisible")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "iscancelbuttonvisible")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SearchCtrl, "searchctrl", TextCtrl)
 
@@ -54,14 +56,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, TextCtrl, val)
+	wxTextCtrl *_parent = DLIB_WXTYPECAST_BASE(TextCtrl, val, textctrl);
+	DeltaWxTextCtrl *parent = DNEWCLASS(DeltaWxTextCtrl, (_parent));
+	WX_SETOBJECT_EX(*at, TextCtrl, parent)
 	return true;
 }
 
 static bool GetMenu (void* val, DeltaValue* at) 
 {
 	wxSearchCtrl *ctrl = DLIB_WXTYPECAST_BASE(SearchCtrl, val, searchctrl);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Menu, ctrl->GetMenu())
+	wxMenu *menu = ctrl->GetMenu();
+	DeltaWxMenu *retval = menu ? DNEWCLASS(DeltaWxMenu, (menu)) : (DeltaWxMenu*) 0;
+	WX_SETOBJECT_EX(*at, Menu, retval)
 	return true;
 }
 
@@ -92,9 +98,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(SearchCtrl,searchctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(searchctrl_construct, 0, 8, Nil)
-	wxSearchCtrl *ctrl = (wxSearchCtrl*) 0;
+	wxSearchCtrl *wxctrl = (wxSearchCtrl*) 0;
+	DeltaWxSearchCtrl *ctrl = (DeltaWxSearchCtrl*) 0;
 	if (n == 0) {
-		ctrl = new wxSearchCtrl();
+		wxctrl = new wxSearchCtrl();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -110,7 +117,7 @@ WX_FUNC_ARGRANGE_START(searchctrl_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		ctrl = new wxSearchCtrl(parent, id, value, pos, size, style, *validator, name);
+		wxctrl = new wxSearchCtrl(parent, id, value, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -119,38 +126,44 @@ WX_FUNC_ARGRANGE_START(searchctrl_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(SearchCtrl, ctrl)
+	if (wxctrl) ctrl = DNEWCLASS(DeltaWxSearchCtrl, (wxctrl));
+	WX_SETOBJECT(SearchCtrl, ctrl)
 }
 
-WX_FUNC_START(searchctrl_setmenu, 2, Nil)
+DLIB_FUNC_START(searchctrl_destruct, 1, Nil)
+	DLIB_WXDELETE(searchctrl, SearchCtrl, ctrl)
+}
+
+DLIB_FUNC_START(searchctrl_setmenu, 2, Nil)
 	DLIB_WXGET_BASE(searchctrl, SearchCtrl, ctrl)
 	DLIB_WXGET_BASE(menu, Menu, menu)
 	ctrl->SetMenu(menu);
 }
 
-WX_FUNC_START(searchctrl_getmenu, 1, Nil)
+DLIB_FUNC_START(searchctrl_getmenu, 1, Nil)
 	DLIB_WXGET_BASE(searchctrl, SearchCtrl, ctrl)
-	WX_SETOBJECT(Menu, ctrl->GetMenu())
+	DeltaWxMenu *retval = DNEWCLASS(DeltaWxMenu, (ctrl->GetMenu()));
+	WX_SETOBJECT(Menu, retval)
 }
 
-WX_FUNC_START(searchctrl_showsearchbutton, 2, Nil)
+DLIB_FUNC_START(searchctrl_showsearchbutton, 2, Nil)
 	DLIB_WXGET_BASE(searchctrl, SearchCtrl, ctrl)
 	WX_GETBOOL(show)
 	ctrl->ShowSearchButton(show);
 }
 
-WX_FUNC_START(searchctrl_issearchbuttonvisible, 1, Nil)
+DLIB_FUNC_START(searchctrl_issearchbuttonvisible, 1, Nil)
 	DLIB_WXGET_BASE(searchctrl, SearchCtrl, ctrl)
 	WX_SETBOOL(ctrl->IsSearchButtonVisible())
 }
 
-WX_FUNC_START(searchctrl_showcancelbutton, 2, Nil)
+DLIB_FUNC_START(searchctrl_showcancelbutton, 2, Nil)
 	DLIB_WXGET_BASE(searchctrl, SearchCtrl, ctrl)
 	WX_GETBOOL(show)
 	ctrl->ShowCancelButton(show);
 }
 
-WX_FUNC_START(searchctrl_iscancelbuttonvisible, 1, Nil)
+DLIB_FUNC_START(searchctrl_iscancelbuttonvisible, 1, Nil)
 	DLIB_WXGET_BASE(searchctrl, SearchCtrl, ctrl)
 	WX_SETBOOL(ctrl->IsCancelButtonVisible())
 }

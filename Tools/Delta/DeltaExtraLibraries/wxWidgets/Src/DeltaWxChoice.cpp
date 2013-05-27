@@ -20,6 +20,7 @@
 #define WX_FUNC(name) WX_FUNC1(choice, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getcolumns)
 WX_FUNC_DEF(getcurrentselection)
@@ -27,6 +28,7 @@ WX_FUNC_DEF(setcolumns)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getcolumns),
 	WX_FUNC(getcurrentselection),
@@ -35,7 +37,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setcolumns")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setcolumns")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Choice, "choice", ControlWithItems)
 
@@ -49,7 +51,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, ControlWithItems, val)
+	wxControlWithItems *_parent = DLIB_WXTYPECAST_BASE(ControlWithItems, val, controlwithitems);
+	DeltaWxControlWithItems *parent = DNEWCLASS(DeltaWxControlWithItems, (_parent));
+	WX_SETOBJECT_EX(*at, ControlWithItems, parent)
 	return true;
 }
 
@@ -63,9 +67,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Choice,choice)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(choice_construct, 0, 8, Nil)
-	wxChoice *choice = (wxChoice*) 0;
+	wxChoice *wxchoice = (wxChoice*) 0;
+	DeltaWxChoice *choice = (DeltaWxChoice*) 0;
 	if (n == 0) {
-		choice = new wxChoice();
+		wxchoice = new wxChoice();
 	} else if (n >= 4) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -89,9 +94,14 @@ WX_FUNC_ARGRANGE_START(choice_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		choice = new wxChoice(parent, id, *pos, *size, choices, style, *validator, name);
+		wxchoice = new wxChoice(parent, id, *pos, *size, choices, style, *validator, name);
 	}
-	WX_SET_WINDOW_OBJECT(Choice, choice)
+	if (wxchoice) choice = DNEWCLASS(DeltaWxChoice, (wxchoice));
+	WX_SETOBJECT(Choice, choice)
+}
+
+DLIB_FUNC_START(choice_destruct, 1, Nil)
+	DLIB_WXDELETE(choice, Choice, choice)
 }
 
 WX_FUNC_ARGRANGE_START(choice_create, 3, 9, Nil)
@@ -121,15 +131,14 @@ WX_FUNC_ARGRANGE_START(choice_create, 3, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(choice->Create(parent, id, pos, size, choices, style, *validator, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(choice);
 }
 
-WX_FUNC_START(choice_getcolumns, 1, Nil)
+DLIB_FUNC_START(choice_getcolumns, 1, Nil)
 	DLIB_WXGET_BASE(choice, Choice, choice)
 	WX_SETNUMBER(choice->GetColumns())
 }
 
-WX_FUNC_START(choice_getcurrentselection, 1, Nil)
+DLIB_FUNC_START(choice_getcurrentselection, 1, Nil)
 	DLIB_WXGET_BASE(choice, Choice, choice)
 	WX_SETNUMBER(choice->GetCurrentSelection())
 }

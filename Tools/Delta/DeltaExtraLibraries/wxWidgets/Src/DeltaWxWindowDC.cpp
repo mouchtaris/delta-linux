@@ -17,20 +17,18 @@
 #define WX_FUNC(name) WX_FUNC1(windowdc, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 
 WX_FUNCS_START
-	WX_FUNC(construct)
+	WX_FUNC(construct),
+	WX_FUNC(destruct)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-//DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(WindowDC, "windowdc", DC)
-VCLASSID_IMPL(DeltaWxWindowDCClassId, "wx::windowdc")
-DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(WindowDC, "windowdc")
-void WindowDCUtils::InstallAll(DeltaTable *methods)
-{
-	DPTR(methods)->DelegateInternal(DCUtils::GetMethods());
-}
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "destruct")
+
+DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(WindowDC, "windowdc", DC)
 
 ////////////////////////////////////////////////////////////////
 
@@ -42,7 +40,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, DC, val)
+	wxDC *_parent = DLIB_WXTYPECAST_BASE(DC, val, dc);
+	DeltaWxDC *parent = DNEWCLASS(DeltaWxDC, (_parent));
+	WX_SETOBJECT_EX(*at, DC, parent)
 	return true;
 }
 
@@ -56,18 +56,24 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(WindowDC,windowdc)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(windowdc_construct, 0, 1, Nil)
-	wxWindowDC *dc = (wxWindowDC*) 0;
+	wxWindowDC *wxdc = (wxWindowDC*) 0;
+	DeltaWxWindowDC *dc = (DeltaWxWindowDC*) 0;
 	if (n == 0) {
 #if wxCHECK_VERSION(2, 9, 0)
 		DPTR(vm)->Error("in wxWidgets 2.9+ windowdc_construct should necessarily take a window argument");
 		DLIB_RESET_RETURN;
 #else
-		dc = new wxWindowDC();
+		wxdc = new wxWindowDC();
 #endif
 	}
 	else {
 		DLIB_WXGET_BASE(window, Window, win)
-		dc = new wxWindowDC(win);
+		wxdc = new wxWindowDC(win);
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(WindowDC, dc)
+	if (wxdc) dc = DNEWCLASS(DeltaWxWindowDC, (wxdc));
+	WX_SETOBJECT(WindowDC, dc)
+}
+
+DLIB_FUNC_START(windowdc_destruct, 1, Nil)
+	DLIB_WXDELETE(windowdc, WindowDC, dc)
 }

@@ -65,7 +65,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Validator, val)
+	wxValidator *_parent = DLIB_WXTYPECAST_BASE(Validator, val, validator);
+	DeltaWxValidator *parent = DNEWCLASS(DeltaWxValidator, (_parent));
+	WX_SETOBJECT_EX(*at, Validator, parent)
 	return true;
 }
 
@@ -83,47 +85,49 @@ WX_FUNC_ARGRANGE_START(textvalidator_construct, 0, 2, Nil)
 	wxString *val = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 2) { WX_GETSTRING(str) val = &str; }
-	WX_SETOBJECT(TextValidator, new wxTextValidator(style, val))
+	DeltaWxTextValidator *validator = DNEWCLASS(DeltaWxTextValidator,
+		(new wxTextValidator(style, val)));
+	WX_SETOBJECT(TextValidator, validator)
 }
 
-WX_FUNC_START(textvalidator_destruct, 1, Nil)
+DLIB_FUNC_START(textvalidator_destruct, 1, Nil)
 	DLIB_WXDELETE(textvalidator, TextValidator, validator)
 }
 
-WX_FUNC_START(textvalidator_copy, 2, Nil)
+DLIB_FUNC_START(textvalidator_copy, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, other)
 	WX_SETBOOL(validator->Copy(*other))
 }
 
-WX_FUNC_START(textvalidator_validate, 2, Nil)
+DLIB_FUNC_START(textvalidator_validate, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	DLIB_WXGET_BASE(window, Window, win)
 	WX_SETBOOL(validator->Validate(win))
 }
 
-WX_FUNC_START(textvalidator_transfertowindow, 1, Nil)
+DLIB_FUNC_START(textvalidator_transfertowindow, 1, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_SETBOOL(validator->TransferToWindow())
 }
 
-WX_FUNC_START(textvalidator_transferfromwindow, 1, Nil)
+DLIB_FUNC_START(textvalidator_transferfromwindow, 1, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_SETBOOL(validator->TransferFromWindow())
 }
 
-WX_FUNC_START(textvalidator_getstyle, 1, Nil)
+DLIB_FUNC_START(textvalidator_getstyle, 1, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_SETNUMBER(validator->GetStyle())
 }
 
-WX_FUNC_START(textvalidator_setstyle, 2, Nil)
+DLIB_FUNC_START(textvalidator_setstyle, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_GETDEFINE(style)
 	validator->SetStyle(style);
 }
 
-WX_FUNC_START(textvalidator_getincludes, 1, Nil)
+DLIB_FUNC_START(textvalidator_getincludes, 1, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	wxArrayString includes = validator->GetIncludes();
 	DLIB_RETVAL_REF.FromTable(DNEW(DELTA_OBJECT));
@@ -134,7 +138,7 @@ WX_FUNC_START(textvalidator_getincludes, 1, Nil)
 	}
 }
 
-WX_FUNC_START(textvalidator_setincludes, 2, Nil)
+DLIB_FUNC_START(textvalidator_setincludes, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_GETTABLE(table)
 	wxArrayString includes;
@@ -148,7 +152,7 @@ WX_FUNC_START(textvalidator_setincludes, 2, Nil)
 	validator->SetIncludes(includes);
 }
 
-WX_FUNC_START(textvalidator_getexcludes, 1, Nil)
+DLIB_FUNC_START(textvalidator_getexcludes, 1, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	wxArrayString excludes = validator->GetExcludes();
 	DLIB_RETVAL_REF.FromTable(DNEW(DELTA_OBJECT));
@@ -159,7 +163,7 @@ WX_FUNC_START(textvalidator_getexcludes, 1, Nil)
 	}
 }
 
-WX_FUNC_START(textvalidator_setexcludes, 2, Nil)
+DLIB_FUNC_START(textvalidator_setexcludes, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_GETTABLE(table)
 	wxArrayString excludes;
@@ -173,7 +177,7 @@ WX_FUNC_START(textvalidator_setexcludes, 2, Nil)
 	validator->SetExcludes(excludes);
 }
 
-WX_FUNC_START(textvalidator_isincharincludes, 2, Nil)
+DLIB_FUNC_START(textvalidator_isincharincludes, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_GETSTRING(val)
 	bool retval;
@@ -191,7 +195,7 @@ WX_FUNC_START(textvalidator_isincharincludes, 2, Nil)
 	WX_SETBOOL(retval)
 }
 
-WX_FUNC_START(textvalidator_isnotincharexcludes, 2, Nil)
+DLIB_FUNC_START(textvalidator_isnotincharexcludes, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	WX_GETSTRING(val)
 	bool retval;
@@ -209,7 +213,7 @@ WX_FUNC_START(textvalidator_isnotincharexcludes, 2, Nil)
 	WX_SETBOOL(retval)
 }
 
-WX_FUNC_START(textvalidator_onchar, 2, Nil)
+DLIB_FUNC_START(textvalidator_onchar, 2, Nil)
 	DLIB_WXGET_BASE(textvalidator, TextValidator, validator)
 	DLIB_WXGET_BASE(keyevent, KeyEvent, ev)
 	validator->OnChar(*ev);

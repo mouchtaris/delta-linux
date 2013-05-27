@@ -15,6 +15,7 @@
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(event, name)
 #define WX_FUNC(name) WX_FUNC1(event, name)
 
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(geteventobject)
 WX_FUNC_DEF(geteventtype)
 WX_FUNC_DEF(getid)
@@ -31,6 +32,7 @@ WX_FUNC_DEF(skip)
 WX_FUNC_DEF(stoppropagation)
 
 WX_FUNCS_START
+	WX_FUNC(destruct),
 	WX_FUNC(geteventobject),
 	WX_FUNC(geteventtype),
 	WX_FUNC(getid),
@@ -49,7 +51,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "geteventobject", "stoppropagation")
+DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "destruct", "stoppropagation")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Event, "event", Object)
 
@@ -63,14 +65,17 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
 static bool GetEventObject (void* val, DeltaValue* at) 
 {
 	wxEvent *ev = DLIB_WXTYPECAST_BASE(Event, val, event);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Object, ev->GetEventObject())
+	DeltaWxObject *retval = DNEWCLASS(DeltaWxObject, (ev->GetEventObject()));
+	WX_SETOBJECT_EX(*at, Object, retval)
 	return true;
 }
 
@@ -124,68 +129,72 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Event,event)
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(event_geteventobject, 1, Nil)
+DLIB_FUNC_START(event_destruct, 1, Nil)
+	DLIB_WXDELETE(event, Event, evt)
+}
+
+DLIB_FUNC_START(event_geteventobject, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
-	wxObject* retval	= evt->GetEventObject();;
+	WXNEWCLASS(DeltaWxObject, retval, wxObject, evt->GetEventObject());
 	WX_SETOBJECT(Object, retval)
 }
 
-WX_FUNC_START(event_geteventtype, 1, Nil)
+DLIB_FUNC_START(event_geteventtype, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETNUMBER(evt->GetEventType());
 }
 
-WX_FUNC_START(event_getid, 1, Nil)
+DLIB_FUNC_START(event_getid, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETNUMBER(evt->GetId());
 }
 
-WX_FUNC_START(event_getskipped, 1, Nil)
+DLIB_FUNC_START(event_getskipped, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETBOOL(evt->GetSkipped());
 }
 
-WX_FUNC_START(event_gettimestamp, 1, Nil)
+DLIB_FUNC_START(event_gettimestamp, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETNUMBER(evt->GetTimestamp());
 }
 
-WX_FUNC_START(event_iscommandevent, 1, Nil)
+DLIB_FUNC_START(event_iscommandevent, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETBOOL(evt->IsCommandEvent());
 }
 
-WX_FUNC_START(event_resumepropagation, 2, Nil)
+DLIB_FUNC_START(event_resumepropagation, 2, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_GETNUMBER(propagationLevel)
 	evt->ResumePropagation(propagationLevel);
 }
 
-WX_FUNC_START(event_seteventobject, 2, Nil)
+DLIB_FUNC_START(event_seteventobject, 2, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	DLIB_WXGET_BASE(object, Object, obj)
 	evt->SetEventObject(obj);
 }
 
-WX_FUNC_START(event_seteventtype, 2, Nil)
+DLIB_FUNC_START(event_seteventtype, 2, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_GETDEFINE(type)
 	evt->SetEventType((wxEventType)type);
 }
 
-WX_FUNC_START(event_setid, 2, Nil)
+DLIB_FUNC_START(event_setid, 2, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_GETDEFINE(id)
 	evt->SetId(id);
 }
 
-WX_FUNC_START(event_settimestamp, 2, Nil)
+DLIB_FUNC_START(event_settimestamp, 2, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_GETNUMBER(timeStamp)
 	evt->SetTimestamp(timeStamp);
 }
 
-WX_FUNC_START(event_shouldpropagate, 1, Nil)
+DLIB_FUNC_START(event_shouldpropagate, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETBOOL(evt->ShouldPropagate())
 }
@@ -200,7 +209,7 @@ WX_FUNC_ARGRANGE_START(event_skip, 1, 2, Nil)
 	}
 }
 
-WX_FUNC_START(event_stoppropagation, 1, Nil)
+DLIB_FUNC_START(event_stoppropagation, 1, Nil)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETNUMBER(evt->StopPropagation())
 }

@@ -17,12 +17,14 @@
 #define WX_FUNC(name) WX_FUNC1(menuevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getmenu)
 WX_FUNC_DEF(getmenuid)
 WX_FUNC_DEF(ispopup)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getmenu),
 	WX_FUNC(getmenuid),
 	WX_FUNC(ispopup)
@@ -30,7 +32,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getmenu", "ispopup")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "ispopup")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MenuEvent, "menuevent", Event)
 
@@ -44,14 +46,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
 static bool GetMenu (void* val, DeltaValue* at) 
 {
 	wxMenuEvent *ev = DLIB_WXTYPECAST_BASE(MenuEvent, val, menuevent);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Menu, ev->GetMenu())
+	wxMenu *menu = ev->GetMenu();
+	DeltaWxMenu *retval = menu ? DNEWCLASS(DeltaWxMenu, (menu)) : (DeltaWxMenu*) 0;
+	WX_SETOBJECT_EX(*at, Menu, retval)
 	return true;
 }
 
@@ -88,20 +94,26 @@ WX_FUNC_ARGRANGE_START(menuevent_construct, 0, 3, Nil)
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
 	if (n >= 3) { DLIB_WXGET_BASE(menu, Menu, _menu) menu = _menu; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(MenuEvent, new wxMenuEvent(type, winid, menu))
+	DeltaWxMenuEvent *evt = DNEWCLASS(DeltaWxMenuEvent, (new wxMenuEvent(type, winid, menu)));
+	WX_SETOBJECT(MenuEvent, evt)
 }
 
-WX_FUNC_START(menuevent_getmenu, 1, Nil)
+DLIB_FUNC_START(menuevent_destruct, 1, Nil)
+	DLIB_WXDELETE(menuevent, MenuEvent, evt)
+}
+
+DLIB_FUNC_START(menuevent_getmenu, 1, Nil)
 	DLIB_WXGET_BASE(menuevent, MenuEvent, evt)
-	WX_SETOBJECT(Menu, evt->GetMenu())
+	DeltaWxMenu *retval = DNEWCLASS(DeltaWxMenu, (evt->GetMenu()));
+	WX_SETOBJECT(Menu, retval)
 }
 
-WX_FUNC_START(menuevent_getmenuid, 1, Nil)
+DLIB_FUNC_START(menuevent_getmenuid, 1, Nil)
 	DLIB_WXGET_BASE(menuevent, MenuEvent, evt)
 	WX_SETNUMBER(evt->GetMenuId())
 }
 
-WX_FUNC_START(menuevent_ispopup, 1, Nil)
+DLIB_FUNC_START(menuevent_ispopup, 1, Nil)
 	DLIB_WXGET_BASE(menuevent, MenuEvent, evt)
 	WX_SETBOOL(evt->IsPopup())
 }

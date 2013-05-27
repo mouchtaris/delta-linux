@@ -17,6 +17,7 @@ std::map<std::string, wxSize> defaultSizeMap;
 #define WX_FUNC(name) WX_FUNC1(size, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(decby)
 WX_FUNC_DEF(decto)
 WX_FUNC_DEF(isfullyspecified)
@@ -39,6 +40,7 @@ WX_FUNC_DEF(multiply)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(decby),
 	WX_FUNC(decto),
 	WX_FUNC(isfullyspecified),
@@ -62,7 +64,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "decby", "multiply")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "multiply")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(Size, "size")
 
@@ -131,23 +133,38 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Size, size,
 
 ////////////////////////////////////////////////////////////////
 
+#define WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, func)							\
+	const wxSize& size##Ref = size->func;										\
+	if (&size##Ref == size) {													\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);							\
+	} else {																	\
+		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(size##Ref)));	\
+		WX_SETOBJECT(Size, retval)												\
+	}
+
 WX_FUNC_ARGRANGE_START(size_construct, 0, 2, Nil)
-	wxSize *size = (wxSize*) 0;
+	wxSize *wxsize = (wxSize*) 0;
+	DeltaWxSize *size = (DeltaWxSize*) 0;
 	if (n == 0)
-		size = new wxSize();
+		wxsize = new wxSize();
 	else if (n == 2) {
 		WX_GETDEFINE(width)
 		WX_GETDEFINE(height)
-		size = new wxSize(width, height);
+		wxsize = new wxSize(width, height);
 	} else {
 		std::string str;
 		wxSize sz;
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String)
 			str = DPTR(vm)->GetActualArg(_argNo++)->ToString();
 		if (DeltaWxSizeSearch(str, &sz))
-			size = new wxSize(sz);
+			wxsize = new wxSize(sz);
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, size)
+	if (wxsize) size = DNEWCLASS(DeltaWxSize, (wxsize));
+	WX_SETOBJECT(Size, size)
+}
+
+DLIB_FUNC_START(size_destruct, 1, Nil)
+	DLIB_WXDELETE(size, Size, size)
 }
 
 WX_FUNC_ARGRANGE_START(size_decby, 2, 3, Nil)
@@ -167,23 +184,23 @@ WX_FUNC_ARGRANGE_START(size_decby, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(size_decto, 2, Nil)
+DLIB_FUNC_START(size_decto, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, curr_size)
 	DLIB_WXGETSIZE_BASE(wxVar)
 	curr_size->DecTo(*wxVar);
 }
 
-WX_FUNC_START(size_isfullyspecified, 1, Nil)
+DLIB_FUNC_START(size_isfullyspecified, 1, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
 	WX_SETBOOL( wxsize->IsFullySpecified() );
 }
 
-WX_FUNC_START(size_getwidth, 1, Nil)
+DLIB_FUNC_START(size_getwidth, 1, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
 	WX_SETNUMBER( wxsize->GetWidth() );
 }
 
-WX_FUNC_START(size_getheight, 1, Nil)
+DLIB_FUNC_START(size_getheight, 1, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
 	WX_SETNUMBER( wxsize->GetHeight() );
 }
@@ -205,82 +222,82 @@ WX_FUNC_ARGRANGE_START(size_incby, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(size_incto, 2, Nil)
+DLIB_FUNC_START(size_incto, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, curr_size)
 	DLIB_WXGETSIZE_BASE(wxVar2)
 	curr_size->IncTo(*wxVar2);
 }
 
-WX_FUNC_START(size_scale, 3, Nil)
+DLIB_FUNC_START(size_scale, 3, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	WX_GETNUMBER(xscale)
 	WX_GETNUMBER(yscale)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(size->Scale(xscale, yscale)))
+	WXSIZE_AVOID_UNNECESSARY_OBJECTS(size, Scale(xscale, yscale))
 }
 
-WX_FUNC_START(size_set, 3, Nil)
+DLIB_FUNC_START(size_set, 3, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
 	WX_GETNUMBER(width)
 	WX_GETNUMBER(height)
 	wxsize->Set((int)width, (int)height);
 }
 
-WX_FUNC_START(size_setdefaults, 2, Nil)
+DLIB_FUNC_START(size_setdefaults, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
 	DLIB_WXGETSIZE_BASE(wxVar)
 	wxsize->SetDefaults(*wxVar);
 }
 
-WX_FUNC_START(size_setwidth, 2, Nil)
+DLIB_FUNC_START(size_setwidth, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
 	WX_GETNUMBER(width)
 	wxsize->SetWidth((int)width);
 }
 
-WX_FUNC_START(size_setheight, 2, Nil)
+DLIB_FUNC_START(size_setheight, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, wxsize)
 	WX_GETNUMBER(height)
 	wxsize->SetHeight((int)height);
 }
 
-WX_FUNC_START(size_assign, 2, Nil)
+DLIB_FUNC_START(size_assign, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
 	size->operator=(*size2);
 }
 
-WX_FUNC_START(size_equal, 2, Nil)
+DLIB_FUNC_START(size_equal, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
 	WX_SETBOOL(*size == *size2)
 }
 
-WX_FUNC_START(size_notequal, 2, Nil)
+DLIB_FUNC_START(size_notequal, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
 	WX_SETBOOL(*size != *size2)
 }
 
-WX_FUNC_START(size_plus, 2, Nil)
+DLIB_FUNC_START(size_plus, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(*size + *size2))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size + *size2))))
 }
 
-WX_FUNC_START(size_minus, 2, Nil)
+DLIB_FUNC_START(size_minus, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	DLIB_WXGETSIZE_BASE(size2)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(*size - *size2))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size - *size2))))
 }
 
-WX_FUNC_START(size_divide, 2, Nil)
+DLIB_FUNC_START(size_divide, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	WX_GETNUMBER(factor)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(*size / (int) factor))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size / (int) factor))))
 }
 
-WX_FUNC_START(size_multiply, 2, Nil)
+DLIB_FUNC_START(size_multiply, 2, Nil)
 	DLIB_WXGET_BASE(size, Size, size)
 	WX_GETNUMBER(factor)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(*size * factor))
+	WX_SETOBJECT(Size, DNEWCLASS(DeltaWxSize, (new wxSize(*size * factor))))
 }

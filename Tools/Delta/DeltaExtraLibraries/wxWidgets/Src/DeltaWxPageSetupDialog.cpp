@@ -19,18 +19,20 @@
 #define WX_FUNC(name) WX_FUNC1(pagesetupdialog, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getpagesetupdata)
 WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getpagesetupdata),
 	WX_FUNC(showmodal)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getpagesetupdata", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PageSetupDialog, "pagesetupdialog", Dialog)
 
@@ -44,14 +46,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
 static bool GetPageSetupDialogData (void* val, DeltaValue* at) 
 {
 	wxPageSetupDialog *dlg = DLIB_WXTYPECAST_BASE(PageSetupDialog, val, pagesetupdialog);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, PageSetupDialogData, new wxPageSetupDialogData(dlg->GetPageSetupDialogData()))
+	DeltaWxPageSetupDialogData *retval = DNEWCLASS(DeltaWxPageSetupDialogData,
+		(new wxPageSetupDialogData(dlg->GetPageSetupDialogData())));
+	WX_SETOBJECT_EX(*at, PageSetupDialogData, retval)
 	return true;
 }
 
@@ -69,16 +75,23 @@ WX_FUNC_ARGRANGE_START(pagesetupdialog_construct, 1, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, parent)
 	wxPageSetupDialogData *data = NULL;
 	if (n >= 2) { DLIB_WXGET_BASE(pagesetupdialogdata, PageSetupDialogData, _data) data = _data; }
-	wxPageSetupDialog* dialog = new wxPageSetupDialog(parent, data);
+	DeltaWxPageSetupDialog *dialog = DNEWCLASS(DeltaWxPageSetupDialog,
+		(new wxPageSetupDialog(parent, data)));
 	WX_SETOBJECT(PageSetupDialog, dialog)
 }
 
-WX_FUNC_START(pagesetupdialog_getpagesetupdata, 1, Nil)
-	DLIB_WXGET_BASE(pagesetupdialog, PageSetupDialog, dialog)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(PageSetupDialogData, new wxPageSetupDialogData(dialog->GetPageSetupDialogData()))
+DLIB_FUNC_START(pagesetupdialog_destruct, 1, Nil)
+	DLIB_WXDELETE(pagesetupdialog, PageSetupDialog, dialog)
 }
 
-WX_FUNC_START(pagesetupdialog_showmodal, 1, Nil)
+DLIB_FUNC_START(pagesetupdialog_getpagesetupdata, 1, Nil)
+	DLIB_WXGET_BASE(pagesetupdialog, PageSetupDialog, dialog)
+	DeltaWxPageSetupDialogData *retval = DNEWCLASS(DeltaWxPageSetupDialogData,
+		(new wxPageSetupDialogData(dialog->GetPageSetupDialogData())));
+	WX_SETOBJECT(PageSetupDialogData, retval)
+}
+
+DLIB_FUNC_START(pagesetupdialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(pagesetupdialog, PageSetupDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

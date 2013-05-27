@@ -16,6 +16,7 @@
 #define WX_FUNC(name) WX_FUNC1(listbookevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getoldselection)
 WX_FUNC_DEF(getselection)
 WX_FUNC_DEF(setoldselection)
@@ -23,6 +24,7 @@ WX_FUNC_DEF(setselection)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getoldselection),
 	WX_FUNC(getselection),
 	WX_FUNC(setoldselection),
@@ -31,7 +33,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getoldselection", "setselection")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setselection")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ListbookEvent, "listbookevent", NotifyEvent)
 
@@ -45,7 +47,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, NotifyEvent, val)
+	wxNotifyEvent *_parent = DLIB_WXTYPECAST_BASE(NotifyEvent, val, notifyevent);
+	DeltaWxNotifyEvent *parent = DNEWCLASS(DeltaWxNotifyEvent, (_parent));
+	WX_SETOBJECT_EX(*at, NotifyEvent, parent)
 	return true;
 }
 
@@ -83,26 +87,32 @@ WX_FUNC_ARGRANGE_START(listbookevent_construct, 0, 4, Nil)
 	if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
 	if (n >= 3) { WX_GETNUMBER_DEFINED(nSel) }
 	if (n >= 4) { WX_GETNUMBER_DEFINED(nOldSel) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ListbookEvent, new wxListbookEvent(commandType, id, nSel, nOldSel))
+	DeltaWxListbookEvent *evt = DNEWCLASS(DeltaWxListbookEvent,
+		(new wxListbookEvent(commandType, id, nSel, nOldSel)));
+	WX_SETOBJECT(ListbookEvent, evt)
 }
 
-WX_FUNC_START(listbookevent_getoldselection, 1, Nil)
+DLIB_FUNC_START(listbookevent_destruct, 1, Nil)
+	DLIB_WXDELETE(listbookevent, ListbookEvent, evt)
+}
+
+DLIB_FUNC_START(listbookevent_getoldselection, 1, Nil)
 	DLIB_WXGET_BASE(listbookevent, ListbookEvent, evt)
 	WX_SETNUMBER(evt->GetOldSelection())
 }
 
-WX_FUNC_START(listbookevent_getselection, 1, Nil)
+DLIB_FUNC_START(listbookevent_getselection, 1, Nil)
 	DLIB_WXGET_BASE(listbookevent, ListbookEvent, evt)
 	WX_SETNUMBER(evt->GetSelection())
 }
 
-WX_FUNC_START(listbookevent_setoldselection, 2, Nil)
+DLIB_FUNC_START(listbookevent_setoldselection, 2, Nil)
 	DLIB_WXGET_BASE(listbookevent, ListbookEvent, evt)
 	WX_GETNUMBER(nOldSel)
 	evt->SetOldSelection(nOldSel);
 }
 
-WX_FUNC_START(listbookevent_setselection, 2, Nil)
+DLIB_FUNC_START(listbookevent_setselection, 2, Nil)
 	DLIB_WXGET_BASE(listbookevent, ListbookEvent, evt)
 	WX_GETNUMBER(nSel)
 	evt->SetSelection(nSel);

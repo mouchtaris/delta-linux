@@ -62,7 +62,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, LogChain, val)
+	wxLogChain *_parent = DLIB_WXTYPECAST_BASE(LogChain, val, logchain);
+	DeltaWxLogChain *parent = DNEWCLASS(DeltaWxLogChain, (_parent));
+	WX_SETOBJECT_EX(*at, LogChain, parent)
 	return true;
 }
 
@@ -90,14 +92,15 @@ WX_FUNC_ARGRANGE_START(logwindow_construct, 2, 4, Nil)
 	bool show = true, passtoold = true;
 	if (n >= 3) { WX_GETBOOL_DEFINED(show) }
 	if (n >= 4) { WX_GETBOOL_DEFINED(passtoold) }
-	WX_SETOBJECT(LogWindow, new wxLogWindowDerived(parent, title, show, passtoold))
+	DeltaWxLogWindow *win = DNEWCLASS(DeltaWxLogWindow, (new wxLogWindow(parent, title, show, passtoold)));
+	WX_SETOBJECT(LogWindow, win)
 }
 
-WX_FUNC_START(logwindow_destruct, 1, Nil)
-	DLIB_WXDELETE(logwindow, LogWindow, log)
+DLIB_FUNC_START(logwindow_destruct, 1, Nil)
+	DLIB_WXDELETE(logwindow, LogWindow, win)
 }
 
-WX_FUNC_START(logwindow_onframecreate, 2, Nil)
+DLIB_FUNC_START(logwindow_onframecreate, 2, Nil)
 	DLIB_WXGET_BASE(logwindow, LogWindow, win)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	win->OnFrameCreate(frame);
@@ -111,7 +114,6 @@ static void logwindow_onframecreateadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(logwindow, LogWindow, _win)
 	wxLogWindowDerived *win = (wxLogWindowDerived*)_win;
 	for (int i = 1; i < n; ++i) {
@@ -129,7 +131,6 @@ static void logwindow_onframecreateremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(logwindow, LogWindow, _win)
 	wxLogWindowDerived *win = (wxLogWindowDerived*)_win;
 	std::list<DeltaValue> *onCreate = win->GetOnCreateFuncs();
@@ -148,7 +149,7 @@ static void logwindow_onframecreateremove_LibFunc (DeltaVirtualMachine* vm)
 }
 
 
-WX_FUNC_START(logwindow_onframeclose, 2, Nil)
+DLIB_FUNC_START(logwindow_onframeclose, 2, Nil)
 	DLIB_WXGET_BASE(logwindow, LogWindow, win)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	WX_SETBOOL(win->OnFrameClose(frame))
@@ -162,7 +163,6 @@ static void logwindow_onframecloseadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(logwindow, LogWindow, _win)
 	wxLogWindowDerived *win = (wxLogWindowDerived*)_win;
 	for (int i = 1; i < n; ++i) {
@@ -180,7 +180,6 @@ static void logwindow_onframecloseremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(logwindow, LogWindow, _win)
 	wxLogWindowDerived *win = (wxLogWindowDerived*)_win;
 	std::list<DeltaValue> *onClose = win->GetOnCloseFuncs();
@@ -198,7 +197,7 @@ static void logwindow_onframecloseremove_LibFunc (DeltaVirtualMachine* vm)
 	}
 }
 
-WX_FUNC_START(logwindow_onframedelete, 2, Nil)
+DLIB_FUNC_START(logwindow_onframedelete, 2, Nil)
 	DLIB_WXGET_BASE(logwindow, LogWindow, win)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	win->OnFrameDelete(frame);
@@ -212,7 +211,6 @@ static void logwindow_onframedeleteadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(logwindow, LogWindow, _win)
 	wxLogWindowDerived *win = (wxLogWindowDerived*)_win;
 	for (int i = 1; i < n; ++i) {
@@ -230,7 +228,6 @@ static void logwindow_onframedeleteremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(logwindow, LogWindow, _win)
 	wxLogWindowDerived *win = (wxLogWindowDerived*)_win;
 	std::list<DeltaValue> *onDelete = win->GetOnDeleteFuncs();
@@ -255,9 +252,9 @@ WX_FUNC_ARGRANGE_START(logwindow_show, 1, 2, Nil)
 	win->Show(show);
 }
 
-WX_FUNC_START(logwindow_getframe, 1, Nil)
+DLIB_FUNC_START(logwindow_getframe, 1, Nil)
 	DLIB_WXGET_BASE(logwindow, LogWindow, win)
-	wxFrame* retval	= win->GetFrame();
+	WXNEWCLASS(DeltaWxFrame, retval, wxFrame, win->GetFrame())
 	WX_SETOBJECT(Frame, retval)
 }
 
@@ -265,9 +262,9 @@ WX_FUNC_START(logwindow_getframe, 1, Nil)
 
 void wxLogWindowDerived::NotifyCreate(wxFrame *wxframe)
 {
-	wxFrame *frame = wxframe;
+	DeltaWxFrame *frame = DNEWCLASS(DeltaWxFrame, (wxframe));
 	DeltaValue arg;
-	WX_SETOBJECT_NO_CONTEXT_EX(arg, Frame, frame)
+	WX_SETOBJECT_EX(arg, Frame, frame)
 	std::list<DeltaValue>::iterator it;
 	std::list<DeltaValue> *createFuncs = this->GetOnCreateFuncs();
 	for (it = createFuncs->begin(); it != createFuncs->end(); ++it) {
@@ -280,9 +277,9 @@ void wxLogWindowDerived::NotifyCreate(wxFrame *wxframe)
 bool wxLogWindowDerived::NotifyClose(wxFrame *wxframe)
 {
 	bool retval = true;
-	wxFrame *frame = wxframe;
+	DeltaWxFrame *frame = DNEWCLASS(DeltaWxFrame, (wxframe));
 	DeltaValue arg;
-	WX_SETOBJECT_NO_CONTEXT_EX(arg, Frame, frame)
+	WX_SETOBJECT_EX(arg, Frame, frame)
 	std::list<DeltaValue>::iterator it;
 	std::list<DeltaValue> *closeFuncs = this->GetOnCloseFuncs();
 	for (it = closeFuncs->begin(); it != closeFuncs->end(); ++it) {
@@ -297,9 +294,9 @@ bool wxLogWindowDerived::NotifyClose(wxFrame *wxframe)
 
 void wxLogWindowDerived::NotifyDelete(wxFrame *wxframe)
 {
-	wxFrame *frame = wxframe;
+	DeltaWxFrame *frame = DNEWCLASS(DeltaWxFrame, (wxframe));
 	DeltaValue arg;
-	WX_SETOBJECT_NO_CONTEXT_EX(arg, Frame, frame)
+	WX_SETOBJECT_EX(arg, Frame, frame)
 	std::list<DeltaValue>::iterator it;
 	std::list<DeltaValue> *deleteFuncs = this->GetOnDeleteFuncs();
 	for (it = deleteFuncs->begin(); it != deleteFuncs->end(); ++it) {

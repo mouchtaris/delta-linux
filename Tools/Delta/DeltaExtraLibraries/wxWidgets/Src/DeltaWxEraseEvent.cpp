@@ -17,16 +17,18 @@
 #define WX_FUNC(name) WX_FUNC1(eraseevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getdc)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getdc)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getdc", "getdc")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getdc")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(EraseEvent, "eraseevent", Event)
 
@@ -40,14 +42,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
 static bool GetDC (void* val, DeltaValue* at) 
 {
 	wxEraseEvent *ev = DLIB_WXTYPECAST_BASE(EraseEvent, val, eraseevent);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, DC, ev->GetDC())
+	wxDC *dc = ev->GetDC();
+	DeltaWxDC *retval = dc ? DNEWCLASS(DeltaWxDC, (dc)) : (DeltaWxDC*) 0;
+	WX_SETOBJECT_EX(*at, DC, retval)
 	return true;
 }
 
@@ -66,10 +72,16 @@ WX_FUNC_ARGRANGE_START(eraseevent_construct, 0, 2, Nil)
 	wxDC *dc = (wxDC*) 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(Id) }
 	if (n >= 2) { DLIB_WXGET_BASE(dc, DC, _dc) dc = _dc; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(EraseEvent, new wxEraseEvent(Id, dc))
+	DeltaWxEraseEvent* evt = DNEWCLASS(DeltaWxEraseEvent, (new wxEraseEvent(Id, dc)));
+	WX_SETOBJECT(EraseEvent, evt)
 }
 
-WX_FUNC_START(eraseevent_getdc, 1, Nil)
+DLIB_FUNC_START(eraseevent_destruct, 1, Nil)
+	DLIB_WXDELETE(eraseevent, EraseEvent, evt)
+}
+
+DLIB_FUNC_START(eraseevent_getdc, 1, Nil)
 	DLIB_WXGET_BASE(eraseevent, EraseEvent, evt)
-	WX_SETOBJECT(DC, evt->GetDC())
+	DeltaWxDC *retval = DNEWCLASS(DeltaWxDC, (evt->GetDC()));
+	WX_SETOBJECT(DC, retval)
 }

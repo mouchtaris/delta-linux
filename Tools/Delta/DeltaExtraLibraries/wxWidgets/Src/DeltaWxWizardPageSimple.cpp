@@ -18,6 +18,7 @@
 #define WX_FUNC(name) WX_FUNC1(wizardpagesimple, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(setprev)
 WX_FUNC_DEF(setnext)
 WX_FUNC_DEF(chain)
@@ -25,13 +26,14 @@ WX_FUNC_DEF(chain)
 WX_FUNCS_START
 	WX_FUNC(construct),
 	WX_FUNC(chain),
+	WX_FUNC(destruct),
 	WX_FUNC(setprev),
 	WX_FUNC(setnext)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(2, uarraysize(funcs) - 2, "setprev", "setnext")
+DELTALIBFUNC_DECLARECONSTS(2, uarraysize(funcs) - 2, "destruct", "setnext")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(WizardPageSimple, "wizardpagesimple", WizardPage)
 
@@ -45,21 +47,27 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, WizardPage, val)
+	wxWizardPage *_parent = DLIB_WXTYPECAST_BASE(WizardPage, val, wizardpage);
+	DeltaWxWizardPage *parent = DNEWCLASS(DeltaWxWizardPage, (_parent));
+	WX_SETOBJECT_EX(*at, WizardPage, parent)
 	return true;
 }
 
 static bool GetPrev (void* val, DeltaValue* at) 
 {
 	wxWizardPageSimple *page = DLIB_WXTYPECAST_BASE(WizardPageSimple, val, wizardpagesimple);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, WizardPage, page->GetPrev())
+	wxWizardPage *prev = page->GetPrev();
+	DeltaWxWizardPage *retval = prev ? DNEWCLASS(DeltaWxWizardPage, (prev)) : (DeltaWxWizardPage*) 0;
+	WX_SETOBJECT_EX(*at, WizardPage, retval)
 	return true;
 }
 
 static bool GetNext (void* val, DeltaValue* at) 
 {
 	wxWizardPageSimple *page = DLIB_WXTYPECAST_BASE(WizardPageSimple, val, wizardpagesimple);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, WizardPage, page->GetNext())
+	wxWizardPage *next = page->GetNext();
+	DeltaWxWizardPage *retval = next ? DNEWCLASS(DeltaWxWizardPage, (next)) : (DeltaWxWizardPage*) 0;
+	WX_SETOBJECT_EX(*at, WizardPage, retval)
 	return true;
 }
 
@@ -76,6 +84,7 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(WizardPageSimple,wizardpagesimple)
 
 WX_FUNC_ARGRANGE_START(wizardpagesimple_construct, 0, 5, Nil)
 	wxWizardPageSimple *page = (wxWizardPageSimple*) 0;
+	DeltaWxWizardPageSimple *_page = (DeltaWxWizardPageSimple*) 0;
 	if (n == 0)
 		page = new wxWizardPageSimple();
 	else {
@@ -93,22 +102,28 @@ WX_FUNC_ARGRANGE_START(wizardpagesimple_construct, 0, 5, Nil)
 #endif
 		);
 	}
-	WX_SET_WINDOW_OBJECT(WizardPageSimple, page)
+	if (page)
+		_page = DNEWCLASS(DeltaWxWizardPageSimple, (page));
+	WX_SETOBJECT(WizardPageSimple, _page)
 }
 
-WX_FUNC_START(wizardpagesimple_setprev, 2, Nil)
+DLIB_FUNC_START(wizardpagesimple_destruct, 1, Nil)
+	DLIB_WXDELETE(wizardpagesimple, WizardPageSimple, page)
+}
+
+DLIB_FUNC_START(wizardpagesimple_setprev, 2, Nil)
 	DLIB_WXGET_BASE(wizardpagesimple, WizardPageSimple, page)
 	DLIB_WXGET_BASE(wizardpage, WizardPage, prev)
 	page->SetPrev(prev);
 }
 
-WX_FUNC_START(wizardpagesimple_setnext, 2, Nil)
+DLIB_FUNC_START(wizardpagesimple_setnext, 2, Nil)
 	DLIB_WXGET_BASE(wizardpagesimple, WizardPageSimple, page)
 	DLIB_WXGET_BASE(wizardpage, WizardPage, next)
 	page->SetNext(next);
 }
 
-WX_FUNC_START(wizardpagesimple_chain, 2, Nil)
+DLIB_FUNC_START(wizardpagesimple_chain, 2, Nil)
 	DLIB_WXGET_BASE(wizardpagesimple, WizardPageSimple, first)
 	DLIB_WXGET_BASE(wizardpagesimple, WizardPageSimple, second)
 	wxWizardPageSimple::Chain(first, second);

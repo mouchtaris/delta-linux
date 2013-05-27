@@ -55,7 +55,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Sizer, val)
+	wxSizer *_parent = DLIB_WXTYPECAST_BASE(Sizer, val, sizer);
+	DeltaWxSizer *parent = DNEWCLASS(DeltaWxSizer, (_parent));
+	WX_SETOBJECT_EX(*at, Sizer, parent)
 	return true;
 }
 
@@ -101,66 +103,68 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(GridSizer,gridsizer)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(gridsizer_construct, 1, 4, Nil)
-	wxGridSizer *sizer = (wxGridSizer*) 0;
+	wxGridSizer *wxsizer = (wxGridSizer*) 0;
+	DeltaWxGridSizer *sizer = (DeltaWxGridSizer*) 0;
 	if (n == 4) {
 		WX_GETNUMBER(rows)
 		WX_GETNUMBER(cols)
 		WX_GETNUMBER(vgap)
 		WX_GETNUMBER(hgap)
-		sizer = new wxGridSizer(rows, cols, vgap, hgap);
+		wxsizer = new wxGridSizer(rows, cols, vgap, hgap);
 	} else {
 		WX_GETNUMBER(cols)
 		int vgap = 0, hgap = 0;
 		if (n >= 2) { WX_GETNUMBER_DEFINED(vgap) }
 		if (n >= 3) { WX_GETNUMBER_DEFINED(hgap) }
-		sizer = new wxGridSizer(cols, vgap, hgap);
+		wxsizer = new wxGridSizer(cols, vgap, hgap);
 	}
+	if (wxsizer) sizer = DNEWCLASS(DeltaWxGridSizer, (wxsizer));
 	WX_SETOBJECT(GridSizer, sizer)
 }
 
-WX_FUNC_START(gridsizer_destruct, 1, Nil)
+DLIB_FUNC_START(gridsizer_destruct, 1, Nil)
 	DLIB_WXDELETE(gridsizer, GridSizer, sizer)
 }
 
-WX_FUNC_START(gridsizer_getcols, 1, Nil)
+DLIB_FUNC_START(gridsizer_getcols, 1, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_SETNUMBER(sizer->GetCols())
 }
 
-WX_FUNC_START(gridsizer_gethgap, 1, Nil)
+DLIB_FUNC_START(gridsizer_gethgap, 1, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_SETNUMBER(sizer->GetHGap())
 }
 
-WX_FUNC_START(gridsizer_getrows, 1, Nil)
+DLIB_FUNC_START(gridsizer_getrows, 1, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_SETNUMBER(sizer->GetRows())
 }
 
-WX_FUNC_START(gridsizer_getvgap, 1, Nil)
+DLIB_FUNC_START(gridsizer_getvgap, 1, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_SETNUMBER(sizer->GetVGap())
 }
 
-WX_FUNC_START(gridsizer_setcols, 2, Nil)
+DLIB_FUNC_START(gridsizer_setcols, 2, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_GETNUMBER(cols)
 	sizer->SetCols(cols);
 }
 
-WX_FUNC_START(gridsizer_sethgap, 2, Nil)
+DLIB_FUNC_START(gridsizer_sethgap, 2, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_GETNUMBER(gap)
 	sizer->SetHGap(gap);
 }
 
-WX_FUNC_START(gridsizer_setrows, 2, Nil)
+DLIB_FUNC_START(gridsizer_setrows, 2, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_GETNUMBER(rows)
 	sizer->SetRows(rows);
 }
 
-WX_FUNC_START(gridsizer_setvgap, 2, Nil)
+DLIB_FUNC_START(gridsizer_setvgap, 2, Nil)
 	DLIB_WXGET_BASE(gridsizer, GridSizer, sizer)
 	WX_GETNUMBER(gap)
 	sizer->SetVGap(gap);

@@ -18,6 +18,7 @@ std::map<std::string, wxPoint> defaultPointMap;
 #define WX_FUNC(name) WX_FUNC1(point, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getx)
 WX_FUNC_DEF(gety)
 WX_FUNC_DEF(setx)
@@ -32,6 +33,7 @@ WX_FUNC_DEF(assign)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getx),
 	WX_FUNC(gety),
 	WX_FUNC(setx),
@@ -45,7 +47,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getx", "assign")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "assign")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(Point, "point")
 
@@ -113,81 +115,91 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Point, point,
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(point_construct, 0, 2, Nil)
-	wxPoint *point = (wxPoint*) 0;
+	wxPoint *wxpoint = (wxPoint*) 0;
+	DeltaWxPoint *point = (DeltaWxPoint*) 0;
 	if (n == 0)
-		point = new wxPoint();
+		wxpoint = new wxPoint();
 	else if (n == 2) {
 		WX_GETDEFINE(x)
 		WX_GETDEFINE(y)
-		point = new wxPoint((int)x, (int)y);
+		wxpoint = new wxPoint((int)x, (int)y);
 	} else {
 		DLIB_WXGETPOINT_BASE(pt)
-		point = new wxPoint(*pt);
+		wxpoint = new wxPoint(*pt);
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, point)
+	if (wxpoint) point = DNEWCLASS(DeltaWxPoint, (wxpoint));
+	WX_SETOBJECT(Point, point)
 }
 
-WX_FUNC_START(point_getx, 1, Nil)
+DLIB_FUNC_START(point_destruct, 1, Nil)
+	DLIB_WXDELETE(point, Point, point)
+}
+
+DLIB_FUNC_START(point_getx, 1, Nil)
 	DLIB_WXGET_BASE(point, Point, wxpoint)
 	WX_SETNUMBER(wxpoint->x);
 }
 
-WX_FUNC_START(point_gety, 1, Nil)
+DLIB_FUNC_START(point_gety, 1, Nil)
 	DLIB_WXGET_BASE(point, Point, wxpoint)
 	WX_SETNUMBER(wxpoint->y);
 }
 
-WX_FUNC_START(point_setx, 2, Nil)
+DLIB_FUNC_START(point_setx, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, wxpoint)
 	WX_GETNUMBER(_x)
 	wxpoint->x = _x;
 }
 
-WX_FUNC_START(point_sety, 2, Nil)
+DLIB_FUNC_START(point_sety, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, wxpoint)
 	WX_GETNUMBER(_y)
 	wxpoint->y = _y;
 }
 
-WX_FUNC_START(point_plus, 2, Nil)
+DLIB_FUNC_START(point_plus, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Point, serial_no, point, point2)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(*point + *point2))
+		if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
+			wxPoint *point2 = (wxPoint*) point_wr->GetCastToNativeInstance();
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point + *point2))))
 		} else
-		if (DLIB_WXISBASE(Size, serial_no, size, size)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(*point + *size))
+		if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
+			wxSize *size = (wxSize*) size_wr->GetCastToNativeInstance();
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point + *size))))
 		}
 	}
 }
 
-WX_FUNC_START(point_minus, 2, Nil)
+DLIB_FUNC_START(point_minus, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Point, serial_no, point, point2)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(*point - *point2))
+		if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
+			wxPoint *point2 = (wxPoint*) point_wr->GetCastToNativeInstance();
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point - *point2))))
 		} else
-		if (DLIB_WXISBASE(Size, serial_no, size, size)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(*point - *size))
+		if (DLIB_WXISBASE(Size, serial_no, size, size_wr)) {
+			wxSize *size = (wxSize*) size_wr->GetCastToNativeInstance();
+			WX_SETOBJECT(Point, DNEWCLASS(DeltaWxPoint, (new wxPoint(*point - *size))))
 		}
 	}
 }
 
-WX_FUNC_START(point_equal, 2, Nil)
+DLIB_FUNC_START(point_equal, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
 	DLIB_WXGETPOINT_BASE(point2)
 	WX_SETBOOL(*point == *point2)
 }
 
-WX_FUNC_START(point_notequal, 2, Nil)
+DLIB_FUNC_START(point_notequal, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
 	DLIB_WXGETPOINT_BASE(point2)
 	WX_SETBOOL(*point != *point2)
 }
 
-WX_FUNC_START(point_assign, 2, Nil)
+DLIB_FUNC_START(point_assign, 2, Nil)
 	DLIB_WXGET_BASE(point, Point, point)
 	DLIB_WXGETPOINT_BASE(point2)
 	point->operator=(*point2);

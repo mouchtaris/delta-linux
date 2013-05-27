@@ -16,16 +16,18 @@
 #define WX_FUNC(name) WX_FUNC1(iconizeevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(iconized)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(iconized)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "iconized", "iconized")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "iconized")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(IconizeEvent, "iconizeevent", Event)
 
@@ -39,7 +41,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
@@ -65,10 +69,15 @@ WX_FUNC_ARGRANGE_START(iconizeevent_construct, 0, 2, Nil)
 	bool iconized = true;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(winid) }
 	if (n >= 2) { WX_GETBOOL_DEFINED(iconized) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IconizeEvent, new wxIconizeEvent(winid, iconized))
+	DeltaWxIconizeEvent *evt = DNEWCLASS(DeltaWxIconizeEvent, (new wxIconizeEvent(winid, iconized)));
+	WX_SETOBJECT(IconizeEvent, evt)
 }
 
-WX_FUNC_START(iconizeevent_iconized, 1, Nil)
+DLIB_FUNC_START(iconizeevent_destruct, 1, Nil)
+	DLIB_WXDELETE(iconizeevent, IconizeEvent, evt)
+}
+
+DLIB_FUNC_START(iconizeevent_iconized, 1, Nil)
 	DLIB_WXGET_BASE(iconizeevent, IconizeEvent, evt)
 	WX_SETBOOL(evt->Iconized())
 }

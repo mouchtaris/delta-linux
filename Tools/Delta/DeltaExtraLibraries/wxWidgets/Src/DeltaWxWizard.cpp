@@ -22,6 +22,7 @@
 #define WX_FUNC(name) WX_FUNC1(wizard, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(fittopage)
 WX_FUNC_DEF(getcurrentpage)
@@ -35,6 +36,7 @@ WX_FUNC_DEF(setborder)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(fittopage),
 	WX_FUNC(getcurrentpage),
@@ -49,7 +51,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setborder")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setborder")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Wizard, "wizard", Dialog)
 
@@ -63,14 +65,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Dialog, val)
+	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
+	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
+	WX_SETOBJECT_EX(*at, Dialog, parent)
 	return true;
 }
 
 static bool GetPage (void* val, DeltaValue* at) 
 {
 	wxWizard *wizard = DLIB_WXTYPECAST_BASE(Wizard, val, wizard);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, WizardPage, wizard->GetCurrentPage())
+	wxWizardPage *page = wizard->GetCurrentPage();
+	DeltaWxWizardPage *retval = page ? DNEWCLASS(DeltaWxWizardPage, (page)) : (DeltaWxWizardPage*) 0;
+	WX_SETOBJECT_EX(*at, WizardPage, retval)
 	return true;
 }
 
@@ -84,7 +90,9 @@ static bool GetBorder (void* val, DeltaValue* at)
 static bool GetSizer (void* val, DeltaValue* at) 
 {
 	wxWizard *wizard = DLIB_WXTYPECAST_BASE(Wizard, val, wizard);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Sizer, wizard->GetPageAreaSizer())
+	wxSizer *sizer = wizard->GetPageAreaSizer();
+	DeltaWxSizer *retval = sizer ? DNEWCLASS(DeltaWxSizer, (sizer)) : (DeltaWxSizer*) 0;
+	WX_SETOBJECT_EX(*at, Sizer, retval)
 	return true;
 }
 
@@ -101,9 +109,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Wizard,wizard)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(wizard_construct, 0, 6, Nil)
-	wxWizard *wizard = (wxWizard*) 0;
+	wxWizard *wxwizard = (wxWizard*) 0;
+	DeltaWxWizard *wizard = (DeltaWxWizard*) 0;
 	if (n == 0)
-		wizard = new wxWizard();
+		wxwizard = new wxWizard();
 	else if (n >= 1) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int id = wxID_ANY;
@@ -116,9 +125,14 @@ WX_FUNC_ARGRANGE_START(wizard_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGET_BASE(bitmap, Bitmap, bmp) bitmap = *bmp; }
 		if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
-		wizard = new wxWizard(parent, id, title, bitmap, pos, style);
+		wxwizard = new wxWizard(parent, id, title, bitmap, pos, style);
 	}
-	WX_SET_TOPLEVELWINDOW_OBJECT(Wizard, wizard)
+	if (wxwizard) wizard = DNEWCLASS(DeltaWxWizard, (wxwizard));
+	WX_SETOBJECT(Wizard, wizard)
+}
+
+DLIB_FUNC_START(wizard_destruct, 1, Nil)
+	DLIB_WXDELETE(wizard, Wizard, wizard)
 }
 
 WX_FUNC_ARGRANGE_START(wizard_create, 2, 7, Nil)
@@ -135,57 +149,57 @@ WX_FUNC_ARGRANGE_START(wizard_create, 2, 7, Nil)
 	if (n >= 6) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	WX_SETBOOL(wizard->Create(parent, id, title, bitmap, pos, style))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(wizard);
 }
 
-WX_FUNC_START(wizard_fittopage, 2, Nil)
+DLIB_FUNC_START(wizard_fittopage, 2, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
 	DLIB_WXGET_BASE(wizardpage, WizardPage, firstPage)
 	wizard->FitToPage(firstPage);
 }
 
-WX_FUNC_START(wizard_getcurrentpage, 1, Nil)
+DLIB_FUNC_START(wizard_getcurrentpage, 1, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
-	wxWizardPage* retval	= wizard->GetCurrentPage();
+	WXNEWCLASS(DeltaWxWizardPage, retval, wxWizardPage, wizard->GetCurrentPage())
 	WX_SETOBJECT(WizardPage, retval)
 }
 
-WX_FUNC_START(wizard_getpageareasizer, 1, Nil)
+DLIB_FUNC_START(wizard_getpageareasizer, 1, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
-	wxSizer* retval	= wizard->GetPageAreaSizer();
+	WXNEWCLASS(DeltaWxSizer, retval, wxSizer, wizard->GetPageAreaSizer())
 	WX_SETOBJECT(Sizer, retval)
 }
 
-WX_FUNC_START(wizard_getpagesize, 1, Nil)
+DLIB_FUNC_START(wizard_getpagesize, 1, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(wizard->GetPageSize()))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(wizard->GetPageSize())));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(wizard_hasnextpage, 2, Nil)
+DLIB_FUNC_START(wizard_hasnextpage, 2, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
 	DLIB_WXGET_BASE(wizardpage, WizardPage, page)
 	WX_SETBOOL(wizard->HasNextPage(page))
 }
 
-WX_FUNC_START(wizard_hasprevpage, 2, Nil)
+DLIB_FUNC_START(wizard_hasprevpage, 2, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
 	DLIB_WXGET_BASE(wizardpage, WizardPage, page)
 	WX_SETBOOL(wizard->HasPrevPage(page))
 }
 
-WX_FUNC_START(wizard_runwizard, 2, Nil)
+DLIB_FUNC_START(wizard_runwizard, 2, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
 	DLIB_WXGET_BASE(wizardpage, WizardPage, firstPage)
 	WX_SETBOOL(wizard->RunWizard(firstPage))
 }
 
-WX_FUNC_START(wizard_setpagesize, 2, Nil)
+DLIB_FUNC_START(wizard_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
 	DLIB_WXGETSIZE_BASE(size)
 	wizard->SetPageSize(*size);
 }
 
-WX_FUNC_START(wizard_setborder, 2, Nil)
+DLIB_FUNC_START(wizard_setborder, 2, Nil)
 	DLIB_WXGET_BASE(wizard, Wizard, wizard)
 	WX_GETNUMBER(border)
 	wizard->SetBorder(border);

@@ -18,6 +18,7 @@
 #define WX_FUNC(name) WX_FUNC1(splitterevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getsashposition)
 WX_FUNC_DEF(getx)
 WX_FUNC_DEF(gety)
@@ -26,6 +27,7 @@ WX_FUNC_DEF(setsashposition)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getsashposition),
 	WX_FUNC(getx),
 	WX_FUNC(gety),
@@ -35,7 +37,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getsashposition", "setsashposition")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setsashposition")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SplitterEvent, "splitterevent", NotifyEvent)
 
@@ -49,7 +51,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, NotifyEvent, val)
+	wxNotifyEvent *_parent = DLIB_WXTYPECAST_BASE(NotifyEvent, val, notifyevent);
+	DeltaWxNotifyEvent *parent = DNEWCLASS(DeltaWxNotifyEvent, (_parent));
+	WX_SETOBJECT_EX(*at, NotifyEvent, parent)
 	return true;
 }
 
@@ -77,7 +81,9 @@ static bool GetY (void* val, DeltaValue* at)
 static bool GetWindowBeingRemoved (void* val, DeltaValue* at) 
 {
 	wxSplitterEvent *ev = DLIB_WXTYPECAST_BASE(SplitterEvent, val, splitterevent);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, ev->GetWindowBeingRemoved())
+	wxWindow *window = ev->GetWindowBeingRemoved();
+	DeltaWxWindow *retval = window ? DNEWCLASS(DeltaWxWindow, (window)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
@@ -99,30 +105,36 @@ WX_FUNC_ARGRANGE_START(splitterevent_construct, 0, 2, Nil)
 	wxSplitterWindow *splitter = (wxSplitterWindow *)NULL;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { DLIB_WXGET_BASE(splitterwindow, SplitterWindow, _splitter) splitter = _splitter; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(SplitterEvent, new wxSplitterEvent(type, splitter))
+	DeltaWxSplitterEvent *evt = DNEWCLASS(DeltaWxSplitterEvent, (new wxSplitterEvent(type, splitter)));
+	WX_SETOBJECT(SplitterEvent, evt)
 }
 
-WX_FUNC_START(splitterevent_getsashposition, 1, Nil)
+DLIB_FUNC_START(splitterevent_destruct, 1, Nil)
+	DLIB_WXDELETE(splitterevent, SplitterEvent, evt)
+}
+
+DLIB_FUNC_START(splitterevent_getsashposition, 1, Nil)
 	DLIB_WXGET_BASE(splitterevent, SplitterEvent, evt)
 	WX_SETNUMBER(evt->GetSashPosition())
 }
 
-WX_FUNC_START(splitterevent_getx, 1, Nil)
+DLIB_FUNC_START(splitterevent_getx, 1, Nil)
 	DLIB_WXGET_BASE(splitterevent, SplitterEvent, evt)
 	WX_SETNUMBER(evt->GetX())
 }
 
-WX_FUNC_START(splitterevent_gety, 1, Nil)
+DLIB_FUNC_START(splitterevent_gety, 1, Nil)
 	DLIB_WXGET_BASE(splitterevent, SplitterEvent, evt)
 	WX_SETNUMBER(evt->GetY())
 }
 
-WX_FUNC_START(splitterevent_getwindowbeingremoved, 1, Nil)
+DLIB_FUNC_START(splitterevent_getwindowbeingremoved, 1, Nil)
 	DLIB_WXGET_BASE(splitterevent, SplitterEvent, evt)
-	WX_SETOBJECT(Window, evt->GetWindowBeingRemoved())
+	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (evt->GetWindowBeingRemoved()));
+	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(splitterevent_setsashposition, 2, Nil)
+DLIB_FUNC_START(splitterevent_setsashposition, 2, Nil)
 	DLIB_WXGET_BASE(splitterevent, SplitterEvent, evt)
 	WX_GETNUMBER(position)
 	evt->SetSashPosition(position);

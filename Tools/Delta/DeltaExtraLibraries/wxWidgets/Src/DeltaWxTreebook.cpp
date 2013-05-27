@@ -22,6 +22,7 @@
 #define WX_FUNC(name) WX_FUNC1(treebook, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addpage)
 WX_FUNC_DEF(addsubpage)
 WX_FUNC_DEF(assignimagelist)
@@ -45,6 +46,7 @@ WX_FUNC_DEF(setselection)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(addpage),
 	WX_FUNC(addsubpage),
 	WX_FUNC(assignimagelist),
@@ -69,7 +71,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addpage", "setselection")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setselection")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Treebook, "treebook", Control)
 
@@ -83,7 +85,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -93,7 +97,9 @@ static bool GetPages (void* val, DeltaValue* at)
 	at->FromTable(DNEW(DELTA_OBJECT));
 	for (int i = 0, pageSize = (int)book->GetPageCount(); i < pageSize; ++i) {
 		DeltaValue value;
-		WX_SETOBJECT_NO_CONTEXT_EX(value, Window, book->GetPage(i))
+		wxWindow *win = book->GetPage(i);
+		DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
+		WX_SETOBJECT_EX(value, Window, retval)
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -102,7 +108,11 @@ static bool GetPages (void* val, DeltaValue* at)
 static bool GetImageList (void* val, DeltaValue* at) 
 {
 	wxTreebook *book = DLIB_WXTYPECAST_BASE(Treebook, val, treebook);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, book->GetImageList())
+	wxImageList *imagelist = book->GetImageList();
+	DeltaWxImageList *retval = imagelist ?
+		DNEWCLASS(DeltaWxImageList, (imagelist)) :
+		(DeltaWxImageList*) 0;
+	WX_SETOBJECT_EX(*at, ImageList, retval)
 	return true;
 }
 
@@ -159,9 +169,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Treebook,treebook)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(treebook_construct, 0, 6, Nil)
-	wxTreebook *treebk = (wxTreebook*) 0;
+	wxTreebook *wxtreebk = (wxTreebook*) 0;
+	DeltaWxTreebook *treebk = (DeltaWxTreebook*) 0;
 	if (n == 0)
-		treebk = new wxTreebook();
+		wxtreebk = new wxTreebook();
 	else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -173,7 +184,7 @@ WX_FUNC_ARGRANGE_START(treebook_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		treebk = new wxTreebook(parent, id, pos, size, style, name);
+		wxtreebk = new wxTreebook(parent, id, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -182,7 +193,12 @@ WX_FUNC_ARGRANGE_START(treebook_construct, 0, 6, Nil)
 		);
 		return;
 	}
-	WX_SET_WINDOW_OBJECT(Treebook, treebk)
+	if (wxtreebk) treebk = DNEWCLASS(DeltaWxTreebook, (wxtreebk));
+	WX_SETOBJECT(Treebook, treebk)
+}
+
+DLIB_FUNC_START(treebook_destruct, 1, Nil)
+	DLIB_WXDELETE(treebook, Treebook, treebk)
 }
 
 WX_FUNC_ARGRANGE_START(treebook_addpage, 3, 5, Nil)
@@ -207,19 +223,19 @@ WX_FUNC_ARGRANGE_START(treebook_addsubpage, 3, 5, Nil)
 	WX_SETBOOL(treebk->AddSubPage(page, text, bSelect, imageId))
 }
 
-WX_FUNC_START(treebook_assignimagelist, 2, Nil)
+DLIB_FUNC_START(treebook_assignimagelist, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	treebk->AssignImageList(imageList);
 }
 
-WX_FUNC_START(treebook_changeselection, 2, Nil)
+DLIB_FUNC_START(treebook_changeselection, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(size)
 	WX_SETNUMBER(treebk->ChangeSelection(size))
 }
 
-WX_FUNC_START(treebook_collapsenode, 2, Nil)
+DLIB_FUNC_START(treebook_collapsenode, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(pageId)
 	WX_SETBOOL(treebk->CollapseNode(pageId))
@@ -238,15 +254,14 @@ WX_FUNC_ARGRANGE_START(treebook_create, 3, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(treebk->Create(parent, id, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(treebk);
 }
 
-WX_FUNC_START(treebook_deleteallpages, 1, Nil)
+DLIB_FUNC_START(treebook_deleteallpages, 1, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_SETBOOL(treebk->DeleteAllPages())
 }
 
-WX_FUNC_START(treebook_deletepage, 2, Nil)
+DLIB_FUNC_START(treebook_deletepage, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(treebk->DeletePage(page))
@@ -260,25 +275,25 @@ WX_FUNC_ARGRANGE_START(treebook_expandnode, 2, 3, Nil)
 	WX_SETBOOL(treebk->ExpandNode(page, expand))
 }
 
-WX_FUNC_START(treebook_getpageimage, 2, Nil)
+DLIB_FUNC_START(treebook_getpageimage, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(nPage)
 	WX_SETNUMBER(treebk->GetPageImage(nPage))
 }
 
-WX_FUNC_START(treebook_getpageparent, 2, Nil)
+DLIB_FUNC_START(treebook_getpageparent, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(nPage)
 	WX_SETNUMBER(treebk->GetPageParent(nPage))
 }
 
-WX_FUNC_START(treebook_getpagetext, 2, Nil)
+DLIB_FUNC_START(treebook_getpagetext, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(page)
 	WX_SETSTRING(treebk->GetPageText(page))
 }
 
-WX_FUNC_START(treebook_getselection, 1, Nil)
+DLIB_FUNC_START(treebook_getselection, 1, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_SETNUMBER(treebk->GetSelection())
 }
@@ -307,33 +322,33 @@ WX_FUNC_ARGRANGE_START(treebook_insertsubpage, 4, 6, Nil)
 	WX_SETBOOL(treebk->InsertSubPage(index, page, text, select, imageId))
 }
 
-WX_FUNC_START(treebook_isnodeexpanded, 2, Nil)
+DLIB_FUNC_START(treebook_isnodeexpanded, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(treebk->IsNodeExpanded(page))
 }
 
-WX_FUNC_START(treebook_setimagelist, 2, Nil)
+DLIB_FUNC_START(treebook_setimagelist, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	treebk->SetImageList(imageList);
 }
 
-WX_FUNC_START(treebook_setpageimage, 3, Nil)
+DLIB_FUNC_START(treebook_setpageimage, 3, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(page)
 	WX_GETNUMBER(image)
 	WX_SETBOOL(treebk->SetPageImage(page, image))
 }
 
-WX_FUNC_START(treebook_setpagetext, 3, Nil)
+DLIB_FUNC_START(treebook_setpagetext, 3, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(page)
 	WX_GETSTRING(text)
 	WX_SETBOOL(treebk->SetPageText(page, text))
 }
 
-WX_FUNC_START(treebook_setselection, 2, Nil)
+DLIB_FUNC_START(treebook_setselection, 2, Nil)
 	DLIB_WXGET_BASE(treebook, Treebook, treebk)
 	WX_GETNUMBER(page)
 	WX_SETNUMBER(treebk->SetSelection(page))

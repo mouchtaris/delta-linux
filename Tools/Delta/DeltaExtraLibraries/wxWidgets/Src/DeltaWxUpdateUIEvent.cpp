@@ -17,6 +17,7 @@
 #define WX_FUNC(name) WX_FUNC1(updateuievent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(canupdate)
 WX_FUNC_DEF(check)
 WX_FUNC_DEF(enable)
@@ -44,6 +45,7 @@ WX_FUNCS_START
 	WX_FUNC(resetupdatetime),
 	WX_FUNC(setmode),
 	WX_FUNC(setupdateinterval),
+	WX_FUNC(destruct),
 	WX_FUNC(check),
 	WX_FUNC(enable),
 	WX_FUNC(show),
@@ -60,7 +62,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(7, uarraysize(funcs) - 7, "check", "settext")
+DELTALIBFUNC_DECLARECONSTS(7, uarraysize(funcs) - 7, "destruct", "settext")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(UpdateUIEvent, "updateuievent", CommandEvent)
 
@@ -74,7 +76,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, CommandEvent, val)
+	wxCommandEvent *_parent = DLIB_WXTYPECAST_BASE(CommandEvent, val, commandevent);
+	DeltaWxCommandEvent *parent = DNEWCLASS(DeltaWxCommandEvent, (_parent));
+	WX_SETOBJECT_EX(*at, CommandEvent, parent)
 	return true;
 }
 
@@ -154,96 +158,102 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(UpdateUIEvent,updateuievent)
 WX_FUNC_ARGRANGE_START(updateuievent_construct, 0, 1, Nil)
 	int commandId = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(commandId) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(UpdateUIEvent, new wxUpdateUIEvent(commandId))
+	DeltaWxUpdateUIEvent *evt = DNEWCLASS(DeltaWxUpdateUIEvent,
+		(new wxUpdateUIEvent(commandId)));
+	WX_SETOBJECT(UpdateUIEvent, evt)
 }
 
-WX_FUNC_START(updateuievent_canupdate, 1, Nil)
+DLIB_FUNC_START(updateuievent_destruct, 1, Nil)
+	DLIB_WXDELETE(updateuievent, UpdateUIEvent, evt)
+}
+
+DLIB_FUNC_START(updateuievent_canupdate, 1, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_SETBOOL(wxUpdateUIEvent::CanUpdate(window))
 }
 
-WX_FUNC_START(updateuievent_check, 2, Nil)
+DLIB_FUNC_START(updateuievent_check, 2, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_GETBOOL(check)
 	evt->Check(check);
 }
 
-WX_FUNC_START(updateuievent_enable, 2, Nil)
+DLIB_FUNC_START(updateuievent_enable, 2, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_GETBOOL(enable)
 	evt->Enable(enable);
 }
 
-WX_FUNC_START(updateuievent_show, 2, Nil)
+DLIB_FUNC_START(updateuievent_show, 2, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_GETBOOL(show)
 	evt->Show(show);
 }
 
-WX_FUNC_START(updateuievent_getchecked, 1, Nil)
+DLIB_FUNC_START(updateuievent_getchecked, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETBOOL(evt->GetChecked())
 }
 
-WX_FUNC_START(updateuievent_getenabled, 1, Nil)
+DLIB_FUNC_START(updateuievent_getenabled, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETBOOL(evt->GetEnabled())
 }
 
-WX_FUNC_START(updateuievent_getshown, 1, Nil)
+DLIB_FUNC_START(updateuievent_getshown, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETBOOL(evt->GetShown())
 }
 
-WX_FUNC_START(updateuievent_getsetchecked, 1, Nil)
+DLIB_FUNC_START(updateuievent_getsetchecked, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETBOOL(evt->GetSetChecked())
 }
 
-WX_FUNC_START(updateuievent_getsetenabled, 1, Nil)
+DLIB_FUNC_START(updateuievent_getsetenabled, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETBOOL(evt->GetSetEnabled())
 }
 
-WX_FUNC_START(updateuievent_getsetshown, 1, Nil)
+DLIB_FUNC_START(updateuievent_getsetshown, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETBOOL(evt->GetSetShown())
 }
 
-WX_FUNC_START(updateuievent_getsettext, 1, Nil)
+DLIB_FUNC_START(updateuievent_getsettext, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETBOOL(evt->GetSetText())
 }
 
-WX_FUNC_START(updateuievent_gettext, 1, Nil)
+DLIB_FUNC_START(updateuievent_gettext, 1, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_SETSTRING(evt->GetText())
 }
 
-WX_FUNC_START(updateuievent_getmode, 0, Nil)
+DLIB_FUNC_START(updateuievent_getmode, 0, Nil)
 	WX_SETNUMBER(wxUpdateUIEvent::GetMode())
 }
 
-WX_FUNC_START(updateuievent_getupdateinterval, 0, Nil)
+DLIB_FUNC_START(updateuievent_getupdateinterval, 0, Nil)
 	WX_SETNUMBER(wxUpdateUIEvent::GetUpdateInterval())
 }
 
-WX_FUNC_START(updateuievent_resetupdatetime, 0, Nil)
+DLIB_FUNC_START(updateuievent_resetupdatetime, 0, Nil)
 	wxUpdateUIEvent::ResetUpdateTime();
 }
 
-WX_FUNC_START(updateuievent_setmode, 1, Nil)
+DLIB_FUNC_START(updateuievent_setmode, 1, Nil)
 	WX_GETDEFINE(mode)
 	wxUpdateUIEvent::SetMode((wxUpdateUIMode)mode);
 }
 
-WX_FUNC_START(updateuievent_settext, 2, Nil)
+DLIB_FUNC_START(updateuievent_settext, 2, Nil)
 	DLIB_WXGET_BASE(updateuievent, UpdateUIEvent, evt)
 	WX_GETSTRING(text)
 	evt->SetText(text);
 }
 
-WX_FUNC_START(updateuievent_setupdateinterval, 1, Nil)
+DLIB_FUNC_START(updateuievent_setupdateinterval, 1, Nil)
 	WX_GETNUMBER(interval)
 	wxUpdateUIEvent::SetUpdateInterval(interval);
 }

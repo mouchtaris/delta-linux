@@ -16,18 +16,20 @@
 #define WX_FUNC(name) WX_FUNC1(treeitemdata, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getid)
 WX_FUNC_DEF(setid)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getid),
 	WX_FUNC(setid)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getid", "setid")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setid")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(TreeItemData, "treeitemdata")
 
@@ -42,7 +44,8 @@ static bool GetKeys (void* val, DeltaValue* at)
 static bool GetItemId (void* val, DeltaValue* at) 
 {
 	wxTreeItemData *data = DLIB_WXTYPECAST_BASE(TreeItemData, val, treeitemdata);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, TreeItemId, new wxTreeItemId(data->GetId()))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(data->GetId())));
+	WX_SETOBJECT_EX(*at, TreeItemId, retval)
 	return true;
 }
 
@@ -55,16 +58,22 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeItemData,treeitemdata)
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(treeitemdata_construct, 0, Nil)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemData, new wxTreeItemData())
+DLIB_FUNC_START(treeitemdata_construct, 0, Nil)
+	DeltaWxTreeItemData *data = DNEWCLASS(DeltaWxTreeItemData, (new wxTreeItemData()));
+	WX_SETOBJECT(TreeItemData, data)
 }
 
-WX_FUNC_START(treeitemdata_getid, 1, Nil)
+DLIB_FUNC_START(treeitemdata_destruct, 1, Nil)
+	DLIB_WXDELETE(treeitemdata, TreeItemData, data)
+}
+
+DLIB_FUNC_START(treeitemdata_getid, 1, Nil)
 	DLIB_WXGET_BASE(treeitemdata, TreeItemData, data)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(data->GetId()))
+	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(data->GetId())));
+	WX_SETOBJECT(TreeItemId, retval)
 }
 
-WX_FUNC_START(treeitemdata_setid, 2, Nil)
+DLIB_FUNC_START(treeitemdata_setid, 2, Nil)
 	DLIB_WXGET_BASE(treeitemdata, TreeItemData, data)
 	DLIB_WXGET_BASE(treeitemid, TreeItemId, id)
 	data->SetId(*id);

@@ -16,6 +16,7 @@
 #define WX_FUNC(name) WX_FUNC1(aboutdialoginfo, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addartist)
 WX_FUNC_DEF(adddeveloper)
 WX_FUNC_DEF(adddocwriter)
@@ -35,6 +36,7 @@ WX_FUNC_DEF(setwebsite)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(addartist),
 	WX_FUNC(adddeveloper),
 	WX_FUNC(adddocwriter),
@@ -55,7 +57,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addartist", "setwebsite")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setwebsite")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(AboutDialogInfo, "aboutdialoginfo")
 
@@ -105,7 +107,8 @@ static bool GetLicence (void* val, DeltaValue* at)
 static bool GetIcon (void* val, DeltaValue* at) 
 {
 	wxAboutDialogInfo *info = DLIB_WXTYPECAST_BASE(AboutDialogInfo, val, aboutdialoginfo);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Icon, new wxIcon(info->GetIcon()));
+	DeltaWxIcon *retval = DNEWCLASS(DeltaWxIcon, (new wxIcon(info->GetIcon())));
+	WX_SETOBJECT_EX(*at, Icon, retval);
 	return true;
 }
 
@@ -195,35 +198,40 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(AboutDialogInfo,aboutdialoginfo)
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(aboutdialoginfo_construct, 0, Nil)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(AboutDialogInfo, new wxAboutDialogInfo())
+DLIB_FUNC_START(aboutdialoginfo_construct, 0, Nil)
+	DeltaWxAboutDialogInfo *info = DNEWCLASS(DeltaWxAboutDialogInfo, (new wxAboutDialogInfo()));
+	WX_SETOBJECT(AboutDialogInfo, info)
 }
 
-WX_FUNC_START(aboutdialoginfo_addartist, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_destruct, 1, Nil)
+	DLIB_WXDELETE(aboutdialoginfo, AboutDialogInfo, info)
+}
+
+DLIB_FUNC_START(aboutdialoginfo_addartist, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(artist)
 	info->AddArtist(artist);
 }
 
-WX_FUNC_START(aboutdialoginfo_adddeveloper, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_adddeveloper, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(developer)
 	info->AddDeveloper(developer);
 }
 
-WX_FUNC_START(aboutdialoginfo_adddocwriter, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_adddocwriter, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(docwriter)
 	info->AddDocWriter(docwriter);
 }
 
-WX_FUNC_START(aboutdialoginfo_addtranslator, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_addtranslator, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(translator)
 	info->AddTranslator(translator);
 }
 
-WX_FUNC_START(aboutdialoginfo_setartists, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setartists, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETTABLE(artists)
 	wxArrayString strarray;
@@ -237,19 +245,19 @@ WX_FUNC_START(aboutdialoginfo_setartists, 2, Nil)
 	info->SetArtists(strarray);
 }
 
-WX_FUNC_START(aboutdialoginfo_setcopyright, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setcopyright, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(copyright)
 	info->SetCopyright(copyright);
 }
 
-WX_FUNC_START(aboutdialoginfo_setdescription, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setdescription, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(desc)
 	info->SetDescription(desc);
 }
 
-WX_FUNC_START(aboutdialoginfo_setdevelopers, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setdevelopers, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETTABLE(developers)
 	wxArrayString strarray;
@@ -263,7 +271,7 @@ WX_FUNC_START(aboutdialoginfo_setdevelopers, 2, Nil)
 	info->SetDevelopers(strarray);
 }
 
-WX_FUNC_START(aboutdialoginfo_setdocwriters, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setdocwriters, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETTABLE(docwriters)
 	wxArrayString strarray;
@@ -277,31 +285,31 @@ WX_FUNC_START(aboutdialoginfo_setdocwriters, 2, Nil)
 	info->SetDocWriters(strarray);
 }
 
-WX_FUNC_START(aboutdialoginfo_seticon, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_seticon, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	DLIB_WXGET_BASE(icon, Icon, icon)
 	info->SetIcon(*icon);
 }
 
-WX_FUNC_START(aboutdialoginfo_setlicence, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setlicence, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(licence)
 	info->SetLicence(licence);
 }
 
-WX_FUNC_START(aboutdialoginfo_setlicense, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setlicense, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(licence)
 	info->SetLicence(licence);
 }
 
-WX_FUNC_START(aboutdialoginfo_setname, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setname, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(name)
 	info->SetName(name);
 }
 
-WX_FUNC_START(aboutdialoginfo_settranslators, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_settranslators, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETTABLE(translators)
 	wxArrayString strarray;
@@ -315,7 +323,7 @@ WX_FUNC_START(aboutdialoginfo_settranslators, 2, Nil)
 	info->SetTranslators(strarray);
 }
 
-WX_FUNC_START(aboutdialoginfo_setversion, 2, Nil)
+DLIB_FUNC_START(aboutdialoginfo_setversion, 2, Nil)
 	DLIB_WXGET_BASE(aboutdialoginfo, AboutDialogInfo, info)
 	WX_GETSTRING(version)
 	info->SetVersion(version);

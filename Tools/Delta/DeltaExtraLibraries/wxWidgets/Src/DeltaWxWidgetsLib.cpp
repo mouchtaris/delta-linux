@@ -4,7 +4,6 @@
 // A. Savidis, July 2009.
 //
 
-#include "DeltaWxWidgetsLibStarter.h"
 #include "DeltaWxWidgetsLib.h"
 #include "DeltaWxWidgets.h"
 #include "DDebug.h"
@@ -24,7 +23,7 @@ DELTA_LIBRARY_GETAPI_IMPL(wx_getapi,api)
 ////////////////////////////////////////////////////////////////
 
 DWXWIDGETS_CFUNC void* Install (void) {
-	wxWidgets::LibraryStarter::Initialise();
+	wxWidgets::DefineInit();
 
 	api = DeltaLibraryObjectCreator::CreateAPI();
 	DeltaLibFuncBinder::Add("wx_getapi", wx_getapi_LibFunc);
@@ -233,7 +232,7 @@ DWXWIDGETS_CFUNC void* Install (void) {
 }
 
 DWXWIDGETS_CFUNC void* CleanUp (void) {
-	wxWidgets::LibraryStarter::CleanUp();
+	wxWidgets::DefineExit();
 
 	CleanUp_DeltaWxGlobalFunctions_Lib();
 	CleanUp_DeltaWxFrame_Lib();

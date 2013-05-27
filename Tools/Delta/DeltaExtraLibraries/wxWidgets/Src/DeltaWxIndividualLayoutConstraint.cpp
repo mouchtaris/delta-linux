@@ -17,6 +17,7 @@
 #define WX_FUNC(name) WX_FUNC1(individuallayoutconstraint, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(above)
 WX_FUNC_DEF(absolute)
 WX_FUNC_DEF(asis)
@@ -30,6 +31,7 @@ WX_FUNC_DEF(set)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(above),
 	WX_FUNC(absolute),
 	WX_FUNC(asis),
@@ -44,7 +46,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "above", "set")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "set")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(IndividualLayoutConstraint, "individuallayoutconstraint", Object)
 
@@ -58,7 +60,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -66,7 +70,9 @@ static bool GetOtherWindow (void* val, DeltaValue* at)
 {
 	wxIndividualLayoutConstraint *constr =
 		DLIB_WXTYPECAST_BASE(IndividualLayoutConstraint, val, individuallayoutconstraint);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, (wxWindow*)constr->GetOtherWindow())
+	wxWindow *window = (wxWindow*)constr->GetOtherWindow();
+	DeltaWxWindow *retval = window ? DNEWCLASS(DeltaWxWindow, (window)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
@@ -143,9 +149,14 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(IndividualLayoutConstraint,individuallayoutconst
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(individuallayoutconstraint_construct, 0, Nil)
-	wxIndividualLayoutConstraint *retval = new wxIndividualLayoutConstraint();
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(IndividualLayoutConstraint, retval)
+DLIB_FUNC_START(individuallayoutconstraint_construct, 0, Nil)
+	DeltaWxIndividualLayoutConstraint *retval = DNEWCLASS(DeltaWxIndividualLayoutConstraint,
+		(new wxIndividualLayoutConstraint()));
+	WX_SETOBJECT(IndividualLayoutConstraint, retval)
+}
+
+DLIB_FUNC_START(individuallayoutconstraint_destruct, 1, Nil)
+	DLIB_WXDELETE(individuallayoutconstraint, IndividualLayoutConstraint, indlayconstr)
 }
 
 WX_FUNC_ARGRANGE_START(individuallayoutconstraint_above, 2, 3, Nil)
@@ -159,13 +170,13 @@ WX_FUNC_ARGRANGE_START(individuallayoutconstraint_above, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(individuallayoutconstraint_absolute, 2, Nil)
+DLIB_FUNC_START(individuallayoutconstraint_absolute, 2, Nil)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indlayconstr)
 	WX_GETNUMBER(value)
 	indlayconstr->Absolute(value);
 }
 
-WX_FUNC_START(individuallayoutconstraint_asis, 1, Nil)
+DLIB_FUNC_START(individuallayoutconstraint_asis, 1, Nil)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indlayconstr)
 	indlayconstr->AsIs();
 }
@@ -181,7 +192,7 @@ WX_FUNC_ARGRANGE_START(individuallayoutconstraint_below, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(individuallayoutconstraint_unconstrained, 1, Nil)
+DLIB_FUNC_START(individuallayoutconstraint_unconstrained, 1, Nil)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indlayconstr)
 	indlayconstr->Unconstrained();
 }
@@ -197,7 +208,7 @@ WX_FUNC_ARGRANGE_START(individuallayoutconstraint_leftof, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(individuallayoutconstraint_percentof, 4, Nil)
+DLIB_FUNC_START(individuallayoutconstraint_percentof, 4, Nil)
 	DLIB_WXGET_BASE(individuallayoutconstraint, IndividualLayoutConstraint, indlayconstr)
 	DLIB_WXGET_BASE(window, Window, otherWin)
 	WX_GETDEFINE(edge)

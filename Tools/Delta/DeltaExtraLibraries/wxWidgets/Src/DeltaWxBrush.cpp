@@ -18,6 +18,7 @@
 #define WX_FUNC(name) WX_FUNC1(brush, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getcolour)
 WX_FUNC_DEF(getstipple)
 WX_FUNC_DEF(getstyle)
@@ -31,6 +32,7 @@ WX_FUNC_DEF(notequal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getcolour),
 	WX_FUNC(getstipple),
 	WX_FUNC(getstyle),
@@ -45,7 +47,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getcolour", "notequal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "notequal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Brush, "brush", Object)
 
@@ -59,7 +61,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -81,50 +85,60 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Brush, brush, DeltaWxBrushInitFunc();, );
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(brush_construct, 0, 2, Nil)
-	wxBrush *brush = (wxBrush*) 0;
+	wxBrush *wxbrush = (wxBrush*) 0;
+	DeltaWxBrush *brush = (DeltaWxBrush*) 0;
 	if (n == 0) {
-		brush = new wxBrush();
+		wxbrush = new wxBrush();
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Colour, serial_no, colour, colour)) {
+			if (DLIB_WXISBASE(Colour, serial_no, colour, colour_wr)) {
+				wxColour *colour = (wxColour*) colour_wr->GetCastToNativeInstance();
 				int style = wxSOLID;
 				if (n >= 2) { WX_GETDEFINE_DEFINED(style) }
-				brush = new wxBrush(*colour, style);
+				wxbrush = new wxBrush(*colour, style);
 			} else
-			if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, stippleBitmap)) {
-				brush = new wxBrush(*stippleBitmap);
+			if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bitmap)) {
+				wxBitmap *stippleBitmap = (wxBitmap*) bitmap->GetCastToNativeInstance();
+				wxbrush = new wxBrush(*stippleBitmap);
 			}
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String && n == 2) {
 			WX_GETSTRING(colourName)
 			WX_GETDEFINE(style)
-			brush = new wxBrush(colourName, style);
+			wxbrush = new wxBrush(colourName, style);
 		}
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Brush, brush)
+	if (wxbrush) brush = DNEWCLASS(DeltaWxBrush, (wxbrush));
+	WX_SETOBJECT(Brush, brush)
 }
 
-WX_FUNC_START(brush_getcolour, 1, Nil)
+DLIB_FUNC_START(brush_destruct, 1, Nil)
+	DLIB_WXDELETE(brush, Brush, brush)
+}
+
+DLIB_FUNC_START(brush_getcolour, 1, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(brush->GetColour()))
+	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(brush->GetColour())));
+	WX_SETOBJECT(Colour, retval)
 }
 
-WX_FUNC_START(brush_getstipple, 1, Nil)
+DLIB_FUNC_START(brush_getstipple, 1, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
-	WX_SETOBJECT(Bitmap, brush->GetStipple())
+	DeltaWxBitmap *retval = DNEWCLASS(DeltaWxBitmap, (brush->GetStipple()));
+	WX_SETOBJECT(Bitmap, retval)
 }
 
-WX_FUNC_START(brush_getstyle, 1, Nil)
+DLIB_FUNC_START(brush_getstyle, 1, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	WX_SETNUMBER(brush->GetStyle())
 }
 
-WX_FUNC_START(brush_ishatch, 1, Nil)
+DLIB_FUNC_START(brush_ishatch, 1, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	WX_SETBOOL(brush->IsHatch())
 }
 
-WX_FUNC_START(brush_isok, 1, Nil)
+DLIB_FUNC_START(brush_isok, 1, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	WX_SETBOOL(brush->IsOk())
 }
@@ -142,25 +156,25 @@ WX_FUNC_ARGRANGE_START(brush_setcolour, 2, 4, Nil)
 	}
 }
 
-WX_FUNC_START(brush_setstipple, 2, Nil)
+DLIB_FUNC_START(brush_setstipple, 2, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bitmap)
 	brush->SetStipple(*bitmap);
 }
 
-WX_FUNC_START(brush_setstyle, 2, Nil)
+DLIB_FUNC_START(brush_setstyle, 2, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	WX_GETDEFINE(style)
 	brush->SetStyle(style);
 }
 
-WX_FUNC_START(brush_equal, 2, Nil)
+DLIB_FUNC_START(brush_equal, 2, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	DLIB_WXGET_BASE(brush, Brush, brush2)
 	WX_SETBOOL(brush->operator==(*brush2))
 }
 
-WX_FUNC_START(brush_notequal, 2, Nil)
+DLIB_FUNC_START(brush_notequal, 2, Nil)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	DLIB_WXGET_BASE(brush, Brush, brush2)
 	WX_SETBOOL(brush->operator!=(*brush2))

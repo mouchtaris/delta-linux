@@ -51,7 +51,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, EvtHandler, val)
+	wxEvtHandler *_parent = DLIB_WXTYPECAST_BASE(EvtHandler, val, evthandler);
+	DeltaWxEvtHandler *parent = DNEWCLASS(DeltaWxEvtHandler, (_parent));
+	WX_SETOBJECT_EX(*at, EvtHandler, parent)
 	return true;
 }
 
@@ -73,33 +75,35 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Timer,timer)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(timer_construct, 0, 2, Nil)
-	wxTimer *timer = (wxTimer*) 0;
+	wxTimer *wxtimer = (wxTimer*) 0;
+	DeltaWxTimer *timer = (DeltaWxTimer*) 0;
 	if (n == 0)
-		timer = new wxTimer();
+		wxtimer = new wxTimer();
 	else {
 		DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 		int id = wxID_ANY;
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-		timer = new wxTimer(handler, id);
+		wxtimer = new wxTimer(handler, id);
 	}
+	if (wxtimer) timer = DNEWCLASS(DeltaWxTimer, (wxtimer));
 	WX_SETOBJECT(Timer, timer)
 }
 
-WX_FUNC_START(timer_destruct, 1, Nil)
+DLIB_FUNC_START(timer_destruct, 1, Nil)
 	DLIB_WXDELETE(timer, Timer, timer)
 }
 
-WX_FUNC_START(timer_getinterval, 1, Nil)
+DLIB_FUNC_START(timer_getinterval, 1, Nil)
 	DLIB_WXGET_BASE(timer, Timer, timer)
 	WX_SETNUMBER(timer->GetInterval())
 }
 
-WX_FUNC_START(timer_isoneshot, 1, Nil)
+DLIB_FUNC_START(timer_isoneshot, 1, Nil)
 	DLIB_WXGET_BASE(timer, Timer, timer)
 	WX_SETBOOL(timer->IsOneShot())
 }
 
-WX_FUNC_START(timer_isrunning, 1, Nil)
+DLIB_FUNC_START(timer_isrunning, 1, Nil)
 	DLIB_WXGET_BASE(timer, Timer, timer)
 	WX_SETBOOL(timer->IsRunning())
 }
@@ -121,7 +125,7 @@ WX_FUNC_ARGRANGE_START(timer_start, 1, 3, Nil)
 	WX_SETBOOL(timer->Start(milliseconds, oneShot))
 }
 
-WX_FUNC_START(timer_stop, 1, Nil)
+DLIB_FUNC_START(timer_stop, 1, Nil)
 	DLIB_WXGET_BASE(timer, Timer, timer)
 	timer->Stop();
 }

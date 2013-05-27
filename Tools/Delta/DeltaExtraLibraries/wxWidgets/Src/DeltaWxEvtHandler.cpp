@@ -28,6 +28,7 @@ pair<int, wxObjectEventFunction> *EventTypeFunctionMapSearch(string eventType);
 #define WX_FUNC(name) WX_FUNC1(evthandler, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addpendingevent)
 WX_FUNC_DEF(connect)
 WX_FUNC_DEF(disconnect)
@@ -39,6 +40,7 @@ WX_FUNC_DEF(setevthandlerenabled)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(addpendingevent),
 	WX_FUNC(connect),
 	WX_FUNC(disconnect),
@@ -51,7 +53,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addpendingevent", "setevthandlerenabled")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setevthandlerenabled")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(EvtHandler, "evthandler", Object)
 
@@ -65,21 +67,25 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
 static bool GetNextHandler (void* val, DeltaValue* at) 
 {
 	wxEvtHandler *handler = DLIB_WXTYPECAST_BASE(EvtHandler, val, evthandler);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, EvtHandler, handler->GetNextHandler())
+	DeltaWxEvtHandler *retval = DNEWCLASS(DeltaWxEvtHandler, (handler->GetNextHandler()));
+	WX_SETOBJECT_EX(*at, EvtHandler, retval)
 	return true;
 }
 
 static bool GetPreviousHandler (void* val, DeltaValue* at) 
 {
 	wxEvtHandler *handler = DLIB_WXTYPECAST_BASE(EvtHandler, val, evthandler);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, EvtHandler, handler->GetPreviousHandler())
+	DeltaWxEvtHandler *retval = DNEWCLASS(DeltaWxEvtHandler, (handler->GetPreviousHandler()));
+	WX_SETOBJECT_EX(*at, EvtHandler, retval)
 	return true;
 }
 
@@ -105,11 +111,16 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(EvtHandler, evthandler,
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(evthandler_construct, 0, Nil)
-	WX_SETOBJECT(EvtHandler, new wxEvtHandler())
+DLIB_FUNC_START(evthandler_construct, 0, Nil)
+	DeltaWxEvtHandler *wxevthandler = DNEWCLASS(DeltaWxEvtHandler, (new wxEvtHandler()));
+	WX_SETOBJECT(EvtHandler, wxevthandler)
 }
 
-WX_FUNC_START(evthandler_addpendingevent, 2, Nil)
+DLIB_FUNC_START(evthandler_destruct, 1, Nil)
+	DLIB_WXDELETE(evthandler, EvtHandler, handler)
+}
+
+DLIB_FUNC_START(evthandler_addpendingevent, 2, Nil)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	DLIB_WXGET_BASE(event, Event, evt)
 	handler->AddPendingEvent(*evt);
@@ -275,28 +286,30 @@ WX_FUNC_ARGRANGE_START(evthandler_disconnect, 1, 4, Nil)
 		WX_SETBOOL(DisconnectHelper(handler, id, eventType, function))
 }
 
-WX_FUNC_START(evthandler_getevthandlerenabled, 1, Nil)
+DLIB_FUNC_START(evthandler_getevthandlerenabled, 1, Nil)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	handler->GetEvtHandlerEnabled();
 }
 
-WX_FUNC_START(evthandler_getnexthandler, 1, Nil)
+DLIB_FUNC_START(evthandler_getnexthandler, 1, Nil)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
-	WX_SETOBJECT(EvtHandler, handler->GetNextHandler())
+	DeltaWxEvtHandler *retval = DNEWCLASS(DeltaWxEvtHandler, (handler->GetNextHandler()));
+	WX_SETOBJECT(EvtHandler, retval)
 }
 
-WX_FUNC_START(evthandler_getprevioushandler, 1, Nil)
+DLIB_FUNC_START(evthandler_getprevioushandler, 1, Nil)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
-	WX_SETOBJECT(EvtHandler, handler->GetPreviousHandler())
+	DeltaWxEvtHandler *retval = DNEWCLASS(DeltaWxEvtHandler, (handler->GetPreviousHandler()));
+	WX_SETOBJECT(EvtHandler, retval)
 }
 
-WX_FUNC_START(evthandler_processevent, 2, Nil)
+DLIB_FUNC_START(evthandler_processevent, 2, Nil)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	DLIB_WXGET_BASE(event, Event, evt)
 	WX_SETBOOL(handler->ProcessEvent(*evt))
 }
 
-WX_FUNC_START(evthandler_setevthandlerenabled, 2, Nil)
+DLIB_FUNC_START(evthandler_setevthandlerenabled, 2, Nil)
 	DLIB_WXGET_BASE(evthandler, EvtHandler, handler)
 	WX_GETBOOL(enabled)
 	handler->SetEvtHandlerEnabled(enabled);
@@ -642,7 +655,7 @@ pair<int, wxObjectEventFunction> *EventTypeFunctionMapSearch(string str)
 	if (it != eventTypeStrFunctionMap.end())
 		return &(it->second);
 	bool found;
-	int eventType = wxWidgets::DefineMapGet().Search(str, &found);
+	int eventType = wxWidgets::DefineSearch(str, &found);
 	if (found)
 		return new pair<int, wxObjectEventFunction>(eventType, EventTypeFunctionMapSearch(eventType));
 	return NULL;

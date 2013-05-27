@@ -61,8 +61,6 @@
 #include "DeltaWxPaintEvent.h"
 //
 #include "DeltaWxObject.h"
-#include "DeltaLibraryFunctionContext.h"
-#include "DeltaWxCollectableDestructors.h"
 
 class eventdata: wxObject {
 public:
@@ -72,24 +70,26 @@ public:
 	{ self = _self; funcs = _funcs; }
 };
 
-#define WX_EVTFUNCTION(_class)										\
-	void _class##EvtFunction(wx##_class##Event& evt)				\
-	{																\
-		DeltaValue arg;												\
-		WX_SETOBJECT_NO_CONTEXT_EX(arg, _class##Event, &evt)		\
-		eventdata* data = (eventdata*)evt.m_callbackUserData;		\
-		std::list<DeltaValue> args;									\
-		args.push_front(data->self);								\
-		args.push_front(arg);										\
-		std::list<DeltaValue>::iterator it = data->funcs.begin();	\
-		DASSERT(data->self.Type() == DeltaValue_ExternId);			\
-		util_ui32 sn = (util_ui32)data->self.ToExternId();			\
-		for (; it != data->funcs.end(); ++it) {						\
-			(*it)(args);											\
-			if (!VALIDATABLE_VGET_INST(sn)) {						\
-				break;												\
-			}														\
-		}															\
+#define WX_EVTFUNCTION(_class)													\
+	void _class##EvtFunction(wx##_class##Event& evt)							\
+	{																			\
+		DeltaWx##_class##Event *e = DNEWCLASS(DeltaWx##_class##Event, (&evt));	\
+		DeltaValue arg;															\
+		WX_SETOBJECT_EX(arg, _class##Event, e)									\
+		eventdata* data = (eventdata*)evt.m_callbackUserData;					\
+		std::list<DeltaValue> args;												\
+		args.push_front(data->self);											\
+		args.push_front(arg);													\
+		std::list<DeltaValue>::iterator it = data->funcs.begin();				\
+		DASSERT(data->self.Type() == DeltaValue_ExternId);						\
+		util_ui32 sn = (util_ui32)data->self.ToExternId();						\
+		for (; it != data->funcs.end(); ++it) {									\
+			(*it)(args);														\
+			if (!VALIDATABLE_VGET_INST(sn)) {									\
+				break;															\
+			}																	\
+		}																		\
+		DDELETE(e);																\
 	}
 
 class wxEvtHandlerDerived : public wxEvtHandler

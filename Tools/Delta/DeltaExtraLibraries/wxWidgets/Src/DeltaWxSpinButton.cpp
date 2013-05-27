@@ -19,6 +19,7 @@
 #define WX_FUNC(name) WX_FUNC1(spinbutton, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getmax)
 WX_FUNC_DEF(getmin)
@@ -28,6 +29,7 @@ WX_FUNC_DEF(setvalue)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getmax),
 	WX_FUNC(getmin),
@@ -38,7 +40,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setvalue")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setvalue")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(SpinButton, "spinbutton", Control)
 
@@ -52,7 +54,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -82,9 +86,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(SpinButton,spinbutton)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(spinbutton_construct, 0, 6, Nil)
-	wxSpinButton *spinbtn = (wxSpinButton*) 0;
+	wxSpinButton *wxspinbtn = (wxSpinButton*) 0;
+	DeltaWxSpinButton *spinbtn = (DeltaWxSpinButton*) 0;
 	if (n == 0)
-		spinbtn = new wxSpinButton();
+		wxspinbtn = new wxSpinButton();
 	else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int id = wxID_ANY;
@@ -97,9 +102,14 @@ WX_FUNC_ARGRANGE_START(spinbutton_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		spinbtn = new wxSpinButton(parent, id, pos, size, style, name);
+		wxspinbtn = new wxSpinButton(parent, id, pos, size, style, name);
 	}
-	WX_SET_WINDOW_OBJECT(SpinButton, spinbtn)
+	if (wxspinbtn) spinbtn = DNEWCLASS(DeltaWxSpinButton, (wxspinbtn));
+	WX_SETOBJECT(SpinButton, spinbtn)
+}
+
+DLIB_FUNC_START(spinbutton_destruct, 1, Nil)
+	DLIB_WXDELETE(spinbutton, SpinButton, spinbtn)
 }
 
 WX_FUNC_ARGRANGE_START(spinbutton_create, 2, 7, Nil)
@@ -116,32 +126,31 @@ WX_FUNC_ARGRANGE_START(spinbutton_create, 2, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(spinbtn->Create(parent, id, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(spinbtn);
 }
 
-WX_FUNC_START(spinbutton_getmax, 1, Nil)
+DLIB_FUNC_START(spinbutton_getmax, 1, Nil)
 	DLIB_WXGET_BASE(spinbutton, SpinButton, spinbtn)
 	WX_SETNUMBER(spinbtn->GetMax())
 }
 
-WX_FUNC_START(spinbutton_getmin, 1, Nil)
+DLIB_FUNC_START(spinbutton_getmin, 1, Nil)
 	DLIB_WXGET_BASE(spinbutton, SpinButton, spinbtn)
 	WX_SETNUMBER(spinbtn->GetMin())
 }
 
-WX_FUNC_START(spinbutton_getvalue, 1, Nil)
+DLIB_FUNC_START(spinbutton_getvalue, 1, Nil)
 	DLIB_WXGET_BASE(spinbutton, SpinButton, spinbtn)
 	WX_SETNUMBER(spinbtn->GetValue())
 }
 
-WX_FUNC_START(spinbutton_setrange, 3, Nil)
+DLIB_FUNC_START(spinbutton_setrange, 3, Nil)
 	DLIB_WXGET_BASE(spinbutton, SpinButton, spinbtn)
 	WX_GETNUMBER(min)
 	WX_GETNUMBER(max)
 	spinbtn->SetRange(min, max);
 }
 
-WX_FUNC_START(spinbutton_setvalue, 2, Nil)
+DLIB_FUNC_START(spinbutton_setvalue, 2, Nil)
 	DLIB_WXGET_BASE(spinbutton, SpinButton, spinbtn)
 	WX_GETNUMBER(value)
 	spinbtn->SetValue(value);

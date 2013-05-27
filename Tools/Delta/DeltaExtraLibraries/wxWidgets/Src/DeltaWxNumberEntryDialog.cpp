@@ -19,12 +19,14 @@
 #define WX_FUNC(name) WX_FUNC1(numberentrydialog, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getvalue)
 WX_FUNC_DEF(onok)
 WX_FUNC_DEF(oncancel)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getvalue),
 	WX_FUNC(onok),
 	WX_FUNC(oncancel)
@@ -32,7 +34,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getvalue", "oncancel")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "oncancel")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(NumberEntryDialog, "numberentrydialog", Dialog)
 
@@ -46,7 +48,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Dialog, val)
+	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
+	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
+	WX_SETOBJECT_EX(*at, Dialog, parent)
 	return true;
 }
 
@@ -77,22 +81,27 @@ WX_FUNC_ARGRANGE_START(numberentrydialog_construct, 7, 8, Nil)
 	WX_GETNUMBER(max)
 	wxPoint pos = wxDefaultPosition;
 	if (n >= 8) { DLIB_WXGETPOINT_BASE(point) pos = *point; }
-	wxNumberEntryDialog* dialog = new wxNumberEntryDialog(parent, message, prompt, caption, value, min, max, pos);
-	WX_SET_TOPLEVELWINDOW_OBJECT(NumberEntryDialog, dialog)
+	DeltaWxNumberEntryDialog *dialog = DNEWCLASS(DeltaWxNumberEntryDialog,
+		(new wxNumberEntryDialog(parent, message, prompt, caption, value, min, max, pos)));
+	WX_SETOBJECT(NumberEntryDialog, dialog)
 }
 
-WX_FUNC_START(numberentrydialog_getvalue, 1, Nil)
+DLIB_FUNC_START(numberentrydialog_destruct, 1, Nil)
+	DLIB_WXDELETE(numberentrydialog, NumberEntryDialog, dialog)
+}
+
+DLIB_FUNC_START(numberentrydialog_getvalue, 1, Nil)
 	DLIB_WXGET_BASE(numberentrydialog, NumberEntryDialog, dialog)
 	WX_SETNUMBER(dialog->GetValue())
 }
 
-WX_FUNC_START(numberentrydialog_onok, 2, Nil)
+DLIB_FUNC_START(numberentrydialog_onok, 2, Nil)
 	DLIB_WXGET_BASE(numberentrydialog, NumberEntryDialog, dialog)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, ev)
 	dialog->OnOK(*ev);
 }
 
-WX_FUNC_START(numberentrydialog_oncancel, 2, Nil)
+DLIB_FUNC_START(numberentrydialog_oncancel, 2, Nil)
 	DLIB_WXGET_BASE(numberentrydialog, NumberEntryDialog, dialog)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, ev)
 	dialog->OnCancel(*ev);

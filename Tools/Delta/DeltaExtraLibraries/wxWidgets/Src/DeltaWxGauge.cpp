@@ -14,8 +14,12 @@
 #include "wxWrapperUtilFunctions.h"
 //
 
-#define WXGAUGE_GETBASE(name)										\
-	DLIB_WXGET_BASE(gauge, Gauge, name)
+#define WXGAUGE_GET(name)							\
+	DLIB_WXGET(gauge, DeltaWxGauge, name)
+
+#define WXGAUGE_GETBASE(name)						\
+	WXGAUGE_GET(_##name)							\
+	wxGauge* name = (wxGauge*)DPTR(_##name)->GetNativeInstance();
 
 ////////////////////////////////////////////////////////////////
 
@@ -23,6 +27,7 @@
 #define WX_FUNC(name) WX_FUNC1(gauge, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getbezelface)
 WX_FUNC_DEF(getrange)
@@ -37,6 +42,7 @@ WX_FUNC_DEF(pulse)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getbezelface),
 	WX_FUNC(getrange),
@@ -52,7 +58,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "pulse")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "pulse")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Gauge, "gauge", Control)
 
@@ -66,7 +72,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -96,9 +104,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Gauge,gauge)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(gauge_construct, 0, 8, Nil)
-	wxGauge *gauge = (wxGauge*) 0;
+	wxGauge *wxgauge = (wxGauge*) 0;
+	DeltaWxGauge *gauge = (DeltaWxGauge*) 0;
 	if (n == 0) {
-		gauge = new wxGauge();
+		wxgauge = new wxGauge();
 	} else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -113,7 +122,7 @@ WX_FUNC_ARGRANGE_START(gauge_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		gauge = new wxGauge(parent, id, range, pos, size, style, *validator, name);
+		wxgauge = new wxGauge(parent, id, range, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -122,7 +131,12 @@ WX_FUNC_ARGRANGE_START(gauge_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(Gauge, gauge)
+	if (wxgauge) gauge = DNEWCLASS(DeltaWxGauge, (wxgauge));
+	WX_SETOBJECT(Gauge, gauge)
+}
+
+DLIB_FUNC_START(gauge_destruct, 1, Nil)
+	DLIB_WXDELETE(gauge, Gauge, gauge)
 }
 
 WX_FUNC_ARGRANGE_START(gauge_create, 4, 9, Nil)
@@ -141,59 +155,58 @@ WX_FUNC_ARGRANGE_START(gauge_create, 4, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(gauge->Create(parent, id, range, pos, size, style, *validator, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(gauge);
 }
 
-WX_FUNC_START(gauge_getbezelface, 1, Nil)
+DLIB_FUNC_START(gauge_getbezelface, 1, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_SETNUMBER(gauge->GetBezelFace())
 }
 
-WX_FUNC_START(gauge_getrange, 1, Nil)
+DLIB_FUNC_START(gauge_getrange, 1, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_SETNUMBER(gauge->GetRange())
 }
 
-WX_FUNC_START(gauge_getshadowwidth, 1, Nil)
+DLIB_FUNC_START(gauge_getshadowwidth, 1, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_SETNUMBER(gauge->GetShadowWidth())
 }
 
-WX_FUNC_START(gauge_getvalue, 1, Nil)
+DLIB_FUNC_START(gauge_getvalue, 1, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_SETNUMBER(gauge->GetValue())
 }
 
-WX_FUNC_START(gauge_isvertical, 1, Nil)
+DLIB_FUNC_START(gauge_isvertical, 1, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_SETBOOL(gauge->IsVertical())
 }
 
-WX_FUNC_START(gauge_setbezelface, 2, Nil)
+DLIB_FUNC_START(gauge_setbezelface, 2, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_GETNUMBER(width)
 	gauge->SetBezelFace(width);
 }
 
-WX_FUNC_START(gauge_setrange, 2, Nil)
+DLIB_FUNC_START(gauge_setrange, 2, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_GETNUMBER(range)
 	gauge->SetRange(range);
 }
 
-WX_FUNC_START(gauge_setshadowwidth, 2, Nil)
+DLIB_FUNC_START(gauge_setshadowwidth, 2, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_GETNUMBER(width)
 	gauge->SetShadowWidth(width);
 }
 
-WX_FUNC_START(gauge_setvalue, 2, Nil)
+DLIB_FUNC_START(gauge_setvalue, 2, Nil)
 	WXGAUGE_GETBASE(gauge)
 	WX_GETNUMBER(pos)
 	gauge->SetValue(pos);
 }
 
-WX_FUNC_START(gauge_pulse, 1, Nil)
+DLIB_FUNC_START(gauge_pulse, 1, Nil)
 	WXGAUGE_GETBASE(gauge)
 	gauge->Pulse();
 }

@@ -50,14 +50,18 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, EvtHandler, val)
+	wxEvtHandler *_parent = DLIB_WXTYPECAST_BASE(EvtHandler, val, evthandler);
+	DeltaWxEvtHandler *parent = DNEWCLASS(DeltaWxEvtHandler, (_parent));
+	WX_SETOBJECT_EX(*at, EvtHandler, parent)
 	return true;
 }
 
 static bool GetWindow (void* val, DeltaValue* at) 
 {
 	wxValidator *validator = DLIB_WXTYPECAST_BASE(Validator, val, validator);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, validator->GetWindow())
+	wxWindow *window = validator->GetWindow();
+	DeltaWxWindow *retval = window ? DNEWCLASS(DeltaWxWindow, (window)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
@@ -72,40 +76,43 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Validator,validator)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(validator_construct, 0, 1, Nil)
-	wxValidator *validator = (wxValidator*) 0;
+	wxValidator *wxvalidator = (wxValidator*) 0;
+	DeltaWxValidator *validator = (DeltaWxValidator*) 0;
 	if (n == 0)
-		validator = new wxValidator();
+		wxvalidator = new wxValidator();
 	else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		std::string val = DPTR(vm)->GetActualArg(_argNo)->ToString();
 		if (val == "DefaultValidator" ||
 			val == "wxDefaultValidator")
-			validator = (wxValidator*)&wxDefaultValidator;
+			wxvalidator = (wxValidator*)&wxDefaultValidator;
 	}
+	if (wxvalidator) validator = DNEWCLASS(DeltaWxValidator, (wxvalidator));
 	WX_SETOBJECT(Validator, validator)
 }
 
-WX_FUNC_START(validator_destruct, 1, Nil)
+DLIB_FUNC_START(validator_destruct, 1, Nil)
 	DLIB_WXDELETE(validator, Validator, validator)
 }
 
-WX_FUNC_START(validator_copy, 2, Nil)
+DLIB_FUNC_START(validator_copy, 2, Nil)
 	DLIB_WXGET_BASE(validator, Validator, validator)
 	DLIB_WXGET_BASE(validator, Validator, other)
 	WX_SETBOOL(validator->Copy(*other))
 }
 
-WX_FUNC_START(validator_getwindow, 1, Nil)
+DLIB_FUNC_START(validator_getwindow, 1, Nil)
 	DLIB_WXGET_BASE(validator, Validator, validator)
-	WX_SETOBJECT(Window, validator->GetWindow())
+	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (validator->GetWindow()));
+	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(validator_setwindow, 2, Nil)
+DLIB_FUNC_START(validator_setwindow, 2, Nil)
 	DLIB_WXGET_BASE(validator, Validator, validator)
 	DLIB_WXGET_BASE(window, Window, window)
 	validator->SetWindow(window);
 }
 
-WX_FUNC_START(validator_issilent, 0, Nil)
+DLIB_FUNC_START(validator_issilent, 0, Nil)
 	WX_SETBOOL(wxValidator::IsSilent())
 }
 

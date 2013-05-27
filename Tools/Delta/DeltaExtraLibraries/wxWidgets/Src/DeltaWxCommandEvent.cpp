@@ -16,6 +16,7 @@
 #define WX_FUNC(name) WX_FUNC1(commandevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getextralong)
 WX_FUNC_DEF(getint)
 WX_FUNC_DEF(getselection)
@@ -28,6 +29,7 @@ WX_FUNC_DEF(setstring)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getextralong),
 	WX_FUNC(getint),
 	WX_FUNC(getselection),
@@ -41,7 +43,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getextralong", "setstring")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setstring")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(CommandEvent, "commandevent", Event)
 
@@ -55,7 +57,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
@@ -93,63 +97,69 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(CommandEvent,commandevent)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(commandevent_construct, 0, 2, Nil)
-	wxCommandEvent *commevt = (wxCommandEvent*) 0;
+	wxCommandEvent *wxcommevt = (wxCommandEvent*) 0;
+	DeltaWxCommandEvent *commevt = (DeltaWxCommandEvent*) 0;
 	if (n == 0)
-		commevt = new wxCommandEvent();
+		wxcommevt = new wxCommandEvent();
 	else if (n == 1) {
 		WX_GETDEFINE(commandType)
-		commevt = new wxCommandEvent(commandType);
+		wxcommevt = new wxCommandEvent(commandType);
 	} else {
 		WX_GETDEFINE(commandType)
 		WX_GETDEFINE(winid)
-		commevt = new wxCommandEvent(commandType, winid);
+		wxcommevt = new wxCommandEvent(commandType, winid);
 	}
+	if (wxcommevt) commevt = DNEWCLASS(DeltaWxCommandEvent, (wxcommevt));
 	WX_SETOBJECT(CommandEvent, commevt)
 }
 
-WX_FUNC_START(commandevent_getextralong, 1, Nil)
+DLIB_FUNC_START(commandevent_destruct, 1, Nil)
+	DLIB_WXDELETE(commandevent, CommandEvent, evt)
+}
+
+DLIB_FUNC_START(commandevent_getextralong, 1, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_SETNUMBER(evt->GetExtraLong())
 }
 
-WX_FUNC_START(commandevent_getint, 1, Nil)
+DLIB_FUNC_START(commandevent_getint, 1, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_SETNUMBER(evt->GetInt())
 }
 
-WX_FUNC_START(commandevent_getselection, 1, Nil)
+DLIB_FUNC_START(commandevent_getselection, 1, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_SETNUMBER(evt->GetSelection())
 }
 
-WX_FUNC_START(commandevent_getstring, 1, Nil)
+DLIB_FUNC_START(commandevent_getstring, 1, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_SETSTRING(evt->GetString())
 }
 
-WX_FUNC_START(commandevent_ischecked, 1, Nil)
+DLIB_FUNC_START(commandevent_ischecked, 1, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_SETBOOL(evt->IsChecked())
 }
 
-WX_FUNC_START(commandevent_isselection, 1, Nil)
+DLIB_FUNC_START(commandevent_isselection, 1, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_SETBOOL(evt->IsSelection())
 }
 
-WX_FUNC_START(commandevent_setextralong, 2, Nil)
+DLIB_FUNC_START(commandevent_setextralong, 2, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_GETNUMBER(extraLong)
 	evt->SetExtraLong(extraLong);
 }
 
-WX_FUNC_START(commandevent_setint, 2, Nil)
+DLIB_FUNC_START(commandevent_setint, 2, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_GETNUMBER(intCommand)
 	evt->SetInt(intCommand);
 }
 
-WX_FUNC_START(commandevent_setstring, 2, Nil)
+DLIB_FUNC_START(commandevent_setstring, 2, Nil)
 	DLIB_WXGET_BASE(commandevent, CommandEvent, evt)
 	WX_GETSTRING(string)
 	evt->SetString(string);

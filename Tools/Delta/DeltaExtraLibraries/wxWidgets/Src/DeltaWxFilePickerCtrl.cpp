@@ -20,12 +20,14 @@
 #define WX_FUNC(name) WX_FUNC1(filepickerctrl, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getpath)
 WX_FUNC_DEF(setpath)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getpath),
 	WX_FUNC(setpath)
@@ -33,7 +35,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setpath")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setpath")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FilePickerCtrl, "filepickerctrl", PickerBase)
 
@@ -47,7 +49,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, PickerBase, val)
+	wxPickerBase *_parent = DLIB_WXTYPECAST_BASE(PickerBase, val, pickerbase);
+	DeltaWxPickerBase *parent = DNEWCLASS(DeltaWxPickerBase, (_parent));
+	WX_SETOBJECT_EX(*at, PickerBase, parent)
 	return true;
 }
 
@@ -69,9 +73,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(FilePickerCtrl,filepickerctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(filepickerctrl_construct, 0, 10, Nil)
-	wxFilePickerCtrl *ctrl = (wxFilePickerCtrl*) 0;
+	wxFilePickerCtrl *wxctrl = (wxFilePickerCtrl*) 0;
+	DeltaWxFilePickerCtrl *ctrl = (DeltaWxFilePickerCtrl*) 0;
 	if (n == 0) {
-		ctrl = new wxFilePickerCtrl();
+		wxctrl = new wxFilePickerCtrl();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -91,7 +96,7 @@ WX_FUNC_ARGRANGE_START(filepickerctrl_construct, 0, 10, Nil)
 		if (n >= 8) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 9) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 10) { WX_GETSTRING_DEFINED(name) }
-		ctrl = new wxFilePickerCtrl(parent, id, path, message, wildcard, pos, size, style, *validator, name);
+		wxctrl = new wxFilePickerCtrl(parent, id, path, message, wildcard, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -100,7 +105,12 @@ WX_FUNC_ARGRANGE_START(filepickerctrl_construct, 0, 10, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(FilePickerCtrl, ctrl)
+	if (wxctrl) ctrl = DNEWCLASS(DeltaWxFilePickerCtrl, (wxctrl));
+	WX_SETOBJECT(FilePickerCtrl, ctrl)
+}
+
+DLIB_FUNC_START(filepickerctrl_destruct, 1, Nil)
+	DLIB_WXDELETE(filepickerctrl, FilePickerCtrl, ctrl)
 }
 
 WX_FUNC_ARGRANGE_START(filepickerctrl_create, 3, 11, Nil)
@@ -124,15 +134,14 @@ WX_FUNC_ARGRANGE_START(filepickerctrl_create, 3, 11, Nil)
 	if (n >= 10) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 11) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(ctrl->Create(parent, id, path, message, wildcard, pos, size, style, *validator, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(ctrl);
 }
 
-WX_FUNC_START(filepickerctrl_getpath, 1, Nil)
+DLIB_FUNC_START(filepickerctrl_getpath, 1, Nil)
 	DLIB_WXGET_BASE(filepickerctrl, FilePickerCtrl, ctrl)
 	WX_SETSTRING(ctrl->GetPath())
 }
 
-WX_FUNC_START(filepickerctrl_setpath, 2, Nil)
+DLIB_FUNC_START(filepickerctrl_setpath, 2, Nil)
 	DLIB_WXGET_BASE(filepickerctrl, FilePickerCtrl, ctrl)
 	WX_GETSTRING(dirname)
 	ctrl->SetPath(dirname);

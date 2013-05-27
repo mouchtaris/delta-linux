@@ -20,6 +20,7 @@
 #define WX_FUNC(name) WX_FUNC1(listview, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(clearcolumnimage)
 WX_FUNC_DEF(focus)
 WX_FUNC_DEF(getfirstselected)
@@ -31,6 +32,7 @@ WX_FUNC_DEF(setcolumnimage)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(clearcolumnimage),
 	WX_FUNC(focus),
 	WX_FUNC(getfirstselected),
@@ -43,7 +45,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "clearcolumnimage", "setcolumnimage")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setcolumnimage")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ListView, "listview", ListCtrl)
 
@@ -57,7 +59,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, ListCtrl, val)
+	wxListCtrl *_parent = DLIB_WXTYPECAST_BASE(ListCtrl, val, listctrl);
+	DeltaWxListCtrl *parent = DNEWCLASS(DeltaWxListCtrl, (_parent));
+	WX_SETOBJECT_EX(*at, ListCtrl, parent)
 	return true;
 }
 
@@ -71,9 +75,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ListView,listview)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(listview_construct, 0, 7, Nil)
-	wxListView *listview = (wxListView*) 0;
+	wxListView *wxlistview = (wxListView*) 0;
+	DeltaWxListView *listview = (DeltaWxListView*) 0;
 	if (n == 0) {
-		listview = new wxListView();
+		wxlistview = new wxListView();
 	} else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		int winid = wxID_ANY;
@@ -88,40 +93,45 @@ WX_FUNC_ARGRANGE_START(listview_construct, 0, 7, Nil)
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
-		listview = new wxListView(parent, winid, pos, size, style, *validator, name);
+		wxlistview = new wxListView(parent, winid, pos, size, style, *validator, name);
 	}
-	WX_SET_WINDOW_OBJECT(ListView, listview)
+	if (wxlistview) listview = DNEWCLASS(DeltaWxListView, (wxlistview));
+	WX_SETOBJECT(ListView, listview)
 }
 
-WX_FUNC_START(listview_clearcolumnimage, 2, Nil)
+DLIB_FUNC_START(listview_destruct, 1, Nil)
+	DLIB_WXDELETE(listview, ListView, listview)
+}
+
+DLIB_FUNC_START(listview_clearcolumnimage, 2, Nil)
 	DLIB_WXGET_BASE(listview, ListView, listview)
 	WX_GETNUMBER(col)
 	listview->ClearColumnImage(col);
 }
 
-WX_FUNC_START(listview_focus, 2, Nil)
+DLIB_FUNC_START(listview_focus, 2, Nil)
 	DLIB_WXGET_BASE(listview, ListView, listview)
 	WX_GETNUMBER(index)
 	listview->Focus(index);
 }
 
-WX_FUNC_START(listview_getfirstselected, 1, Nil)
+DLIB_FUNC_START(listview_getfirstselected, 1, Nil)
 	DLIB_WXGET_BASE(listview, ListView, listview)
 	WX_SETNUMBER(listview->GetFirstSelected())
 }
 
-WX_FUNC_START(listview_getfocuseditem, 1, Nil)
+DLIB_FUNC_START(listview_getfocuseditem, 1, Nil)
 	DLIB_WXGET_BASE(listview, ListView, listview)
 	WX_SETNUMBER(listview->GetFocusedItem())
 }
 
-WX_FUNC_START(listview_getnextselected, 2, Nil)
+DLIB_FUNC_START(listview_getnextselected, 2, Nil)
 	DLIB_WXGET_BASE(listview, ListView, listview)
 	WX_GETNUMBER(item)
 	WX_SETNUMBER(listview->GetNextSelected(item))
 }
 
-WX_FUNC_START(listview_isselected, 2, Nil)
+DLIB_FUNC_START(listview_isselected, 2, Nil)
 	DLIB_WXGET_BASE(listview, ListView, listview)
 	WX_GETNUMBER(index)
 	WX_SETBOOL(listview->IsSelected(index))
@@ -135,7 +145,7 @@ WX_FUNC_ARGRANGE_START(listview_select, 2, 3, Nil)
 	listview->Select(num, on);
 }
 
-WX_FUNC_START(listview_setcolumnimage, 3, Nil)
+DLIB_FUNC_START(listview_setcolumnimage, 3, Nil)
 	DLIB_WXGET_BASE(listview, ListView, listview)
 	WX_GETNUMBER(col)
 	WX_GETNUMBER(image)

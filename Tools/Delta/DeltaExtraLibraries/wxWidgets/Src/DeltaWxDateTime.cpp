@@ -21,6 +21,7 @@ WX_FUNC_DEF(constructfromtimet)
 WX_FUNC_DEF(constructfromjdn)
 WX_FUNC_DEF(constructfromhms)
 WX_FUNC_DEF(constructfromdmy)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(convertyeartobc)
 WX_FUNC_DEF(getampmstrings)
 WX_FUNC_DEF(getbegindst)
@@ -148,6 +149,7 @@ WX_FUNCS_START
 	WX_FUNC(today),
 	WX_FUNC(unow),
 	WX_FUNC(settoweekofyear),
+	WX_FUNC(destruct),
 	WX_FUNC(settocurrent),
 	WX_FUNC(settimet),
 	WX_FUNC(setjdn),
@@ -230,7 +232,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(26, uarraysize(funcs) - 26, "settocurrent", "greaterequalthan")
+DELTALIBFUNC_DECLARECONSTS(26, uarraysize(funcs) - 26, "destruct", "greaterequalthan")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(DateTime, "datetime")
 
@@ -352,18 +354,30 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateTime, datetime, DeltaWxDateTimeInitFunc()
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(datetime_construct, 0, Nil)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime())
+#define WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, func)									\
+	const wxDateTime& datetime##Ref = datetime->func;											\
+	if (&datetime##Ref == datetime) {															\
+		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
+	} else {																					\
+		DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (new wxDateTime(datetime##Ref)));	\
+		WX_SETOBJECT(DateTime, retval)															\
+	}
+
+DLIB_FUNC_START(datetime_construct, 0, Nil)
+	DeltaWxDateTime *data = DNEWCLASS(DeltaWxDateTime, (new wxDateTime()));
+	WX_SETOBJECT(DateTime, data)
 }
 
-WX_FUNC_START(datetime_constructfromtimet, 1, Nil)
+DLIB_FUNC_START(datetime_constructfromtimet, 1, Nil)
 	WX_GETNUMBER(timet)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime((time_t)timet))
+	DeltaWxDateTime *data = DNEWCLASS(DeltaWxDateTime, (new wxDateTime((time_t)timet)));
+	WX_SETOBJECT(DateTime, data)
 }
 
-WX_FUNC_START(datetime_constructfromjdn, 1, Nil)
+DLIB_FUNC_START(datetime_constructfromjdn, 1, Nil)
 	WX_GETNUMBER(jdn)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime((double)jdn))
+	DeltaWxDateTime *data = DNEWCLASS(DeltaWxDateTime, (new wxDateTime((double)jdn)));
+	WX_SETOBJECT(DateTime, data)
 }
 
 WX_FUNC_ARGRANGE_START(datetime_constructfromhms, 1, 4, Nil)
@@ -372,7 +386,9 @@ WX_FUNC_ARGRANGE_START(datetime_constructfromhms, 1, 4, Nil)
 	if (n >= 2) { WX_GETNUMBER(_minute) minute = (wxDateTime::wxDateTime_t)_minute; }
 	if (n >= 3) { WX_GETNUMBER(_second) second = (wxDateTime::wxDateTime_t)_second; }
 	if (n >= 4) { WX_GETNUMBER(_millisec) millisec = (wxDateTime::wxDateTime_t)_millisec; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime((wxDateTime::wxDateTime_t)hour, minute, second, millisec))
+	DeltaWxDateTime *data = DNEWCLASS(DeltaWxDateTime,
+		(new wxDateTime((wxDateTime::wxDateTime_t)hour, minute, second, millisec)));
+	WX_SETOBJECT(DateTime, data)
 }
 
 WX_FUNC_ARGRANGE_START(datetime_constructfromdmy, 2, 7, Nil)
@@ -385,16 +401,21 @@ WX_FUNC_ARGRANGE_START(datetime_constructfromdmy, 2, 7, Nil)
 	if (n >= 5) { WX_GETNUMBER(_minute) minute = (wxDateTime::wxDateTime_t)_minute; }
 	if (n >= 6) { WX_GETNUMBER(_second) second = (wxDateTime::wxDateTime_t)_second; }
 	if (n >= 7) { WX_GETNUMBER(_millisec) millisec = (wxDateTime::wxDateTime_t)_millisec; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime((wxDateTime::wxDateTime_t)day,
-		(wxDateTime::Month)(int)month, year, hour, minute, second, millisec))
+	DeltaWxDateTime *data = DNEWCLASS(DeltaWxDateTime, (new wxDateTime((wxDateTime::wxDateTime_t)day,
+		(wxDateTime::Month)(int)month, year, hour, minute, second, millisec)));
+	WX_SETOBJECT(DateTime, data)
 }
 
-WX_FUNC_START(datetime_convertyeartobc, 1, Nil)
+DLIB_FUNC_START(datetime_destruct, 1, Nil)
+	DLIB_WXDELETE(datetime, DateTime, datetime)
+}
+
+DLIB_FUNC_START(datetime_convertyeartobc, 1, Nil)
 	WX_GETDEFINE(year)
 	WX_SETNUMBER(wxDateTime::ConvertYearToBC(year))
 }
 
-WX_FUNC_START(datetime_getampmstrings, 2, Nil)
+DLIB_FUNC_START(datetime_getampmstrings, 2, Nil)
 	WX_GETTABLE(am_table)
 	WX_GETTABLE(pm_table)
 	wxString am, pm;
@@ -408,10 +429,12 @@ WX_FUNC_ARGRANGE_START(datetime_getbegindst, 0, 2, Nil)
 	wxDateTime::Country country = wxDateTime::Country_Default;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(year) }
 	if (n >= 2) { WX_GETDEFINE(_country) country = (wxDateTime::Country)_country; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(wxDateTime::GetBeginDST(year, country)))
+	DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (
+		new wxDateTime(wxDateTime::GetBeginDST(year, country))));
+	WX_SETOBJECT(DateTime, retval)
 }
 
-WX_FUNC_START(datetime_getcountry, 0, Nil)
+DLIB_FUNC_START(datetime_getcountry, 0, Nil)
 	WX_SETNUMBER(wxDateTime::GetCountry())
 }
 
@@ -445,7 +468,9 @@ WX_FUNC_ARGRANGE_START(datetime_getenddst, 0, 2, Nil)
 	wxDateTime::Country country = wxDateTime::Country_Default;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(year) }
 	if (n >= 2) { WX_GETDEFINE(_country) country = (wxDateTime::Country)_country; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(wxDateTime::GetEndDST(year, country)))
+	DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (
+		new wxDateTime(wxDateTime::GetEndDST(year, country))));
+	WX_SETOBJECT(DateTime, retval)
 }
 
 WX_FUNC_ARGRANGE_START(datetime_getmonthname, 1, 2, Nil)
@@ -471,7 +496,7 @@ WX_FUNC_ARGRANGE_START(datetime_getnumberofdaysinmonth, 1, 3, Nil)
 	WX_SETNUMBER(wxDateTime::GetNumberOfDays((wxDateTime::Month)month, year, cal))
 }
 
-WX_FUNC_START(datetime_gettimenow, 0, Nil)
+DLIB_FUNC_START(datetime_gettimenow, 0, Nil)
 	WX_SETNUMBER(wxDateTime::GetTimeNow())
 }
 
@@ -504,38 +529,41 @@ WX_FUNC_ARGRANGE_START(datetime_isdstapplicable, 0, 2, Nil)
 	WX_SETBOOL(wxDateTime::IsDSTApplicable(year, country))
 }
 
-WX_FUNC_START(datetime_now, 0, Nil)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(wxDateTime::Now()))
+DLIB_FUNC_START(datetime_now, 0, Nil)
+	DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (new wxDateTime(wxDateTime::Now())));
+	WX_SETOBJECT(DateTime, retval)
 }
 
-WX_FUNC_START(datetime_setcountry, 1, Nil)
+DLIB_FUNC_START(datetime_setcountry, 1, Nil)
 	WX_GETDEFINE(country)
 	wxDateTime::SetCountry((wxDateTime::Country)country);
 }
 
-WX_FUNC_START(datetime_today, 0, Nil)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(wxDateTime::Today()))
+DLIB_FUNC_START(datetime_today, 0, Nil)
+	DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (new wxDateTime(wxDateTime::Today())));
+	WX_SETOBJECT(DateTime, retval)
 }
 
-WX_FUNC_START(datetime_unow, 0, Nil)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(wxDateTime::UNow()))
+DLIB_FUNC_START(datetime_unow, 0, Nil)
+	DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (new wxDateTime(wxDateTime::UNow())));
+	WX_SETOBJECT(DateTime, retval)
 }
 
-WX_FUNC_START(datetime_settocurrent, 1, Nil)
+DLIB_FUNC_START(datetime_settocurrent, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetToCurrent()))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetToCurrent())
 }
 
-WX_FUNC_START(datetime_settimet, 2, Nil)
+DLIB_FUNC_START(datetime_settimet, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(timet)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Set((time_t)timet)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Set((time_t)timet))
 }
 
-WX_FUNC_START(datetime_setjdn, 2, Nil)
+DLIB_FUNC_START(datetime_setjdn, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(jdn)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Set((double)jdn)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Set((double)jdn))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_sethms, 2, 5, Nil)
@@ -545,7 +573,8 @@ WX_FUNC_ARGRANGE_START(datetime_sethms, 2, 5, Nil)
 	if (n >= 3) { WX_GETNUMBER(_minute) minute = (wxDateTime::wxDateTime_t)_minute; }
 	if (n >= 4) { WX_GETNUMBER(_second) second = (wxDateTime::wxDateTime_t)_second; }
 	if (n >= 5) { WX_GETNUMBER(_millisec) millisec = (wxDateTime::wxDateTime_t)_millisec; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Set((wxDateTime::wxDateTime_t)hour, minute, second, millisec)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Set((wxDateTime::wxDateTime_t)hour,
+		minute, second, millisec))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_set, 3, 8, Nil)
@@ -559,67 +588,68 @@ WX_FUNC_ARGRANGE_START(datetime_set, 3, 8, Nil)
 	if (n >= 6) { WX_GETNUMBER(_minute) minute = (wxDateTime::wxDateTime_t)_minute; }
 	if (n >= 7) { WX_GETNUMBER(_second) second = (wxDateTime::wxDateTime_t)_second; }
 	if (n >= 8) { WX_GETNUMBER(_millisec) millisec = (wxDateTime::wxDateTime_t)_millisec; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Set((wxDateTime::wxDateTime_t)day, (wxDateTime::Month)month, year, hour, minute, second, millisec)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Set((wxDateTime::wxDateTime_t)day,
+		(wxDateTime::Month)month, year, hour, minute, second, millisec))
 }
 
-WX_FUNC_START(datetime_resettime, 1, Nil)
+DLIB_FUNC_START(datetime_resettime, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->ResetTime()))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, ResetTime())
 }
 
-WX_FUNC_START(datetime_setyear, 2, Nil)
+DLIB_FUNC_START(datetime_setyear, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(year)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetYear(year)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetYear(year))
 }
 
-WX_FUNC_START(datetime_setmonth, 2, Nil)
+DLIB_FUNC_START(datetime_setmonth, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETDEFINE(month)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetMonth((wxDateTime::Month)month)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetMonth((wxDateTime::Month)month))
 }
 
-WX_FUNC_START(datetime_setday, 2, Nil)
+DLIB_FUNC_START(datetime_setday, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETDEFINE(day)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetDay((wxDateTime::wxDateTime_t)day)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetDay((wxDateTime::wxDateTime_t)day))
 }
 
-WX_FUNC_START(datetime_sethour, 2, Nil)
+DLIB_FUNC_START(datetime_sethour, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(hour)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetHour((wxDateTime::wxDateTime_t)hour)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetHour((wxDateTime::wxDateTime_t)hour))
 }
 
-WX_FUNC_START(datetime_setminute, 2, Nil)
+DLIB_FUNC_START(datetime_setminute, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(minute)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetMinute((wxDateTime::wxDateTime_t)minute)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetMinute((wxDateTime::wxDateTime_t)minute))
 }
 
-WX_FUNC_START(datetime_setsecond, 2, Nil)
+DLIB_FUNC_START(datetime_setsecond, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(second)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetSecond((wxDateTime::wxDateTime_t)second)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetSecond((wxDateTime::wxDateTime_t)second))
 }
 
-WX_FUNC_START(datetime_setmillisecond, 2, Nil)
+DLIB_FUNC_START(datetime_setmillisecond, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(millisecond)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetMillisecond((wxDateTime::wxDateTime_t)millisecond)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetMillisecond((wxDateTime::wxDateTime_t)millisecond))
 }
 
-WX_FUNC_START(datetime_isvalid, 1, Nil)
+DLIB_FUNC_START(datetime_isvalid, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETBOOL(datetime->IsValid())
 }
 
-WX_FUNC_START(datetime_getdateonly, 1, Nil)
+DLIB_FUNC_START(datetime_getdateonly, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetDateOnly()))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetDateOnly())
 }
 
-WX_FUNC_START(datetime_getticks, 1, Nil)
+DLIB_FUNC_START(datetime_getticks, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETNUMBER(datetime->GetTicks())
 }
@@ -655,7 +685,8 @@ WX_FUNC_ARGRANGE_START(datetime_getweekday, 1, 5, Nil)
 	if (n >= 4) { WX_GETDEFINE(_month) month = (wxDateTime::Month)_month; }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(year) }
 	if (n >= 3) {
-		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetWeekDay((wxDateTime::WeekDay)tz, num, month, year)))
+		WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetWeekDay(
+			(wxDateTime::WeekDay)tz, num, month, year))
 	} else {
 		WX_SETNUMBER(datetime->GetWeekDay((wxDateTime::TimeZone)tz))
 	}
@@ -721,68 +752,68 @@ WX_FUNC_ARGRANGE_START(datetime_isworkday, 1, 2, Nil)
 	WX_SETBOOL(datetime->IsWorkDay(country))
 }
 
-WX_FUNC_START(datetime_setfromdos, 2, Nil)
+DLIB_FUNC_START(datetime_setfromdos, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(ddt)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetFromDOS(ddt)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetFromDOS(ddt))
 }
 
-WX_FUNC_START(datetime_getasdos, 1, Nil)
+DLIB_FUNC_START(datetime_getasdos, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETNUMBER(datetime->GetAsDOS())
 }
 
-WX_FUNC_START(datetime_isequalto, 2, Nil)
+DLIB_FUNC_START(datetime_isequalto, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->IsEqualTo(*dt))
 }
 
-WX_FUNC_START(datetime_isnotequalto, 2, Nil)
+DLIB_FUNC_START(datetime_isnotequalto, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->operator!=(*dt))
 }
 
-WX_FUNC_START(datetime_isearlierthan, 2, Nil)
+DLIB_FUNC_START(datetime_isearlierthan, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->IsEarlierThan(*dt))
 }
 
-WX_FUNC_START(datetime_islaterthan, 2, Nil)
+DLIB_FUNC_START(datetime_islaterthan, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->IsLaterThan(*dt))
 }
 
-WX_FUNC_START(datetime_isstrictlybetween, 3, Nil)
+DLIB_FUNC_START(datetime_isstrictlybetween, 3, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, t1)
 	DLIB_WXGET_BASE(datetime, DateTime, t2)
 	WX_SETBOOL(datetime->IsStrictlyBetween(*t1, *t2))
 }
 
-WX_FUNC_START(datetime_isbetween, 3, Nil)
+DLIB_FUNC_START(datetime_isbetween, 3, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, t1)
 	DLIB_WXGET_BASE(datetime, DateTime, t2)
 	WX_SETBOOL(datetime->IsBetween(*t1, *t2))
 }
 
-WX_FUNC_START(datetime_issamedate, 2, Nil)
+DLIB_FUNC_START(datetime_issamedate, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->IsSameDate(*dt))
 }
 
-WX_FUNC_START(datetime_issametime, 2, Nil)
+DLIB_FUNC_START(datetime_issametime, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->IsSameTime(*dt))
 }
 
-WX_FUNC_START(datetime_isequalupto, 3, Nil)
+DLIB_FUNC_START(datetime_isequalupto, 3, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	DLIB_WXGET_BASE(timespan, TimeSpan, ts)
@@ -797,7 +828,7 @@ WX_FUNC_START(datetime_isequalupto, 3, Nil)
 #define DEFAULT_FORMAT_TYPE wxChar
 #endif
 
-WX_FUNC_START(datetime_parserfc822date, 2, Nil)
+DLIB_FUNC_START(datetime_parserfc822date, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
 	const wxChar *retval = (const wxChar*)datetime->ParseRfc822Date(PARSE_DATE_ARG(date));
@@ -823,7 +854,7 @@ WX_FUNC_ARGRANGE_START(datetime_parseformat, 2, 4, Nil)
 	}
 }
 
-WX_FUNC_START(datetime_parsedatetime, 2, Nil)
+DLIB_FUNC_START(datetime_parsedatetime, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
 	const wxChar *retval = (const wxChar*)datetime->ParseDateTime(PARSE_DATE_ARG(date));
@@ -834,7 +865,7 @@ WX_FUNC_START(datetime_parsedatetime, 2, Nil)
 	}
 }
 
-WX_FUNC_START(datetime_parsedate, 2, Nil)
+DLIB_FUNC_START(datetime_parsedate, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
 	const wxChar *retval = (const wxChar*)datetime->ParseDate(PARSE_DATE_ARG(date));
@@ -845,7 +876,7 @@ WX_FUNC_START(datetime_parsedate, 2, Nil)
 	}
 }
 
-WX_FUNC_START(datetime_parsetime, 2, Nil)
+DLIB_FUNC_START(datetime_parsetime, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETSTRING(date)
 	const wxChar *retval = (const wxChar*)datetime->ParseTime(PARSE_DATE_ARG(date));
@@ -865,22 +896,22 @@ WX_FUNC_ARGRANGE_START(datetime_format, 1, 3, Nil)
 	WX_SETSTRING(datetime->Format(format, tz))
 }
 
-WX_FUNC_START(datetime_formatdate, 1, Nil)
+DLIB_FUNC_START(datetime_formatdate, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETSTRING(datetime->FormatDate())
 }
 
-WX_FUNC_START(datetime_formattime, 1, Nil)
+DLIB_FUNC_START(datetime_formattime, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETSTRING(datetime->FormatTime())
 }
 
-WX_FUNC_START(datetime_formatisodate, 1, Nil)
+DLIB_FUNC_START(datetime_formatisodate, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETSTRING(datetime->FormatISODate())
 }
 
-WX_FUNC_START(datetime_formatisotime, 1, Nil)
+DLIB_FUNC_START(datetime_formatisotime, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETSTRING(datetime->FormatISOTime())
 }
@@ -890,7 +921,7 @@ WX_FUNC_ARGRANGE_START(datetime_settoweekdayinsameweek, 2, 3, Nil)
 	WX_GETDEFINE(weekday)
 	wxDateTime::WeekFlags flags = wxDateTime::Monday_First;
 	if (n >= 3) { WX_GETDEFINE(_flags) flags = (wxDateTime::WeekFlags)_flags; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetToWeekDayInSameWeek((wxDateTime::WeekDay)weekday, flags)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetToWeekDayInSameWeek((wxDateTime::WeekDay)weekday, flags))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_getweekdayinsameweek, 2, 3, Nil)
@@ -898,31 +929,31 @@ WX_FUNC_ARGRANGE_START(datetime_getweekdayinsameweek, 2, 3, Nil)
 	WX_GETDEFINE(weekday)
 	wxDateTime::WeekFlags flags = wxDateTime::Monday_First;
 	if (n >= 3) { WX_GETDEFINE(_flags) flags = (wxDateTime::WeekFlags)_flags; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetWeekDayInSameWeek((wxDateTime::WeekDay)weekday, flags)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetWeekDayInSameWeek((wxDateTime::WeekDay)weekday, flags))
 }
 
-WX_FUNC_START(datetime_settonextweekday, 2, Nil)
+DLIB_FUNC_START(datetime_settonextweekday, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETDEFINE(weekday)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetToNextWeekDay((wxDateTime::WeekDay)weekday)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetToNextWeekDay((wxDateTime::WeekDay)weekday))
 }
 
-WX_FUNC_START(datetime_getnextweekday, 2, Nil)
+DLIB_FUNC_START(datetime_getnextweekday, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETDEFINE(weekday)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetNextWeekDay((wxDateTime::WeekDay)weekday)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetNextWeekDay((wxDateTime::WeekDay)weekday))
 }
 
-WX_FUNC_START(datetime_settoprevweekday, 2, Nil)
+DLIB_FUNC_START(datetime_settoprevweekday, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETDEFINE(weekday)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetToPrevWeekDay((wxDateTime::WeekDay)weekday)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetToPrevWeekDay((wxDateTime::WeekDay)weekday))
 }
 
-WX_FUNC_START(datetime_getprevweekday, 2, Nil)
+DLIB_FUNC_START(datetime_getprevweekday, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETDEFINE(weekday)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetPrevWeekDay((wxDateTime::WeekDay)weekday)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetPrevWeekDay((wxDateTime::WeekDay)weekday))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_settoweekday, 2, 5, Nil)
@@ -953,7 +984,7 @@ WX_FUNC_ARGRANGE_START(datetime_getlastweekday, 2, 4, Nil)
 	int year = wxDateTime::Inv_Year;
 	if (n >= 3) { WX_GETDEFINE(_month) month = (wxDateTime::Month)_month; }
 	if (n >= 4) { WX_GETDEFINE_DEFINED(year) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetLastWeekDay((wxDateTime::WeekDay)weekday, month, year)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetLastWeekDay((wxDateTime::WeekDay)weekday, month, year))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_settoweekofyear, 2, 3, Nil)
@@ -961,7 +992,9 @@ WX_FUNC_ARGRANGE_START(datetime_settoweekofyear, 2, 3, Nil)
 	WX_GETNUMBER(numWeek)
 	wxDateTime::WeekDay weekday = wxDateTime::Mon;
 	if (n >= 3) { WX_GETDEFINE(_weekday) weekday = (wxDateTime::WeekDay)_weekday; }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(wxDateTime::SetToWeekOfYear(year, numWeek, weekday)))
+	DeltaWxDateTime *retval = DNEWCLASS(DeltaWxDateTime, (
+		new wxDateTime(wxDateTime::SetToWeekOfYear(year, numWeek, weekday))));
+	WX_SETOBJECT(DateTime, retval)
 }
 
 WX_FUNC_ARGRANGE_START(datetime_settolastmonthday, 1, 3, Nil)
@@ -970,7 +1003,7 @@ WX_FUNC_ARGRANGE_START(datetime_settolastmonthday, 1, 3, Nil)
 	int year = wxDateTime::Inv_Year;
 	if (n >= 2) { WX_GETDEFINE(_month) month = (wxDateTime::Month)_month; }
 	if (n >= 3) { WX_GETDEFINE_DEFINED(year) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetToLastMonthDay(month, year)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetToLastMonthDay(month, year))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_getlastmonthday, 1, 3, Nil)
@@ -979,42 +1012,42 @@ WX_FUNC_ARGRANGE_START(datetime_getlastmonthday, 1, 3, Nil)
 	int year = wxDateTime::Inv_Year;
 	if (n >= 2) { WX_GETDEFINE(_month) month = (wxDateTime::Month)_month; }
 	if (n >= 3) { WX_GETDEFINE_DEFINED(year) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetLastMonthDay(month, year)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetLastMonthDay(month, year))
 }
 
-WX_FUNC_START(datetime_settoyearday, 2, Nil)
+DLIB_FUNC_START(datetime_settoyearday, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(yday)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->SetToYearDay(yday)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, SetToYearDay(yday))
 }
 
-WX_FUNC_START(datetime_getyearday, 2, Nil)
+DLIB_FUNC_START(datetime_getyearday, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_GETNUMBER(yday)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->GetYearDay(yday)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, GetYearDay(yday))
 }
 
-WX_FUNC_START(datetime_getjuliandaynumber, 1, Nil)
+DLIB_FUNC_START(datetime_getjuliandaynumber, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETNUMBER(datetime->GetJulianDayNumber())
 }
 
-WX_FUNC_START(datetime_getjdn, 1, Nil)
+DLIB_FUNC_START(datetime_getjdn, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETNUMBER(datetime->GetJDN())
 }
 
-WX_FUNC_START(datetime_getmodifiedjuliandaynumber, 1, Nil)
+DLIB_FUNC_START(datetime_getmodifiedjuliandaynumber, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETNUMBER(datetime->GetModifiedJulianDayNumber())
 }
 
-WX_FUNC_START(datetime_getmjd, 1, Nil)
+DLIB_FUNC_START(datetime_getmjd, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETNUMBER(datetime->GetMJD())
 }
 
-WX_FUNC_START(datetime_getratadie, 1, Nil)
+DLIB_FUNC_START(datetime_getratadie, 1, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	WX_SETNUMBER(datetime->GetRataDie())
 }
@@ -1024,7 +1057,7 @@ WX_FUNC_ARGRANGE_START(datetime_fromtimezone, 2, 3, Nil)
 	WX_GETDEFINE(tz)
 	bool noDST = false;
 	if (n >= 3) { WX_GETBOOL_DEFINED(noDST) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->FromTimezone((wxDateTime::TimeZone)tz, noDST)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, FromTimezone((wxDateTime::TimeZone)tz, noDST))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_totimezone, 2, 3, Nil)
@@ -1032,7 +1065,7 @@ WX_FUNC_ARGRANGE_START(datetime_totimezone, 2, 3, Nil)
 	WX_GETDEFINE(tz)
 	bool noDST = false;
 	if (n >= 3) { WX_GETBOOL_DEFINED(noDST) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->ToTimezone((wxDateTime::TimeZone)tz, noDST)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, ToTimezone((wxDateTime::TimeZone)tz, noDST))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_maketimezone, 2, 3, Nil)
@@ -1040,7 +1073,7 @@ WX_FUNC_ARGRANGE_START(datetime_maketimezone, 2, 3, Nil)
 	WX_GETDEFINE(tz)
 	bool noDST = false;
 	if (n >= 3) { WX_GETBOOL_DEFINED(noDST) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->MakeTimezone((wxDateTime::TimeZone)tz, noDST)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, MakeTimezone((wxDateTime::TimeZone)tz, noDST))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_makefromtimezone, 2, 3, Nil)
@@ -1048,21 +1081,21 @@ WX_FUNC_ARGRANGE_START(datetime_makefromtimezone, 2, 3, Nil)
 	WX_GETDEFINE(tz)
 	bool noDST = false;
 	if (n >= 3) { WX_GETBOOL_DEFINED(noDST) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->MakeFromTimezone((wxDateTime::TimeZone)tz, noDST)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, MakeFromTimezone((wxDateTime::TimeZone)tz, noDST))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_toutc, 1, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	bool noDST = false;
 	if (n >= 2) { WX_GETBOOL_DEFINED(noDST) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->ToUTC(noDST)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, ToUTC(noDST))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_makeutc, 1, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	bool noDST = false;
 	if (n >= 2) { WX_GETBOOL_DEFINED(noDST) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->MakeUTC(noDST)))
+	WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, MakeUTC(noDST))
 }
 
 WX_FUNC_ARGRANGE_START(datetime_isdst, 1, 2, Nil)
@@ -1072,42 +1105,49 @@ WX_FUNC_ARGRANGE_START(datetime_isdst, 1, 2, Nil)
 	WX_SETNUMBER(datetime->IsDST(country))
 }
 
-WX_FUNC_START(datetime_add, 2, Nil)
+DLIB_FUNC_START(datetime_add, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(TimeSpan, serial_no, timespan, diff)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Add(*diff)))
+		if (DLIB_WXISBASE(TimeSpan, serial_no, timespan, timespan)) {
+			wxTimeSpan *diff = (wxTimeSpan*) timespan->GetCastToNativeInstance();
+			WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Add(*diff))
 		} else
-		if (DLIB_WXISBASE(DateSpan, serial_no, datespan, diff)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Add(*diff)))
+		if (DLIB_WXISBASE(DateSpan, serial_no, datespan, datespan)) {
+			wxDateSpan *diff = (wxDateSpan*) datespan->GetCastToNativeInstance();
+			WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Add(*diff))
 		}
 	}
 }
 
-WX_FUNC_START(datetime_subtract, 2, Nil)
+DLIB_FUNC_START(datetime_subtract, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(TimeSpan, serial_no, timespan, diff)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Subtract(*diff)))
+		if (DLIB_WXISBASE(TimeSpan, serial_no, timespan, timespan)) {
+			wxTimeSpan *diff = (wxTimeSpan*) timespan->GetCastToNativeInstance();
+			WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Subtract(*diff))
 		} else
-		if (DLIB_WXISBASE(DateSpan, serial_no, datespan, diff)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(DateTime, new wxDateTime(datetime->Subtract(*diff)))
+		if (DLIB_WXISBASE(DateSpan, serial_no, datespan, datespan)) {
+			wxDateSpan *diff = (wxDateSpan*) datespan->GetCastToNativeInstance();
+			WXDATETIME_AVOID_UNNECESSARY_OBJECTS(datetime, Subtract(*diff))
 		} else
-		if (DLIB_WXISBASE(DateTime, serial_no, datetime, dt)) {
-			WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(datetime->Subtract(*dt)))
+		if (DLIB_WXISBASE(DateTime, serial_no, datetime, datetime_wr)) {
+			wxDateTime *dt = (wxDateTime*) datetime_wr->GetCastToNativeInstance();
+			DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (
+				new wxTimeSpan(datetime->Subtract(*dt))));
+			WX_SETOBJECT(TimeSpan, retval)
 		}
 	}
 }
 
-WX_FUNC_START(datetime_lessequalthan, 2, Nil)
+DLIB_FUNC_START(datetime_lessequalthan, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->operator<=(*dt))
 }
 
-WX_FUNC_START(datetime_greaterequalthan, 2, Nil)
+DLIB_FUNC_START(datetime_greaterequalthan, 2, Nil)
 	DLIB_WXGET_BASE(datetime, DateTime, datetime)
 	DLIB_WXGET_BASE(datetime, DateTime, dt)
 	WX_SETBOOL(datetime->operator>=(*dt))

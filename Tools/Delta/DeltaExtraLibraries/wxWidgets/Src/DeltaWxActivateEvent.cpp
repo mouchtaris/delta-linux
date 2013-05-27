@@ -16,16 +16,18 @@
 #define WX_FUNC(name) WX_FUNC1(activateevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getactive)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getactive)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getactive", "getactive")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getactive")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ActivateEvent, "activateevent", Event)
 
@@ -39,7 +41,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Event, val)
+	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
+	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
+	WX_SETOBJECT_EX(*at, Event, parent)
 	return true;
 }
 
@@ -67,10 +71,16 @@ WX_FUNC_ARGRANGE_START(activateevent_construct, 0, 3, Nil)
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { WX_GETBOOL_DEFINED(active) }
 	if (n >= 3) { WX_GETDEFINE_DEFINED(Id) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ActivateEvent, new wxActivateEvent(type, active, Id))
+	DeltaWxActivateEvent *evt = DNEWCLASS(DeltaWxActivateEvent,
+		(new wxActivateEvent(type, active, Id)));
+	WX_SETOBJECT(ActivateEvent, evt)
 }
 
-WX_FUNC_START(activateevent_getactive, 1, Nil)
+DLIB_FUNC_START(activateevent_destruct, 1, Nil)
+	DLIB_WXDELETE(activateevent, ActivateEvent, evt)
+}
+
+DLIB_FUNC_START(activateevent_getactive, 1, Nil)
 	DLIB_WXGET_BASE(activateevent, ActivateEvent, evt)
 	WX_SETBOOL(evt->GetActive())
 }

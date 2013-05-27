@@ -18,16 +18,18 @@
 #define WX_FUNC(name) WX_FUNC1(messagedialog, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(showmodal)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "showmodal", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MessageDialog, "messagedialog", Dialog)
 
@@ -41,7 +43,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Dialog, val)
+	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
+	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
+	WX_SETOBJECT_EX(*at, Dialog, parent)
 	return true;
 }
 
@@ -63,11 +67,16 @@ WX_FUNC_ARGRANGE_START(messagedialog_construct, 2, 5, Nil)
 	if (n >= 3) { WX_GETSTRING_DEFINED(caption) }
 	if (n >= 4) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 5) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
-	wxMessageDialog* dialog = new wxMessageDialog(parent, message, caption, style, pos);
-	WX_SET_TOPLEVELWINDOW_OBJECT(MessageDialog, dialog)
+	DeltaWxMessageDialog *dialog = DNEWCLASS(DeltaWxMessageDialog,
+		(new wxMessageDialog(parent, message, caption, style, pos)));
+	WX_SETOBJECT(MessageDialog, dialog)
 }
 
-WX_FUNC_START(messagedialog_showmodal, 1, Nil)
+DLIB_FUNC_START(messagedialog_destruct, 1, Nil)
+	DLIB_WXDELETE(messagedialog, MessageDialog, dialog)
+}
+
+DLIB_FUNC_START(messagedialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(messagedialog, MessageDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

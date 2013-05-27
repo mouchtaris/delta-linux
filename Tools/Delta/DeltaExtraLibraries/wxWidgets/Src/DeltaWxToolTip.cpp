@@ -50,7 +50,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Object, val)
+	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
+	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
+	WX_SETOBJECT_EX(*at, Object, parent)
 	return true;
 }
 
@@ -64,7 +66,9 @@ static bool GetTip (void* val, DeltaValue* at)
 static bool GetWindow (void* val, DeltaValue* at) 
 {
 	wxToolTip *tooltip = DLIB_WXTYPECAST_BASE(ToolTip, val, tooltip);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, tooltip->GetWindow())
+	wxWindow *win = tooltip->GetWindow();
+	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
+	WX_SETOBJECT_EX(*at, Window, retval)
 	return true;
 }
 
@@ -79,38 +83,39 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ToolTip,tooltip)
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(tooltip_construct, 1, Nil)
+DLIB_FUNC_START(tooltip_construct, 1, Nil)
 	WX_GETSTRING(tip)
-	WX_SETOBJECT(ToolTip, new wxToolTip(tip))
+	DeltaWxToolTip *tooltip = DNEWCLASS(DeltaWxToolTip, (new wxToolTip(tip)));
+	WX_SETOBJECT(ToolTip, tooltip)
 }
 
-WX_FUNC_START(tooltip_destruct, 1, Nil)
+DLIB_FUNC_START(tooltip_destruct, 1, Nil)
 	DLIB_WXDELETE(tooltip, ToolTip, tooltip)
 }
 
-WX_FUNC_START(tooltip_enable, 1, Nil)
+DLIB_FUNC_START(tooltip_enable, 1, Nil)
 	WX_GETBOOL(flag)
 	wxToolTip::Enable(flag);
 }
 
-WX_FUNC_START(tooltip_setdelay, 1, Nil)
+DLIB_FUNC_START(tooltip_setdelay, 1, Nil)
 	WX_GETNUMBER(delay)
 	wxToolTip::SetDelay(delay);
 }
 
-WX_FUNC_START(tooltip_settip, 2, Nil)
+DLIB_FUNC_START(tooltip_settip, 2, Nil)
 	DLIB_WXGET_BASE(tooltip, ToolTip, tooltip)
 	WX_GETSTRING(tip)
 	tooltip->SetTip(tip);
 }
 
-WX_FUNC_START(tooltip_gettip, 1, Nil)
+DLIB_FUNC_START(tooltip_gettip, 1, Nil)
 	DLIB_WXGET_BASE(tooltip, ToolTip, tooltip)
 	WX_SETSTRING(tooltip->GetTip());
 }
 
-WX_FUNC_START(tooltip_getwindow, 1, Nil)
+DLIB_FUNC_START(tooltip_getwindow, 1, Nil)
 	DLIB_WXGET_BASE(tooltip, ToolTip, tooltip)
-	wxWindow* retval	= tooltip->GetWindow();;
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, tooltip->GetWindow());
 	WX_SETOBJECT(Window, retval)
 }

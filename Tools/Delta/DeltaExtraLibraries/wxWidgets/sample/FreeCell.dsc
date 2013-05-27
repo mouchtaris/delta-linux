@@ -471,6 +471,8 @@ function freeCellGameGUI_new()
 						collisionArea = area;
 						collisionCollection = collection;
 					}
+					
+					rect.destruct();
 				}
 			}
 			
@@ -485,6 +487,8 @@ function freeCellGameGUI_new()
 						collisionArea = area;
 						collisionCollection = collection;
 					}
+					
+					rect.destruct();
 				}
 			}
 			
@@ -499,6 +503,8 @@ function freeCellGameGUI_new()
 						collisionArea = area;
 						collisionCollection = collection;
 					}
+					
+					rect.destruct();
 				}
 			}
 			if (collisionArea > 0) {
@@ -516,8 +522,10 @@ function freeCellGameGUI_new()
 			buffer = buffereddc_construct(frame.dc, size_construct(frame.getsize().getwidth()/userScale, frame.getsize().getheight()/userScale));
 			
 			//Draw background
-			local brush = brush_construct(colour_construct(20,100,20));
+			local brush = brush_construct(colour = colour_construct(20,100,20));
 			buffer.setbrush(brush);
+			brush.destruct();
+			colour.destruct();
 			buffer.drawrectangle(0, 0, frame.getsize().getwidth()/userScale, frame.getsize().getheight()/userScale);
 			
 			//Draw the playing piles
@@ -538,6 +546,8 @@ function freeCellGameGUI_new()
 			if (self.movingPile != nil) {
 				self.movingPile.draw(buffer);
 			}
+			
+			buffer.destruct();
 		},
 		method (x, y) {
 			for (local i = 0; i < 8; ++i) {
@@ -594,6 +604,7 @@ function onAbout(frame, ev) {
 	info.setdevelopers(["Andreas Maragoudakis", "Christos Despotakis"]);
 	info.setdescription("This is a test project for wxWidgets library for DELTA.");
 	aboutbox(info);
+	info.destruct();
 }
 
 function onNewGame(frame, ev) {
@@ -654,14 +665,15 @@ function onStatistics(frame, ev) {
 	buttonSizer = dialog.createbuttonsizer("OK");
 	sizer.add(buttonSizer, 0, flags("CENTER", "ALL"), 5);
 	dialog.showmodal();
-	dialog.destroy();
+	dialog.destruct();
 }
 
 function onExit(frame, ev) {
 //Save changes
 	savegame(frame);
 //Destruction
-	frame.destroy();
+	frame.dc.destruct();
+	frame.destruct();
 }
 
 function onLeftDownEvent(frame, ev) {

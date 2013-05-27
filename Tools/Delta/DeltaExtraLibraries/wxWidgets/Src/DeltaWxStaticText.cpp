@@ -19,6 +19,7 @@
 #define WX_FUNC(name) WX_FUNC1(statictext, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getlabel)
 WX_FUNC_DEF(setlabel)
@@ -26,6 +27,7 @@ WX_FUNC_DEF(wrap)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getlabel),
 	WX_FUNC(setlabel),
@@ -34,7 +36,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "wrap")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "wrap")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(StaticText, "statictext", Control)
 
@@ -48,7 +50,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -62,9 +66,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(StaticText,statictext)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(statictext_construct, 0, 7, Nil)
-	wxStaticText *text = (wxStaticText*) 0;
+	wxStaticText *wxtext = (wxStaticText*) 0;
+	DeltaWxStaticText *text = (DeltaWxStaticText*) 0;
 	if (n == 0) {
-		text = new wxStaticText();
+		wxtext = new wxStaticText();
 	} else if (n >= 3) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -77,7 +82,7 @@ WX_FUNC_ARGRANGE_START(statictext_construct, 0, 7, Nil)
 		if (n >= 5) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
-		text = new wxStaticText(parent, id, label, pos, size, style, name);
+		wxtext = new wxStaticText(parent, id, label, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -86,7 +91,12 @@ WX_FUNC_ARGRANGE_START(statictext_construct, 0, 7, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SET_WINDOW_OBJECT(StaticText, text)
+	if (wxtext) text = DNEWCLASS(DeltaWxStaticText, (wxtext));
+	WX_SETOBJECT(StaticText, text)
+}
+
+DLIB_FUNC_START(statictext_destruct, 1, Nil)
+	DLIB_WXDELETE(statictext, StaticText, text)
 }
 
 WX_FUNC_ARGRANGE_START(statictext_create, 4, 8, Nil)
@@ -103,21 +113,20 @@ WX_FUNC_ARGRANGE_START(statictext_create, 4, 8, Nil)
 	if (n >= 7) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(text->Create(parent, id, label, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(text);
 }
 
-WX_FUNC_START(statictext_getlabel, 1, Nil)
+DLIB_FUNC_START(statictext_getlabel, 1, Nil)
 	DLIB_WXGET_BASE(statictext, StaticText, text)
 	WX_SETSTRING(text->GetLabel())
 }
 
-WX_FUNC_START(statictext_setlabel, 2, Nil)
+DLIB_FUNC_START(statictext_setlabel, 2, Nil)
 	DLIB_WXGET_BASE(statictext, StaticText, text)
 	WX_GETSTRING(label)
 	text->SetLabel(label);
 }
 
-WX_FUNC_START(statictext_wrap, 2, Nil)
+DLIB_FUNC_START(statictext_wrap, 2, Nil)
 	DLIB_WXGET_BASE(statictext, StaticText, text)
 	WX_GETNUMBER(width)
 	text->Wrap(width);

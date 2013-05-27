@@ -22,6 +22,7 @@
 #define WX_FUNC(name) WX_FUNC1(listbook, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addpage)
 WX_FUNC_DEF(advanceselection)
 WX_FUNC_DEF(assignimagelist)
@@ -49,6 +50,7 @@ WX_FUNC_DEF(setselection)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(addpage),
 	WX_FUNC(advanceselection),
 	WX_FUNC(assignimagelist),
@@ -77,7 +79,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addpage", "setselection")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setselection")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Listbook, "listbook", Control)
 
@@ -91,7 +93,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, Control, val)
+	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
+	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
+	WX_SETOBJECT_EX(*at, Control, parent)
 	return true;
 }
 
@@ -101,7 +105,9 @@ static bool GetPages (void* val, DeltaValue* at)
 	at->FromTable(DNEW(DELTA_OBJECT));
 	for (int i = 0, pageSize = (int)book->GetPageCount(); i < pageSize; ++i) {
 		DeltaValue value;
-		WX_SETOBJECT_NO_CONTEXT_EX(value, Window, book->GetPage(i))
+		wxWindow *win = book->GetPage(i);
+		DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
+		WX_SETOBJECT_EX(value, Window, retval)
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -110,7 +116,11 @@ static bool GetPages (void* val, DeltaValue* at)
 static bool GetImageList (void* val, DeltaValue* at) 
 {
 	wxListbook *book = DLIB_WXTYPECAST_BASE(Listbook, val, listbook);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, book->GetImageList())
+	wxImageList *imagelist = book->GetImageList();
+	DeltaWxImageList *retval = imagelist ?
+		DNEWCLASS(DeltaWxImageList, (imagelist)) :
+		(DeltaWxImageList*) 0;
+	WX_SETOBJECT_EX(*at, ImageList, retval)
 	return true;
 }
 
@@ -167,9 +177,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Listbook,listbook)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(listbook_construct, 0, 6, Nil)
-	wxListbook *listbk = (wxListbook*) 0;
+	wxListbook *wxlistbk = (wxListbook*) 0;
+	DeltaWxListbook *listbk = (DeltaWxListbook*) 0;
 	if (n == 0)
-		listbk = new wxListbook();
+		wxlistbk = new wxListbook();
 	else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -181,7 +192,7 @@ WX_FUNC_ARGRANGE_START(listbook_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		listbk = new wxListbook(parent, id, pos, size, style, name);
+		wxlistbk = new wxListbook(parent, id, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -190,7 +201,12 @@ WX_FUNC_ARGRANGE_START(listbook_construct, 0, 6, Nil)
 		);
 		return;
 	}
-	WX_SET_WINDOW_OBJECT(Listbook, listbk)
+	if (wxlistbk) listbk = DNEWCLASS(DeltaWxListbook, (wxlistbk));
+	WX_SETOBJECT(Listbook, listbk)
+}
+
+DLIB_FUNC_START(listbook_destruct, 1, Nil)
+	DLIB_WXDELETE(listbook, Listbook, listbk)
 }
 
 WX_FUNC_ARGRANGE_START(listbook_addpage, 3, 5, Nil)
@@ -211,19 +227,20 @@ WX_FUNC_ARGRANGE_START(listbook_advanceselection, 1, 2, Nil)
 	listbk->AdvanceSelection(forward);
 }
 
-WX_FUNC_START(listbook_assignimagelist, 2, Nil)
+DLIB_FUNC_START(listbook_assignimagelist, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	listbk->AssignImageList(imageList);
 }
 
-WX_FUNC_START(listbook_calcsizefrompage, 2, Nil)
+DLIB_FUNC_START(listbook_calcsizefrompage, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	DLIB_WXGETSIZE_BASE(sizePage)
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(listbk->CalcSizeFromPage(*sizePage)))
+	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(listbk->CalcSizeFromPage(*sizePage))));
+	WX_SETOBJECT(Size, retval)
 }
 
-WX_FUNC_START(listbook_changeselection, 2, Nil)
+DLIB_FUNC_START(listbook_changeselection, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(size)
 	WX_SETNUMBER(listbk->ChangeSelection(size))
@@ -242,62 +259,62 @@ WX_FUNC_ARGRANGE_START(listbook_create, 3, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(listbk->Create(parent, id, pos, size, style, name))
-	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(listbk);
 }
 
-WX_FUNC_START(listbook_deleteallpages, 1, Nil)
+DLIB_FUNC_START(listbook_deleteallpages, 1, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_SETBOOL(listbk->DeleteAllPages())
 }
 
-WX_FUNC_START(listbook_deletepage, 2, Nil)
+DLIB_FUNC_START(listbook_deletepage, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(listbk->DeletePage(page))
 }
 
-WX_FUNC_START(listbook_getcurrentpage, 1, Nil)
+DLIB_FUNC_START(listbook_getcurrentpage, 1, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
-	wxWindow* retval	= listbk->GetCurrentPage();
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, listbk->GetCurrentPage())
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(listbook_getimagelist, 1, Nil)
+DLIB_FUNC_START(listbook_getimagelist, 1, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
-	wxImageList* retval	= listbk->GetImageList();
+	WXNEWCLASS(DeltaWxImageList, retval, wxImageList, listbk->GetImageList())
 	WX_SETOBJECT(ImageList, retval)
 }
 
-WX_FUNC_START(listbook_getlistview, 1, Nil)
+DLIB_FUNC_START(listbook_getlistview, 1, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
-	WX_SETOBJECT(ListView, listbk->GetListView())
+	DeltaWxListView *retval = DNEWCLASS(DeltaWxListView, (listbk->GetListView()));
+	WX_SETOBJECT(ListView, retval)
 }
 
-WX_FUNC_START(listbook_getpage, 2, Nil)
+DLIB_FUNC_START(listbook_getpage, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(page)
-	wxWindow* retval	= listbk->GetPage(page);
+	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, listbk->GetPage(page))
 	WX_SETOBJECT(Window, retval)
 }
 
-WX_FUNC_START(listbook_getpagecount, 1, Nil)
+DLIB_FUNC_START(listbook_getpagecount, 1, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_SETNUMBER(listbk->GetPageCount())
 }
 
-WX_FUNC_START(listbook_getpageimage, 2, Nil)
+DLIB_FUNC_START(listbook_getpageimage, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(nPage)
 	WX_SETNUMBER(listbk->GetPageImage(nPage))
 }
 
-WX_FUNC_START(listbook_getpagetext, 2, Nil)
+DLIB_FUNC_START(listbook_getpagetext, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(page)
 	WX_SETSTRING(listbk->GetPageText(page))
 }
 
-WX_FUNC_START(listbook_getselection, 1, Nil)
+DLIB_FUNC_START(listbook_getselection, 1, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_SETNUMBER(listbk->GetSelection())
 }
@@ -325,39 +342,39 @@ WX_FUNC_ARGRANGE_START(listbook_insertpage, 4, 6, Nil)
 	WX_SETBOOL(listbk->InsertPage(index, page, text, select, imageId))
 }
 
-WX_FUNC_START(listbook_removepage, 2, Nil)
+DLIB_FUNC_START(listbook_removepage, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(listbk->RemovePage(page))
 }
 
-WX_FUNC_START(listbook_setimagelist, 2, Nil)
+DLIB_FUNC_START(listbook_setimagelist, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	listbk->SetImageList(imageList);
 }
 
-WX_FUNC_START(listbook_setpagesize, 2, Nil)
+DLIB_FUNC_START(listbook_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	DLIB_WXGETSIZE_BASE(size)
 	listbk->SetPageSize(*size);
 }
 
-WX_FUNC_START(listbook_setpageimage, 3, Nil)
+DLIB_FUNC_START(listbook_setpageimage, 3, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(page)
 	WX_GETNUMBER(image)
 	WX_SETBOOL(listbk->SetPageImage(page, image))
 }
 
-WX_FUNC_START(listbook_setpagetext, 3, Nil)
+DLIB_FUNC_START(listbook_setpagetext, 3, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(page)
 	WX_GETSTRING(text)
 	WX_SETBOOL(listbk->SetPageText(page, text))
 }
 
-WX_FUNC_START(listbook_setselection, 2, Nil)
+DLIB_FUNC_START(listbook_setselection, 2, Nil)
 	DLIB_WXGET_BASE(listbook, Listbook, listbk)
 	WX_GETNUMBER(page)
 	WX_SETNUMBER(listbk->SetSelection(page))

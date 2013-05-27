@@ -66,27 +66,21 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(DropTarget,droptarget)
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(droptarget_construct, 0, Nil)
-	context.UpdateContext(_argNo, _sig1, _sig2);
-	if (SetValueFromNativeInstance
-			<DeltaWxDropTargetClassId, DeltaWxDropTarget, wxDropTargetDerived>
-			(new wxDropTargetDerived(), DLIB_RETVAL_PTR, &LetWrapperLive,
-			&DropTargetUtils::GetGetter, &DropTargetUtils::GetMethods, &context)) {
-		context.UpdateLocals(NULL, NULL, &_argNo, &_sig1, &_sig2);
-	} else
-		return;
+DLIB_FUNC_START(droptarget_construct, 0, Nil)
+	DeltaWxDropTarget *wxdtarget = DNEWCLASS(DeltaWxDropTarget, (new wxDropTargetDerived()));
+	WX_SETOBJECT(DropTarget, wxdtarget)
 }
 
-WX_FUNC_START(droptarget_destruct, 1, Nil)
+DLIB_FUNC_START(droptarget_destruct, 1, Nil)
 	DLIB_WXDELETE(droptarget, DropTarget, target)
 }
 
-WX_FUNC_START(droptarget_getdata, 1, Nil)
+DLIB_FUNC_START(droptarget_getdata, 1, Nil)
 	DLIB_WXGET_BASE(droptarget, DropTarget, target)
 	target->GetData();
 }
 
-WX_FUNC_START(droptarget_ondata, 4, Nil)
+DLIB_FUNC_START(droptarget_ondata, 4, Nil)
 	DLIB_WXGET_BASE(droptarget, DropTarget, target)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
@@ -102,7 +96,6 @@ static void droptarget_ondataadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(droptarget, DropTarget, _droptarget)
 	wxDropTargetDerived *droptarget = (wxDropTargetDerived*)_droptarget;
 	for (int i = 1; i < n; ++i) {
@@ -120,7 +113,6 @@ static void droptarget_ondataremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(droptarget, DropTarget, _droptarget)
 	wxDropTargetDerived *droptarget = (wxDropTargetDerived*)_droptarget;
 	DeltaValue *onData = droptarget->GetOnDataFunc();
@@ -132,7 +124,7 @@ static void droptarget_ondataremove_LibFunc (DeltaVirtualMachine* vm)
 	}
 }
 
-WX_FUNC_START(droptarget_ondrop, 3, Nil)
+DLIB_FUNC_START(droptarget_ondrop, 3, Nil)
 	DLIB_WXGET_BASE(droptarget, DropTarget, target)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
@@ -147,7 +139,6 @@ static void droptarget_ondropadd_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(droptarget, DropTarget, _droptarget)
 	wxDropTargetDerived *droptarget = (wxDropTargetDerived*)_droptarget;
 	for (int i = 1; i < n; ++i) {
@@ -165,7 +156,6 @@ static void droptarget_ondropremove_LibFunc (DeltaVirtualMachine* vm)
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
-	WX_CREATE_CONTEXT(context);
 	DLIB_WXGET_BASE(droptarget, DropTarget, _droptarget)
 	wxDropTargetDerived *droptarget = (wxDropTargetDerived*)_droptarget;
 	std::list<DeltaValue> *onDrop = droptarget->GetOnDropFuncs();

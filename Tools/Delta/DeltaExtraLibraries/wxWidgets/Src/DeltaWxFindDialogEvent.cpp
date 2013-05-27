@@ -17,6 +17,7 @@
 #define WX_FUNC(name) WX_FUNC1(finddialogevent, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getflags)
 WX_FUNC_DEF(getfindstring)
 WX_FUNC_DEF(getreplacestring)
@@ -24,6 +25,7 @@ WX_FUNC_DEF(getdialog)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getflags),
 	WX_FUNC(getfindstring),
 	WX_FUNC(getreplacestring),
@@ -32,7 +34,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getflags", "getdialog")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getdialog")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FindDialogEvent, "finddialogevent", CommandEvent)
 
@@ -46,7 +48,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, CommandEvent, val)
+	wxCommandEvent *_parent = DLIB_WXTYPECAST_BASE(CommandEvent, val, commandevent);
+	DeltaWxCommandEvent *parent = DNEWCLASS(DeltaWxCommandEvent, (_parent));
+	WX_SETOBJECT_EX(*at, CommandEvent, parent)
 	return true;
 }
 
@@ -71,25 +75,32 @@ WX_FUNC_ARGRANGE_START(finddialogevent_construct, 0, 2, Nil)
 	int commandType = wxEVT_NULL, id = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(commandType) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(FindDialogEvent, new wxFindDialogEvent(commandType, id))
+	DeltaWxFindDialogEvent *evt = DNEWCLASS(DeltaWxFindDialogEvent,
+		(new wxFindDialogEvent(commandType, id)));
+	WX_SETOBJECT(FindDialogEvent, evt)
 }
 
-WX_FUNC_START(finddialogevent_getflags, 1, Nil)
+DLIB_FUNC_START(finddialogevent_destruct, 1, Nil)
+	DLIB_WXDELETE(finddialogevent, FindDialogEvent, evt)
+}
+
+DLIB_FUNC_START(finddialogevent_getflags, 1, Nil)
 	DLIB_WXGET_BASE(finddialogevent, FindDialogEvent, evt)
 	WX_SETNUMBER(evt->GetFlags())
 }
 
-WX_FUNC_START(finddialogevent_getfindstring, 1, Nil)
+DLIB_FUNC_START(finddialogevent_getfindstring, 1, Nil)
 	DLIB_WXGET_BASE(finddialogevent, FindDialogEvent, evt)
 	WX_SETSTRING(evt->GetFindString())
 }
 
-WX_FUNC_START(finddialogevent_getreplacestring, 1, Nil)
+DLIB_FUNC_START(finddialogevent_getreplacestring, 1, Nil)
 	DLIB_WXGET_BASE(finddialogevent, FindDialogEvent, evt)
 	WX_SETSTRING(evt->GetReplaceString())
 }
 
-WX_FUNC_START(finddialogevent_getdialog, 1, Nil)
+DLIB_FUNC_START(finddialogevent_getdialog, 1, Nil)
 	DLIB_WXGET_BASE(finddialogevent, FindDialogEvent, evt)
-	WX_SETOBJECT(FindReplaceDialog, evt->GetDialog())
+	DeltaWxFindReplaceDialog *retval = DNEWCLASS(DeltaWxFindReplaceDialog, (evt->GetDialog()));
+	WX_SETOBJECT(FindReplaceDialog, retval)
 }

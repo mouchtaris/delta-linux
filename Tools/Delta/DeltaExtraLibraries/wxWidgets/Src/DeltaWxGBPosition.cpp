@@ -15,6 +15,7 @@
 #define WX_FUNC(name) WX_FUNC1(gbposition, name)
 
 WX_FUNC_DEF(construct)
+WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getcol)
 WX_FUNC_DEF(getrow)
 WX_FUNC_DEF(setcol)
@@ -24,6 +25,7 @@ WX_FUNC_DEF(notequal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
+	WX_FUNC(destruct),
 	WX_FUNC(getcol),
 	WX_FUNC(getrow),
 	WX_FUNC(setcol),
@@ -34,7 +36,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getcol", "notequal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "notequal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(GBPosition, "gbposition")
 
@@ -81,13 +83,14 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(GBPosition, gbposition,
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(gbposition_construct, 0, 2, Nil)
-	wxGBPosition *gbposition = (wxGBPosition*) 0;
+	wxGBPosition *wxgbposition = (wxGBPosition*) 0;
+	DeltaWxGBPosition *gbposition = (DeltaWxGBPosition*) 0;
 	if (n == 0)
-		gbposition = new wxGBPosition();
+		wxgbposition = new wxGBPosition();
 	else if (n == 2) {
 		WX_GETNUMBER(row)
 		WX_GETNUMBER(col)
-		gbposition = new wxGBPosition(row, col);
+		wxgbposition = new wxGBPosition(row, col);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -96,38 +99,43 @@ WX_FUNC_ARGRANGE_START(gbposition_construct, 0, 2, Nil)
 		);
 		RESET_EMPTY
 	}
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(GBPosition, gbposition)
+	if (wxgbposition) gbposition = DNEWCLASS(DeltaWxGBPosition, (wxgbposition));
+	WX_SETOBJECT(GBPosition, gbposition)
 }
 
-WX_FUNC_START(gbposition_getcol, 1, Nil)
+DLIB_FUNC_START(gbposition_destruct, 1, Nil)
+	DLIB_WXDELETE(gbposition, GBPosition, gbposition)
+}
+
+DLIB_FUNC_START(gbposition_getcol, 1, Nil)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition)
 	WX_SETNUMBER(wxgbposition->GetCol());
 }
 
-WX_FUNC_START(gbposition_getrow, 1, Nil)
+DLIB_FUNC_START(gbposition_getrow, 1, Nil)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition)
 	WX_SETNUMBER(wxgbposition->GetRow());
 }
 
-WX_FUNC_START(gbposition_setcol, 2, Nil)
+DLIB_FUNC_START(gbposition_setcol, 2, Nil)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition)
 	WX_GETNUMBER(col)
 	wxgbposition->SetCol(col);
 }
 
-WX_FUNC_START(gbposition_setrow, 2, Nil)
+DLIB_FUNC_START(gbposition_setrow, 2, Nil)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition)
 	WX_GETNUMBER(row)
 	wxgbposition->SetRow(row);
 }
 
-WX_FUNC_START(gbposition_equal, 2, Nil)
+DLIB_FUNC_START(gbposition_equal, 2, Nil)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition2)
 	WX_SETBOOL(wxgbposition->operator==(*wxgbposition2))
 }
 
-WX_FUNC_START(gbposition_notequal, 2, Nil)
+DLIB_FUNC_START(gbposition_notequal, 2, Nil)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition)
 	DLIB_WXGET_BASE(gbposition, GBPosition, wxgbposition2)
 	WX_SETBOOL(wxgbposition->operator!=(*wxgbposition2))

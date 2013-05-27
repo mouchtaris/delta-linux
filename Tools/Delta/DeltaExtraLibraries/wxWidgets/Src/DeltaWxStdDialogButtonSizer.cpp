@@ -61,42 +61,54 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, BoxSizer, val)
+	wxBoxSizer *_parent = DLIB_WXTYPECAST_BASE(BoxSizer, val, boxsizer);
+	DeltaWxBoxSizer *parent = DNEWCLASS(DeltaWxBoxSizer, (_parent));
+	WX_SETOBJECT_EX(*at, BoxSizer, parent)
 	return true;
 }
 
 static bool GetAffirmativeButton (void* val, DeltaValue* at) 
 {
 	wxStdDialogButtonSizer *sizer = DLIB_WXTYPECAST_BASE(StdDialogButtonSizer, val, stddialogbuttonsizer);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Button, sizer->GetAffirmativeButton())
+	wxButton *button = sizer->GetAffirmativeButton();
+	DeltaWxButton *retval = button ? DNEWCLASS(DeltaWxButton, (button)) : (DeltaWxButton*) 0;
+	WX_SETOBJECT_EX(*at, Button, retval)
 	return true;
 }
 
 static bool GetApplyButton (void* val, DeltaValue* at) 
 {
 	wxStdDialogButtonSizer *sizer = DLIB_WXTYPECAST_BASE(StdDialogButtonSizer, val, stddialogbuttonsizer);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Button, sizer->GetApplyButton())
+	wxButton *button = sizer->GetApplyButton();
+	DeltaWxButton *retval = button ? DNEWCLASS(DeltaWxButton, (button)) : (DeltaWxButton*) 0;
+	WX_SETOBJECT_EX(*at, Button, retval)
 	return true;
 }
 
 static bool GetNegativeButton (void* val, DeltaValue* at) 
 {
 	wxStdDialogButtonSizer *sizer = DLIB_WXTYPECAST_BASE(StdDialogButtonSizer, val, stddialogbuttonsizer);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Button, sizer->GetNegativeButton())
+	wxButton *button = sizer->GetNegativeButton();
+	DeltaWxButton *retval = button ? DNEWCLASS(DeltaWxButton, (button)) : (DeltaWxButton*) 0;
+	WX_SETOBJECT_EX(*at, Button, retval)
 	return true;
 }
 
 static bool GetCancelButton (void* val, DeltaValue* at) 
 {
 	wxStdDialogButtonSizer *sizer = DLIB_WXTYPECAST_BASE(StdDialogButtonSizer, val, stddialogbuttonsizer);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Button, sizer->GetCancelButton())
+	wxButton *button = sizer->GetCancelButton();
+	DeltaWxButton *retval = button ? DNEWCLASS(DeltaWxButton, (button)) : (DeltaWxButton*) 0;
+	WX_SETOBJECT_EX(*at, Button, retval)
 	return true;
 }
 
 static bool GetHelpButton (void* val, DeltaValue* at) 
 {
 	wxStdDialogButtonSizer *sizer = DLIB_WXTYPECAST_BASE(StdDialogButtonSizer, val, stddialogbuttonsizer);
-	WX_SETOBJECT_NO_CONTEXT_EX(*at, Button, sizer->GetHelpButton())
+	wxButton *button = sizer->GetHelpButton();
+	DeltaWxButton *retval = button ? DNEWCLASS(DeltaWxButton, (button)) : (DeltaWxButton*) 0;
+	WX_SETOBJECT_EX(*at, Button, retval)
 	return true;
 }
 
@@ -114,63 +126,70 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(StdDialogButtonSizer,stddialogbuttonsizer)
 
 ////////////////////////////////////////////////////////////////
 
-WX_FUNC_START(stddialogbuttonsizer_construct, 0, Nil)
-	WX_SETOBJECT(StdDialogButtonSizer, new wxStdDialogButtonSizer())
+DLIB_FUNC_START(stddialogbuttonsizer_construct, 0, Nil)
+	DeltaWxStdDialogButtonSizer *sizer = DNEWCLASS(DeltaWxStdDialogButtonSizer,
+		(new wxStdDialogButtonSizer));
+	WX_SETOBJECT(StdDialogButtonSizer, sizer)
 }
 
-WX_FUNC_START(stddialogbuttonsizer_destruct, 1, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_destruct, 1, Nil)
 	DLIB_WXDELETE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
 }
 
-WX_FUNC_START(stddialogbuttonsizer_addbutton, 2, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_addbutton, 2, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
 	DLIB_WXGET_BASE(button, Button, button)
 	sizer->AddButton(button);
 }
 
-WX_FUNC_START(stddialogbuttonsizer_realize, 1, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_realize, 1, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
 	sizer->Realize();
 }
 
-WX_FUNC_START(stddialogbuttonsizer_getaffirmativebutton, 1, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_getaffirmativebutton, 1, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
-	WX_SETOBJECT(Button, sizer->GetAffirmativeButton())
+	DeltaWxButton *retval = DNEWCLASS(DeltaWxButton, (sizer->GetAffirmativeButton()));
+	WX_SETOBJECT(Button, retval)
 }
 
-WX_FUNC_START(stddialogbuttonsizer_getapplybutton, 1, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_getapplybutton, 1, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
-	WX_SETOBJECT(Button, sizer->GetApplyButton())
+	DeltaWxButton *retval = DNEWCLASS(DeltaWxButton, (sizer->GetApplyButton()));
+	WX_SETOBJECT(Button, retval)
 }
 
-WX_FUNC_START(stddialogbuttonsizer_getnegativebutton, 1, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_getnegativebutton, 1, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
-	WX_SETOBJECT(Button, sizer->GetNegativeButton())
+	DeltaWxButton *retval = DNEWCLASS(DeltaWxButton, (sizer->GetNegativeButton()));
+	WX_SETOBJECT(Button, retval)
 }
 
-WX_FUNC_START(stddialogbuttonsizer_getcancelbutton, 1, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_getcancelbutton, 1, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
-	WX_SETOBJECT(Button, sizer->GetCancelButton())
+	DeltaWxButton *retval = DNEWCLASS(DeltaWxButton, (sizer->GetCancelButton()));
+	WX_SETOBJECT(Button, retval)
 }
 
-WX_FUNC_START(stddialogbuttonsizer_gethelpbutton, 1, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_gethelpbutton, 1, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
-	WX_SETOBJECT(Button, sizer->GetHelpButton())
+	DeltaWxButton *retval = DNEWCLASS(DeltaWxButton, (sizer->GetHelpButton()));
+	WX_SETOBJECT(Button, retval)
 }
 
-WX_FUNC_START(stddialogbuttonsizer_setaffirmativebutton, 2, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_setaffirmativebutton, 2, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
 	DLIB_WXGET_BASE(button, Button, button)
 	sizer->SetAffirmativeButton(button);
 }
 
-WX_FUNC_START(stddialogbuttonsizer_setcancelbutton, 2, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_setcancelbutton, 2, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
 	DLIB_WXGET_BASE(button, Button, button)
 	sizer->SetCancelButton(button);
 }
 
-WX_FUNC_START(stddialogbuttonsizer_setnegativebutton, 2, Nil)
+DLIB_FUNC_START(stddialogbuttonsizer_setnegativebutton, 2, Nil)
 	DLIB_WXGET_BASE(stddialogbuttonsizer, StdDialogButtonSizer, sizer)
 	DLIB_WXGET_BASE(button, Button, button)
 	sizer->SetNegativeButton(button);

@@ -57,7 +57,9 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	WX_SET_BASECLASS_GETTER(at, SizerItem, val)
+	wxSizerItem *_parent = DLIB_WXTYPECAST_BASE(SizerItem, val, sizeritem);
+	DeltaWxSizerItem *parent = DNEWCLASS(DeltaWxSizerItem, (_parent));
+	WX_SETOBJECT_EX(*at, SizerItem, parent)
 	return true;
 }
 
@@ -66,7 +68,9 @@ static bool GetPosition (void* val, DeltaValue* at)
 	wxGBSizerItem *item = DLIB_WXTYPECAST_BASE(GBSizerItem, val, gbsizeritem);
 	int row, col;
 	item->GetPos(row, col);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, GBPosition, new wxGBPosition(row, col))
+	DeltaWxGBPosition *retval = DNEWCLASS(DeltaWxGBPosition,
+									(new wxGBPosition(row, col)));
+	WX_SETOBJECT_EX(*at, GBPosition, retval)
 	return true;
 }
 
@@ -75,7 +79,9 @@ static bool GetEndPosition (void* val, DeltaValue* at)
 	wxGBSizerItem *item = DLIB_WXTYPECAST_BASE(GBSizerItem, val, gbsizeritem);
 	int row, col;
 	item->GetEndPos(row, col);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, GBPosition, new wxGBPosition(row, col))
+	DeltaWxGBPosition *retval = DNEWCLASS(DeltaWxGBPosition,
+									(new wxGBPosition(row, col)));
+	WX_SETOBJECT_EX(*at, GBPosition, retval)
 	return true;
 }
 
@@ -84,7 +90,8 @@ static bool GetSpan (void* val, DeltaValue* at)
 	wxGBSizerItem *item = DLIB_WXTYPECAST_BASE(GBSizerItem, val, gbsizeritem);
 	int rowSpan, colSpan;
 	item->GetSpan(rowSpan, colSpan);
-	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, GBSpan, new wxGBSpan(rowSpan, colSpan))
+	DeltaWxGBSpan *retval = DNEWCLASS(DeltaWxGBSpan, (new wxGBSpan(rowSpan, colSpan)));
+	WX_SETOBJECT_EX(*at, GBSpan, retval)
 	return true;
 }
 
@@ -103,9 +110,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(GBSizerItem,gbsizeritem)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(gbsizeritem_construct, 0, 6, Nil)
-	wxGBSizerItem *gbitem = (wxGBSizerItem*) 0;
+	wxGBSizerItem *wxgbitem = (wxGBSizerItem*) 0;
+	DeltaWxGBSizerItem *gbitem = (DeltaWxGBSizerItem*) 0;
 	if (n == 0)
-		gbitem = new wxGBSizerItem();
+		wxgbitem = new wxGBSizerItem();
 	else if (n == 6) {
 		WX_GETNUMBER(width)
 		WX_GETNUMBER(height)
@@ -113,23 +121,25 @@ WX_FUNC_ARGRANGE_START(gbsizeritem_construct, 0, 6, Nil)
 		DLIB_WXGET_BASE(gbspan, GBSpan, span)
 		WX_GETDEFINE(flag)
 		WX_GETNUMBER(border)
-		gbitem = new wxGBSizerItem(width, height, *pos, *span, flag, border, NULL);
+		wxgbitem = new wxGBSizerItem(width, height, *pos, *span, flag, border, NULL);
 	} else if (n == 5) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Window, serial_no, window, window)) {
+			if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
+				wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
 				DLIB_WXGET_BASE(gbposition, GBPosition, pos)
 				DLIB_WXGET_BASE(gbspan, GBSpan, span)
 				WX_GETDEFINE(flag)
 				WX_GETNUMBER(border)
-				gbitem = new wxGBSizerItem(window, *pos, *span, flag, border, NULL);
+				wxgbitem = new wxGBSizerItem(window, *pos, *span, flag, border, NULL);
 			} else
-			if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer)) {
+			if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
+				wxSizer *sizer = (wxSizer*) sizer_wr->GetCastToNativeInstance();
 				DLIB_WXGET_BASE(gbposition, GBPosition, pos)
 				DLIB_WXGET_BASE(gbspan, GBSpan, span)
 				WX_GETDEFINE(flag)
 				WX_GETNUMBER(border)
-				gbitem = new wxGBSizerItem(sizer, *pos, *span, flag, border, NULL);
+				wxgbitem = new wxGBSizerItem(sizer, *pos, *span, flag, border, NULL);
 			}
 		}
 	} else {
@@ -140,32 +150,38 @@ WX_FUNC_ARGRANGE_START(gbsizeritem_construct, 0, 6, Nil)
 		);
 		RESET_EMPTY
 	}
+	if (wxgbitem) gbitem = DNEWCLASS(DeltaWxGBSizerItem, (wxgbitem));
 	WX_SETOBJECT(GBSizerItem, gbitem)
 }
 
-WX_FUNC_START(gbsizeritem_destruct, 1, Nil)
+DLIB_FUNC_START(gbsizeritem_destruct, 1, Nil)
 	DLIB_WXDELETE(gbsizeritem, GBSizerItem, item)
 }
 
-WX_FUNC_START(gbsizeritem_getendpos, 1, Nil)
+DLIB_FUNC_START(gbsizeritem_getendpos, 1, Nil)
 	DLIB_WXGET_BASE(gbsizeritem, GBSizerItem, item)
 	int row, col;
 	item->GetEndPos(row, col);
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(GBPosition, new wxGBPosition(row,col))
+	DeltaWxGBPosition *retval = DNEWCLASS(DeltaWxGBPosition,
+									(new wxGBPosition(row,col)));
+	WX_SETOBJECT(GBPosition, retval)
 }
 
-WX_FUNC_START(gbsizeritem_getpos, 1, Nil)
+DLIB_FUNC_START(gbsizeritem_getpos, 1, Nil)
 	DLIB_WXGET_BASE(gbsizeritem, GBSizerItem, item)
 	int row, col;
 	item->GetPos(row, col);
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(GBPosition, new wxGBPosition(row,col))
+	DeltaWxGBPosition *retval = DNEWCLASS(DeltaWxGBPosition,
+									(new wxGBPosition(row,col)));
+	WX_SETOBJECT(GBPosition, retval)
 }
 
-WX_FUNC_START(gbsizeritem_getspan, 1, Nil)
+DLIB_FUNC_START(gbsizeritem_getspan, 1, Nil)
 	DLIB_WXGET_BASE(gbsizeritem, GBSizerItem, item)
 	int rowSpan, colSpan;
 	item->GetSpan(rowSpan, colSpan);
-	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(GBSpan, new wxGBSpan(rowSpan,colSpan))
+	DeltaWxGBSpan *retval = DNEWCLASS(DeltaWxGBSpan, (new wxGBSpan(rowSpan,colSpan)));
+	WX_SETOBJECT(GBSpan, retval)
 }
 
 WX_FUNC_ARGRANGE_START(gbsizeritem_intersects, 2, 3, Nil)
@@ -180,13 +196,13 @@ WX_FUNC_ARGRANGE_START(gbsizeritem_intersects, 2, 3, Nil)
 	}
 }
 
-WX_FUNC_START(gbsizeritem_setpos, 2, Nil)
+DLIB_FUNC_START(gbsizeritem_setpos, 2, Nil)
 	DLIB_WXGET_BASE(gbsizeritem, GBSizerItem, item)
 	DLIB_WXGET_BASE(gbposition, GBPosition, pos)
 	WX_SETBOOL(item->SetPos(*pos))
 }
 
-WX_FUNC_START(gbsizeritem_setspan, 2, Nil)
+DLIB_FUNC_START(gbsizeritem_setspan, 2, Nil)
 	DLIB_WXGET_BASE(gbsizeritem, GBSizerItem, item)
 	DLIB_WXGET_BASE(gbspan, GBSpan, span)
 	WX_SETBOOL(item->SetSpan(*span))
