@@ -223,6 +223,7 @@ Snake = [
 	},
 	
 	method drawitems {
+		
 		local j = listiter_new(), (local i = listiter_new()).setbegin(local bag = @items.bag);
 		while (not i.checkend(bag))
 			if (not (local item = i.getval()).visible)

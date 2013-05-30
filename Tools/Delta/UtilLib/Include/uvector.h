@@ -81,7 +81,7 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 					}
 
 	public:
-	class iterator : public std::iterator<std::input_iterator_tag, T> {
+	class iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 		protected:
 		uvector*	v;
 		util_ui32	j;
