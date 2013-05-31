@@ -147,9 +147,9 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 						{ DASSERT(invariant()); return right - left; }
 	util_ui32		capacity (void) const
 						{ DASSERT(invariant()); return total; }
-	T&				front (void) 
+	T&				front (void) const
 						{ DASSERT(invariant()); return this->operator[](0); }
-	T&				back (void) 
+	T&				back (void) const
 						{ DASSERT(invariant()); return this->operator[](size() - 1); }
 
 	void			push_back (const T& val) {
