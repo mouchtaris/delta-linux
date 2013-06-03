@@ -358,8 +358,9 @@ namespace ide
 		BOOST_FOREACH(String& decision, decisions)
 		{
 			DBGOUT << decision << DBGENDL;
-			if (boost::algorithm::starts_with(decision, _T("activate ")))
-				AddComponent(util::str2std(decision.substr(9)), -1);	///< magic number 9 == strlen("activate ")
+			String target = _T("activate ");
+			if (boost::algorithm::starts_with(decision, target))
+				AddComponent(util::str2std(decision.substr(target.size())), -1);
 		}
 	}
 

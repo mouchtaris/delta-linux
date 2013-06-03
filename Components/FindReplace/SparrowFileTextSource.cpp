@@ -18,11 +18,7 @@
 #include "SparrowFileTextSource.h"
 #include "ComponentHandle.h"
 #include "ComponentRegistry.h"
-
-
-//#define START_POS	col1		//auta ta duo ta xriazomatse gia to select text epidei
-//#define END_POS		col2+1		//o jg den 3erei ti dinei san orisma 
-
+#include "DockableComponent.h"
 
 using namespace frep;
 
@@ -57,7 +53,8 @@ namespace ide {
 
 	//-----------------------------------------------------------------------
 	
-	bool HasEditor(std::string uri){
+	static bool HasEditor(const std::string& uri){
+		DockableComponent::EnsureVisibility("EditorManager");
 		return Call<const Handle& (const String& uri)>
 					("FindAndReplace", "EditorManager", "GetEditor")
 					(util::std2str(uri));
@@ -65,7 +62,8 @@ namespace ide {
 
 	//-----------------------------------------------------------------------
 
-	Component *	NewEditor(std::string uri) {
+	static Component *	NewEditor(const std::string& uri) {
+		DockableComponent::EnsureVisibility("EditorManager");
 		const Handle& editor2 = Call<const Handle& (void)>("FindAndReplace", "EditorManager", "NewEditor")();
 		Call<void (const String& uri)>("FindAndReplace", editor2, "Open")( util::std2str(uri));
 		return editor2.Resolve();
@@ -234,8 +232,8 @@ namespace ide {
 	
 	const frep::TextSource::Pos SparrowFileTextSource::GetCurrentFilePos (void) { 
 		if (editor) {
-			currPos.col = Call<int (void)>(editor, editor, "GetCurrentPos")();
-			currPos.row = Call<int (void)>(editor, editor, "GetCurrentLine")();
+			currPos.col = Call<int (void)>("FindAndReplace", editor, "GetCurrentPos")();
+			currPos.row = Call<int (void)>("FindAndReplace", editor, "GetCurrentLine")();
 		}
 		return currPos; 
 	}
@@ -245,8 +243,8 @@ namespace ide {
 	bool SparrowFileTextSource::IsFocused (void) { 
 		if (editor) {
 		//if ( !HasEditor(path) ) editor = NewEditor(path);
-			const Handle& focused = Call<const Handle& (void)>(editor, "EditorManager", "GetFocusedEditor")();
-			const String& focusedEditorURI = Call<const String& (void)>(editor, focused, "GetURI")();
+			const Handle& focused = Call<const Handle& (void)>("FindAndReplace", "EditorManager", "GetFocusedEditor")();
+			const String& focusedEditorURI = Call<const String& (void)>("FindAndReplace", focused, "GetURI")();
 			if ( !util::str2std(focusedEditorURI).compare(path))
 				return true;
 		}
@@ -258,7 +256,8 @@ namespace ide {
 	void SparrowFileTextSource::Focus (void) { 
 		if ( !HasEditor(path) ) 
 			editor = NewEditor(path);
-		Call<void (Handle)>(editor, "EditorManager", "FocusEditor")(editor);
+		Call<void (Handle)>("FindAndReplace", "EditorManager", "FocusEditor")(editor);
+		editor->Focus();
 	}
 
 	//-----------------------------------------------------------------------
@@ -266,17 +265,17 @@ namespace ide {
 	void SparrowFileTextSource::Bookmark(const unsigned row, const unsigned col) {
 		if ( !HasEditor(path) ) 
 			editor = NewEditor(path);
-		if (!Call<bool (int)>(editor, editor, "HasBookmark")(row))
-			Call<void (int)>(editor, editor, "InsertBookmark")(row);
+		if (!Call<bool (int)>("FindAndReplace", editor, "HasBookmark")(row))
+			Call<void (int)>("FindAndReplace", editor, "InsertBookmark")(row);
 	}
 
 	//-----------------------------------------------------------------------
 	void SparrowFileTextSource::Select( const int row1, const int col1, const int row2, const int col2) {
 		if ( !HasEditor(path) ) 
 			editor = NewEditor(path);
-		Call<void (Handle)>(editor, "EditorManager", "FocusEditor")(editor);
-		Call<void  (int, int)>(editor, editor, "SelectRange")(col1, col2+1); //+1 magic number is like the 
-																			 //end() of interator.
+		Call<void (Handle)>("FindAndReplace", "EditorManager", "FocusEditor")(editor);
+		Call<void  (int, int)>("FindAndReplace", editor, "SelectRange")(col1, col2+1);	//+1 magic number is like the 
+																						//.end() of iterator.
 	}
 
 
@@ -292,17 +291,17 @@ namespace ide {
 		if ( !HasEditor(path) ) 
 			editor = NewEditor(path);
 
-		Call<void (Handle)>(editor, "EditorManager", "FocusEditor")(editor);
-		Call<void  (int, int)>(editor, editor, "SelectRange")(col1, col2+1);//+1 magic number is like the 
-																			//.end() of interator.
+		Call<void (Handle)>("FindAndReplace", "EditorManager", "FocusEditor")(editor);
+		Call<void  (int, int)>("FindAndReplace", editor, "SelectRange")(col1, col2+1);	//+1 magic number is like the 
+																						//.end() of iterator.
 		
 		//to string pou 8a alax8ei
-		std::string toChange = util::str2std( Call<const String& (void)>(editor, editor, "GetSelectedText")() );
-		Call<void (const String&)>(editor, editor, "ReplaceSelection")(util::std2str(str));
+		std::string toChange = util::str2std( Call<const String& (void)>("FindAndReplace", editor, "GetSelectedText")() );
+		Call<void (const String&)>("FindAndReplace", editor, "ReplaceSelection")(util::std2str(str));
 		
 		//update the contents of the vec.
 		ClearAllContainers();
-		std::string text = util::str2std(Call<const String (void)>(editor, editor, "GetText")());
+		std::string text = util::str2std(Call<const String (void)>("FindAndReplace", editor, "GetText")());
 		vec.reserve(text.size()+1);
 		Open();
 		return toChange;

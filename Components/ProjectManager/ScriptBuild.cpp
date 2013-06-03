@@ -640,7 +640,8 @@ EXPORTED_FUNCTION(Script, const std::string, GetTransformedFileFullPath, (uint t
 {
 	String name = GetName();
 	name = name.substr(0, name.find_last_of(_T(".")));
-	return util::str2std(GetPath() + name + _T("_aspect_") + boost::lexical_cast<String>(transformationNo) + _T(".dsc"));
+	const String path = GetDirectoryProperty("stage_output_path");	//if transformations are placed elsewhere change this
+	return util::str2std(path + name + _T("_aspect_") + boost::lexical_cast<String>(transformationNo) + _T(".dsc"));
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -745,9 +746,9 @@ void Script::ResolveAspectTransformations (void) {
 
 	std::string func;
 	const std::string type = GetType();
-	if (type == "Script" || type == "Aspect")
+	if (type == "Script" || type == "Aspect")	//normal script entry
 		func = "GetPreTransformations";
-	else if (type == "stage")
+	else if (type == "stage")					//else check for stage sources
 		func = "GetInterimTransformations";
 	else if (type == "result")
 		func = "GetPostTransformations";
@@ -1101,6 +1102,10 @@ void Script::BuildWithTransformations (void) {
 	//	options += _T(" --dllimport_path=") + util::quotepath(bytecodePath);
 
 	options += _T(" --symbolic=\"") + GetSymbolicURI() + _T("\"");
+
+	//transformations are stage sources and thus are produced in the sage_output_path
+	//if we want them to be produced elsewhere add a new script property and use it here.
+	options += _T(" --output_path=") + util::quotepath(GetDirectoryProperty("stage_output_path"));
 
 	const String directory = Call<const String (void)>(this, TreeItemComponent::GetParent(), "GetPath")();
 
@@ -1603,6 +1608,54 @@ EXPORTED_FUNCTION(Script, unsigned long, Clean, (const UIntList& workId)) {
 
 /////////////////////////////////////////////////////////////////////////
 
+static const String AdaptPath(const String& path, const String& originalPath, const String& targetPath) {
+	wxFileName filename(path);
+	if (filename.IsRelative()) {
+		filename.MakeAbsolute(originalPath);
+		filename.MakeRelativeTo(targetPath);
+	}
+	return util::normalizeslashes(filename.GetFullPath());
+}
+
+//********************************
+
+template<class T>
+void AdaptFileOrDirectoryPath(T* p, const String& originalPath, const String& targetPath) {
+	p->SetValue(AdaptPath(p->GetValue(), originalPath, targetPath));
+}
+template<class T>
+void AdaptFileOrDirectoryListPath(T* p, const String& originalPath, const String& targetPath) {
+	StringVec paths = p->GetValues();
+	for (StringVec::iterator i = paths.begin(); i != paths.end(); ++i)
+		*i = AdaptPath(*i, originalPath, targetPath);
+	p->SetValues(paths);
+}
+
+//********************************
+
+static conf::Property* AdaptFileOrDirectoryProperty(conf::Property* p, const String& originalPath, const String& targetPath) {
+	switch(p->GetType()) {
+		case conf::FileProperty::Type:
+			AdaptFileOrDirectoryPath(static_cast<conf::FileProperty*>(p), originalPath, targetPath);
+			break;
+
+		case conf::DirectoryProperty::Type:
+			AdaptFileOrDirectoryPath(static_cast<conf::DirectoryProperty*>(p), originalPath, targetPath);
+			break;
+
+		case conf::FileListProperty::Type:
+			AdaptFileOrDirectoryListPath(static_cast<conf::FileListProperty*>(p), originalPath, targetPath);
+			break;
+
+		case conf::DirectoryListProperty::Type:
+			AdaptFileOrDirectoryListPath(static_cast<conf::DirectoryListProperty*>(p), originalPath, targetPath);
+			break;
+	}
+	return p;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const StringList& lineMappings, 
 	const StringList& sourceRefs, const String& type, uint index, bool isFinal))
 {
@@ -1647,6 +1700,8 @@ EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const St
 	}
 	m_stageSources.push_back(source);
 
+	const String path = GetDirectoryProperty("stage_output_path");
+
 	if (type == _T("stage")) {	//generate stage properties
 		using namespace conf;
 		const AggregateListProperty* stageSourcesOptions = safe_prop_cast<const AggregateListProperty>(
@@ -1675,21 +1730,22 @@ EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const St
 			item->AddInstanceProperty("aspects", prop->Clone());
 	}
 	else {	//for stage results and aspect transformations copy script properties
+		StdStringList props;
 		for (const char** p = conf::GetProjectBuildPropertyIdsForScripts(); *p; ++p)
-			if (const conf::Property* prop = GetInstanceProperty(*p))
-				item->AddInstanceProperty(*p, prop->Clone());
+			props.push_back(*p);
 		for (const char** p = conf::GetScriptExecutionPropertyIds(); *p; ++p)
-			if (const conf::Property* prop = GetInstanceProperty(*p))
-				item->AddInstanceProperty(*p, prop->Clone());
-		if (const conf::Property* prop = GetInstanceProperty("output"))
-			item->AddInstanceProperty("output", prop->Clone());
-		if (const conf::Property* prop = GetInstanceProperty("aspects"))
-			item->AddInstanceProperty("aspects", prop->Clone());
+			props.push_back(*p);
+		props.push_back("output");
+		props.push_back("aspects");
+
+		for (StdStringList::const_iterator i = props.begin(); i != props.end(); ++i)
+			if (const conf::Property* prop = GetInstanceProperty(*i))
+				item->AddInstanceProperty(*i, AdaptFileOrDirectoryProperty(prop->Clone(), GetPath(), path));
 	}
 
 	assert(treeview);
 	Call<bool (const Handle&, const Handle&)>(this, treeview, "AddComponent")(this, item);
-	Call<void (const String&)>(this, item, "Load")(GetDirectoryProperty("stage_output_path") + file);
+	Call<void (const String&)>(this, item, "Load")(path + file);
 	Call<void (const String&)>(this, item, "SetSymbolicURI")(file);
 	Call<void (const Handle&)>(this, treeview, "SortChildren")(this);
 
@@ -1781,7 +1837,8 @@ void Script::CleanStageSources (void) {
 	}
 
 	BOOST_FOREACH(const conf::PropertyTable& source, m_stageSources) {
-		const String uri = GetPath() + conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
+		const String uri = GetDirectoryProperty("stage_output_path") +
+			conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
 		const std::string curi = util::str2std(uri);
 		RemoveIfExists(curi);
 		if (conf::get_prop_value<conf::StringProperty>(source.GetProperty("type")) == _T("stage")) {

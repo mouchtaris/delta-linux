@@ -105,7 +105,7 @@ namespace conf {
 		);
 		comp->AddInstanceProperty(GetDeploymentPropertyId(), GenerateScriptDeploymentProperty());
 		comp->AddInstanceProperty("stage_sources_options", GenerateStageSourcesProperty());
-		comp->AddInstanceProperty("aspects", new FileListProperty(_("Aspect Transformations"),
+		comp->AddInstanceProperty("aspects", new StringListProperty(_("Aspect Transformations"),
 			_("Aspect transformation script binaries"), _("Compilation"))
 		);
 
@@ -144,7 +144,7 @@ namespace conf {
 				_("Compilation")
 			)
 		);
-		props->AddProperty("aspects", new FileListProperty(_("Aspect Transformations"),
+		props->AddProperty("aspects", new StringListProperty(_("Aspect Transformations"),
 			_("Aspect transformation script binaries"), _("Compilation"))
 		);
 	}

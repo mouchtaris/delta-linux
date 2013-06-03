@@ -20,8 +20,11 @@ void AspectCompiler::Error(const std::string& msg) {
 
 ///////////////////////////////////////////////////////////////////////////
 
-static const std::string BaseName (const std::string& name)
-	{ return name.substr(0, name.find_last_of('.')); }
+static const std::string BaseName (const std::string& name) {
+	const std::string noSuffix = name.substr(0, name.find_last_of('.'));
+	std::string::size_type pos = noSuffix.find_last_of('/');
+	return pos == std::string::npos ? noSuffix : noSuffix.substr(pos + 1);
+}
 
 bool AspectCompiler::ParseFile(const std::string& path, const std::string& symbolic) {
 	DeltaMetaCompiler* compiler = DNEW(DeltaMetaCompiler);

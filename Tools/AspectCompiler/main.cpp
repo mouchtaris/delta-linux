@@ -20,6 +20,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 #include <iostream>
 #include <vector>
@@ -45,6 +46,7 @@ static void OnError (const char* error, void*) {
 //-----------------------------------------------------------------------
 
 static std::string originalSource;
+static std::string output_path;
 
 static void OnParse(AST::Node* ast, void* closure) {
 	BuildClient::DoGetSourceReferences(originalSource);
@@ -67,7 +69,7 @@ static void OnTransformation(
 	bool									final,
 	void*									closure
 ) {
-	DeltaMetaCompiler::DumpSource(source, text);
+	DeltaMetaCompiler::DumpSource(output_path + source, text);
 	BuildClient::DoAddSource(originalSource, source, lineMappings, sourceRefs, "aspect", index, final);
 	BuildClient::WaitAnyMessage();
 	DASSERT(BuildClient::IsConnectionBroken() || BuildClient::GetResponseType() == Build_SourceAdded);
@@ -99,6 +101,9 @@ int main (int argc, char* argv[])
 		("aspects,a",
 			boost::program_options::value<StringVec>(),
 			"aspect transformation binaries")
+		("output_path",
+			boost::program_options::value<std::string>()->default_value("./"),
+			"target directory of output files")
 		("bytecode_path,b",
 			boost::program_options::value<std::string>(),
 			"byte code loading paths (as a single string with semicolon separated values)")
@@ -135,6 +140,13 @@ int main (int argc, char* argv[])
 	//-- Check arguments for help
 	if (argc == 1 || vars.count("help")) {
 		std::cout << desc << std::endl;
+		system("pause");
+		return -1;
+	}
+
+	output_path = vars["output_path"].as<std::string>();
+	if (!boost::filesystem::exists(output_path)) {
+		std::cout << "Output path " << output_path << " not found!" << std::endl;
 		system("pause");
 		return -1;
 	}

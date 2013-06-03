@@ -289,16 +289,19 @@ function GenerateAndShowAST
 
 function ShowTextualAST
 {
-	if (not inBreakpoint or spw.components.EditorManager.serial == 0)
-		return;
-	local editor = spw.components.EditorManager.GetFocusedEditor();
-	if (not editor or editor.serial == 0)
-		return;
+	if (inBreakpoint) {
+		local expr = "";
+		if (spw.components.EditorManager.serial != 0							and
+			(local editor = spw.components.EditorManager.GetFocusedEditor())	and
+			editor.serial != 0
+		)
+			expr = editor.GetSelectedText();
 
-	local window = spw.components.Shell.AddComponent("DeltaQuickWatch", 0);
-	local editorWindow = EditorWindow(window, editor.GetSelectedText());
-	editorWindows[editorWindow.window.serial] = editorWindow;
-	editorWindow.window.ShowDialog(false);
+		local window = spw.components.Shell.AddComponent("DeltaQuickWatch", 0);
+		local editorWindow = EditorWindow(window, expr);
+		editorWindows[editorWindow.window.serial] = editorWindow;
+		editorWindow.window.ShowDialog(false);
+	}
 }
 
 //-----------------------------------------------------------------------

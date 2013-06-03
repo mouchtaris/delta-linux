@@ -729,6 +729,9 @@ void Editor::ComponentAppliedChangedProperties (const conf::PropertyTable& old, 
 
 void Editor::onUpdateUI (wxScintillaEvent& event) {
 
+	if (!IsFocused())
+		Focus();
+
 	m_editor->UpdateMatchedBrace();
 
 	// i-sense call.

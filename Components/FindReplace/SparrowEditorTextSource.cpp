@@ -134,20 +134,13 @@ namespace ide {
 
 	//-----------------------------------------------------------------------
 
-	bool SparrowEditorTextSource::IsFocused (void) {
-		const Handle& focused = Call<const Handle& (void)>(editor, "EditorManager", "GetFocusedEditor")();
-		const String& focusedEditorURI = Call<const String& (void)>(editor, focused, "GetURI")();
-		if ( !util::str2std(focusedEditorURI).compare(path))
-			return true;
-		return false;
-	}
+	bool SparrowEditorTextSource::IsFocused (void) { return editor->IsFocused(); }
 
 	//-----------------------------------------------------------------------
 	
 	void SparrowEditorTextSource::Focus (void) {
-		Call<void (Handle)>
-		(editor, "EditorManager", "FocusEditor")
-		(editor);
+		Call<void (Handle)>(editor, "EditorManager", "FocusEditor")(editor);
+		editor->Focus();		//just in case of a standalone editor
 	}
 
 	//-----------------------------------------------------------------------
@@ -199,7 +192,7 @@ namespace ide {
 	void SparrowEditorTextSource::Select( const int row1, const int col1, const int row2, const int col2) {
 		Focus();
 		Call<void  (int, int)>(editor, editor, "SelectRange")(col1, col2+1); //+1 magic number. Is like the 
-																			//end() of interator.
+																			//end() of iterator.
 	}
 
 	//-----------------------------------------------------------------------
@@ -212,7 +205,7 @@ namespace ide {
 	{ 
 		Focus();
 		Call<void  (int, int)>(editor, editor, "SelectRange")(col1, col2+1);//+1 magic number is like the 
-																			//.end() of interator.
+																			//.end() of iterator.
 		
 		//to string pou 8a alax8ei
 		std::string toChange = util::str2std( Call<const String& (void)>(editor, editor, "GetSelectedText")() );

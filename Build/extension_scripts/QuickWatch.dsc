@@ -269,17 +269,19 @@ onevent onDebugStopped(classId, uri) { CloseAllQuickWatchWindows(); }
 
 function ShowDialog
 {	
-	if (not inBreakpoint or spw.components.EditorManager.serial == 0)
-		return;
-	local editor = spw.components.EditorManager.GetFocusedEditor();
-	if (not editor or editor.serial == 0)
-		return;
-	local expr = editor.GetSelectedText();
+	if (inBreakpoint) {
+		local expr = "";
+		if (spw.components.EditorManager.serial != 0							and
+			(local editor = spw.components.EditorManager.GetFocusedEditor())	and
+			editor.serial != 0
+		)
+			expr = editor.GetSelectedText();
 
-	local window = spw.components.Shell.AddComponent("DeltaQuickWatch", 0);
-	local quickWatch = QuickWatchWindow(window, expr);
-	quickWatches[quickWatch.window.serial] = quickWatch;
-	quickWatch.window.ShowDialog(false);
+		local window = spw.components.Shell.AddComponent("DeltaQuickWatch", 0);
+		local quickWatch = QuickWatchWindow(window, expr);
+		quickWatches[quickWatch.window.serial] = quickWatch;
+		quickWatch.window.ShowDialog(false);
+	}
 }
 
 //-------------------------------------------------------//

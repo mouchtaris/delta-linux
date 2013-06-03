@@ -54,31 +54,40 @@ namespace ide {
 
 	//-----------------------------------------------------------------------
 
-	bool FindAndReplace::HasOpenEditors (void) {
-		if (!ComponentRegistry::Instance().GetFocusedInstance("EditorManager") )
-			return false;
-		else {
-			HandleVec vec = Call<HandleVec (void)>(s_classId, "EditorManager", "GetEditors")();
-			return !vec.empty();
+	Component* FindAndReplace::GetFocusedEditor (void)
+		{ return ComponentRegistry::Instance().GetComponentEntry("Editor").GetFocusedInstance(); }
+
+	//-----------------------------------------------------------------------
+
+	const std::string FindAndReplace::GetFocusedEditorURI(void) {
+		Component* editor = GetFocusedEditor();
+		assert(editor);
+		return util::str2std(Call<const String& (void)>(s_classId, editor, "GetURI")());
+	}
+
+	//-----------------------------------------------------------------------
+	
+	void FindAndReplace::ToggleDialog(
+		frep::FindAndReplaceUserInterface*	active,
+		frep::FindAndReplaceUserInterface*	inactive,
+		bool*								activeFlag,
+		bool*								inactiveFlag
+	)
+	{
+		*activeFlag = true;
+		*inactiveFlag = false;
+		if (inactive->IsShown())
+			inactive->CloseDialog();
+		if (!active->IsShown()) {
+			std::string text;
+			if (Component* editor = GetFocusedEditor())
+				text = util::str2std(Call<const String (void)>(s_classId, editor, "GetSelectedText")());
+			active->OpenDialog(text);
 		}
 	}
 
 	//-----------------------------------------------------------------------
 
-	const std::string FindAndReplace::GetFocusedEditorURI(void) {
-		const Handle& han = Call<const Handle& (void)>(s_classId, "EditorManager", "GetFocusedEditor")();
-		return util::str2std(Call<const String& (void)>(s_classId, han.Resolve(), "GetURI")());
-	}
-
-	//-----------------------------------------------------------------------
-
-	const std::string FindAndReplace::GetFocusedEditorSelectedText (void) {
-		const Handle& han = Call<const Handle& (void)>(s_classId, "EditorManager", "GetFocusedEditor")();
-		return util::str2std(Call<const String (void)>(s_classId, han.Resolve(), "GetSelectedText")());
-	}
-
-	//-----------------------------------------------------------------------
-	
 	EXPORTED_STATIC(FindAndReplace, void, Initialize, (void))
 	{
 		findState		= false;
@@ -112,42 +121,19 @@ namespace ide {
 	}
 
 	//-----------------------------------------------------------------------
-	
-	EXPORTED_IMAGE(FindAndReplace, "find", find_xpm);
-	
+
+	EXPORTED_IMAGE(FindAndReplace, "find", find_xpm);	
 	EXPORTED_CMD_STATIC(FindAndReplace, Find, _("/{1}Edit/{110}--Find and Replace--/Find\tCtrl+F"), MT_MAIN, "find")
 	{	
-		findState	 = true;
-		replaceState = false;
-
-		if (replaceDialog->IsShown())
-			replaceDialog->CloseDialog();
-
-		if (!findDialog->IsShown() && HasOpenEditors()){
-			std::string selectedText;
-			if (HasOpenEditors())
-				selectedText = GetFocusedEditorSelectedText();
-			findDialog->OpenDialog(selectedText);
-		}
+		ToggleDialog(findDialog, replaceDialog, &findState, &replaceState);
 	}
 
 	//-----------------------------------------------------------------------
 	
-	EXPORTED_IMAGE(FindAndReplace, "replace", replace_xpm);
-	
+	EXPORTED_IMAGE(FindAndReplace, "replace", replace_xpm);	
 	EXPORTED_CMD_STATIC(FindAndReplace, Replace, _("/{1}Edit/{110}Find and Replace/Replace\tCtrl+H"), MT_MAIN, "replace")
 	{
-		findState	 = false;
-		replaceState = true;
-
-		if (findDialog->IsShown())
-			findDialog->CloseDialog();
-		if (!replaceDialog->IsShown() && HasOpenEditors()){
-			std::string selectedText;
-			if (HasOpenEditors())
-				selectedText = GetFocusedEditorSelectedText();
-			replaceDialog->OpenDialog(selectedText);
-		}
+		ToggleDialog(replaceDialog, findDialog, &replaceState, &findState);
 	}
 
 	//-----------------------------------------------------------------------
@@ -201,7 +187,7 @@ namespace ide {
 	EXPORTED_SLOT_STATIC(FindAndReplace, void, OnEditSelectionChanged,
 		(const std::string& classId, int startPos, int endPos), "EditSelectionChanged")
 	{
-		const std::string uri	= GetFocusedEditorURI();
+		const std::string uri = GetFocusedEditorURI();
 
 		if (replaceDialog->IsShown()){
 			frep::TextSource::Block * block;

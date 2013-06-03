@@ -40,10 +40,13 @@ namespace ide {
 		//		private functions
 		
 		static const std::string GetFocusedEditorURI (void);
-		static const std::string GetFocusedEditorSelectedText (void);
-
-		static bool	HasOpenEditors (void);
-
+		static Component* GetFocusedEditor (void);
+		static void ToggleDialog(
+			frep::FindAndReplaceUserInterface*	active,
+			frep::FindAndReplaceUserInterface*	inactive,
+			bool*								activeFlag,
+			bool*								inactiveFlag
+		);
 
 		DECLARE_IDE_COMPONENT(Component);
 

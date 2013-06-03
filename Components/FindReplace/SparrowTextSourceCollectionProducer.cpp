@@ -120,7 +120,7 @@ namespace ide {
 
 		for (HandleList::iterator scr = scripts.begin(); scr != scripts.end(); ++scr) {
 			std::string uri = util::str2std( Call<const String& (void)>("FindAndReplace", (*scr), "GetURI")() );
-			if (!FindIntoTSList(uri))	//maby one script is alrady inside the tsList, if is an open editor.
+			if (!FindIntoTSList(uri))	//maybe one script is already inside the tsList, if is an open editor.
 				tsList.push_back(SelectFileType((*scr).Resolve(), uri));
 		}
 		return;
@@ -156,18 +156,17 @@ namespace ide {
 	
 	void SparrowTextSourceCollectionProducer::AllOpenDocuments (void){
 		CHECK_FOR_EDITOR_MANAGER();
-		//pernoume prwta ton focus editor oste na isxiei h sun8ilh pou 8elei sthn arxh ths lista na einai
-		//o focus editor
-		CurrentDocument(false);
 		
-		HandleVec vec = Call<const HandleVec& (void)>
-						("FindAndReplace", "EditorManager", "GetEditors")
-						();
+		HandleVec vec = Call<const HandleVec& (void)>("FindAndReplace", "EditorManager", "GetEditors")();
 		for (HandleVec::iterator i = vec.begin(); i != vec.end(); ++i ){
-			std::string uri = util::str2std( Call<const String& (void)>("FindAndReplace", (*i), "GetURI")() );
-
-			if ( !FindIntoTSList(uri) )
-				tsList.push_back(SelectFileType((*i).Resolve(), uri));
+			const std::string uri = util::str2std( Call<const String& (void)>("FindAndReplace", (*i), "GetURI")() );
+			if ( !FindIntoTSList(uri) ) {
+				frep::TextSource *ts = SelectFileType((*i).Resolve(), uri);
+				if (*i == Call<const Handle& (void)>("FindAndReplace", "EditorManager", "GetFocusedEditor")())
+					tsList.push_front(ts);	//focused editor should be first in list.
+				else
+					tsList.push_back(ts);
+			}
 		}
 		return;
 	}
@@ -178,12 +177,9 @@ namespace ide {
 		CHECK_FOR_EDITOR_MANAGER();
 
 		findOnSelection = _findOnSelection;
-		const Handle& editor =	Call<const Handle& (void)>
-								("FindAndReplace", "EditorManager", "GetFocusedEditor")
-								();
-		if (editor) {
-			std::string uri = util::str2std( Call<const String& (void)>("FindAndReplace", editor, "GetURI")() );
-			tsList.push_back(SelectFileType(editor.Resolve(), uri));
+		if (Component* editor = ComponentRegistry::Instance().GetComponentEntry("Editor").GetFocusedInstance()) {
+			const std::string uri = util::str2std( Call<const String& (void)>("FindAndReplace", editor, "GetURI")() );
+			tsList.push_back(SelectFileType(editor, uri));
 		}
 		
  		return;		
