@@ -80,48 +80,69 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 						right += UVECTOR_AUTORESIZE_QUANTITY;
 					}
 
-	public:
-	class iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
-		protected:
-		uvector*	v;
-		util_ui32	j;
+	/////////////////////////////////////////////////////////////////
+
+	template <typename Titer, typename Tval> struct iterator_impl {
+		typedef typename uconst_of<Tval>::t Tpure;
+		uvector<Tpure>*	v;
+		util_ui32		j;
 		bool								isvalidforaccess (void) const 
 												{ return v && j >= v->left && j < v->right; }
 		void								fwd (void) 
 												{ DASSERT(v && j < v->right); ++j; }
 		void								bwd (void) 
 												{ DASSERT(v && j > v->left); --j; }
-
-		/////////////////////////////////////////////////////////////////
-
-		public:
 		util_ui32							getindex (void) const
 												{ DASSERT(isvalidforaccess()); return j - v->left; }
-		bool								operator==(const iterator& i) const 
+		bool								operator==(const Titer& i) const 
 												{ return v == i.v && j == i.j; }
-		bool								operator!=(const iterator& i) const 
+		bool								operator!=(const Titer& i) const 
 												{ return !operator==(i); }
-		T&									operator*(void) const
+		Tval&								operator*(void) const
 												{ DASSERT(isvalidforaccess()); return *DPTR(v->data[j]); }
-		T*									operator->(void) const 
+		Tval*								operator->(void) const 
 												{ DASSERT(isvalidforaccess());  return *DPTR(v->data + v->left + j); }
-		const iterator						operator++(int) 
-												{ DASSERT(v); iterator i(*this); fwd(); return i; }
-		const iterator						operator++(void) 
-												{ DASSERT(v); fwd(); return *this; }
-		const iterator						operator--(int)
-												{ DASSERT(v); iterator i(*this); bwd(); return i; }
-		const iterator						operator--(void)
+		const Titer							operator++(int) 
+												{ DASSERT(v); Titer i(*this); fwd(); return i; }
+		const Titer							operator++(void) 
+														{ DASSERT(v); fwd(); return *this; }
+		const Titer							operator--(int)
+														{ DASSERT(v); Titer i(*this); bwd(); return i; }
+		const Titer							operator--(void)
 												{ DASSERT(v); bwd(); return *this;}
-		const iterator&						operator=(const iterator& i) 
-												{ return *new(this) iterator(i); }
+		const Titer&						operator=(const Titer& i) 
+												{ return *new(this) Titer(i); }
 
-		iterator (const iterator& i):				
-			v(const_cast<uvector*>(i.v)), j(i.j) { DASSERT(v && j >= v->left && j <= v->right);}
-		iterator (const uvector* _v, util_ui32 _j):	
-			v(const_cast<uvector*>(_v)), j(_v->left + _j) { DASSERT(v && j >= v->left && j <= v->right); }
-		iterator (void):							
-			v((uvector*) 0), j(0){}
+		iterator_impl (const iterator_impl& i):				
+			v (const_cast<uvector<Tpure>*>(i.v)), j(i.j) { DASSERT(v && j >= v->left && j <= v->right);}
+		iterator_impl (const uvector<Tpure>* _v, util_ui32 _j):	
+			v (const_cast<uvector<Tpure>*>(_v)), j(_v->left + _j) { DASSERT(v && j >= v->left && j <= v->right); }
+		iterator_impl (void):							
+			v ((uvector<Tpure>*) 0), j(0){}
+	};	
+
+	/////////////////////////////////////////////////////////////////
+
+	public:
+	class iterator :	public std::iterator<std::bidirectional_iterator_tag, T>,
+						public iterator_impl<iterator, T> {
+
+		public:
+		iterator (const iterator_impl& i): iterator_impl(i){}
+		iterator (const iterator& i): iterator_impl(i){}
+		iterator (const uvector* _v, util_ui32 _j):	iterator_impl(_v, _j){}
+		iterator (void){}
+	};
+
+	class const_iterator :	public std::iterator<std::bidirectional_iterator_tag, T>,
+							public iterator_impl<const_iterator, const T> {
+
+		public:
+		const_iterator (const iterator_impl<typename uvector::iterator, T>& i): iterator_impl(i.v, i.j){}
+		const_iterator (const iterator_impl& i): iterator_impl(i){}
+		const_iterator (const const_iterator& i): iterator_impl(i){}
+		const_iterator (const uvector* _v, util_ui32 _j): iterator_impl(_v, _j){}
+		const_iterator (void){}
 	};
 
 	/////////////////////////////////////////////////////////////////
