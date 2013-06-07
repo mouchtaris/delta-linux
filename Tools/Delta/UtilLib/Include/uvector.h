@@ -128,9 +128,9 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 						public iterator_impl<iterator, T> {
 
 		public:
-		iterator (const iterator_impl& i): iterator_impl(i){}
-		iterator (const iterator& i): iterator_impl(i){}
-		iterator (const uvector* _v, util_ui32 _j):	iterator_impl(_v, _j){}
+		iterator (const iterator_impl<iterator, T>& i): iterator_impl<iterator, T>(i){}
+		iterator (const iterator& i): iterator_impl<iterator, T>(i){}
+		iterator (const uvector<T>* _v, util_ui32 _j):	iterator_impl<iterator, T>(_v, _j){}
 		iterator (void){}
 	};
 
@@ -138,10 +138,9 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 							public iterator_impl<const_iterator, const T> {
 
 		public:
-		const_iterator (const iterator_impl<typename uvector::iterator, T>& i): iterator_impl(i.v, i.j){}
-		const_iterator (const iterator_impl& i): iterator_impl(i){}
-		const_iterator (const const_iterator& i): iterator_impl(i){}
-		const_iterator (const uvector* _v, util_ui32 _j): iterator_impl(_v, _j){}
+		const_iterator (const iterator_impl<typename uvector::iterator, T>& i): iterator_impl<typename uvector::iterator, T>(i.v, i.j){}
+		const_iterator (const const_iterator& i): iterator_impl<const_iterator, const T>(i){}
+		const_iterator (const uvector* _v, util_ui32 _j): iterator_impl<const_iterator, const T>(_v, _j){}
 		const_iterator (void){}
 	};
 
