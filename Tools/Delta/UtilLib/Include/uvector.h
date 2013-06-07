@@ -105,9 +105,9 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 		const Titer							operator++(int) 
 												{ DASSERT(v); Titer i(*this); fwd(); return i; }
 		const Titer							operator++(void) 
-														{ DASSERT(v); fwd(); return *this; }
+												{ DASSERT(v); fwd(); return *this; }
 		const Titer							operator--(int)
-														{ DASSERT(v); Titer i(*this); bwd(); return i; }
+												{ DASSERT(v); Titer i(*this); bwd(); return i; }
 		const Titer							operator--(void)
 												{ DASSERT(v); bwd(); return *this;}
 		const Titer&						operator=(const Titer& i) 
@@ -138,9 +138,14 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 							public iterator_impl<const_iterator, const T> {
 
 		public:
-		const_iterator (const typename uvector::iterator& i): iterator_impl<const_iterator, T>(i.v, i.j){}
-		const_iterator (const const_iterator& i): iterator_impl<const_iterator, const T>(i){}
-		const_iterator (const uvector* _v, util_ui32 _j): iterator_impl<const_iterator, const T>(_v, _j){}
+		const_iterator (const iterator_impl<typename uvector<T>::iterator, T>& i) : 
+			iterator_impl<const_iterator, const T>(i.v, i.j){}
+		const_iterator (const const_iterator& i) : 
+			iterator_impl<const_iterator, const T>(i){}
+		const_iterator (const iterator_impl<const_iterator, const T>& i) : 
+			iterator_impl<const_iterator, const T>(i.v, i.j){}
+		const_iterator (const uvector* _v, util_ui32 _j) : 
+			iterator_impl<const_iterator, const T>(_v, _j){}
 		const_iterator (void){}
 	};
 
