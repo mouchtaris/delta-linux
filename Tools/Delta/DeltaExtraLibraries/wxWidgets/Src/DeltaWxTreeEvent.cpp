@@ -20,7 +20,6 @@
 #define WX_FUNC(name) WX_FUNC1(treeevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getkeycode)
 WX_FUNC_DEF(getitem)
 WX_FUNC_DEF(getkeyevent)
@@ -32,7 +31,6 @@ WX_FUNC_DEF(settooltip)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getkeycode),
 	WX_FUNC(getitem),
 	WX_FUNC(getkeyevent),
@@ -45,7 +43,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "settooltip")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getkeycode", "settooltip")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(TreeEvent, "treeevent", NotifyEvent)
 
@@ -59,41 +57,35 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxNotifyEvent *_parent = DLIB_WXTYPECAST_BASE(NotifyEvent, val, notifyevent);
-	DeltaWxNotifyEvent *parent = DNEWCLASS(DeltaWxNotifyEvent, (_parent));
-	WX_SETOBJECT_EX(*at, NotifyEvent, parent)
+	WX_SET_BASECLASS_GETTER(at, NotifyEvent, val)
 	return true;
 }
 
 static bool GetKeyEvent (void* val, DeltaValue* at) 
 {
 	wxTreeEvent *ev = DLIB_WXTYPECAST_BASE(TreeEvent, val, treeevent);
-	DeltaWxKeyEvent *retval = DNEWCLASS(DeltaWxKeyEvent, (new wxKeyEvent(ev->GetKeyEvent())));
-	WX_SETOBJECT_EX(*at, KeyEvent, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, KeyEvent, new wxKeyEvent(ev->GetKeyEvent()))
 	return true;
 }
 
 static bool GetItem (void* val, DeltaValue* at) 
 {
 	wxTreeEvent *ev = DLIB_WXTYPECAST_BASE(TreeEvent, val, treeevent);
-	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ev->GetItem())));
-	WX_SETOBJECT_EX(*at, TreeItemId, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, TreeItemId, new wxTreeItemId(ev->GetItem()))
 	return true;
 }
 
 static bool GetOldItem (void* val, DeltaValue* at) 
 {
 	wxTreeEvent *ev = DLIB_WXTYPECAST_BASE(TreeEvent, val, treeevent);
-	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(ev->GetOldItem())));
-	WX_SETOBJECT_EX(*at, TreeItemId, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, TreeItemId, new wxTreeItemId(ev->GetOldItem()))
 	return true;
 }
 
 static bool GetPointDrag (void* val, DeltaValue* at) 
 {
 	wxTreeEvent *ev = DLIB_WXTYPECAST_BASE(TreeEvent, val, treeevent);
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(ev->GetPoint())));
-	WX_SETOBJECT_EX(*at, Point, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(ev->GetPoint()))
 	return true;
 }
 
@@ -127,68 +119,58 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(TreeEvent,treeevent)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(treeevent_construct, 0, 3, Nil)
-	wxTreeEvent *wxevt = (wxTreeEvent*) 0;
-	DeltaWxTreeEvent *evt = (DeltaWxTreeEvent*) 0;
+	wxTreeEvent *evt = (wxTreeEvent*) 0;
 	int commandType = wxEVT_NULL;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(commandType) }
 	if (n >= 2 && DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		DLIB_WXGET_BASE(treectrl, TreeCtrl, tree)
 		wxTreeItemId item = wxTreeItemId();
 		if (n >= 3) { DLIB_WXGET_BASE(treeitemid, TreeItemId, _item) item = *_item; }
-		wxevt = new wxTreeEvent(commandType, tree, item);
+		evt = new wxTreeEvent(commandType, tree, item);
 	} else {
 		int id = 0;
 		if (n >= 2) { WX_GETDEFINE_DEFINED(id) }
-		wxevt = new wxTreeEvent(commandType, id);
+		evt = new wxTreeEvent(commandType, id);
 	}
-	if (wxevt) evt = DNEWCLASS(DeltaWxTreeEvent, (wxevt));
-	WX_SETOBJECT(TreeEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeEvent, evt)
 }
 
-DLIB_FUNC_START(treeevent_destruct, 1, Nil)
-	DLIB_WXDELETE(treeevent, TreeEvent, evt)
-}
-
-DLIB_FUNC_START(treeevent_getkeycode, 1, Nil)
+WX_FUNC_START(treeevent_getkeycode, 1, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
 	WX_SETNUMBER(evt->GetKeyCode())
 }
 
-DLIB_FUNC_START(treeevent_getitem, 1, Nil)
+WX_FUNC_START(treeevent_getitem, 1, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
-	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(evt->GetItem())));
-	WX_SETOBJECT(TreeItemId, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(evt->GetItem()))
 }
 
-DLIB_FUNC_START(treeevent_getkeyevent, 1, Nil)
+WX_FUNC_START(treeevent_getkeyevent, 1, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
-	DeltaWxKeyEvent *retval = DNEWCLASS(DeltaWxKeyEvent, (new wxKeyEvent(evt->GetKeyEvent())));
-	WX_SETOBJECT(KeyEvent, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(KeyEvent, new wxKeyEvent(evt->GetKeyEvent()))
 }
 
-DLIB_FUNC_START(treeevent_getlabel, 1, Nil)
+WX_FUNC_START(treeevent_getlabel, 1, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
 	WX_SETSTRING(evt->GetLabel())
 }
 
-DLIB_FUNC_START(treeevent_getolditem, 1, Nil)
+WX_FUNC_START(treeevent_getolditem, 1, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
-	DeltaWxTreeItemId *retval = DNEWCLASS(DeltaWxTreeItemId, (new wxTreeItemId(evt->GetOldItem())));
-	WX_SETOBJECT(TreeItemId, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TreeItemId, new wxTreeItemId(evt->GetOldItem()))
 }
 
-DLIB_FUNC_START(treeevent_getpoint, 1, Nil)
+WX_FUNC_START(treeevent_getpoint, 1, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(evt->GetPoint())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(evt->GetPoint()))
 }
 
-DLIB_FUNC_START(treeevent_iseditcancelled, 1, Nil)
+WX_FUNC_START(treeevent_iseditcancelled, 1, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
 	WX_SETBOOL(evt->IsEditCancelled())
 }
 
-DLIB_FUNC_START(treeevent_settooltip, 2, Nil)
+WX_FUNC_START(treeevent_settooltip, 2, Nil)
 	DLIB_WXGET_BASE(treeevent, TreeEvent, evt)
 	WX_GETSTRING(tooltip)
 	evt->SetToolTip(tooltip);

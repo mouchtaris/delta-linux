@@ -45,9 +45,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxValidator *_parent = DLIB_WXTYPECAST_BASE(Validator, val, validator);
-	DeltaWxValidator *parent = DNEWCLASS(DeltaWxValidator, (_parent));
-	WX_SETOBJECT_EX(*at, Validator, parent)
+	WX_SET_BASECLASS_GETTER(at, Validator, val)
 	return true;
 }
 
@@ -60,18 +58,18 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(GenericValidator,genericvalidator)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(genericvalidator_construct, 1, Nil)
-	DeltaWxGenericValidator *validator = (DeltaWxGenericValidator*) 0;
+WX_FUNC_START(genericvalidator_construct, 1, Nil)
+	wxGenericValidator *validator = (wxGenericValidator*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Bool) {
 		WX_GETBOOL(val)
-		validator = DNEWCLASS(DeltaWxGenericValidator, (&val));
+		validator = new wxGenericValidator(&val);
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		WX_GETSTRING(val)
-		validator = DNEWCLASS(DeltaWxGenericValidator, (&val));
+		validator = new wxGenericValidator(&val);
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(double_val)
 		int val = (int)double_val;
-		validator = DNEWCLASS(DeltaWxGenericValidator, (&val));
+		validator = new wxGenericValidator(&val);
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Table) {
 		WX_GETTABLE(table)
 		wxArrayInt val;
@@ -82,27 +80,27 @@ DLIB_FUNC_START(genericvalidator_construct, 1, Nil)
 				val.Add(content.ToNumber());
 			}
 		}
-		validator = DNEWCLASS(DeltaWxGenericValidator, (&val));
+		validator = new wxGenericValidator(&val);
 	}
 	WX_SETOBJECT(GenericValidator, validator)
 }
 
-DLIB_FUNC_START(genericvalidator_destruct, 1, Nil)
+WX_FUNC_START(genericvalidator_destruct, 1, Nil)
 	DLIB_WXDELETE(genericvalidator, GenericValidator, validator)
 }
 
-DLIB_FUNC_START(genericvalidator_copy, 2, Nil)
+WX_FUNC_START(genericvalidator_copy, 2, Nil)
 	DLIB_WXGET_BASE(genericvalidator, GenericValidator, validator)
 	DLIB_WXGET_BASE(genericvalidator, GenericValidator, other)
 	WX_SETBOOL(validator->Copy(*other))
 }
 
-DLIB_FUNC_START(genericvalidator_transferfromwindow, 1, Nil)
+WX_FUNC_START(genericvalidator_transferfromwindow, 1, Nil)
 	DLIB_WXGET_BASE(genericvalidator, GenericValidator, validator)
 	WX_SETBOOL(validator->TransferFromWindow())
 }
 
-DLIB_FUNC_START(genericvalidator_transfertowindow, 1, Nil)
+WX_FUNC_START(genericvalidator_transfertowindow, 1, Nil)
 	DLIB_WXGET_BASE(genericvalidator, GenericValidator, validator)
 	WX_SETBOOL(validator->TransferToWindow())
 }

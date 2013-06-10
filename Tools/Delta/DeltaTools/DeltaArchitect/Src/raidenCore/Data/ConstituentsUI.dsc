@@ -46,41 +46,30 @@ function Shape (x, y, width, height) {
 			local brush = wx::brush_construct(colour = wx::colour_construct(255,255,255));
 			local pen   = wx::pen_construct(colour);
 			bdc.setbrush(brush);
-			brush.destruct();
 			bdc.setpen(pen);
-			pen.destruct();
 			bdc.drawrectangle(0,0, bitmap.getwidth(),bitmap.getheight());
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			bdc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			for(i=0;i<self.width*2;i=i+4)
 				bdc.drawline(0,i,i,0);
 			//draw magenda rectangle
 			local pen = wx::pen_construct(colour = wx::colour_construct("#FF00FF"));
 			bdc.setpen(pen);
-			pen.destruct();
 			local brush = wx::brush_construct(colour);
 			bdc.setbrush(brush);
-			brush.destruct();
 			bdc.drawrectangle(5, 5, self.width, self.height);
 			bdc.selectobject(wx::bitmap_construct());
 			// tranparrent rectangle
 			mask = wx::mask_construct(bitmap, colour);
 			bitmap.setmask(mask);
-			bdc.destruct();
-			colour.destruct();
 			dc.drawbitmap(bitmap, wx::point_construct(@x-5,@y-5),true);
 			return;
 		},
 		method drawRects (dc) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			dc.setpen(pen);
-			pen.destruct();
 			local brush = wx::brush_construct(colour);
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawrectangle(self.x, self.y, r, r);
 			dc.drawrectangle(self.x+self.width/2-r/2, self.y, r, r);
 			dc.drawrectangle(self.x+self.width-r, self.y, r, r);
@@ -141,12 +130,8 @@ function Rectangle(x, y, width, height) {
 		method drawShape (dc, selected) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			dc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct("#FFFF99"));
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawrectangle(self.x,self.y,self.width,self.height);
 			if (selected)
 				self.drawRects(dc);
@@ -154,11 +139,8 @@ function Rectangle(x, y, width, height) {
 		method drawEnable (dc) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0), 4, wx::DOT);
 			dc.setpen(pen);
-			pen.destruct();
 			local brush = wx::brush_construct(colour, wx::TRANSPARENT);
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawrectangle(self.x,self.y,self.width,self.height);
 		},
 		method drawText (dc, shortDesc) {
@@ -177,11 +159,8 @@ function Rectangle(x, y, width, height) {
 			for (i=6;i>=0;--i) {
 				local brush = wx::brush_construct(colour = wx::colour_construct(255,colourNum,colourNum));
 				dc.setbrush(brush);
-				brush.destruct();
 				local pen = wx::pen_construct(colour);
 				dc.setpen(pen);
-				pen.destruct();
-				colour.destruct();
 				dc.drawrectangle(self.x-i,self.y-i,self.width+(i*2),self.height+(i*2));
 				theta +=18;
 				colourNum = 220*std::cos(theta);
@@ -236,12 +215,8 @@ function Rectangular (x, y, width, height) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			dc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct("#FFFF99"));
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawpolygon(4,[self.point1,self.point2,self.point3,self.point4]);
 			if (selected)
 				self.drawRects(dc);
@@ -249,11 +224,8 @@ function Rectangular (x, y, width, height) {
 		method drawEnable (dc) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0), 3, wx::DOT);
 			dc.setpen(pen);
-			pen.destruct();
 			local brush = wx::brush_construct(colour, wx::TRANSPARENT);
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawpolygon(4,[self.point1,self.point2,self.point3,self.point4]);
 		},
 		method drawText (dc, shortDesc) {
@@ -271,20 +243,13 @@ function Rectangular (x, y, width, height) {
 			for (i=5;i>=0;--i) {
 				local brush = wx::brush_construct(colour = wx::colour_construct(255,colourNum,colourNum));
 				dc.setbrush(brush);
-				brush.destruct();
 				local pen = wx::pen_construct(colour);
 				dc.setpen(pen);
-				pen.destruct();
-				colour.destruct();
 				pt1	= wx::point_construct(self.x+@distBB-i, self.y-i);
 				pt2	= wx::point_construct(self.x-i, self.y+self.height+i);
 				pt3	= wx::point_construct(self.x-@distBB+self.width+i, self.y+self.height+i);
 				pt4	= wx::point_construct(self.x+self.width+i, self.y-i);
 				dc.drawpolygon(4, [pt1,pt2,pt3,pt4]);
-				pt1.destruct();
-				pt2.destruct();
-				pt3.destruct();
-				pt4.destruct();
 				theta +=22;
 				colourNum = 220*std::cos(theta);
 			}
@@ -325,12 +290,8 @@ function Circle (x, y, radius) {
 		method drawShape (dc, selected) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			dc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct("#FFFF99"));
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawcircle(x,y,radius);
 			if (selected)
 				self.drawRects(dc);
@@ -350,11 +311,8 @@ function Circle (x, y, radius) {
 			for (i=5;i>=0;--i) {
 				local pen = wx::pen_construct(colour = wx::colour_construct(255,colourNum,colourNum));
 				dc.setpen(pen);
-				pen.destruct();
 				local brush = wx::brush_construct(colour);
 				dc.setbrush(brush);
-				brush.destruct();
-				colour.destruct();
 				dc.drawcircle(self.x, self.y, @radius+i);
 				theta +=22;
 				colourNum = 220*std::cos(theta);
@@ -385,12 +343,8 @@ function Ellipse(x,y,width,height) {
 		method drawShape (dc, selected) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			dc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct("#FFFF99"));
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawellipse(self.rect);
 			if (selected)
 				self.drawRects(dc);
@@ -398,14 +352,10 @@ function Ellipse(x,y,width,height) {
 		method drawEnable (dc) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0), 3, wx::DOT);
 			dc.setpen(pen);
-			pen.destruct();
 			local brush = wx::brush_construct(colour, wx::TRANSPARENT);
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			trect = wx::rect_construct(self.rect.getx(),self.rect.gety(),self.rect.getwidth(),self.rect.getheight());
 			dc.drawellipse(trect);
-			trect.destruct();
 		},
 		method drawText (dc, shortDesc) {
 			dc.drawtext(shortDesc, self.x+20, self.y+30);
@@ -422,10 +372,8 @@ function Ellipse(x,y,width,height) {
 			for (i=5;i>=0;--i) {
 				local pen = wx::pen_construct(colour = wx::colour_construct(255,colourNum,colourNum));
 				dc.setpen(pen);
-				pen.destruct();
 				local brush = wx::brush_construct(colour);
 				dc.setbrush(brush);
-				brush.destruct();
 				dc.drawellipse(wx::rect_construct(self.x-i, self.y-i, self.width+(i*2), self.height+(i*2)));
 				theta +=22;
 				colourNum = 220*std::cos(theta);
@@ -473,12 +421,8 @@ function Rhombus(x, y, width, height) {
 		method drawShape (dc, selected) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0));
 			dc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct("#FFFF99"));
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawpolygon(4,[self.point1, self.point2, self.point3, self.point4]);
 			if (selected)
 				self.drawRects(dc);
@@ -489,11 +433,8 @@ function Rhombus(x, y, width, height) {
 		method drawEnable (dc) {
 			local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0), 3, wx::DOT);
 			dc.setpen(pen);
-			pen.destruct();
 			local brush = wx::brush_construct(colour, wx::TRANSPARENT);
 			dc.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			dc.drawpolygon(4,[self.point1, self.point2, self.point3, self.point4]);
 		},
 		method drawHighlight (dc) {
@@ -502,20 +443,13 @@ function Rhombus(x, y, width, height) {
 			for (i=5;i>=0;--i) {
 				local pen = wx::pen_construct(colour =wx::colour_construct(255,colourNum,colourNum));
 				dc.setpen(pen);
-				pen.destruct();
 				local brush = wx::brush_construct(colour);
 				dc.setbrush(brush);
-				brush.destruct();
-				colour.destruct();
 				pt1 = wx::point_construct(self.x+self.width/2, self.y-i*1.6);
 				pt2 = wx::point_construct(self.x-i*3, self.y+self.height/2);
 				pt3 = wx::point_construct(self.x+self.width/2, self.y+self.height+i*1.6);
 				pt4 = wx::point_construct(self.x+self.width+i*3, self.y+self.height/2);
 				dc.drawpolygon(4,[pt1, pt2, pt3, pt4]);
-				pt1.destruct();
-				pt2.destruct();
-				pt3.destruct();
-				pt4.destruct();
 				theta +=22;
 				colourNum = 220*std::cos(theta);
 			}
@@ -702,14 +636,10 @@ function Segment (lineWidth, lineStyle, lineColour, type, pt1,pt2,direction) {
 		method drawSegment (dc) {
 			pen = wx::pen_construct(colour = wx::colour_construct(@line.colour), @line.width);
 			dc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			dc.drawline(@point1,@point2);
 			//
 			local pen = wx::pen_construct(colour = wx::colour_construct(@line.colour), @line.width, @line.style);
 			dc.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local x = (@point1.getx()+@point2.getx())/2;
 			local y = (@point1.gety()+@point2.gety())/2;
 			dc.drawbitmap(@image,x-8,y-8,true);

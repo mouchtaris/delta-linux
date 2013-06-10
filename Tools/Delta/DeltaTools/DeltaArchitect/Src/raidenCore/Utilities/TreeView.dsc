@@ -258,7 +258,7 @@ function destroyTreeView (frame) {
 			role.treeitemid = nil;
 	}
 	frame.treectrl.deleteallitems();
-	frame.treectrl.destruct();
+	frame.treectrl.destroy();
 	frame.treectrl = nil;
 	frame.root = nil;
 }

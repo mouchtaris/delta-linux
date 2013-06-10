@@ -60,7 +60,7 @@ function onClosePattern (frame, ev) {
 			pattern.window.disconnect(wx::EVT_ERASE_BACKGROUND,			ShapeRAD::onEraseBackground);
 			pattern.window.disconnect(wx::EVT_PAINT,					ShapeRAD::onPaint);
 			//
-			pattern.window.destruct();
+			pattern.window.destroy();
 			pattern.viewPoint = wx::point_construct(0,0);
 			pattern.window = nil;
 			notebook.setselection(0);
@@ -126,7 +126,7 @@ function onMiddleDownClosePattern (frame, ev) {
 				pattern.window.disconnect(wx::EVT_LEFT_UP   , AddrFuncs::ConstituentsMouseEvents(#onLeftUp));
 				pattern.window.disconnect(wx::EVT_RIGHT_DOWN, AddrFuncs::ConstituentsMouseEvents(#onRightDown));
 				pattern.window.disconnect(wx::EVT_MOTION    , AddrFuncs::ConstituentsMouseEvents(#onMotionEvent));
-				pattern.window.destruct();
+				pattern.window.destroy();
 				pattern.window = nil;
 				// go to start page
 				if (currWindowId==currentPageId or currWindowId==idManagement::Core().MainPageID) {

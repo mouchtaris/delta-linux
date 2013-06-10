@@ -19,7 +19,7 @@ function SetCurrProject (project,wxparent) {
 	::currentProject.window.disconnect(wx::EVT_RIGHT_UP, AddrFuncs::ProjectEvent(#onRightUp));
 	::currentProject.window.disconnect(wx::EVT_LEFT_DCLICK, AddrFuncs::ProjectEvent(#onLeftDClick));
 	::currentProject.window.show(false);
-	::currentProject.window.destruct();
+	::currentProject.window.destroy();
 	::currentProject = project;
 	TreeView::disconnectEVT(wxparent);
 	TreeView::destroyTreeView(wxparent);
@@ -169,7 +169,6 @@ function Project (id, title, author, properties, wxparent) {
 //	window.alwaysshowscrollbars (true, true);
 //	window.enablescrolling(true,true);
 	window.setbackgroundcolour(colour = wx::colour_construct(214,240,245));
-	colour.destruct();
 	return [
 		@class			: #Project,
 		@id				: id,

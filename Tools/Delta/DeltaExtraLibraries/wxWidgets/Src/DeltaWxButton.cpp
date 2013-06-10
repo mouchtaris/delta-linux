@@ -20,7 +20,6 @@
 #define WX_FUNC(name) WX_FUNC1(button, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getlabel)
 WX_FUNC_DEF(getdefaultsize)
@@ -29,7 +28,6 @@ WX_FUNC_DEF(setlabel)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getlabel),
 	WX_FUNC(getdefaultsize),
@@ -39,7 +37,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setlabel")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setlabel")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Button, "button", Control)
 
@@ -53,9 +51,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
@@ -69,10 +65,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Button,button)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(button_construct, 0, 8, Nil)
-	wxButton *wxbutton = (wxButton*) 0;
-	DeltaWxButton *button = (DeltaWxButton*) 0;
+	wxButton *button = (wxButton*) 0;
 	if (n == 0) {
-		wxbutton = new wxButton();
+		button = new wxButton();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -88,7 +83,7 @@ WX_FUNC_ARGRANGE_START(button_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		wxbutton = new wxButton(parent, id, label, pos, size, style, *validator, name);
+		button = new wxButton(parent, id, label, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -97,12 +92,7 @@ WX_FUNC_ARGRANGE_START(button_construct, 0, 8, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxbutton) button = DNEWCLASS(DeltaWxButton, (wxbutton));
-	WX_SETOBJECT(Button, button)
-}
-
-DLIB_FUNC_START(button_destruct, 1, Nil)
-	DLIB_WXDELETE(button, Button, button)
+	WX_SET_WINDOW_OBJECT(Button, button)
 }
 
 WX_FUNC_ARGRANGE_START(button_create, 3, 9, Nil)
@@ -122,25 +112,25 @@ WX_FUNC_ARGRANGE_START(button_create, 3, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(button->Create(parent, id, label, pos, size, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(button);
 }
 
-DLIB_FUNC_START(button_getlabel, 1, Nil)
+WX_FUNC_START(button_getlabel, 1, Nil)
 	DLIB_WXGET_BASE(button, Button, button)
 	WX_SETSTRING(button->GetLabel())
 }
 
-DLIB_FUNC_START(button_getdefaultsize, 1, Nil)
+WX_FUNC_START(button_getdefaultsize, 1, Nil)
 	DLIB_WXGET_BASE(button, Button, button)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(button->GetDefaultSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(button->GetDefaultSize()))
 }
 
-DLIB_FUNC_START(button_setdefault, 1, Nil)
+WX_FUNC_START(button_setdefault, 1, Nil)
 	DLIB_WXGET_BASE(button, Button, button)
 	button->SetDefault();
 }
 
-DLIB_FUNC_START(button_setlabel, 2, Nil)
+WX_FUNC_START(button_setlabel, 2, Nil)
 	DLIB_WXGET_BASE(button, Button, button)
 	WX_GETSTRING(label)
 	button->SetLabel(label);

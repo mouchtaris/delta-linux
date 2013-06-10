@@ -15,7 +15,6 @@
 #define WX_FUNC(name) WX_FUNC1(timespan, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(abs)
 WX_FUNC_DEF(add)
 WX_FUNC_DEF(days)
@@ -69,7 +68,6 @@ WX_FUNCS_START
 	WX_FUNC(second),
 	WX_FUNC(weeks),
 	WX_FUNC(week),
-	WX_FUNC(destruct),
 	WX_FUNC(abs),
 	WX_FUNC(add),
 	WX_FUNC(format),
@@ -100,7 +98,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(13, uarraysize(funcs) - 13, "destruct", "greaterthan")
+DELTALIBFUNC_DECLARECONSTS(13, uarraysize(funcs) - 13, "abs", "greaterthan")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(TimeSpan, "timespan")
 
@@ -191,56 +189,39 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(TimeSpan, timespan, DeltaWxTimeSpanInitFunc()
 
 ////////////////////////////////////////////////////////////////
 
-#define WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, func)									\
-	const wxTimeSpan& timespan##Ref = timespan->func;											\
-	if (&timespan##Ref == timespan) {															\
-		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);											\
-	} else {																					\
-		DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan##Ref)));	\
-		WX_SETOBJECT(TimeSpan, retval)															\
-	}
-
 WX_FUNC_ARGRANGE_START(timespan_construct, 0, 4, Nil)
-	wxTimeSpan *wxtimespan = (wxTimeSpan*) 0;
-	DeltaWxTimeSpan *timespan = (DeltaWxTimeSpan*) 0;
+	wxTimeSpan *timespan = (wxTimeSpan*) 0;
 	if (n == 0)
-		wxtimespan = new wxTimeSpan();
+		timespan = new wxTimeSpan();
 	else {
 		double minutes = 0, seconds = 0, milliseconds = 0;
 		WX_GETNUMBER(hours)
 		if (n >= 2) { WX_GETNUMBER_DEFINED(minutes) }
 		if (n >= 3) { WX_GETNUMBER_DEFINED(seconds) }
 		if (n >= 4) { WX_GETNUMBER_DEFINED(milliseconds) }
-		wxtimespan = new wxTimeSpan(hours, minutes, seconds, milliseconds);
+		timespan = new wxTimeSpan(hours, minutes, seconds, milliseconds);
 	}
-	if (wxtimespan) timespan = DNEWCLASS(DeltaWxTimeSpan, (wxtimespan));
-	WX_SETOBJECT(TimeSpan, timespan)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, timespan)
 }
 
-DLIB_FUNC_START(timespan_destruct, 1, Nil)
-	DLIB_WXDELETE(timespan, TimeSpan, timespan)
-}
-
-DLIB_FUNC_START(timespan_abs, 1, Nil)
+WX_FUNC_START(timespan_abs, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
-	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Abs())
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(timespan->Abs()))
 }
 
-DLIB_FUNC_START(timespan_add, 2, Nil)
+WX_FUNC_START(timespan_add, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
-	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Add(*diff))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(timespan->Add(*diff)))
 }
 
-DLIB_FUNC_START(timespan_days, 1, Nil)
+WX_FUNC_START(timespan_days, 1, Nil)
 	WX_GETNUMBER(days)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Days(days))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Days(days)))
 }
 
-DLIB_FUNC_START(timespan_day, 0, Nil)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Day())));
-	WX_SETOBJECT(TimeSpan, retval)
+WX_FUNC_START(timespan_day, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Day()))
 }
 
 WX_FUNC_ARGRANGE_START(timespan_format, 1, 2, Nil)
@@ -253,188 +234,178 @@ WX_FUNC_ARGRANGE_START(timespan_format, 1, 2, Nil)
 	}
 }
 
-DLIB_FUNC_START(timespan_getdays, 1, Nil)
+WX_FUNC_START(timespan_getdays, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETNUMBER(timespan->GetDays())
 }
 
-DLIB_FUNC_START(timespan_gethours, 1, Nil)
+WX_FUNC_START(timespan_gethours, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETNUMBER(timespan->GetHours())
 }
 
-DLIB_FUNC_START(timespan_getmilliseconds, 1, Nil)
+WX_FUNC_START(timespan_getmilliseconds, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETNUMBER(timespan->GetMilliseconds().ToDouble())
 }
 
-DLIB_FUNC_START(timespan_getminutes, 1, Nil)
+WX_FUNC_START(timespan_getminutes, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETNUMBER(timespan->GetMinutes())
 }
 
-DLIB_FUNC_START(timespan_getseconds, 1, Nil)
+WX_FUNC_START(timespan_getseconds, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETNUMBER(timespan->GetSeconds().ToDouble())
 }
 
-DLIB_FUNC_START(timespan_getvalue, 1, Nil)
+WX_FUNC_START(timespan_getvalue, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETNUMBER(timespan->GetValue().ToDouble())
 }
 
-DLIB_FUNC_START(timespan_getweeks, 1, Nil)
+WX_FUNC_START(timespan_getweeks, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETNUMBER(timespan->GetWeeks())
 }
 
-DLIB_FUNC_START(timespan_hours, 1, Nil)
+WX_FUNC_START(timespan_hours, 1, Nil)
 	WX_GETNUMBER(hours)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Hours(hours))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Hours(hours)))
 }
 
-DLIB_FUNC_START(timespan_hour, 0, Nil)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Hour())));
-	WX_SETOBJECT(TimeSpan, retval)
+WX_FUNC_START(timespan_hour, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Hour()))
 }
 
-DLIB_FUNC_START(timespan_isequalto, 2, Nil)
+WX_FUNC_START(timespan_isequalto, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, ts)
 	WX_SETBOOL(timespan->IsEqualTo(*ts))
 }
 
-DLIB_FUNC_START(timespan_islongerthan, 2, Nil)
+WX_FUNC_START(timespan_islongerthan, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, ts)
 	WX_SETBOOL(timespan->IsLongerThan(*ts))
 }
 
-DLIB_FUNC_START(timespan_isnegative, 1, Nil)
+WX_FUNC_START(timespan_isnegative, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETBOOL(timespan->IsNegative())
 }
 
-DLIB_FUNC_START(timespan_isnull, 1, Nil)
+WX_FUNC_START(timespan_isnull, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETBOOL(timespan->IsNull())
 }
 
-DLIB_FUNC_START(timespan_ispositive, 1, Nil)
+WX_FUNC_START(timespan_ispositive, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_SETBOOL(timespan->IsPositive())
 }
 
-DLIB_FUNC_START(timespan_isshorterthan, 2, Nil)
+WX_FUNC_START(timespan_isshorterthan, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, ts)
 	WX_SETBOOL(timespan->IsShorterThan(*ts))
 }
 
-DLIB_FUNC_START(timespan_minutes, 1, Nil)
+WX_FUNC_START(timespan_minutes, 1, Nil)
 	WX_GETNUMBER(minutes)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Minutes(minutes))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Minutes(minutes)))
 }
 
-DLIB_FUNC_START(timespan_minute, 0, Nil)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Minute())));
-	WX_SETOBJECT(TimeSpan, retval)
+WX_FUNC_START(timespan_minute, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Minute()))
 }
 
-DLIB_FUNC_START(timespan_multiply, 2, Nil)
+WX_FUNC_START(timespan_multiply, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	WX_GETNUMBER(factor)
-	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Multiply(factor))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(timespan->Multiply(factor)))
 }
 
-DLIB_FUNC_START(timespan_negate, 1, Nil)
+WX_FUNC_START(timespan_negate, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
-	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Negate())
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(timespan->Negate()))
 }
 
-DLIB_FUNC_START(timespan_neg, 1, Nil)
+WX_FUNC_START(timespan_neg, 1, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
-	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Neg())
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(timespan->Neg()))
 }
 
-DLIB_FUNC_START(timespan_milliseconds, 1, Nil)
+WX_FUNC_START(timespan_milliseconds, 1, Nil)
 	WX_GETNUMBER(milliseconds)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Milliseconds(milliseconds))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Milliseconds(milliseconds)))
 }
 
-DLIB_FUNC_START(timespan_millisecond, 0, Nil)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Millisecond())));
-	WX_SETOBJECT(TimeSpan, retval)
+WX_FUNC_START(timespan_millisecond, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Millisecond()))
 }
 
-DLIB_FUNC_START(timespan_seconds, 1, Nil)
+WX_FUNC_START(timespan_seconds, 1, Nil)
 	WX_GETNUMBER(seconds)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Seconds(seconds))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Seconds(seconds)))
 }
 
-DLIB_FUNC_START(timespan_second, 0, Nil)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Second())));
-	WX_SETOBJECT(TimeSpan, retval)
+WX_FUNC_START(timespan_second, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Second()))
 }
 
-DLIB_FUNC_START(timespan_subtract, 2, Nil)
+WX_FUNC_START(timespan_subtract, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
-	WXTIMESPAN_AVOID_UNNECESSARY_OBJECTS(timespan, Subtract(*diff))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(timespan->Subtract(*diff)))
 }
 
-DLIB_FUNC_START(timespan_weeks, 1, Nil)
+WX_FUNC_START(timespan_weeks, 1, Nil)
 	WX_GETNUMBER(weeks)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Weeks(weeks))));
-	WX_SETOBJECT(TimeSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Weeks(weeks)))
 }
 
-DLIB_FUNC_START(timespan_week, 0, Nil)
-	DeltaWxTimeSpan *retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(wxTimeSpan::Week())));
-	WX_SETOBJECT(TimeSpan, retval)
+WX_FUNC_START(timespan_week, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, new wxTimeSpan(wxTimeSpan::Week()))
 }
 
 WX_FUNC_ARGRANGE_START(timespan_minus, 1, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
-	DeltaWxTimeSpan *retval = (DeltaWxTimeSpan*) 0;
+	wxTimeSpan *retval = (wxTimeSpan*) 0;
 	if (n == 1)
-		retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->operator-())));
+		retval = new wxTimeSpan(timespan->operator-());
 	else {
 		DLIB_WXGET_BASE(timespan, TimeSpan, diff)
-		retval = DNEWCLASS(DeltaWxTimeSpan, (new wxTimeSpan(timespan->operator-(*diff))));
+		retval = new wxTimeSpan(timespan->operator-(*diff));
 	}
-	WX_SETOBJECT(TimeSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(TimeSpan, retval)
 }
 
-DLIB_FUNC_START(timespan_isnotequalto, 2, Nil)
+WX_FUNC_START(timespan_isnotequalto, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
 	WX_SETBOOL(timespan->operator!=(*diff))
 }
 
-DLIB_FUNC_START(timespan_lessequalthan, 2, Nil)
+WX_FUNC_START(timespan_lessequalthan, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
 	WX_SETBOOL(timespan->operator<=(*diff))
 }
 
-DLIB_FUNC_START(timespan_lessthan, 2, Nil)
+WX_FUNC_START(timespan_lessthan, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
 	WX_SETBOOL(timespan->operator<(*diff))
 }
 
-DLIB_FUNC_START(timespan_greaterequalthan, 2, Nil)
+WX_FUNC_START(timespan_greaterequalthan, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
 	WX_SETBOOL(timespan->operator>=(*diff))
 }
 
-DLIB_FUNC_START(timespan_greaterthan, 2, Nil)
+WX_FUNC_START(timespan_greaterthan, 2, Nil)
 	DLIB_WXGET_BASE(timespan, TimeSpan, timespan)
 	DLIB_WXGET_BASE(timespan, TimeSpan, diff)
 	WX_SETBOOL(timespan->operator>(*diff))

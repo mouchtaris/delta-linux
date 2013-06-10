@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(colourdata, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getchoosefull)
 WX_FUNC_DEF(getcolour)
 WX_FUNC_DEF(getcustomcolour)
@@ -27,7 +26,6 @@ WX_FUNC_DEF(setcustomcolour)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getchoosefull),
 	WX_FUNC(getcolour),
 	WX_FUNC(getcustomcolour),
@@ -38,7 +36,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setcustomcolour")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getchoosefull", "setcustomcolour")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ColourData, "colourdata", Object)
 
@@ -52,17 +50,14 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
 static bool GetColour (void* val, DeltaValue* at) 
 {
 	wxColourData *data = DLIB_WXTYPECAST_BASE(ColourData, val, colourdata);
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(data->GetColour())));
-	WX_SETOBJECT_EX(*at, Colour, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(data->GetColour()))
 	return true;
 }
 
@@ -73,8 +68,7 @@ static bool GetCustomColours (void* val, DeltaValue* at)
 	for (int i = 0; i < 16; ++i) {
 		DeltaValue value;
 		wxColour colour = data->GetCustomColour(i);
-		DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(colour)));
-		WX_SETOBJECT_EX(value, Colour, retval)
+		WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(value, Colour, new wxColour(colour))
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -99,46 +93,39 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourData,colourdata)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(colourdata_construct, 0, Nil)
-	DeltaWxColourData *data = DNEWCLASS(DeltaWxColourData, (new wxColourData()));
-	WX_SETOBJECT(ColourData, data)
+WX_FUNC_START(colourdata_construct, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ColourData, new wxColourData())
 }
 
-DLIB_FUNC_START(colourdata_destruct, 1, Nil)
-	DLIB_WXDELETE(colourdata, ColourData, data)
-}
-
-DLIB_FUNC_START(colourdata_getchoosefull, 1, Nil)
+WX_FUNC_START(colourdata_getchoosefull, 1, Nil)
 	DLIB_WXGET_BASE(colourdata, ColourData, data)
 	WX_SETBOOL(data->GetChooseFull())
 }
 
-DLIB_FUNC_START(colourdata_getcolour, 1, Nil)
+WX_FUNC_START(colourdata_getcolour, 1, Nil)
 	DLIB_WXGET_BASE(colourdata, ColourData, data)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(data->GetColour())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(data->GetColour()))
 }
 
-DLIB_FUNC_START(colourdata_getcustomcolour, 2, Nil)
+WX_FUNC_START(colourdata_getcustomcolour, 2, Nil)
 	DLIB_WXGET_BASE(colourdata, ColourData, data)
 	WX_GETNUMBER(i)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(data->GetCustomColour(i))));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(data->GetCustomColour(i)))
 }
 
-DLIB_FUNC_START(colourdata_setchoosefull, 2, Nil)
+WX_FUNC_START(colourdata_setchoosefull, 2, Nil)
 	DLIB_WXGET_BASE(colourdata, ColourData, data)
 	WX_GETBOOL(flag)
 	data->SetChooseFull(flag);
 }
 
-DLIB_FUNC_START(colourdata_setcolour, 2, Nil)
+WX_FUNC_START(colourdata_setcolour, 2, Nil)
 	DLIB_WXGET_BASE(colourdata, ColourData, data)
 	DLIB_WXGET_BASE(colour, Colour, col)
 	data->SetColour(*col);
 }
 
-DLIB_FUNC_START(colourdata_setcustomcolour, 3, Nil)
+WX_FUNC_START(colourdata_setcustomcolour, 3, Nil)
 	DLIB_WXGET_BASE(colourdata, ColourData, data)
 	WX_GETNUMBER(i)
 	DLIB_WXGET_BASE(colour, Colour, col)

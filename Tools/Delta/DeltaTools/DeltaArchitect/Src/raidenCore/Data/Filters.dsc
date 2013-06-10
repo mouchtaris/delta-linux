@@ -112,9 +112,7 @@ function consoleFilterAnswers (answer, filtername) {
 	panel.show(true);
 	anstxt = wx::textctrl_construct(panel, wx::ID_ANY, answer, wx::point_construct(0,0),wx::size_construct(595,275),wx::flags(wx::TE_RICH2,wx::TE_MULTILINE,wx::TE_READONLY));
 	anstxt.setbackgroundcolour(colour = wx::colour_construct(0,0,0));
-	colour.destruct();
 	attr = wx::textattr_construct(colour = wx::colour_construct(255,255,255));
-	colour.destruct();
 	anstxt.setstyle(0, anstxt.getlastposition(), attr);
 	// skaei mallon sta 2 showmodals otan anoigei kai den kleinei h vm na to pw!!!!
 	console.show/*modal*/(true);
@@ -218,7 +216,7 @@ function onRunFilter (frame, ev) {
 	//
 	dialog.disconnect(runID   , wx::EVT_COMMAND_BUTTON_CLICKED, ::onAnswersFilter);
 	dialog.disconnect(cancelID, wx::EVT_COMMAND_BUTTON_CLICKED, ::onCancel);
-	dialog.destruct();
+	dialog.destroy();
 	currProject.connManageId.removeIDs([dialogID, runID, cancelID]);
 }
 

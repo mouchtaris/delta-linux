@@ -17,20 +17,18 @@
 #define WX_FUNC(name) WX_FUNC1(memorydc, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(selectobject)
 WX_FUNC_DEF(selectobjectassource)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(selectobject),
 	WX_FUNC(selectobjectassource)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "selectobjectassource")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "selectobject", "selectobjectassource")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MemoryDC, "memorydc", DC)
 
@@ -44,9 +42,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxDC *_parent = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	DeltaWxDC *parent = DNEWCLASS(DeltaWxDC, (_parent));
-	WX_SETOBJECT_EX(*at, DC, parent)
+	WX_SET_BASECLASS_GETTER(at, DC, val)
 	return true;
 }
 
@@ -60,29 +56,23 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(MemoryDC,memorydc)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(memorydc_construct, 0, 1, Nil)
-	wxMemoryDC *wxdc = (wxMemoryDC*) 0;
-	DeltaWxMemoryDC *dc = (DeltaWxMemoryDC*) 0;
+	wxMemoryDC *dc = (wxMemoryDC*) 0;
 	if (n == 0)
-		wxdc = new wxMemoryDC();
+		dc = new wxMemoryDC();
 	else {
 		DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
-		wxdc = new wxMemoryDC(*bmp);
+		dc = new wxMemoryDC(*bmp);
 	}
-	if (wxdc) dc = DNEWCLASS(DeltaWxMemoryDC, (wxdc));
 	WX_SETOBJECT(MemoryDC, dc)
 }
 
-DLIB_FUNC_START(memorydc_destruct, 1, Nil)
-	DLIB_WXDELETE(memorydc, MemoryDC, dc)
-}
-
-DLIB_FUNC_START(memorydc_selectobject, 2, Nil)
+WX_FUNC_START(memorydc_selectobject, 2, Nil)
 	DLIB_WXGET_BASE(memorydc, MemoryDC, dc)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 	dc->SelectObject(*bmp);
 }
 
-DLIB_FUNC_START(memorydc_selectobjectassource, 2, Nil)
+WX_FUNC_START(memorydc_selectobjectassource, 2, Nil)
 	DLIB_WXGET_BASE(memorydc, MemoryDC, dc)
 	DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 	dc->SelectObjectAsSource(*bmp);

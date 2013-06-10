@@ -12,9 +12,12 @@ dllXML	= std::dllimportdeltalib(xml::DLL);
 //
 app = wx::app_construct();
 
-
 //
 function initializeRAD () {
+	wx::initallimagehandlers();
+
+//
+
 	info = SaveLoad::loadInfo();
 	frame = wx::frame_construct(nil, wx::ID_ANY, "Raiden", wx::point_construct(0,0), wx::size_construct(info.Dimensions.width, info.Dimensions.height));
 	frame.centre();
@@ -120,11 +123,9 @@ function initializeRAD () {
 // CREATE MAIN ACTION AREA
 	notebook = wx::notebook_construct(toolSpl1, 12, wx::point_construct(0,0), wx::size_construct(-1,-1), wx::NB_HITTEST_ONICON );
 	notebook.setbackgroundcolour(colour = wx::colour_construct("#D0D0D0"));
-	colour.destruct();
 	// start up window for rad
 	startPage = wx::window_construct(notebook, 6, wx::point_construct(0,0));
 	startPage.setbackgroundcolour(colour = wx::colour_construct(212,220,237));
-	colour.destruct();
 	bitmap = ImageHolder::images().buttonNewProj;
 	mask = wx::mask_construct(bitmap, wx::colour_construct("#FF00FF"));
 	bitmap.setmask(mask);
@@ -145,7 +146,6 @@ function initializeRAD () {
 	viewprojToolBar = wx::scrolledwindow_construct(toolSpl2, 10, wx::point_construct(0,0));
 	wx::scrolledwindow_enablescrolling(viewprojToolBar,true,true);
 	viewprojToolBar.setbackgroundcolour(colour = wx::colour_construct(255,255,255));
-	colour.destruct();
 	filterToolBar = wx::window_construct(toolSpl2, 11, wx::point_construct(0,0));
 	
 	frame.show(true);
@@ -222,9 +222,10 @@ function initializeRAD () {
 	notebook.frame = frame;
 	notebook.connect(wx::EVT_MIDDLE_DOWN, AddrFuncs::PatternsEvents(#onMiddleDownClosePattern));
 	notebook.connect(wx::EVT_RIGHT_DOWN, AddrFuncs::PatternsEvents(#onNotebookRightDown));
-	
-	wx::initallimagehandlers();
 }
 
 app.oninitadd(initializeRAD);
 app.start();
+
+std::dllunimportdeltalib(dllWX);
+std::dllunimportdeltalib(dllXML);

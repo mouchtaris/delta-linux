@@ -87,25 +87,24 @@ DELTA_LIBRARY_SUBAPI_INSTALLER_EX(DeltaWxLog, "log", "wx::log_",
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(log_construct, 0, Nil)
-	DeltaWxLog *log = DNEWCLASS(DeltaWxLog, (new wxLog()));
-	WX_SETOBJECT(Log, log)
+WX_FUNC_START(log_construct, 0, Nil)
+	WX_SETOBJECT(Log, new wxLog())
 }
 
-DLIB_FUNC_START(log_destruct, 1, Nil)
+WX_FUNC_START(log_destruct, 1, Nil)
 	DLIB_WXDELETE(log, Log, log)
 }
 
-DLIB_FUNC_START(log_addtracemask, 1, Nil)
+WX_FUNC_START(log_addtracemask, 1, Nil)
 	WX_GETSTRING(mask)
 	wxLog::AddTraceMask(mask);
 }
 
-DLIB_FUNC_START(log_cleartracemasks, 0, Nil)
+WX_FUNC_START(log_cleartracemasks, 0, Nil)
 	wxLog::ClearTraceMasks();
 }
 
-DLIB_FUNC_START(log_gettracemasks, 0, Nil)
+WX_FUNC_START(log_gettracemasks, 0, Nil)
 	wxArrayString masks = wxLog::GetTraceMasks();
 	DeltaObject *retval = DNEW(DeltaObject);
 	for (int i = 0, n = (int)masks.GetCount(); i < n; ++i) {
@@ -116,46 +115,46 @@ DLIB_FUNC_START(log_gettracemasks, 0, Nil)
 	DLIB_RETVAL_REF.FromTable(retval);
 }
 
-DLIB_FUNC_START(log_onlog, 3, Nil)
+WX_FUNC_START(log_onlog, 3, Nil)
 	WX_GETDEFINE(level)
 	WX_GETSTRING(message)
 	WX_GETNUMBER(t)
 	wxLog::OnLog(level, message, t);
 }
 
-DLIB_FUNC_START(log_getactivetarget, 0, Nil)
-	WXNEWCLASS(DeltaWxLog, retval, wxLog, wxLog::GetActiveTarget())
+WX_FUNC_START(log_getactivetarget, 0, Nil)
+	wxLog* retval	= wxLog::GetActiveTarget();
 	WX_SETOBJECT(Log, retval)
 }
 
-DLIB_FUNC_START(log_setactivetarget, 1, Nil)
+WX_FUNC_START(log_setactivetarget, 1, Nil)
 	DLIB_WXGET_BASE(log, Log, logtarget)
-	WXNEWCLASS(DeltaWxLog, retval, wxLog, wxLog::SetActiveTarget(logtarget))
+	wxLog* retval	= wxLog::SetActiveTarget(logtarget);
 	WX_SETOBJECT(Log, retval)
 }
 
-DLIB_FUNC_START(log_suspend, 0, Nil)
+WX_FUNC_START(log_suspend, 0, Nil)
 	wxLog::Suspend();
 }
 
-DLIB_FUNC_START(log_resume, 0, Nil)
+WX_FUNC_START(log_resume, 0, Nil)
 	wxLog::Resume();
 }
 
-DLIB_FUNC_START(log_dontcreateondemand, 0, Nil)
+WX_FUNC_START(log_dontcreateondemand, 0, Nil)
 	wxLog::DontCreateOnDemand();
 }
 
-DLIB_FUNC_START(log_flush, 1, Nil)
+WX_FUNC_START(log_flush, 1, Nil)
 	DLIB_WXGET_BASE(log, Log, log)
 	log->Flush();
 }
 
-DLIB_FUNC_START(log_flushactive, 0, Nil)
+WX_FUNC_START(log_flushactive, 0, Nil)
 	wxLog::FlushActive();
 }
 
-DLIB_FUNC_START(log_getverbose, 0, Nil)
+WX_FUNC_START(log_getverbose, 0, Nil)
 	WX_SETBOOL(wxLog::GetVerbose())
 }
 
@@ -165,16 +164,16 @@ WX_FUNC_ARGRANGE_START(log_setverbose, 0, 1, Nil)
 	wxLog::SetVerbose(verbose);
 }
 
-DLIB_FUNC_START(log_getloglevel, 0, Nil)
+WX_FUNC_START(log_getloglevel, 0, Nil)
 	WX_SETNUMBER(wxLog::GetLogLevel())
 }
 
-DLIB_FUNC_START(log_setloglevel, 1, Nil)
+WX_FUNC_START(log_setloglevel, 1, Nil)
 	WX_GETDEFINE(level)
 	wxLog::SetLogLevel(level);
 }
 
-DLIB_FUNC_START(log_getrepetitioncounting, 0, Nil)
+WX_FUNC_START(log_getrepetitioncounting, 0, Nil)
 	WX_SETBOOL(wxLog::GetRepetitionCounting())
 }
 
@@ -184,30 +183,30 @@ WX_FUNC_ARGRANGE_START(log_setrepetitioncounting, 0, 1, Nil)
 	wxLog::SetRepetitionCounting(counting);
 }
 
-DLIB_FUNC_START(log_gettimestamp, 0, Nil)
+WX_FUNC_START(log_gettimestamp, 0, Nil)
 	WX_SETSTRING(wxString(wxLog::GetTimestamp()))
 }
 
-DLIB_FUNC_START(log_settimestamp, 1, Nil)
+WX_FUNC_START(log_settimestamp, 1, Nil)
 	WX_GETSTRING(format)
 	wxLog::SetTimestamp(format);
 }
 
-DLIB_FUNC_START(log_gettracemask, 0, Nil)
+WX_FUNC_START(log_gettracemask, 0, Nil)
 	WX_SETNUMBER(wxLog::GetTraceMask())
 }
 
-DLIB_FUNC_START(log_settracemask, 1, Nil)
+WX_FUNC_START(log_settracemask, 1, Nil)
 	WX_GETDEFINE(mask)
 	wxLog::SetTraceMask(mask);
 }
 
-DLIB_FUNC_START(log_isallowedtracemask, 1, Nil)
+WX_FUNC_START(log_isallowedtracemask, 1, Nil)
 	WX_GETSTRING(mask)
 	WX_SETBOOL(wxLog::IsAllowedTraceMask(mask))
 }
 
-DLIB_FUNC_START(log_removetracemask, 1, Nil)
+WX_FUNC_START(log_removetracemask, 1, Nil)
 	WX_GETSTRING(mask)
 	wxLog::RemoveTraceMask(mask);
 }

@@ -18,18 +18,20 @@
 #define WX_FUNC(name) WX_FUNC1(passwordentrydialog, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 
 WX_FUNCS_START
-	WX_FUNC(construct),
-	WX_FUNC(destruct)
+	WX_FUNC(construct)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "destruct")
-
-DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PasswordEntryDialog, "passwordentrydialog", TextEntryDialog)
+//DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PasswordEntryDialog, "passwordentrydialog", TextEntryDialog)
+VCLASSID_IMPL(DeltaWxPasswordEntryDialogClassId, "wx::passwordentrydialog")
+DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(PasswordEntryDialog, "passwordentrydialog")
+void PasswordEntryDialogUtils::InstallAll(DeltaTable *methods)
+{
+	DPTR(methods)->DelegateInternal(TextEntryDialogUtils::GetMethods());
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -41,9 +43,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxTextEntryDialog *_parent = DLIB_WXTYPECAST_BASE(TextEntryDialog, val, textentrydialog);
-	DeltaWxTextEntryDialog *parent = DNEWCLASS(DeltaWxTextEntryDialog, (_parent));
-	WX_SETOBJECT_EX(*at, TextEntryDialog, parent)
+	WX_SET_BASECLASS_GETTER(at, TextEntryDialog, val)
 	return true;
 }
 
@@ -66,11 +66,6 @@ WX_FUNC_ARGRANGE_START(passwordentrydialog_construct, 2, 6, Nil)
 	if (n >= 4) { WX_GETSTRING_DEFINED(value) }
 	if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 6) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
-	DeltaWxPasswordEntryDialog *dialog = DNEWCLASS(DeltaWxPasswordEntryDialog,
-		(new wxPasswordEntryDialog(parent, message, caption, value, style, pos)));
-	WX_SETOBJECT(PasswordEntryDialog, dialog)
-}
-
-DLIB_FUNC_START(passwordentrydialog_destruct, 1, Nil)
-	DLIB_WXDELETE(passwordentrydialog, PasswordEntryDialog, dialog)
+	wxPasswordEntryDialog* dialog = new wxPasswordEntryDialog(parent, message, caption, value, style, pos);
+	WX_SET_TOPLEVELWINDOW_OBJECT(PasswordEntryDialog, dialog)
 }

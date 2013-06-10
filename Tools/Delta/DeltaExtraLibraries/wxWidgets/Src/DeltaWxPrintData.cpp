@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(printdata, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getcollate)
 WX_FUNC_DEF(getbin)
 WX_FUNC_DEF(getcolour)
@@ -40,7 +39,6 @@ WX_FUNC_DEF(setquality)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getcollate),
 	WX_FUNC(getbin),
 	WX_FUNC(getcolour),
@@ -64,7 +62,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setquality")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getcollate", "setquality")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(PrintData, "printdata", Object)
 
@@ -78,9 +76,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
@@ -171,8 +167,7 @@ static bool GetPaperId (void* val, DeltaValue* at)
 static bool GetPaperSize (void* val, DeltaValue* at) 
 {
 	wxPrintData *data = DLIB_WXTYPECAST_BASE(PrintData, val, printdata);
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(data->GetPaperSize())));
-	WX_SETOBJECT_EX(*at, Size, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Size, new wxSize(data->GetPaperSize()))
 	return true;
 }
 
@@ -206,114 +201,109 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(PrintData,printdata)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(printdata_construct, 0, Nil)
-	DeltaWxPrintData *data = DNEWCLASS(DeltaWxPrintData, (new wxPrintData()));
-	WX_SETOBJECT(PrintData, data)
+WX_FUNC_START(printdata_construct, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(PrintData, new wxPrintData())
 }
 
-DLIB_FUNC_START(printdata_destruct, 1, Nil)
-	DLIB_WXDELETE(printdata, PrintData, data)
-}
-
-DLIB_FUNC_START(printdata_getcollate, 1, Nil)
+WX_FUNC_START(printdata_getcollate, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETBOOL(data->GetCollate())
 }
 
-DLIB_FUNC_START(printdata_getbin, 1, Nil)
+WX_FUNC_START(printdata_getbin, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETNUMBER(data->GetBin())
 }
 
-DLIB_FUNC_START(printdata_getcolour, 1, Nil)
+WX_FUNC_START(printdata_getcolour, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETBOOL(data->GetColour())
 }
 
-DLIB_FUNC_START(printdata_getduplex, 1, Nil)
+WX_FUNC_START(printdata_getduplex, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETNUMBER(data->GetDuplex())
 }
 
-DLIB_FUNC_START(printdata_getnocopies, 1, Nil)
+WX_FUNC_START(printdata_getnocopies, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETNUMBER(data->GetNoCopies())
 }
 
-DLIB_FUNC_START(printdata_getorientation, 1, Nil)
+WX_FUNC_START(printdata_getorientation, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETNUMBER(data->GetOrientation())
 }
 
-DLIB_FUNC_START(printdata_getpaperid, 1, Nil)
+WX_FUNC_START(printdata_getpaperid, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETNUMBER(data->GetPaperId())
 }
 
-DLIB_FUNC_START(printdata_getprintername, 1, Nil)
+WX_FUNC_START(printdata_getprintername, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETSTRING(data->GetPrinterName())
 }
 
-DLIB_FUNC_START(printdata_getquality, 1, Nil)
+WX_FUNC_START(printdata_getquality, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETNUMBER(data->GetQuality())
 }
 
-DLIB_FUNC_START(printdata_isok, 1, Nil)
+WX_FUNC_START(printdata_isok, 1, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_SETBOOL(data->IsOk())
 }
 
-DLIB_FUNC_START(printdata_setbin, 2, Nil)
+WX_FUNC_START(printdata_setbin, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETDEFINE(flag)
 	data->SetBin((wxPrintBin)flag);
 }
 
-DLIB_FUNC_START(printdata_setcollate, 2, Nil)
+WX_FUNC_START(printdata_setcollate, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETBOOL(flag)
 	data->SetCollate(flag);
 }
 
-DLIB_FUNC_START(printdata_setcolour, 2, Nil)
+WX_FUNC_START(printdata_setcolour, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETBOOL(flag)
 	data->SetColour(flag);
 }
 
-DLIB_FUNC_START(printdata_setduplex, 2, Nil)
+WX_FUNC_START(printdata_setduplex, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETDEFINE(mode)
 	data->SetDuplex((wxDuplexMode)mode);
 }
 
-DLIB_FUNC_START(printdata_setnocopies, 2, Nil)
+WX_FUNC_START(printdata_setnocopies, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETNUMBER(num)
 	data->SetNoCopies(num);
 }
 
-DLIB_FUNC_START(printdata_setorientation, 2, Nil)
+WX_FUNC_START(printdata_setorientation, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETDEFINE(orientation)
 	data->SetOrientation(orientation);
 }
 
-DLIB_FUNC_START(printdata_setpaperid, 2, Nil)
+WX_FUNC_START(printdata_setpaperid, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETDEFINE(paperId)
 	data->SetPaperId((wxPaperSize)paperId);
 }
 
-DLIB_FUNC_START(printdata_setprintername, 2, Nil)
+WX_FUNC_START(printdata_setprintername, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETSTRING(printerName)
 	data->SetPrinterName(printerName);
 }
 
-DLIB_FUNC_START(printdata_setquality, 2, Nil)
+WX_FUNC_START(printdata_setquality, 2, Nil)
 	DLIB_WXGET_BASE(printdata, PrintData, data)
 	WX_GETDEFINE(quality)
 	data->SetQuality(quality);

@@ -142,7 +142,7 @@ function onDeletePattern (frame, ev) {
 				pattern.window.disconnect(wx::EVT_ERASE_BACKGROUND, ShapeRAD::onEraseBackground);
 				pattern.window.disconnect(wx::EVT_PAINT,			ShapeRAD::onPaint);
 				
-				pattern.window.destruct();
+				pattern.window.destroy();
 				notebook.setselection(0);
 				break; }
 			++i;
@@ -156,7 +156,6 @@ function onDeletePattern (frame, ev) {
 	pattern.constituents = nil;
 	pattern.created.destruct();
 	pattern.lastUpdate.destruct();
-	pattern.rect.destruct();
 	pattern.notes.clear();
 	pattern.notes = nil;
 	ShapeRAD::drawPatterns(currProject);
@@ -191,11 +190,8 @@ function onOpenTabPattern (frame, ev) {
 		pattern.window.dc = wx::windowdc_construct(pattern.window);
 		local pen = wx::pen_construct(colour);
 		pattern.window.dc.setpen(pen);
-		pen.destruct();
 		local brush = wx::brush_construct(colour);
 		pattern.window.dc.setbrush(brush);
-		brush.destruct();
-		colour.destruct();
 		pattern.window.dc.drawrectangle(wx::point_construct(0,0), pattern.window.getsize());
 		wxparent.notebook.addpage(pattern.window, pattern.name, true, ImageHolder::images().imageListNB.Pattern);
 		currentProject.currentPattern = pattern;
@@ -373,7 +369,6 @@ function onLeftDownMainPage (frame, ev) {
 		// fix the mouse view to be in drag mode
 		local cursor = wx::cursor_construct(wx::CURSOR_SIZING);
 		frame.setcursor(cursor);
-		cursor.destruct();
 		ShapeRAD::drawPatterns(currProject);
 	}
 	else {
@@ -408,21 +403,18 @@ function onMotionEventMainPage (frame, ev) {
 			ShapeRAD::drawPatterns(currProject);
 		}
 		else {
-			local cursor = wx::cursor_construct(wx::CURSOR_NONE);
+			local cursor = wx::cursor_construct();
 			frame.setcursor(cursor);
-			cursor.destruct();
 		}
 	}
 	else {
 		if (ShapeRAD::patternHit(currPoint, currProject)!=nil) {
 			local cursor = wx::cursor_construct(wx::CURSOR_SIZING);
 			frame.setcursor(cursor);
-			cursor.destruct();
 		}
 		else {
-			local cursor = wx::cursor_construct(wx::CURSOR_NONE);
+			local cursor = wx::cursor_construct();
 			frame.setcursor(cursor);
-			cursor.destruct();
 		}
 	}
 }

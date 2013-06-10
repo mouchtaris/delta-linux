@@ -17,18 +17,20 @@
 #define WX_FUNC(name) WX_FUNC1(mousecapturelostevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 
 WX_FUNCS_START
-	WX_FUNC(construct),
-	WX_FUNC(destruct)
+	WX_FUNC(construct)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "destruct")
-
-DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MouseCaptureLostEvent, "mousecapturelostevent", Event)
+//DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(MouseCaptureLostEvent, "mousecapturelostevent", Event)
+VCLASSID_IMPL(DeltaWxMouseCaptureLostEventClassId, "wx::mousecapturelostevent")
+DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(MouseCaptureLostEvent, "mousecapturelostevent")
+void MouseCaptureLostEventUtils::InstallAll(DeltaTable *methods)
+{
+	DPTR(methods)->DelegateInternal(EventUtils::GetMethods());
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -40,9 +42,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxEvent *_parent = DLIB_WXTYPECAST_BASE(Event, val, event);
-	DeltaWxEvent *parent = DNEWCLASS(DeltaWxEvent, (_parent));
-	WX_SETOBJECT_EX(*at, Event, parent)
+	WX_SET_BASECLASS_GETTER(at, Event, val)
 	return true;
 }
 
@@ -58,11 +58,5 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(MouseCaptureLostEvent,mousecapturelostevent)
 WX_FUNC_ARGRANGE_START(mousecapturelostevent_construct, 0, 1, Nil)
 	int winid = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(winid) }
-	DeltaWxMouseCaptureLostEvent *evt = DNEWCLASS(DeltaWxMouseCaptureLostEvent,
-		(new wxMouseCaptureLostEvent(winid)));
-	WX_SETOBJECT(MouseCaptureLostEvent, evt)
-}
-
-DLIB_FUNC_START(mousecapturelostevent_destruct, 1, Nil)
-	DLIB_WXDELETE(mousecapturelostevent, MouseCaptureLostEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(MouseCaptureLostEvent, new wxMouseCaptureLostEvent(winid))
 }

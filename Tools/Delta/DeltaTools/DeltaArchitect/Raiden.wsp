@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Workspace name="Raiden" version="alpha">
-    <WorkspaceProperties>
-        <symbolic>Raiden.wsp</symbolic>
-        <startup>Project\raiden.dproj</startup>
-        <config>0</config>
-        <collapsed>0</collapsed>
-        <breakpoints>break.dat</breakpoints>
-    </WorkspaceProperties>
-    <Child type="Project" name="Project\raiden.dproj"/>
+  <WorkspaceProperties>
+    <symbolic>Raiden.wsp</symbolic>
+    <startup>Project\raiden.dproj</startup>
+    <config>0</config>
+    <collapsed>0</collapsed>
+    <breakpoints>break.dat</breakpoints>
+  </WorkspaceProperties>
+  <Child type="Project" name="Project\raiden.dproj"/>
 </Workspace>

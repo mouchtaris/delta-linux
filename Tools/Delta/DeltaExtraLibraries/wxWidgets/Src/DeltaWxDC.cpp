@@ -33,7 +33,6 @@ typedef int wxMappingMode;
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(dc, name)
 #define WX_FUNC(name) WX_FUNC1(dc, name)
 
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(blit)
 WX_FUNC_DEF(calcboundingbox)
 WX_FUNC_DEF(clear)
@@ -118,7 +117,6 @@ WX_FUNC_DEF(startdoc)
 WX_FUNC_DEF(startpage)
 
 WX_FUNCS_START
-	WX_FUNC(destruct),
 	WX_FUNC(blit),
 	WX_FUNC(calcboundingbox),
 	WX_FUNC(clear),
@@ -205,7 +203,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "destruct", "startpage")
+DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "blit", "startpage")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(DC, "dc", Object)
 
@@ -219,9 +217,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
@@ -389,48 +385,42 @@ static bool GetMapMode (void* val, DeltaValue* at)
 static bool GetPen (void* val, DeltaValue* at) 
 {
 	wxDC *dc = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	DeltaWxPen *retval = DNEWCLASS(DeltaWxPen, (new wxPen(dc->GetPen())));
-	WX_SETOBJECT_EX(*at, Pen, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Pen, new wxPen(dc->GetPen()))
 	return true;
 }
 
 static bool GetBrush (void* val, DeltaValue* at) 
 {
 	wxDC *dc = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	DeltaWxBrush *retval = DNEWCLASS(DeltaWxBrush, (new wxBrush(dc->GetBrush())));
-	WX_SETOBJECT_EX(*at, Brush, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Brush, new wxBrush(dc->GetBrush()))
 	return true;
 }
 
 static bool GetBackgroundBrush (void* val, DeltaValue* at) 
 {
 	wxDC *dc = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	DeltaWxBrush *retval = DNEWCLASS(DeltaWxBrush, (new wxBrush(dc->GetBackground())));
-	WX_SETOBJECT_EX(*at, Brush, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Brush, new wxBrush(dc->GetBackground()))
 	return true;
 }
 
 static bool GetTextForegroundColour (void* val, DeltaValue* at) 
 {
 	wxDC *dc = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(dc->GetTextForeground())));
-	WX_SETOBJECT_EX(*at, Colour, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(dc->GetTextForeground()))
 	return true;
 }
 
 static bool GetTextBackgroundColour (void* val, DeltaValue* at) 
 {
 	wxDC *dc = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(dc->GetTextBackground())));
-	WX_SETOBJECT_EX(*at, Colour, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(dc->GetTextBackground()))
 	return true;
 }
 
 static bool GetFont (void* val, DeltaValue* at) 
 {
 	wxDC *dc = DLIB_WXTYPECAST_BASE(DC, val, dc);
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(dc->GetFont())));
-	WX_SETOBJECT_EX(*at, Font, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Font, new wxFont(dc->GetFont()))
 	return true;
 }
 
@@ -469,10 +459,6 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(DC,dc)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(dc_destruct, 1, Nil)
-	DLIB_WXDELETE(dc, DC, dc)
-}
-
 WX_FUNC_ARGRANGE_START(dc_blit, 5, 12, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
@@ -505,19 +491,19 @@ WX_FUNC_ARGRANGE_START(dc_blit, 5, 12, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_calcboundingbox, 3, Nil)
+WX_FUNC_START(dc_calcboundingbox, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	dc->CalcBoundingBox(x, y);
 }
 
-DLIB_FUNC_START(dc_clear, 1, Nil)
+WX_FUNC_START(dc_clear, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	dc->Clear();
 }
 
-DLIB_FUNC_START(dc_computescaleandorigin, 1, Nil)
+WX_FUNC_START(dc_computescaleandorigin, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 #if wxCHECK_VERSION(2, 9, 0)
 	dc->GetImpl()->ComputeScaleAndOrigin();
@@ -538,30 +524,30 @@ WX_FUNC_ARGRANGE_START(dc_crosshair, 2, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_destroyclippingregion, 1, Nil)
+WX_FUNC_START(dc_destroyclippingregion, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	dc->DestroyClippingRegion();
 }
 
-DLIB_FUNC_START(dc_devicetologicalx, 2, Nil)
+WX_FUNC_START(dc_devicetologicalx, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(x)
 	WX_SETNUMBER(dc->DeviceToLogicalX(x))
 }
 
-DLIB_FUNC_START(dc_devicetologicalxrel, 2, Nil)
+WX_FUNC_START(dc_devicetologicalxrel, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(x)
 	WX_SETNUMBER(dc->DeviceToLogicalXRel(x))
 }
 
-DLIB_FUNC_START(dc_devicetologicaly, 2, Nil)
+WX_FUNC_START(dc_devicetologicaly, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(dc->DeviceToLogicalY(y))
 }
 
-DLIB_FUNC_START(dc_devicetologicalyrel, 2, Nil)
+WX_FUNC_START(dc_devicetologicalyrel, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(dc->DeviceToLogicalYRel(y))
@@ -685,9 +671,8 @@ WX_FUNC_ARGRANGE_START(dc_drawlabel, 3, 7, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETSTRING(text)
 	util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-	if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, bitmap)) {
+	if (DLIB_WXISBASE(Bitmap, serial_no, bitmap, image)) {
 		if (n >= 4) {
-			wxBitmap *image = (wxBitmap*) bitmap->GetCastToNativeInstance();
 			DLIB_WXGET_BASE(rect, Rect, rect)
 			int alignment = wxALIGN_LEFT | wxALIGN_TOP, indexAccel = -1;
 			wxRect rectBounding;
@@ -696,15 +681,13 @@ WX_FUNC_ARGRANGE_START(dc_drawlabel, 3, 7, Nil)
 			dc->DrawLabel(text, *image, *rect, alignment, indexAccel, &rectBounding);
 			if (n >= 7) {
 				WX_GETTABLE(rect_table)
-				DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rectBounding)));
 				DeltaValue value;
-				WX_SETOBJECT_EX(value, Rect, retval)
+				WX_SETOBJECT_EX(value, Rect, new wxRect(rectBounding))
 				WX_SETTABLE_RETVAL(rect_table, value)
 			}
 		}
 	} else
-	if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
-		wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
+	if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
 		int alignment = wxALIGN_LEFT | wxALIGN_TOP, indexAccel = -1;
 		if (n >= 4) { WX_GETDEFINE_DEFINED(alignment) }
 		if (n >= 5) { WX_GETNUMBER_DEFINED(indexAccel) }
@@ -738,8 +721,7 @@ WX_FUNC_ARGRANGE_START(dc_drawlines, 3, 5, Nil)
 		points_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 		if (value.Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)value.ToExternId();
-			if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
-				wxPoint *point = (wxPoint*) point_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Point, serial_no, point, point)) {
 				points[i] = *point;
 			}
 		}
@@ -762,8 +744,7 @@ WX_FUNC_ARGRANGE_START(dc_drawpolygon, 3, 6, Nil)
 		points_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 		if (value.Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)value.ToExternId();
-			if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
-				wxPoint *point = (wxPoint*) point_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Point, serial_no, point, point)) {
 				points[i] = *point;
 			}
 		}
@@ -795,8 +776,7 @@ WX_FUNC_ARGRANGE_START(dc_drawpolypolygon, 4, 7, Nil)
 		points_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 		if (value.Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)value.ToExternId();
-			if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
-				wxPoint *point = (wxPoint*) point_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Point, serial_no, point, point)) {
 				points[i] = *point;
 			}
 		}
@@ -888,8 +868,7 @@ WX_FUNC_ARGRANGE_START(dc_drawspline, 3, 7, Nil)
 			points_table->Get(DeltaValue((DeltaNumberValueType)i), &value);
 			if (value.Type() == DeltaValue_ExternId) {
 				util_ui32 serial_no = (util_ui32)value.ToExternId();
-				if (DLIB_WXISBASE(Point, serial_no, point, point_wr)) {
-					wxPoint *point = (wxPoint*) point_wr->GetCastToNativeInstance();
+				if (DLIB_WXISBASE(Point, serial_no, point, point)) {
 					points[i] = *point;
 				}
 			}
@@ -920,12 +899,12 @@ WX_FUNC_ARGRANGE_START(dc_drawtext, 3, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_enddoc, 1, Nil)
+WX_FUNC_START(dc_enddoc, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	dc->EndDoc();
 }
 
-DLIB_FUNC_START(dc_endpage, 1, Nil)
+WX_FUNC_START(dc_endpage, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	dc->EndPage();
 }
@@ -948,29 +927,27 @@ WX_FUNC_ARGRANGE_START(dc_floodfill, 3, 5, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_getbackground, 1, Nil)
+WX_FUNC_START(dc_getbackground, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	DeltaWxBrush *retval = DNEWCLASS(DeltaWxBrush, (new wxBrush(dc->GetBackground())));
-	WX_SETOBJECT(Brush, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Brush, new wxBrush(dc->GetBackground()))
 }
 
-DLIB_FUNC_START(dc_getbackgroundmode, 1, Nil)
+WX_FUNC_START(dc_getbackgroundmode, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->GetBackgroundMode())
 }
 
-DLIB_FUNC_START(dc_getbrush, 1, Nil)
+WX_FUNC_START(dc_getbrush, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	DeltaWxBrush *retval = DNEWCLASS(DeltaWxBrush, (new wxBrush(dc->GetBrush())));
-	WX_SETOBJECT(Brush, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Brush, new wxBrush(dc->GetBrush()))
 }
 
-DLIB_FUNC_START(dc_getcharheight, 1, Nil)
+WX_FUNC_START(dc_getcharheight, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->GetCharHeight())
 }
 
-DLIB_FUNC_START(dc_getcharwidth, 1, Nil)
+WX_FUNC_START(dc_getcharwidth, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->GetCharWidth())
 }
@@ -981,9 +958,8 @@ WX_FUNC_ARGRANGE_START(dc_getclippingbox, 2, 5, Nil)
 		WX_GETTABLE(rect_table)
 		wxRect rect;
 		dc->GetClippingBox(rect);
-		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect)));
 		DeltaValue value;
-		WX_SETOBJECT_EX(value, Rect, retval)
+		WX_SETOBJECT_EX(value, Rect, new wxRect(rect))
 		WX_SETTABLE_RETVAL(rect_table, value)
 	} else if (n == 4) {
 		WX_GETTABLE(x_table)
@@ -999,23 +975,22 @@ WX_FUNC_ARGRANGE_START(dc_getclippingbox, 2, 5, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_getfont, 1, Nil)
+WX_FUNC_START(dc_getfont, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(dc->GetFont())));
-	WX_SETOBJECT(Font, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(dc->GetFont()))
 }
 
-DLIB_FUNC_START(dc_getlayoutdirection, 1, Nil)
+WX_FUNC_START(dc_getlayoutdirection, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->GetLayoutDirection())
 }
 
-DLIB_FUNC_START(dc_getlogicalfunction, 1, Nil)
+WX_FUNC_START(dc_getlogicalfunction, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->GetLogicalFunction())
 }
 
-DLIB_FUNC_START(dc_getmapmode, 1, Nil)
+WX_FUNC_START(dc_getmapmode, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->GetMapMode())
 }
@@ -1024,8 +999,7 @@ WX_FUNC_ARGRANGE_START(dc_getmultilinetextextent, 2, 6, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETSTRING(string)
 	if (n == 2) {
-		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(dc->GetMultiLineTextExtent(string))));
-		WX_SETOBJECT(Size, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(dc->GetMultiLineTextExtent(string)))
 	} else if (n >= 4) {
 		int width, height, heightLine;
 		wxFont font;
@@ -1040,15 +1014,14 @@ WX_FUNC_ARGRANGE_START(dc_getmultilinetextextent, 2, 6, Nil)
 		}
 		if (n >= 6) {
 			WX_GETTABLE(font_table)
-			DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(font)));
 			DeltaValue value;
-			WX_SETOBJECT_EX(value, Font, retval)
+			WX_SETOBJECT_EX(value, Font, new wxFont(font))
 			WX_SETTABLE_RETVAL(font_table, value)
 		}
 	}
 }
 
-DLIB_FUNC_START(dc_getpartialtextextents, 3, Nil)
+WX_FUNC_START(dc_getpartialtextextents, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETSTRING(text)
 	WX_GETTABLE(widths_table)
@@ -1061,10 +1034,9 @@ DLIB_FUNC_START(dc_getpartialtextextents, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_getpen, 1, Nil)
+WX_FUNC_START(dc_getpen, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	DeltaWxPen *retval = DNEWCLASS(DeltaWxPen, (new wxPen(dc->GetPen())));
-	WX_SETOBJECT(Pen, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Pen, new wxPen(dc->GetPen()))
 }
 
 WX_FUNC_ARGRANGE_START(dc_getpixel, 3, 4, Nil)
@@ -1081,17 +1053,15 @@ WX_FUNC_ARGRANGE_START(dc_getpixel, 3, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_getppi, 1, Nil)
+WX_FUNC_START(dc_getppi, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(dc->GetPPI())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(dc->GetPPI()))
 }
 
 WX_FUNC_ARGRANGE_START(dc_getsize, 1, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 1) {
-		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(dc->GetSize())));
-		WX_SETOBJECT(Size, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(dc->GetSize()))
 	} else if (n == 3) {
 		WX_GETTABLE(x_table)
 		WX_GETTABLE(y_table)
@@ -1105,8 +1075,7 @@ WX_FUNC_ARGRANGE_START(dc_getsize, 1, 3, Nil)
 WX_FUNC_ARGRANGE_START(dc_getsizemm, 1, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	if (n == 1) {
-		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(dc->GetSizeMM())));
-		WX_SETOBJECT(Size, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(dc->GetSizeMM()))
 	} else if (n == 3) {
 		WX_GETTABLE(x_table)
 		WX_GETTABLE(y_table)
@@ -1117,18 +1086,16 @@ WX_FUNC_ARGRANGE_START(dc_getsizemm, 1, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(dc_gettextbackground, 1, Nil)
+WX_FUNC_START(dc_gettextbackground, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(dc->GetTextBackground())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(dc->GetTextBackground()))
 }
 
 WX_FUNC_ARGRANGE_START(dc_gettextextent, 2, 7, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETSTRING(string)
 	if (n == 2) {
-		DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(dc->GetTextExtent(string))));
-		WX_SETOBJECT(Size, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(dc->GetTextExtent(string)))
 	} else if (n == 4) {
 		int x, y, descent, externalLeading;
 		wxFont font;
@@ -1147,21 +1114,19 @@ WX_FUNC_ARGRANGE_START(dc_gettextextent, 2, 7, Nil)
 		}
 		if (n >= 7) {
 			WX_GETTABLE(font_table)
-			DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(font)));
 			DeltaValue value;
-			WX_SETOBJECT_EX(value, Font, retval)
+			WX_SETOBJECT_EX(value, Font, new wxFont(font))
 			WX_SETTABLE_RETVAL(font_table, value)
 		}
 	}
 }
 
-DLIB_FUNC_START(dc_gettextforeground, 1, Nil)
+WX_FUNC_START(dc_gettextforeground, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(dc->GetTextForeground())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(dc->GetTextForeground()))
 }
 
-DLIB_FUNC_START(dc_getuserscale, 3, Nil)
+WX_FUNC_START(dc_getuserscale, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	double x, y;
 	dc->GetUserScale(&x, &y);
@@ -1194,80 +1159,80 @@ WX_FUNC_ARGRANGE_START(dc_gradientfilllinear, 4, 5, Nil)
 	dc->GradientFillLinear(*rect, *initialColour, *destColour, (wxDirection)nDirection);
 }
 
-DLIB_FUNC_START(dc_logicaltodevicex, 2, Nil)
+WX_FUNC_START(dc_logicaltodevicex, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(x)
 	WX_SETNUMBER(dc->LogicalToDeviceX(x))
 }
 
-DLIB_FUNC_START(dc_logicaltodevicexrel, 2, Nil)
+WX_FUNC_START(dc_logicaltodevicexrel, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(x)
 	WX_SETNUMBER(dc->LogicalToDeviceXRel(x))
 }
 
-DLIB_FUNC_START(dc_logicaltodevicey, 2, Nil)
+WX_FUNC_START(dc_logicaltodevicey, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(dc->LogicalToDeviceY(y))
 }
 
-DLIB_FUNC_START(dc_logicaltodeviceyrel, 2, Nil)
+WX_FUNC_START(dc_logicaltodeviceyrel, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(dc->LogicalToDeviceYRel(y))
 }
 
-DLIB_FUNC_START(dc_maxx, 1, Nil)
+WX_FUNC_START(dc_maxx, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->MaxX())
 }
 
-DLIB_FUNC_START(dc_maxy, 1, Nil)
+WX_FUNC_START(dc_maxy, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->MaxY())
 }
 
-DLIB_FUNC_START(dc_minx, 1, Nil)
+WX_FUNC_START(dc_minx, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->MinX())
 }
 
-DLIB_FUNC_START(dc_miny, 1, Nil)
+WX_FUNC_START(dc_miny, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETNUMBER(dc->MinY())
 }
 
-DLIB_FUNC_START(dc_isok, 1, Nil)
+WX_FUNC_START(dc_isok, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_SETBOOL(dc->IsOk())
 }
 
-DLIB_FUNC_START(dc_resetboundingbox, 1, Nil)
+WX_FUNC_START(dc_resetboundingbox, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	dc->ResetBoundingBox();
 }
 
-DLIB_FUNC_START(dc_setaxisorientation, 3, Nil)
+WX_FUNC_START(dc_setaxisorientation, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETBOOL(xLeftRight)
 	WX_GETBOOL(yBottomUp)
 	dc->SetAxisOrientation(xLeftRight, yBottomUp);
 }
 
-DLIB_FUNC_START(dc_setbackground, 2, Nil)
+WX_FUNC_START(dc_setbackground, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	dc->SetBackground(*brush);
 }
 
-DLIB_FUNC_START(dc_setbackgroundmode, 2, Nil)
+WX_FUNC_START(dc_setbackgroundmode, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETDEFINE(mode)
 	dc->SetBackgroundMode(mode);
 }
 
-DLIB_FUNC_START(dc_setbrush, 2, Nil)
+WX_FUNC_START(dc_setbrush, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(brush, Brush, brush)
 	dc->SetBrush(*brush);
@@ -1288,93 +1253,91 @@ WX_FUNC_ARGRANGE_START(dc_setclippingregion, 2, 5, Nil)
 	} else if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Rect, serial_no, rect, rect_wr)) {
-				wxRect *rect = (wxRect*) rect_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Rect, serial_no, rect, rect)) {
 				dc->SetClippingRegion(*rect);
-			} else if (DLIB_WXISBASE(Region, serial_no, region, region_wr)) {
-				wxRegion *region = (wxRegion*) region_wr->GetCastToNativeInstance();
+			} else if (DLIB_WXISBASE(Region, serial_no, region, region)) {
 				dc->SetClippingRegion(*region);
 			}
 		}
 	}
 }
 
-DLIB_FUNC_START(dc_setdeviceorigin, 3, Nil)
+WX_FUNC_START(dc_setdeviceorigin, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	dc->SetDeviceOrigin(x, y);
 }
 
-DLIB_FUNC_START(dc_setfont, 2, Nil)
+WX_FUNC_START(dc_setfont, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(font, Font, font)
 	dc->SetFont(*font);
 }
 
-DLIB_FUNC_START(dc_setlayoutdirection, 2, Nil)
+WX_FUNC_START(dc_setlayoutdirection, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETDEFINE(dir)
 	dc->SetLayoutDirection((wxLayoutDirection)dir);
 }
 
-DLIB_FUNC_START(dc_setlogicalfunction, 2, Nil)
+WX_FUNC_START(dc_setlogicalfunction, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETDEFINE(function)
 	dc->SetLogicalFunction((wxRasterOperationMode) function);
 }
 
-DLIB_FUNC_START(dc_setlogicalorigin, 3, Nil)
+WX_FUNC_START(dc_setlogicalorigin, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	dc->SetLogicalOrigin(x, y);
 }
 
-DLIB_FUNC_START(dc_setmapmode, 2, Nil)
+WX_FUNC_START(dc_setmapmode, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETDEFINE(mode)
 	dc->SetMapMode((wxMappingMode) mode);
 }
 
-DLIB_FUNC_START(dc_setpalette, 2, Nil)
+WX_FUNC_START(dc_setpalette, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(palette, Palette, palette)
 	dc->SetPalette(*palette);
 }
 
-DLIB_FUNC_START(dc_setpen, 2, Nil)
+WX_FUNC_START(dc_setpen, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(pen, Pen, pen)
 	dc->SetPen(*pen);
 }
 
-DLIB_FUNC_START(dc_settextbackground, 2, Nil)
+WX_FUNC_START(dc_settextbackground, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	dc->SetTextBackground(*colour);
 }
 
-DLIB_FUNC_START(dc_settextforeground, 2, Nil)
+WX_FUNC_START(dc_settextforeground, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	dc->SetTextForeground(*colour);
 }
 
-DLIB_FUNC_START(dc_setuserscale, 3, Nil)
+WX_FUNC_START(dc_setuserscale, 3, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETNUMBER(xScale)
 	WX_GETNUMBER(yScale)
 	dc->SetUserScale(xScale, yScale);
 }
 
-DLIB_FUNC_START(dc_startdoc, 2, Nil)
+WX_FUNC_START(dc_startdoc, 2, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	WX_GETSTRING(message)
 	WX_SETBOOL(dc->StartDoc(message))
 }
 
-DLIB_FUNC_START(dc_startpage, 1, Nil)
+WX_FUNC_START(dc_startpage, 1, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
 	dc->StartPage();
 }

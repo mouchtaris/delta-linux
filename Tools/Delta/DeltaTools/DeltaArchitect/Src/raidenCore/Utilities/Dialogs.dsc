@@ -76,7 +76,8 @@ function RequirementProps(req, propsWin, currProject) {
 	wxRequirement.createdText = wx::statictext_construct(propsWin,wx::ID_ANY,"Created:",wx::point_construct(180,168));
 	wxRequirement.created     = wx::textctrl_construct(propsWin,31,datetimeStr,wx::point_construct(230,164),wx::size_construct(80,20),wx::flags(wx::TE_READONLY));
 	
-	wxRequirement.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+//	wxRequirement.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+	wxRequirement.st = wx::staticbox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
 	wxRequirement.description = wx::textctrl_construct(wxRequirement.st, wx::ID_ANY, req.description, wx::point_construct(15,20),wx::size_construct(330,120),wx::flags(wx::TE_RICH2,wx::TE_MULTILINE));
 	
 	return wxRequirement;
@@ -103,8 +104,9 @@ function RequirementNotes(req, notes, currProject) {
 	deleteID = currProject.connManageId.getID();
 	deleteButton = wx::button_construct(notes, deleteID, "Delete", wx::point_construct(320,155), wx::size_construct(60, 25));
 
-	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
-	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::flags(wx::LB_SINGLE, wx::LC_LIST));
+//	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	st = wx::staticbox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::LC_LIST);
 	k = -1;
 /*	items = req.notes;
 	foreach (item, items)
@@ -119,10 +121,9 @@ function Requirement (req, currProject) {
 	panel = wx::panel_construct(dialog, wx::ID_ANY, wx::point_construct(0,0), wx::size_construct(450, 480));
 	notebook = wx::notebook_construct(panel, wx::ID_ANY,wx::point_construct(22,15),wx::size_construct(400,390));
 	notebook.setbackgroundcolour(colour = wx::colour_construct(240,240,240));
-	colour.destruct();
 	propsWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	propsWin.show(true);
-	notesWin = wx::window_construct(panel, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
+	notesWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	notesWin.show(true);
 	wxreq = ::RequirementProps(req, propsWin, currProject);
 	notesIds = ::RequirementNotes(req, notesWin, currProject);
@@ -155,7 +156,7 @@ function Requirement (req, currProject) {
 	notebook.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	propsWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	notesWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
-	dialog.destruct();
+	dialog.destroy();
 	currProject.connManageId.removeIDs([okID, cancelID]);
 	currProject.connManageId.removeIDs(notesIds);
 	notesIds = nil;
@@ -224,7 +225,8 @@ function OperationProps(operation, propsWin, currProject) {
 	wxRequirement.createdText = wx::statictext_construct(propsWin,wx::ID_ANY,"Created:",wx::point_construct(180,168));
 	wxRequirement.created     = wx::textctrl_construct(propsWin,31,datetimeStr,wx::point_construct(230,164),wx::size_construct(80,20),wx::flags(wx::TE_READONLY));
 	
-	wxRequirement.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+//	wxRequirement.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+	wxRequirement.st = wx::staticbox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
 	wxRequirement.description = wx::textctrl_construct(wxRequirement.st, wx::ID_ANY, operation.description, wx::point_construct(15,20),wx::size_construct(330,120),wx::flags(wx::TE_RICH2,wx::TE_MULTILINE));
 	
 	return wxRequirement;
@@ -250,8 +252,9 @@ function OperationNotes(operation, notes, currProject) {
 	deleteID = currProject.connManageId.getID();
 	deleteButton = wx::button_construct(notes, deleteID, "Delete", wx::point_construct(320,155), wx::size_construct(60, 25));
 
-	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
-	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::flags(wx::LB_SINGLE, wx::LC_LIST));
+//	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	st = wx::staticbox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::LC_LIST);
 	k = -1;
 /*	items = req.notes;
 	foreach (item, items)
@@ -266,10 +269,9 @@ function Operation (operation, currProject) {
 	panel = wx::panel_construct(dialog, wx::ID_ANY, wx::point_construct(0,0), wx::size_construct(450, 480));
 	notebook = wx::notebook_construct(panel, wx::ID_ANY,wx::point_construct(22,15),wx::size_construct(400,390));
 	notebook.setbackgroundcolour(colour = wx::colour_construct(240,240,240));
-	colour.destruct();
 	propsWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	propsWin.show(true);
-	notesWin = wx::window_construct(panel, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
+	notesWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	notesWin.show(true);
 	wxreq = ::OperationProps(operation, propsWin, currProject);
 	notesIds = ::OperationNotes(operation, notesWin, currProject);
@@ -302,7 +304,7 @@ function Operation (operation, currProject) {
 	notebook.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	propsWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	notesWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
-	dialog.destruct();
+	dialog.destroy();
 	currProject.connManageId.removeIDs([okID, cancelID]);
 	currProject.connManageId.removeIDs(notesIds);
 	notesIds = nil;
@@ -363,7 +365,8 @@ function RoleProps(role, propsWin, currProject) {
 	datetimeStr = datetime.getday()+"/"+datetime.getmonth()+"/"+datetime.getyear();
 	wxRole.createdText = wx::statictext_construct(propsWin,wx::ID_ANY,"Created:",wx::point_construct(180,168));
 	wxRole.created     = wx::textctrl_construct(propsWin,31,datetimeStr,wx::point_construct(230,164),wx::size_construct(80,20),wx::flags(wx::TE_READONLY));
-	wxRole.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+//	wxRole.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+	wxRole.st = wx::staticbox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
 	wxRole.description = wx::textctrl_construct(wxRole.st, wx::ID_ANY, role.description, wx::point_construct(15,20),wx::size_construct(330,120),wx::flags(wx::TE_RICH2,wx::TE_MULTILINE));	
 	return wxRole;
 }
@@ -388,8 +391,9 @@ function RoleNotes(role, notes, currProject) {
 	deleteID = currProject.connManageId.getID();
 	deleteButton = wx::button_construct(notes, deleteID, "Delete", wx::point_construct(320,155), wx::size_construct(60, 25));
 
-	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
-	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::flags(wx::LB_SINGLE, wx::LC_LIST));
+//	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	st = wx::staticbox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::LC_LIST);
 	k = -1;
 /*	items = req.notes;
 	foreach (item, items)
@@ -404,10 +408,9 @@ function Role (role, currProject, frame) {
 	panel = wx::panel_construct(dialog, wx::ID_ANY, wx::point_construct(0,0), wx::size_construct(450, 480));
 	notebook = wx::notebook_construct(panel, wx::ID_ANY,wx::point_construct(22,15),wx::size_construct(400,390));
 	notebook.setbackgroundcolour(colour = wx::colour_construct(240,240,240));
-	colour.destruct();
 	propsWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	propsWin.show(true);
-	notesWin = wx::window_construct(panel, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
+	notesWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	notesWin.show(true);
 	wxreq = ::RoleProps(role, propsWin, currProject);
 	notesIds = ::RoleNotes(role, notesWin, currProject);
@@ -441,7 +444,7 @@ function Role (role, currProject, frame) {
 	notebook.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	propsWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	notesWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
-	dialog.destruct();
+	dialog.destroy();
 	currProject.connManageId.removeIDs([okID, cancelID]);
 	currProject.connManageId.removeIDs(notesIds);
 	notesIds = nil;
@@ -469,7 +472,8 @@ function IoProps(io, propsWin, currProject) {
 	datetimeStr = datetime.getday()+"/"+datetime.getmonth()+"/"+datetime.getyear();
 	wxIo.createdText = wx::statictext_construct(propsWin,wx::ID_ANY,"Created:",wx::point_construct(180,168));
 	wxIo.created     = wx::textctrl_construct(propsWin,31,datetimeStr,wx::point_construct(230,164),wx::size_construct(80,20),wx::flags(wx::TE_READONLY));
-	wxIo.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+//	wxIo.st = wx::radiobox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
+	wxIo.st = wx::staticbox_construct(propsWin, -1, "Description", wx::point_construct(15, 200), wx::size_construct(360, 150));
 	wxIo.description = wx::textctrl_construct(wxIo.st, wx::ID_ANY, io.description, wx::point_construct(15,20),wx::size_construct(330,120),wx::flags(wx::TE_RICH2,wx::TE_MULTILINE));
 	return wxIo;
 }
@@ -494,8 +498,9 @@ function IoNotes(io, notes, currProject) {
 	deleteID = currProject.connManageId.getID();
 	deleteButton = wx::button_construct(notes, deleteID, "Delete", wx::point_construct(320,155), wx::size_construct(60, 25));
 
-	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
-	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::flags(wx::LB_SINGLE, wx::LC_LIST));
+//	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	st = wx::staticbox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::LC_LIST);
 	k = -1;
 /*	items = req.notes;
 	foreach (item, items)
@@ -510,10 +515,9 @@ function Io (io, currProject) {
 	panel = wx::panel_construct(dialog, wx::ID_ANY, wx::point_construct(0,0), wx::size_construct(450, 480));
 	notebook = wx::notebook_construct(panel, wx::ID_ANY,wx::point_construct(22,15),wx::size_construct(400,390));
 	notebook.setbackgroundcolour(colour = wx::colour_construct(240,240,240));
-	colour.destruct();
 	propsWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	propsWin.show(true);
-	notesWin = wx::window_construct(panel, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
+	notesWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	notesWin.show(true);
 	wxreq = ::IoProps(io, propsWin, currProject);
 	notesIds = ::IoNotes(io, notesWin, currProject);
@@ -546,7 +550,7 @@ function Io (io, currProject) {
 	notebook.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	propsWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	notesWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
-	dialog.destruct();
+	dialog.destroy();
 	currProject.connManageId.removeIDs([okID, cancelID]);
 	currProject.connManageId.removeIDs(notesIds);
 	notesIds = nil;
@@ -656,7 +660,8 @@ function FilterProps(filter, propsWin, currProject) {
 	datetimeStr = datetime.getday()+"/"+datetime.getmonth()+"/"+datetime.getyear();
 	createdText = wx::statictext_construct(propsWin,wx::ID_ANY,"Created:",wx::point_construct(180,100));
 	createdCtrl = wx::textctrl_construct(propsWin,wx::ID_ANY,datetimeStr,wx::point_construct(230,96),wx::size_construct(80,20), wx::flags(wx::TE_READONLY));
-	st = wx::radiobox_construct(propsWin, wx::ID_ANY, "Description", wx::point_construct(15, 130), wx::size_construct(360, 200));
+//	st = wx::radiobox_construct(propsWin, wx::ID_ANY, "Description", wx::point_construct(15, 130), wx::size_construct(360, 200));
+	st = wx::staticbox_construct(propsWin, wx::ID_ANY, "Description", wx::point_construct(15, 130), wx::size_construct(360, 200));
 	textctrl = wx::textctrl_construct(st,wx::ID_ANY, filter.description, wx::point_construct(15,20),wx::size_construct(330,170),wx::flags(wx::TE_RICH2,wx::TE_MULTILINE));
 	propsWin.description = textctrl;
 }
@@ -684,9 +689,10 @@ function FilterNotes(filter, notes, currProject) {
 	deleteID = currProject.connManageId.getID();
 	deleteButton = wx::button_construct(notes, deleteID, "Delete", wx::point_construct(320,155), wx::size_construct(60, 25));
 
-	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
-	//listbox = listbox_construct(st, 36, point_construct(9,15), size_construct(340,155), ["choice1","choice2"]);//, flags(wx::LB_SINGLE,wx::LC_LIST));
-	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::flags(wx::LB_SINGLE, wx::LC_LIST));
+//	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	st = wx::staticbox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+//	//listbox = listbox_construct(st, 36, point_construct(9,15), size_construct(340,155), ["choice1","choice2"]);//, flags(wx::LB_SINGLE,wx::LC_LIST));
+	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::LC_LIST);
 	k = -1;
 	items = filter.notes;
 	foreach (item, items)
@@ -701,10 +707,9 @@ function Filter (filter, currProject, frame) {
 	panel = wx::panel_construct(dialog, wx::ID_ANY, wx::point_construct(0,0), wx::size_construct(450, 480));
 	notebook = wx::notebook_construct(panel, wx::ID_ANY,wx::point_construct(22,15),wx::size_construct(400,390));
 	notebook.setbackgroundcolour(colour = wx::colour_construct(240,240,240));
-	colour.destruct();
 	propsWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	propsWin.show(true);
-	notesWin = wx::window_construct(panel, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
+	notesWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	notesWin.show(true);
 	::FilterProps(filter, propsWin, currProject);
 	notesIds = ::FilterNotes(filter, notesWin, currProject);
@@ -738,7 +743,7 @@ function Filter (filter, currProject, frame) {
 	notebook.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	propsWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	notesWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
-	dialog.destruct();
+	dialog.destroy();
 	currProject.connManageId.removeIDs([okID, cancelID]);
 	currProject.connManageId.removeIDs(notesIds);
 	notesIds = nil;
@@ -771,7 +776,8 @@ function PatternProps(pattern, propsWin, currProject) {
 	datetimeStr = datetime.getday()+"/"+datetime.getmonth()+"/"+datetime.getyear();
 	createdText = wx::statictext_construct(propsWin,wx::ID_ANY,"Created:",wx::point_construct(180,100));
 	createdCtrl = wx::textctrl_construct(propsWin,wx::ID_ANY,datetimeStr,wx::point_construct(230,96),wx::size_construct(80,20), wx::flags(wx::TE_READONLY));
-	st = wx::radiobox_construct(propsWin, wx::ID_ANY, "Description", wx::point_construct(15, 130), wx::size_construct(360, 200));
+//	st = wx::radiobox_construct(propsWin, wx::ID_ANY, "Description", wx::point_construct(15, 130), wx::size_construct(360, 200));
+	st = wx::staticbox_construct(propsWin, wx::ID_ANY, "Description", wx::point_construct(15, 130), wx::size_construct(360, 200));
 	textctrl = wx::textctrl_construct(st,wx::ID_ANY, pattern.description, wx::point_construct(15,20),wx::size_construct(330,170),wx::flags(wx::TE_RICH2,wx::TE_MULTILINE));
 	propsWin.description = textctrl;
 }
@@ -799,9 +805,10 @@ function PatternNotes(pattern, notes, currProject) {
 	deleteID = currProject.connManageId.getID();
 	deleteButton = wx::button_construct(notes, deleteID, "Delete", wx::point_construct(320,155), wx::size_construct(60, 25));
 
-	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
-	//listbox = listbox_construct(st, 36, point_construct(9,15), size_construct(340,155), ["choice1","choice2"]);//, flags(wx::LB_SINGLE,wx::LC_LIST));
-	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::flags(wx::LB_SINGLE, wx::LC_LIST));
+//	st = wx::radiobox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+	st = wx::staticbox_construct(notes, -1, "", wx::point_construct(35, 180), wx::size_construct(358, 180));
+//	//listbox = listbox_construct(st, 36, point_construct(9,15), size_construct(340,155), ["choice1","choice2"]);//, flags(wx::LB_SINGLE,wx::LC_LIST));
+	listctrl = wx::listctrl_construct(st, wx::ID_ANY, wx::point_construct(9,15), wx::size_construct(340,155), wx::LC_LIST);
 	k = -1;
 	items = pattern.notes;
 	foreach (item, items)
@@ -816,10 +823,9 @@ function Pattern (pattern, currProject, frame) {
 	panel = wx::panel_construct(dialog, wx::ID_ANY, wx::point_construct(0,0), wx::size_construct(450, 480));
 	notebook = wx::notebook_construct(panel, wx::ID_ANY,wx::point_construct(22,15),wx::size_construct(400,390));
 	notebook.setbackgroundcolour(colour = wx::colour_construct(240,240,240));
-	colour.destruct();
 	propsWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	propsWin.show(true);
-	notesWin = wx::window_construct(panel, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
+	notesWin = wx::window_construct(notebook, wx::ID_ANY, wx::point_construct(), wx::size_construct(400,390));
 	notesWin.show(true);
 	::PatternProps(pattern, propsWin, currProject);
 	notesIds = ::PatternNotes(pattern, notesWin, currProject);
@@ -853,7 +859,7 @@ function Pattern (pattern, currProject, frame) {
 	notebook.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	propsWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
 	notesWin.disconnect(wx::EVT_KEY_DOWN, ::onKeyDown);
-	dialog.destruct();
+	dialog.destroy();
 	currProject.connManageId.removeIDs([okID, cancelID]);
 	currProject.connManageId.removeIDs(notesIds);
 	notesIds = nil;

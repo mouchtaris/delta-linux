@@ -20,7 +20,6 @@
 #define WX_FUNC(name) WX_FUNC1(listbox, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(deselect)
 WX_FUNC_DEF(getselections)
@@ -32,7 +31,6 @@ WX_FUNC_DEF(setfirstitem)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(deselect),
 	WX_FUNC(getselections),
@@ -45,7 +43,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setfirstitem")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "setfirstitem")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ListBox, "listbox", ControlWithItems)
 
@@ -59,9 +57,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControlWithItems *_parent = DLIB_WXTYPECAST_BASE(ControlWithItems, val, controlwithitems);
-	DeltaWxControlWithItems *parent = DNEWCLASS(DeltaWxControlWithItems, (_parent));
-	WX_SETOBJECT_EX(*at, ControlWithItems, parent)
+	WX_SET_BASECLASS_GETTER(at, ControlWithItems, val)
 	return true;
 }
 
@@ -75,10 +71,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ListBox, listbox)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(listbox_construct, 0, 8, Nil)
-	wxListBox *wxlistbox = (wxListBox*) 0;
-	DeltaWxListBox *listbox = (DeltaWxListBox*) 0;
+	wxListBox *listbox = (wxListBox*) 0;
 	if (n == 0) {
-		wxlistbox = new wxListBox();
+		listbox = new wxListBox();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -104,14 +99,9 @@ WX_FUNC_ARGRANGE_START(listbox_construct, 0, 8, Nil)
 		if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 8) { WX_GETSTRING_DEFINED(name) }
-		wxlistbox = new wxListBox(parent, id, pos, size, choices, style, *validator, name);
+		listbox = new wxListBox(parent, id, pos, size, choices, style, *validator, name);
 	}
-	if (wxlistbox) listbox = DNEWCLASS(DeltaWxListBox, (wxlistbox));
-	WX_SETOBJECT(ListBox, listbox)
-}
-
-DLIB_FUNC_START(listbox_destruct, 1, Nil)
-	DLIB_WXDELETE(listbox, ListBox, listbox)
+	WX_SET_WINDOW_OBJECT(ListBox, listbox)
 }
 
 WX_FUNC_ARGRANGE_START(listbox_create, 3, 9, Nil)
@@ -141,15 +131,16 @@ WX_FUNC_ARGRANGE_START(listbox_create, 3, 9, Nil)
 	if (n >= 8) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(listbox->Create(parent, id, pos, size, choices, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(listbox);
 }
 
-DLIB_FUNC_START(listbox_deselect, 2, Nil)
+WX_FUNC_START(listbox_deselect, 2, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
 	WX_GETNUMBER(num)
 	listbox->Deselect(num);
 }
 
-DLIB_FUNC_START(listbox_getselections, 2, Nil)
+WX_FUNC_START(listbox_getselections, 2, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
 	WX_GETTABLE(selections_table)
 	wxArrayInt selections;
@@ -161,7 +152,7 @@ DLIB_FUNC_START(listbox_getselections, 2, Nil)
 	}
 }
 
-DLIB_FUNC_START(listbox_insertitems, 3, Nil)
+WX_FUNC_START(listbox_insertitems, 3, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
 	WX_GETTABLE(nItems_table)
 	wxArrayString nItems;
@@ -175,19 +166,19 @@ DLIB_FUNC_START(listbox_insertitems, 3, Nil)
 	listbox->InsertItems(nItems, pos);
 }
 
-DLIB_FUNC_START(listbox_hittest, 2, Nil)
+WX_FUNC_START(listbox_hittest, 2, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
 	DLIB_WXGETPOINT_BASE(point)
 	WX_SETNUMBER(listbox->HitTest(*point))
 }
 
-DLIB_FUNC_START(listbox_isselected, 2, Nil)
+WX_FUNC_START(listbox_isselected, 2, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
 	WX_GETNUMBER(num)
 	WX_SETBOOL(listbox->IsSelected(num))
 }
 
-DLIB_FUNC_START(listbox_set, 2, Nil)
+WX_FUNC_START(listbox_set, 2, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
 	WX_GETTABLE(choices_table)
 	wxArrayString choices;
@@ -201,7 +192,7 @@ DLIB_FUNC_START(listbox_set, 2, Nil)
 	listbox->Set(choices);
 }
 
-DLIB_FUNC_START(listbox_setfirstitem, 2, Nil)
+WX_FUNC_START(listbox_setfirstitem, 2, Nil)
 	DLIB_WXGET_BASE(listbox, ListBox, listbox)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		WX_GETSTRING(string)

@@ -15,7 +15,6 @@
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(controlwithitems, name)
 #define WX_FUNC(name) WX_FUNC1(controlwithitems, name)
 
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(append)
 WX_FUNC_DEF(clear)
 WX_FUNC_DEF(delete)
@@ -33,7 +32,6 @@ WX_FUNC_DEF(setstring)
 WX_FUNC_DEF(setstringselection)
 
 WX_FUNCS_START
-	WX_FUNC(destruct),
 	WX_FUNC(append),
 	WX_FUNC(clear),
 	WX_FUNC(delete),
@@ -53,7 +51,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "destruct", "setstringselection")
+DELTALIBFUNC_DECLARECONSTS(0, uarraysize(funcs), "append", "setstringselection")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ControlWithItems, "controlwithitems", Control)
 
@@ -67,9 +65,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
@@ -82,11 +78,7 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ControlWithItems,controlwithitems)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(controlwithitems_destruct, 1, Nil)
-	DLIB_WXDELETE(controlwithitems, ControlWithItems, ctrl)
-}
-
-DLIB_FUNC_START(controlwithitems_append, 2, Nil)
+WX_FUNC_START(controlwithitems_append, 2, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		WX_GETSTRING(item)
@@ -106,12 +98,12 @@ DLIB_FUNC_START(controlwithitems_append, 2, Nil)
 	}
 }
 
-DLIB_FUNC_START(controlwithitems_clear, 1, Nil)
+WX_FUNC_START(controlwithitems_clear, 1, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	ctrl->Clear();
 }
 
-DLIB_FUNC_START(controlwithitems_delete, 2, Nil)
+WX_FUNC_START(controlwithitems_delete, 2, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_GETNUMBER(num)
 	ctrl->Delete(num);
@@ -125,23 +117,23 @@ WX_FUNC_ARGRANGE_START(controlwithitems_findstring, 2, 3, Nil)
 	WX_SETNUMBER(ctrl->FindString(string, bCase))
 }
 
-DLIB_FUNC_START(controlwithitems_getcount, 1, Nil)
+WX_FUNC_START(controlwithitems_getcount, 1, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_SETNUMBER(ctrl->GetCount())
 }
 
-DLIB_FUNC_START(controlwithitems_getselection, 1, Nil)
+WX_FUNC_START(controlwithitems_getselection, 1, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_SETNUMBER(ctrl->GetSelection())
 }
 
-DLIB_FUNC_START(controlwithitems_getstring, 2, Nil)
+WX_FUNC_START(controlwithitems_getstring, 2, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_GETNUMBER(num)
 	WX_SETSTRING(ctrl->GetString(num))
 }
 
-DLIB_FUNC_START(controlwithitems_getstrings, 1, Nil)
+WX_FUNC_START(controlwithitems_getstrings, 1, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	wxArrayString strings = ctrl->GetStrings();
 	DeltaObject *retval = DNEW(DeltaObject);
@@ -153,43 +145,43 @@ DLIB_FUNC_START(controlwithitems_getstrings, 1, Nil)
 	DLIB_RETVAL_REF.FromTable(retval);
 }
 
-DLIB_FUNC_START(controlwithitems_getstringselection, 1, Nil)
+WX_FUNC_START(controlwithitems_getstringselection, 1, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_SETSTRING(ctrl->GetStringSelection())
 }
 
-DLIB_FUNC_START(controlwithitems_insert, 3, Nil)
+WX_FUNC_START(controlwithitems_insert, 3, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_GETSTRING(item)
 	WX_GETNUMBER(pos)
 	WX_SETNUMBER(ctrl->Insert(item, pos))
 }
 
-DLIB_FUNC_START(controlwithitems_isempty, 1, Nil)
+WX_FUNC_START(controlwithitems_isempty, 1, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_SETBOOL(ctrl->IsEmpty())
 }
 
-DLIB_FUNC_START(controlwithitems_select, 2, Nil)
+WX_FUNC_START(controlwithitems_select, 2, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_GETNUMBER(num)
 	ctrl->Select(num);
 }
 
-DLIB_FUNC_START(controlwithitems_setselection, 2, Nil)
+WX_FUNC_START(controlwithitems_setselection, 2, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_GETNUMBER(num)
 	ctrl->SetSelection(num);
 }
 
-DLIB_FUNC_START(controlwithitems_setstring, 3, Nil)
+WX_FUNC_START(controlwithitems_setstring, 3, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_GETNUMBER(num)
 	WX_GETSTRING(string)
 	ctrl->SetString(num, string);
 }
 
-DLIB_FUNC_START(controlwithitems_setstringselection, 2, Nil)
+WX_FUNC_START(controlwithitems_setstringselection, 2, Nil)
 	DLIB_WXGET_BASE(controlwithitems, ControlWithItems, ctrl)
 	WX_GETSTRING(string)
 	WX_SETBOOL(ctrl->SetStringSelection(string))

@@ -27,7 +27,6 @@
 #define WX_FUNC(name) WX_FUNC1(listctrl, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(arrange)
 WX_FUNC_DEF(assignimagelist)
 WX_FUNC_DEF(clearall)
@@ -86,7 +85,6 @@ WX_FUNC_DEF(setwindowstyleflag)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(arrange),
 	WX_FUNC(assignimagelist),
 	WX_FUNC(clearall),
@@ -146,7 +144,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setwindowstyleflag")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "arrange", "setwindowstyleflag")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ListCtrl, "listctrl", Control)
 
@@ -160,45 +158,35 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
 static bool GetEditControl (void* val, DeltaValue* at) 
 {
 	wxListCtrl *ctrl = DLIB_WXTYPECAST_BASE(ListCtrl, val, listctrl);
-	wxTextCtrl *textctrl = ctrl->GetEditControl();
-	DeltaWxTextCtrl *retval = textctrl ? DNEWCLASS(DeltaWxTextCtrl, (textctrl)) : (DeltaWxTextCtrl*) 0;
-	WX_SETOBJECT_EX(*at, TextCtrl, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, TextCtrl, ctrl->GetEditControl())
 	return true;
 }
 
 static bool GetImageListNormal (void* val, DeltaValue* at) 
 {
 	wxListCtrl *ctrl = DLIB_WXTYPECAST_BASE(ListCtrl, val, listctrl);
-	wxImageList *imglist = ctrl->GetImageList(wxIMAGE_LIST_NORMAL);
-	DeltaWxImageList *retval = imglist ? DNEWCLASS(DeltaWxImageList, (imglist)) : (DeltaWxImageList*) 0;
-	WX_SETOBJECT_EX(*at, ImageList, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, ctrl->GetImageList(wxIMAGE_LIST_NORMAL))
 	return true;
 }
 
 static bool GetImageListSmall (void* val, DeltaValue* at) 
 {
 	wxListCtrl *ctrl = DLIB_WXTYPECAST_BASE(ListCtrl, val, listctrl);
-	wxImageList *imglist = ctrl->GetImageList(wxIMAGE_LIST_SMALL);
-	DeltaWxImageList *retval = imglist ? DNEWCLASS(DeltaWxImageList, (imglist)) : (DeltaWxImageList*) 0;
-	WX_SETOBJECT_EX(*at, ImageList, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, ctrl->GetImageList(wxIMAGE_LIST_SMALL))
 	return true;
 }
 
 static bool GetImageListState (void* val, DeltaValue* at) 
 {
 	wxListCtrl *ctrl = DLIB_WXTYPECAST_BASE(ListCtrl, val, listctrl);
-	wxImageList *imglist = ctrl->GetImageList(wxIMAGE_LIST_STATE);
-	DeltaWxImageList *retval = imglist ? DNEWCLASS(DeltaWxImageList, (imglist)) : (DeltaWxImageList*) 0;
-	WX_SETOBJECT_EX(*at, ImageList, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, ctrl->GetImageList(wxIMAGE_LIST_STATE))
 	return true;
 }
 
@@ -232,10 +220,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ListCtrl,listctrl)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(listctrl_construct, 0, 7, Nil)
-	wxListCtrl *wxctrl = (wxListCtrl*) 0;
-	DeltaWxListCtrl *ctrl = (DeltaWxListCtrl*) 0;
+	wxListCtrl *ctrl = (wxListCtrl*) 0;
 	if (n == 0) {
-		wxctrl = new wxListCtrl();
+		ctrl = new wxListCtrl();
 	} else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -249,7 +236,7 @@ WX_FUNC_ARGRANGE_START(listctrl_construct, 0, 7, Nil)
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 7) { WX_GETSTRING_DEFINED(name) }
-		wxctrl = new wxListCtrl(parent, id, pos, size, style, *validator, name);
+		ctrl = new wxListCtrl(parent, id, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -258,12 +245,7 @@ WX_FUNC_ARGRANGE_START(listctrl_construct, 0, 7, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxctrl) ctrl = DNEWCLASS(DeltaWxListCtrl, (wxctrl));
-	WX_SETOBJECT(ListCtrl, ctrl)
-}
-
-DLIB_FUNC_START(listctrl_destruct, 1, Nil)
-	DLIB_WXDELETE(listctrl, ListCtrl, ctrl)
+	WX_SET_WINDOW_OBJECT(ListCtrl, ctrl)
 }
 
 WX_FUNC_ARGRANGE_START(listctrl_arrange, 1, 2, Nil)
@@ -273,14 +255,14 @@ WX_FUNC_ARGRANGE_START(listctrl_arrange, 1, 2, Nil)
 	WX_SETBOOL(ctrl->Arrange(flag))
 }
 
-DLIB_FUNC_START(listctrl_assignimagelist, 3, Nil)
+WX_FUNC_START(listctrl_assignimagelist, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	DLIB_WXGET_BASE(imagelist, ImageList, imagelist)
 	WX_GETNUMBER(which)
 	ctrl->AssignImageList(imagelist, which);
 }
 
-DLIB_FUNC_START(listctrl_clearall, 1, Nil)
+WX_FUNC_START(listctrl_clearall, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	ctrl->ClearAll();
 }
@@ -300,32 +282,33 @@ WX_FUNC_ARGRANGE_START(listctrl_create, 3, 8, Nil)
 	if (n >= 7) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 	if (n >= 8) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(ctrl->Create(parent, id, pos, size, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(ctrl);
 }
 
-DLIB_FUNC_START(listctrl_deleteallitems, 1, Nil)
+WX_FUNC_START(listctrl_deleteallitems, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_SETBOOL(ctrl->DeleteAllItems())
 }
 
-DLIB_FUNC_START(listctrl_deletecolumn, 2, Nil)
+WX_FUNC_START(listctrl_deletecolumn, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(col)
 	WX_SETBOOL(ctrl->DeleteColumn(col))
 }
 
-DLIB_FUNC_START(listctrl_deleteitem, 2, Nil)
+WX_FUNC_START(listctrl_deleteitem, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_SETBOOL(ctrl->DeleteItem(item))
 }
 
-DLIB_FUNC_START(listctrl_editlabel, 2, Nil)
+WX_FUNC_START(listctrl_editlabel, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	ctrl->EditLabel(item);
 }
 
-DLIB_FUNC_START(listctrl_ensurevisible, 2, Nil)
+WX_FUNC_START(listctrl_ensurevisible, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_SETBOOL(ctrl->EnsureVisible(item))
@@ -346,82 +329,75 @@ WX_FUNC_ARGRANGE_START(listctrl_finditem, 3, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(listctrl_getcolumn, 2, Nil)
+WX_FUNC_START(listctrl_getcolumn, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(col)
 	wxListItem item;
 	if (ctrl->GetColumn(col, item)) {
-		DeltaWxListItem *retval = DNEWCLASS(DeltaWxListItem, (new wxListItem(item)));
-		WX_SETOBJECT(ListItem, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ListItem, new wxListItem(item))
 	} else {
 		DLIB_RETVAL_REF.FromNil();
 	}
 }
 
-DLIB_FUNC_START(listctrl_getcolumncount, 1, Nil)
+WX_FUNC_START(listctrl_getcolumncount, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetColumnCount())
 }
 
-DLIB_FUNC_START(listctrl_getcolumnwidth, 2, Nil)
+WX_FUNC_START(listctrl_getcolumnwidth, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(col)
 	WX_SETNUMBER(ctrl->GetColumnWidth(col))
 }
 
-DLIB_FUNC_START(listctrl_getcountperpage, 1, Nil)
+WX_FUNC_START(listctrl_getcountperpage, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetCountPerPage())
 }
 
-DLIB_FUNC_START(listctrl_geteditcontrol, 1, Nil)
+WX_FUNC_START(listctrl_geteditcontrol, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
-	DeltaWxTextCtrl *retval = DNEWCLASS(DeltaWxTextCtrl, (ctrl->GetEditControl()));
-	WX_SETOBJECT(TextCtrl, retval)
+	WX_SETOBJECT(TextCtrl, ctrl->GetEditControl())
 }
 
-DLIB_FUNC_START(listctrl_getimagelist, 2, Nil)
+WX_FUNC_START(listctrl_getimagelist, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETDEFINE(which)
-	DeltaWxImageList *retval = DNEWCLASS(DeltaWxImageList, (ctrl->GetImageList(which)));
-	WX_SETOBJECT(ImageList, retval)
+	WX_SETOBJECT(ImageList, ctrl->GetImageList(which))
 }
 
-DLIB_FUNC_START(listctrl_getitem, 1, Nil)
+WX_FUNC_START(listctrl_getitem, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	wxListItem info;
 	if (ctrl->GetItem(info)) {
-		DeltaWxListItem *retval = DNEWCLASS(DeltaWxListItem, (new wxListItem(info)));
-		WX_SETOBJECT(ListItem, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ListItem, new wxListItem(info))
 	}
 }
 
-DLIB_FUNC_START(listctrl_getitembackgroundcolour, 2, Nil)
+WX_FUNC_START(listctrl_getitembackgroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(ctrl->GetItemBackgroundColour(item))));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(ctrl->GetItemBackgroundColour(item)))
 }
 
-DLIB_FUNC_START(listctrl_getitemcount, 1, Nil)
+WX_FUNC_START(listctrl_getitemcount, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetItemCount())
 }
 
-DLIB_FUNC_START(listctrl_getitemfont, 2, Nil)
+WX_FUNC_START(listctrl_getitemfont, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(ctrl->GetItemFont(item))));
-	WX_SETOBJECT(Font, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(ctrl->GetItemFont(item)))
 }
 
-DLIB_FUNC_START(listctrl_getitemposition, 2, Nil)
+WX_FUNC_START(listctrl_getitemposition, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	wxPoint pos;
 	if (ctrl->GetItemPosition(item, pos)) {
-		DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(pos)));
-		WX_SETOBJECT(Point, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(pos))
 	}
 }
 
@@ -432,8 +408,7 @@ WX_FUNC_ARGRANGE_START(listctrl_getitemrect, 2, 3, Nil)
 	if (n >= 3) { WX_GETDEFINE_DEFINED(code) }
 	wxRect rect;
 	if (ctrl->GetItemRect(item, rect, code)) {
-		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect)));
-		WX_SETOBJECT(Rect, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(rect))
 	}
 }
 
@@ -446,8 +421,7 @@ WX_FUNC_ARGRANGE_START(listctrl_getsubitemrect, 3, 4, Nil)
 	if (n >= 4) { WX_GETDEFINE_DEFINED(code) }
 	wxRect rect;
 	if (ctrl->GetSubItemRect(item, subItem, rect, code)) {
-		DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(rect)));
-		WX_SETOBJECT(Rect, retval)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(rect))
 	}
 #else
 	DLIB_ERROR_CHECK(
@@ -457,30 +431,28 @@ WX_FUNC_ARGRANGE_START(listctrl_getsubitemrect, 3, 4, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(listctrl_getitemspacing, 1, Nil)
+WX_FUNC_START(listctrl_getitemspacing, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(ctrl->GetItemSpacing())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(ctrl->GetItemSpacing()))
 }
 
-DLIB_FUNC_START(listctrl_getitemstate, 3, Nil)
+WX_FUNC_START(listctrl_getitemstate, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_GETDEFINE(stateMask)
 	WX_SETNUMBER(ctrl->GetItemState(item, stateMask))
 }
 
-DLIB_FUNC_START(listctrl_getitemtext, 2, Nil)
+WX_FUNC_START(listctrl_getitemtext, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_SETSTRING(ctrl->GetItemText(item))
 }
 
-DLIB_FUNC_START(listctrl_getitemtextcolour, 2, Nil)
+WX_FUNC_START(listctrl_getitemtextcolour, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(ctrl->GetItemTextColour(item))));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(ctrl->GetItemTextColour(item)))
 }
 
 WX_FUNC_ARGRANGE_START(listctrl_getnextitem, 2, 4, Nil)
@@ -493,26 +465,24 @@ WX_FUNC_ARGRANGE_START(listctrl_getnextitem, 2, 4, Nil)
 	WX_SETNUMBER(ctrl->GetNextItem(item, geometry, state))
 }
 
-DLIB_FUNC_START(listctrl_getselecteditemcount, 1, Nil)
+WX_FUNC_START(listctrl_getselecteditemcount, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetSelectedItemCount())
 }
 
-DLIB_FUNC_START(listctrl_gettextcolour, 1, Nil)
+WX_FUNC_START(listctrl_gettextcolour, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(ctrl->GetTextColour())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(ctrl->GetTextColour()))
 }
 
-DLIB_FUNC_START(listctrl_gettopitem, 1, Nil)
+WX_FUNC_START(listctrl_gettopitem, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_SETNUMBER(ctrl->GetTopItem())
 }
 
-DLIB_FUNC_START(listctrl_getviewrect, 1, Nil)
+WX_FUNC_START(listctrl_getviewrect, 1, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
-	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(ctrl->GetViewRect())));
-	WX_SETOBJECT(Rect, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(ctrl->GetViewRect()))
 }
 
 WX_FUNC_ARGRANGE_START(listctrl_hittest, 3, 4, Nil)
@@ -560,47 +530,47 @@ WX_FUNC_ARGRANGE_START(listctrl_insertitem, 2, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(listctrl_refreshitem, 2, Nil)
+WX_FUNC_START(listctrl_refreshitem, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	ctrl->RefreshItem(item);
 }
 
-DLIB_FUNC_START(listctrl_refreshitems, 3, Nil)
+WX_FUNC_START(listctrl_refreshitems, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(itemFrom)
 	WX_GETNUMBER(itemTo)
 	ctrl->RefreshItems(itemFrom, itemTo);
 }
 
-DLIB_FUNC_START(listctrl_scrolllist, 3, Nil)
+WX_FUNC_START(listctrl_scrolllist, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(dx)
 	WX_GETNUMBER(dy)
 	WX_SETBOOL(ctrl->ScrollList(dx, dy))
 }
 
-DLIB_FUNC_START(listctrl_setbackgroundcolour, 2, Nil)
+WX_FUNC_START(listctrl_setbackgroundcolour, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	DLIB_WXGET_BASE(colour, Colour, col)
 	ctrl->SetBackgroundColour(*col);
 }
 
-DLIB_FUNC_START(listctrl_setcolumn, 3, Nil)
+WX_FUNC_START(listctrl_setcolumn, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(col)
 	DLIB_WXGET_BASE(listitem, ListItem, item)
 	WX_SETBOOL(ctrl->SetColumn(col, *item))
 }
 
-DLIB_FUNC_START(listctrl_setcolumnwidth, 3, Nil)
+WX_FUNC_START(listctrl_setcolumnwidth, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(col)
 	WX_GETNUMBER(width)
 	WX_SETBOOL(ctrl->SetColumnWidth(col, width))
 }
 
-DLIB_FUNC_START(listctrl_setimagelist, 3, Nil)
+WX_FUNC_START(listctrl_setimagelist, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	WX_GETDEFINE(which)
@@ -622,20 +592,20 @@ WX_FUNC_ARGRANGE_START(listctrl_setitem, 2, 5, Nil)
 	}
 }
 
-DLIB_FUNC_START(listctrl_setitembackgroundcolour, 3, Nil)
+WX_FUNC_START(listctrl_setitembackgroundcolour, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	DLIB_WXGET_BASE(colour, Colour, col)
 	ctrl->SetItemBackgroundColour(item, *col);
 }
 
-DLIB_FUNC_START(listctrl_setitemcount, 2, Nil)
+WX_FUNC_START(listctrl_setitemcount, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(count)
 	ctrl->SetItemCount(count);
 }
 
-DLIB_FUNC_START(listctrl_setitemfont, 3, Nil)
+WX_FUNC_START(listctrl_setitemfont, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	DLIB_WXGET_BASE(font, Font, font)
@@ -650,7 +620,7 @@ WX_FUNC_ARGRANGE_START(listctrl_setitemimage, 3, 4, Nil)
 	if (n == 4) { WX_GETNUMBER(selImage) WX_SETBOOL(ctrl->SetItemImage(item, image, selImage)) }
 }
 
-DLIB_FUNC_START(listctrl_setitemcolumnimage, 4, Nil)
+WX_FUNC_START(listctrl_setitemcolumnimage, 4, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_GETNUMBER(column)
@@ -658,14 +628,14 @@ DLIB_FUNC_START(listctrl_setitemcolumnimage, 4, Nil)
 	WX_SETBOOL(ctrl->SetItemColumnImage(item, column, image))
 }
 
-DLIB_FUNC_START(listctrl_setitemposition, 3, Nil)
+WX_FUNC_START(listctrl_setitemposition, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	DLIB_WXGETPOINT_BASE(pos)
 	WX_SETBOOL(ctrl->SetItemPosition(item, *pos))
 }
 
-DLIB_FUNC_START(listctrl_setitemstate, 4, Nil)
+WX_FUNC_START(listctrl_setitemstate, 4, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_GETDEFINE(state)
@@ -673,14 +643,14 @@ DLIB_FUNC_START(listctrl_setitemstate, 4, Nil)
 	WX_SETBOOL(ctrl->SetItemState(item, state, statemask))
 }
 
-DLIB_FUNC_START(listctrl_setitemtext, 3, Nil)
+WX_FUNC_START(listctrl_setitemtext, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	WX_GETSTRING(text)
 	ctrl->SetItemText(item, text);
 }
 
-DLIB_FUNC_START(listctrl_setitemtextcolour, 3, Nil)
+WX_FUNC_START(listctrl_setitemtextcolour, 3, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETNUMBER(item)
 	DLIB_WXGET_BASE(colour, Colour, col)
@@ -695,13 +665,13 @@ WX_FUNC_ARGRANGE_START(listctrl_setsinglestyle, 2, 3, Nil)
 	ctrl->SetSingleStyle(style, add);
 }
 
-DLIB_FUNC_START(listctrl_settextcolour, 2, Nil)
+WX_FUNC_START(listctrl_settextcolour, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	DLIB_WXGET_BASE(colour, Colour, col)
 	ctrl->SetTextColour(*col);
 }
 
-DLIB_FUNC_START(listctrl_setwindowstyleflag, 2, Nil)
+WX_FUNC_START(listctrl_setwindowstyleflag, 2, Nil)
 	DLIB_WXGET_BASE(listctrl, ListCtrl, ctrl)
 	WX_GETDEFINE(style)
 	ctrl->SetWindowStyleFlag(style);

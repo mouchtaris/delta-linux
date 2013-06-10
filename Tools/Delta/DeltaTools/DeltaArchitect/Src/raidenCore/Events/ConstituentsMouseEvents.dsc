@@ -34,41 +34,35 @@ function onEnterWindow (frame, ev) {
 	toolChoice = ToolBarRAD::GetToolChoice();
 	//
 	if (toolChoice==#none) {
-		local cursor = wx::cursor_construct(wx::CURSOR_NONE);
+		local cursor = wx::cursor_construct();
 		frame.setcursor(cursor);
-		cursor.destruct();
 	}
 	else
 	// show element mouse
 	if (std::strsub(toolChoice,"shape_")>=0) {
 		local cursor = wx::cursor_construct(ImageHolder::images().addElement);
 		frame.setcursor(cursor);
-		cursor.destruct();
 	}
 	// show segment mouse
 	else {
 		if (toolChoice=="segment_Address") {
 			local cursor = wx::cursor_construct(ImageHolder::images().addAddressSegment1st);
 			frame.setcursor(cursor);
-			cursor.destruct();
 		}
 		else
 		if (toolChoice=="segment_Use") {
 			local cursor = wx::cursor_construct(ImageHolder::images().addUseSegment1st);
 			frame.setcursor(cursor);
-			cursor.destruct();
 		}
 		else
 		if (toolChoice=="segment_Offer") {
 			local cursor = wx::cursor_construct(ImageHolder::images().addOfferSegment1st);
 			frame.setcursor(cursor);
-			cursor.destruct();
 		}
 		else
 		if (toolChoice=="segment_PartOF") {
 			local cursor = wx::cursor_construct(ImageHolder::images().addPartOFSegment1st);
 			frame.setcursor(cursor);
-			cursor.destruct();
 		}
 	}
 }
@@ -110,9 +104,8 @@ function onLeftDown (frame, ev) {
 	if (toolChoice!=#none) {
 		if (std::strsub(toolChoice,"shape_")>=0) {
 			// set the mouse in normal mode
-			local cursor = wx::cursor_construct(wx::CURSOR_NONE);
+			local cursor = wx::cursor_construct();
 			frame.setcursor(cursor);
-			cursor.destruct();
 			// set toolbar in none mode
 			ToolBarRAD::SetToolChoice("none");
 			// create the corresponding constituent
@@ -145,13 +138,12 @@ function onLeftDown (frame, ev) {
 					assert(false);
 				// fix the mouse view
 				frame.setcursor(cursor);
-				cursor.destruct();
 			}
 			// if mouse click on empty area without shape...
 			else {
 				::segmentConstituent = nil;
 				ToolBarRAD::SetToolChoice(#none);
-				frame.setcursor(wx::cursor_construct(wx::CURSOR_NONE));
+				frame.setcursor(wx::cursor_construct());
 			}
 		}
 		else {
@@ -216,7 +208,6 @@ function onLeftDown (frame, ev) {
 			// fix the mouse view to be in drag mode
 			local cursor = wx::cursor_construct(wx::CURSOR_SIZING);
 			frame.setcursor(cursor);
-			cursor.destruct();
 			scrolledwindow.refresh();
 		}
 		else {
@@ -375,9 +366,8 @@ function onLeftUp (frame, ev) {
 		else
 		// left up mouse on a shape means try to create a segment with segmentConstituent and this shape-constituent
 		if ((constituent = ShapeRAD::shapeHit(currPoint, currProject, true))!=nil) {
-			local cursor = wx::cursor_construct(wx::CURSOR_NONE);
+			local cursor = wx::cursor_construct();
 			frame.setcursor(cursor);
-			cursor.destruct();
 			ToolBarRAD::SetToolChoice("none");
 			frame.constituent1		= ::segmentConstituent;
 			::segmentConstituent	= nil;
@@ -390,7 +380,7 @@ function onLeftUp (frame, ev) {
 		else {
 			// left up and mouse is not on a shape so 
 			// choice to create new shape and line segment
-			frame.setcursor(wx::cursor_construct(wx::CURSOR_NONE));
+			frame.setcursor(wx::cursor_construct());
 			toolChoice = ToolBarRAD::GetToolChoice();
 			if (toolChoice=="segment_Address") {
 				if (::segmentConstituent.class=="Requirement") {
@@ -829,9 +819,8 @@ function onMotionEvent (frame, ev) {
 					break;
 				}
 				else {
-					local cursor = wx::cursor_construct(wx::CURSOR_NONE);
+					local cursor = wx::cursor_construct();
 					frame.setcursor(cursor);
-					cursor.destruct();
 					::Direction = #none;
 					::StateSelected = #none;
 					// here stop mouse move-resize and states
@@ -1171,8 +1160,7 @@ function onKeyDown (frame, ev) {
 		// user new action means clear redo stack
 		constituents.redoStack.clear();
 		// fixing mouse in nope mode
-		local cursor = wx::cursor_construct(wx::CURSOR_NONE);
+		local cursor = wx::cursor_construct();
 		(frame.getpage(frame.getselection())).setcursor(cursor);
-		cursor.destruct();
 	}
 }

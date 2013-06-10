@@ -143,23 +143,22 @@ function redraw (currProject...) {
 	constituents = pattern.constituents;
 	frame  = pattern.window;
 	//
-	dc = nil;
-	if (arguments.total()==1)
-		dc = wx::paintdc_construct(frame);
-	else
-		dc = wx::clientdc_construct(frame);
-	buffer = wx::buffereddc_construct(dc, pattern.virtualsize);
+	dc		= nil;
+	buffer	= nil;
+	if (arguments.total()==1) {
+		dc 		= buffer	= wx::bufferedpaintdc_construct(frame);
+	} else {
+		dc		= wx::clientdc_construct(frame);
+		buffer	= wx::buffereddc_construct(dc, pattern.virtualsize);
+	}
 	frame.preparedc(dc);
 	dc.setuserscale(frame.scale, frame.scale);
 	
 	// draw background
 	local pen = wx::pen_construct(colour = wx::colour_construct(212,220,237));
 	buffer.setpen(pen);
-	pen.destruct();
 	local brush = wx::brush_construct(colour);
 	buffer.setbrush(brush);
-	brush.destruct();
-	colour.destruct();
 	buffer.drawrectangle(wx::point_construct(0, 0), pattern.virtualsize);
 	// draw line segments
 	segments = [ "Address", "Use", "Offer", "PartOF" ];
@@ -184,8 +183,6 @@ function redraw (currProject...) {
 	if (drawline!=nil) {
 		local pen	= wx::pen_construct(colour = wx::colour_construct(0,0,0),2,wx::DOT);
 		buffer.setpen(pen);
-		pen.destruct();
-		colour.destruct();
 		buffer.drawline(drawline.point1, drawline.point2);
 		drawline.constituent.drawElement(buffer);
 		enable = drawline.enable;
@@ -195,8 +192,6 @@ function redraw (currProject...) {
 		frame.drawline	= nil;
 	}
 	// fire paint the screen and in paint event stop th recall of event
-	buffer.destruct();
-	dc.destruct();
 }
 
 /**
@@ -214,11 +209,8 @@ function redraw (currProject...) {
 	// draw background
 	local pen = wx::pen_construct(colour = wx::colour_construct(212,220,237));
 	buffer.setpen(pen);
-	pen.destruct();
 	local brush = wx::brush_construct(colour);
 	buffer.setbrush(brush);
-	brush.destruct();
-	colour.destruct();
 	buffer.drawrectangle(wx::point_construct(0,0), pattern.virtualsize);
 	// draw line segments
 	segments = [ "Address", "Use", "Offer", "PartOF" ];
@@ -239,7 +231,6 @@ function redraw (currProject...) {
 		constituents[value.type][value.id].drawElement(buffer);
 	}
 	//
-	buffer.destruct();
 	return bitmap;
 }
 
@@ -261,10 +252,8 @@ function drawPatterns(currProject) {
 	buffer = wx::buffereddc_construct(dc, wx::size_construct(width,height));
 	local pen = wx::pen_construct(colour = wx::colour_construct(214,240,245));
 	buffer.setpen(pen);
-	pen.destruct();
 	local brush = wx::brush_construct(colour);
 	buffer.setbrush(brush);
-	brush.destruct();
 	buffer.drawrectangle(wx::point_construct(0,0), wx::size_construct(width,height));
 	//
 	it = std::listiter_new();
@@ -275,12 +264,8 @@ function drawPatterns(currProject) {
 		//
 		local pen = wx::pen_construct(colour = wx::colour_construct(0,0,0), 2);
 		buffer.setpen(pen);
-		pen.destruct();
-		colour.destruct();
 		local brush = wx::brush_construct(colour = wx::colour_construct(255,249,130));
 		buffer.setbrush(brush);
-		brush.destruct();
-		colour.destruct();
 		buffer.drawrectangle(pattern.rect);
 		strlist = std::strtokenise(pattern.name," ");
 		strlength = 0;
@@ -310,7 +295,6 @@ function drawPatterns(currProject) {
 		}
 		buffer.drawtext(strname, pattern.rect.getx()+15, pattern.rect.gety()+(15*line));
 	}
-	buffer.destruct();
 }
 
 /**

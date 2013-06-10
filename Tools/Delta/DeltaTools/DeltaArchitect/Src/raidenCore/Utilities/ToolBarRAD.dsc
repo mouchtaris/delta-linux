@@ -102,7 +102,6 @@ function Tools (...) {
 				width -= 5;
 				foreach (tool, self.data)
 					tool.rect.setwidth(width);
-				self.backgroundBitmap.destruct();
 				self.backgroundBitmap = wx::bitmap_construct(width,20);
 				memDC = wx::memorydc_construct();
 				memDC.selectobject(self.backgroundBitmap);
@@ -110,16 +109,12 @@ function Tools (...) {
 				for(i=0;i<width;++i) {
 					local pen = wx::pen_construct(colour = wx::colour_construct(colNum, colNum, colNum), 1);
 					memDC.setpen(pen);
-					pen.destruct();
-					colour.destruct();
 					memDC.drawline(i, 0, i, 20);
 					if(i%10==0)
 						colNum = colNum - 1;
 				}
 				memDC.selectobject(wx::bitmap_construct());
-				memDC.destruct();
 				//
-				self.backgroundToolBar.destruct();
 				self.backgroundToolBar = wx::bitmap_construct(self.width,self.height);
 				memDC = wx::memorydc_construct();
 				memDC.selectobject(self.backgroundToolBar);
@@ -127,8 +122,6 @@ function Tools (...) {
 				for(i=0;i<self.width;++i) {
 					local pen = wx::pen_construct(colour = wx::colour_construct(colNum, colNum, colNum), 1);
 					memDC.setpen(pen);
-					pen.destruct();
-					colour.destruct();
 					memDC.drawline(i, 0, i, height);
 					if(i%10==0)
 						colNum = colNum - 1;
@@ -171,24 +164,15 @@ function drawToolBox () {
 	buffer.drawrectangle(0, 0, width, height);*/
 	local pen = wx::pen_construct(colour = wx::colour_construct(160,160,160), 2);
 	buffer.setpen(pen);
-	pen.destruct();
-	colour.destruct();
 	local brush = wx::brush_construct(colour = wx::colour_construct(167,167,167));
 	buffer.setbrush(brush);
-	brush.destruct();
-	colour.destruct();
 	buffer.drawrectangle(2, 2, width-3, 18);
 	buffer.settextforeground(colour = wx::colour_construct(255,255,255));
-	colour.destruct();
 	buffer.drawtext("Toolbox",5,2);
 	local pen = wx::pen_construct(colour = wx::colour_construct(190,190,190),2);
 	buffer.setpen(pen);
-	pen.destruct();
-	colour.destruct();
 	local brush = wx::brush_construct(colour = wx::colour_construct(255,255,255));
 	buffer.setbrush(brush);
-	brush.destruct();
-	colour.destruct();
 	buffer.drawrectangle(2, 22, width-3, 17);
 	colNum = 221;
 	w = width-3;
@@ -196,8 +180,6 @@ function drawToolBox () {
 	for(i=1;i<=15;++i) {
 		local pen = wx::pen_construct(colour = wx::colour_construct(colNum, colNum, colNum), 1);
 		buffer.setpen(pen);
-		pen.destruct();
-		colour.destruct();
 		buffer.drawline(2, x, w, x);
 		colNum -= 2;
 		++x;
@@ -205,25 +187,18 @@ function drawToolBox () {
 	local bitmap = ImageHolder::images().toolbarArrow;
 	buffer.drawbitmap(bitmap, wx::point_construct(10,28), true);
 	buffer.settextforeground(colour = wx::colour_construct(0,0,0));
-	colour.destruct();
 	buffer.drawtext("Element", 25, 24);
 	local pen = wx::pen_construct(colour = wx::colour_construct(190,190,190),2);
 	buffer.setpen(pen);
-	pen.destruct();
-	colour.destruct();
 	buffer.drawline(1, 42, width-1, 42);
 	// Element Links
 	l = 171;
 	d = 165;
 	local pen = wx::pen_construct(colour = wx::colour_construct(190,190,190),2);
 	buffer.setpen(pen);
-	pen.destruct();
-	colour.destruct();
 	buffer.drawrectangle(2, d, w, 20);
 	local pen = wx::pen_construct(colour = wx::colour_construct(190,190,190),2);
 	buffer.setpen(pen);
-	pen.destruct();
-	colour.destruct();
 	local brush = wx::brush_construct(colour = wx::colour_construct(255,255,255));
 	buffer.setbrush(brush);
 	buffer.drawrectangle(2, d, w, 17);
@@ -232,8 +207,6 @@ function drawToolBox () {
 	for(i=1;i<=15;++i) {
 		local pen = wx::pen_construct(colour = wx::colour_construct(colNum, colNum, colNum), 1);
 		buffer.setpen(pen);
-		pen.destruct();
-		colour.destruct();
 		buffer.drawline(2, d, w, d);
 		colNum -= 2;
 		++d;
@@ -241,35 +214,26 @@ function drawToolBox () {
 	local bitmap = ImageHolder::images().toolbarArrow;
 	buffer.drawbitmap(bitmap,wx::point_construct(10,l),true);
 	buffer.settextforeground(colour = wx::colour_construct(0,0,0));
-	colour.destruct();
 	buffer.drawtext("Element Relationships", 25, l-5);
 	tools = ::Tools(width,height).data;
-	local font = wx::font_construct(9,wx::FONTBTN_DEFAULT_STYLE,wx::FONTBTN_DEFAULT_STYLE,10);
+	local font = wx::font_construct(9,wx::FONTFAMILY_DEFAULT,wx::FONTSTYLE_NORMAL,wx::FONTWEIGHT_NORMAL);
 	buffer.setfont(font);
-	font.destruct();
 	local pen = wx::pen_construct(colour = wx::colour_construct(51,153,255), 1);
 	buffer.setpen(pen);
-	pen.destruct();
-	colour.destruct();
 	foreach(tool, tools) {
 		if (::toolSelected==tool) {
 			local brush = wx::brush_construct(colour = wx::colour_construct(218,235,252));
 			buffer.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			buffer.drawrectangle(tool.rect); }
 		else
 		if (::toolHovered==tool) {
 			local brush = wx::brush_construct(colour = wx::colour_construct(194,226,255));
 			buffer.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			buffer.drawrectangle(tool.rect);
 		}
 		buffer.drawbitmap(tool.bitmap, tool.rect.getx()+6, tool.rect.gety()+3, true);
 		buffer.drawtext(tool.txt, tool.rect.getx()+40, tool.rect.gety()+2);
 	}
-	buffer.destruct();
 }
 
 
@@ -305,9 +269,8 @@ function onMotionEvent (frame, ev) {
 	if ( (tool=::Tools().onCollision(ev.getposition())) != nil) {
 		if( tool!=::toolHovered and tool!=toolSelected ) {
 			buffer = wx::buffereddc_construct(frame.dc, frame.getsize());
-			local font = wx::font_construct(9,wx::FONTBTN_DEFAULT_STYLE,wx::FONTBTN_DEFAULT_STYLE,10);
+			local font = wx::font_construct(9,wx::FONTFAMILY_DEFAULT,wx::FONTSTYLE_NORMAL,wx::FONTWEIGHT_NORMAL);
 			buffer.setfont(font);
-			font.destruct();
 			if (::toolHovered!=nil) {
 				buffer.drawbitmap(::Tools().backgroundBitmap, ::toolHovered.rect.getposition());
 				buffer.drawbitmap(::toolHovered.bitmap, ::toolHovered.rect.getx()+6, ::toolHovered.rect.gety()+3, true);
@@ -316,41 +279,32 @@ function onMotionEvent (frame, ev) {
 			::toolHovered = tool;
 			local pen = wx::pen_construct(colour = wx::colour_construct(51,153,255), 1);
 			buffer.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct(194,226,255));
 			buffer.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			buffer.drawrectangle(::toolHovered.rect);
 			buffer.drawbitmap(::toolHovered.bitmap, ::toolHovered.rect.getx()+6, ::toolHovered.rect.gety()+3, true);
 			buffer.drawtext(::toolHovered.txt, ::toolHovered.rect.getx()+40, ::toolHovered.rect.gety()+2);
-			buffer.destruct();
 		}
 		else
 		if (::toolHovered!=nil and tool==toolSelected) {
 			buffer = wx::buffereddc_construct(frame.dc, frame.getsize());
-			local font = wx::font_construct(9,wx::FONTBTN_DEFAULT_STYLE,wx::FONTBTN_DEFAULT_STYLE,10);
+			local font = wx::font_construct(9,wx::FONTFAMILY_DEFAULT,wx::FONTSTYLE_NORMAL,wx::FONTWEIGHT_NORMAL);
 			buffer.setfont(font);
-			font.destruct();
 			buffer.drawbitmap(::Tools().backgroundBitmap, ::toolHovered.rect.getposition());
 			buffer.drawbitmap(::toolHovered.bitmap, ::toolHovered.rect.getx()+6, ::toolHovered.rect.gety()+3, true);
 			buffer.drawtext(::toolHovered.txt, ::toolHovered.rect.getx()+40, ::toolHovered.rect.gety()+2);			
 			::toolHovered = nil;
-			buffer.destruct();
 		}
 	}
 	else
 	if (::toolHovered!=nil) {
 		buffer = wx::buffereddc_construct(frame.dc, frame.getsize());
-		local font = wx::font_construct(9,wx::FONTBTN_DEFAULT_STYLE,wx::FONTBTN_DEFAULT_STYLE,10);
+		local font = wx::font_construct(9,wx::FONTFAMILY_DEFAULT,wx::FONTSTYLE_NORMAL,wx::FONTWEIGHT_NORMAL);
 		buffer.setfont(font);
-		font.destruct();
 		buffer.drawbitmap(::Tools().backgroundBitmap, ::toolHovered.rect.getposition());
 		buffer.drawbitmap(::toolHovered.bitmap, ::toolHovered.rect.getx()+6, ::toolHovered.rect.gety()+3, true);
 		buffer.drawtext(::toolHovered.txt, ::toolHovered.rect.getx()+40, ::toolHovered.rect.gety()+2);
 		::toolHovered = nil;
-		buffer.destruct();
 	}
 }
 
@@ -361,9 +315,8 @@ function onLeftDownEvent (frame, ev) {
 	if ( (tool=::Tools().onCollision(ev.getposition())) != nil) {
 		buffer = wx::buffereddc_construct(frame.dc, frame.getsize());
 		if( tool!=::toolSelected ) {
-			local font = wx::font_construct(9,wx::FONTBTN_DEFAULT_STYLE,wx::FONTBTN_DEFAULT_STYLE,10);
+			local font = wx::font_construct(9,wx::FONTFAMILY_DEFAULT,wx::FONTSTYLE_NORMAL,wx::FONTWEIGHT_NORMAL);
 			buffer.setfont(font);
-			font.destruct();
 			if (::toolSelected!=nil) {
 				buffer.drawbitmap(::Tools().backgroundBitmap, ::toolSelected.rect.getposition());
 				buffer.drawbitmap(::toolSelected.bitmap, ::toolSelected.rect.getx()+6, ::toolSelected.rect.gety()+3, true);
@@ -374,12 +327,8 @@ function onLeftDownEvent (frame, ev) {
 			::toolHovered  = nil;
 			local pen = wx::pen_construct(colour = wx::colour_construct(51,153,255), 1);
 			buffer.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct(218,235,252));
 			buffer.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			buffer.drawrectangle(::toolSelected.rect);
 			buffer.drawbitmap(::toolSelected.bitmap, ::toolSelected.rect.getx()+6, ::toolSelected.rect.gety()+3, true);
 			buffer.drawtext(::toolSelected.txt, ::toolSelected.rect.getx()+40, ::toolSelected.rect.gety()+2);
@@ -388,22 +337,16 @@ function onLeftDownEvent (frame, ev) {
 			::toolSelected = nil;
 			::toolChoice = #none;
 			::toolHovered = tool;
-			local font = wx::font_construct(9,wx::FONTBTN_DEFAULT_STYLE,wx::FONTBTN_DEFAULT_STYLE,10);
+			local font = wx::font_construct(9,wx::FONTFAMILY_DEFAULT,wx::FONTSTYLE_NORMAL,wx::FONTWEIGHT_NORMAL);
 			buffer.setfont(font);
-			font.destruct();
 			local pen = wx::pen_construct(colour = wx::colour_construct(51,153,255), 1);
 			buffer.setpen(pen);
-			pen.destruct();
-			colour.destruct();
 			local brush = wx::brush_construct(colour = wx::colour_construct(194,226,255));
 			buffer.setbrush(brush);
-			brush.destruct();
-			colour.destruct();
 			buffer.drawrectangle(::toolHovered.rect);
 			buffer.drawbitmap(::toolHovered.bitmap, ::toolHovered.rect.getx()+6, ::toolHovered.rect.gety()+3, true);
 			buffer.drawtext(::toolHovered.txt, ::toolHovered.rect.getx()+40, ::toolHovered.rect.gety()+2);
 		}
-		buffer.destruct();
 	}
 }
 

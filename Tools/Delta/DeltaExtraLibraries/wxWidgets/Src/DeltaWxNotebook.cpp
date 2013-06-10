@@ -23,7 +23,6 @@
 #define WX_FUNC(name) WX_FUNC1(notebook, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(addpage)
 WX_FUNC_DEF(advanceselection)
 WX_FUNC_DEF(assignimagelist)
@@ -53,7 +52,6 @@ WX_FUNC_DEF(setselection)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(addpage),
 	WX_FUNC(advanceselection),
 	WX_FUNC(assignimagelist),
@@ -84,7 +82,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setselection")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "addpage", "setselection")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Notebook, "notebook", Control)
 
@@ -98,9 +96,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
@@ -110,9 +106,7 @@ static bool GetPages (void* val, DeltaValue* at)
 	at->FromTable(DNEW(DELTA_OBJECT));
 	for (int i = 0, pageSize = (int)book->GetPageCount(); i < pageSize; ++i) {
 		DeltaValue value;
-		wxWindow *win = book->GetPage(i);
-		DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-		WX_SETOBJECT_EX(value, Window, retval)
+		WX_SETOBJECT_NO_CONTEXT_EX(value, Window, book->GetPage(i))
 		at->ToTable()->Set(DeltaValue((DeltaNumberValueType)i), value);
 	}
 	return true;
@@ -121,11 +115,7 @@ static bool GetPages (void* val, DeltaValue* at)
 static bool GetImageList (void* val, DeltaValue* at) 
 {
 	wxNotebook *book = DLIB_WXTYPECAST_BASE(Notebook, val, notebook);
-	wxImageList *imagelist = book->GetImageList();
-	DeltaWxImageList *retval = imagelist ?
-		DNEWCLASS(DeltaWxImageList, (imagelist)) :
-		(DeltaWxImageList*) 0;
-	WX_SETOBJECT_EX(*at, ImageList, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, ImageList, book->GetImageList())
 	return true;
 }
 
@@ -182,10 +172,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Notebook,notebook)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(notebook_construct, 0, 6, Nil)
-	wxNotebook *wxnotebk = (wxNotebook*) 0;
-	DeltaWxNotebook *notebk = (DeltaWxNotebook*) 0;
+	wxNotebook *notebk = (wxNotebook*) 0;
 	if (n == 0)
-		wxnotebk = new wxNotebook();
+		notebk = new wxNotebook();
 	else if (n >= 2) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(winid)
@@ -197,7 +186,7 @@ WX_FUNC_ARGRANGE_START(notebook_construct, 0, 6, Nil)
 		if (n >= 4) { DLIB_WXGETSIZE_BASE(_size) size = *_size; }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 6) { WX_GETSTRING_DEFINED(name) }
-		wxnotebk = new wxNotebook(parent, winid, pos, size, style, name);
+		notebk = new wxNotebook(parent, winid, pos, size, style, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -206,12 +195,7 @@ WX_FUNC_ARGRANGE_START(notebook_construct, 0, 6, Nil)
 		);
 		return;
 	}
-	if (wxnotebk) notebk = DNEWCLASS(DeltaWxNotebook, (wxnotebk));
-	WX_SETOBJECT(Notebook, notebk)
-}
-
-DLIB_FUNC_START(notebook_destruct, 1, Nil)
-	DLIB_WXDELETE(notebook, Notebook, notebk)
+	WX_SET_WINDOW_OBJECT(Notebook, notebk)
 }
 
 WX_FUNC_ARGRANGE_START(notebook_addpage, 3, 5, Nil)
@@ -232,13 +216,13 @@ WX_FUNC_ARGRANGE_START(notebook_advanceselection, 1, 2, Nil)
 	notebk->AdvanceSelection(forward);
 }
 
-DLIB_FUNC_START(notebook_assignimagelist, 2, Nil)
+WX_FUNC_START(notebook_assignimagelist, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	notebk->AssignImageList(imageList);
 }
 
-DLIB_FUNC_START(notebook_changeselection, 2, Nil)
+WX_FUNC_START(notebook_changeselection, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(size)
 	WX_SETNUMBER(notebk->ChangeSelection(size))
@@ -257,69 +241,69 @@ WX_FUNC_ARGRANGE_START(notebook_create, 3, 7, Nil)
 	if (n >= 6) { WX_GETDEFINE_DEFINED(style) }
 	if (n >= 7) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(notebk->Create(parent, winid, pos, size, style, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(notebk);
 }
 
-DLIB_FUNC_START(notebook_deleteallpages, 1, Nil)
+WX_FUNC_START(notebook_deleteallpages, 1, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_SETBOOL(notebk->DeleteAllPages())
 }
 
-DLIB_FUNC_START(notebook_deletepage, 2, Nil)
+WX_FUNC_START(notebook_deletepage, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(notebk->DeletePage(page))
 }
 
-DLIB_FUNC_START(notebook_getcurrentpage, 1, Nil)
+WX_FUNC_START(notebook_getcurrentpage, 1, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
-	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, notebk->GetCurrentPage())
+	wxWindow* retval	= notebk->GetCurrentPage();
 	WX_SETOBJECT(Window, retval)
 }
 
-DLIB_FUNC_START(notebook_getimagelist, 1, Nil)
+WX_FUNC_START(notebook_getimagelist, 1, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
-	WXNEWCLASS(DeltaWxImageList, retval, wxImageList, notebk->GetImageList())
+	wxImageList* retval	= notebk->GetImageList();
 	WX_SETOBJECT(ImageList, retval)
 }
 
-DLIB_FUNC_START(notebook_getpage, 2, Nil)
+WX_FUNC_START(notebook_getpage, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)
-	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, notebk->GetPage(page))
+	wxWindow* retval	= notebk->GetPage(page);
 	WX_SETOBJECT(Window, retval)
 }
 
-DLIB_FUNC_START(notebook_getpagecount, 1, Nil)
+WX_FUNC_START(notebook_getpagecount, 1, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_SETNUMBER(notebk->GetPageCount())
 }
 
-DLIB_FUNC_START(notebook_getpageimage, 2, Nil)
+WX_FUNC_START(notebook_getpageimage, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(nPage)
 	WX_SETNUMBER(notebk->GetPageImage(nPage))
 }
 
-DLIB_FUNC_START(notebook_getpagetext, 2, Nil)
+WX_FUNC_START(notebook_getpagetext, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)
 	WX_SETSTRING(notebk->GetPageText(page))
 }
 
-DLIB_FUNC_START(notebook_getrowcount, 1, Nil)
+WX_FUNC_START(notebook_getrowcount, 1, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_SETNUMBER(notebk->GetRowCount())
 }
 
-DLIB_FUNC_START(notebook_getselection, 1, Nil)
+WX_FUNC_START(notebook_getselection, 1, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_SETNUMBER(notebk->GetSelection())
 }
 
-DLIB_FUNC_START(notebook_getthemebackgroundcolour, 1, Nil)
+WX_FUNC_START(notebook_getthemebackgroundcolour, 1, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(notebk->GetThemeBackgroundColour())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(notebk->GetThemeBackgroundColour()))
 }
 
 WX_FUNC_ARGRANGE_START(notebook_hittest, 2, 3, Nil)
@@ -345,7 +329,7 @@ WX_FUNC_ARGRANGE_START(notebook_insertpage, 4, 6, Nil)
 	WX_SETBOOL(notebk->InsertPage(index, page, text, select, imageId))
 }
 
-DLIB_FUNC_START(notebook_onselchange, 2, Nil)
+WX_FUNC_START(notebook_onselchange, 2, Nil)
 #if defined (__WXMSW__) && wxVERSION_NUMBER < 2902	//TODO: maybe totally remove in wxWidgets 2.9?
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	DLIB_WXGET_BASE(notebookevent, NotebookEvent, ev)
@@ -358,45 +342,45 @@ DLIB_FUNC_START(notebook_onselchange, 2, Nil)
 #endif //__WXMSW__
 }
 
-DLIB_FUNC_START(notebook_removepage, 2, Nil)
+WX_FUNC_START(notebook_removepage, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)
 	WX_SETBOOL(notebk->RemovePage(page))
 }
 
-DLIB_FUNC_START(notebook_setimagelist, 2, Nil)
+WX_FUNC_START(notebook_setimagelist, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	DLIB_WXGET_BASE(imagelist, ImageList, imageList)
 	notebk->SetImageList(imageList);
 }
 
-DLIB_FUNC_START(notebook_setpadding, 2, Nil)
+WX_FUNC_START(notebook_setpadding, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	DLIB_WXGETSIZE_BASE(padding)
 	notebk->SetPadding(*padding);
 }
 
-DLIB_FUNC_START(notebook_setpagesize, 2, Nil)
+WX_FUNC_START(notebook_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	DLIB_WXGETSIZE_BASE(size)
 	notebk->SetPageSize(*size);
 }
 
-DLIB_FUNC_START(notebook_setpageimage, 3, Nil)
+WX_FUNC_START(notebook_setpageimage, 3, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)
 	WX_GETNUMBER(image)
 	WX_SETBOOL(notebk->SetPageImage(page, image))
 }
 
-DLIB_FUNC_START(notebook_setpagetext, 3, Nil)
+WX_FUNC_START(notebook_setpagetext, 3, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)
 	WX_GETSTRING(text)
 	WX_SETBOOL(notebk->SetPageText(page, text))
 }
 
-DLIB_FUNC_START(notebook_setselection, 2, Nil)
+WX_FUNC_START(notebook_setselection, 2, Nil)
 	DLIB_WXGET_BASE(notebook, Notebook, notebk)
 	WX_GETNUMBER(page)
 	WX_SETNUMBER(notebk->SetSelection(page))

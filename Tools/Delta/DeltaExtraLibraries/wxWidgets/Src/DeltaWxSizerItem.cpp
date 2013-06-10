@@ -103,51 +103,42 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
 static bool GetWindow (void* val, DeltaValue* at) 
 {
 	wxSizerItem *item = DLIB_WXTYPECAST_BASE(SizerItem, val, sizeritem);
-	wxWindow *win = item->GetWindow();
-	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-	WX_SETOBJECT_EX(*at, Window, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, item->GetWindow())
 	return true;
 }
 
 static bool GetSizer (void* val, DeltaValue* at) 
 {
 	wxSizerItem *item = DLIB_WXTYPECAST_BASE(SizerItem, val, sizeritem);
-	wxSizer *sizer = item->GetSizer();
-	DeltaWxSizer *retval = sizer ? DNEWCLASS(DeltaWxSizer, (sizer)) : (DeltaWxSizer*) 0;
-	WX_SETOBJECT_EX(*at, Sizer, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Sizer, item->GetSizer())
 	return true;
 }
 
 static bool GetSpacer (void* val, DeltaValue* at) 
 {
 	wxSizerItem *item = DLIB_WXTYPECAST_BASE(SizerItem, val, sizeritem);
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(item->GetSpacer())));
-	WX_SETOBJECT_EX(*at, Size, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Size, new wxSize(item->GetSpacer()))
 	return true;
 }
 
 static bool GetPosition (void* val, DeltaValue* at) 
 {
 	wxSizerItem *item = DLIB_WXTYPECAST_BASE(SizerItem, val, sizeritem);
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(item->GetPosition())));
-	WX_SETOBJECT_EX(*at, Point, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(item->GetPosition()))
 	return true;
 }
 
 static bool GetMinSize (void* val, DeltaValue* at) 
 {
 	wxSizerItem *item = DLIB_WXTYPECAST_BASE(SizerItem, val, sizeritem);
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(item->GetMinSize())));
-	WX_SETOBJECT_EX(*at, Size, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Size, new wxSize(item->GetMinSize()))
 	return true;
 }
 
@@ -175,8 +166,7 @@ static bool GetFlag (void* val, DeltaValue* at)
 static bool GetRect (void* val, DeltaValue* at) 
 {
 	wxSizerItem *item = DLIB_WXTYPECAST_BASE(SizerItem, val, sizeritem);
-	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(item->GetRect())));
-	WX_SETOBJECT_EX(*at, Rect, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Rect, new wxRect(item->GetRect()))
 	return true;
 }
 
@@ -224,40 +214,35 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(SizerItem,sizeritem)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(sizeritem_construct, 0, 5, Nil)
-	wxSizerItem *wxitem = (wxSizerItem*) 0;
-	DeltaWxSizerItem *item = (DeltaWxSizerItem*) 0;
+	wxSizerItem *item = (wxSizerItem*) 0;
 	if (n == 0)
-		wxitem = new wxSizerItem();
+		item = new wxSizerItem();
 	else if (n == 2) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-				wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 				DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-				wxitem = new wxSizerItem(window, *flags);
+				item = new wxSizerItem(window, *flags);
 			} else
-			if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-				wxSizer *sizer = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer)) {
 				DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-				wxitem = new wxSizerItem(sizer, *flags);
+				item = new wxSizerItem(sizer, *flags);
 			}
 		}
 	} else if (n == 4) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-				wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 				WX_GETNUMBER(proportion)
 				WX_GETDEFINE(flag)
 				WX_GETDEFINE(border)
-				wxitem = new wxSizerItem(window, proportion, flag, border, NULL);
+				item = new wxSizerItem(window, proportion, flag, border, NULL);
 			} else
-			if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-				wxSizer *sizer = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+			if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer)) {
 				WX_GETNUMBER(proportion)
 				WX_GETDEFINE(flag)
 				WX_GETDEFINE(border)
-				wxitem = new wxSizerItem(sizer, proportion, flag, border, NULL);
+				item = new wxSizerItem(sizer, proportion, flag, border, NULL);
 			}
 		}
 	} else if (n == 5) {
@@ -266,7 +251,7 @@ WX_FUNC_ARGRANGE_START(sizeritem_construct, 0, 5, Nil)
 		WX_GETNUMBER(proportion)
 		WX_GETDEFINE(flag)
 		WX_GETDEFINE(border)
-		wxitem = new wxSizerItem(width, height, proportion, flag, border, NULL);
+		item = new wxSizerItem(width, height, proportion, flag, border, NULL);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -275,145 +260,135 @@ WX_FUNC_ARGRANGE_START(sizeritem_construct, 0, 5, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxitem) item = DNEWCLASS(DeltaWxSizerItem, (wxitem));
 	WX_SETOBJECT(SizerItem, item)
 }
 
-DLIB_FUNC_START(sizeritem_destruct, 1, Nil)
+WX_FUNC_START(sizeritem_destruct, 1, Nil)
 	DLIB_WXDELETE(sizeritem, SizerItem, item)
 }
 
-DLIB_FUNC_START(sizeritem_calcmin, 1, Nil)
+WX_FUNC_START(sizeritem_calcmin, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(item->CalcMin())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(item->CalcMin()))
 }
 
-DLIB_FUNC_START(sizeritem_deletewindows, 1, Nil)
+WX_FUNC_START(sizeritem_deletewindows, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	item->DeleteWindows();
 }
 
-DLIB_FUNC_START(sizeritem_detachsizer, 1, Nil)
+WX_FUNC_START(sizeritem_detachsizer, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	item->DetachSizer();
 }
 
-DLIB_FUNC_START(sizeritem_getborder, 1, Nil)
+WX_FUNC_START(sizeritem_getborder, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETNUMBER(item->GetBorder())
 }
 
-DLIB_FUNC_START(sizeritem_getflag, 1, Nil)
+WX_FUNC_START(sizeritem_getflag, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETNUMBER(item->GetFlag())
 }
 
-DLIB_FUNC_START(sizeritem_getminsize, 1, Nil)
+WX_FUNC_START(sizeritem_getminsize, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(item->GetMinSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(item->GetMinSize()))
 }
 
-DLIB_FUNC_START(sizeritem_getposition, 1, Nil)
+WX_FUNC_START(sizeritem_getposition, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(item->GetPosition())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(item->GetPosition()))
 }
 
-DLIB_FUNC_START(sizeritem_getproportion, 1, Nil)
+WX_FUNC_START(sizeritem_getproportion, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETNUMBER(item->GetProportion())
 }
 
-DLIB_FUNC_START(sizeritem_getratio, 1, Nil)
+WX_FUNC_START(sizeritem_getratio, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETNUMBER(item->GetRatio())
 }
 
-DLIB_FUNC_START(sizeritem_getrect, 1, Nil)
+WX_FUNC_START(sizeritem_getrect, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxRect *retval = DNEWCLASS(DeltaWxRect, (new wxRect(item->GetRect())));
-	WX_SETOBJECT(Rect, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Rect, new wxRect(item->GetRect()))
 }
 
-DLIB_FUNC_START(sizeritem_getsize, 1, Nil)
+WX_FUNC_START(sizeritem_getsize, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(item->GetSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(item->GetSize()))
 }
 
-DLIB_FUNC_START(sizeritem_getsizer, 1, Nil)
+WX_FUNC_START(sizeritem_getsizer, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxSizer *retval = DNEWCLASS(DeltaWxSizer, (item->GetSizer()));
-	WX_SETOBJECT(Sizer, retval)
+	WX_SETOBJECT(Sizer, item->GetSizer())
 }
 
-DLIB_FUNC_START(sizeritem_getspacer, 1, Nil)
+WX_FUNC_START(sizeritem_getspacer, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(item->GetSpacer())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(item->GetSpacer()))
 }
 
-DLIB_FUNC_START(sizeritem_getuserdata, 1, Nil)
+WX_FUNC_START(sizeritem_getuserdata, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxObject *retval = DNEWCLASS(DeltaWxObject, (item->GetUserData()));
-	WX_SETOBJECT(Object, retval)
+	WX_SETOBJECT(Object, item->GetUserData())
 }
 
-DLIB_FUNC_START(sizeritem_getwindow, 1, Nil)
+WX_FUNC_START(sizeritem_getwindow, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
-	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (item->GetWindow()));
-	WX_SETOBJECT(Window, retval)
+	WX_SETOBJECT(Window, item->GetWindow())
 }
 
-DLIB_FUNC_START(sizeritem_issizer, 1, Nil)
+WX_FUNC_START(sizeritem_issizer, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETBOOL(item->IsSizer())
 }
 
-DLIB_FUNC_START(sizeritem_isshown, 1, Nil)
+WX_FUNC_START(sizeritem_isshown, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETBOOL(item->IsShown())
 }
 
-DLIB_FUNC_START(sizeritem_isspacer, 1, Nil)
+WX_FUNC_START(sizeritem_isspacer, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETBOOL(item->IsSpacer())
 }
 
-DLIB_FUNC_START(sizeritem_iswindow, 1, Nil)
+WX_FUNC_START(sizeritem_iswindow, 1, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_SETBOOL(item->IsWindow())
 }
 
-DLIB_FUNC_START(sizeritem_setborder, 2, Nil)
+WX_FUNC_START(sizeritem_setborder, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_GETDEFINE(border)
 	item->SetBorder(border);
 }
 
-DLIB_FUNC_START(sizeritem_setdimension, 3, Nil)
+WX_FUNC_START(sizeritem_setdimension, 3, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	DLIB_WXGETPOINT_BASE(pos)
 	DLIB_WXGETSIZE_BASE(size)
 	item->SetDimension(*pos, *size);
 }
 
-DLIB_FUNC_START(sizeritem_setflag, 2, Nil)
+WX_FUNC_START(sizeritem_setflag, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_GETDEFINE(flag)
 	item->SetFlag(flag);
 }
 
-DLIB_FUNC_START(sizeritem_setinitsize, 3, Nil)
+WX_FUNC_START(sizeritem_setinitsize, 3, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	item->SetInitSize(x, y);
 }
 
-DLIB_FUNC_START(sizeritem_setproportion, 2, Nil)
+WX_FUNC_START(sizeritem_setproportion, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_GETNUMBER(proportion)
 	item->SetProportion(proportion);
@@ -436,25 +411,25 @@ WX_FUNC_ARGRANGE_START(sizeritem_setratio, 2, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(sizeritem_setsizer, 2, Nil)
+WX_FUNC_START(sizeritem_setsizer, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	item->SetSizer(sizer);
 }
 
-DLIB_FUNC_START(sizeritem_setspacer, 2, Nil)
+WX_FUNC_START(sizeritem_setspacer, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	DLIB_WXGETSIZE_BASE(size)
 	item->SetSpacer(*size);
 }
 
-DLIB_FUNC_START(sizeritem_setwindow, 2, Nil)
+WX_FUNC_START(sizeritem_setwindow, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	DLIB_WXGET_BASE(window, Window, window)
 	item->SetWindow(window);
 }
 
-DLIB_FUNC_START(sizeritem_show, 2, Nil)
+WX_FUNC_START(sizeritem_show, 2, Nil)
 	DLIB_WXGET_BASE(sizeritem, SizerItem, item)
 	WX_GETBOOL(show)
 	item->Show(show);

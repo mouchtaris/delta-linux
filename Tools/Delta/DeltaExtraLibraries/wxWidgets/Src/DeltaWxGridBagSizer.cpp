@@ -75,9 +75,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxFlexGridSizer *_parent = DLIB_WXTYPECAST_BASE(FlexGridSizer, val, flexgridsizer);
-	DeltaWxFlexGridSizer *parent = DNEWCLASS(DeltaWxFlexGridSizer, (_parent));
-	WX_SETOBJECT_EX(*at, FlexGridSizer, parent)
+	WX_SET_BASECLASS_GETTER(at, FlexGridSizer, val)
 	return true;
 }
 
@@ -91,28 +89,25 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(GridBagSizer,gridbagsizer)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(gridbagsizer_construct, 0, 2, Nil)
-	wxGridBagSizer *wxsizer = (wxGridBagSizer*) 0;
-	DeltaWxGridBagSizer *sizer = (DeltaWxGridBagSizer*) 0;
+	wxGridBagSizer *sizer = (wxGridBagSizer*) 0;
 	int vgap = 0;
 	int hgap = 0;
 	if (n >= 1)	{ WX_GETNUMBER_DEFINED(vgap) }
 	if (n >= 2)	{ WX_GETNUMBER_DEFINED(hgap) }
-	wxsizer = new wxGridBagSizer(vgap, hgap);
-	if (wxsizer) sizer = DNEWCLASS(DeltaWxGridBagSizer, (wxsizer));
+	sizer = new wxGridBagSizer(vgap, hgap);
 	WX_SETOBJECT(GridBagSizer, sizer)
 }
 
-DLIB_FUNC_START(gridbagsizer_destruct, 1, Nil)
+WX_FUNC_START(gridbagsizer_destruct, 1, Nil)
 	DLIB_WXDELETE(gridbagsizer, GridBagSizer, sizer)
 }
 
 WX_FUNC_ARGRANGE_START(gridbagsizer_add, 2, 7, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
-	DeltaWxSizerItem *retval = (DeltaWxSizerItem*) 0;
+	wxSizerItem *retval = (wxSizerItem*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			if (n == 2) {
 				DPTR(vm)->PrimaryError(
 					"Wrong number of args (%d passed) to '%s'",
@@ -128,12 +123,10 @@ WX_FUNC_ARGRANGE_START(gridbagsizer_add, 2, 7, Nil)
 				if (n >= 4) { DLIB_WXGET_BASE(gbspan, GBSpan, _span) span = *_span; }
 				if (n >= 5) { WX_GETDEFINE_DEFINED(flag) }
 				if (n >= 6) { WX_GETNUMBER_DEFINED(border) }
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem,
-					sizer->Add(window, *pos, span, flag, border))
+				retval	= sizer->Add(window, *pos, span, flag, border);
 			}
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			if (n == 2) {
 				DPTR(vm)->PrimaryError(
 					"Wrong number of args (%d passed) to '%s'",
@@ -149,13 +142,11 @@ WX_FUNC_ARGRANGE_START(gridbagsizer_add, 2, 7, Nil)
 				if (n >= 4) { DLIB_WXGET_BASE(gbspan, GBSpan, _span) span = *_span; }
 				if (n >= 5) { WX_GETDEFINE_DEFINED(flag) }
 				if (n >= 6) { WX_GETNUMBER_DEFINED(border) }
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem,
-					sizer->Add(szr, *pos, span, flag, border))
+				retval	= sizer->Add(szr, *pos, span, flag, border);
 			}
 		} else
-		if (DLIB_WXISBASE(GBSizerItem, serial_no, gbsizeritem, gbsizeritem_wr)) {
-			wxGBSizerItem *szrItem = (wxGBSizerItem*) gbsizeritem_wr->GetCastToNativeInstance();
-			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(szrItem)));
+		if (DLIB_WXISBASE(GBSizerItem, serial_no, gbsizeritem, szrItem)) {
+			retval	= (sizer->Add(szrItem));;
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		if (n <= 3) {
@@ -175,17 +166,15 @@ WX_FUNC_ARGRANGE_START(gridbagsizer_add, 2, 7, Nil)
 			if (n >= 5) { DLIB_WXGET_BASE(gbspan, GBSpan, _span) span = *_span; }
 			if (n >= 6) { WX_GETDEFINE_DEFINED(flag) }
 			if (n >= 7) { WX_GETNUMBER_DEFINED(border) }
-			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem,
-				sizer->Add(width, height, *pos, span, flag, border))
+			retval	= sizer->Add(width, height, *pos, span, flag, border);
 		}
 	}
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(gridbagsizer_calcmin, 1, Nil)
+WX_FUNC_START(gridbagsizer_calcmin, 1, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(sizer->CalcMin())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(sizer->CalcMin()))
 }
 
 WX_FUNC_ARGRANGE_START(gridbagsizer_checkforintersection, 2, 4, Nil)
@@ -200,8 +189,7 @@ WX_FUNC_ARGRANGE_START(gridbagsizer_checkforintersection, 2, 4, Nil)
 	)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(GBSizerItem, serial_no, gbsizeritem, gbsizeritem_wr)) {
-			wxGBSizerItem *sizeritem = (wxGBSizerItem*) gbsizeritem_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(GBSizerItem, serial_no, gbsizeritem, sizeritem)) {
 			wxGBSizerItem *excludeitem = NULL;
 			if (n >= 3) {
 				DLIB_WXGET_BASE(gbsizeritem, GBSizerItem, _excludeitem)
@@ -209,8 +197,7 @@ WX_FUNC_ARGRANGE_START(gridbagsizer_checkforintersection, 2, 4, Nil)
 			}
 			WX_SETBOOL(sizer->CheckForIntersection(sizeritem, excludeitem))
 		} else
-		if (DLIB_WXISBASE(GBPosition, serial_no, gbposition, gbposition_wr)) {
-			wxGBPosition *pos = (wxGBPosition*) gbposition_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(GBPosition, serial_no, gbposition, pos)) {
 			if (n <= 2) {
 				DPTR(vm)->PrimaryError(
 					"Wrong number of args (%d passed) to '%s'",
@@ -231,9 +218,9 @@ WX_FUNC_ARGRANGE_START(gridbagsizer_checkforintersection, 2, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(gridbagsizer_finditem, 2, Nil)
+WX_FUNC_START(gridbagsizer_finditem, 2, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
-	DeltaWxGBSizerItem *retval;
+	wxGBSizerItem *retval;
 	DLIB_ERROR_CHECK(
 		DPTR(vm)->GetActualArg(_argNo)->Type() != DeltaValue_ExternId &&
 		DPTR(vm)->GetActualArg(_argNo)->Type() != DeltaValue_Nil,
@@ -244,126 +231,102 @@ DLIB_FUNC_START(gridbagsizer_finditem, 2, Nil)
 	)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
-			WXNEWCLASS_DEFINED(DeltaWxGBSizerItem, retval, wxGBSizerItem,
-				sizer->FindItem(window))
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
+			retval	= sizer->FindItem(window);
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *other = (wxSizer*) sizer_wr->GetCastToNativeInstance();
-			WXNEWCLASS_DEFINED(DeltaWxGBSizerItem, retval, wxGBSizerItem,
-				sizer->FindItem(other))
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, other)) {
+			retval	= sizer->FindItem(other);
 		}
 	}
 	WX_SETOBJECT(GBSizerItem, retval)
 }
 
-DLIB_FUNC_START(gridbagsizer_finditematpoint, 2, Nil)
+WX_FUNC_START(gridbagsizer_finditematpoint, 2, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
 	DLIB_WXGETPOINT_BASE(pt)
-	DeltaWxGBSizerItem *retval = DNEWCLASS(DeltaWxGBSizerItem,
-		(sizer->FindItemAtPoint(*pt)));
-	WX_SETOBJECT(GBSizerItem, retval)
+	WX_SETOBJECT(GBSizerItem, sizer->FindItemAtPoint(*pt))
 }
 
-DLIB_FUNC_START(gridbagsizer_finditematposition, 2, Nil)
+WX_FUNC_START(gridbagsizer_finditematposition, 2, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
 	DLIB_WXGET_BASE(gbposition, GBPosition, pos)
-	DeltaWxGBSizerItem *retval = DNEWCLASS(DeltaWxGBSizerItem,
-		(sizer->FindItemAtPosition(*pos)));
-	WX_SETOBJECT(GBSizerItem, retval)
+	WX_SETOBJECT(GBSizerItem, sizer->FindItemAtPosition(*pos))
 }
 
-DLIB_FUNC_START(gridbagsizer_getcellsize, 3, Nil)
+WX_FUNC_START(gridbagsizer_getcellsize, 3, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
 	WX_GETNUMBER(row)
 	WX_GETNUMBER(column)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize,
-		(new wxSize(sizer->GetCellSize(row, column))));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(sizer->GetCellSize(row, column)))
 }
 
-DLIB_FUNC_START(gridbagsizer_getemptycellsize, 1, Nil)
+WX_FUNC_START(gridbagsizer_getemptycellsize, 1, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize,
-		(new wxSize(sizer->GetEmptyCellSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(sizer->GetEmptyCellSize()))
 }
 
-DLIB_FUNC_START(gridbagsizer_getitemposition, 2, Nil)
+WX_FUNC_START(gridbagsizer_getitemposition, 2, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
-	DeltaWxGBPosition *retval;
+	wxGBPosition *retval;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			wxGBPosition _retval = sizer->GetItemPosition(window);
-			retval = DNEWCLASS(DeltaWxGBPosition,
-				(new wxGBPosition(_retval.GetRow(), _retval.GetCol())));
+			retval = new wxGBPosition(_retval.GetRow(), _retval.GetCol());
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *other = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, other)) {
 			wxGBPosition _retval = sizer->GetItemPosition(other);
-			retval = DNEWCLASS(DeltaWxGBPosition,
-				(new wxGBPosition(_retval.GetRow(), _retval.GetCol())));
+			retval = new wxGBPosition(_retval.GetRow(), _retval.GetCol());
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(index)
 		wxGBPosition _retval = sizer->GetItemPosition(index);
-		retval = DNEWCLASS(DeltaWxGBPosition,
-			(new wxGBPosition(_retval.GetRow(), _retval.GetCol())));
+		retval = new wxGBPosition(_retval.GetRow(), _retval.GetCol());
 	}
-	WX_SETOBJECT(GBPosition, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(GBPosition, retval)
 }
 
-DLIB_FUNC_START(gridbagsizer_getitemspan, 2, Nil)
+WX_FUNC_START(gridbagsizer_getitemspan, 2, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
-	DeltaWxGBSpan *retval;
+	wxGBSpan *retval;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			wxGBSpan _retval = sizer->GetItemSpan(window);
-			retval = DNEWCLASS(DeltaWxGBSpan,
-				(new wxGBSpan(_retval.GetRowspan(), _retval.GetColspan())));
+			retval = new wxGBSpan(_retval.GetRowspan(), _retval.GetColspan());
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *other = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, other)) {
 			wxGBSpan _retval = sizer->GetItemSpan(other);
-			retval = DNEWCLASS(DeltaWxGBSpan,
-				(new wxGBSpan(_retval.GetRowspan(), _retval.GetColspan())));
+			retval = new wxGBSpan(_retval.GetRowspan(), _retval.GetColspan());
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(index)
 		wxGBSpan _retval = sizer->GetItemSpan(index);
-		retval = DNEWCLASS(DeltaWxGBSpan,
-			(new wxGBSpan(_retval.GetRowspan(), _retval.GetColspan())));
+		retval = new wxGBSpan(_retval.GetRowspan(), _retval.GetColspan());
 	}
-	WX_SETOBJECT(GBSpan, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(GBSpan, retval)
 }
 
-DLIB_FUNC_START(gridbagsizer_recalcsizes, 1, Nil)
+WX_FUNC_START(gridbagsizer_recalcsizes, 1, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
 	sizer->RecalcSizes();
 }
 
-DLIB_FUNC_START(gridbagsizer_setemptycellsize, 2, Nil)
+WX_FUNC_START(gridbagsizer_setemptycellsize, 2, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
 	DLIB_WXGETSIZE_BASE(size)
 	sizer->SetEmptyCellSize(*size);
 }
 
-DLIB_FUNC_START(gridbagsizer_setitemposition, 3, Nil)
+WX_FUNC_START(gridbagsizer_setitemposition, 3, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			DLIB_WXGET_BASE(gbposition, GBPosition, pos)
 			WX_SETBOOL(sizer->SetItemPosition(window, *pos))
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *other = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, other)) {
 			DLIB_WXGET_BASE(gbposition, GBPosition, pos)
 			WX_SETBOOL(sizer->SetItemPosition(other, *pos))
 		}
@@ -374,17 +337,15 @@ DLIB_FUNC_START(gridbagsizer_setitemposition, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(gridbagsizer_setitemspan, 3, Nil)
+WX_FUNC_START(gridbagsizer_setitemspan, 3, Nil)
 	DLIB_WXGET_BASE(gridbagsizer, GridBagSizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			DLIB_WXGET_BASE(gbspan, GBSpan, span)
 			WX_SETBOOL(sizer->SetItemSpan(window, *span))
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *other = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, other)) {
 			DLIB_WXGET_BASE(gbspan, GBSpan, span)
 			WX_SETBOOL(sizer->SetItemSpan(other, *span))
 		}

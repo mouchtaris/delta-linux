@@ -706,7 +706,7 @@ function onLoad (frame, ev) {
 				currPage = notebook.getpage(i);
 				notebook.removepage(i);
 				currPage.show(false);
-				currPage.destruct();
+				currPage.destroy();
 			}
 			frame.fileName = fileName;
 			project = ::loadProject (loadProj,frame);

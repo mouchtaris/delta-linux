@@ -17,7 +17,6 @@
 #define WX_FUNC(name) WX_FUNC1(helpevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getorigin)
 WX_FUNC_DEF(getposition)
 WX_FUNC_DEF(setorigin)
@@ -25,7 +24,6 @@ WX_FUNC_DEF(setposition)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getorigin),
 	WX_FUNC(getposition),
 	WX_FUNC(setorigin),
@@ -34,7 +32,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setposition")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getorigin", "setposition")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(HelpEvent, "helpevent", CommandEvent)
 
@@ -48,9 +46,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxCommandEvent *_parent = DLIB_WXTYPECAST_BASE(CommandEvent, val, commandevent);
-	DeltaWxCommandEvent *parent = DNEWCLASS(DeltaWxCommandEvent, (_parent));
-	WX_SETOBJECT_EX(*at, CommandEvent, parent)
+	WX_SET_BASECLASS_GETTER(at, CommandEvent, val)
 	return true;
 }
 
@@ -64,8 +60,7 @@ static bool GetOrigin (void* val, DeltaValue* at)
 static bool GetPosition (void* val, DeltaValue* at) 
 {
 	wxHelpEvent *ev = DLIB_WXTYPECAST_BASE(HelpEvent, val, helpevent);
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(ev->GetPosition())));
-	WX_SETOBJECT_EX(*at, Point, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(ev->GetPosition()))
 	return true;
 }
 
@@ -89,32 +84,26 @@ WX_FUNC_ARGRANGE_START(helpevent_construct, 0, 4, Nil)
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
 	if (n >= 3) { DLIB_WXGETPOINT_BASE(point) pt = *point; }
 	if (n >= 4) { WX_GETDEFINE(_origin) origin = (wxHelpEvent::Origin)_origin; }
-	DeltaWxHelpEvent *evt = DNEWCLASS(DeltaWxHelpEvent, (new wxHelpEvent(type, winid, pt, origin)));
-	WX_SETOBJECT(HelpEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(HelpEvent, new wxHelpEvent(type, winid, pt, origin))
 }
 
-DLIB_FUNC_START(helpevent_destruct, 1, Nil)
-	DLIB_WXDELETE(helpevent, HelpEvent, evt)
-}
-
-DLIB_FUNC_START(helpevent_getorigin, 1, Nil)
+WX_FUNC_START(helpevent_getorigin, 1, Nil)
 	DLIB_WXGET_BASE(helpevent, HelpEvent, evt)
 	WX_SETNUMBER((int)evt->GetOrigin())
 }
 
-DLIB_FUNC_START(helpevent_getposition, 1, Nil)
+WX_FUNC_START(helpevent_getposition, 1, Nil)
 	DLIB_WXGET_BASE(helpevent, HelpEvent, evt)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(evt->GetPosition())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(evt->GetPosition()))
 }
 
-DLIB_FUNC_START(helpevent_setorigin, 2, Nil)
+WX_FUNC_START(helpevent_setorigin, 2, Nil)
 	DLIB_WXGET_BASE(helpevent, HelpEvent, evt)
 	WX_GETDEFINE(origin)
 	evt->SetOrigin((wxHelpEvent::Origin)origin);
 }
 
-DLIB_FUNC_START(helpevent_setposition, 1, Nil)
+WX_FUNC_START(helpevent_setposition, 1, Nil)
 	DLIB_WXGET_BASE(helpevent, HelpEvent, evt)
 	DLIB_WXGETPOINT_BASE(point)
 	evt->SetPosition(*point);

@@ -17,20 +17,14 @@ function drawTreeViewTitle (viewprojToolBar, ev) {
 	//
 	local pen = wx::pen_construct(colour = wx::colour_construct(160,160,160), 2);
 	viewprojToolBar.dc.setpen(pen);
-	pen.destruct();
-	colour.destruct();
 	local brush = wx::brush_construct(colour = wx::colour_construct(167,167,167));
 	viewprojToolBar.dc.setbrush(brush);
-	brush.destruct();
-	colour.destruct();
 	viewprojToolBar.dc.drawrectangle(2, 2, width-4, 18);
 	viewprojToolBar.dc.settextforeground(colour = wx::colour_construct(255,255,255));
-	colour.destruct();
 	viewprojToolBar.dc.drawtext("Project",5,2);
 	//
 	if (ProjectRAD::GetCurrentProject()==nil) {
 		viewprojToolBar.dc.settextforeground(colour = wx::colour_construct(109,109,109));
-		colour.destruct();
 		viewprojToolBar.dc.drawtext("<No Project Open>", 30, 150);
 	}
 }
@@ -86,9 +80,10 @@ function onDClickSplitter (frame, ev) {
 
 
 function onExitRaiden (frame, ev) {
-	frame.app.exitmainloop();
-	frame.app.exitmainloop();
-	frame.app = nil;
+	frame.destroy();
+//	frame.app.exitmainloop();
+//	frame.app.exitmainloop();
+//	frame.app = nil;
 }
 
 function onFilterDocument (frame, ev) {
@@ -239,7 +234,7 @@ function browseProjectDir (frame, ev) {
 	foreach (cstr, list) newpath += cstr + "\\\\";
 	//
 	frame.wizard.location.setvalue(newpath);
-	dirdialog.destruct();
+	dirdialog.destroy();
 }
 /**
  *  Description: Create the finish page of create project
@@ -282,7 +277,6 @@ function onCreateProject (frame, ev) {
 				wx::flags(wx::DEFAULT_DIALOG_STYLE, wx::RESIZE_BORDER));
 	local size = wx::size_construct(500,200);
 	wizard.setpagesize(size);
-	size.destruct();
 	wizard.parent = frame;
 	page1 = ::propertiesWizard(wizard);
 	page2 = ::finishWizard(wizard);

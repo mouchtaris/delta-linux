@@ -17,18 +17,20 @@
 #define WX_FUNC(name) WX_FUNC1(clipboardtextevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 
 WX_FUNCS_START
-	WX_FUNC(construct),
-	WX_FUNC(destruct)
+	WX_FUNC(construct)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "destruct")
-
-DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ClipboardTextEvent, "clipboardtextevent", CommandEvent)
+//DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ClipboardTextEvent, "clipboardtextevent", CommandEvent)
+VCLASSID_IMPL(DeltaWxClipboardTextEventClassId, "wx::clipboardtextevent")
+DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(ClipboardTextEvent, "clipboardtextevent")
+void ClipboardTextEventUtils::InstallAll(DeltaTable *methods)
+{
+	DPTR(methods)->DelegateInternal(CommandEventUtils::GetMethods());
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -40,9 +42,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxCommandEvent *_parent = DLIB_WXTYPECAST_BASE(CommandEvent, val, commandevent);
-	DeltaWxCommandEvent *parent = DNEWCLASS(DeltaWxCommandEvent, (_parent));
-	WX_SETOBJECT_EX(*at, CommandEvent, parent)
+	WX_SET_BASECLASS_GETTER(at, CommandEvent, val)
 	return true;
 }
 
@@ -60,11 +60,5 @@ WX_FUNC_ARGRANGE_START(clipboardtextevent_construct, 0, 2, Nil)
 	int winid = 0;
 	if (n >= 1) { WX_GETDEFINE_DEFINED(type) }
 	if (n >= 2) { WX_GETDEFINE_DEFINED(winid) }
-	DeltaWxClipboardTextEvent *evt = DNEWCLASS(DeltaWxClipboardTextEvent,
-		(new wxClipboardTextEvent(type, winid)));
-	WX_SETOBJECT(ClipboardTextEvent, evt)
-}
-
-DLIB_FUNC_START(clipboardtextevent_destruct, 1, Nil)
-	DLIB_WXDELETE(clipboardtextevent, ClipboardTextEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ClipboardTextEvent, new wxClipboardTextEvent(type, winid))
 }

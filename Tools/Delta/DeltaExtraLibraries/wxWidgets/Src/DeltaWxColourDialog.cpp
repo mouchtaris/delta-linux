@@ -18,14 +18,12 @@
 #define WX_FUNC(name) WX_FUNC1(colourdialog, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(create)
 WX_FUNC_DEF(getcolourdata)
 WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(create),
 	WX_FUNC(getcolourdata),
 	WX_FUNC(showmodal)
@@ -33,7 +31,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "create", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ColourDialog, "colourdialog", Dialog)
 
@@ -47,17 +45,14 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
-	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
-	WX_SETOBJECT_EX(*at, Dialog, parent)
+	WX_SET_BASECLASS_GETTER(at, Dialog, val)
 	return true;
 }
 
 static bool GetColourData (void* val, DeltaValue* at) 
 {
 	wxColourDialog *dlg = DLIB_WXTYPECAST_BASE(ColourDialog, val, colourdialog);
-	DeltaWxColourData *retval = DNEWCLASS(DeltaWxColourData, (new wxColourData(dlg->GetColourData())));
-	WX_SETOBJECT_EX(*at, ColourData, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, ColourData, new wxColourData(dlg->GetColourData()))
 	return true;
 }
 
@@ -72,22 +67,16 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ColourDialog,colourdialog)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(colourdialog_construct, 0, 2, Nil)
-	wxColourDialog *wxdialog = (wxColourDialog*) 0;
-	DeltaWxColourDialog *dialog = (DeltaWxColourDialog*) 0;
+	wxColourDialog *dialog = (wxColourDialog*) 0;
 	if (n == 0)
-		wxdialog = new wxColourDialog();
+		dialog = new wxColourDialog();
 	else {
 		DLIB_WXGET_BASE(window, Window, parent)
 		wxColourData *data = NULL;
 		if (n >= 2) { DLIB_WXGET_BASE(colourdata, ColourData, cdata) data = cdata; }
-		wxdialog = new wxColourDialog(parent, data);
+		dialog = new wxColourDialog(parent, data);
 	}
-	if (wxdialog) dialog = DNEWCLASS(DeltaWxColourDialog, (wxdialog));
-	WX_SETOBJECT(ColourDialog, dialog)
-}
-
-DLIB_FUNC_START(colourdialog_destruct, 1, Nil)
-	DLIB_WXDELETE(colourdialog, ColourDialog, dialog)
+	WX_SET_TOPLEVELWINDOW_OBJECT(ColourDialog, dialog)
 }
 
 WX_FUNC_ARGRANGE_START(colourdialog_create, 2, 3, Nil)
@@ -96,15 +85,15 @@ WX_FUNC_ARGRANGE_START(colourdialog_create, 2, 3, Nil)
 	wxColourData *data = NULL;
 	if (n >= 3) { DLIB_WXGET_BASE(colourdata, ColourData, cdata) data = cdata; }
 	WX_SETBOOL(dialog->Create(parent, data))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(dialog);
 }
 
-DLIB_FUNC_START(colourdialog_getcolourdata, 1, Nil)
+WX_FUNC_START(colourdialog_getcolourdata, 1, Nil)
 	DLIB_WXGET_BASE(colourdialog, ColourDialog, dialog)
-	DeltaWxColourData *retval = DNEWCLASS(DeltaWxColourData, (new wxColourData(dialog->GetColourData())));
-	WX_SETOBJECT(ColourData, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ColourData, new wxColourData(dialog->GetColourData()))
 }
 
-DLIB_FUNC_START(colourdialog_showmodal, 1, Nil)
+WX_FUNC_START(colourdialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(colourdialog, ColourDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

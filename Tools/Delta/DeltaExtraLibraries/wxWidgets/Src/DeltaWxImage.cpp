@@ -25,7 +25,6 @@ typedef int wxImageResizeQuality;
 #define WX_FUNC(name) WX_FUNC1(image, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(blur)
 WX_FUNC_DEF(blurhorizontal)
 WX_FUNC_DEF(blurvertical)
@@ -81,7 +80,6 @@ WX_FUNCS_START
 	WX_FUNC(construct),
 	WX_FUNC(hsvtorgb),
 	WX_FUNC(rgbtohsv),
-	WX_FUNC(destruct),
 	WX_FUNC(blur),
 	WX_FUNC(blurhorizontal),
 	WX_FUNC(blurvertical),
@@ -90,7 +88,6 @@ WX_FUNCS_START
 	WX_FUNC(converttomono),
 	WX_FUNC(copy),
 	WX_FUNC(create),
-	WX_FUNC(destroy),
 	WX_FUNC(findfirstunusedcolour),
 	WX_FUNC(getalpha),
 	WX_FUNC(getblue),
@@ -134,7 +131,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(3, uarraysize(funcs) - 3, "destruct", "setrgb")
+DELTALIBFUNC_DECLARECONSTS(3, uarraysize(funcs) - 3, "blur", "setrgb")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Image, "image", Object)
 
@@ -148,9 +145,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
@@ -185,8 +180,7 @@ static bool GetMaskRed (void* val, DeltaValue* at)
 static bool GetPalette (void* val, DeltaValue* at) 
 {
 	wxImage *image = DLIB_WXTYPECAST_BASE(Image, val, image);
-	DeltaWxPalette *retval = DNEWCLASS(DeltaWxPalette, (new wxPalette(image->GetPalette())));
-	WX_SETOBJECT_EX(*at, Palette, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Palette, new wxPalette(image->GetPalette()))
 	return true;
 }
 
@@ -212,73 +206,58 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Image,image)
 
 ////////////////////////////////////////////////////////////////
 
-#define WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, func)								\
-	const wxImage& image##Ref = image->func;										\
-	if (&image##Ref == image) {														\
-		DLIB_RETVAL_REF = DPTR(vm)->GetActualArg(0);								\
-	} else {																		\
-		DeltaWxImage *retval = DNEWCLASS(DeltaWxImage, (new wxImage(image##Ref)));	\
-		WX_SETOBJECT(Image, retval)													\
-	}
-
 WX_FUNC_ARGRANGE_START(image_construct, 0, 3, Nil)
-	wxImage *wximage = (wxImage*) 0;
-	DeltaWxImage *image = (DeltaWxImage*) 0;
+	wxImage *image = (wxImage*) 0;
 	if (n == 0) {
-		wximage = new wxImage();
+		image = new wxImage();
 	} else {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 			WX_GETSTRING(name)
 			if (n == 1)
-				wximage = new wxImage(name);
+				image = new wxImage(name);
 			else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 				WX_GETDEFINE(type)
 				int index = -1;
 				if (n >= 3) { WX_GETNUMBER_DEFINED(index) }
-				wximage = new wxImage(name, type, index);
+				image = new wxImage(name, type, index);
 			} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 				bool found;
 				std::string arg = DPTR(vm)->GetActualArg(_argNo++)->ToString();
-				int type = wxWidgets::DefineSearch(arg, &found);
+				int type = wxWidgets::DefineMapGet().Search(arg, &found);
 				int index = -1;
 				if (n >= 3) { WX_GETNUMBER_DEFINED(index) }
 				if (found)
-					wximage = new wxImage(name, type, index);
+					image = new wxImage(name, type, index);
 				else
-					wximage = new wxImage(name, wxString(arg.c_str(), wxConvUTF8), index);
+					image = new wxImage(name, wxString(arg.c_str(), wxConvUTF8), index);
 			}
 		} else if (n >= 2 && DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(width)
 			WX_GETNUMBER(height)
 			bool clear = true;
 			if (n >= 3) { WX_GETBOOL_DEFINED(clear) }
-			wximage = new wxImage(width, height, clear);
+			image = new wxImage(width, height, clear);
 		}
 	}
-	if (wximage) image = DNEWCLASS(DeltaWxImage, (wximage));
-	WX_SETOBJECT(Image, image)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, image)
 }
 
-DLIB_FUNC_START(image_destruct, 1, Nil)
-	DLIB_WXDELETE(image, Image, image)
-}
-
-DLIB_FUNC_START(image_blur, 2, Nil)
+WX_FUNC_START(image_blur, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(blurRadius)
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Blur(blurRadius))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Blur(blurRadius)))
 }
 
-DLIB_FUNC_START(image_blurhorizontal, 2, Nil)
+WX_FUNC_START(image_blurhorizontal, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(blurRadius)
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, BlurHorizontal(blurRadius))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->BlurHorizontal(blurRadius)))
 }
 
-DLIB_FUNC_START(image_blurvertical, 2, Nil)
+WX_FUNC_START(image_blurvertical, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(blurRadius)
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, BlurVertical(blurRadius))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->BlurVertical(blurRadius)))
 }
 
 WX_FUNC_ARGRANGE_START(image_convertalphatomask, 1, 2, Nil)
@@ -294,20 +273,20 @@ WX_FUNC_ARGRANGE_START(image_converttogreyscale, 1, 4, Nil)
 	if (n >= 2) { WX_GETNUMBER_DEFINED(lr) }
 	if (n >= 3) { WX_GETNUMBER_DEFINED(lg) }
 	if (n >= 4) { WX_GETNUMBER_DEFINED(lb) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, ConvertToGreyscale(lr, lg, lb))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->ConvertToGreyscale(lr, lg, lb)))
 }
 
-DLIB_FUNC_START(image_converttomono, 4, Nil)
+WX_FUNC_START(image_converttomono, 4, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(red)
 	WX_GETNUMBER(green)
 	WX_GETNUMBER(blue)
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, ConvertToMono(red, green, blue))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->ConvertToMono(red, green, blue)))
 }
 
-DLIB_FUNC_START(image_copy, 1, Nil)
+WX_FUNC_START(image_copy, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Copy())
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Copy()))
 }
 
 WX_FUNC_ARGRANGE_START(image_create, 3, 4, Nil)
@@ -319,7 +298,7 @@ WX_FUNC_ARGRANGE_START(image_create, 3, 4, Nil)
 	WX_SETBOOL(image->Create(width, height, clear))
 }
 
-DLIB_FUNC_START(image_destroy, 1, Nil)
+WX_FUNC_START(image_destroy, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	image->Destroy();
 }
@@ -340,48 +319,48 @@ WX_FUNC_ARGRANGE_START(image_findfirstunusedcolour, 4, 7, Nil)
 	WX_SETTABLE_RETVAL(b_table, DeltaValue((DeltaNumberValueType)b))
 }
 
-DLIB_FUNC_START(image_getalpha, 3, Nil)
+WX_FUNC_START(image_getalpha, 3, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(image->GetAlpha(x, y))
 }
 
-DLIB_FUNC_START(image_getblue, 3, Nil)
+WX_FUNC_START(image_getblue, 3, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(image->GetBlue(x, y))
 }
 
-DLIB_FUNC_START(image_getgreen, 3, Nil)
+WX_FUNC_START(image_getgreen, 3, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(image->GetGreen(x, y))
 }
 
-DLIB_FUNC_START(image_getheight, 1, Nil)
+WX_FUNC_START(image_getheight, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETNUMBER(image->GetHeight())
 }
 
-DLIB_FUNC_START(image_getmaskblue, 1, Nil)
+WX_FUNC_START(image_getmaskblue, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETNUMBER(image->GetMaskBlue())
 }
 
-DLIB_FUNC_START(image_getmaskgreen, 1, Nil)
+WX_FUNC_START(image_getmaskgreen, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETNUMBER(image->GetMaskGreen())
 }
 
-DLIB_FUNC_START(image_getmaskred, 1, Nil)
+WX_FUNC_START(image_getmaskred, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETNUMBER(image->GetMaskRed())
 }
 
-DLIB_FUNC_START(image_getorfindmaskcolour, 4, Nil)
+WX_FUNC_START(image_getorfindmaskcolour, 4, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETTABLE(r_table)
 	WX_GETTABLE(g_table)
@@ -393,26 +372,25 @@ DLIB_FUNC_START(image_getorfindmaskcolour, 4, Nil)
 	WX_SETTABLE_RETVAL(b_table, DeltaValue((DeltaNumberValueType)b))
 }
 
-DLIB_FUNC_START(image_getpalette, 1, Nil)
+WX_FUNC_START(image_getpalette, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
-	DeltaWxPalette *retval = DNEWCLASS(DeltaWxPalette, (new wxPalette(image->GetPalette())));
-	WX_SETOBJECT(Palette, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Palette, new wxPalette(image->GetPalette()))
 }
 
-DLIB_FUNC_START(image_getred, 3, Nil)
+WX_FUNC_START(image_getred, 3, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
 	WX_SETNUMBER(image->GetRed(x, y))
 }
 
-DLIB_FUNC_START(image_getsubimage, 2, Nil)
+WX_FUNC_START(image_getsubimage, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	DLIB_WXGET_BASE(rect, Rect, rect)
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, GetSubImage(*rect))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->GetSubImage(*rect)))
 }
 
-DLIB_FUNC_START(image_getwidth, 1, Nil)
+WX_FUNC_START(image_getwidth, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETNUMBER(image->GetWidth())
 }
@@ -440,35 +418,35 @@ WX_FUNC_ARGRANGE_START(image_hsvtorgb, 1, 3, Nil)
 	DLIB_RETVAL_REF.ToTable()->Set(DeltaValue((DeltaNumberValueType)2), DeltaValue((DeltaNumberValueType)rgb.blue));
 }
 
-DLIB_FUNC_START(image_hasalpha, 1, Nil)
+WX_FUNC_START(image_hasalpha, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETBOOL(image->HasAlpha())
 }
 
-DLIB_FUNC_START(image_hasmask, 1, Nil)
+WX_FUNC_START(image_hasmask, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETBOOL(image->HasMask())
 }
 
-DLIB_FUNC_START(image_getoption, 2, Nil)
+WX_FUNC_START(image_getoption, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETSTRING(name)
 	WX_SETSTRING(image->GetOption(name))
 }
 
-DLIB_FUNC_START(image_getoptionint, 2, Nil)
+WX_FUNC_START(image_getoptionint, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETSTRING(name)
 	WX_SETNUMBER(image->GetOptionInt(name))
 }
 
-DLIB_FUNC_START(image_hasoption, 2, Nil)
+WX_FUNC_START(image_hasoption, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETSTRING(name)
 	WX_SETBOOL(image->HasOption(name))
 }
 
-DLIB_FUNC_START(image_initalpha, 1, Nil)
+WX_FUNC_START(image_initalpha, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	image->InitAlpha();
 }
@@ -495,7 +473,7 @@ WX_FUNC_ARGRANGE_START(image_loadfile, 2, 4, Nil)
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		bool found;
 		std::string arg = DPTR(vm)->GetActualArg(_argNo++)->ToString();
-		int type = wxWidgets::DefineSearch(arg, &found);
+		int type = wxWidgets::DefineMapGet().Search(arg, &found);
 		int index = -1;
 		if (n >= 4) { WX_GETNUMBER_DEFINED(index) }
 		if (found)
@@ -505,7 +483,7 @@ WX_FUNC_ARGRANGE_START(image_loadfile, 2, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(image_isok, 1, Nil)
+WX_FUNC_START(image_isok, 1, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_SETBOOL(image->IsOk())
 }
@@ -537,10 +515,10 @@ WX_FUNC_ARGRANGE_START(image_mirror, 1, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	bool horizontally = true;
 	if (n >= 2) { WX_GETBOOL_DEFINED(horizontally) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Mirror(horizontally))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Mirror(horizontally)))
 }
 
-DLIB_FUNC_START(image_replace, 7, Nil)
+WX_FUNC_START(image_replace, 7, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(r1)
 	WX_GETNUMBER(g1)
@@ -557,7 +535,7 @@ WX_FUNC_ARGRANGE_START(image_rescale, 3, 4, Nil)
 	WX_GETNUMBER(height)
 	int quality = wxIMAGE_QUALITY_NORMAL;
 	if (n >= 4) { WX_GETDEFINE_DEFINED(quality) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rescale(width, height, (wxImageResizeQuality) quality))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Rescale(width, height, (wxImageResizeQuality) quality)))
 }
 
 WX_FUNC_ARGRANGE_START(image_resize, 3, 6, Nil)
@@ -568,7 +546,7 @@ WX_FUNC_ARGRANGE_START(image_resize, 3, 6, Nil)
 	if (n >= 4) { WX_GETNUMBER_DEFINED(r) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(g) }
 	if (n >= 6) { WX_GETNUMBER_DEFINED(b) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Resize(*size, *pos, r, g, b))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Resize(*size, *pos, r, g, b)))
 }
 
 WX_FUNC_ARGRANGE_START(image_rotate, 3, 5, Nil)
@@ -578,17 +556,16 @@ WX_FUNC_ARGRANGE_START(image_rotate, 3, 5, Nil)
 	bool interpolating = true;
 	wxPoint offsetAfterRotation;
 	if (n >= 4) { WX_GETBOOL_DEFINED(interpolating) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rotate(angle, *rotationCentre, interpolating, &offsetAfterRotation))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Rotate(angle, *rotationCentre, interpolating, &offsetAfterRotation)))
 	if (n >= 5) {
 		DeltaValue offset;
 		WX_GETTABLE(offset_table)
-		DeltaWxPoint *point = DNEWCLASS(DeltaWxPoint, (new wxPoint(offsetAfterRotation)));
-		WX_SETOBJECT_EX(offset, Point, point)
+		WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE_EX(offset, Point, new wxPoint(offsetAfterRotation))
 		WX_SETTABLE_RETVAL(offset_table, offset)
 	}
 }
 
-DLIB_FUNC_START(image_rotatehue, 2, Nil)
+WX_FUNC_START(image_rotatehue, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(angle)
 	image->RotateHue(angle);
@@ -598,7 +575,7 @@ WX_FUNC_ARGRANGE_START(image_rotate90, 1, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	bool clockwise = true;
 	if (n >= 2) { WX_GETBOOL_DEFINED(clockwise) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Rotate90(clockwise))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Rotate90(clockwise)))
 }
 
 WX_FUNC_ARGRANGE_START(image_savefile, 2, 3, Nil)
@@ -612,7 +589,7 @@ WX_FUNC_ARGRANGE_START(image_savefile, 2, 3, Nil)
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		bool found;
 		std::string arg = DPTR(vm)->GetActualArg(_argNo++)->ToString();
-		int type = wxWidgets::DefineSearch(arg, &found);
+		int type = wxWidgets::DefineMapGet().Search(arg, &found);
 		if (found)
 			WX_SETBOOL(image->SaveFile(name, type))
 		else
@@ -626,7 +603,7 @@ WX_FUNC_ARGRANGE_START(image_scale, 3, 4, Nil)
 	WX_GETNUMBER(height)
 	int quality = wxIMAGE_QUALITY_NORMAL;
 	if (n >= 4) { WX_GETDEFINE_DEFINED(quality) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Scale(width, height, (wxImageResizeQuality) quality))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Scale(width, height, (wxImageResizeQuality) quality)))
 }
 
 WX_FUNC_ARGRANGE_START(image_size, 3, 6, Nil)
@@ -637,10 +614,10 @@ WX_FUNC_ARGRANGE_START(image_size, 3, 6, Nil)
 	if (n >= 4) { WX_GETNUMBER_DEFINED(r) }
 	if (n >= 5) { WX_GETNUMBER_DEFINED(g) }
 	if (n >= 6) { WX_GETNUMBER_DEFINED(b) }
-	WXIMAGE_AVOID_UNNECESSARY_OBJECTS(image, Size(*size, *pos, r, g, b))
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Image, new wxImage(image->Size(*size, *pos, r, g, b)))
 }
 
-DLIB_FUNC_START(image_setalpha, 4, Nil)
+WX_FUNC_START(image_setalpha, 4, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
@@ -655,7 +632,7 @@ WX_FUNC_ARGRANGE_START(image_setmask, 1, 2, Nil)
 	image->SetMask(hasMask);
 }
 
-DLIB_FUNC_START(image_setmaskcolour, 4, Nil)
+WX_FUNC_START(image_setmaskcolour, 4, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETNUMBER(red)
 	WX_GETNUMBER(green)
@@ -663,7 +640,7 @@ DLIB_FUNC_START(image_setmaskcolour, 4, Nil)
 	image->SetMaskColour(red, green, blue);
 }
 
-DLIB_FUNC_START(image_setmaskfromimage, 5, Nil)
+WX_FUNC_START(image_setmaskfromimage, 5, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	DLIB_WXGET_BASE(image, Image, mask)
 	WX_GETNUMBER(mr)
@@ -672,7 +649,7 @@ DLIB_FUNC_START(image_setmaskfromimage, 5, Nil)
 	WX_SETBOOL(image->SetMaskFromImage(*mask, mr, mg, mb))
 }
 
-DLIB_FUNC_START(image_setoption, 3, Nil)
+WX_FUNC_START(image_setoption, 3, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	WX_GETSTRING(name)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
@@ -681,7 +658,7 @@ DLIB_FUNC_START(image_setoption, 3, Nil)
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 		bool found;
 		std::string arg = DPTR(vm)->GetActualArg(_argNo++)->ToString();
-		int type = wxWidgets::DefineSearch(arg, &found);
+		int type = wxWidgets::DefineMapGet().Search(arg, &found);
 		if (found)
 			image->SetOption(name, type);
 		else
@@ -689,7 +666,7 @@ DLIB_FUNC_START(image_setoption, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(image_setpalette, 2, Nil)
+WX_FUNC_START(image_setpalette, 2, Nil)
 	DLIB_WXGET_BASE(image, Image, image)
 	DLIB_WXGET_BASE(palette, Palette, palette)
 	image->SetPalette(*palette);

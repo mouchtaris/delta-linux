@@ -18,7 +18,6 @@
 #define WX_FUNC(name) WX_FUNC1(fontdata, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(enableeffects)
 WX_FUNC_DEF(getallowsymbols)
 WX_FUNC_DEF(getcolour)
@@ -35,7 +34,6 @@ WX_FUNC_DEF(setshowhelp)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(enableeffects),
 	WX_FUNC(getallowsymbols),
 	WX_FUNC(getcolour),
@@ -53,7 +51,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setshowhelp")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "enableeffects", "setshowhelp")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FontData, "fontdata", Object)
 
@@ -67,17 +65,14 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
 static bool GetFontColour (void* val, DeltaValue* at) 
 {
 	wxFontData *data = DLIB_WXTYPECAST_BASE(FontData, val, fontdata);
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(data->GetColour())));
-	WX_SETOBJECT_EX(*at, Colour, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Colour, new wxColour(data->GetColour()))
 	return true;
 }
 
@@ -105,16 +100,14 @@ static bool GetEnableEffects (void* val, DeltaValue* at)
 static bool GetInitialFont (void* val, DeltaValue* at) 
 {
 	wxFontData *data = DLIB_WXTYPECAST_BASE(FontData, val, fontdata);
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(data->GetInitialFont())));
-	WX_SETOBJECT_EX(*at, Font, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Font, new wxFont(data->GetInitialFont()))
 	return true;
 }
 
 static bool GetChosenFont (void* val, DeltaValue* at) 
 {
 	wxFontData *data = DLIB_WXTYPECAST_BASE(FontData, val, fontdata);
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(data->GetChosenFont())));
-	WX_SETOBJECT_EX(*at, Font, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Font, new wxFont(data->GetChosenFont()))
 	return true;
 }
 
@@ -157,86 +150,78 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(FontData,fontdata)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(fontdata_construct, 0, Nil)
-	DeltaWxFontData *data = DNEWCLASS(DeltaWxFontData, (new wxFontData()));
-	WX_SETOBJECT(FontData, data)
+WX_FUNC_START(fontdata_construct, 0, Nil)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(FontData, new wxFontData())
 }
 
-DLIB_FUNC_START(fontdata_destruct, 1, Nil)
-	DLIB_WXDELETE(fontdata, FontData, data)
-}
-
-DLIB_FUNC_START(fontdata_enableeffects, 2, Nil)
+WX_FUNC_START(fontdata_enableeffects, 2, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	WX_GETBOOL(enable)
 	data->EnableEffects(enable);
 }
 
-DLIB_FUNC_START(fontdata_getallowsymbols, 1, Nil)
+WX_FUNC_START(fontdata_getallowsymbols, 1, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	WX_SETBOOL(data->GetAllowSymbols())
 }
 
-DLIB_FUNC_START(fontdata_getcolour, 1, Nil)
+WX_FUNC_START(fontdata_getcolour, 1, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
-	DeltaWxColour *retval = DNEWCLASS(DeltaWxColour, (new wxColour(data->GetColour())));
-	WX_SETOBJECT(Colour, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Colour, new wxColour(data->GetColour()))
 }
 
-DLIB_FUNC_START(fontdata_getchosenfont, 1, Nil)
+WX_FUNC_START(fontdata_getchosenfont, 1, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(data->GetChosenFont())));
-	WX_SETOBJECT(Font, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(data->GetChosenFont()))
 }
 
-DLIB_FUNC_START(fontdata_getenableeffects, 1, Nil)
+WX_FUNC_START(fontdata_getenableeffects, 1, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	WX_SETBOOL(data->GetEnableEffects())
 }
 
-DLIB_FUNC_START(fontdata_getinitialfont, 1, Nil)
+WX_FUNC_START(fontdata_getinitialfont, 1, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
-	DeltaWxFont *retval = DNEWCLASS(DeltaWxFont, (new wxFont(data->GetInitialFont())));
-	WX_SETOBJECT(Font, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Font, new wxFont(data->GetInitialFont()))
 }
 
-DLIB_FUNC_START(fontdata_getshowhelp, 1, Nil)
+WX_FUNC_START(fontdata_getshowhelp, 1, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	WX_SETBOOL(data->GetShowHelp())
 }
 
-DLIB_FUNC_START(fontdata_setallowsymbols, 2, Nil)
+WX_FUNC_START(fontdata_setallowsymbols, 2, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	WX_GETBOOL(symbols)
 	data->SetAllowSymbols(symbols);
 }
 
-DLIB_FUNC_START(fontdata_setchosenfont, 2, Nil)
+WX_FUNC_START(fontdata_setchosenfont, 2, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	DLIB_WXGET_BASE(font, Font, font)
 	data->SetChosenFont(*font);
 }
 
-DLIB_FUNC_START(fontdata_setcolour, 2, Nil)
+WX_FUNC_START(fontdata_setcolour, 2, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	DLIB_WXGET_BASE(colour, Colour, colour)
 	data->SetColour(*colour);
 }
 
-DLIB_FUNC_START(fontdata_setinitialfont, 2, Nil)
+WX_FUNC_START(fontdata_setinitialfont, 2, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	DLIB_WXGET_BASE(font, Font, font)
 	data->SetInitialFont(*font);
 }
 
-DLIB_FUNC_START(fontdata_setrange, 3, Nil)
+WX_FUNC_START(fontdata_setrange, 3, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	WX_GETNUMBER(min)
 	WX_GETNUMBER(max)
 	data->SetRange(min, max);
 }
 
-DLIB_FUNC_START(fontdata_setshowhelp, 2, Nil)
+WX_FUNC_START(fontdata_setshowhelp, 2, Nil)
 	DLIB_WXGET_BASE(fontdata, FontData, data)
 	WX_GETBOOL(help)
 	data->SetShowHelp(help);

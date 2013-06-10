@@ -20,7 +20,6 @@
 #define WX_FUNC(name) WX_FUNC1(slider, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(clearsel)
 WX_FUNC_DEF(clearticks)
 WX_FUNC_DEF(create)
@@ -44,7 +43,6 @@ WX_FUNC_DEF(setvalue)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(clearsel),
 	WX_FUNC(clearticks),
 	WX_FUNC(create),
@@ -69,7 +67,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "setvalue")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "clearsel", "setvalue")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Slider, "slider", Control)
 
@@ -83,9 +81,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxControl *_parent = DLIB_WXTYPECAST_BASE(Control, val, control);
-	DeltaWxControl *parent = DNEWCLASS(DeltaWxControl, (_parent));
-	WX_SETOBJECT_EX(*at, Control, parent)
+	WX_SET_BASECLASS_GETTER(at, Control, val)
 	return true;
 }
 
@@ -139,10 +135,9 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Slider,slider)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(slider_construct, 0, 10, Nil)
-	wxSlider *wxslider = (wxSlider*) 0;
-	DeltaWxSlider *slider = (DeltaWxSlider*) 0;
+	wxSlider *slider = (wxSlider*) 0;
 	if (n == 0) {
-		wxslider = new wxSlider();
+		slider = new wxSlider();
 	} else if (n >= 5) {
 		DLIB_WXGET_BASE(window, Window, parent)
 		WX_GETDEFINE(id)
@@ -159,7 +154,7 @@ WX_FUNC_ARGRANGE_START(slider_construct, 0, 10, Nil)
 		if (n >= 8) { WX_GETDEFINE_DEFINED(style) }
 		if (n >= 9) { DLIB_WXGET_BASE(validator, Validator, val) validator = val; }
 		if (n >= 10) { WX_GETSTRING_DEFINED(name) }
-		wxslider = new wxSlider(parent, id, value, minValue, maxValue, pos, size, style, *validator, name);
+		slider = new wxSlider(parent, id, value, minValue, maxValue, pos, size, style, *validator, name);
 	} else {
 		DPTR(vm)->PrimaryError(
 			"Wrong number of args (%d passed) to '%s'",
@@ -168,20 +163,15 @@ WX_FUNC_ARGRANGE_START(slider_construct, 0, 10, Nil)
 		);
 		RESET_EMPTY
 	}
-	if (wxslider) slider = DNEWCLASS(DeltaWxSlider, (wxslider));
-	WX_SETOBJECT(Slider, slider)
+	WX_SET_WINDOW_OBJECT(Slider, slider)
 }
 
-DLIB_FUNC_START(slider_destruct, 1, Nil)
-	DLIB_WXDELETE(slider, Slider, slider)
-}
-
-DLIB_FUNC_START(slider_clearsel, 1, Nil)
+WX_FUNC_START(slider_clearsel, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	slider->ClearSel();
 }
 
-DLIB_FUNC_START(slider_clearticks, 1, Nil)
+WX_FUNC_START(slider_clearticks, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	slider->ClearTicks();
 }
@@ -205,99 +195,100 @@ WX_FUNC_ARGRANGE_START(slider_create, 6, 11, Nil)
 	if (n >= 11) { WX_GETSTRING_DEFINED(name) }
 	WX_SETBOOL(slider->Create(parent, id, value, minValue, maxValue,
 		pos, size, style, *validator, name))
+	SetWrapperChild<DeltaWxWindowClassId,DeltaWxWindow,wxWindow>(slider);
 }
 
-DLIB_FUNC_START(slider_getlinesize, 1, Nil)
+WX_FUNC_START(slider_getlinesize, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetLineSize())
 }
 
-DLIB_FUNC_START(slider_getmax, 1, Nil)
+WX_FUNC_START(slider_getmax, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetMax())
 }
 
-DLIB_FUNC_START(slider_getmin, 1, Nil)
+WX_FUNC_START(slider_getmin, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetMin())
 }
 
-DLIB_FUNC_START(slider_getpagesize, 1, Nil)
+WX_FUNC_START(slider_getpagesize, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetPageSize())
 }
 
-DLIB_FUNC_START(slider_getselend, 1, Nil)
+WX_FUNC_START(slider_getselend, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetSelEnd())
 }
 
-DLIB_FUNC_START(slider_getselstart, 1, Nil)
+WX_FUNC_START(slider_getselstart, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetSelStart())
 }
 
-DLIB_FUNC_START(slider_getthumblength, 1, Nil)
+WX_FUNC_START(slider_getthumblength, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetThumbLength())
 }
 
-DLIB_FUNC_START(slider_gettickfreq, 1, Nil)
+WX_FUNC_START(slider_gettickfreq, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetTickFreq())
 }
 
-DLIB_FUNC_START(slider_getvalue, 1, Nil)
+WX_FUNC_START(slider_getvalue, 1, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_SETNUMBER(slider->GetValue())
 }
 
-DLIB_FUNC_START(slider_setlinesize, 2, Nil)
+WX_FUNC_START(slider_setlinesize, 2, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(lineSize)
 	slider->SetLineSize(lineSize);
 }
 
-DLIB_FUNC_START(slider_setpagesize, 2, Nil)
+WX_FUNC_START(slider_setpagesize, 2, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(pageSize)
 	slider->SetPageSize(pageSize);
 }
 
-DLIB_FUNC_START(slider_setrange, 3, Nil)
+WX_FUNC_START(slider_setrange, 3, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(minValue)
 	WX_GETNUMBER(maxValue)
 	slider->SetRange(minValue, maxValue);
 }
 
-DLIB_FUNC_START(slider_setselection, 3, Nil)
+WX_FUNC_START(slider_setselection, 3, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(startPos)
 	WX_GETNUMBER(endPos)
 	slider->SetSelection(startPos, endPos);
 }
 
-DLIB_FUNC_START(slider_setthumblength, 2, Nil)
+WX_FUNC_START(slider_setthumblength, 2, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(len)
 	slider->SetThumbLength(len);
 }
 
-DLIB_FUNC_START(slider_settick, 2, Nil)
+WX_FUNC_START(slider_settick, 2, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(tickPos)
 	slider->SetTick(tickPos);
 }
 
-DLIB_FUNC_START(slider_settickfreq, 3, Nil)
+WX_FUNC_START(slider_settickfreq, 3, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(num)
 	WX_GETNUMBER(pos)
 	slider->SetTickFreq(num, pos);
 }
 
-DLIB_FUNC_START(slider_setvalue, 2, Nil)
+WX_FUNC_START(slider_setvalue, 2, Nil)
 	DLIB_WXGET_BASE(slider, Slider, slider)
 	WX_GETNUMBER(value)
 	slider->SetValue(value);

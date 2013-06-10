@@ -19,7 +19,6 @@
 #define WX_FUNC(name) WX_FUNC1(filedialog, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getdirectory)
 WX_FUNC_DEF(getfilename)
 WX_FUNC_DEF(getfilenames)
@@ -38,7 +37,6 @@ WX_FUNC_DEF(showmodal)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getdirectory),
 	WX_FUNC(getfilename),
 	WX_FUNC(getfilenames),
@@ -58,7 +56,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "showmodal")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getdirectory", "showmodal")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(FileDialog, "filedialog", Dialog)
 
@@ -72,9 +70,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxDialog *_parent = DLIB_WXTYPECAST_BASE(Dialog, val, dialog);
-	DeltaWxDialog *parent = DNEWCLASS(DeltaWxDialog, (_parent));
-	WX_SETOBJECT_EX(*at, Dialog, parent)
+	WX_SET_BASECLASS_GETTER(at, Dialog, val)
 	return true;
 }
 
@@ -165,26 +161,21 @@ WX_FUNC_ARGRANGE_START(filedialog_construct, 1, 9, Nil)
 	if (n >= 7) { DLIB_WXGETPOINT_BASE(pt) pos = *pt; }
 	if (n >= 8) { DLIB_WXGETSIZE_BASE(sz) size = *sz; }
 	if (n >= 9) { WX_GETSTRING_DEFINED(name) }
-	DeltaWxFileDialog *dialog = DNEWCLASS(DeltaWxFileDialog,
-		(new wxFileDialog(parent, message, defaultDir, defaultFile, wildCard, style, pos, size, name)));
-	WX_SETOBJECT(FileDialog, dialog)
+	wxFileDialog* dialog = new wxFileDialog(parent, message, defaultDir, defaultFile, wildCard, style, pos, size, name);
+	WX_SET_TOPLEVELWINDOW_OBJECT(FileDialog, dialog)
 }
 
-DLIB_FUNC_START(filedialog_destruct, 1, Nil)
-	DLIB_WXDELETE(filedialog, FileDialog, dialog)
-}
-
-DLIB_FUNC_START(filedialog_getdirectory, 1, Nil)
+WX_FUNC_START(filedialog_getdirectory, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_SETSTRING(dialog->GetDirectory())
 }
 
-DLIB_FUNC_START(filedialog_getfilename, 1, Nil)
+WX_FUNC_START(filedialog_getfilename, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_SETSTRING(dialog->GetFilename())
 }
 
-DLIB_FUNC_START(filedialog_getfilenames, 1, Nil)
+WX_FUNC_START(filedialog_getfilenames, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	wxArrayString filenames;
 	dialog->GetFilenames(filenames);
@@ -197,22 +188,22 @@ DLIB_FUNC_START(filedialog_getfilenames, 1, Nil)
 	DLIB_RETVAL_REF.FromTable(retval);
 }
 
-DLIB_FUNC_START(filedialog_getfilterindex, 1, Nil)
+WX_FUNC_START(filedialog_getfilterindex, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_SETNUMBER(dialog->GetFilterIndex())
 }
 
-DLIB_FUNC_START(filedialog_getmessage, 1, Nil)
+WX_FUNC_START(filedialog_getmessage, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_SETSTRING(dialog->GetMessage())
 }
 
-DLIB_FUNC_START(filedialog_getpath, 1, Nil)
+WX_FUNC_START(filedialog_getpath, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_SETSTRING(dialog->GetPath())
 }
 
-DLIB_FUNC_START(filedialog_getpaths, 1, Nil)
+WX_FUNC_START(filedialog_getpaths, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	wxArrayString paths;
 	dialog->GetPaths(paths);
@@ -225,48 +216,48 @@ DLIB_FUNC_START(filedialog_getpaths, 1, Nil)
 	DLIB_RETVAL_REF.FromTable(retval);
 }
 
-DLIB_FUNC_START(filedialog_getwildcard, 1, Nil)
+WX_FUNC_START(filedialog_getwildcard, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_SETSTRING(dialog->GetWildcard())
 }
 
-DLIB_FUNC_START(filedialog_setdirectory, 2, Nil)
+WX_FUNC_START(filedialog_setdirectory, 2, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_GETSTRING(directory)
 	dialog->SetDirectory(directory);
 }
 
-DLIB_FUNC_START(filedialog_setfilename, 2, Nil)
+WX_FUNC_START(filedialog_setfilename, 2, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_GETSTRING(filename)
 	dialog->SetFilename(filename);
 }
 
-DLIB_FUNC_START(filedialog_setfilterindex, 2, Nil)
+WX_FUNC_START(filedialog_setfilterindex, 2, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_GETNUMBER(index)
 	dialog->SetFilterIndex(index);
 }
 
-DLIB_FUNC_START(filedialog_setmessage, 2, Nil)
+WX_FUNC_START(filedialog_setmessage, 2, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_GETSTRING(message)
 	dialog->SetMessage(message);
 }
 
-DLIB_FUNC_START(filedialog_setpath, 2, Nil)
+WX_FUNC_START(filedialog_setpath, 2, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_GETSTRING(path)
 	dialog->SetPath(path);
 }
 
-DLIB_FUNC_START(filedialog_setwildcard, 2, Nil)
+WX_FUNC_START(filedialog_setwildcard, 2, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_GETSTRING(wildcard)
 	dialog->SetWildcard(wildcard);
 }
 
-DLIB_FUNC_START(filedialog_showmodal, 1, Nil)
+WX_FUNC_START(filedialog_showmodal, 1, Nil)
 	DLIB_WXGET_BASE(filedialog, FileDialog, dialog)
 	WX_SETNUMBER(dialog->ShowModal())
 }

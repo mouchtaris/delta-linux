@@ -18,18 +18,16 @@
 #define WX_FUNC(name) WX_FUNC1(cursor, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(isok)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(isok)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "isok")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "isok", "isok")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Cursor, "cursor", Bitmap)
 
@@ -43,9 +41,7 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
@@ -59,22 +55,20 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Cursor,cursor)
 ////////////////////////////////////////////////////////////////
 
 WX_FUNC_ARGRANGE_START(cursor_construct, 0, 4, Nil)
-	wxCursor *wxcursor = (wxCursor*) 0;
-	DeltaWxCursor *cursor = (DeltaWxCursor*) 0;
+	wxCursor *cursor = (wxCursor*) 0;
 	if (n == 0) {
-		wxcursor = new wxCursor();
+		cursor = new wxCursor();
 	} else if (n == 1) {
 		if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 			WX_GETNUMBER(cursorId)
-			wxcursor = new wxCursor(cursorId);
+			cursor = new wxCursor(cursorId);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_String) {
 			WX_GETDEFINE(cursorId)
-			wxcursor = new wxCursor(cursorId);
+			cursor = new wxCursor(cursorId);
 		} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 			util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-			if (DLIB_WXISBASE(Image, serial_no, image, image_wr)) {
-				wxImage *image = (wxImage*) image_wr->GetCastToNativeInstance();
-				wxcursor = new wxCursor(*image);
+			if (DLIB_WXISBASE(Image, serial_no, image, image)) {
+				cursor = new wxCursor(*image);
 			}
 		}
 	} else {
@@ -85,7 +79,7 @@ WX_FUNC_ARGRANGE_START(cursor_construct, 0, 4, Nil)
 			int hotSpotX = 0, hotSpotY = 0;
 			if (n >= 3) { WX_GETNUMBER_DEFINED(hotSpotX) }
 			if (n >= 4) { WX_GETNUMBER_DEFINED(hotSpotY) }
-			wxcursor = new wxCursor(cursorName, (wxBitmapType) type, hotSpotX, hotSpotY);
+			cursor = new wxCursor(cursorName, (wxBitmapType) type, hotSpotX, hotSpotY);
 #else
 			DLIB_ERROR_CHECK(
 				true,
@@ -94,15 +88,10 @@ WX_FUNC_ARGRANGE_START(cursor_construct, 0, 4, Nil)
 #endif //__WXMSW__
 		}
 	}
-	if (wxcursor) cursor = DNEWCLASS(DeltaWxCursor, (wxcursor));
 	WX_SETOBJECT(Cursor, cursor)
 }
 
-DLIB_FUNC_START(cursor_destruct, 1, Nil)
-	DLIB_WXDELETE(cursor, Cursor, cursor)
-}
-
-DLIB_FUNC_START(cursor_isok, 1, Nil)
+WX_FUNC_START(cursor_isok, 1, Nil)
 	DLIB_WXGET_BASE(cursor, Cursor, cursor)
 	WX_SETBOOL(cursor->IsOk())
 }

@@ -17,18 +17,16 @@
 #define WX_FUNC(name) WX_FUNC1(childfocusevent, name)
 
 WX_FUNC_DEF(construct)
-WX_FUNC_DEF(destruct)
 WX_FUNC_DEF(getwindow)
 
 WX_FUNCS_START
 	WX_FUNC(construct),
-	WX_FUNC(destruct),
 	WX_FUNC(getwindow)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "destruct", "getwindow")
+DELTALIBFUNC_DECLARECONSTS(1, uarraysize(funcs) - 1, "getwindow", "getwindow")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(ChildFocusEvent, "childfocusevent", CommandEvent)
 
@@ -42,18 +40,14 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxCommandEvent *_parent = DLIB_WXTYPECAST_BASE(CommandEvent, val, commandevent);
-	DeltaWxCommandEvent *parent = DNEWCLASS(DeltaWxCommandEvent, (_parent));
-	WX_SETOBJECT_EX(*at, CommandEvent, parent)
+	WX_SET_BASECLASS_GETTER(at, CommandEvent, val)
 	return true;
 }
 
 static bool GetWindow (void* val, DeltaValue* at) 
 {
 	wxChildFocusEvent *ev = DLIB_WXTYPECAST_BASE(ChildFocusEvent, val, childfocusevent);
-	wxWindow *win = ev->GetWindow();
-	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-	WX_SETOBJECT_EX(*at, Window, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, ev->GetWindow())
 	return true;
 }
 
@@ -70,16 +64,10 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(ChildFocusEvent,childfocusevent)
 WX_FUNC_ARGRANGE_START(childfocusevent_construct, 0, 1, Nil)
 	wxWindow *win = NULL;
 	if (n >= 1) { DLIB_WXGET_BASE(window, Window, window) win = window; }
-	DeltaWxChildFocusEvent *evt = DNEWCLASS(DeltaWxChildFocusEvent, (new wxChildFocusEvent(win)));
-	WX_SETOBJECT(ChildFocusEvent, evt)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ChildFocusEvent, new wxChildFocusEvent(win))
 }
 
-DLIB_FUNC_START(childfocusevent_destruct, 1, Nil)
-	DLIB_WXDELETE(childfocusevent, ChildFocusEvent, evt)
-}
-
-DLIB_FUNC_START(childfocusevent_getwindow, 1, Nil)
+WX_FUNC_START(childfocusevent_getwindow, 1, Nil)
 	DLIB_WXGET_BASE(childfocusevent, ChildFocusEvent, evt)
-	DeltaWxWindow *retval = DNEWCLASS(DeltaWxWindow, (evt->GetWindow()));
-	WX_SETOBJECT(Window, retval)
+	WX_SETOBJECT(Window, evt->GetWindow())
 }

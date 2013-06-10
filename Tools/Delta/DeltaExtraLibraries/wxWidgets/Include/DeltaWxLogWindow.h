@@ -38,7 +38,6 @@ public:
 		wxLogWindow::OnFrameDelete(frame);
 		NotifyDelete(frame);
 		wxLog::SetActiveTarget(new wxLog());
-		DDELETE(this);
 	}
 	void NotifyDelete(wxFrame *frame);
 

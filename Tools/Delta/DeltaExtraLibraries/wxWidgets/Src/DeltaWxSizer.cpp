@@ -105,33 +105,28 @@ static bool GetKeys (void* val, DeltaValue* at)
 
 static bool GetBaseClass (void* val, DeltaValue* at) 
 {
-	wxObject *_parent = DLIB_WXTYPECAST_BASE(Object, val, object);
-	DeltaWxObject *parent = DNEWCLASS(DeltaWxObject, (_parent));
-	WX_SETOBJECT_EX(*at, Object, parent)
+	WX_SET_BASECLASS_GETTER(at, Object, val)
 	return true;
 }
 
 static bool GetSize (void* val, DeltaValue* at) 
 {
 	wxSizer *sizer = DLIB_WXTYPECAST_BASE(Sizer, val, sizer);
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(sizer->GetSize())));
-	WX_SETOBJECT_EX(*at, Size, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Size, new wxSize(sizer->GetSize()))
 	return true;
 }
 
 static bool GetMinSize (void* val, DeltaValue* at) 
 {
 	wxSizer *sizer = DLIB_WXTYPECAST_BASE(Sizer, val, sizer);
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(sizer->GetMinSize())));
-	WX_SETOBJECT_EX(*at, Size, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Size, new wxSize(sizer->GetMinSize()))
 	return true;
 }
 
 static bool GetPosition (void* val, DeltaValue* at) 
 {
 	wxSizer *sizer = DLIB_WXTYPECAST_BASE(Sizer, val, sizer);
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(sizer->GetPosition())));
-	WX_SETOBJECT_EX(*at, Point, retval)
+	WX_SETOBJECT_NO_CONTEXT_COLLECTABLE_NATIVE_INSTANCE_EX(*at, Point, new wxPoint(sizer->GetPosition()))
 	return true;
 }
 
@@ -144,8 +139,7 @@ static bool GetChildren (void* val, DeltaValue* at)
 	for (wxSizerItemList::iterator it = sizeritemlist.begin(); it != sizeritemlist.end(); ++it) {
 		DeltaValue value;
 		wxSizerItem *child = *it;
-		DeltaWxSizerItem *sizeritem = DNEWCLASS(DeltaWxSizerItem, (child));
-		WX_SETOBJECT_EX(value, SizerItem, sizeritem)
+		WX_SETOBJECT_NO_CONTEXT_EX(value, SizerItem, child)
 		list->push_back(value);
 	}
 	return true;
@@ -154,9 +148,7 @@ static bool GetChildren (void* val, DeltaValue* at)
 static bool GetContainingWindow (void* val, DeltaValue* at) 
 {
 	wxSizer *sizer = DLIB_WXTYPECAST_BASE(Sizer, val, sizer);
-	wxWindow *win = sizer->GetContainingWindow();
-	DeltaWxWindow *retval = win ? DNEWCLASS(DeltaWxWindow, (win)) : (DeltaWxWindow*) 0;
-	WX_SETOBJECT_EX(*at, Window, retval)
+	WX_SETOBJECT_NO_CONTEXT_EX(*at, Window, sizer->GetContainingWindow())
 	return true;
 }
 
@@ -174,52 +166,49 @@ WX_LIBRARY_FUNCS_IMPLEMENTATION(Sizer,sizer)
 
 ////////////////////////////////////////////////////////////////
 
-DLIB_FUNC_START(sizer_destruct, 1, Nil)
+WX_FUNC_START(sizer_destruct, 1, Nil)
 	DLIB_WXDELETE(sizer, Sizer, sizer)
 }
 
 WX_FUNC_ARGRANGE_START(sizer_add, 2, 6, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	DeltaWxSizerItem *retval = (DeltaWxSizerItem*) 0;
+	wxSizerItem *retval = (wxSizerItem*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			if (n == 2) {
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(window)));
+				retval	= (sizer->Add(window));;
 			} else {
 				if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 					DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(window, *flags)));
+					retval	=  (sizer->Add(window, *flags));;
 				} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 					WX_GETNUMBER(proportion)
 					int flag = 0, border = 0;
 					if (n >= 4) { WX_GETDEFINE_DEFINED(flag) }
 					if (n >= 5) { WX_GETDEFINE_DEFINED(border) }
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(window, proportion, flag, border)));
+					retval	=  (sizer->Add(window, proportion, flag, border));;
 				}
 			}
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			if (n == 2) {
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(szr)));
+				retval	= (sizer->Add(szr));;
 			} else {
 				if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 					DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(szr, *flags)));
+					retval	=  (sizer->Add(szr, *flags));;
 				} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 					WX_GETNUMBER(proportion)
 					int flag = 0, border = 0;
 					if (n >= 4) { WX_GETDEFINE_DEFINED(flag) }
 					if (n >= 5) { WX_GETDEFINE_DEFINED(border) }
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(szr, proportion, flag, border)));
+					retval	=  (sizer->Add(szr, proportion, flag, border));;
 				}
 			}
 		} else
-		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, sizeritem_wr)) {
-			wxSizerItem *szrItem = (wxSizerItem*) sizeritem_wr->GetCastToNativeInstance();
-			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(szrItem)));
+		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, szrItem)) {
+			retval	= (sizer->Add(szrItem));;
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(width)
@@ -228,15 +217,15 @@ WX_FUNC_ARGRANGE_START(sizer_add, 2, 6, Nil)
 		if (n >= 4) { WX_GETNUMBER_DEFINED(proportion) }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(flag) }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(border) }
-		WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Add(width, height, proportion, flag, border)));
+		retval	=  (sizer->Add(width, height, proportion, flag, border));;
 	}
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(sizer_addspacer, 2, Nil)
+WX_FUNC_START(sizer_addspacer, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	WX_GETNUMBER(size)
-	WXNEWCLASS(DeltaWxSizerItem, retval, wxSizerItem, sizer->AddSpacer(size))
+	wxSizerItem* retval	= sizer->AddSpacer(size);
 	WX_SETOBJECT(SizerItem, retval)
 }
 
@@ -244,14 +233,13 @@ WX_FUNC_ARGRANGE_START(sizer_addstretchspacer, 1, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	int prop = 1;
 	if (n >= 2) { WX_GETNUMBER_DEFINED(prop) }
-	WXNEWCLASS(DeltaWxSizerItem, retval, wxSizerItem, sizer->AddStretchSpacer(prop))
+	wxSizerItem* retval	= sizer->AddStretchSpacer(prop);
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(sizer_calcmin, 1, Nil)
+WX_FUNC_START(sizer_calcmin, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(sizer->CalcMin())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(sizer->CalcMin()))
 }
 
 WX_FUNC_ARGRANGE_START(sizer_clear, 1, 2, Nil)
@@ -261,15 +249,13 @@ WX_FUNC_ARGRANGE_START(sizer_clear, 1, 2, Nil)
 	sizer->Clear(delete_windows);
 }
 
-DLIB_FUNC_START(sizer_detach, 2, Nil)
+WX_FUNC_START(sizer_detach, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			WX_SETBOOL(sizer->Detach(window))
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			WX_SETBOOL(sizer->Detach(szr))
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
@@ -278,20 +264,19 @@ DLIB_FUNC_START(sizer_detach, 2, Nil)
 	}
 }
 
-DLIB_FUNC_START(sizer_fit, 2, Nil)
+WX_FUNC_START(sizer_fit, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	DLIB_WXGET_BASE(window, Window, window)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(sizer->Fit(window))));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(sizer->Fit(window)))
 }
 
-DLIB_FUNC_START(sizer_fitinside, 2, Nil)
+WX_FUNC_START(sizer_fitinside, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	DLIB_WXGET_BASE(window, Window, window)
 	sizer->FitInside(window);
 }
 
-DLIB_FUNC_START(sizer_getchildren, 1, Nil)
+WX_FUNC_START(sizer_getchildren, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	wxSizerItemList sizeritemlist = sizer->GetChildren();
 	DeltaList_Make(DLIB_RETVAL_REF);
@@ -299,70 +284,62 @@ DLIB_FUNC_START(sizer_getchildren, 1, Nil)
 	for (wxSizerItemList::iterator it = sizeritemlist.begin(); it != sizeritemlist.end(); ++it) {
 		DeltaValue value;
 		wxSizerItem *child = *it;
-		DeltaWxSizerItem *sizeritem = DNEWCLASS(DeltaWxSizerItem, (child));
-		WX_SETOBJECT_EX(value, SizerItem, sizeritem)
+		WX_SETOBJECT_EX(value, SizerItem, child)
 		list->push_back(value);
 	}
 }
 
-DLIB_FUNC_START(sizer_getcontainingwindow, 1, Nil)
+WX_FUNC_START(sizer_getcontainingwindow, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	WXNEWCLASS(DeltaWxWindow, retval, wxWindow, (sizer->GetContainingWindow()));
+	wxWindow* retval	= (sizer->GetContainingWindow());;
 	WX_SETOBJECT(Window, retval)
 }
 
 WX_FUNC_ARGRANGE_START(sizer_getitem, 2, 3, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	DeltaWxSizerItem *retval = (DeltaWxSizerItem*) 0;
+	wxSizerItem *retval = (wxSizerItem*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			bool recursive = false;
 			if (n >= 3) { WX_GETBOOL_DEFINED(recursive) }
-			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, sizer->GetItem(window, recursive))
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+			retval	= sizer->GetItem(window, recursive);
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			bool recursive = false;
 			if (n >= 3) { WX_GETBOOL_DEFINED(recursive) }
-			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, sizer->GetItem(szr, recursive))
+			retval	= sizer->GetItem(szr, recursive);
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(index)
-		WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, sizer->GetItem(index))
+		retval	= sizer->GetItem(index);
 	}
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(sizer_getsize, 1, Nil)
+WX_FUNC_START(sizer_getsize, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(sizer->GetSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(sizer->GetSize()))
 }
 
-DLIB_FUNC_START(sizer_getposition, 1, Nil)
+WX_FUNC_START(sizer_getposition, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	DeltaWxPoint *retval = DNEWCLASS(DeltaWxPoint, (new wxPoint(sizer->GetPosition())));
-	WX_SETOBJECT(Point, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Point, new wxPoint(sizer->GetPosition()))
 }
 
-DLIB_FUNC_START(sizer_getminsize, 1, Nil)
+WX_FUNC_START(sizer_getminsize, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	DeltaWxSize *retval = DNEWCLASS(DeltaWxSize, (new wxSize(sizer->GetMinSize())));
-	WX_SETOBJECT(Size, retval)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(sizer->GetMinSize()))
 }
 
 WX_FUNC_ARGRANGE_START(sizer_hide, 2, 3, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			bool recursive = false;
 			if (n >= 3) { WX_GETBOOL_DEFINED(recursive) }
 			WX_SETBOOL(sizer->Hide(window, recursive))
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			bool recursive = false;
 			if (n >= 3) { WX_GETBOOL_DEFINED(recursive) }
 			WX_SETBOOL(sizer->Hide(szr, recursive))
@@ -376,47 +353,44 @@ WX_FUNC_ARGRANGE_START(sizer_hide, 2, 3, Nil)
 WX_FUNC_ARGRANGE_START(sizer_insert, 3, 7, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	WX_GETNUMBER(index)
-	DeltaWxSizerItem *retval = (DeltaWxSizerItem*) 0;
+	wxSizerItem *retval = (wxSizerItem*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			if (n == 3) {
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, window)));
+				retval	=  (sizer->Insert(index, window));;
 			} else {
 				if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 					DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, window, *flags)));
+					retval	=  (sizer->Insert(index, window, *flags));;
 				} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 					WX_GETNUMBER(proportion)
 					int flag = 0, border = 0;
 					if (n >= 5) { WX_GETDEFINE_DEFINED(flag) }
 					if (n >= 6) { WX_GETDEFINE_DEFINED(border) }
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, window, proportion, flag, border)));
+					retval	=  (sizer->Insert(index, window, proportion, flag, border));;
 				}
 			}
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			if (n == 3) {
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, szr)));
+				retval	=  (sizer->Insert(index, szr));;
 			} else {
 				if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 					DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, szr, *flags)));
+					retval	=  (sizer->Insert(index, szr, *flags));;
 				} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 					WX_GETNUMBER(proportion)
 					int flag = 0, border = 0;
 					wxObject* userData = NULL;
 					if (n >= 5) { WX_GETDEFINE_DEFINED(flag) }
 					if (n >= 6) { WX_GETDEFINE_DEFINED(border) }
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, szr, proportion, flag, border)));
+					retval	=  (sizer->Insert(index, szr, proportion, flag, border));;
 				}
 			}
 		} else
-		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, sizeritem_wr)) {
-			wxSizerItem *szrItem = (wxSizerItem*) sizeritem_wr->GetCastToNativeInstance();
-			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, szrItem)));
+		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, szrItem)) {
+			retval	=  (sizer->Insert(index, szrItem));;
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(width)
@@ -426,16 +400,16 @@ WX_FUNC_ARGRANGE_START(sizer_insert, 3, 7, Nil)
 		if (n >= 5) { WX_GETNUMBER_DEFINED(proportion) }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(flag) }
 		if (n >= 7) { WX_GETDEFINE_DEFINED(border) }
-		WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Insert(index, width, height, proportion, flag, border)));
+		retval	=  (sizer->Insert(index, width, height, proportion, flag, border));;
 	}
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(sizer_insertspacer, 3, Nil)
+WX_FUNC_START(sizer_insertspacer, 3, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	WX_GETNUMBER(index)
 	WX_GETNUMBER(size)
-	WXNEWCLASS(DeltaWxSizerItem, retval, wxSizerItem, sizer->InsertSpacer(index, size))
+	wxSizerItem* retval	= sizer->InsertSpacer(index, size);
 	WX_SETOBJECT(SizerItem, retval)
 }
 
@@ -444,19 +418,17 @@ WX_FUNC_ARGRANGE_START(sizer_insertstretchspacer, 2, 3, Nil)
 	WX_GETNUMBER(index)
 	int prop = 1;
 	if (n >= 3) { WX_GETNUMBER_DEFINED(prop) }
-	WXNEWCLASS(DeltaWxSizerItem, retval, wxSizerItem, sizer->InsertStretchSpacer(index, prop))
+	wxSizerItem* retval	= sizer->InsertStretchSpacer(index, prop);
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(sizer_isshown, 2, Nil)
+WX_FUNC_START(sizer_isshown, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			WX_SETBOOL(sizer->IsShown(window))
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			WX_SETBOOL(sizer->IsShown(szr))
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
@@ -465,53 +437,50 @@ DLIB_FUNC_START(sizer_isshown, 2, Nil)
 	}
 }
 
-DLIB_FUNC_START(sizer_layout, 1, Nil)
+WX_FUNC_START(sizer_layout, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	sizer->Layout();
 }
 
 WX_FUNC_ARGRANGE_START(sizer_prepend, 2, 6, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
-	DeltaWxSizerItem *retval = (DeltaWxSizerItem*) 0;
+	wxSizerItem *retval = (wxSizerItem*) 0;
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			if (n == 2) {
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(window)));
+				retval	= (sizer->Prepend(window));;
 			} else {
 				if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 					DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(window, *flags)));
+					retval	=  (sizer->Prepend(window, *flags));;
 				} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 					WX_GETNUMBER(proportion)
 					int flag = 0, border = 0;
 					if (n >= 4) { WX_GETDEFINE_DEFINED(flag) }
 					if (n >= 5) { WX_GETDEFINE_DEFINED(border) }
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(window, proportion, flag, border)));
+					retval	=  (sizer->Prepend(window, proportion, flag, border));;
 				}
 			}
 		} else
-		if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			if (n == 2) {
-				WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(szr)));
+				retval	= (sizer->Prepend(szr));;
 			} else {
 				if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 					DLIB_WXGET_BASE(sizerflags, SizerFlags, flags)
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(szr, *flags)));
+					retval	=  (sizer->Prepend(szr, *flags));;
 				} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 					WX_GETNUMBER(proportion)
 					int flag = 0, border = 0;
 					if (n >= 4) { WX_GETDEFINE_DEFINED(flag) }
 					if (n >= 5) { WX_GETDEFINE_DEFINED(border) }
-					WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(szr, proportion, flag, border)));
+					retval	=  (sizer->Prepend(szr, proportion, flag, border));;
 				}
 			}
 		} else
-		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, sizeritem_wr)) {
-			wxSizerItem *szrItem = (wxSizerItem*) sizeritem_wr->GetCastToNativeInstance();
-			WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(szrItem)));
+		if (DLIB_WXISBASE(SizerItem, serial_no, sizeritem, szrItem)) {
+			retval	= (sizer->Prepend(szrItem));;
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
 		WX_GETNUMBER(width)
@@ -520,15 +489,15 @@ WX_FUNC_ARGRANGE_START(sizer_prepend, 2, 6, Nil)
 		if (n >= 4) { WX_GETNUMBER_DEFINED(proportion) }
 		if (n >= 5) { WX_GETDEFINE_DEFINED(flag) }
 		if (n >= 6) { WX_GETDEFINE_DEFINED(border) }
-		WXNEWCLASS_DEFINED(DeltaWxSizerItem, retval, wxSizerItem, (sizer->Prepend(width, height, proportion, flag, border)));
+		retval	=  (sizer->Prepend(width, height, proportion, flag, border));;
 	}
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(sizer_prependspacer, 2, Nil)
+WX_FUNC_START(sizer_prependspacer, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	WX_GETNUMBER(size)
-	WXNEWCLASS(DeltaWxSizerItem, retval, wxSizerItem, sizer->PrependSpacer(size))
+	wxSizerItem* retval	= sizer->PrependSpacer(size);
 	WX_SETOBJECT(SizerItem, retval)
 }
 
@@ -536,21 +505,20 @@ WX_FUNC_ARGRANGE_START(sizer_prependstretchspacer, 1, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	int prop = 1;
 	if (n >= 2) { WX_GETNUMBER_DEFINED(prop) }
-	WXNEWCLASS(DeltaWxSizerItem, retval, wxSizerItem, sizer->PrependStretchSpacer(prop))
+	wxSizerItem* retval	= sizer->PrependStretchSpacer(prop);
 	WX_SETOBJECT(SizerItem, retval)
 }
 
-DLIB_FUNC_START(sizer_recalcsizes, 1, Nil)
+WX_FUNC_START(sizer_recalcsizes, 1, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	sizer->RecalcSizes();
 }
 
-DLIB_FUNC_START(sizer_remove, 2, Nil)
+WX_FUNC_START(sizer_remove, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			bool retval;
 #if wxCHECK_VERSION(2, 9, 0)
 			retval = sizer->Detach(window);
@@ -558,8 +526,7 @@ DLIB_FUNC_START(sizer_remove, 2, Nil)
 			retval = sizer->Remove(window);
 #endif
 			WX_SETBOOL(retval)
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			WX_SETBOOL(sizer->Remove(szr))
 		}
 	} else if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_Number) {
@@ -572,14 +539,12 @@ WX_FUNC_ARGRANGE_START(sizer_replace, 3, 4, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *oldwin = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, oldwin)) {
 			DLIB_WXGET_BASE(window, Window, newwin)
 			bool recursive = false;
 			if (n >= 4) { WX_GETBOOL_DEFINED(recursive) }
 			WX_SETBOOL(sizer->Replace(oldwin, newwin, recursive))
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *oldsz = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, oldsz)) {
 			DLIB_WXGET_BASE(sizer, Sizer, newsz)
 			bool recursive = false;
 			if (n >= 4) { WX_GETBOOL_DEFINED(recursive) }
@@ -592,7 +557,7 @@ WX_FUNC_ARGRANGE_START(sizer_replace, 3, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(sizer_setdimension, 5, Nil)
+WX_FUNC_START(sizer_setdimension, 5, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	WX_GETNUMBER(x)
 	WX_GETNUMBER(y)
@@ -613,17 +578,15 @@ WX_FUNC_ARGRANGE_START(sizer_setminsize, 2, 3, Nil)
 	}
 }
 
-DLIB_FUNC_START(sizer_setitemminsize, 4, Nil)
+WX_FUNC_START(sizer_setitemminsize, 4, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			WX_GETNUMBER(width)
 			WX_GETNUMBER(height)
 			sizer->SetItemMinSize(window, width, height);
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			WX_GETNUMBER(width)
 			WX_GETNUMBER(height)
 			sizer->SetItemMinSize(szr, width, height);
@@ -636,13 +599,13 @@ DLIB_FUNC_START(sizer_setitemminsize, 4, Nil)
 	}
 }
 
-DLIB_FUNC_START(sizer_setsizehints, 2, Nil)
+WX_FUNC_START(sizer_setsizehints, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	DLIB_WXGET_BASE(window, Window, window)
 	sizer->SetSizeHints(window);
 }
 
-DLIB_FUNC_START(sizer_setvirtualsizehints, 2, Nil)
+WX_FUNC_START(sizer_setvirtualsizehints, 2, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	DLIB_WXGET_BASE(window, Window, window)
 	sizer->SetVirtualSizeHints(window);
@@ -652,14 +615,12 @@ WX_FUNC_ARGRANGE_START(sizer_show, 2, 4, Nil)
 	DLIB_WXGET_BASE(sizer, Sizer, sizer)
 	if (DPTR(vm)->GetActualArg(_argNo)->Type() == DeltaValue_ExternId) {
 		util_ui32 serial_no = (util_ui32)DPTR(vm)->GetActualArg(_argNo++)->ToExternId();
-		if (DLIB_WXISBASE(Window, serial_no, window, window_wr)) {
-			wxWindow *window = (wxWindow*) window_wr->GetCastToNativeInstance();
+		if (DLIB_WXISBASE(Window, serial_no, window, window)) {
 			bool show = true, recursive = false;
 			if (n >= 3) { WX_GETBOOL_DEFINED(show) }
 			if (n >= 4) { WX_GETBOOL_DEFINED(recursive) }
 			WX_SETBOOL(sizer->Show(window, show, recursive))
-		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, sizer_wr)) {
-			wxSizer *szr = (wxSizer*) sizer_wr->GetCastToNativeInstance();
+		} else if (DLIB_WXISBASE(Sizer, serial_no, sizer, szr)) {
 			bool show = true, recursive = false;
 			if (n >= 3) { WX_GETBOOL_DEFINED(show) }
 			if (n >= 4) { WX_GETBOOL_DEFINED(recursive) }
