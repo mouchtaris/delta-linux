@@ -476,7 +476,7 @@ TEXT_END
 
 END_SEC,	// si_stage_assembly
 
-START_SEC("si_metaprogramming_examples", "Integrated Metaprogram Examples")
+START_SEC("si_metaprogramming_examples", "Examples (integrated metaprograms)")
 
 TEXT_START
 

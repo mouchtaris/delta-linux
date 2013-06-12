@@ -785,6 +785,7 @@ void Script::BuildSelf (void) {
 				break;
 			}
 		}
+
 	if (!upToDate)
 		BuildSelfImpl();
 	else
@@ -1427,7 +1428,7 @@ void Script::SetInitiatedBuildIsCompleted (Script* script, unsigned long pid, bo
 				SetBuildCompleted(false, false);
 			}
 			else
-				BuildSelf();
+				timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Script::BuildSelf, this));	//Delayed so as to release any dependency mutexes
 		else {
 			BUILD_ERROR_FAILED_WHILE_BUILDING_DEPENDENCIES(GetSource());
 			SetBuildCompleted(false, false);
@@ -2158,7 +2159,6 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSe
 unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script* initiator) {
 
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
-	
 
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 

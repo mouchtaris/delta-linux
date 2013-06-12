@@ -597,9 +597,9 @@ END_DOC,
 START_DOC("d_features", "Novel features"),
 index ["Novel features"],
 
-START_SEC("sl_integrated_metaprogramming", "Integrated Metaprogramming")
+START_SEC("sl_integrated_metaprogramming", "Integrated metaprogramming")
 
-index ["Integrated Metaprogramming"],
+index ["Integrated metaprogramming"],
 [_text [
 	"Delta introduces a metaprogramming model that treats distinct meta-code fragments as a 
 	single coherent metaprogram. In this sense, the typical unrelated and localized
