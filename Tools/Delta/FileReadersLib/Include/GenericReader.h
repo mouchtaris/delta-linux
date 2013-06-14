@@ -27,6 +27,13 @@
 	void	StoreBin (const std::string& path) const;									\
 	void	StoreText (const std::string& path) const;
 
+#define	GENERIC_READER_COMMON_LOAD_METHOD_PUBLIC_DEF									\
+	bool	LoadBin (const std::string& path);
+
+#define	GENERIC_READER_COMMON_STORE_METHODS_PUBLIC_DEF									\
+	void	StoreBin (const std::string& path) const;									\
+	void	StoreText (const std::string& path) const;
+
 //**************************
 
 #define	GENERIC_READER_COMMON_STORE_METHODS_IMPL_TEMPLATE(_prefix)						\
