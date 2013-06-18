@@ -117,6 +117,17 @@ void DeltaVirtualMachine::PrimaryError (const char* format,...) {
 
 	MAKE_ERROR_REPORT();
 
+	CreateStackTrace(MAX_DISPLAYED_CALLS_ON_ERROR);
+	std::string stackTrace = std::string("\nStack trace:\n") + GetStackTrace();
+	
+	report = uconstructstr(
+				"Runtime error: VM '%s', source '%s', line %d: %s%s", 
+				Id(),
+				*Source() ? Source() : "none",
+				Line(),
+				report.c_str(),
+				stackTrace.c_str()
+			);
 
 	if (!EXCEPTION_HANDLERS->IsPostingUnhandledExceptionError()) {
 
@@ -125,6 +136,7 @@ void DeltaVirtualMachine::PrimaryError (const char* format,...) {
 
 		DeltaValue exception(report);
 		exception.SetTypeTag(errorCode);
+
 		EXCEPTION_HANDLERS->Throw(this, exception);
 
 		errorCode.clear();
@@ -133,18 +145,8 @@ void DeltaVirtualMachine::PrimaryError (const char* format,...) {
 
 		DASSERT(!HasProducedError() && !GetPrimaryFailing() && IsErrorCauseReset());
 		SetAsPrimaryFailing();
-
-		CreateStackTrace(MAX_DISPLAYED_CALLS_ON_ERROR);
-		std::string stackTrace = std::string("\nStack trace:\n") + GetStackTrace();
 	
-		RunTimeError(
-			"Runtime error: VM '%s', source '%s', line %d: %s%s", 
-			Id(),
-			*Source() ? Source() : "none",
-			Line(),
-			report.c_str(),
-			stackTrace.c_str()
-		);
+		RunTimeError("%s", report.c_str());
 
 		InvalidateExecution();
 	}

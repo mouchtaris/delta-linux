@@ -55,10 +55,6 @@ void Execute_THROW (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 	if (DeltaValue* exception = vm->TranslateOperand(instr->DELTA_THROW_OPERAND_EXCEPTION, &temp)) {
 
 		DASSERT(exception == &temp || instr->DELTA_THROW_OPERAND_EXCEPTION.IsStorageType());
-
-		if (DPTR(vm)->GetDebugger())
-			DPTR(vm)->GetDebuggerRef().OnThrow();
-
 		EXCEPTION_HANDLERS->Throw(vm, *exception);
 	}
 	else

@@ -265,6 +265,18 @@ START_SEC("si_reports", "Reports")
 	LIST_START
 		[
 			TEXT_START
+			"Lilis, Y., Savidis, A. (2013). ", !italic "An Integrated Approach to Source Level Debugging and Compile Error Reporting in Metaprograms.",
+			" Journal of Object Technology. To appear.",
+			NL2 TEXT_END
+		],
+		[
+			TEXT_START
+			"Lilis, Y., Savidis, A., Valsamakis, Y. (2013). ", !italic "Self Model-Driven Engineering Through Metaprograms.",
+			" In Proceedings of the 17th Panhellenic Conference on Informatics (PCI 2013), 19-21 September. To appear.",
+			NL2 TEXT_END
+		],
+		[
+			TEXT_START
 			"Savidis, A., Koutsopoulos, N. (2013). ", !italic "A Programmer-Centric and Task-Optimized Object Graph Visualizer for Debuggers.",
 			" In M. Huang and W. Huang (ed.) Innovative Approaches of Data Visualization and Visual Analytics, 1st Edition, IGI Global. To appear.",
 			NL2 TEXT_END

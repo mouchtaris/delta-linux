@@ -60,6 +60,9 @@ void DeltaExceptionHandling::Throw (DeltaVirtualMachine* vm, const DeltaValue& e
 	DASSERT(Invariant()); 
 	DASSERT(!IsUnwinding());
 
+	if (DPTR(vm)->GetDebugger())
+		DPTR(vm)->GetDebuggerRef().OnThrow();
+
 	if (!IsThereAnyTrapBlock()) {
 		postingUnhandledExceptionError = true;
 		DPTR(vm)->PrimaryError(
