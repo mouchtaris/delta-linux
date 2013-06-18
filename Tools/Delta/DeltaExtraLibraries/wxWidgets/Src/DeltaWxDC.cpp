@@ -625,7 +625,7 @@ WX_FUNC_ARGRANGE_START(dc_drawellipse, 2, 5, Nil)
 		DLIB_WXGETPOINT_BASE(pt)
 		DLIB_WXGETSIZE_BASE(size)
 		dc->DrawEllipse(*pt, *size);
-	} else if (n == 4) {
+	} else if (n == 5) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
 		WX_GETNUMBER(width)
@@ -837,16 +837,16 @@ WX_FUNC_ARGRANGE_START(dc_drawrotatedtext, 4, 5, Nil)
 
 WX_FUNC_ARGRANGE_START(dc_drawroundedrectangle, 3, 6, Nil)
 	DLIB_WXGET_BASE(dc, DC, dc)
-	if (n == 2) {
+	if (n == 3) {
 		DLIB_WXGET_BASE(rect, Rect, rect)
 		WX_GETNUMBER(radius)
 		dc->DrawRoundedRectangle(*rect, radius);
-	} else if (n == 3) {
+	} else if (n == 4) {
 		DLIB_WXGETPOINT_BASE(point)
 		DLIB_WXGETSIZE_BASE(size)
 		WX_GETNUMBER(radius)
 		dc->DrawRoundedRectangle(*point, *size, radius);
-	} else if (n == 5) {
+	} else if (n == 6) {
 		WX_GETNUMBER(x)
 		WX_GETNUMBER(y)
 		WX_GETNUMBER(width)
