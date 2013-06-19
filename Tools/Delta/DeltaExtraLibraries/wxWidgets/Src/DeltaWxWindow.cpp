@@ -30,6 +30,8 @@
 
 using namespace wxWidgets;
 
+#define DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR		"wxNativeInstance"
+
 ////////////////////////////////////////////////////////////////
 
 #define WX_FUNC_DEF(name) WX_FUNC_DEF1(window, name)
@@ -197,6 +199,7 @@ WX_FUNC_DEF(shouldinheritcolours)
 WX_FUNC_DEF(show)
 WX_FUNC_DEF(thaw)
 WX_FUNC_DEF(togglewindowstyle)
+WX_FUNC_DEF(tonativeinstance)
 WX_FUNC_DEF(transferdatafromwindow)
 WX_FUNC_DEF(transferdatatowindow)
 WX_FUNC_DEF(update)
@@ -367,6 +370,7 @@ WX_FUNCS_START
 	WX_FUNC(show),
 	WX_FUNC(thaw),
 	WX_FUNC(togglewindowstyle),
+	WX_FUNC(tonativeinstance),
 	WX_FUNC(transferdatafromwindow),
 	WX_FUNC(transferdatatowindow),
 	WX_FUNC(update),
@@ -1934,6 +1938,16 @@ WX_FUNC_START(window_togglewindowstyle, 2, Nil)
 	DLIB_WXGET_BASE(window, Window, window)
 	WX_GETDEFINE(flag)
 	WX_SETBOOL(window->ToggleWindowStyle(flag));
+}
+
+WX_FUNC_START(window_tonativeinstance, 1, Nil)
+	DLIB_WXGET_BASE(window, Window, window)
+	DLIB_RETVAL_REF.FromExternId(
+		(void*) window,
+		DeltaExternId_NonCollectable,
+		(void(*)(DeltaString*, void*))0,
+		DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR
+	);
 }
 
 WX_FUNC_START(window_transferdatafromwindow, 1, Nil)
