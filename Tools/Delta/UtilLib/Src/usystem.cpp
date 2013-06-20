@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <termios.h>
 #include <fcntl.h>
+#include <signal.h>
 #endif
 
 #include <stdarg.h>
