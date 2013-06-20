@@ -50,7 +50,7 @@ static void defaultmodalmessage (const std::string& title, const std::string& ms
 }
 
 UTILLIB_FUNC void uabort (void) 
-	{ abort(); }
+	{ raise(SIGKILL); }
 
 UTILLIB_FUNC  util_ui32	 ugetpid (void)
 	{ return (util_ui32) getpid(); }

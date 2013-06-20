@@ -5,6 +5,7 @@
 //
 
 #include <assert.h>
+#include <signal.h>
 #include "DeltaPureVMFacade.h"
 #include "DeltaVirtualMachine.h"
 #include "VMInit.h"
@@ -160,6 +161,20 @@ static void ErrorDefenseCallback (const char* msg) {
 }
 
 ////////////////////////////////////////////////////////////////////
+// Signal handling to avoid post-exit actions (ui callbacks, etc.)
+// that can cause crashes.
+//
+static void ForceExit (int unused)
+	{ uabort(); }
+
+void InstallSignals (void) {
+	signal(SIGINT, &ForceExit);
+#ifdef SIGBREAK
+	signal(SIGBREAK, &ForceExit);
+#endif
+}
+
+////////////////////////////////////////////////////////////////////
 
 void DeltaPureVMFacade::Initialise (bool errorInvalidatesAll) {
 
@@ -168,6 +183,9 @@ void DeltaPureVMFacade::Initialise (bool errorInvalidatesAll) {
 	
 	initialising = true;
 	if (!initCounter++) {
+		
+		InstallSignals();	// always the first call
+
 		dinit(ErrorDefenseCallback);
 		dsetassertfunc(CPPAssertCallback);
 
