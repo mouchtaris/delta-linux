@@ -686,8 +686,8 @@ bool LanguageModule::shouldIncreaseIndentAfterNewLine (int line) const
 {
 	static const String openingBraces = _T("{([");
 	const String str = this->GetEditor()->GetLine(line).Trim();
-	return	std::find(openingBraces.begin(), openingBraces.end(), str[str.size() - 1]) != 
-				openingBraces.end();
+	return	!str.empty() &&
+			std::find(openingBraces.begin(), openingBraces.end(), str[str.size() - 1]) != openingBraces.end();
 }
 
 //**********************************************************************
