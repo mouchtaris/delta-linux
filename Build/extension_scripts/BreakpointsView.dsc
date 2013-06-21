@@ -416,9 +416,11 @@ onevent Destructor
 
 //-----------------------------------------------------------------------
 
-onevent GenerateWindow
+function GenerateWindow(parent)
 {
 	base = spw.decorate(spw::basecomponent());
+	local nativeWindow = spw::generatewindow(base, parent);
+	
 	mostbase = spw.decorate(spw::mostbasecomponent());
 	window = spw.decorate(spw::thiscomponent());
 	window.SetTitle("Breakpoints");
@@ -431,4 +433,5 @@ onevent GenerateWindow
 	window.AddInstanceCommand("/{20}--Condition...", CreateMenuUserCommand("ChangeSelectedBreakpointCondition"));
 	
 	UpdateBreakpointView();
+	return nativeWindow;
 }

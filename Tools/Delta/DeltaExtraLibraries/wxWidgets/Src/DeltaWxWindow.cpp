@@ -200,6 +200,7 @@ WX_FUNC_DEF(show)
 WX_FUNC_DEF(thaw)
 WX_FUNC_DEF(togglewindowstyle)
 WX_FUNC_DEF(tonativeinstance)
+WX_FUNC_DEF(towxinstance)
 WX_FUNC_DEF(transferdatafromwindow)
 WX_FUNC_DEF(transferdatatowindow)
 WX_FUNC_DEF(update)
@@ -215,6 +216,7 @@ WX_FUNCS_START
 	WX_FUNC(findwindowbyname),
 	WX_FUNC(getcapture),
 	WX_FUNC(getclassdefaultattributes),
+	WX_FUNC(towxinstance),
 	WX_FUNC(addchild),
 	WX_FUNC(cachebestsize),
 	WX_FUNC(capturemouse),
@@ -381,7 +383,7 @@ WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
 
-DELTALIBFUNC_DECLARECONSTS(7, uarraysize(funcs) - 7, "addchild", "warppointer")
+DELTALIBFUNC_DECLARECONSTS(8, uarraysize(funcs) - 8, "addchild", "warppointer")
 
 DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(Window, "window", EvtHandler)
 
@@ -1948,6 +1950,39 @@ WX_FUNC_START(window_tonativeinstance, 1, Nil)
 		(void(*)(DeltaString*, void*))0,
 		DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR
 	);
+}
+
+WX_FUNC_START(window_towxinstance, 1, Nil)
+	DLIB_ARG(DeltaValue*, window)
+	DeltaValueType type = DLIB_ARGVAL(window)->Type();
+	wxWindow* nativeWindow = (wxWindow*) 0;
+	if (type == DeltaValue_ExternId) {
+		std::string typeStr;
+		void* val = DLIB_ARGVAL(window)->ToExternId(typeStr);
+		if (typeStr != DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR) {
+			DPTR(vm)->PrimaryError(
+				DEFORMAT_NO_TYPE_MATCHING_FOR_EXTERNID,
+				0,
+				DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR,
+				CURR_FUNC
+			);
+			DLIB_RESET_RETURN;
+		}
+		nativeWindow = (wxWindow*) val;
+	}
+	else if (type != DeltaValue_Nil) {
+		DPTR(vm)->PrimaryError("%s(%s): %s!",
+			CURR_FUNC, _sig1.c_str(),
+			ucstringarg(
+				uconstructstr(
+					"Invalid argument passed (%s). Expected externid or nil.",
+					DPTR(vm)->GetActualArg(_argNo)->TypeStr()
+				)
+			)
+		);
+		DLIB_RESET_RETURN;
+	}
+	WX_SETOBJECT(Window, nativeWindow)
 }
 
 WX_FUNC_START(window_transferdatafromwindow, 1, Nil)

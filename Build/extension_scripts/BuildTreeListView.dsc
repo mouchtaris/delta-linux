@@ -625,11 +625,12 @@ onevent Destructor {
 
 //-----------------------------------------------------------------------
 
-onevent GenerateWindow
+function GenerateWindow(parent)
 {
-	base		= spw.decorate(spw::basecomponent());
-	mostbase	= spw.decorate(spw::mostbasecomponent());
-	window		= spw.decorate(spw::thiscomponent());
+	base 				= spw.decorate(spw::basecomponent());
+	local nativeWindow	= spw::generatewindow(base, parent);
+	mostbase			= spw.decorate(spw::mostbasecomponent());
+	window				= spw.decorate(spw::thiscomponent());
 	
 	window.SetTitle("Build Tree");
 	
@@ -645,4 +646,5 @@ onevent GenerateWindow
 	
 	local images = list_new("done", "cancel");
 	window.SetImages(images);
+	return nativeWindow;
 }

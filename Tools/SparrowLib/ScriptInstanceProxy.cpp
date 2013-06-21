@@ -23,6 +23,8 @@
 #include "uinit.h"
 #include "uerrorclass.h"
 
+#include <wx/wx.h>
+
 #define DELTA_CALL(F, ERROR_RETVAL)															\
 	do {																					\
 		if (!DPTR(vm)->HasProducedError() && DPTR(vm)->GlobalFuncExists(STRINGIFY(F))) {		\
@@ -70,7 +72,7 @@ namespace ide
 	//---- class ScriptInstanceProxy ------------------------//
 
 	ScriptInstanceProxy::ScriptInstanceProxy(const std::string& classId, DeltaVirtualMachine* vm, Component* base)
-		: classId(classId), vm(vm), base(base), baseSerial(0)
+		: classId(classId), vm(vm), base(base), window(0), baseSerial(0)
 	{
 		if (base) {
 			baseSerial = base->GetSerial();
@@ -82,8 +84,13 @@ namespace ide
 
 	ScriptInstanceProxy::~ScriptInstanceProxy()
 	{
-		if (base && IsBaseValid())
+		if (base && IsBaseValid()) {
+			if (base->GetWindow() == window)
+				window = 0;	//window belonged to parent, so it is handled there
 			base->Destroy();
+		}
+		if (window)
+			window->Destroy();
 		if (vm)
 			DDELETE(vm);
 	}
@@ -92,20 +99,18 @@ namespace ide
 
 	wxWindow* ScriptInstanceProxy::GenerateWindow(wxWindow* parent)
 	{
-		wxWindow *ret = 0;
-		if (base)
-		{
-			ret = base->GenerateWindow(parent);
-			DELTA_CALL(GenerateWindow, (wxWindow *) 0);
-		}
-		return ret;
+		PUSH_ARG(wxWindow*, parent);
+		DELTA_CALL(GenerateWindow, (wxWindow *) 0);
+		
+		to_native<wxWindow*>().convert(window, DLIB_RETVAL_PTR);
+		return window;
 	}
 
 	//-----------------------------------------------------------------------
 
 	wxWindow* ScriptInstanceProxy::GetWindow(void)
 	{
-		return base ? base->GetWindow() : 0;
+		return window;
 	}
 
 	//-----------------------------------------------------------------------

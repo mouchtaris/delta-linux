@@ -109,6 +109,7 @@ namespace ide
 		std::string	classId;
 		DeltaVirtualMachine* vm;
 		Component* base;
+		wxWindow* window;
 		uint baseSerial;
 
 		typedef std::map<std::string, DeltaValue> FunctionMapping;

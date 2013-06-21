@@ -448,6 +448,24 @@ IMPLEMENT_FUNCTOR(ClassDeclareMemberSignal, 3, "class_decl_member_signal");
 		}
 	};
 
+	//-----------------------------------------------------------------------
+	// {wxWindow|Nil} spw_generatewindow(handle, parent).
+	//
+	class GenerateWindowFunctor {
+	public:
+		bool HasValidArgCount		(uint totalArgs) const	{ return totalArgs == 2; }
+		const char* ArgCountError	(void) const			{ return "Two arguments expected"; }
+		const char* Id				(void) const			{ return "generatewindow"; }
+
+		void operator()(DeltaVirtualMachine* vm, const DeltaArgumentVec& arguments) const
+		{
+			boost::tuple<Handle, wxWindow*> args;
+			TypeConverter::DeltaToCpp(args, arguments);
+			to_delta<wxWindow*>().convert(DLIB_RETVAL_PTR, ARG(0)->GenerateWindow(ARG(1)));
+		}
+	};
+
+
 	//-------------------------------------------------------//
 	//---- class ConstructionAPI ----------------------------//
 
@@ -483,6 +501,8 @@ IMPLEMENT_FUNCTOR(ClassDeclareMemberSignal, 3, "class_decl_member_signal");
 		
 		INSTALL_LIBRARY_FUNCTOR(RegisterImageFunctor);
 		INSTALL_LIBRARY_FUNCTOR(UnregisterImageFunctor);
+
+		INSTALL_LIBRARY_FUNCTOR(GenerateWindowFunctor);
 
 		TypeConverter::Initialize();
 		DeltaScriptProxy::Initialize();

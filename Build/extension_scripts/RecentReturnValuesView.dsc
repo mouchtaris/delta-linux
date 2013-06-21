@@ -157,13 +157,15 @@ onevent Destructor
 
 //-----------------------------------------------------------------------
 
-onevent GenerateWindow
+function GenerateWindow(parent)
 {
 	base = spw.decorate(spw::basecomponent());
+	local nativeWindow = spw::generatewindow(base, parent);
 	window = spw.decorate(spw::thiscomponent());
 	window.SetTitle("Function Results");
 	window.SetColumns(list_new("Function:150", "Return Value:500"));
 	UpdateRecentFunctionResultView();
+	return nativeWindow;
 }
 
 //-----------------------------------------------------------------------

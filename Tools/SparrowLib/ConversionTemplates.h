@@ -39,6 +39,8 @@
 #include <exception>
 #include <new>
 
+#define DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR		"wxNativeInstance"
+
 namespace ide
 {
 	template <class Type>
@@ -678,6 +680,22 @@ namespace ide
 			output->SetCategory(GetTableItem<String>(table, index, "category"));
 		}
 	};
+	template <>
+	struct to_native<wxWindow*> {
+		void convert(wxWindow*& output, DeltaValue* input, uint index=0) const {
+			if (input->Type() == DeltaValue_Nil)
+				output = (wxWindow*) 0;
+			else if (input->Type() != DeltaValue_ExternId)
+				throw std::exception(("argument " + boost::lexical_cast<std::string>(index + 1)
+					+ " can not be converted to wxWindow").c_str());
+			std::string typeStr;
+			void* val = input->ToExternId(typeStr);
+			if (typeStr != DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR)
+				throw std::exception(("argument " + boost::lexical_cast<std::string>(index + 1)
+					+ " can not be converted to wxWindow (externid type is not valid)").c_str());
+			output = (wxWindow*) val;
+		}
+	};
 
 	//----------------------------
 	//-- struct to_delta
@@ -1038,6 +1056,17 @@ namespace ide
 	struct to_delta<conf::Property*> {
 		void convert(DeltaValue* output, conf::Property* input) const {
 			to_delta<const conf::Property*>().convert(output, const_cast<const conf::Property*>(input));
+		}
+	};
+	template <>
+	struct to_delta<wxWindow*> {
+		void convert(DeltaValue* output, wxWindow* input) const {
+			output->FromExternId(
+				(void*)input,
+				DeltaExternId_NonCollectable,
+				(void(*)(DeltaString*, void*))0,
+				DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR
+			);
 		}
 	};
 

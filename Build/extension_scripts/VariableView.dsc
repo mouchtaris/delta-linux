@@ -288,9 +288,10 @@ onevent Destructor
 
 //-----------------------------------------------------------------------
 
-onevent GenerateWindow
+function GenerateWindow(parent)
 {
 	base = spw.decorate(spw::basecomponent());
+	local nativeWindow = spw::generatewindow(base, parent);
 	mostbase = spw.decorate(spw::mostbasecomponent());
 	window = spw.decorate(spw::thiscomponent());
 	window.SetTitle("Variables");
@@ -299,6 +300,7 @@ onevent GenerateWindow
 	
 	local root = AppendItem(0, "", "");
 	UpdateVariableView();
+	return nativeWindow;
 }
 
 //-----------------------------------------------------------------------

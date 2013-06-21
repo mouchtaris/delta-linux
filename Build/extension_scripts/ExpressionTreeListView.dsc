@@ -641,12 +641,14 @@ onevent Destructor
 
 //-----------------------------------------------------------------------
 
-onevent GenerateWindow
+function GenerateWindow(parent)
 {
 	base = spw.decorate(spw::basecomponent());
+	local nativeWindow = spw::generatewindow(base, parent);
 	mostbase = spw.decorate(spw::mostbasecomponent());
 	window = spw.decorate(spw::thiscomponent());
 	window.SetRootVisibility(false);
+	return nativeWindow;
 }
 
 //-----------------------------------------------------------------------

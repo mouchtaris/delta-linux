@@ -192,6 +192,8 @@ Handle		spw::mostbasecomponent([Handle(component)])					Returns the last non-scr
 																		If no component is specified the calling component is assumed as target.
 Handle		spw::getcomponent(String(class) [, Number(serial])			Returns the focused IDE component given a component class id.
 String[]	spw::getcomponents()										Returns a list with the names of the components in the registry.
+wxWindow	spw::generatewindow(Handle(component), wxWindow(parent))	Generates the window for the component. To be used in the DeltaComponent implementation
+																		of the virtual GenerateWindow method for invoking the base class functionality.
 
 Property	spw::getclassproperty(String(class), String(prop_id))		Returns the target class property given a component class id.
 Property	spw::getinstanceproperty(Instance(comp), String(prop_id))	Returns the target instance property given for the given component.

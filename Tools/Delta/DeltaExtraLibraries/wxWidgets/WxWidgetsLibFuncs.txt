@@ -7356,6 +7356,7 @@ window_show									(window:window) (window:window,show:Bool) : Bool
 window_thaw									(window:window)
 window_togglewindowstyle					(window:window,style:+{Number,String}) : Bool
 window_tonativeinstance						(window:window) : ExternId
+window_towxinstance							(window:+{ExternId,Nil}) : window
 window_transferdatafromwindow				(window:window) : Bool
 window_transferdatatowindow					(window:window) : Bool
 window_update								(window:window)

@@ -115,6 +115,7 @@ namespace ide
 			Call<void (const Handle&, bool)>(this, treeview, "SetStartupResource")(GetChildByURI(startup), true);
 		
 		if (!m_duringReload) {
+			boost::mutex::scoped_lock lock(m_changeWatcherMutex);
 			CancelFileModificationWatcher();
 			m_changeWatcher = util::FileChangeWatcher::Instance().Register(
 				GetURI(),
@@ -183,11 +184,14 @@ namespace ide
 		const_cast<conf::PropertyTable&>(GetInstancePropertyTable()).Accept(derivedType + "Properties", &propertySaver);
 		SaveChildrenForComponent(root, this);
 
-		++m_internalSaveCounter;
-		wxXmlDocument doc;
-		doc.SetFileEncoding(_T("utf-8"));
-		doc.SetRoot(root.NativeType());
-		return doc.Save(uri, 2);
+		{
+			boost::mutex::scoped_lock lock(m_changeWatcherMutex);
+			++m_internalSaveCounter;
+			wxXmlDocument doc;
+			doc.SetFileEncoding(_T("utf-8"));
+			doc.SetRoot(root.NativeType());
+			return doc.Save(uri, 2);
+		}
 	}
 
 	//-----------------------------------------------------------------------
@@ -230,6 +234,7 @@ namespace ide
 
 	void Container::ComponentDestroyed(void)
 	{
+		boost::mutex::scoped_lock lock(m_changeWatcherMutex);
 		CancelFileModificationWatcher();
 		VirtualContainer::ComponentDestroyed();
 	}
@@ -335,7 +340,6 @@ namespace ide
 
 	void Container::CancelFileModificationWatcher(void)
 	{
-		boost::mutex::scoped_lock lock(m_changeWatcherMutex);
 		if (m_changeWatcher) {
 			util::FileChangeWatcher::Instance().Cancel(GetURI(), m_changeWatcher);
 			m_changeWatcher = 0;

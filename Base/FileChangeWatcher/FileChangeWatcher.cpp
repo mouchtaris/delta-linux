@@ -6,6 +6,7 @@
  */
 
 #include "FileChangeWatcher.h"
+#include <set>
 #include <windows.h>
 #include <wx/filename.h>
 
@@ -151,6 +152,7 @@ void DirectoryWatcher::WatchChanges (void)
 			break;
 		{
 			boost::recursive_mutex::scoped_lock lock(mutex);
+			std::set<const WatchInfo*> changed;
 			do {
 				pInfo = (FILE_NOTIFY_INFORMATION*)((LPBYTE)buffer + dwOffset);
 				if(	pInfo->Action == FILE_ACTION_MODIFIED			||
@@ -162,10 +164,14 @@ void DirectoryWatcher::WatchChanges (void)
 					const String name(wcFileName);
 					BOOST_FOREACH(const WatchInfo* watch, watches)
 						if (wxFileName(name).SameAs(watch->first))
-							watch->second();
+							changed.insert(watch);	// multiple notifications may occur so first gather all
+													// unique changes and then invoke their callbacks
 				}
 				dwOffset += pInfo->NextEntryOffset;
 			} while (pInfo->NextEntryOffset != 0);
+			
+			BOOST_FOREACH(const WatchInfo* watch, changed)
+				watch->second();
 		}
 	}
 	if (hFolder != INVALID_HANDLE_VALUE)

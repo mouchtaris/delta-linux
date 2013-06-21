@@ -1440,8 +1440,9 @@ function UIClass{
 		method RemoveEmptyParent(handle) {
 			if (window.GetTotalChildren(handle, false) == 0) window.Remove(handle);
 		},
-		method Init(){			
+		method Init(parentWindow){			
 			base = spw.decorate (spw::basecomponent());
+			local nativeWindow = spw::generatewindow(base, parentWindow);
 			mostbase = spw.decorate(spw::thiscomponent());
 			window = spw.decorate(spw::thiscomponent());
 			window.SetTitle("Source Browser");
@@ -1451,6 +1452,7 @@ function UIClass{
 			window.SetImages(images);
 			self.AppendRoot();
 			self.CreateVisualGroups();
+			return nativeWindow;
 		},
 		method Clear{
 			window.Clear();
@@ -1809,14 +1811,14 @@ onevent Destructor
 
 //-----------------------------------------------------------------------
 
-onevent GenerateWindow {
+function GenerateWindow(parent) {
 	config = ConfigDataSingleton();
 	config.Refresh();
 	
 	RegisterImages();
 
 	ui = UIClass();
-	ui.Init();	
+	return ui.Init(parent);
 }
 
 //-----------------------------------------------------------------------
