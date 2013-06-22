@@ -683,17 +683,20 @@ namespace ide
 	template <>
 	struct to_native<wxWindow*> {
 		void convert(wxWindow*& output, DeltaValue* input, uint index=0) const {
-			if (input->Type() == DeltaValue_Nil)
+			DeltaValueType type = input->Type();
+			if (type == DeltaValue_Nil)
 				output = (wxWindow*) 0;
-			else if (input->Type() != DeltaValue_ExternId)
+			else if (type == DeltaValue_ExternId) {
+				std::string typeStr;
+				void* val = input->ToExternId(typeStr);
+				if (typeStr != DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR)
+					throw std::exception(("argument " + boost::lexical_cast<std::string>(index + 1)
+						+ " can not be converted to wxWindow (externid type is not valid)").c_str());
+				output = (wxWindow*) val;
+			}
+			else
 				throw std::exception(("argument " + boost::lexical_cast<std::string>(index + 1)
-					+ " can not be converted to wxWindow").c_str());
-			std::string typeStr;
-			void* val = input->ToExternId(typeStr);
-			if (typeStr != DLIB_WX_WINDOW_NATIVE_INSTANCE_TYPE_STR)
-				throw std::exception(("argument " + boost::lexical_cast<std::string>(index + 1)
-					+ " can not be converted to wxWindow (externid type is not valid)").c_str());
-			output = (wxWindow*) val;
+						+ " can not be converted to wxWindow").c_str());
 		}
 	};
 
