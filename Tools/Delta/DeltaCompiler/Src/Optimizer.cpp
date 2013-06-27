@@ -375,6 +375,7 @@ void Optimizer::DoCopyPropagation (
 		if (quad.opcode == DeltaIC_GETRETVAL) {
 			DASSERT(quad.result->IsTemp());
 			ClearCarries(quad.result->sym);
+			ClearCarriedBy(quad.result->sym);
 		}
 		else
 		if (quad.opcode == DeltaIC_BLOCKEXIT)

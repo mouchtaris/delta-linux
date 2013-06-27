@@ -50,10 +50,19 @@ class Optimizer : public ucomponentdirectoryclient {
 	CarriedByMap			carriedBy;
 
 	struct ClearCarriesFunctor : public std::binary_function<DeltaSymbol*, CarriesMap*, void> {
+
 		void operator()(DeltaSymbol* var, CarriesMap* m) const {
+
 			CarriesMap::iterator i = m->find(var);
 			if (i != m->end())
 				m->erase(i);
+
+			i = m->begin(); 
+			while (i != m->end())
+				if (i->second == var)
+					i = m->erase(i);
+				else
+					++i;
 		}
 	};
 

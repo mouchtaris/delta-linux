@@ -82,8 +82,9 @@
 
 ///////////////////////////////////////////////////////////
 
-AST::TranslationVisitor::TranslationVisitor (ucomponentdirectory* directory) : ucomponentdirectoryclient(directory) {
-
+AST::TranslationVisitor::TranslationVisitor (ucomponentdirectory* directory) :
+	ucomponentdirectoryclient(directory), quasiQuoteOnErrorFunc(0)
+{
 	// Context independent handlers.
 	_H(Program,							AST_TAG_PROGRAM);
 	_H(Stmts,							AST_TAG_STMTS);
@@ -1688,16 +1689,19 @@ void AST::TranslationVisitor::Handle_QuasiQuotes (AST_VISITOR_ARGS){
 		DeltaExpr* func = translator.Translate_NamespaceLvalue(NameList(1, DELTA_STDLIB_NAMESPACE), "vmparsequotedelements", &ns);
 		DeltaExpr* code = translator.Translate_ConstValue(quoted);
 		
-		// Generate an empty OnError callback for vmparsequotedelements
-		DeltaQuadAddress quad = QUADS.NextQuadNo();
-		DeltaSymbol* funcdef = translator.Translate_Function((const char *) 0, DELTA_FUNCCLASS_PROGRAMFUNCTION);
-		translator.Translate_FunctionHeader(funcdef);
-		DELTASYMBOLS.PushAndResetTempCounter();
-		translator.Translate_CompoundBegin();
-		translator.Translate_CompoundEnd();
-		funcdef = translator.Translate_Function(funcdef, (Stmt*) 0, quad, 0);
+		if (!VISITOR->quasiQuoteOnErrorFunc) {
+			// On first quasi-quote encountered generate an empty OnError callback for vmparsequotedelements
+			// Note that this function may be reused out-of-scope.
+			DeltaQuadAddress quad = QUADS.NextQuadNo();
+			DeltaSymbol* funcdef = translator.Translate_Function((const char *) 0, DELTA_FUNCCLASS_PROGRAMFUNCTION);
+			translator.Translate_FunctionHeader(funcdef);
+			DELTASYMBOLS.PushAndResetTempCounter();
+			translator.Translate_CompoundBegin();
+			translator.Translate_CompoundEnd();
+			VISITOR->quasiQuoteOnErrorFunc = translator.Translate_Function(funcdef, (Stmt*) 0, quad, 0);
+		}
 
-		DeltaExpr* args = translator.Translate_FunctionExpresssion(funcdef);
+		DeltaExpr* args = translator.Translate_FunctionExpresssion(VISITOR->quasiQuoteOnErrorFunc);
 		DASSERT(args || COMPMESSENGER.ErrorsExist());
 		if (args)
 			args->next = code;

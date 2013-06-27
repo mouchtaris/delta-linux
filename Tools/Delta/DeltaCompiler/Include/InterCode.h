@@ -147,8 +147,13 @@ struct DeltaQuad {
 	bool				dropped;		// If dropped due to optimization.
 	void*				userData;		// Extra user-specific information.
 
-	void				MarkAsDropped (void) 
-							{ dropped = true; }
+	void				MarkAsDropped (void) {
+							DASSERT(
+								opcode != DeltaIC_FUNCRET	&&
+								opcode != DeltaIC_FUNCENTER
+							);
+							dropped = true; 
+						}
 	bool				IsDropped (void) const 
 							{ return dropped; }
 	void				MarkAsUsed (void) 

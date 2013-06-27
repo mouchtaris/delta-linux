@@ -274,13 +274,13 @@ void Translator::Translate_HandleAssignFunctionVar (DeltaSymbol* func) {
 		DPTR(funcVarExpr)->sym	= DPTR(DPTR(func)->funcAccess)->GetFunctionVar();
 		DPTR(funcVarExpr)->SetInitialised();
 
+		QUADS.Emit(DeltaIC_ASSIGN, funcExpr, NIL_EXPR, funcVarExpr);
+		DPTR(DPTR(func)->funcAccess)->SetAssignQuadNo(QUADS.CurrQuadNo());
+
 		if (!COMPOPTIONS.GetProductionMode())							// Except when we are in debug mode.
 			OPTIMIZER.ExcludeFromTempElimination(QUADS.CurrQuadNo());	// To ensure optimization will not strip it off.
 		else
 			QUADS.GetQuad(QUADS.CurrQuadNo()).MarkAsDropped();			// Else we drop it directly
-		QUADS.Emit(DeltaIC_ASSIGN, funcExpr, NIL_EXPR, funcVarExpr);
-
-		DPTR(DPTR(func)->funcAccess)->SetAssignQuadNo(QUADS.CurrQuadNo());
 	}
 }
 

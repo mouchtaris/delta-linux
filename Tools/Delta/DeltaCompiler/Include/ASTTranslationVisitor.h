@@ -198,6 +198,8 @@ class TranslationVisitor :	public ucomponentdirectoryclient,
 	typedef AST::EvaluationStack<StackValue, IsUndefFunctor> EvaluationStack;
 	EvaluationStack	evalStack;
 
+	DeltaSymbol* quasiQuoteOnErrorFunc;
+
 	/////////////////////////////////////////////////////////
 
 	public:
