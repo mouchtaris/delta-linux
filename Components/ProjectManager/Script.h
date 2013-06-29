@@ -90,6 +90,7 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION(const HandleList, FindScriptsOfUsedByteCodeFile, (const String& fileName, uint stage));
 
 		DECLARE_EXPORTED_FUNCTION(const ScriptDependencies, GetDependencies, (void));
+		DECLARE_EXPORTED_FUNCTION(const StringList, ExtractDependencies, (void));
 		DECLARE_EXPORTED_FUNCTION(bool, IsByteCodeUpToDate, (void));
 		DECLARE_EXPORTED_FUNCTION(const std::string, GetProducedByteCodeFileFullPath, (void));
 
@@ -239,7 +240,6 @@ namespace ide
 		void								GenerateFinalLineMappings(void);
 		void								CleanStageSources (void);
 		void								DestroyStageSource (const String& uri);
-		const StringList					ExtractDependencies (void) const;
 		const ScriptPtrSet					ExtractStageDependencies (void) const;
 		bool								ResolveDependencies (
 												const StringList&	deps,

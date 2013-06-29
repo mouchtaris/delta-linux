@@ -964,6 +964,32 @@ EXPORTED_FUNCTION(Script, const ScriptDependencies, GetDependencies, (void)) {
 
 /////////////////////////////////////////////////////////////////////////
 
+EXPORTED_FUNCTION(Script, const StringList, ExtractDependencies, (void)) {
+	StringList deps;
+	{
+		boost::mutex::scoped_lock lock(s_componentCallMutex);
+		deps = Call<StringList (const String&, const String&)>(const_cast<Script*>(this), "DeltaVM", "ExtractBuildDependencies")(
+			const_cast<Script*>(this)->GetURI(), 
+			GetByteCodeLoadingPath()
+		);
+	}
+	DASSERT(deps.size() % 2 == 0);
+	std::set<String> uris;
+	for (StringList::iterator i = deps.begin(); i != deps.end(); /*empty*/)
+		if (uris.find(*i) == uris.end()) {
+			uris.insert(*i);
+			++i;	//skip uri
+			++i;	//skip status
+		}
+		else {
+			i = deps.erase(i);	//erase uri
+			i = deps.erase(i);	//erase status
+		}
+	return deps;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 bool Script::ResolveDependencies (
 		const StringList&	deps,
 		ScriptPtrSet*		outDeps,
@@ -1859,32 +1885,6 @@ void Script::DestroyStageSource (const String& uri) {
 	Handle child = GetChildByURI(uri);
 	Call<bool (const Handle&)>(this, treeview, "RemoveComponent")(child);
 	child->Destroy();
-}
-
-/////////////////////////////////////////////////////////////////////////
-
-const StringList Script::ExtractDependencies (void) const {
-	StringList deps;
-	{
-		boost::mutex::scoped_lock lock(s_componentCallMutex);
-		deps = Call<StringList (const String&, const String&)>(const_cast<Script*>(this), "DeltaVM", "ExtractBuildDependencies")(
-			const_cast<Script*>(this)->GetURI(), 
-			GetByteCodeLoadingPath()
-		);
-	}
-	DASSERT(deps.size() % 2 == 0);
-	std::set<String> uris;
-	for (StringList::iterator i = deps.begin(); i != deps.end(); /*empty*/)
-		if (uris.find(*i) == uris.end()) {
-			uris.insert(*i);
-			++i;	//skip uri
-			++i;	//skip status
-		}
-		else {
-			i = deps.erase(i);	//erase uri
-			i = deps.erase(i);	//erase status
-		}
-	return deps;
 }
 
 /////////////////////////////////////////////////////////////////////////
