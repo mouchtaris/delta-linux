@@ -436,8 +436,9 @@ bool DeltaExceptionHandling::UnwindDeltaFunction (void) {
 	// execution loop.
 
 	if (IsDeltaCodeContext(currContext) && (prevVM != currVM)) {
-		DASSERT(!shouldUnwind);					// It is forced to exit.
-		RETURN_STOP_UNWINDING;					// Cause it to exit current execution loop.
+		DASSERT(!shouldUnwind);								// It is forced to exit.
+		DPTR(currVM)->ForceCompleteExecutionByException();	// Necessary since pc could gain a return addr by the return sequence
+		RETURN_STOP_UNWINDING;								// Cause it to exit current execution loop.
 	}
 	else
 		RETURN_CONTINUE_UNWINDING;				// Continue unwinding loop.
