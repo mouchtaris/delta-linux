@@ -507,14 +507,14 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    56,    56,    72,    73,    76,    79,    80,    83,    84,
-      87,    88,    91,    92,    95,    97,    98,   101,   102,   105,
-     106,   109,   110,   111,   114,   115,   116,   117,   118,   119,
-     122,   125,   126,   127,   130,   133,   134,   137,   140,   141,
-     142,   145,   146,   149,   150,   153,   156,   157,   158,   161,
-     164,   165,   168,   169,   172,   173,   176,   177,   178,   181,
-     184,   189,   194,   197,   200,   205,   210,   213,   216,   219,
-     222,   225,   228,   231,   239
+       0,    56,    56,    73,    74,    77,    80,    81,    84,    85,
+      88,    89,    92,    93,    96,    98,    99,   102,   103,   106,
+     107,   110,   111,   112,   115,   116,   117,   118,   119,   120,
+     123,   126,   127,   128,   131,   134,   135,   138,   141,   142,
+     143,   146,   147,   150,   151,   154,   157,   158,   159,   162,
+     165,   166,   169,   170,   173,   174,   177,   178,   179,   182,
+     185,   190,   195,   198,   201,   206,   211,   214,   217,   220,
+     223,   226,   229,   232,   240
 };
 #endif
 
@@ -1525,6 +1525,7 @@ yyreduce:
 																				*return_value = (yyvsp[(2) - (3)].element)->GetContent();
 																				DPTR((*return_value))->Set(index, value);
 
+																				DDELETE((yyvsp[(2) - (3)].element)->GetName());
 																				DDELETE((yyvsp[(2) - (3)].element));
 																			}
 																		;}
@@ -1533,399 +1534,399 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 72 "XmlParser.y"
+#line 73 "XmlParser.y"
     { ;}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 73 "XmlParser.y"
+#line 74 "XmlParser.y"
     { ;}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 76 "XmlParser.y"
+#line 77 "XmlParser.y"
     { ;}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 79 "XmlParser.y"
+#line 80 "XmlParser.y"
     { ;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 80 "XmlParser.y"
+#line 81 "XmlParser.y"
     { ;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 83 "XmlParser.y"
+#line 84 "XmlParser.y"
     { ;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 84 "XmlParser.y"
+#line 85 "XmlParser.y"
     { ;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 87 "XmlParser.y"
+#line 88 "XmlParser.y"
     { ;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 88 "XmlParser.y"
+#line 89 "XmlParser.y"
     { ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 91 "XmlParser.y"
+#line 92 "XmlParser.y"
     { ;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 92 "XmlParser.y"
+#line 93 "XmlParser.y"
     { ;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 95 "XmlParser.y"
+#line 96 "XmlParser.y"
     { ;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 97 "XmlParser.y"
+#line 98 "XmlParser.y"
     { ;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 98 "XmlParser.y"
+#line 99 "XmlParser.y"
     { ;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 101 "XmlParser.y"
+#line 102 "XmlParser.y"
     { ;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 102 "XmlParser.y"
+#line 103 "XmlParser.y"
     { ;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 105 "XmlParser.y"
+#line 106 "XmlParser.y"
     { ;}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 106 "XmlParser.y"
+#line 107 "XmlParser.y"
     { ;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 109 "XmlParser.y"
+#line 110 "XmlParser.y"
     { ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 110 "XmlParser.y"
+#line 111 "XmlParser.y"
     { ;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 111 "XmlParser.y"
+#line 112 "XmlParser.y"
     { ;}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 114 "XmlParser.y"
+#line 115 "XmlParser.y"
     { ;}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 115 "XmlParser.y"
+#line 116 "XmlParser.y"
     { ;}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 116 "XmlParser.y"
+#line 117 "XmlParser.y"
     { ;}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 117 "XmlParser.y"
+#line 118 "XmlParser.y"
     { ;}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 118 "XmlParser.y"
+#line 119 "XmlParser.y"
     { ;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 119 "XmlParser.y"
+#line 120 "XmlParser.y"
     { ;}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 122 "XmlParser.y"
+#line 123 "XmlParser.y"
     { ;}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 125 "XmlParser.y"
+#line 126 "XmlParser.y"
     { ;}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 126 "XmlParser.y"
+#line 127 "XmlParser.y"
     { ;}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 127 "XmlParser.y"
+#line 128 "XmlParser.y"
     { ;}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 130 "XmlParser.y"
+#line 131 "XmlParser.y"
     { ;}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 133 "XmlParser.y"
+#line 134 "XmlParser.y"
     { ;}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 134 "XmlParser.y"
+#line 135 "XmlParser.y"
     { ;}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 137 "XmlParser.y"
+#line 138 "XmlParser.y"
     { ;}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 140 "XmlParser.y"
+#line 141 "XmlParser.y"
     { ;}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 141 "XmlParser.y"
+#line 142 "XmlParser.y"
     { ;}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 142 "XmlParser.y"
+#line 143 "XmlParser.y"
     { ;}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 145 "XmlParser.y"
+#line 146 "XmlParser.y"
     { ;}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 146 "XmlParser.y"
+#line 147 "XmlParser.y"
     { ;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 149 "XmlParser.y"
+#line 150 "XmlParser.y"
     { ;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 150 "XmlParser.y"
+#line 151 "XmlParser.y"
     { ;}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 153 "XmlParser.y"
+#line 154 "XmlParser.y"
     { ;}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 156 "XmlParser.y"
+#line 157 "XmlParser.y"
     { ;}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 157 "XmlParser.y"
+#line 158 "XmlParser.y"
     { ;}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 158 "XmlParser.y"
+#line 159 "XmlParser.y"
     { ;}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 161 "XmlParser.y"
+#line 162 "XmlParser.y"
     { ;}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 164 "XmlParser.y"
+#line 165 "XmlParser.y"
     { ;}
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 165 "XmlParser.y"
+#line 166 "XmlParser.y"
     { ;}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 168 "XmlParser.y"
+#line 169 "XmlParser.y"
     { ;}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 169 "XmlParser.y"
+#line 170 "XmlParser.y"
     { ;}
     break;
 
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 172 "XmlParser.y"
+#line 173 "XmlParser.y"
     { ;}
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 173 "XmlParser.y"
+#line 174 "XmlParser.y"
     { ;}
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 176 "XmlParser.y"
+#line 177 "XmlParser.y"
     { ;}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 177 "XmlParser.y"
+#line 178 "XmlParser.y"
     { ;}
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 178 "XmlParser.y"
+#line 179 "XmlParser.y"
     { ;}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 181 "XmlParser.y"
+#line 182 "XmlParser.y"
     {
 																			(yyval.element) = Manage_ElementWithContent((yyvsp[(1) - (3)].tag), (yyvsp[(2) - (3)].proto), (yyvsp[(3) - (3)].strValue));
 																		;}
@@ -1934,7 +1935,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 184 "XmlParser.y"
+#line 185 "XmlParser.y"
     {
 																			(yyval.element) = Manage_ElementWithoutContent((yyvsp[(1) - (1)].tag));
 																		;}
@@ -1943,7 +1944,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 189 "XmlParser.y"
+#line 190 "XmlParser.y"
     {
 																			(yyval.tag) = Manage_Stag((yyvsp[(2) - (4)].strValue), (yyvsp[(3) - (4)].tag));
 																		;}
@@ -1952,7 +1953,7 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 194 "XmlParser.y"
+#line 195 "XmlParser.y"
     {
 																			(yyval.tag) = Manage_Attlist((yyvsp[(2) - (5)].strValue), (yyvsp[(4) - (5)].strValue), (yyvsp[(5) - (5)].tag));
 																		;}
@@ -1961,7 +1962,7 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 197 "XmlParser.y"
+#line 198 "XmlParser.y"
     {
 																			(yyval.tag) = Manage_AttlistSpaces();
 																		;}
@@ -1970,7 +1971,7 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 200 "XmlParser.y"
+#line 201 "XmlParser.y"
     {
 																			(yyval.tag) = Manage_AttlistNothing();
 																		;}
@@ -1979,7 +1980,7 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 205 "XmlParser.y"
+#line 206 "XmlParser.y"
     {
 																			(yyval.strValue) = (yyvsp[(2) - (3)].strValue);
 																		;}
@@ -1988,7 +1989,7 @@ yyreduce:
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 210 "XmlParser.y"
+#line 211 "XmlParser.y"
     {
 																			(yyval.proto) = Manage_ContentElement((yyvsp[(1) - (2)].proto), (yyvsp[(2) - (2)].element));
 																		;}
@@ -1997,7 +1998,7 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 213 "XmlParser.y"
+#line 214 "XmlParser.y"
     {
 																			(yyval.proto) = Manage_ContentCdsect((yyvsp[(1) - (2)].proto), (yyvsp[(2) - (2)].strValue));
 																		;}
@@ -2006,7 +2007,7 @@ yyreduce:
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 216 "XmlParser.y"
+#line 217 "XmlParser.y"
     {
 																			(yyval.proto) = (yyvsp[(1) - (2)].proto);
 																		;}
@@ -2015,7 +2016,7 @@ yyreduce:
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 219 "XmlParser.y"
+#line 220 "XmlParser.y"
     {
 																			(yyval.proto) = (yyvsp[(1) - (2)].proto);
 																		;}
@@ -2024,7 +2025,7 @@ yyreduce:
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 222 "XmlParser.y"
+#line 223 "XmlParser.y"
     {
 																			(yyval.proto) = Manage_ContentChardata((yyvsp[(1) - (2)].proto), (yyvsp[(2) - (2)].strValue));
 																		;}
@@ -2033,7 +2034,7 @@ yyreduce:
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 225 "XmlParser.y"
+#line 226 "XmlParser.y"
     {
 																			(yyval.proto) = (yyvsp[(1) - (2)].proto);
 																		;}
@@ -2042,7 +2043,7 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 228 "XmlParser.y"
+#line 229 "XmlParser.y"
     {
 																			(yyval.proto) = Manage_ContentNothing();
 																		;}
@@ -2051,7 +2052,7 @@ yyreduce:
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 231 "XmlParser.y"
+#line 232 "XmlParser.y"
     {
 																			if ((yyvsp[(1) - (2)].proto) != NULL) {
 																				DPTR((yyvsp[(1) - (2)].proto))->DecRefCounter((DeltaValue*) 0);
@@ -2063,7 +2064,7 @@ yyreduce:
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 239 "XmlParser.y"
+#line 240 "XmlParser.y"
     {
 																			(yyval.tag) = Manage_EmptyElemTag((yyvsp[(2) - (4)].strValue), (yyvsp[(3) - (4)].tag));
 																		;}
@@ -2072,7 +2073,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2076 "XmlParser.tab.c"
+#line 2077 "XmlParser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2284,7 +2285,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 244 "XmlParser.y"
+#line 245 "XmlParser.y"
 
 
 /*

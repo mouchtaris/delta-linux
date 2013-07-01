@@ -64,6 +64,7 @@ document:		prolog element MiscList									{
 																				*return_value = $2->GetContent();
 																				DPTR((*return_value))->Set(index, value);
 
+																				DDELETE($2->GetName());
 																				DDELETE($2);
 																			}
 																		}
