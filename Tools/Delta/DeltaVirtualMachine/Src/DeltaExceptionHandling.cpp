@@ -23,6 +23,9 @@ DeltaExceptionHandling*	DeltaExceptionHandling::singletonPtr = (DeltaExceptionHa
 USINGLETON_APISTYLE_IMPL_PUBLICSTDMETHODS(DeltaExceptionHandling)
 USINGLETON_APISTYLE_IMPL_GETTER(DeltaExceptionHandling)
 
+#define	RETURN_CONTINUE_UNWINDING	return true
+#define	RETURN_STOP_UNWINDING		return false
+
 //////////////////////////////////////////////////////////////
 
 DeltaExceptionHandling::DeltaExceptionHandling (void) : 
@@ -367,16 +370,20 @@ bool DeltaExceptionHandling::PerformUnwindingTests (DeltaVirtualMachine* vm) {
 	
 	DASSERT(Invariant()); 
 
-	if (IsUnwinding() && ShouldUnwind())
-		Unwind(vm);
+	if (!IsUnwinding())
+		{ DPTR(vm)->ResetUnwindingChecker(); return true; }
+	else {
 
-	if (IsUnwinding() && !ShouldUnwind()) {				// Signifies request to break execution loop.
-		SwitchShouldUnwind();							// Next time we do unwind.
-		DPTR(vm)->ForceCompleteExecutionByException();	// Done with this VM
-		return false;
+		if (IsUnwinding() && ShouldUnwind())
+			Unwind(vm);
+
+		if (IsUnwinding() && !ShouldUnwind()) {				// Signifies request to break execution loop.
+			SwitchShouldUnwind();							// Next time we do unwind.
+			return false;
+		}
+		else
+			return true;
 	}
-	else
-		return true;
 }
 
 //////////////////////////////////////////////////////////////
@@ -415,6 +422,9 @@ void DeltaExceptionHandling::Trap (void) {
 
 bool DeltaExceptionHandling::UnwindDeltaFunction (void) {
 
+	DASSERT(!Empty() && currVM);
+	DeltaVirtualMachine* prevVM = currVM;
+
 	DPTR(currVM)->DoExitAllBlocksOfCurrentContext();
 
 	if (DPTR(currVM)->GetDebugger())
@@ -422,19 +432,22 @@ bool DeltaExceptionHandling::UnwindDeltaFunction (void) {
 
 	DPTR(currVM)->DoLocalFuncReturnCode();		// Will lead to a PopFunc() and possible change of curr vm.
 
-	if (!Empty()							&& 
-		IsDeltaCodeContext(currContext)		&& 
-		DPTR(currVM)->PCAtNormalProgramEnd()) {		// Was it a nested execution loop ?
-		DASSERT(!shouldUnwind);						// It is forced to exit.
-		return false;								// Cause it to exit current execution loop.
-	}
+	// If unwinding a cross-vm call we need to exit explcitly its
+	// execution loop.
 
-	return true;								// Continue unwinding loop.
+	if (IsDeltaCodeContext(currContext) && (prevVM != currVM)) {
+		DASSERT(!shouldUnwind);					// It is forced to exit.
+		RETURN_STOP_UNWINDING;					// Cause it to exit current execution loop.
+	}
+	else
+		RETURN_CONTINUE_UNWINDING;				// Continue unwinding loop.
 }
 
 //////////////////////////////////////////////////////////////
 
 bool DeltaExceptionHandling::UnwindLibraryFunction (void) {
+
+	DASSERT(!Empty() && currVM && !shouldUnwind);
 
 	if (DPTR(currVM)->GetDebugger())
 		DPTR(currVM)->GetDebuggerRef().OnStackUnWindingLibraryFunction();
@@ -445,13 +458,8 @@ bool DeltaExceptionHandling::UnwindLibraryFunction (void) {
 	DASSERT(currFunc);
 	DPTR(currVM)->DoExternFuncReturnCode((DeltaLibraryFunc) currFunc);	// Will lead to a PopFunc().
 
-	if (!Empty()) {
-		DASSERT(!shouldUnwind); 
-		shouldUnwind = isUnwindingFromNativeCode;	// Should unwind the next time unwinding checks are performed?
-		return false;								// Break unwinding loop.
-	}
-
-	return true;
+	shouldUnwind = isUnwindingFromNativeCode;	// Should unwind the next time unwinding checks are performed?
+	RETURN_STOP_UNWINDING;						// Break unwinding loop.
 }
 
 //////////////////////////////////////////////////////////////
@@ -464,30 +472,29 @@ bool DeltaExceptionHandling::UnwindGlobalCode (void) {
 		DPTR(currVM)->GetDebuggerRef().OnStackUnWindingGlobalCode();
 
 	// When unwinding a global context there is no way to 
-	// continue its execution thus PROGRAMEND will not be manually. 
+	// continue its execution thus PROGRAMEND is not manually invoked. 
 	// This is why we need to manually invoke PopFunc() below.
 
 	PopFunc();
 
-	// If it is not the bottom call then we may either come from
-	// a lib function (like vmrun) or an explicit invocation from
-	// within native code.
+	// We may either come from a lib function (like vmrun) or an 
+	// explicit invocation from within native code.
 
-	DASSERT(Empty() || (currContext == InLibraryFunction || currContext == InNativeCode));
-
-	return true;	// Never cause breaking of the unwinding loop.
+	DASSERT(currContext == InLibraryFunction || currContext == InNativeCode);
+	RETURN_CONTINUE_UNWINDING;		// Never cause breaking of the unwinding loop.
 }
 
 //////////////////////////////////////////////////////////////
 
 bool DeltaExceptionHandling::UnwindNativeCode (void) {
 	
+	DASSERT(!shouldUnwind);	
+
 	PopFunc();
 	--expectedNativeTrapDisableCalls;
 
-	DASSERT(!shouldUnwind);	
 	shouldUnwind = isUnwindingFromNativeCode;	// If native code on top of the lib func.
-	return false;								// Always breaking the unwinding loop.
+	RETURN_STOP_UNWINDING;						// Always breaking the unwinding loop.
 }
 
 //////////////////////////////////////////////////////////////
