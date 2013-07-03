@@ -157,14 +157,26 @@ class DVM_CLASS CompilerIFace {
 
 //-----------------------------------------------------------------------
 
-template<class T> class DefaultCompilerIFace : public CompilerIFace {
+#define	DEFAULT_COMPILERIFACE_INIT_IMPL(_name)							\
+struct _name {															\
+	static void Initialise (void) { DeltaCompilerInit::Initialise(); }	\
+	static void CleanUp (void) { DeltaCompilerInit::CleanUp(); }		\
+};
+
+#define EMPTY_COMPILERIFACE_INIT_IMPL(_name)							\
+struct _name {															\
+	static void Initialise (void) {}									\
+	static void CleanUp (void) {}										\
+};
+
+template<class T, class C> class DefaultCompilerIFace : public CompilerIFace {
 	private:
 	T* impl;
 
 	static CompilerIFace*			New (void) { return DNEWCLASS(DefaultCompilerIFace, (DNEW(T))); }
 	static void						Delete (CompilerIFace* instance) { DDELETE(instance); }
-	static void						Initialise (void) { DeltaCompilerInit::Initialise(); }
-	static void						CleanUp (void) { DeltaCompilerInit::CleanUp(); }
+	static void						Initialise (void) { C::Initialise(); }
+	static void						CleanUp (void) { C::CleanUp(); }
 	
 	DefaultCompilerIFace (T* impl) : impl(impl) {}
 	~DefaultCompilerIFace () { DDELETE(impl); }
@@ -203,7 +215,7 @@ template<class T> class DefaultCompilerIFace : public CompilerIFace {
 	static void						Install (void) { CompilerIFace::Install(New, Delete, Initialise, CleanUp); }
 };
 
-#define INSTALL_DEFAULT_COMPILERIFACE(class)	DefaultCompilerIFace<class>::Install()
+#define INSTALL_DEFAULT_COMPILERIFACE(class, init)	DefaultCompilerIFace<class, init>::Install()
 
 ///////////////////////////////////////////////////////////////////////////
 

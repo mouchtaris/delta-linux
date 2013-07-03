@@ -38,7 +38,8 @@ class DVM_CLASS DeltaExceptionHandling {
 		InLibraryFunction	=	0,
 		InDeltaFunction		=	1,
 		InDeltaGlobalCode	=	2,
-		InNativeCode		=	3
+		InNativeCode		=	3,
+		InExecutionLoop		=	4
 	};
 
 	/////////////////////////////////////////////////////////////////
@@ -48,7 +49,7 @@ class DVM_CLASS DeltaExceptionHandling {
 	// We keep two stacks, in accordance to the global call-stack.
 	// The trap-blocks of each function call and the respective VMs,
 	// with a value indicating if the context is a library function, a program 
-	// function or global porgram context.
+	// function or global program context.
 	//
 	union ContextInfo {
 		
@@ -94,6 +95,8 @@ class DVM_CLASS DeltaExceptionHandling {
 	
 	bool					IsValidCallContext (const CallContext& c) const;
 
+	bool					IsExecutionLoop (Context context) const
+								{ return context == InExecutionLoop; }
 	bool					IsNativeTryBlockContext (Context context) const
 								{ return context == InNativeCode; }
 	bool					IsLibraryFunctionContext (Context context) const
@@ -121,6 +124,9 @@ class DVM_CLASS DeltaExceptionHandling {
 	/////////////////////////////////////////////////////////////////
 
 	public:
+	void					PushExecutionLoop (DeltaVirtualMachine* vm)
+								{ PushFunc(vm, InExecutionLoop); }
+	void					PopExecutionLoop (DeltaVirtualMachine* vm);
 	void					PushFunc (DeltaVirtualMachine* vm, Context context);
 	void					PushFunc (DeltaVirtualMachine* vm, Context context, util_ui32 pc);
 	void					PushFunc (DeltaVirtualMachine* vm, Context context, DeltaLibraryFunc func);

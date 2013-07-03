@@ -3,11 +3,17 @@
 // Revised June 2008 using new facades.
 //
 #include "DDebug.h"
+#include "VMCompLib.h"
 #include "DeltaVirtualMachine.h"
 #include "uerrorclass.h"
 #include "DeltaPureVMFacade.h"
 #include "DeltaExceptionHandling.h"
 #include "DeltaDebugDynamicActivator.h"
+#include "DeltaCompilerInit.h"
+#include "DeltaMetaCompiler.h"
+#include "BuildDependencies.h"
+#include "MetaCompilerLib.h"
+#include "Unparse.h"
 #include "usystem.h"
 #include "ufiles.h"
 
@@ -31,28 +37,7 @@ static void onerror (const char* error) {
 #define	DEBUGGER_BACKEND	"DebuggerBackend.dll"
 #endif
 
-
-struct A { 
-	virtual void f (void){ printf("A\n"); }	// Virtual method
-	A(void){} 
-};
-struct B : public A { 
-	void f (void) { printf("B\n"); }		// Refined version
-	B(void){} 
-};
-struct C : public B { 
-	void f (void) { printf("C\n"); }		// Refined version
-	C(void){} 
-};
-
-static void f (void) {
-	C* c = new C;
-	c->f();
-	A* a = c;
-	a->f();
-	a->A::A();
-	a->f();
-}
+EMPTY_COMPILERIFACE_INIT_IMPL(NoCompilerInit)
 
 ///////////////////////////////////////////
 
@@ -64,6 +49,9 @@ int main (int argc, char* argv[]) {
 	DeltaPureVMFacade::Initialise();
 	dseterrorcallback(onerror);
 	
+	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler, NoCompilerInit);
+	INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
+
 	DeltaDebugDynamicActivator::GetSingleton().AddLibrary(
 		DEBUGGER_COMMON, DELTA_DEBUG_DYNAMIC_ACTIVATOR_NO_INIT, DELTA_DEBUG_DYNAMIC_ACTIVATOR_NO_CLEANUP
 	);
@@ -75,6 +63,9 @@ int main (int argc, char* argv[]) {
 	DeltaVirtualMachine* vm = DNEWCLASS(DeltaVirtualMachine, ("test"));
 	util_ui32 serialNo = vm->GetSerialNo();
 
+	Unparse_SingletonCreate();
+	Install_DeltaMetaCompiler_Lib();
+
 	if (DPTR(vm)->Load(TEST_FILE))
 		DPTR(vm)->Run();
 
@@ -85,7 +76,12 @@ int main (int argc, char* argv[]) {
 
 	if (ValidatableHandler::Validate(vm, serialNo))
 		DDELETE(vm);
+
+	Unparse_SingletonDestroy();
+	CleanUp_DeltaMetaCompiler_Lib();
+
 	DeltaPureVMFacade::WriteProfileReport("ProfilerReport.txt");
 	DeltaPureVMFacade::CleanUp();
+
 	return 0;
 }

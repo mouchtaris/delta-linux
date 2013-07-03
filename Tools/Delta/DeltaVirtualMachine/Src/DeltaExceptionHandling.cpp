@@ -84,9 +84,19 @@ void DeltaExceptionHandling::Throw (DeltaVirtualMachine* vm, const DeltaValue& e
 
 //////////////////////////////////////////////////////////////
 
+void DeltaExceptionHandling::PopExecutionLoop (DeltaVirtualMachine* vm) {
+
+	CallContext& call(callStack.front());
+	DASSERT(call.first == vm && call.second == InExecutionLoop);
+
+	PopFunc();
+}
+
+//////////////////////////////////////////////////////////////
+
 void DeltaExceptionHandling::PushFunc (DeltaVirtualMachine* vm, Context context) {
 
-	DASSERT(Invariant() && (context == InDeltaGlobalCode || context == InNativeCode));
+	DASSERT(Invariant() && (context == InDeltaGlobalCode || context == InNativeCode || context == InExecutionLoop));
 	DASSERT(vm || context == InNativeCode);
 	DASSERT(context != InNativeCode || callStack.empty() || callStack.front().second != InNativeCode);
 
@@ -133,7 +143,10 @@ void DeltaExceptionHandling::PushFunc (DeltaVirtualMachine* vm, Context context,
 //////////////////////////////////////////////////////////////
 
 bool DeltaExceptionHandling::IsValidCallContext (const CallContext& c) const {
-	return	(	c.second == InNativeCode		&& 
+	return	(	c.second == InExecutionLoop		&& 
+				c.first && c.third.IsEmpty()	)								||
+
+			(	c.second == InNativeCode		&& 
 				!c.first && c.third.IsEmpty()	)								||
 
 			(	(IsDeltaCodeContext(c.second) || c.second == InLibraryFunction) && 
@@ -214,19 +227,23 @@ void DeltaExceptionHandling::PopFunc (void) {
 	trapBlockStack.pop_front();
 	callStack.pop_front();
 
-	if (!trapBlockStack.empty()) {
+	if (!trapBlockStack.empty()) {	// only at global code this is empty
+
+		DASSERT(IsValidCallContext(callStack.front()));
+
 		currList	= trapBlockStack.front();
-		currVM		= callStack.front().first;
 		currContext = callStack.front().second;
+		currVM		= callStack.front().first;
+
 		if (currContext == InLibraryFunction)
 			currFunc = callStack.front().third.func;
 		else
 			unullify(currFunc);
-		DASSERT(IsValidCallContext(callStack.front()));
 	}
-	else {
-		unullify(currList);
+	else {	// gracefull program end only
+		DASSERT(callStack.empty());
 		unullify(currVM);
+		unullify(currList);
 		unullify(currFunc);
 		currContext	= InDeltaGlobalCode;
 	}
@@ -432,16 +449,16 @@ bool DeltaExceptionHandling::UnwindDeltaFunction (void) {
 
 	DPTR(currVM)->DoLocalFuncReturnCode();		// Will lead to a PopFunc() and possible change of curr vm.
 
-	// If unwinding a cross-vm call we need to exit explcitly its
-	// execution loop.
-
-	if (IsDeltaCodeContext(currContext) && (prevVM != currVM)) {
-		DASSERT(!shouldUnwind);								// It is forced to exit.
-		DPTR(currVM)->ForceCompleteExecutionByException();	// Necessary since pc could gain a return addr by the return sequence
-		RETURN_STOP_UNWINDING;								// Cause it to exit current execution loop.
+	// Bteween cross-vm calls or nested loops; we need to exit
+	// the execution loop
+	if (IsExecutionLoop(currContext)) {
+		DPTR(currVM)->ForceCompleteExecutionByException();
+		RETURN_STOP_UNWINDING;
 	}
-	else
-		RETURN_CONTINUE_UNWINDING;				// Continue unwinding loop.
+	else {
+		DASSERT(IsDeltaCodeContext(currContext) && prevVM == currVM);
+		RETURN_CONTINUE_UNWINDING;
+	}
 }
 
 //////////////////////////////////////////////////////////////
@@ -479,7 +496,7 @@ bool DeltaExceptionHandling::UnwindGlobalCode (void) {
 	PopFunc();
 
 	// We may either come from a lib function (like vmrun) or an 
-	// explicit invocation from within native code.
+	// explicit vm invocation from within native code.
 
 	DASSERT(currContext == InLibraryFunction || currContext == InNativeCode);
 	RETURN_CONTINUE_UNWINDING;		// Never cause breaking of the unwinding loop.
@@ -507,7 +524,12 @@ bool DeltaExceptionHandling::UnwindNativeCode (void) {
 
 void DeltaExceptionHandling::Unwind (DeltaVirtualMachine* caller) {
 
-	DASSERT(Invariant() && IsUnwinding() && !callStack.empty());
+	DASSERT(
+		Invariant()			&& 
+		IsUnwinding()		&& 
+		!callStack.empty()	&&
+		callStack.front().second != InExecutionLoop
+	);
 
 	shouldUnwind				= false;
 	isUnwindingFromNativeCode	= !IsDeltaCodeContext(callStack.front().second);
@@ -527,6 +549,7 @@ void DeltaExceptionHandling::Unwind (DeltaVirtualMachine* caller) {
 			case InLibraryFunction	:	if (!UnwindLibraryFunction())	return;		continue;
 			case InDeltaGlobalCode	:	if (!UnwindGlobalCode())		return;		continue;
 			case InNativeCode		:	if (!UnwindNativeCode())		return;		continue;
+			case InExecutionLoop	:	return;
 			default: DASSERT(false);
 		}
 	}

@@ -60,7 +60,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\ResourceLoaderLib\Include;..\Include;..\..\Common\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\FileReadersLib\Include;..\..\DeltaPureVMFacade\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ResourceLoaderLib\Include;..\Include;..\..\Common\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\FileReadersLib\Include;..\..\DeltaPureVMFacade\Include;..\..\DeltaCompiler\Include;..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -100,7 +100,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\ResourceLoaderLib\Include;..\Include;..\..\Common\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\FileReadersLib\Include;..\..\DeltaPureVMFacade\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ResourceLoaderLib\Include;..\Include;..\..\Common\Include;..\..\DebugLib\Include;..\..\UtilLib\Include;..\..\DeltaStdLib\Include;..\..\FileReadersLib\Include;..\..\DeltaPureVMFacade\Include;..\..\DeltaCompiler\Include;..\..\DeltaSyntaxTree\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

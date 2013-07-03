@@ -48,6 +48,8 @@ static void OnStartRequested (void)
 static void WaitStartMessage (void)
 	{ while (!execute) ; }
 
+EMPTY_COMPILERIFACE_INIT_IMPL(NoCompilerInit)
+
 /////////////////////////////////////////////////////////
 
 namespace DeltaCompilerInit {
@@ -61,7 +63,7 @@ namespace DeltaCompilerInit {
 			dinit(onError);
 			UtilPackage::Initialise();
 			Unparse_SingletonCreate();
-			INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler);						
+			INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler, NoCompilerInit);						
 			INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
 			
 			DeltaPureVMFacade::Initialise();

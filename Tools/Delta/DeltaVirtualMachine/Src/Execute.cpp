@@ -587,6 +587,7 @@ void DeltaVirtualMachine::Continue (void) {
 	SetCallingVM(this);	
 	DPTR(vmNesting)->push_front(GetSerialNo());
 	EnterExecutionLoop();
+	EXCEPTION_HANDLERS->PushExecutionLoop(this);
 	ResetUnwindingChecker();	// Always reset before normal execution.
 
 	DELTA_RECORD_VM_SERIALNO_EX(this);
@@ -631,6 +632,7 @@ void DeltaVirtualMachine::Continue (void) {
 
 	DELTA_VALIDATE_VM_SERIALNO_EX(this, DELTA_RETURN_VOID);
 	ExitExecutionLoop();
+	EXCEPTION_HANDLERS->PopExecutionLoop(this);
 }
 
 //------------------------------------------------------------------
