@@ -22,6 +22,8 @@
 #include <vector>
 #include <string>
 
+DEFAULT_COMPILERIFACE_INIT_IMPL(DefaultCompilerInit)
+
 //-------------------------------------------------------//
 //---- free functions -----------------------------------//
 
@@ -79,7 +81,7 @@ int main (int argc, char* argv[])
 		return -1;
 	}
 
-	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler);
+	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler,DefaultCompilerInit);
 	INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
 
 	DeltaPureVMFacade::Initialise();

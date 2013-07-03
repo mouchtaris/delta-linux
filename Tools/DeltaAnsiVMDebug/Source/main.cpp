@@ -45,8 +45,10 @@ static void DeltaDebuggedVirtualMachineFacadeOnEndDebuggingRequestCallback (void
 
 /////////////////////////////
 
+DEFAULT_COMPILERIFACE_INIT_IMPL(DefaultCompilerInit)
+
 static bool Initialisations (void) {
-	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler);
+	INSTALL_DEFAULT_COMPILERIFACE(DeltaMetaCompiler, DefaultCompilerInit);
 	INSTALL_DEFAULT_BUILDDEPENDENCIESIFACE(DeltaBuildDependencies);
 	DeltaPureVMFacade::Initialise(true);
 	return DeltaDebuggedVMFacade::Initialise();
