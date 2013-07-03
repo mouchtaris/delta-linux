@@ -780,9 +780,10 @@ static void dllimport_handler (DeltaVirtualMachine* vm, const char* funcName, bo
 
 		if (!*dll) {
 			DPTR(vm)->Warning(
-				"in '%s(%s,%s)': %s!",
+				"in cwd '%s' call '%s(%s,%s)': %s!",
+				ucstringarg(ugetcwd()),
 				CURR_FUNC,
-				path.c_str(), 
+				fullPath.c_str(), 
 				func.c_str(),
 				dll->GetError().c_str()
 			);
