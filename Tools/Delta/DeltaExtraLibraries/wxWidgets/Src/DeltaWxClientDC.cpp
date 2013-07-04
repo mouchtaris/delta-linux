@@ -69,6 +69,6 @@ WX_FUNC_ARGRANGE_START(clientdc_construct, 0, 1, Nil)
 		DLIB_WXGET_BASE(window, Window, win)
 		dc = new wxClientDC(win);
 	}
-	WX_SETOBJECT(ClientDC, dc)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(ClientDC, dc)
 }
 

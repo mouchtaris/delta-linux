@@ -69,5 +69,5 @@ WX_FUNC_ARGRANGE_START(paintdc_construct, 0, 1, Nil)
 		DLIB_WXGET_BASE(window, Window, win)
 		dc = new wxPaintDC(win);
 	}
-	WX_SETOBJECT(PaintDC, dc)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(PaintDC, dc)
 }

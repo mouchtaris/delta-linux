@@ -63,7 +63,7 @@ WX_FUNC_ARGRANGE_START(memorydc_construct, 0, 1, Nil)
 		DLIB_WXGET_BASE(bitmap, Bitmap, bmp)
 		dc = new wxMemoryDC(*bmp);
 	}
-	WX_SETOBJECT(MemoryDC, dc)
+	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(MemoryDC, dc)
 }
 
 WX_FUNC_START(memorydc_selectobject, 2, Nil)
