@@ -6,8 +6,13 @@
 66 "TRUE" ""
 89 "TRUE" ""
 82 "TRUE" ""
+<<<<<<< .mine
+"OperatorOverloading.dsc" 2
+=======
 55 "TRUE" ""
 "OperatorOverloading.dsc" 1
+>>>>>>> .r516
 475 "TRUE" ""
+216 "TRUE" ""
 "SubobjectTrees.dsc" 1
 18 "TRUE" ""
