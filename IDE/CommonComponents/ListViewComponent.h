@@ -106,6 +106,9 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION_(void, Clear, (void),
 			_("Clear the list"));
 
+		DECLARE_EXPORTED_FUNCTION_(void, OnItemActivated, (uint index), _("Handler for an item being activated"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnDeleteItem, (uint index), _("Handler for deleting an item"));		
+
 	protected:
 		///--- protected API
 		virtual void ComponentAddedUserCommand(const String& path, const UserCommand& cmd);

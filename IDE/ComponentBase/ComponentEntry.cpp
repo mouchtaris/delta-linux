@@ -231,13 +231,12 @@ const ComponentEntry::InstanceList ComponentEntry::GetInstances (bool includeDer
 
 //**********************************************************************
 
-Component* ComponentEntry::GetInstance (uint instanceSerial, bool includeDerivedInstances) const
+Component* ComponentEntry::GetInstance (uint instanceSerial) const
 {
-	InstanceList instances = GetInstances(includeDerivedInstances);
 	InstanceList::const_iterator iter = std::find_if(
-			instances.begin(), instances.end(), util::ptr_equal_to<Component*>(instanceSerial)
+			m_instances.begin(), m_instances.end(), util::ptr_equal_to<Component*>(instanceSerial)
 		);
-	return iter != instances.end() ? *iter : 0;
+	return iter != m_instances.end() ? *iter : 0;
 }
 
 //**********************************************************************
@@ -302,8 +301,8 @@ const conf::Property* ComponentEntry::GetProperty (const std::string& id) const
 
 //**********************************************************************
 
-bool ComponentEntry::HasInstance (uint serial, bool includeDerivedInstances) const
-	{ return !!this->GetInstance(serial, includeDerivedInstances); }
+bool ComponentEntry::HasInstance (uint serial) const
+	{ return !!this->GetInstance(serial); }
 
 bool ComponentEntry::HasInstance (Component* instance, bool includeDerivedInstances) const
 {

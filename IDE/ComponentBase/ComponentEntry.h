@@ -88,7 +88,7 @@ public:
 	//******************************************************************
 
 	const InstanceList	GetInstances (bool includeDerivedInstances = false) const;
-	Component*			GetInstance (uint instanceSerial, bool includeDerivedInstances = false) const;
+	Component*			GetInstance (uint instanceSerial) const;
 
 	Component*			GetFocusedInstance (void) const;
 	uint				GetFocusedInstanceSerial (void) const;
@@ -118,7 +118,7 @@ public:
 
 	//******************************************************************
 
-	bool HasInstance (uint serial, bool includeDerivedInstances = false) const;
+	bool HasInstance (uint serial) const;
 	bool HasInstance (Component* instance, bool includeDerivedInstances = false) const;
 	bool HasFunction (const std::string& id, bool includeBaseFunctions = true) const;
 	bool HasUserCommand (const String& path) const;

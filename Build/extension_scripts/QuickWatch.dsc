@@ -25,7 +25,6 @@ function QuickWatchWindow(window, expr) {
 	window.AddNavigationButtons();
 	
 	local treeview = spw.decorate(window.CreateContainedComponent("ExpressionTreeListView"));
-	local treeviewBase = spw.decorate(spw::mostbasecomponent(treeview));
 	treeview.SetColumns(list_new("Expression:150", "Value:400"));
 	treeview.Append(0, list_new("", ""));
 	local result = treeview.SetSingleSelectionMode(true);
@@ -37,10 +36,9 @@ function QuickWatchWindow(window, expr) {
 		watchId = treeview.InsertExpression(0, expr);
 	}
 
-	return [
+	local watch = [
 		@window : window,
 		@treeview : treeview,
-		@treeviewBase : treeviewBase,
 		@watchId : watchId,
 		@undoStack : list_new(),
 		@redoStack : list_new(),
@@ -53,13 +51,9 @@ function QuickWatchWindow(window, expr) {
 		
 		method opposite (action){
 			assert @isValidAction(action);
-			if (action.type == "expand")
-				type = "collapse";
-			else if (action.type == "collapse")
-				type = "expand";
-			else
-				assert false;
-			return [{.type : type}, {.id : action.id}];
+			if (std::isundefined(static opposites))
+				opposites = [{"expand" : "collapse"}, {"collapse" : "expand"}];
+			return [{.type : opposites[action.type]}, {.id : action.id}];
 		},
 		
 		method perform(action)
@@ -100,14 +94,16 @@ function QuickWatchWindow(window, expr) {
 		},
 
 		method EvaluateExpression(expr) {
-			@window.SetExpression(expr);
-			if (@watchId)
-				@treeview.RemoveExpression(@watchId);
-			if (expr != "")
-				@watchId = @treeview.InsertExpression(0, expr);
-			
-			@undoStack.clear();
-			@redoStack.clear();
+			if (inBreakpoint) {
+				@window.SetExpression(expr);
+				if (@watchId)
+					@treeview.RemoveExpression(@watchId);
+				if (expr != "")
+					@watchId = @treeview.InsertExpression(0, expr);
+				
+				@undoStack.clear();
+				@redoStack.clear();
+			}
 		},
 		method Refresh {
 			local children = @treeview.GetChildren(@treeview.GetRoot(), false);
@@ -127,47 +123,57 @@ function QuickWatchWindow(window, expr) {
 				@treeview.SetTextColor(watch, INVALID);
 		},
 		
-		method onExpanding(id) {
+		method onItemSelected(id) {
+			spw::basecall(@treeview, "OnItemSelected", id);
+			@window.SetDisplayedExpression(@treeview.GetFullExpression(id));
+		},
+		method onItemExpanding(id) {
+			spw::basecall(@treeview, "OnItemExpanding", id);
 			if (not @isPerformingAction)
 				@undoStack.push_front([{.type : "collapse"}, {.id : id}]);
 		},
-		method onCollapsing(id) {
+		method onItemCollapsing(id) {
+			spw::basecall(@treeview, "OnItemCollapsing", id);
 			if (not @isPerformingAction)
 				@undoStack.push_front([{.type : "expand"}, {.id : id}]);
 		},
 		
 		method onClose {
-			@undoStack.clear();
-			@redoStack.clear();
-			quickWatches[@window.serial] = nil;
-			local shell = spw.components.Shell;
-			if (shell.serial != 0)
-				shell.RemoveComponent(@window);
+			if (not @closing) {
+				@closing = true;
+				@undoStack.clear();
+				@redoStack.clear();
+				quickWatches[@window.serial] = nil;
+				local shell = spw.components.Shell;
+				if (shell.serial != 0 and @window)
+					shell.RemoveComponent(@window);
+			}
+		},
+		
+		method onAddWatch(expr) {
+			local watches = spw.components.ExpressionWatches;
+			if (watches.serial != 0)
+				watches.AddWatch(expr);
 		}
 	];
+
+	spw::inst_impl_dynamic_member_function(window, "OnBack", watch.undo, "void (void)");
+	spw::inst_impl_dynamic_member_function(window, "OnForward", watch.redo, "void (void)");
+	spw::inst_impl_dynamic_member_function(window, "OnReevaluate", watch.EvaluateExpression, "void (const String& expression)");
+	spw::inst_impl_dynamic_member_function(window, "OnAddWatch", watch.onAddWatch, "void (const String& expression)");
+	spw::inst_impl_dynamic_member_function(window, "OnExpressionChanged", watch.EvaluateExpression, "void (const String& expression)");
+	spw::inst_impl_dynamic_member_function(window, "OnViewerWidthChanged", watch.ExpandValueColumn, "void (uint width)");
+	spw::inst_impl_dynamic_member_function(window, "OnClosed", watch.onClose, "void (void)");
+
+	spw::inst_impl_dynamic_member_function(treeview, "OnItemSelected", watch.onItemSelected, "void (uint serial)");
+	spw::inst_impl_dynamic_member_function(treeview, "OnItemExpanding", watch.onItemExpanding, "void (uint serial)");
+	spw::inst_impl_dynamic_member_function(treeview, "OnCollapsing", watch.onItemCollapsing, "void (uint serial)");
+	spw::inst_impl_dynamic_member_function(treeview, "OnWidthChanged", watch.ExpandValueColumn, "void (uint width)");
+	
+	return watch;
 }
 
 //-----------------------------------------------------------------------
-
-function MatchWindow(invoker) {
-	if (local quickWatch = quickWatches[invoker.serial]) {
-		local window = quickWatch.window;
-		assert window;
-		if (invoker.class_id == window.class_id and invoker.serial == window.serial)
-			return quickWatch;
-	}
-	return nil;
-}
-
-function MatchTreeview(invoker) {
-	foreach(local quickWatch, quickWatches) {
-		local treeviewBase = quickWatch.treeviewBase;
-		assert treeviewBase;
-		if (invoker.class_id == treeviewBase.class_id and invoker.serial == treeviewBase.serial)
-			return quickWatch;
-	}
-	return nil;
-}
 
 function CloseAllQuickWatchWindows {
 	foreach(local quickWatch, quickWatches)
@@ -179,77 +185,6 @@ function CloseAllQuickWatchWindows {
 
 //-------------------------------------------------------//
 //---- Exported API -------------------------------------//
-
-onevent onQuickWatchEvaluateExpression(invoker, expr) {
-	if (inBreakpoint and local quickWatch = MatchWindow(invoker))
-		quickWatch.EvaluateExpression(expr);
-}
-
-//-----------------------------------------------------------------------
-
-onevent onQuickWatchAddWatch(invoker, expr)
-{
-	if (spw.components.ExpressionWatches and MatchWindow(invoker))
-		spw.components.ExpressionWatches.AddWatch(expr);
-}
-
-//-----------------------------------------------------------------------
-
-onevent onQuickWatchBack(invoker) {
-	if (local quickWatch = MatchWindow(invoker))
-		quickWatch.undo();
-}
-
-//-----------------------------------------------------------------------
-
-onevent onQuickWatchForward(invoker) {
-	if (local quickWatch = MatchWindow(invoker))
-		quickWatch.redo();
-}
-
-//-----------------------------------------------------------------------
-
-onevent onQuickWatchViewerWidthChanged(invoker, treeviewWidth) {
-	if (local quickWatch = MatchWindow(invoker))
-		quickWatch.ExpandValueColumn(treeviewWidth);
-}
-
-//-----------------------------------------------------------------------
-
-onevent onQuickWatchClosed(invoker) {
-	if (local quickWatch = MatchWindow(invoker))
-		quickWatch.onClose();
-}
-
-//-----------------------------------------------------------------------
-
-onevent onTreeListItemSelected(invoker, id) {
-	if (local quickWatch = MatchTreeview(invoker))
-		quickWatch.window.SetDisplayedExpression(quickWatch.treeview.GetFullExpression(id));
-}
-
-//-----------------------------------------------------------------------
-
-onevent onTreeListItemExpanding(invoker, id) {
-	if (local quickWatch = MatchTreeview(invoker))
-		quickWatch.onExpanding(id);
-}
-
-//-----------------------------------------------------------------------
-
-onevent onTreeListItemCollapsing(invoker, id) {
-	if (local quickWatch = MatchTreeview(invoker))
-		quickWatch.onCollapsing(id);
-}
-
-//-----------------------------------------------------------------------
-
-onevent onTreeListWidthChanged(invoker, treeviewWidth) {
-	if (local quickWatch = MatchTreeview(invoker))
-		quickWatch.ExpandValueColumn(treeviewWidth);
-}
-
-//-----------------------------------------------------------------------
 
 onevent onBreakpointHit(invoker, uri, line) {
 	foreach(local quickWatch, quickWatches)
@@ -311,17 +246,6 @@ onevent ClassLoad
 		"Show the Quick Watch dialog"
 	);
 
-	spw::class_decl_required_member_handler(classId, "QuickWatchReevaluate");
-	spw::class_decl_required_member_handler(classId, "QuickWatchAddWatch");
-	spw::class_decl_required_member_handler(classId, "QuickWatchBack");
-	spw::class_decl_required_member_handler(classId, "QuickWatchForward");
-	spw::class_decl_required_member_handler(classId, "QuickWatchExpressionChanged");
-	spw::class_decl_required_member_handler(classId, "QuickWatchViewerWidthChanged");
-	spw::class_decl_required_member_handler(classId, "QuickWatchClosed");
-	spw::class_decl_required_member_handler(classId, "TreeListItemSelected");
-	spw::class_decl_required_member_handler(classId, "TreeListItemExpanding");
-	spw::class_decl_required_member_handler(classId, "TreeListItemCollapsing");
-	spw::class_decl_required_member_handler(classId, "TreeListWidthChanged");
 	spw::class_decl_required_member_handler(classId, "BreakpointHit");
 	spw::class_decl_required_member_handler(classId, "DebugResumed");
 	spw::class_decl_required_member_handler(classId, "DebugStopped");
@@ -338,17 +262,6 @@ onevent Constructor
 {
 	spw::inst_impl_required_member_command(classId, "ShowDialogCmd", ShowDialog);
 
-	spw::inst_impl_required_member_handler(classId, "QuickWatchReevaluate", onQuickWatchEvaluateExpression);
-	spw::inst_impl_required_member_handler(classId, "QuickWatchAddWatch", onQuickWatchAddWatch);
-	spw::inst_impl_required_member_handler(classId, "QuickWatchBack", onQuickWatchBack);
-	spw::inst_impl_required_member_handler(classId, "QuickWatchForward", onQuickWatchForward);
-	spw::inst_impl_required_member_handler(classId, "QuickWatchExpressionChanged", onQuickWatchEvaluateExpression);
-	spw::inst_impl_required_member_handler(classId, "QuickWatchViewerWidthChanged", onQuickWatchViewerWidthChanged);
-	spw::inst_impl_required_member_handler(classId, "QuickWatchClosed", onQuickWatchClosed);
-	spw::inst_impl_required_member_handler(classId, "TreeListItemSelected", onTreeListItemSelected);
-	spw::inst_impl_required_member_handler(classId, "TreeListItemExpanding", onTreeListItemExpanding);
-	spw::inst_impl_required_member_handler(classId, "TreeListItemCollapsing", onTreeListItemCollapsing);
-	spw::inst_impl_required_member_handler(classId, "TreeListWidthChanged", onTreeListWidthChanged);
 	spw::inst_impl_required_member_handler(classId, "BreakpointHit", onBreakpointHit);
 	spw::inst_impl_required_member_handler(classId, "DebugResumed", onDebugResumed);
 	spw::inst_impl_required_member_handler(classId, "DebugStopped", onDebugStopped);

@@ -76,6 +76,8 @@ public:
 	void SetInstance (const Handle& handle);
 	void SetInstance (Component* comp);
 
+	void SetBaseCall (bool val = true);
+
 	//******************************************************************
 
 	bool Invoke (Message& result, const Buffer& args) const;

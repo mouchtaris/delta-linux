@@ -178,7 +178,7 @@ function EditorWindow(window, expr) {
 		method onClose {
 			editorWindows[@window.serial] = nil;
 			local shell = spw.components.Shell;
-			if (shell.serial != 0)
+			if (shell.serial != 0 and @window)
 				shell.RemoveComponent(@window);
 		}
 	];

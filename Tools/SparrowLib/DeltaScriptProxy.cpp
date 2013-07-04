@@ -241,19 +241,18 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::InstanceImplementDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm,
-		const std::string& classId, const std::string& funcName, DeltaValue* func, const std::string& signature, 
-		const std::string& doc)
+	bool DeltaScriptProxy::InstanceImplementDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm, Component* comp,
+		const std::string& funcName, DeltaValue* func, const std::string& signature, const std::string& doc)
 	{
-		return ImplementDynamicFunction(vm, classId, funcName, func, signature, false, doc, error);
+		return ImplementDynamicFunction(vm, comp, funcName, func, signature, false, doc, error);
 	}
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::InstanceRemoveDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm,
-		const std::string& classId, const std::string& funcName)
+	bool DeltaScriptProxy::InstanceRemoveDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm, 
+		Component* comp, const std::string& funcName)
 	{
-		return RemoveDynamicFunction(vm, classId, funcName, error);
+		return RemoveDynamicFunction(comp, funcName, error);
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -334,30 +333,31 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::InstanceImplementDynamicMemberHandler(std::string* error, DeltaVirtualMachine* vm,
-		const std::string& classId, const std::string& signal, DeltaValue* func, const std::string& doc)
+	bool DeltaScriptProxy::InstanceImplementDynamicMemberHandler(std::string* error, DeltaVirtualMachine* vm, 
+		Component* comp, const std::string& signal, DeltaValue* func, const std::string& doc)
 	{
 		const std::string funcName = signal;	//Single registration, so no need for unique id
 		if (!ImplementDynamicFunction(
-				vm, classId, funcName, func,
+				vm, comp, funcName, func,
 				ComponentSignalRegistry::Instance().GetSignal(signal).GetSignature(), true,
 				doc, error
 			)
 		)
 			return false;
 		ComponentSignalRegistry::Instance().ConnectDynamicSlot(
-			signal, DynamicComponentSlot(Handle(GetScriptInstance(vm)), funcName)
+			signal, DynamicComponentSlot(Handle(comp), funcName)
 		);
 		return true;
 	}
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::InstanceRemoveDynamicMemberHandler(std::string* error, DeltaVirtualMachine* vm, const std::string& classId, const std::string& signal)
+	bool DeltaScriptProxy::InstanceRemoveDynamicMemberHandler(std::string* error, DeltaVirtualMachine* vm, 
+		Component* comp, const std::string& signal)
 	{
-		if (!RemoveDynamicFunction(vm, classId, signal, error))
+		if (!RemoveDynamicFunction(comp, signal, error))
 			return false;
-		ComponentSignalRegistry::Instance().DisconnectDynamicSlot(signal, Handle(GetScriptInstance(vm)));
+		ComponentSignalRegistry::Instance().DisconnectDynamicSlot(signal, Handle(comp));
 		return true;
 	}
 
@@ -453,12 +453,12 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::InstanceImplementDynamicMemberCommand(std::string* error, DeltaVirtualMachine* vm,
-		const UserCommandDesc& cmd, const std::string& command, DeltaValue* func, const std::string& doc)
+	bool DeltaScriptProxy::InstanceImplementDynamicMemberCommand(std::string* error,
+		DeltaVirtualMachine* vm, Component* comp, const UserCommandDesc& cmd,
+		const std::string& command, DeltaValue* func, const std::string& doc)
 	{
-		const std::string& classId = cmd.GetCallback().first;
 		const std::string& funcName = cmd.GetCallback().second;
-		if (!ImplementDynamicFunction(vm, classId, funcName, func, "void (void)", false, doc, error))
+		if (!ImplementDynamicFunction(vm, comp, funcName, func, "void (void)", false, doc, error))
 			return false;
 		//TODO add cmd to dynamic component entry
 		if (error)
@@ -468,10 +468,11 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::InstanceRemoveDynamicMemberCommand(std::string* error, DeltaVirtualMachine* vm, const std::string& classId, const std::string& command)
+	bool DeltaScriptProxy::InstanceRemoveDynamicMemberCommand(std::string* error,
+		DeltaVirtualMachine* vm, Component* comp, const std::string& command)
 	{
 		const std::string funcName;// = compEntry.GetUserCommand(cmd).GetAction().GetFunction();
-		if (!RemoveDynamicFunction(vm, classId, funcName, error))
+		if (!RemoveDynamicFunction(comp, funcName, error))
 			return false;
 		//TODO remove cmd from dynamic component entry
 		if (error)
@@ -632,26 +633,27 @@ namespace ide
 
 	bool DeltaScriptProxy::DispatchRequiredMemberFunction(Component* instance, EXPORTED_FUNCTION_ARGS)
 	{
-		return InvokeMemberFunction(instance, false, false, EXPORTED_FUNCTION_ARG_NAMES);
+		return InvokeMemberFunction(instance, false, EXPORTED_FUNCTION_ARG_NAMES);
 	}
 
 	//-----------------------------------------------------------------------
 
 	bool DeltaScriptProxy::DispatchClassMemberFunction(Component* instance, EXPORTED_FUNCTION_ARGS)
 	{
-		return InvokeMemberFunction(instance, true, false, EXPORTED_FUNCTION_ARG_NAMES);
+		return InvokeMemberFunction(instance, true, EXPORTED_FUNCTION_ARG_NAMES);
 	}
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::DispatchDynamicMemberFunction(Component* instance, EXPORTED_FUNCTION_ARGS)
+	bool DeltaScriptProxy::DispatchDynamicMemberFunction(DeltaVirtualMachine* vm, const DeltaValue& function,
+		Component* instance, EXPORTED_FUNCTION_ARGS)
 	{
-		return InvokeMemberFunction(instance, false, true, EXPORTED_FUNCTION_ARG_NAMES);
+		return InvokeDeltaMemberFunction(vm, function, instance, false, true, EXPORTED_FUNCTION_ARG_NAMES);
 	}
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::InvokeMemberFunction(Component* instance, bool isClassMember, bool isDynamic, EXPORTED_FUNCTION_ARGS)
+	bool DeltaScriptProxy::InvokeMemberFunction(Component* instance, bool isClassMember, EXPORTED_FUNCTION_ARGS)
 	{
 		//-- construct result message
 		result.SetSrc(msg.GetDst());
@@ -668,37 +670,42 @@ namespace ide
 		ScriptInstanceProxy::FunctionMapping::iterator fit;
 		const ComponentFuncEntry* funcEntry = (const ComponentFuncEntry*) 0;
 
-		if (isDynamic) {
-			const ComponentFuncEntry& entry = instance->GetDynamicFuncEntry(funcName);
-			if (!entry || (fit = (*it)->dynamicFunctions.find(funcName)) == (*it)->dynamicFunctions.end())
-				return false;	//Dynamic functions do not check inheritance
-			funcEntry = &entry;
-		}
-		else {
-			if ((fit = (*it)->functions.find(funcName)) == (*it)->functions.end()) {
-				bool status = false;
-				if ((*it)->base && (*it)->IsBaseValid()) {	//-- Check if there is a valid base class with this function
-					const ComponentEntry& compEntry = ComponentRegistry::Instance().GetComponentEntry((*it)->base->GetClassId());
-					const ComponentFuncEntry& funcEntry = compEntry.GetFuncEntry(funcName);
-					if (funcEntry.IsMemberFunc())
-						try {
-							ComponentFunctionCaller(msg.GetSrc().classId, (*it)->base, funcName).
-								Invoke(result, msg.GetData());
-							status = true;
-						} catch (std::exception&) {}
-				}
-				return status;
+		if ((fit = (*it)->functions.find(funcName)) == (*it)->functions.end()) {
+			bool status = false;
+			if ((*it)->base && (*it)->IsBaseValid()) {	//-- Check if there is a valid base class with this function
+				const ComponentEntry& compEntry = ComponentRegistry::Instance().GetComponentEntry((*it)->base->GetClassId());
+				const ComponentFuncEntry& funcEntry = compEntry.GetFuncEntry(funcName);
+				if (funcEntry.IsMemberFunc())
+					try {
+						ComponentFunctionCaller(msg.GetSrc().classId, (*it)->base, funcName).
+							Invoke(result, msg.GetData());
+						status = true;
+					} catch (std::exception&) {}
 			}
-			else
-				funcEntry = &compEntry.GetFuncEntry(funcName);
+			return status;
 		}
-		DeltaValue& function = fit->second;
+		else
+			return InvokeDeltaMemberFunction((*it)->vm, fit->second, instance, isClassMember, false, EXPORTED_FUNCTION_ARG_NAMES);
+	}
 
+	//-----------------------------------------------------------------------
+
+	bool DeltaScriptProxy::InvokeDeltaMemberFunction(DeltaVirtualMachine* vm, DeltaValue function, 
+		Component* instance, bool isClassMember, bool isDynamic, EXPORTED_FUNCTION_ARGS)
+	{
 		//-- Perform Delta function call
 		std::list<DeltaValue> deltaArgs;
 		std::string retType;
-		
-		if (!ExtractArguments(*funcEntry, msg, &deltaArgs, &retType))
+
+		if (!msg.GetDst().baseCall)	//base calls don't use the most derived
+			while(Component* derived = instance->GetDerivedInstance())	// Get most derived
+				instance = derived;
+
+		const std::string funcName = msg.GetDst().function;
+		const ComponentFuncEntry& funcEntry = isDynamic && !msg.GetDst().baseCall ? instance->GetDynamicFuncEntry(funcName):
+			ComponentRegistry::Instance().GetComponentEntry(instance->GetClassId()).GetFuncEntry(funcName);
+
+		if (!ExtractArguments(funcEntry, msg, &deltaArgs, &retType))
 			return false;
 
 		if (isClassMember) {
@@ -722,16 +729,20 @@ namespace ide
 		if(!ComponentRegistry::Instance().IsValidInstance(instance, savedSerial))
 			return true;
 
-		if (DPTR((*it)->vm)->HasProducedError() && DELTA_NO_VM_CALLER_FAILED)
+		if (DPTR(vm)->HasProducedError() && DELTA_NO_VM_CALLER_FAILED)
 			DeltaVirtualMachine::ResetRunTimeErrors();
 
 		if (UERROR_ISRAISED()) {
 			HandleVMError(instance->GetClassId());
-			ComponentMap::iterator i = derivedInstances.find(*it);
-			Component* component = i == derivedInstances.end() ? *it : i->second;
-			timer::DelayedCaller::Instance().PostDelayedCall(
-				boost::bind(&ComponentFactory::DestroyComponent, boost::ref(ComponentFactory::Instance()), component)
-			);
+			if (!isDynamic) {	//Do not destroy the component when a dynamic invocation fails				
+				DASSERT(IsScriptInstance(instance));
+				ScriptInstanceProxy* proxy = static_cast<ScriptInstanceProxy*>(instance);
+				ComponentMap::iterator i = derivedInstances.find(proxy);
+				Component* component = i == derivedInstances.end() ? proxy : i->second;
+				timer::DelayedCaller::Instance().PostDelayedCall(
+					boost::bind(&ComponentFactory::DestroyComponent, boost::ref(ComponentFactory::Instance()), component)
+				);
+			}
 			return true;
 		}
 
@@ -885,14 +896,10 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::ImplementDynamicFunction(DeltaVirtualMachine* vm, const std::string& classId, 
-		const std::string& funcName, DeltaValue* function, const std::string& signature, bool slot,
-		const std::string& doc, std::string* error)
+	bool DeltaScriptProxy::ImplementDynamicFunction(DeltaVirtualMachine* vm, Component* comp, const std::string& funcName,
+		DeltaValue* function, const std::string& signature, bool slot, const std::string& doc, std::string* error)
 	{
-		if (!ClassLoadedCheck(classId, error)		||
-			!InstanceVMCheck(vm, classId, error)	||
-			!CallableCheck(function, error)
-		)
+		if (!CallableCheck(function, error))
 			return false;
 
 		const size_t spaceIndex = signature.find(" ");
@@ -901,29 +908,25 @@ namespace ide
 		const std::string arglist = signature.substr(argIndex);
 		boost::algorithm::trim(ret_type);
 		DASSERT(!slot || ret_type == "void");
-		ScriptInstanceProxy* instance = GetScriptInstance(vm);
-		instance->AddDynamicFunction(
+		comp->AddDynamicFunction(
 			ComponentFuncEntry(
-				(ComponentMemberCallback) &DeltaScriptProxy::DispatchDynamicMemberFunction,
+				(ComponentMemberCallback) boost::bind(&DeltaScriptProxy::DispatchDynamicMemberFunction, vm, *function,_1, _2, _3),
 				ret_type, funcName, arglist,
 				boost::bind(&DeltaScriptProxy::DocumentationFunction, util::std2str(doc), _1), slot
 			)
 		);
-		instance->dynamicFunctions[funcName] = *function;
 		return true;
 	}
 
 	//-----------------------------------------------------------------------
 
-	bool DeltaScriptProxy::RemoveDynamicFunction(DeltaVirtualMachine* vm, const std::string& classId, const std::string& funcName, std::string* error)
+	bool DeltaScriptProxy::RemoveDynamicFunction(Component* comp, const std::string& funcName, std::string* error)
 	{
-		if (!ClassLoadedCheck(classId, error) || !InstanceVMCheck(vm, classId, error))
-			return false;
-		ScriptInstanceProxy* instance = GetScriptInstance(vm);
-		instance->RemoveDynamicFunction(funcName);
-		instance->dynamicFunctions.erase(funcName);
+		comp->RemoveDynamicFunction(funcName);		
 		return true;
 	}
+
+	//-----------------------------------------------------------------------
 
 	bool DeltaScriptProxy::AddSignal(DeltaVirtualMachine* vm, const std::string& classId, const std::string& signal,
 		const std::string& arglist, bool isStatic, std::string* error)
@@ -1081,7 +1084,14 @@ namespace ide
 		const char * destructorFunc = "Destructor";
 		DeltaVirtualMachine*& vm = (*it)->vm;
 		if (!DPTR(vm)->HasProducedError() && DPTR(vm)->GlobalFuncExists(destructorFunc))
-			DELTA_VM_CALL_AND_RESET_ERRORS(vm, DPTR(vm)->ExtCallGlobalFunc(destructorFunc), DELTA_NO_VM_CALLER_FAILED);
+			DELTA_VM_CALL_AND_RESET_ERRORS(
+				vm,
+				DELTA_EXCEPTIONS_NATIVE_TRY
+					DPTR(vm)->ExtCallGlobalFunc(destructorFunc);	
+				DELTA_EXCEPTIONS_NATIVE_TRAP(runtimeException)
+					UPRIMARYERROR(runtimeException.ToString()),
+				DELTA_NO_VM_CALLER_FAILED
+			);
 
 		//-- Get error condition
 		if (UERROR_ISRAISED())

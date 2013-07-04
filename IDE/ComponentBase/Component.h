@@ -55,8 +55,9 @@ public:
 
 	//******************************************************************
 
-	const std::string&			GetDerivedClassId (void) const;
-	void						SetDerivedClassId (const std::string& classId) { m_derivedClassId = classId; }
+	virtual Component*	GetBaseInstance (void) const { return (Component*) 0; }
+	Component*			GetDerivedInstance (void) const { return m_derivedInstance; }
+	void				SetDerivedInstance (Component* comp) { m_derivedInstance = comp; }
 
 	//******************************************************************
 
@@ -259,9 +260,9 @@ private:
 	Component*			m_parent;
 	List				m_children;
 
-	bool				m_inDestruction;
+	Component*			m_derivedInstance;
 
-	std::string			m_derivedClassId;
+	bool				m_inDestruction;
 };
 
 ////////////////////////////////////////////////////////////////////////

@@ -37,6 +37,7 @@ spw.components.Shell.AddComponent("IViews", SHELL_NOWHERE);
 
 //-- load several utilities
 (function LineCounter { spw.components.DeltaComponentDirectory.CreateComponent("LineCounter"); })();
+(function MyGraph { spw.components.DeltaComponentDirectory.CreateComponent("MyGraph"); })();
 
 //-- restore last workspace
 spw.components.DeltaComponentDirectory.LoadComponent("RecentWorkspaces");

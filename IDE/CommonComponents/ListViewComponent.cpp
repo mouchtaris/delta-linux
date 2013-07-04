@@ -59,11 +59,6 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_SIGNAL(ListViewComponent, ListItemActivated, (uint index));
-	EXPORTED_SIGNAL(ListViewComponent, DeleteListItem, (uint index));
-
-	//-----------------------------------------------------------------------
-
 	COMPONENT_SET_PROPERTIES_FUNCTION(ListViewComponent, table)
 	{
 	}
@@ -383,6 +378,11 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_FUNCTION(ListViewComponent, void, OnItemActivated, (uint index)){}
+	EXPORTED_FUNCTION(ListViewComponent, void, OnDeleteItem, (uint index)){}
+
+	//-----------------------------------------------------------------------
+
 	void ListViewComponent::ComponentAddedUserCommand(const String& path, const UserCommand& cmd)
 	{
 		ComponentMenu *oldMenu = menu;
@@ -410,7 +410,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	void ListViewComponent::onDisplay(wxCommandEvent& event)
+	void ListViewComponent::onDisplay(wxCommandEvent& WXUNUSED(event))
 	{
 	}
 
@@ -435,7 +435,7 @@ namespace ide
 
 	void ListViewComponent::onItemActivated(wxListEvent& event)
 	{
-		sigListItemActivated(this, event.GetIndex());
+		Call<void (uint)>(this, this, "OnItemActivated")(event.GetIndex());
 	}
 
 	//-----------------------------------------------------------------------
@@ -448,7 +448,7 @@ namespace ide
 			UIntList selected = GetMultipleSelection();
 			// Perform reverse iteration to ensure correct numbering while deleting
 			for(UIntList::const_reverse_iterator i = selected.rbegin(); i != selected.rend(); ++i)
-				sigDeleteListItem(this, *i);
+				Call<void (uint)>(this, this, "OnDeleteItem")(*i);
 		}
 		else if (!HasSingleSelection() && key == 'A' && event.ControlDown())
 			for(uint i = 0; i < (uint) GetItemCount(); ++i)	//Select all

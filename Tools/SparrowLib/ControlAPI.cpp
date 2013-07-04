@@ -472,6 +472,29 @@ namespace ide
 	};
 
 	//-----------------------------------------------------------------------
+	// ret_type spw_basecall({handle | class_id}, function, args...).
+	// Calls an exported function from the specified component.
+	//
+	class BaseCallOp {
+	public:
+		const char* Id				(void)			 const { return "basecall"; }
+
+		void SetReturnValue(DeltaVirtualMachine* vm, const Buffer& result, const std::string& funcReturnType)
+		{
+			//-- Extract return value
+			if (!result.empty())
+				TypeConverter::DecodeDeltaValue(comm::decoder(result), DLIB_RETVAL_PTR, funcReturnType);
+		}
+
+		template<typename Source, typename Dest>
+		void operator()(Source source, Dest dest, const std::string& function, Message& result, const Buffer& args) const {
+			ComponentFunctionCaller caller(source, dest, function);
+			caller.SetBaseCall();
+			caller.Invoke(result, args);
+		}
+	};
+
+	//-----------------------------------------------------------------------
 	// void spw_setundo({handle | class_id}, function, args...).
 	// Sets the undo action for the specified component.
 	//
@@ -821,6 +844,7 @@ namespace ide
 		INSTALL_LIBRARY_FUNCTOR(PropertyTableSetDirtyFunctor);
 		
 		INSTALL_LIBRARY_FUNCTOR(ComponentCallFunctor<SimpleCallInvoker<CallOp>>);
+		INSTALL_LIBRARY_FUNCTOR(ComponentCallFunctor<SimpleCallInvoker<BaseCallOp>>);
 		INSTALL_LIBRARY_FUNCTOR(ComponentCallFunctor<SimpleCallInvoker<SetUndoOp>>);
 		
 		INSTALL_LIBRARY_FUNCTOR(ComponentCallFunctor<SetTimerInvoker>);

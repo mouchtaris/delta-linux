@@ -26,7 +26,7 @@ static const char* SparrowLibFuncNames[] = {
 	"mostbasecomponent"				"() : Object (comp:Object)								:	Object",
 	"getcomponent"					"(class:String) : Object (class:String, serial:Number)	:	Object",
 	"getcomponents"					"()														:	Object",
-	"generatewindow"				"(comp:Object, parent:ExternId)							:	ExternId",
+	"basecreatewindow"				"(parent:ExternId)										:	ExternId",
 
 	"#group(spwprop)",
 	"getclassproperty"				"(class:String, propId:String)				:	Object	",
@@ -36,6 +36,7 @@ static const char* SparrowLibFuncNames[] = {
 	"#group(_)",
 
 	"call"							"(comp:+{Object, String}, func:String, ...)	:	Any	",
+	"basecall"						"(comp:+{Object, String}, func:String, ...)	:	Any	",
 	"setundo"						"(comp:+{Object, String}, func:String, ...)	:	Void",
 
 	"settimer"						"(id:Number, time:Number, continuous:Bool, comp:+{Object, String}, func:String,...)	:	Number	",

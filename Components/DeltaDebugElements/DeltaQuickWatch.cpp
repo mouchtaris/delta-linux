@@ -55,16 +55,6 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchBack, (void));
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchForward, (void));
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchReevaluate, (const String& expression));
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchAddWatch, (const String& expression));
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchExpressionChanged, (const String& expression));
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchViewerWidthChanged, (uint width));
-	EXPORTED_SIGNAL(DeltaQuickWatch, QuickWatchClosed, (void));
-
-	//-----------------------------------------------------------------------
-
 	COMPONENT_SET_PROPERTIES_FUNCTION(DeltaQuickWatch, table)
 	{
 		conf::AggregateProperty* position = new conf::AggregateProperty(_("Window position"), _("initial window position"));
@@ -287,6 +277,16 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, OnBack, (void)){}
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, OnForward, (void)){}
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, OnReevaluate, (const String& expression)){}
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, OnAddwatch, (const String& expression)){}
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, OnExpressionChanged, (const String& expression)){}
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, OnViewerWidthChanged, (uint width)){}
+	EXPORTED_FUNCTION(DeltaQuickWatch, void, OnClosed, (void)){}
+
+	//-----------------------------------------------------------------------
+
 	void DeltaQuickWatch::UpdatePosition(void)
 	{
 		if (totalInstances == 1) {
@@ -315,35 +315,35 @@ namespace ide
 
 	void DeltaQuickWatch::onReevaluate(wxCommandEvent& event)
 	{
-		sigQuickWatchReevaluate(this, expressions->GetValue());
+		Call<void (const String&)>(this, this, "OnReevaluate")(expressions->GetValue());
 	}
 
 	//-----------------------------------------------------------------------
 
 	void DeltaQuickWatch::onAddWatch(wxCommandEvent& event)
 	{
-		sigQuickWatchAddWatch(this, expressions->GetValue());
+		Call<void (const String&)>(this, this, "OnAddWatch")(expressions->GetValue());
 	}
 
 	//-----------------------------------------------------------------------
 
 	void DeltaQuickWatch::onBack(wxCommandEvent& event)
 	{
-		sigQuickWatchBack(this);
+		Call<void (void)>(this, this, "OnBack")();
 	}
 
 	//-----------------------------------------------------------------------
 
 	void DeltaQuickWatch::onForward(wxCommandEvent& event)
 	{
-		sigQuickWatchForward(this);
+		Call<void (void)>(this, this, "OnForward")();
 	}
 
 	//-----------------------------------------------------------------------
 
 	void DeltaQuickWatch::onExpressionChange(wxCommandEvent& event)
 	{
-		sigQuickWatchExpressionChanged(this, event.GetString());
+		Call<void (const String&)>(this, this, "OnExpressionChanged")(event.GetString());
 	}
 
 	//-----------------------------------------------------------------------
@@ -365,7 +365,7 @@ namespace ide
 
 	void DeltaQuickWatch::onClose(wxCloseEvent& event)
 	{
-		sigQuickWatchClosed(this);
+		Call<void (void)>(this, this, "OnClosed")();
 		event.Skip();
 	}
 
@@ -378,10 +378,9 @@ namespace ide
 #else
 		if (!event.GetShow())
 #endif
-			sigQuickWatchClosed(this);
+			Call<void (void)>(this, this, "OnClosed")();
 		else if (viewer)
-			sigQuickWatchViewerWidthChanged(
-				this,
+			Call<void (uint)>(this, this, "OnViewerWidthChanged")(
 				conf::get_prop_value<conf::IntProperty>(
 					static_cast<const conf::AggregateProperty*>(GetProperty("size"))->GetProperty("width")
 				)
@@ -396,7 +395,7 @@ namespace ide
 		UpdatePosition();
 		UpdateSize();
 		if (viewer)
-			sigQuickWatchViewerWidthChanged(this, viewer->GetWindow()->GetSize().GetWidth());
+			Call<void (uint)>(this, this, "OnViewerWidthChanged")(viewer->GetWindow()->GetSize().GetWidth());
 		event.Skip();
 	}
 

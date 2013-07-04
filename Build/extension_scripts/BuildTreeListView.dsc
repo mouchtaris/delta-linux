@@ -17,7 +17,6 @@ const classId	= "BuildTreeListView";
 
 window			= nil;
 base			= nil;
-mostbase		= nil;
 
 treeData 		= nil;
 map				= [];
@@ -259,6 +258,19 @@ function Update(index, data)
 }
 
 //======================= Event Handling =======================//
+
+//----------------------- onItemActivated -----------------------//
+
+function onItemActivated (id)
+{
+	local index = map[id];
+	local FileName = treeData[index].URI;
+	local line = treeData[index].Line;
+	
+	if (not FileName or not line)
+		return;
+	spw.components.DeltaVM.GotoSymbolicDocument(FileName, line);
+}
 
 //----------------------- onWorkStarted -----------------------//
 
@@ -529,22 +541,6 @@ function onResourceWorkCompleted(invoker, task, workId)
 	Update(parent, nil);
 }
 
-//----------------------- onTreeListItemActivated -----------------------//
-
-function onTreeListItemActivated (invoker, id)
-{
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-	
-	local index = map[id];
-	local FileName = treeData[index].URI;
-	local line = treeData[index].Line;
-	
-	if (not FileName or not line)
-		return;
-	spw.components.DeltaVM.GotoSymbolicDocument(FileName, line);
-}
-
 //----------------------- onWorkspaceClosed -----------------------//
 
 function onWorkspaceClosed (component, uri)
@@ -565,6 +561,7 @@ onevent ClassLoad
 		"Christos Despotakis <despotak@ics.forth.gr>", 
 		"alpha"
 	);
+	spw::class_decl_required_member_function(classId, #OnItemActivated, "void (uint serial)");
 
 	spw::class_decl_required_member_handler(classId, #WorkStarted);
 	spw::class_decl_required_member_handler(classId, #WorkCompleted);
@@ -572,7 +569,6 @@ onevent ClassLoad
 	spw::class_decl_required_member_handler(classId, #CompilationMessage);
 	spw::class_decl_required_member_handler(classId, #ResourceWorkStarted);
 	spw::class_decl_required_member_handler(classId, #ResourceWorkCompleted);
-	spw::class_decl_required_member_handler(classId, #TreeListItemActivated);
 	spw::class_decl_required_member_handler(classId, #WorkspaceClosed);
 							
 	spw::class_impl_static_command(
@@ -602,13 +598,14 @@ onevent ClassUnload {}
 
 onevent Constructor
 {
+	spw::inst_impl_required_member_function(classId, #OnItemActivated, onItemActivated);
+	
 	spw::inst_impl_required_member_handler(classId, #WorkStarted, onWorkStarted);
 	spw::inst_impl_required_member_handler(classId, #WorkCompleted, onWorkCompleted);
 	spw::inst_impl_required_member_handler(classId, #WorkCanceled, onWorkCanceled);
 	spw::inst_impl_required_member_handler(classId, #CompilationMessage, onCompilationMessage);
 	spw::inst_impl_required_member_handler(classId, #ResourceWorkStarted, onResourceWorkStarted);
-	spw::inst_impl_required_member_handler(classId, #ResourceWorkCompleted, onResourceWorkCompleted);
-	spw::inst_impl_required_member_handler(classId, #TreeListItemActivated, onTreeListItemActivated);
+	spw::inst_impl_required_member_handler(classId, #ResourceWorkCompleted, onResourceWorkCompleted);	
 	spw::inst_impl_required_member_handler(classId, #WorkspaceClosed, onWorkspaceClosed);
 
 	//This is a GUI component so any other initialization takes place in GenerateWindow
@@ -619,18 +616,17 @@ onevent Constructor
 onevent Destructor {
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent)
+onevent CreateWindow (parent)
 {
-	base 				= spw.decorate(spw::basecomponent());
-	local nativeWindow	= spw::generatewindow(base, parent);
-	mostbase			= spw.decorate(spw::mostbasecomponent());
-	window				= spw.decorate(spw::thiscomponent());
+	local nativeWindow	= spw::basecreatewindow(parent);
+	::base				= spw.decorate(spw::basecomponent());
+	::window			= spw.decorate(spw::thiscomponent());
 	
 	window.SetTitle("Build Tree");
 	

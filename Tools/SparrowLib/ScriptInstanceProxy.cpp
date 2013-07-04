@@ -18,6 +18,7 @@
 
 #include "DDebug.h"
 #include "DeltaVirtualMachine.h"
+#include "DeltaExceptionHandling.h"
 #include "DeltaStdLib.h"
 #include "VMInit.h"
 #include "uinit.h"
@@ -25,25 +26,31 @@
 
 #include <wx/wx.h>
 
-#define DELTA_CALL(F, ERROR_RETVAL)															\
-	do {																					\
-		if (!DPTR(vm)->HasProducedError() && DPTR(vm)->GlobalFuncExists(STRINGIFY(F))) {		\
-			DPTR(vm)->ExtCallGlobalFunc(STRINGIFY(F));										\
-			if (UERROR_ISRAISED()) {														\
-				Call<void (const String&), SafeCall>(DPTR(vm)->Id(), "Output", "Append")		\
-					(util::std2str(uerror::GetSingleton().getreport() + "\n"));				\
-				uerror::GetSingleton().clear();												\
-				DELTA_VM_CALL_AND_RESET_ERRORS(vm, UEMPTY, DELTA_NO_VM_CALLER_FAILED);		\
-				if (!GetInDestruction())													\
-					this->Destroy();															\
-				return ERROR_RETVAL;														\
-			}																				\
-		}																					\
+#define DELTA_CALL(F, ERROR_RETVAL)																				\
+	do {																										\
+		if (!GetInDestruction() && !DPTR(vm)->HasProducedError() && DPTR(vm)->GlobalFuncExists(STRINGIFY(F))) {	\
+			std::string error;																					\
+			DELTA_VM_CALL_AND_RESET_ERRORS(																		\
+				vm,																								\
+				DELTA_EXCEPTIONS_NATIVE_TRY																		\
+					DPTR(vm)->ExtCallGlobalFunc(STRINGIFY(F));													\
+				DELTA_EXCEPTIONS_NATIVE_TRAP(runtimeException)													\
+					UPRIMARYERROR(error = runtimeException.ToString()),											\
+				DELTA_NO_VM_CALLER_FAILED																		\
+			);																									\
+			if (!error.empty()) {																				\
+				Call<void (const String&), SafeCall>(DPTR(vm)->Id(), "Output", "Append")							\
+					(util::std2str(error + "\n"));																\
+				DASSERT(!GetInDestruction());																	\
+				this->Destroy();																					\
+				return ERROR_RETVAL;																			\
+			}																									\
+		}																										\
 	} while(false)
 
 #define PUSH_ARG(TYPE, ARG)						\
 	do {										\
-		DeltaValue obj;						\
+		DeltaValue obj;							\
 		to_delta<TYPE>().convert(&obj, ARG);	\
 		DPTR(vm)->PushActualArg(obj);			\
 	} while (false)
@@ -76,7 +83,7 @@ namespace ide
 	{
 		if (base) {
 			baseSerial = base->GetSerial();
-			base->SetDerivedClassId(classId);
+			base->SetDerivedInstance(this);
 		}
 	}
 
@@ -100,7 +107,7 @@ namespace ide
 	wxWindow* ScriptInstanceProxy::GenerateWindow(wxWindow* parent)
 	{
 		PUSH_ARG(wxWindow*, parent);
-		DELTA_CALL(GenerateWindow, (wxWindow *) 0);
+		DELTA_CALL(CreateWindow, (wxWindow *) 0);
 		
 		to_native<wxWindow*>().convert(window, DLIB_RETVAL_PTR);
 		return window;
@@ -119,11 +126,9 @@ namespace ide
 	{
 		DELTA_CALL(Constructor, UEMPTY);
 		std::string error;
-		if (!DeltaScriptProxy::InstanceImplementsRequiredFunctionsCheck(vm, classId, &error)) {
-			DPTR(vm)->PrimaryError("Component creation failed: %s", error.c_str());
+		if (!GetInDestruction() && !DeltaScriptProxy::InstanceImplementsRequiredFunctionsCheck(vm, classId, &error)) {
 			Call<void (const String&), SafeCall>(DPTR(vm)->Id(), "Output", "Append")
-				(util::std2str(uerror::GetSingleton().getreport() + "\n"));
-			DELTA_VM_CALL_AND_RESET_ERRORS(vm, UEMPTY, DELTA_NO_VM_CALLER_FAILED);
+				(util::std2str(uconstructstr("Component creation failed: %s\n", error.c_str())));
 			DASSERT(!GetInDestruction());
 			this->Destroy();
 		}	
@@ -157,9 +162,6 @@ namespace ide
 
 	void ScriptInstanceProxy::ComponentRemovedFunction(const std::string& id)
 		{ functions.erase(id); }
-
-	void ScriptInstanceProxy::ComponentRemovedDynamicFunction (const std::string& id)
-		{ dynamicFunctions.erase(id); }
 
 	//-----------------------------------------------------------------------
 

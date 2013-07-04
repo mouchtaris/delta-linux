@@ -17,7 +17,7 @@ namespace ide {
 // Component class
 //
 Component::Component (void) :
-	m_serial(0), m_properties(), m_parent(0), m_inDestruction(false)
+	m_serial(0), m_properties(), m_parent(0), m_derivedInstance(0), m_inDestruction(false)
 {
 }
 
@@ -27,13 +27,6 @@ Component::~Component (void)
 {
 	assert(m_inDestruction && "Only destroy Component through instance->Destroy()"
 		"or ComponentEntry::Destroy(instance)");
-}
-
-//**********************************************************************
-
-const std::string& Component::GetDerivedClassId	(void) const
-{
-	return m_derivedClassId.empty() ? GetClassId() : m_derivedClassId;
 }
 
 //**********************************************************************

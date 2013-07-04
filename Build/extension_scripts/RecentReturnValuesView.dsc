@@ -15,8 +15,8 @@ spw  = sparrowlib::sparrow();
 
 const classId = "RecentReturnValuesView";
 
-window = nil;
-base = nil;
+window	= nil;
+base	= nil;
 
 //-----------------------------------------------------------------------
 
@@ -151,17 +151,18 @@ onevent Destructor
 {
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent)
+onevent CreateWindow (parent)
 {
-	base = spw.decorate(spw::basecomponent());
-	local nativeWindow = spw::generatewindow(base, parent);
-	window = spw.decorate(spw::thiscomponent());
+	local nativeWindow	= spw::basecreatewindow(parent);
+	::base				= spw.decorate(spw::basecomponent());
+	::window			= spw.decorate(spw::thiscomponent());
+
 	window.SetTitle("Function Results");
 	window.SetColumns(list_new("Function:150", "Return Value:500"));
 	UpdateRecentFunctionResultView();

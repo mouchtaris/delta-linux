@@ -63,15 +63,6 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_SIGNAL(TreeListViewComponent, TreeListItemActivated, (uint serial));
-	EXPORTED_SIGNAL(TreeListViewComponent, TreeListItemExpanding, (uint serial));
-	EXPORTED_SIGNAL(TreeListViewComponent, TreeListItemCollapsing, (uint serial));
-	EXPORTED_SIGNAL(TreeListViewComponent, TreeListItemSelected, (uint serial));
-	EXPORTED_SIGNAL(TreeListViewComponent, TreeListWidthChanged, (uint width));
-	EXPORTED_SIGNAL(TreeListViewComponent, DeleteTreeListItem, (uint serial));
-
-	//-----------------------------------------------------------------------
-
 	COMPONENT_SET_PROPERTIES_FUNCTION(TreeListViewComponent, table)
 	{
 	}
@@ -509,6 +500,15 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_FUNCTION(TreeListViewComponent, void, OnItemActivated, (uint serial)){}
+	EXPORTED_FUNCTION(TreeListViewComponent, void, OnItemExpanding, (uint serial)){}
+	EXPORTED_FUNCTION(TreeListViewComponent, void, OnItemCollapsing, (uint serial)){}
+	EXPORTED_FUNCTION(TreeListViewComponent, void, OnItemSelected, (uint serial)){}
+	EXPORTED_FUNCTION(TreeListViewComponent, void, OnDeleteItem, (uint serial)){}
+	EXPORTED_FUNCTION(TreeListViewComponent, void, OnWidthChanged, (uint width)){}
+
+	//-----------------------------------------------------------------------
+
 	wxTreeItemId TreeListViewComponent::GetNode(uint serial) const
 	{
 		if (!serial)
@@ -575,7 +575,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	void TreeListViewComponent::onDisplay(wxCommandEvent& event)
+	void TreeListViewComponent::onDisplay(wxCommandEvent& WXUNUSED(event))
 	{
 	}
 
@@ -603,7 +603,7 @@ namespace ide
 	{
 		CHECK_VALID_TREE_ITEM(event);
 		uint serial = static_cast<TreeItemData *>(GetItemData(event.GetItem()))->GetSerial();
-		sigTreeListItemActivated(this, serial);
+		Call<void (uint)>(this, this, "OnItemActivated")(serial);
 	}
 
 	//-----------------------------------------------------------------------
@@ -613,7 +613,7 @@ namespace ide
 		CHECK_VALID_TREE_ITEM(event);
 		if (!ignoreCollapseAndExpandChanges) {
 			uint serial = static_cast<TreeItemData *>(GetItemData(event.GetItem()))->GetSerial();
-			sigTreeListItemExpanding(this, serial);
+			Call<void (uint)>(this, this, "OnItemExpanding")(serial);
 		}
 	}
 
@@ -624,7 +624,7 @@ namespace ide
 		CHECK_VALID_TREE_ITEM(event);
 		if (!ignoreCollapseAndExpandChanges) {
 			uint serial = static_cast<TreeItemData *>(GetItemData(event.GetItem()))->GetSerial();
-			sigTreeListItemCollapsing(this, serial);
+			Call<void (uint)>(this, this, "OnItemCollapsing")(serial);
 		}
 	}
 
@@ -634,7 +634,7 @@ namespace ide
 	{
 		CHECK_VALID_TREE_ITEM(event);
 		uint serial = static_cast<TreeItemData *>(GetItemData(event.GetItem()))->GetSerial();
-		sigTreeListItemSelected(this, serial);
+		Call<void (uint)>(this, this, "OnItemSelected")(serial);
 	}
 
 	//-----------------------------------------------------------------------
@@ -644,7 +644,7 @@ namespace ide
 		int key = event.GetKeyEvent().GetKeyCode();
 		if (key == WXK_DELETE || key == WXK_NUMPAD_DELETE)
 			BOOST_FOREACH(uint serial, GetMultipleSelection())
-				sigDeleteTreeListItem(this, serial);
+				Call<void (uint)>(this, this, "OnDeleteItem")(serial);
 		//Ctrl+A gives a key with value 1 (ascii value of Ctrl+A)
 		else if (!HasSingleSelection() && key == 1 && event.GetKeyEvent().ControlDown())
 			SetMultipleSelection(GetChildren(GetRoot(), true));
@@ -654,9 +654,9 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	void TreeListViewComponent::onColEndDrag(wxListEvent& event)
+	void TreeListViewComponent::onColEndDrag(wxListEvent& WXUNUSED(event))
 	{
-		sigTreeListWidthChanged(this, GetSize().GetWidth());
+		Call<void (uint)>(this, this, "OnWidthChanged")(GetSize().GetWidth());
 	}
 
 	//-----------------------------------------------------------------------

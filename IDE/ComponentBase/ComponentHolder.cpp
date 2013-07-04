@@ -41,7 +41,7 @@ const ComponentHolder::ComponentList ComponentHolder::Find (const std::string& c
 
 Component* ComponentHolder::Find (const std::string& classId, uint instanceSerial) const
 {
-	return ComponentRegistry::Instance().GetComponentEntry(classId).GetInstance(instanceSerial, true);
+	return ComponentRegistry::Instance().GetComponentEntry(classId).GetInstance(instanceSerial);
 }
 
 //**********************************************************************

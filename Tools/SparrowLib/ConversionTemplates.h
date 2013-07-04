@@ -229,6 +229,18 @@ namespace ide
 				+ " can not be converted to an " + std::string(INPUTBUFFER_TYPE_STR)).c_str());
 		}
 	};
+	template <>
+	struct to_native<Component*> {
+		void convert(Component*& output, DeltaValue* input, uint index=0) const {
+			Handle handle;
+			to_native<Handle>().convert(handle, input, index);
+			if (Component* comp = handle.Resolve())
+				output = comp;
+			else
+				throw std::exception(("argument " + boost::lexical_cast<std::string>(index + 1)
+				+ " is not a valid Component (cannot be resolved)").c_str());
+		}
+	};
 	template <typename Type>
 	struct to_native<std::list<Type>> {
 		void convert(std::list<Type>& output, DeltaValue* input, uint index=0) const {

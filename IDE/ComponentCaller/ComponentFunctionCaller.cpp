@@ -116,6 +116,13 @@ void ComponentFunctionCaller::SetInstance (const Handle& handle)
 
 //**********************************************************************
 
+void ComponentFunctionCaller::SetBaseCall (bool val)
+{
+	m_msg.GetDst().baseCall = val;
+}
+
+//**********************************************************************
+
 bool ComponentFunctionCaller::Invoke (Message& result, const Buffer& args) const
 {
 	m_msg.SetData(args);

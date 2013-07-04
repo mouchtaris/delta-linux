@@ -36,6 +36,7 @@ namespace ide
 
 		///--- overridden base API
 		virtual const std::string& GetClassId(void) const	{ return classId; }
+		virtual Component*	GetBaseInstance (void) const { return base; }
 
 		//--- component GUI support
 		virtual wxWindow* GenerateWindow (wxWindow* parent);
@@ -63,7 +64,7 @@ namespace ide
 		virtual void ComponentRemovedFunction(const std::string& id);
 
 		//virtual void ComponentAddedDynamicFunction (const ComponentFuncEntry& func) {}
-		virtual void ComponentRemovedDynamicFunction (const std::string& id);
+		//virtual void ComponentRemovedDynamicFunction (const std::string& id);
 
 		//virtual void ComponentAddedUserCommand(const String& path, const UserCommand& cmd);
 		//virtual void ComponentRemovedUserCommand(const String& path);
@@ -114,7 +115,6 @@ namespace ide
 
 		typedef std::map<std::string, DeltaValue> FunctionMapping;
 		FunctionMapping functions;
-		FunctionMapping dynamicFunctions;
 	};
 }
 

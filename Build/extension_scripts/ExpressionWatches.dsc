@@ -16,9 +16,8 @@ spw  = sparrowlib::sparrow();
 
 const classId = "ExpressionWatches";
 
-window = nil;
-base = nil;
-mostbase = nil;
+window	= nil;
+base	= nil;
 
 inBreakpoint = false;
 
@@ -121,7 +120,7 @@ function DeleteSelectedWatch
 
 function Clear
 {
-	base.Clear();
+	spw::basecall(base, "Clear");	//base..Clear();
 	local root = AppendItem(0, "", "");
 	AppendItem(root, "", "");
 }
@@ -137,27 +136,8 @@ function Refresh
 
 //-----------------------------------------------------------------------
 
-function onBreakpointHit(invoker, uri, line)
+function onItemActivated(id)
 {
-	Refresh();
-	inBreakpoint = true;
-}
-
-//-----------------------------------------------------------------------
-
-function onUpdateWatches(classId) { Refresh(); }
-
-//-----------------------------------------------------------------------
-
-function onClearExpressions(classId) { Clear(); }
-
-//-----------------------------------------------------------------------
-
-function onTreeListItemActivated(invoker, id)
-{
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-
 	if (inBreakpoint and window.GetParent(id) == window.GetRoot()) {
 		local result = spw.components.Shell.PromptInput(
 			"Add Watch",
@@ -180,14 +160,27 @@ function onTreeListItemActivated(invoker, id)
 
 //-----------------------------------------------------------------------
 
-function onDeleteTreeListItem(invoker, id)
+function onDeleteItem(id)
 {
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-
 	if (GetWatchExpression(id) != "" and window.GetParent(id) == window.GetRoot())
 		window.RemoveExpression(id);
 }
+
+//-----------------------------------------------------------------------
+
+function onBreakpointHit(invoker, uri, line)
+{
+	Refresh();
+	inBreakpoint = true;
+}
+
+//-----------------------------------------------------------------------
+
+function onUpdateWatches(classId) { Refresh(); }
+
+//-----------------------------------------------------------------------
+
+function onClearExpressions(classId) { Clear(); }
 
 //-----------------------------------------------------------------------
 
@@ -241,12 +234,12 @@ onevent ClassLoad
 		"Return the value of the specified watch");
 	spw::class_decl_required_member_function(classId, "SetWatchValue", "String (uint id, String value)",
 		"Set the value of the specified watch");
+	spw::class_decl_required_member_function(classId, "OnItemActivated", "void (uint serial)");
+	spw::class_decl_required_member_function(classId, "OnDeleteItem", "void (uint serial)");
 
 	spw::class_decl_required_member_handler(classId, "BreakpointHit");
 	spw::class_decl_required_member_handler(classId, "StackFrameMoved");
 	spw::class_decl_required_member_handler(classId, "DebugStopped");
-	spw::class_decl_required_member_handler(classId, "TreeListItemActivated");
-	spw::class_decl_required_member_handler(classId, "DeleteTreeListItem");
 	spw::class_decl_required_member_handler(classId, "DebugResumed");
 }
 
@@ -269,12 +262,12 @@ onevent Constructor
 	spw::inst_impl_required_member_function(classId, "SetWatchExpression", SetWatchExpression);
 	spw::inst_impl_required_member_function(classId, "GetWatchValue", GetWatchValue);
 	spw::inst_impl_required_member_function(classId, "SetWatchValue", SetWatchValue);
+	spw::inst_impl_required_member_function(classId, "OnItemActivated", onItemActivated);
+	spw::inst_impl_required_member_function(classId, "OnDeleteItem", onDeleteItem);
 
 	spw::inst_impl_required_member_handler(classId, "BreakpointHit", onBreakpointHit);
 	spw::inst_impl_required_member_handler(classId, "StackFrameMoved", onUpdateWatches);
 	spw::inst_impl_required_member_handler(classId, "DebugStopped", onClearExpressions);
-	spw::inst_impl_required_member_handler(classId, "TreeListItemActivated", onTreeListItemActivated);
-	spw::inst_impl_required_member_handler(classId, "DeleteTreeListItem", onDeleteTreeListItem);
 	spw::inst_impl_required_member_handler(classId, "DebugResumed", onDebugResumed);
 		
 	//This is a GUI component so any other initialization takes place in GenerateWindow
@@ -288,18 +281,18 @@ onevent Destructor
 	
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent)
+onevent CreateWindow (parent)
 {
-	base = spw.decorate(spw::basecomponent());
-	local nativeWindow = spw::generatewindow(base, parent);
-	mostbase = spw.decorate(spw::mostbasecomponent());
-	window = spw.decorate(spw::thiscomponent());
+	local nativeWindow	= spw::basecreatewindow(parent);
+	::base				= spw.decorate(spw::basecomponent());
+	::window			= spw.decorate(spw::thiscomponent());
+
 	window.SetTitle("Watches");
 	window.SetColumns(list_new("Expression:150", "Value:800"));
 	window.SetSingleSelectionMode(false);

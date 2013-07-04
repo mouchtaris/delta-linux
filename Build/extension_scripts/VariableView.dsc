@@ -14,9 +14,8 @@ using #sparrowlib;
 spw  = sparrowlib::sparrow();
 const classId = "VariableView";
 
-window = nil;
-base = nil;
-mostbase = nil;
+window	= nil;
+base	= nil;
 
 const VARIABLE_VALUE_IS_GROUP = "_<VARGROUP>_";
 
@@ -174,7 +173,7 @@ function GetTotalVariables()
 
 function Clear()
 {
-	base.Clear();
+	spw::basecall(base, "Clear");	//base..Clear();
 	AppendItem(0, "", "");
 }
 
@@ -200,11 +199,8 @@ function onClear(classId) { Clear(); }
 
 //-----------------------------------------------------------------------
 
-function onVariableActivated(invoker, id)
+function onItemActivated(id)
 {
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-
 	if (GetName(id) == "" or window.GetParent(id) != window.GetRoot())
 		return;
 
@@ -246,10 +242,10 @@ onevent ClassLoad
 		"Return the line definition for the specified local");
 	spw::class_decl_required_member_function(classId, "GetTotalVariables", "uint (void)",
 		"Return number of total locals");
-
+	spw::class_decl_required_member_function(classId, "OnItemActivated", "void (uint serial)");
+	
 	spw::class_decl_required_member_handler(classId, "BreakpointHit");
 	spw::class_decl_required_member_handler(classId, "StackFrameMoved");
-	spw::class_decl_required_member_handler(classId, "TreeListItemActivated");
 	spw::class_decl_required_member_handler(classId, "DebugResumed");
 	
 	SetProperties();
@@ -272,7 +268,7 @@ onevent Constructor
 
 	spw::inst_impl_required_member_handler(classId, "BreakpointHit", onBreakpointHit);
 	spw::inst_impl_required_member_handler(classId, "StackFrameMoved", onStackFrameMoved);
-	spw::inst_impl_required_member_handler(classId, "TreeListItemActivated", onVariableActivated);
+	spw::inst_impl_required_member_handler(classId, "OnItemActivated", onItemActivated);
 	spw::inst_impl_required_member_handler(classId, "DebugResumed", onDebugResumed);
 }
 
@@ -282,18 +278,18 @@ onevent Destructor
 {
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent)
+onevent CreateWindow (parent)
 {
-	base = spw.decorate(spw::basecomponent());
-	local nativeWindow = spw::generatewindow(base, parent);
-	mostbase = spw.decorate(spw::mostbasecomponent());
-	window = spw.decorate(spw::thiscomponent());
+	local nativeWindow	= spw::basecreatewindow(parent);
+	::base				= spw.decorate(spw::basecomponent());
+	::window			= spw.decorate(spw::thiscomponent());
+
 	window.SetTitle("Variables");
 	window.SetColumns(list_new("Name:100", "Value:350", "Line:50"));
 	window.SetSingleSelectionMode(false);

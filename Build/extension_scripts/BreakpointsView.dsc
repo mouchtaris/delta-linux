@@ -15,11 +15,9 @@ spw  = sparrowlib::sparrow();
 
 const classId = "BreakpointsView";
 
-window = nil;
-base = nil;
-mostbase = nil;
-
-debugging = false;
+window		= nil;
+base		= nil;
+debugging 	= false;
 
 //-----------------------------------------------------------------------
 
@@ -82,21 +80,19 @@ function SetHitCount(index, count)  { SetText(index, 4, count + ""); }
 
 function ChangeCondition(index, condition)
 {
-	if (index < 0 or index > window.GetTotalLines())
-		return;
-
-	spw.components.DeltaVM.ChangeBreakpointCondition(
-		GetSourceFile(index),
-		GetSourceLine(index),
-		condition
-	);
+	if (index >= 0 and index < window.GetTotalLines())
+		spw.components.DeltaVM.ChangeBreakpointCondition(
+			GetSourceFile(index),
+			GetSourceLine(index),
+			condition
+		);
 }
 
 //-----------------------------------------------------------------------
 
 function GetBreakpoint(index)
 {
-	if (index < 0 or index > window.GetTotalLines())
+	if (index < 0 or index >= window.GetTotalLines())
 		return "";
 
 	return
@@ -116,7 +112,7 @@ function GetTotalBreakpoints()
 
 function Clear()
 {
-	base.Clear();
+	spw::basecall(base, "Clear");	//base..Clear();
 }
 
 //-----------------------------------------------------------------------
@@ -133,9 +129,8 @@ function GetIndex(symbolic, line)
 
 function DeleteBreakpoint(index)
 {
-	if (index < 0 or index > window.GetTotalLines())
-		return;
-	spw.components.DeltaVM.RemoveBreakpoint(GetSourceFile(index), GetSourceLine(index));
+	if (index >= 0 and index < window.GetTotalLines())
+		spw.components.DeltaVM.RemoveBreakpoint(GetSourceFile(index), GetSourceLine(index));
 }
 
 //-----------------------------------------------------------------------
@@ -149,9 +144,8 @@ function DeleteSelectedBreakpoint()
 
 function GotoBreakpointSource(index)
 {
-	if (index < 0 or index > window.GetTotalLines())
-		return;
-	spw.components.DeltaVM.GotoSymbolicDocument(GetSourceFile(index), GetSourceLine(index));
+	if (index >= 0 and index < window.GetTotalLines())
+		spw.components.DeltaVM.GotoSymbolicDocument(GetSourceFile(index), GetSourceLine(index));
 }
 
 //-----------------------------------------------------------------------
@@ -178,6 +172,14 @@ function ChangeSelectedBreakpointCondition()
 			ChangeCondition(index, expr);
 	}
 }
+
+//-----------------------------------------------------------------------
+
+function onBreakpointActivated(index) { GotoBreakpointSource(index); }
+
+//-----------------------------------------------------------------------
+
+function onDeleteBreakpoint(index) { DeleteBreakpoint(index); }
 
 //-----------------------------------------------------------------------
 
@@ -240,32 +242,6 @@ function onLoadWorkspace(workspace, uri)
 function onCloseWorkspace(workspace, uri)
 {
 	Clear();
-}
-
-//-----------------------------------------------------------------------
-
-function onBreakpointActivated(invoker, index)
-{
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-
-	if (index < 0 or index > window.GetTotalLines())
-		return;
-
-	GotoBreakpointSource(index);
-}
-
-//-----------------------------------------------------------------------
-
-function onDeleteBreakpoint(invoker, index)
-{
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-
-	if (index < 0 or index > window.GetTotalLines())
-		return;
-
-	DeleteBreakpoint(index);
 }
 
 //-----------------------------------------------------------------------
@@ -343,6 +319,9 @@ onevent ClassLoad
 	spw::class_decl_required_member_function(classId, "ChangeSelectedBreakpointCondition", "void (void)",
 		"Change the condition of the selected breakpoint");
 
+	spw::class_decl_required_member_function(classId, "OnItemActivated", "void (uint index)");
+	spw::class_decl_required_member_function(classId, "OnDeleteItem", "void (uint index)");
+
 	spw::class_decl_required_member_handler(classId, "BreakpointAdded");
 	spw::class_decl_required_member_handler(classId, "BreakpointRemoved");
 	spw::class_decl_required_member_handler(classId, "BreakpointEnabled");
@@ -351,8 +330,6 @@ onevent ClassLoad
 	spw::class_decl_required_member_handler(classId, "BreakpointLineChanged");
 	spw::class_decl_required_member_handler(classId, "WorkspaceLoaded");
 	spw::class_decl_required_member_handler(classId, "WorkspaceClosed");
-	spw::class_decl_required_member_handler(classId, "ListItemActivated");
-	spw::class_decl_required_member_handler(classId, "DeleteListItem");
 	spw::class_decl_required_member_handler(classId, "DebugStarted");
 	spw::class_decl_required_member_handler(classId, "DebugStopped");
 	spw::class_decl_required_member_handler(classId, "DebugResumed");
@@ -382,6 +359,9 @@ onevent Constructor
 	spw::inst_impl_required_member_function(classId, "GotoSelectedBreakpointSource", GotoSelectedBreakpointSource);
 	spw::inst_impl_required_member_function(classId, "ChangeSelectedBreakpointCondition", ChangeSelectedBreakpointCondition);
 
+	spw::inst_impl_required_member_function(classId, "OnItemActivated", onBreakpointActivated);
+	spw::inst_impl_required_member_function(classId, "OnDeleteItem", onDeleteBreakpoint);
+
 	spw::inst_impl_required_member_handler(classId, "BreakpointAdded", onInsertBreakpoint);
 	spw::inst_impl_required_member_handler(classId, "BreakpointRemoved", onRemoveBreakpoint);
 	spw::inst_impl_required_member_handler(classId, "BreakpointEnabled", onEnableBreakpoint);
@@ -390,8 +370,6 @@ onevent Constructor
 	spw::inst_impl_required_member_handler(classId, "BreakpointLineChanged", onChangeBreakpointLine);
 	spw::inst_impl_required_member_handler(classId, "WorkspaceLoaded", onLoadWorkspace);
 	spw::inst_impl_required_member_handler(classId, "WorkspaceClosed", onCloseWorkspace);
-	spw::inst_impl_required_member_handler(classId, "ListItemActivated", onBreakpointActivated);
-	spw::inst_impl_required_member_handler(classId, "DeleteListItem", onDeleteBreakpoint);
 	spw::inst_impl_required_member_handler(classId, "DebugStarted", onDebugStarted);
 	spw::inst_impl_required_member_handler(classId, "DebugStopped", onDebugStopped);
 	spw::inst_impl_required_member_handler(classId, "DebugResumed", onDebugResumed);
@@ -410,19 +388,18 @@ onevent Destructor
 
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent)
+onevent CreateWindow (parent)
 {
-	base = spw.decorate(spw::basecomponent());
-	local nativeWindow = spw::generatewindow(base, parent);
-	
-	mostbase = spw.decorate(spw::mostbasecomponent());
-	window = spw.decorate(spw::thiscomponent());
+	local nativeWindow	= spw::basecreatewindow(parent);
+	::base				= spw.decorate(spw::basecomponent());
+	::window			= spw.decorate(spw::thiscomponent());
+
 	window.SetTitle("Breakpoints");
 	window.SetColumns(list_new(" :25", "Source File:300", "Line:50", "Condition:200", "Hit Count:100"));
 	window.SetImages(list_new("breakpoint_enabled", "breakpoint_disabled"));

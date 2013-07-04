@@ -124,15 +124,19 @@ namespace ide
 
 		DECLARE_EXPORTED_FUNCTION_(void, SetItemHasChildren, (uint serial, bool val),
 			_("Force appearance of the button next to the item. Useful when adding children while expanding items"));
-		DECLARE_EXPORTED_FUNCTION_(void, Collapse, (uint serial),
-			_("Collapse the given item"));
-		DECLARE_EXPORTED_FUNCTION_(void, Expand, (uint serial),
-			_("Expand the given item"));
-		DECLARE_EXPORTED_FUNCTION_(void, EnsureVisible, (uint serial),
+		DECLARE_EXPORTED_FUNCTION_(void, Collapse, (uint serial), _("Collapse the given item"));
+		DECLARE_EXPORTED_FUNCTION_(void, Expand, (uint serial), _("Expand the given item"));
+		DECLARE_EXPORTED_FUNCTION_(void, EnsureVisible, (uint serial), 
 			_("Ensure that the given item is visible by scrolling and/or expanding items"));
-		DECLARE_EXPORTED_FUNCTION_(void, ScrollTo, (uint serial),
-			_("Scroll to a given item"));
+		DECLARE_EXPORTED_FUNCTION_(void, ScrollTo, (uint serial), _("Scroll to a given item"));
 
+		DECLARE_EXPORTED_FUNCTION_(void, OnItemActivated, (uint serial), _("Handler for an item being activated"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnItemExpanding, (uint serial), _("Handler for an item being expanded"));		
+		DECLARE_EXPORTED_FUNCTION_(void, OnItemCollapsing, (uint serial), _("Handler for an item being activated"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnItemSelected, (uint serial), _("Handler for an item being selected"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnDeleteItem, (uint serial), _("Handler for deleting an item"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnWidthChanged, (uint width), _("Handler for when the treelistctrl width has changed"));
+		
 	protected:
 		///--- protected API
 		virtual void ComponentAddedUserCommand(const String& path, const UserCommand& cmd);

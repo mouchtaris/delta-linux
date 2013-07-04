@@ -58,6 +58,15 @@ namespace ide
 			_("Create the contained component of the quick watch"));
 		DECLARE_EXPORTED_FUNCTION_(void, AddNavigationButtons, (void),
 			_("Adds navagation buttons in the quick watch"));
+
+		DECLARE_EXPORTED_FUNCTION_(void, OnBack, (void), _("Handler for pressing 'back'"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnForward, (void), _("Handler for pressing 'forward'"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnReevaluate, (const String& expression), _("Handler for pressing 'reevaluate'"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnAddwatch, (const String& expression), _("Handler for pressing 'add watch'"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnExpressionChanged, (const String& expression), _("Handler for when an expression changes"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnViewerWidthChanged, (uint width), _("Handler for when the width of the viewer changes"));
+		DECLARE_EXPORTED_FUNCTION_(void, OnClosed, (void), _("Handler for when the quick watch closes"));
+
 	private:
 		///--- event table
 		DECLARE_EVENT_TABLE();

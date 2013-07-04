@@ -20,11 +20,9 @@ spw = sparrowlib::sparrow();
 
 const classId = "ExpressionTreeListView";
 
-window = nil;
-base = nil;
-mostbase = nil;
-
-treeData = [];
+window		= nil;
+base		= nil;
+treeData	= [];
 
 //-------------------------------------------------------//
 //---- Communication Protocol ---------------------------//
@@ -527,12 +525,12 @@ function GetFullExpression(id)
 function Clear()
 {
 	treeData = [];
-	base.Clear();
+	spw::basecall(base, "Clear");	//base..Clear();
 }
 
 //-----------------------------------------------------------------------
 
-function ItemExpanding(id)
+function OnItemExpanding(id)
 {
 	local t = treeData[id];
 	if (t and not t.expanded) {
@@ -541,15 +539,6 @@ function ItemExpanding(id)
 		assert contents;
 		AddContents(id, 0, contents);
 	}
-}
-
-//-----------------------------------------------------------------------
-
-function onTreeListItemExpanding(invoker, id)
-{
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-	ItemExpanding(id);
 }
 
 //-----------------------------------------------------------------------
@@ -584,7 +573,7 @@ onevent ClassLoad
 		"Clear the tree list view");
 	spw::class_decl_required_member_function(classId, "SelectDecoder", "void (String format)",
 		"Selects the decoder for the expression evaluation");
-	spw::class_decl_required_member_handler(classId, "TreeListItemExpanding");
+	spw::class_decl_required_member_function(classId, "OnItemExpanding", "void (uint serial)");
 	spw::class_decl_required_member_handler(classId, "ExpressionEvaluationFormatChanged");
 
 	spw::class_decl_required_member_command(
@@ -617,7 +606,7 @@ onevent Constructor
 	spw::inst_impl_required_member_function(classId, "UpdateExpression", UpdateExpression);
 	spw::inst_impl_required_member_function(classId, "Clear", Clear);
 	spw::inst_impl_required_member_function(classId, "SelectDecoder", SelectDecoder);
-	spw::inst_impl_required_member_handler(classId, "TreeListItemExpanding", onTreeListItemExpanding);
+	spw::inst_impl_required_member_function(classId, "OnItemExpanding", OnItemExpanding);
 	spw::inst_impl_required_member_handler(classId, "ExpressionEvaluationFormatChanged", onExpressionEvaluationFormatChanged);
 
 	spw::inst_impl_required_member_command(classId, "ConfigureExpressionTreeListView", 
@@ -635,18 +624,17 @@ onevent Destructor
 {
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent)
+onevent CreateWindow (parent)
 {
-	base = spw.decorate(spw::basecomponent());
-	local nativeWindow = spw::generatewindow(base, parent);
-	mostbase = spw.decorate(spw::mostbasecomponent());
-	window = spw.decorate(spw::thiscomponent());
+	local nativeWindow	= spw::basecreatewindow(parent);
+	::base				= spw.decorate(spw::basecomponent());
+	::window			= spw.decorate(spw::thiscomponent());
 	window.SetRootVisibility(false);
 	return nativeWindow;
 }

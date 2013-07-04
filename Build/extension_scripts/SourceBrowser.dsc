@@ -16,8 +16,6 @@ const nl 					= "\n";
 const classId 				= "SourceBrowser";
 sparrowDir 					= spw::installationdir() + "/";
 window 						= nil;
-base 						= nil;
-mostbase 					= nil;
 treeData 					= [];
 ui							= nil;
 config						= nil;
@@ -1440,11 +1438,9 @@ function UIClass{
 		method RemoveEmptyParent(handle) {
 			if (window.GetTotalChildren(handle, false) == 0) window.Remove(handle);
 		},
-		method Init(parentWindow){			
-			base = spw.decorate (spw::basecomponent());
-			local nativeWindow = spw::generatewindow(base, parentWindow);
-			mostbase = spw.decorate(spw::thiscomponent());
-			window = spw.decorate(spw::thiscomponent());
+		method Init(parent){
+			local nativeWindow = spw::basecreatewindow(parent);
+			::window = spw.decorate(spw::thiscomponent());
 			window.SetTitle("Source Browser");
 			window.SetRootVisibility(false);						
 			window.SetColumns(list_new("Data:"+config.dataColumnWidth, "Value:"+config.valueColumnWidth));
@@ -1703,8 +1699,8 @@ function Signals {
 					{ ::editor = fileEditor; Browse(uri, false); }
 			},
 			
-			@itemDoubleClicked : onevent (invoker, id) {	
-				if (config and (invoker.class_id == mostbase.class_id and invoker.serial == mostbase.serial)) {
+			@itemActivated : onevent (id) {
+				if (config) {
 					if (spw.components.EditorManager.serial == 0)	
 						spw.components.Shell.AddComponent("EditorManager", 6);								
 					spw.components.Shell.FocusComponent(spw.components.EditorManager);
@@ -1715,6 +1711,7 @@ function Signals {
 					}
 				}
 			}
+			
 		];
 	return signals;
 }
@@ -1751,10 +1748,10 @@ onevent ClassLoad {
 	); 
 	spw::registerimage("refresh",  sparrowDir + "resources/refresh.png");
 
-	spw::class_decl_required_member_handler(classId, "TreeListItemActivated");
+	spw::class_decl_required_member_function(classId, "OnItemActivated", "void (uint serial)");
 	spw::class_decl_required_member_handler(classId, "FocusedEditorChanged");
 	spw::class_decl_required_member_handler(classId, "FileOpened");
-
+	
 	spw::class_decl_required_member_command(
 		[
 			{.class			: "UserCommandDesc"			},
@@ -1791,7 +1788,7 @@ onevent ClassUnload {}
 //---- Instance Creation --------------------------------//
 
 onevent Constructor {
-	spw::inst_impl_required_member_handler(classId, "TreeListItemActivated", Signals().itemDoubleClicked);
+	spw::inst_impl_required_member_function(classId, "OnItemActivated", Signals().itemActivated);
 	spw::inst_impl_required_member_handler(classId, "FocusedEditorChanged", Signals().editorChanged);
 	spw::inst_impl_required_member_handler(classId, "FileOpened", Signals().fileOpened);
 
@@ -1805,13 +1802,13 @@ onevent Destructor
 {
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent) {
+onevent CreateWindow (parent) {
 	config = ConfigDataSingleton();
 	config.Refresh();
 	

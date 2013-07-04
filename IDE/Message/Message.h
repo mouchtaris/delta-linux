@@ -36,15 +36,16 @@ public:
 	class _IDE_API Endpoint {
 	public:
 		Endpoint (void);
-		Endpoint (const std::string& classId, const std::string& function) :
-			classId(classId), serial(0), function(function) {}
-		Endpoint (const std::string& classId, uint serial, const std::string& function) :
-			classId(classId), serial(serial), function(function) {}
+		Endpoint (const std::string& classId, const std::string& function, bool baseCall = false) :
+			classId(classId), serial(0), function(function), baseCall(baseCall) {}
+		Endpoint (const std::string& classId, uint serial, const std::string& function, bool baseCall = false) :
+			classId(classId), serial(serial), function(function), baseCall(baseCall) {}
 		~Endpoint (void);
 
 		std::string classId;
 		uint		serial;
 		std::string function;
+		bool		baseCall;
 
 		//**************************************************************
 
@@ -53,11 +54,6 @@ public:
 
 		bool operator== (const Endpoint& p) const
 			{ return classId == p.classId && serial == p.serial && function == p.function; }
-
-		//**************************************************************
-
-		bool operator!= (const std::string& PORT_UNUSED_PARAM(id)) const { return classId != classId; }
-		bool operator== (const std::string& PORT_UNUSED_PARAM(id)) const { return classId == classId; }
 
 		//**************************************************************
 

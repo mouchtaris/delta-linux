@@ -242,12 +242,12 @@ IMPLEMENT_FUNCTOR(ClassRemoveMemberFunction, 2, "class_remove_member_function");
 #define InstanceImplementRequiredMemberFunctionCaller FunctionCaller<std::string, std::string, DeltaValue*>
 IMPLEMENT_FUNCTOR(InstanceImplementRequiredMemberFunction, 3, "inst_impl_required_member_function");
 
-// void spw_inst_impl_dynamic_member_function(class_id, function_name, function, signature[, doc_string]).
-#define InstanceImplementDynamicMemberFunctionCaller DefaultLastArgFunctionCaller<std::string, std::string, DeltaValue*, std::string>
+// void spw_inst_impl_dynamic_member_function(handle, function_name, function, signature[, doc_string]).
+#define InstanceImplementDynamicMemberFunctionCaller DefaultLastArgFunctionCaller<Component*, std::string, DeltaValue*, std::string>
 IMPLEMENT_FUNCTOR_WITH_DEFAULT_LAST_ARG(InstanceImplementDynamicMemberFunction, 4, 5, "inst_impl_dynamic_member_function");
 
-// void spw_inst_remove_dynamic_member_function(class_id, function_name).
-#define InstanceRemoveDynamicMemberFunctionCaller FunctionCaller<std::string, std::string>
+// void spw_inst_remove_dynamic_member_function(handle, function_name).
+#define InstanceRemoveDynamicMemberFunctionCaller FunctionCaller<Component*, std::string>
 IMPLEMENT_FUNCTOR(InstanceRemoveDynamicMemberFunction, 2, "inst_remove_dynamic_member_function");
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -277,12 +277,12 @@ IMPLEMENT_FUNCTOR(ClassRemoveMemberHandler, 2, "class_remove_member_handler");
 #define InstanceImplementRequiredMemberHandlerCaller FunctionCaller<std::string, std::string, DeltaValue*>
 IMPLEMENT_FUNCTOR(InstanceImplementRequiredMemberHandler, 3, "inst_impl_required_member_handler");
 
-// void spw_inst_impl_dynamic_member_handler(class_id, signal, function[, doc_string]).
-#define InstanceImplementDynamicMemberHandlerCaller DefaultLastArgFunctionCaller<std::string, std::string, DeltaValue*>
+// void spw_inst_impl_dynamic_member_handler(handle, signal, function[, doc_string]).
+#define InstanceImplementDynamicMemberHandlerCaller DefaultLastArgFunctionCaller<Component*, std::string, DeltaValue*>
 IMPLEMENT_FUNCTOR_WITH_DEFAULT_LAST_ARG(InstanceImplementDynamicMemberHandler, 3, 4, "inst_impl_dynamic_member_handler");
 
-// void spw_inst_remove_dynamic_member_handler(class_id, handler).
-#define InstanceRemoveDynamicMemberHandlerCaller FunctionCaller<std::string, std::string>
+// void spw_inst_remove_dynamic_member_handler(handle, handler).
+#define InstanceRemoveDynamicMemberHandlerCaller FunctionCaller<Component*, std::string>
 IMPLEMENT_FUNCTOR(InstanceRemoveDynamicMemberHandler, 2, "inst_remove_dynamic_member_handler");
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -312,12 +312,12 @@ IMPLEMENT_FUNCTOR(ClassRemoveMemberCommand, 2, "class_remove_member_command");
 #define InstanceImplementRequiredMemberCommandCaller FunctionCaller<std::string, std::string, DeltaValue*>
 IMPLEMENT_FUNCTOR(InstanceImplementRequiredMemberCommand, 3, "inst_impl_required_member_command");
 
-// void spw_inst_impl_dynamic_member_command(user_cmd, command, function[, doc_string]).
-#define InstanceImplementDynamicMemberCommandCaller DefaultLastArgFunctionCaller<UserCommandDesc, std::string, DeltaValue*>
-IMPLEMENT_FUNCTOR_WITH_DEFAULT_LAST_ARG(InstanceImplementDynamicMemberCommand, 3, 4, "inst_impl_dynamic_member_command");
+// void spw_inst_impl_dynamic_member_command(handle, user_cmd, command, function[, doc_string]).
+#define InstanceImplementDynamicMemberCommandCaller DefaultLastArgFunctionCaller<Component*, UserCommandDesc, std::string, DeltaValue*>
+IMPLEMENT_FUNCTOR_WITH_DEFAULT_LAST_ARG(InstanceImplementDynamicMemberCommand, 4, 5, "inst_impl_dynamic_member_command");
 
-// void spw_inst_remove_dynamic_member_command(class_id, command).
-#define InstanceRemoveDynamicMemberCommandCaller FunctionCaller<std::string, std::string>
+// void spw_inst_remove_dynamic_member_command(handle, command).
+#define InstanceRemoveDynamicMemberCommandCaller FunctionCaller<Component*, std::string>
 IMPLEMENT_FUNCTOR(InstanceRemoveDynamicMemberCommand, 2, "inst_remove_dynamic_member_command");
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -449,19 +449,23 @@ IMPLEMENT_FUNCTOR(ClassDeclareMemberSignal, 3, "class_decl_member_signal");
 	};
 
 	//-----------------------------------------------------------------------
-	// {wxWindow|Nil} spw_generatewindow(handle, parent).
+	// {wxWindow|Nil} spw_basecreatewindow(parent).
 	//
-	class GenerateWindowFunctor {
+	class BaseCreateWindowFunctor {
 	public:
-		bool HasValidArgCount		(uint totalArgs) const	{ return totalArgs == 2; }
-		const char* ArgCountError	(void) const			{ return "Two arguments expected"; }
-		const char* Id				(void) const			{ return "generatewindow"; }
+		bool HasValidArgCount		(uint totalArgs) const	{ return totalArgs == 1; }
+		const char* ArgCountError	(void) const			{ return "One argument expected"; }
+		const char* Id				(void) const			{ return "basecreatewindow"; }
 
 		void operator()(DeltaVirtualMachine* vm, const DeltaArgumentVec& arguments) const
 		{
-			boost::tuple<Handle, wxWindow*> args;
+			boost::tuple<wxWindow*> args;
 			TypeConverter::DeltaToCpp(args, arguments);
-			to_delta<wxWindow*>().convert(DLIB_RETVAL_PTR, ARG(0)->GenerateWindow(ARG(1)));
+			ScriptInstanceProxy* script = DeltaScriptProxy::GetScriptInstance(DPTR(vm));
+			wxWindow* result = (wxWindow*) 0;
+			if (script && script->base && script->IsBaseValid())
+				result = script->base->GenerateWindow(ARG(0));
+			to_delta<wxWindow*>().convert(DLIB_RETVAL_PTR, result);
 		}
 	};
 
@@ -502,7 +506,7 @@ IMPLEMENT_FUNCTOR(ClassDeclareMemberSignal, 3, "class_decl_member_signal");
 		INSTALL_LIBRARY_FUNCTOR(RegisterImageFunctor);
 		INSTALL_LIBRARY_FUNCTOR(UnregisterImageFunctor);
 
-		INSTALL_LIBRARY_FUNCTOR(GenerateWindowFunctor);
+		INSTALL_LIBRARY_FUNCTOR(BaseCreateWindowFunctor);
 
 		TypeConverter::Initialize();
 		DeltaScriptProxy::Initialize();

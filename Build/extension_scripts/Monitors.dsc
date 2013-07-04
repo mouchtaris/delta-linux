@@ -16,9 +16,8 @@ spw  = sparrowlib::sparrow();
 
 const classId = "Monitors";
 
-window = nil;
-base = nil;
-mostbase = nil;
+window	= nil;
+base	= nil;
 
 inBreakpoint = false;
 
@@ -107,7 +106,8 @@ function RemoveMonitor(id)
 
 function Clear()
 {
-	base.Clear();
+	//base.Clear();
+	spw::basecall(base, "Clear");
 	local root = AppendItem(0, "", "");
 	AppendItem(root, "", "");
 }
@@ -123,27 +123,8 @@ function Refresh()
 
 //-----------------------------------------------------------------------
 
-function onBreakpointHit(invoker, uri, line)
+function onItemActivated(id)
 {
-	Refresh();
-	inBreakpoint = true;
-}
-
-//-----------------------------------------------------------------------
-
-function onUpdateMonitors(classId) { Refresh(); }
-
-//-----------------------------------------------------------------------
-
-function onClearMonitors(classId) { Clear(); }
-
-//-----------------------------------------------------------------------
-
-function onTreeListItemActivated(invoker, id)
-{
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-
 	if (window.GetParent(id) == window.GetRoot())
 	{
 		local list = spw.components.Shell.PromptMultipleInput(
@@ -170,14 +151,27 @@ function onTreeListItemActivated(invoker, id)
 
 //-----------------------------------------------------------------------
 
-function onDeleteTreeListItem(invoker, id)
+function onDeleteItem(id)
 {
-	if (invoker.class_id != mostbase.class_id or invoker.serial != mostbase.serial)
-		return;
-
 	if (GetMonitorName(id) != "" and window.GetParent(id) == window.GetRoot())
 		window.RemoveExpression(id);
 }
+
+//-----------------------------------------------------------------------
+
+function onBreakpointHit(invoker, uri, line)
+{
+	Refresh();
+	inBreakpoint = true;
+}
+
+//-----------------------------------------------------------------------
+
+function onUpdateMonitors(classId) { Refresh(); }
+
+//-----------------------------------------------------------------------
+
+function onClearMonitors(classId) { Clear(); }
 
 //-----------------------------------------------------------------------
 
@@ -218,12 +212,12 @@ onevent ClassLoad
 		"Return the id of the specified monitor");
 	spw::class_decl_required_member_function(classId, "GetMonitorValue", "String (uint id)",
 		"Return the value of the specified monitor");
+	spw::class_decl_required_member_function(classId, "OnItemActivated", "void (uint serial)");
+	spw::class_decl_required_member_function(classId, "OnDeleteItem", "void (uint serial)");
 
 	spw::class_decl_required_member_handler(classId, "BreakpointHit");
 	spw::class_decl_required_member_handler(classId, "StackFrameMoved");
 	spw::class_decl_required_member_handler(classId, "DebugStopped");
-	spw::class_decl_required_member_handler(classId, "TreeListItemActivated");
-	spw::class_decl_required_member_handler(classId, "DeleteTreeListItem");
 	spw::class_decl_required_member_handler(classId, "DebugResumed");
 }
 
@@ -243,12 +237,12 @@ onevent Constructor
 	spw::inst_impl_required_member_function(classId, "GetTotalMonitors", GetTotalMonitors);
 	spw::inst_impl_required_member_function(classId, "GetMonitorName", GetMonitorName);
 	spw::inst_impl_required_member_function(classId, "GetMonitorValue", GetMonitorValue);
+	spw::inst_impl_required_member_function(classId, "OnItemActivated", onItemActivated);
+	spw::inst_impl_required_member_function(classId, "OnDeleteItem", onDeleteItem);
 
 	spw::inst_impl_required_member_handler(classId, "BreakpointHit", onBreakpointHit);
 	spw::inst_impl_required_member_handler(classId, "StackFrameMoved", onUpdateMonitors);
 	spw::inst_impl_required_member_handler(classId, "DebugStopped", onClearMonitors);
-	spw::inst_impl_required_member_handler(classId, "TreeListItemActivated", onTreeListItemActivated);
-	spw::inst_impl_required_member_handler(classId, "DeleteTreeListItem", onDeleteTreeListItem);
 	spw::inst_impl_required_member_handler(classId, "DebugResumed", onDebugResumed);
 		
 	//This is a GUI component so any other initialization takes place in GenerateWindow
@@ -262,18 +256,18 @@ onevent Destructor
 	
 	//the component may be destroyed without being removed, so do this anyway
 	local shell = spw.components.Shell;
-	if (shell.serial != 0)
+	if (shell.serial != 0 and window)
 		shell.RemoveComponent(window);
 }
 
 //-----------------------------------------------------------------------
 
-function GenerateWindow(parent)
+onevent CreateWindow (parent)
 {
-	base = spw.decorate(spw::basecomponent());
-	local nativeWindow = spw::generatewindow(base, parent);
-	mostbase = spw.decorate(spw::mostbasecomponent());
-	window = spw.decorate(spw::thiscomponent());
+	local nativeWindow	= spw::basecreatewindow(parent);
+	::base				= spw.decorate(spw::basecomponent());
+	::window			= spw.decorate(spw::thiscomponent());
+
 	window.SetTitle("Monitors");
 	window.SetColumns(list_new("Monitor:150", "Value:500"));
 	window.SetSingleSelectionMode(false);

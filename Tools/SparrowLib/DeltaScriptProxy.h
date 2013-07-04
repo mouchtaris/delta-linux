@@ -74,11 +74,11 @@ namespace ide
 		//--- Instance function registration
 		static bool InstanceImplementRequiredMemberFunction(std::string* error, DeltaVirtualMachine* vm,
 			const std::string& classId, const std::string& funcName, DeltaValue* func);
-		static bool InstanceImplementDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm, 
-			const std::string& classId, const std::string& funcName, DeltaValue* func, 
-			const std::string& signature, const std::string& doc = std::string());
+		static bool InstanceImplementDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm, Component* comp,
+			const std::string& funcName, DeltaValue* func, const std::string& signature, const std::string& doc = std::string());
 
-		static bool InstanceRemoveDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm, const std::string& classId, const std::string& funcName);
+		static bool InstanceRemoveDynamicMemberFunction(std::string* error, DeltaVirtualMachine* vm, 
+			Component* comp, const std::string& funcName);
 
 		///////////////////////////
 		//--- Handler registration
@@ -101,10 +101,10 @@ namespace ide
 		static bool InstanceImplementRequiredMemberHandler(std::string* error, DeltaVirtualMachine* vm,
 			const std::string& classId, const std::string& signal, DeltaValue* func);
 		static bool InstanceImplementDynamicMemberHandler(std::string* error, DeltaVirtualMachine* vm,
-			const std::string& classId, const std::string& signal, DeltaValue* func,
-			const std::string& doc = std::string());
+			Component* comp, const std::string& signal, DeltaValue* func, const std::string& doc = std::string());
 
-		static bool InstanceRemoveDynamicMemberHandler(std::string* error, DeltaVirtualMachine* vm, const std::string& classId, const std::string& signal);
+		static bool InstanceRemoveDynamicMemberHandler(std::string* error, DeltaVirtualMachine* vm,
+			Component* comp, const std::string& signal);
 
 		///////////////////////////
 		//--- Command registration
@@ -126,11 +126,11 @@ namespace ide
 		//--- Instance function registration
 		static bool InstanceImplementRequiredMemberCommand(std::string* error, DeltaVirtualMachine* vm,
 			const std::string& classId, const std::string& funcName, DeltaValue* func);
-		static bool InstanceImplementDynamicMemberCommand(std::string* error, DeltaVirtualMachine* vm, 
-			const UserCommandDesc& cmd, const std::string& command, DeltaValue* func, 
-			const std::string& doc = std::string());
+		static bool InstanceImplementDynamicMemberCommand(std::string* error, DeltaVirtualMachine* vm, Component* comp,
+			const UserCommandDesc& cmd, const std::string& command, DeltaValue* func, const std::string& doc = std::string());
 
-		static bool InstanceRemoveDynamicMemberCommand(std::string* error, DeltaVirtualMachine* vm, const std::string& classId, const std::string& command);
+		static bool InstanceRemoveDynamicMemberCommand(std::string* error, DeltaVirtualMachine* vm,
+			Component* comp, const std::string& command);
 
 		///////////////////////////
 		//--- Signal
@@ -160,8 +160,10 @@ namespace ide
 		///--- private API
 		static bool DispatchClassMemberFunction(Component* instance, EXPORTED_FUNCTION_ARGS);
 		static bool DispatchRequiredMemberFunction(Component* instance, EXPORTED_FUNCTION_ARGS);
-		static bool DispatchDynamicMemberFunction(Component* instance, EXPORTED_FUNCTION_ARGS);
-		static bool InvokeMemberFunction(Component* instance, bool isClassMember, bool isDynamic, EXPORTED_FUNCTION_ARGS);
+		static bool DispatchDynamicMemberFunction(DeltaVirtualMachine* vm, const DeltaValue& function, Component* instance, EXPORTED_FUNCTION_ARGS);
+		static bool InvokeMemberFunction(Component* instance, bool isClassMember, EXPORTED_FUNCTION_ARGS);
+		static bool InvokeDeltaMemberFunction(DeltaVirtualMachine* vm, DeltaValue function, Component* instance, bool isClassMember, bool isDynamic, EXPORTED_FUNCTION_ARGS);
+
 		static bool DispatchStaticFunction(EXPORTED_FUNCTION_ARGS);
 
 		static const String DocumentationFunction(const String& doc, const ComponentFuncEntry& funcEntry);
@@ -179,11 +181,9 @@ namespace ide
 			const std::string& doc, std::string* error);
 		static bool InstanceImplementFunction(DeltaVirtualMachine* vm, const std::string& classId,
 			const std::string& funcName, DeltaValue* function, std::string* error);
-		static bool ImplementDynamicFunction(DeltaVirtualMachine* vm, const std::string& classId, 
-			const std::string& funcName, DeltaValue* function, const std::string& signature, bool slot,
-			const std::string& doc, std::string* error);
-		static bool RemoveDynamicFunction(DeltaVirtualMachine* vm, const std::string& classId,
-			const std::string& funcName, std::string* error);
+		static bool ImplementDynamicFunction(DeltaVirtualMachine* vm, Component* comp, const std::string& funcName,
+			DeltaValue* function, const std::string& signature, bool slot, const std::string& doc, std::string* error);
+		static bool RemoveDynamicFunction(Component* comp, const std::string& funcName, std::string* error);
 		static bool AddSignal(DeltaVirtualMachine* vm, const std::string& classId, const std::string& signal,
 		const std::string& arglist, bool isStatic, std::string* error);
 

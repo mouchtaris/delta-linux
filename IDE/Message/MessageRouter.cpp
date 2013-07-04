@@ -80,20 +80,31 @@ bool MessageRouter::DispatchMessage (
 	)
 {
 	const std::string			funcName	= msg.GetDst().function;
-	const ComponentEntry&		entry		= _GetComponentEntry(msg);
+	const ComponentEntry*		entry		= &_GetComponentEntry(msg);
 	const ComponentFuncEntry*	func		= (const ComponentFuncEntry*) 0;
 
-	Component* comp = msg.GetDst().serial != 0 ? entry.GetInstance(msg.GetDst().serial) : entry.GetFocusedInstance();
-	if (comp) 	// Dynamic functions have higher lookup priiority than methods / static functions.
+	Component* comp = msg.GetDst().serial != 0 ? entry->GetInstance(msg.GetDst().serial) : entry->GetFocusedInstance();
+	if (comp && !msg.GetDst().baseCall) {	//base calls don't use the most derived and they override any dynamic functions
+		while(Component* derived = comp->GetDerivedInstance())	// Get most derived
+			comp = derived;
+		entry = &_GetComponentEntry(comp->GetClassId());
+
+		// Dynamic functions have higher lookup priiority than methods / static functions.
 		if (const ComponentFuncEntry& entry = comp->GetDynamicFuncEntry(funcName)) {
 			func = &entry;
 			assert(func->IsMemberFunc());
 		}
+	}
 
 	if (!func)
-		func = &entry.GetFuncEntry(funcName);
+		func = &entry->GetFuncEntry(funcName);
 
 	if (*func && (comp || func->IsStaticFunc())) {	// Member funcs for destroyed comps should not be dispatched.
+		if (func->IsMemberFunc()) {
+			for (; comp->GetBaseInstance(); comp = comp->GetBaseInstance())
+				if (_GetComponentEntry(comp->GetClassId()).GetFuncEntry(funcName, false))
+					break;
+		}
 		sigPreDispatchMessage(callerId, msg, false, *func);
 
 		bool returnValue = false;
@@ -166,8 +177,11 @@ void MessageRouter::DispatchSignal (const Message& msg)
 			instances[comp] = (const ComponentEntry*) 0;
 	}
 
-	BOOST_FOREACH(ComponentMap::value_type& pair, instances)	//Then match them with their derived ComponentEntries
-		pair.second = &_GetComponentEntry(pair.first->GetDerivedClassId());
+	BOOST_FOREACH(ComponentMap::value_type& pair, instances) {	//Then match them with their derived ComponentEntries
+		Component* derived = pair.first->GetDerivedInstance();		
+		const std::string derivedClassId = (derived ? derived : pair.first)->GetClassId();
+		pair.second = &_GetComponentEntry(derivedClassId);
+	}
 
 	Message result;	//ignored
 	BOOST_FOREACH(ComponentMap::value_type& pair, instances) {	//Finally apply the function to the correct entry in the hierarchy
