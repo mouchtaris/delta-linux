@@ -364,7 +364,7 @@ bool DeltaVirtualMachine::ExtCallFunctionCommit (DeltaValue* functor) {
 	DELTA_VALIDATE_VM_SERIALNO_EX(this, false);
 	DELTA_RETURN_IF_PRODUCEDERROR(this, true);
 	DELTA_VALIDATE_EXECUTION_LOOP_PASSPORT(this, true);
-	DELTA_ON_UNWINDING_RETURN_TEST(this, true);
+//	DELTA_ON_UNWINDING_RETURN_TEST(this, true);
 
 	if (pc != DELTA_PC_PROGRAM_END) {	// When calling a library function the saved (prog end) pc is restored.
 
@@ -377,7 +377,7 @@ bool DeltaVirtualMachine::ExtCallFunctionCommit (DeltaValue* functor) {
 		DELTA_VALIDATE_VM_SERIALNO_EX(this, false);
 		DELTA_RETURN_IF_PRODUCEDERROR(this, true);
 		DELTA_VALIDATE_EXECUTION_LOOP_PASSPORT(this, true);
-		DELTA_ON_UNWINDING_RETURN_TEST(this, true);
+//		DELTA_ON_UNWINDING_RETURN_TEST(this, true);
 	}
 
 	// We should ensure that the stack pointers remain intact and that

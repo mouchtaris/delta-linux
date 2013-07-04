@@ -335,7 +335,7 @@ void DeltaExceptionHandling::NativeTrapDisable (void) {
 
 	if (expectedNativeTrapDisableCalls) {
 		DASSERT(
-			!callStack.empty()						&&
+			!callStack.empty()							&&
 			!callStack.front().first					&& 	// no vm in native code
 			callStack.front().second == InNativeCode	&&
 			!callStack.front().third	// no pc or func
@@ -349,14 +349,20 @@ void DeltaExceptionHandling::NativeTrapDisable (void) {
 //////////////////////////////////////////////////////////////
 
 bool DeltaExceptionHandling::NativeTrap (DeltaValue* lvalue) {
+
 	DASSERT(Invariant()); 
 	DASSERT(IsUnwinding());
+
+	UnwindNativeCode();
 
 	lvalue->Assign(GetException());
 	ResetException();
 	SetUnwinding(false);	// Stop unwinding.
+
 	return true;
 }
+
+//////////////////////////////////////////////////////////////
 
 void DeltaExceptionHandling::NativeThrow (const std::string& from, util_ui32 line, const DeltaValue& exception) {
 
@@ -449,12 +455,10 @@ bool DeltaExceptionHandling::UnwindDeltaFunction (void) {
 
 	DPTR(currVM)->DoLocalFuncReturnCode();		// Will lead to a PopFunc() and possible change of curr vm.
 
-	// Bteween cross-vm calls or nested loops; we need to exit
+	// Between cross-vm calls or nested loops; we need to exit
 	// the execution loop
-	if (IsExecutionLoop(currContext)) {
-		DPTR(currVM)->ForceCompleteExecutionByException();
+	if (IsExecutionLoop(currContext))
 		RETURN_STOP_UNWINDING;
-	}
 	else {
 		DASSERT(IsDeltaCodeContext(currContext) && prevVM == currVM);
 		RETURN_CONTINUE_UNWINDING;
@@ -503,16 +507,23 @@ bool DeltaExceptionHandling::UnwindGlobalCode (void) {
 }
 
 //////////////////////////////////////////////////////////////
+// Always manually invoked inside NativeTrap.
 
 bool DeltaExceptionHandling::UnwindNativeCode (void) {
 	
-	DASSERT(!shouldUnwind);	
+	DASSERT(
+		!callStack.empty()							&&
+		!callStack.front().first					&& 	// no vm in native code
+		callStack.front().second == InNativeCode	&&
+		!callStack.front().third					&&	// no pc or func
+		shouldUnwind
+	);	
 
 	PopFunc();
 	--expectedNativeTrapDisableCalls;
 
-	shouldUnwind = isUnwindingFromNativeCode;	// If native code on top of the lib func.
-	RETURN_STOP_UNWINDING;						// Always breaking the unwinding loop.
+	shouldUnwind = false;		// If native code on top of the lib func.
+	RETURN_STOP_UNWINDING;		// Always breaking the unwinding loop.
 }
 
 //////////////////////////////////////////////////////////////
@@ -528,7 +539,8 @@ void DeltaExceptionHandling::Unwind (DeltaVirtualMachine* caller) {
 		Invariant()			&& 
 		IsUnwinding()		&& 
 		!callStack.empty()	&&
-		callStack.front().second != InExecutionLoop
+		(callStack.front().second != InExecutionLoop &&
+		 callStack.front().second != InNativeCode)
 	);
 
 	shouldUnwind				= false;
@@ -548,9 +560,10 @@ void DeltaExceptionHandling::Unwind (DeltaVirtualMachine* caller) {
 			case InDeltaFunction	:	if (!UnwindDeltaFunction())		return;		continue;
 			case InLibraryFunction	:	if (!UnwindLibraryFunction())	return;		continue;
 			case InDeltaGlobalCode	:	if (!UnwindGlobalCode())		return;		continue;
-			case InNativeCode		:	if (!UnwindNativeCode())		return;		continue;
 			case InExecutionLoop	:	return;
-			default: DASSERT(false);
+
+			case InNativeCode		:	DASSERT(false);	// should never reveal native code while unwinding
+			default					:	DASSERT(false);
 		}
 	}
 }
