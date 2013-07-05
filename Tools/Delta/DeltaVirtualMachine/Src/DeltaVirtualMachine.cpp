@@ -293,6 +293,14 @@ DeltaVirtualMachine::~DeltaVirtualMachine() {
 
 //-----------------------------------------------------------------
 
+bool DeltaVirtualMachine::check_top_minusminus (void) {
+	DASSERT(top);
+	if (top == 1)
+		{ SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!"); return false; }
+	else
+		return true;
+}
+
 bool DeltaVirtualMachine::top_minusminus (void) {
 	if (!top)
 		{ SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!"); return false; }
@@ -385,9 +393,11 @@ void DeltaVirtualMachine::CallPreboundLibraryFunc (DeltaLibraryFunc func, util_u
 	if (!DeltaLibFuncBinder::IsValidAddress(func)) 
 		{ PrimaryError("In calling library function: not found (was removed)!"); return; }
 
-	PushUserArgumentsOnly();
-	if (!CallFuncPrepare(this, totalActuals, 0))	// Caller obligations.
-		{ DASSERT(AreRegistersResetDueToError() && HasProducedError()); return; }
+	if (!PushUserArgumentsOnly(DELTA_SAVED_ENVIRONMENT_SIZE))
+		return;
+
+	bool result = CallFuncPrepare(this, totalActuals, 0);
+	DASSERT(result);
 
 	++callingLibraryFunction;
 	DoExternFuncEnterCode(func);			// Callee obligations.
@@ -896,14 +906,19 @@ void DeltaVirtualMachine::ExtCallGlobalFunc (const char* name) {
 //	4:	PUSHARG TOPSP
 //
 
-#define	TOP_MINUSMINUS()								\
-	if (!top_minusminus())								\
-		{ DASSERT(HasProducedError()); return false; }	\
+#define	TOP_MINUSMINUS()		\
+	if (!top_minusminus())		\
+		return false; 			\
 	else --s_top
 
 bool DeltaVirtualMachine::CallFuncPrepare (DeltaVirtualMachine* caller, util_ui16 totalActuals, util_ui16 stdCallArguments) {
 
 	DASSERT(!HasProducedError() && pc <= DELTA_PC_PROGRAM_END);
+
+	if (top < DELTA_SAVED_ENVIRONMENT_SIZE) {
+		SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!");
+		return false;
+	}
 
 	DeltaValue* s_top = stack + top;	// For fast access.
 
@@ -1171,13 +1186,6 @@ void DeltaVirtualMachine::ForceCompleteExecutionByError (void) {
 		DASSERT(AreRegistersResetDueToError());
 		DASSERT(IsInvalidationCommitted());		
 	}
-}
-
-//////////////////////////////////
-
-void DeltaVirtualMachine::ForceCompleteExecutionByException (void) {
-	pc = DELTA_PC_PROGRAM_END; 	// So that we cannot execute further.
-	DASSERT(PCAtNormalProgramEnd());
 }
 
 //------------------------------------------------------------------

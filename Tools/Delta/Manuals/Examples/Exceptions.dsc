@@ -93,3 +93,16 @@ trap e
 	);
 
 //////////////////////////////////////////////////////
+// trapping stack overflow on functions or methods
+
+try
+	(lambda { @lambda(1,2,3,4,5,6,7) })();
+trap e
+	print(e, nl);
+
+try
+	[ method f { @f(11,22,33,44,55,66,77); } ].f();
+trap e
+	print(e, nl);
+
+//////////////////////////////////////////////////////

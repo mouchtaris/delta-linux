@@ -154,7 +154,7 @@ void DeltaClosureHandling::RemoveAllCalls (DeltaVirtualMachine* vm) {
 
 /////////////////////////////////////////////////////////////
 
-void DeltaVirtualMachine::SetUserFuncClosure (DeltaClosure* closure, const DeltaStdFuncInfo* funcInfo) {
+bool DeltaVirtualMachine::SetUserFuncClosure (DeltaClosure* closure, const DeltaStdFuncInfo* funcInfo) {
 
 	if (!closure == !funcInfo->HasClosureVars()) {	// Closure provision matches function requirements.
 		if (closure && DPTR(closure)->GetTotal() != (util_ui32) funcInfo->GetClosureVarsInfo().size()) {
@@ -166,6 +166,7 @@ void DeltaVirtualMachine::SetUserFuncClosure (DeltaClosure* closure, const Delta
 					funcInfo->GetClosureVarsInfo().size()
 				);
 				unullify(closure);
+				return false;
 			}
 			else	// More than needed.
 				Warning(
@@ -177,12 +178,14 @@ void DeltaVirtualMachine::SetUserFuncClosure (DeltaClosure* closure, const Delta
 		}
 	}
 	else	// Closure provision mismatch regarding function requirements.
-	if (!closure)	// No closure when needed.
+	if (!closure) {	// No closure when needed.
 		SetErrorCode(DELTA_NO_SUPPLIED_CLOSURE_ERROR)->PrimaryError(
 			"in calling '%s' no closure supplied (requires one with %u vars)", 
 			funcInfo->GetName().c_str(),
 			funcInfo->GetClosureVarsInfo().size()
 		);
+		return false;
+	}
 	else	// Closure when not needed.
 		Warning(
 			"in calling '%s' a closure is supplied (with %u vars) but none is required)", 
@@ -190,6 +193,7 @@ void DeltaVirtualMachine::SetUserFuncClosure (DeltaClosure* closure, const Delta
 			DPTR(closure)->GetTotal()
 		);
 	userFuncClosure = closure;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////

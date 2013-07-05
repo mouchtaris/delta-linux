@@ -65,45 +65,67 @@ DeltaVirtualMachine::ArgumentsPreserver::~ArgumentsPreserver()
 
 ///////////////////////////////////////////////////////////////////////
 
-bool DeltaVirtualMachine::PushUserArgumentsOnly (void) 
-	{ return PushUserArgumentsOnly(actualArguments); }
+bool DeltaVirtualMachine::PushUserArgumentsOnly (util_ui32 extraTotalArgs) 
+	{ return PushUserArgumentsOnly(actualArguments, extraTotalArgs); }
 
-bool DeltaVirtualMachine::PushUserArgumentsOnly (std::list<DeltaValue*>& userArguments) {
+///////////////////////////////////////////////////////////////////////
 
-	for (std::list<DeltaValue*>::iterator i = userArguments.begin(); i != userArguments.end(); ++i) {			
-		stack[top].Assign(DPTR(*i));	// Push on the runtime stack.
-		if (!top_minusminus())			// Stack overflow.
-			return false;
+bool DeltaVirtualMachine::PushUserArgumentsOnly (std::list<DeltaValue*>& userArguments, util_ui32 extraTotalArgs) {
+
+	bool overflow = top < (userArguments.size() + extraTotalArgs);
+
+	for (std::list<DeltaValue*>::iterator i = userArguments.begin(); i != userArguments.end(); ++i) {
+		if (!overflow) {
+			stack[top].Assign(DPTR(*i));	// Push on the runtime stack.
+			top_minusminus();
+		}
 		DeltaValueFactory::Delete(*i);	// Clear dynamic argument.
 	}
 
 	userArguments.clear();
-	return true;
+
+	if (overflow) {
+		ResetTotalActualArgs();
+		SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!"); 
+	}
+
+	return !overflow;
 }
 
 ///////////////////////////////////////////////////////////////////////
 
-bool DeltaVirtualMachine::PushUserArgumentsAndArgumentsVector (void) 
-	{ return PushUserArgumentsAndArgumentsVector(actualArguments); }
+bool DeltaVirtualMachine::PushUserArgumentsAndArgumentsVector (util_ui32 extraTotalArgs) 
+	{ return PushUserArgumentsAndArgumentsVector(actualArguments, extraTotalArgs); }
 
-bool DeltaVirtualMachine::PushUserArgumentsAndArgumentsVector (std::list<DeltaValue*>& userArguments) {
-	
+bool DeltaVirtualMachine::PushUserArgumentsAndArgumentsVector (std::list<DeltaValue*>& userArguments, util_ui32 extraTotalArgs) {
+
+	bool					overflow		= top < (userArguments.size() + 1 + extraTotalArgs);
 	DeltaValue				argumentsVal;
 	CollectableContainer*	argumentsCont   = DNULLCHECK(GetStdUtilities())->MakeVector(&argumentsVal);
 	uvector<DeltaValue>&	argumentsVector = GetStdUtilities()->GetVector(&argumentsVal);
 
 	for (std::list<DeltaValue*>::iterator i = userArguments.begin(); i != userArguments.end(); ++i) {			
-		stack[top].Assign(DPTR(*i));	// Push on the runtime stack.
-		if (!top_minusminus())			// Stack overflow.
-			return false;
-		argumentsVector.push_front(**i);
-		argumentsVector.front().SetResidencyType(DeltaValue::Contained, argumentsCont);
+		if (!overflow) {					// Only when no overflow is caused we push arguments
+			stack[top].Assign(DPTR(*i));	// Push on the runtime stack; no overloading applied with this assign
+			top_minusminus();
+			argumentsVector.push_front(**i);
+			argumentsVector.front().SetResidencyType(DeltaValue::Contained, argumentsCont);
+		}
 		DeltaValueFactory::Delete(*i);	// Clear dynamic argument.
 	}
 
 	userArguments.clear();
-	stack[top].Assign(argumentsVal);
-	return top_minusminus();
+
+	if (!overflow) {
+		stack[top].Assign(argumentsVal);
+		top_minusminus();
+	}
+	else {
+		ResetTotalActualArgs();
+		SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!"); 
+	}
+
+	return !overflow;
 }
 
 

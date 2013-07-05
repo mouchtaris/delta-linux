@@ -240,7 +240,8 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 	void				SetRetainPC (void)	{ DASSERT(!retain_pc); retain_pc = true; }
 	void				ResetRetainPC(void) { DASSERT(retain_pc); retain_pc = false; }
 
-	bool				top_minusminus (void);		// Decrement and overflow check (false returns means overflow).
+	bool				check_top_minusminus (void);	// Check if possible to decrement with overflow check (false returns means overflow).
+	bool				top_minusminus (void);			// Do decrement and overflow check (false returns means overflow).
 	
 	struct				ExecutionTerminationException {};
 
@@ -538,10 +539,10 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 
 	DeltaValue*			NewActualArgument (void);
 
-	bool				PushUserArgumentsOnly (void);
-	bool				PushUserArgumentsOnly (std::list<DeltaValue*>& userArguments);
-	bool				PushUserArgumentsAndArgumentsVector (void);
-	bool				PushUserArgumentsAndArgumentsVector (std::list<DeltaValue*>& userArguments);
+	bool				PushUserArgumentsOnly (util_ui32 extraTotalArgs = 0);
+	bool				PushUserArgumentsOnly (std::list<DeltaValue*>& userArguments, util_ui32 extraTotalArgs = 0);
+	bool				PushUserArgumentsAndArgumentsVector (util_ui32 extraTotalArgs = 0);
+	bool				PushUserArgumentsAndArgumentsVector (std::list<DeltaValue*>& userArguments, util_ui32 extraTotalArgs = 0);
 
 	void				PushSelfArgument (DeltaTable* self) 
 							{ stack[top].FromTable(self); top_minusminus();	}
@@ -616,7 +617,6 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 							{ return this == GetPrimaryFailing(); }
 
 	void				ForceCompleteExecutionByError (void);
-	void				ForceCompleteExecutionByException (void);
 	bool				AreRegistersResetDueToError (void) const;
 
 	void				InvalidateExecution (ErrorCause cause = CurrentFailed);
@@ -688,7 +688,7 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 	bool				currFuncReturnsValue;
 	DeltaClosure*		userFuncClosure;		// Closure of user-defined function (null for lib funcs).
 
-	void				SetUserFuncClosure (DeltaClosure* closure, const DeltaStdFuncInfo* func);
+	bool				SetUserFuncClosure (DeltaClosure* closure, const DeltaStdFuncInfo* func);
 	void				ResetUserFuncClosure (void)
 							{ unullify(userFuncClosure); }
 	DeltaClosure*		GetUserFuncClosure (void) const

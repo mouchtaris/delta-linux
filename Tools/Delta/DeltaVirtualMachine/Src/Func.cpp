@@ -36,6 +36,14 @@
 		);																	\
 	else
 
+#define	PUSH_SELF_ARGUMENT(_vm, _self)									\
+		DPTR(_vm)->PushSelfArgument(_self)								\
+
+#define	PUSH_METHOD_SELF												\
+	PUSH_SELF_ARGUMENT(vm, DPTR(vm)->GetSelfForCurrMethod())
+
+#define	EXTRA_SELF_ARGUMENT	1
+
 //------------------------------------------------------------------
 
 #define	CALLFUNC_ARGS \
@@ -107,13 +115,14 @@ void DELTAVALUE_OPERATION Callfunc_ProgramFunc (CALLFUNC_ARGS) {
 
 			DASSERT(!DPTR(vm)->HasProducedError());
 	
-			if (!DPTR(vm)->PushUserArgumentsAndArgumentsVector())	// Push agruments, since it is a normal program  function.
-				{ DASSERT(DPTR(vm)->HasProducedError()); return; }
-
-			DPTR(vm)->SetUserFuncClosure(closure, funcInfo);
-			DELTA_RETURN_IF_PRODUCEDERROR(vm, DELTA_RETURN_VOID);
-			DELTA_ON_UNWINDING_RETURN_TEST(vm,  DELTA_RETURN_VOID);
-			DPTR(vm)->ExecuteCallProgramFunc(vm, funcInfo->GetAddress(), totalArgs, DELTA_PROGFUNC_STD_ARGUMENTS);
+			if (DPTR(vm)->SetUserFuncClosure(closure, funcInfo))		// only when closure is set correctly args are pushed
+				if (DPTR(vm)->PushUserArgumentsAndArgumentsVector())	// push agruments, since it is a normal program  function.
+					DPTR(vm)->ExecuteCallProgramFunc(
+						vm, 
+						funcInfo->GetAddress(), 
+						totalArgs, 
+						DELTA_PROGFUNC_STD_ARGUMENTS
+					);
 		}
 		else // Calling VM is different from function owner VM.
 		IF_CALLEE_PRODUCED_ERROR_CHECK_ELSE(funcVM, "function") {
@@ -123,11 +132,22 @@ void DELTAVALUE_OPERATION Callfunc_ProgramFunc (CALLFUNC_ARGS) {
 			// Pass calling arguments.
 			bool result = DPTR(funcVM)->PushUserArgumentsAndArgumentsVector(DPTR(vm)->actualArguments);
 			DPTR(vm)->ResetTotalActualArgs();
-			if (!result)
-				{ DASSERT(DPTR(funcVM)->HasProducedError()); return; }
 
-			DELTA_INVOKE_FUNCTION_SET_TOTAL_ACTUALS_AND_CLOSURE(funcVM, totalArgs, closure, funcInfo);
-			DELTA_INVOKE_FUNCTION_OR_METHOD(funcVM, ExtCallGlobalFuncCommit(funcInfo->GetAddress(), DELTA_PROGFUNC_STD_ARGUMENTS));
+			if (result) {	// no error occured
+				DELTA_INVOKE_FUNCTION_SET_TOTAL_ACTUALS_AND_CLOSURE(
+					funcVM, 
+					totalArgs, 
+					closure, 
+					funcInfo
+				);
+				DELTA_INVOKE_FUNCTION_OR_METHOD(
+					funcVM, 
+					ExtCallGlobalFuncCommit(
+						funcInfo->GetAddress(), 
+						DELTA_PROGFUNC_STD_ARGUMENTS
+					)
+				);
+			}
 		}
 	}
 }
@@ -150,18 +170,17 @@ void DELTAVALUE_OPERATION Callfunc_MethodFunc (CALLFUNC_ARGS) {
 		if (methodVM == vm) {
 
 			DASSERT(!DPTR(vm)->HasProducedError());
-			if (!DPTR(vm)->PushUserArgumentsAndArgumentsVector())
-				{ DASSERT(DPTR(vm)->HasProducedError()); return; }
 
-			DPTR(vm)->PushSelfArgument(self);	// Not counted as part of the user arguments.
-			DELTA_RETURN_IF_PRODUCEDERROR(vm, DELTA_RETURN_VOID);
-			DELTA_ON_UNWINDING_RETURN_TEST(vm,  DELTA_RETURN_VOID);
-
-			DPTR(vm)->SetUserFuncClosure(closure, funcInfo);
-			DELTA_RETURN_IF_PRODUCEDERROR(vm, DELTA_RETURN_VOID);
-			DELTA_ON_UNWINDING_RETURN_TEST(vm, DELTA_RETURN_VOID);
-
-			DPTR(vm)->ExecuteCallProgramFunc(vm, funcInfo->GetAddress(), totalArgs, DELTA_METHOD_STD_ARGUMENTS);
+			if (DPTR(vm)->SetUserFuncClosure(closure, funcInfo))
+				if (DPTR(vm)->PushUserArgumentsAndArgumentsVector(EXTRA_SELF_ARGUMENT)) {
+					DPTR(vm)->PushSelfArgument(self);
+					DPTR(vm)->ExecuteCallProgramFunc(
+						vm, 
+						funcInfo->GetAddress(), 
+						totalArgs, 
+						DELTA_METHOD_STD_ARGUMENTS
+					);
+				}
 		}
 		else  // Calling VM is different from method owner VM.
 		IF_CALLEE_PRODUCED_ERROR_CHECK_ELSE(methodVM, "method") {
@@ -169,17 +188,28 @@ void DELTAVALUE_OPERATION Callfunc_MethodFunc (CALLFUNC_ARGS) {
 			DASSERT(methodVM);
 
 			// Pass calling arguments.
-			bool result = DPTR(methodVM)->PushUserArgumentsAndArgumentsVector(DPTR(vm)->actualArguments);
+			bool result =	DPTR(methodVM)->PushUserArgumentsAndArgumentsVector(
+								DPTR(vm)->actualArguments, 
+								EXTRA_SELF_ARGUMENT
+							);
 			DPTR(vm)->ResetTotalActualArgs();
-			if (!result)
-				{ DASSERT(DPTR(methodVM)->HasProducedError()); return; }
-			
-			DPTR(methodVM)->PushSelfArgument(self);	// Not counted as part of the arguments.
-			DELTA_RETURN_IF_PRODUCEDERROR(methodVM, DELTA_RETURN_VOID);
-			DELTA_ON_UNWINDING_RETURN_TEST(methodVM,  DELTA_RETURN_VOID);
 
-			DELTA_INVOKE_FUNCTION_SET_TOTAL_ACTUALS_AND_CLOSURE(methodVM, totalArgs, closure, funcInfo);
-			DELTA_INVOKE_FUNCTION_OR_METHOD(methodVM, ExtCallGlobalFuncCommit(funcInfo->GetAddress(), DELTA_METHOD_STD_ARGUMENTS));
+			if (result) {
+				DPTR(methodVM)->PushSelfArgument(self);
+				DELTA_INVOKE_FUNCTION_SET_TOTAL_ACTUALS_AND_CLOSURE(
+					methodVM, 
+					totalArgs, 
+					closure, 
+					funcInfo
+				);
+				DELTA_INVOKE_FUNCTION_OR_METHOD(
+					methodVM, 
+					ExtCallGlobalFuncCommit(
+						funcInfo->GetAddress(), 
+						DELTA_METHOD_STD_ARGUMENTS
+					)
+				);
+			}
 		}
 	}
 }
@@ -364,7 +394,7 @@ bool DeltaVirtualMachine::ExtCallFunctionCommit (DeltaValue* functor) {
 	DELTA_VALIDATE_VM_SERIALNO_EX(this, false);
 	DELTA_RETURN_IF_PRODUCEDERROR(this, true);
 	DELTA_VALIDATE_EXECUTION_LOOP_PASSPORT(this, true);
-//	DELTA_ON_UNWINDING_RETURN_TEST(this, true);
+	// never check unwidning and return at this point!
 
 	if (pc != DELTA_PC_PROGRAM_END) {	// When calling a library function the saved (prog end) pc is restored.
 
@@ -377,7 +407,8 @@ bool DeltaVirtualMachine::ExtCallFunctionCommit (DeltaValue* functor) {
 		DELTA_VALIDATE_VM_SERIALNO_EX(this, false);
 		DELTA_RETURN_IF_PRODUCEDERROR(this, true);
 		DELTA_VALIDATE_EXECUTION_LOOP_PASSPORT(this, true);
-//		DELTA_ON_UNWINDING_RETURN_TEST(this, true);
+
+		// never check unwidning and return at this point!
 	}
 
 	// We should ensure that the stack pointers remain intact and that
@@ -411,27 +442,29 @@ void Execute_CALLFUNC (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 }
 
 //------------------------------------------------------------------
-// TODO: the unwinding call when the activatin record is incomplete may cause errors!
 
-#define	DELTA_FAST_PROGRAM_CALL(_std_args, _extra_push, _getfunc, _precheck, _closure)					\
+#define	DELTA_FAST_PROGRAM_CALL(_std_args, _extra_args, _extra_push, _getfunc, _precheck, _closure)		\
 	const DeltaStdFuncInfo* func = _getfunc;															\
 	DASSERT(DPTR(vm)->IsValidFuncInfo(func));															\
 	_precheck;																							\
 	util_ui16 totalArgs = DPTR(vm)->GetTotalActualArgs();	/* Save before pushing! */					\
 	DASSERT(totalArgs == (util_ui32) DPTR(vm)->actualArguments.size());									\
-	/* Push agruments, since it is a normal program  function. */										\
-	DPTR(vm)->PushUserArgumentsAndArgumentsVector();													\
-	DELTA_RETURN_IF_PRODUCEDERROR(vm, DELTA_RETURN_VOID);												\
-	DELTA_ON_UNWINDING_RETURN_TEST(vm, DELTA_RETURN_VOID);												\
-	_extra_push;																						\
-	DPTR(vm)->SetUserFuncClosure(_closure, func);														\
-	DASSERT(!DPTR(vm)->HasProducedError());	/* No closure error possible as we handle it. */			\
-	DPTR(vm)->ExecuteCallProgramFunc(																	\
-		vm,																								\
-		func->GetAddress(),																				\
-		totalArgs,																						\
-		_std_args																						\
-	);
+	/* only when closure is set correctly we push arguments and self */									\
+	if (DPTR(vm)->SetUserFuncClosure(_closure, func) && 												\
+		DPTR(vm)->PushUserArgumentsAndArgumentsVector(_extra_args)) {									\
+			_extra_push;																				\
+			DPTR(vm)->ExecuteCallProgramFunc(															\
+				vm,																						\
+				func->GetAddress(),																		\
+				totalArgs,																				\
+				_std_args																				\
+			);																							\
+		}																								\
+	else {																								\
+		DELTA_RETURN_IF_PRODUCEDERROR(vm, DELTA_RETURN_VOID);											\
+		DELTA_ON_UNWINDING_RETURN_TEST(vm, DELTA_RETURN_VOID);											\
+	}
+
 
 /////////////////////////////////////////////////////////////////////
 // Calling directly a program function of the current vm.
@@ -439,6 +472,7 @@ void Execute_CALLFUNC (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 void Execute_CALLPROGRAMFUNC (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 	DELTA_FAST_PROGRAM_CALL(
 		DELTA_PROGFUNC_STD_ARGUMENTS, 
+		0,
 		UEMPTY, 
 		(const DeltaStdFuncInfo*) instr->DELTA_CALLFUNC_OPERAND_FUNC.GetValue(), 
 		DASSERT(DPTR(vm)->GetCurrFuncInfo() != func),
@@ -452,6 +486,7 @@ void Execute_CALLPROGRAMFUNC (DeltaInstruction* instr, DeltaVirtualMachine* vm) 
 void Execute_CALLLAMBDAPROGRAMFUNC (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 	DELTA_FAST_PROGRAM_CALL(
 		DELTA_PROGFUNC_STD_ARGUMENTS, 
+		0,
 		UEMPTY, 
 		DNULLCHECK(DPTR(vm)->GetCurrFuncInfo()), 
 		UEMPTY,
@@ -459,15 +494,11 @@ void Execute_CALLLAMBDAPROGRAMFUNC (DeltaInstruction* instr, DeltaVirtualMachine
 	);
 }
 
-#define	PUSH_SELF														\
-	DPTR(vm)->PushSelfArgument(DPTR(vm)->GetSelfForCurrMethod());		\
-	DELTA_RETURN_IF_PRODUCEDERROR(vm, DELTA_RETURN_VOID);				\
-	DELTA_ON_UNWINDING_RETURN_TEST(vm, DELTA_RETURN_VOID);
-
 void Execute_CALLLAMBDAMETHODFUNC (DeltaInstruction* instr, DeltaVirtualMachine* vm) {
 	DELTA_FAST_PROGRAM_CALL(
 		DELTA_METHOD_STD_ARGUMENTS, 
-		PUSH_SELF, 
+		1,
+		PUSH_METHOD_SELF, 
 		DNULLCHECK(DPTR(vm)->GetCurrFuncInfo()), 
 		UEMPTY,
 		const_cast<DeltaClosure*>(CLOSURE_HANDLERS->GetTopClosure())
