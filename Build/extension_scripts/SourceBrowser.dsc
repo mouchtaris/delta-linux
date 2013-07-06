@@ -939,6 +939,7 @@ function ElementsIteratorClass (node) {
 							local indexList		 			= tableElementChildren[j];
 							local expressionList 			= tableElementChildren[j + 1];	
 							local expressionListChildren 	= expressionList.children;
+							local expressionIndex			= 0;
 							
 							for (local indicesIndex = 0, local k = indexList.children.size; k; ++indicesIndex, --k){
 								
@@ -946,9 +947,10 @@ function ElementsIteratorClass (node) {
 									expressionIndex = indicesIndex;
 								else 
 									expressionIndex = expressionListChildren.size - 1;
-								
-								expressionListChildren[expressionIndex].parent = expressionList;
-								
+								try 
+									expressionListChildren[expressionIndex].parent = expressionList;
+								trap e
+									throw e;
 								list.push_back( 
 									[
 										@index		: tostring(::UnquoteSlotKey(::GetNodeText(indexList.children[indicesIndex]))),

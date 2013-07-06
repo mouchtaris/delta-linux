@@ -269,7 +269,7 @@
             <output_path>../extension_scripts</output_path>
             <output>SourceBrowser</output>
             <libs>spw</libs>
-            <icode>0</icode>
+            <icode>1</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
