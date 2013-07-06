@@ -76,8 +76,9 @@ bool DeltaVirtualMachine::PushUserArgumentsOnly (std::list<DeltaValue*>& userArg
 
 	for (std::list<DeltaValue*>::iterator i = userArguments.begin(); i != userArguments.end(); ++i) {
 		if (!overflow) {
+			DASSERT(top);
 			stack[top].Assign(DPTR(*i));	// Push on the runtime stack.
-			top_minusminus();
+			--top;
 		}
 		DeltaValueFactory::Delete(*i);	// Clear dynamic argument.
 	}
@@ -106,8 +107,9 @@ bool DeltaVirtualMachine::PushUserArgumentsAndArgumentsVector (std::list<DeltaVa
 
 	for (std::list<DeltaValue*>::iterator i = userArguments.begin(); i != userArguments.end(); ++i) {			
 		if (!overflow) {					// Only when no overflow is caused we push arguments
+			DASSERT(top);
 			stack[top].Assign(DPTR(*i));	// Push on the runtime stack; no overloading applied with this assign
-			top_minusminus();
+			--top;
 			argumentsVector.push_front(**i);
 			argumentsVector.front().SetResidencyType(DeltaValue::Contained, argumentsCont);
 		}
@@ -117,8 +119,9 @@ bool DeltaVirtualMachine::PushUserArgumentsAndArgumentsVector (std::list<DeltaVa
 	userArguments.clear();
 
 	if (!overflow) {
+		DASSERT(top);
 		stack[top].Assign(argumentsVal);
-		top_minusminus();
+		--top;
 	}
 	else {
 		ResetTotalActualArgs();

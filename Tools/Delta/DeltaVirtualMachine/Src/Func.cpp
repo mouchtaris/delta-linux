@@ -98,6 +98,8 @@ void DELTAVALUE_OPERATION  Callfunc_String (CALLFUNC_ARGS) {
 		); 	else
 
 //************************
+// Stack overflow is detected before the arguments and env are pushed 
+// onto the stack
 
 void DELTAVALUE_OPERATION Callfunc_ProgramFunc (CALLFUNC_ARGS) {
 
@@ -115,8 +117,8 @@ void DELTAVALUE_OPERATION Callfunc_ProgramFunc (CALLFUNC_ARGS) {
 
 			DASSERT(!DPTR(vm)->HasProducedError());
 	
-			if (DPTR(vm)->SetUserFuncClosure(closure, funcInfo))		// only when closure is set correctly args are pushed
-				if (DPTR(vm)->PushUserArgumentsAndArgumentsVector())	// push agruments, since it is a normal program  function.
+			if (DPTR(vm)->SetUserFuncClosure(closure, funcInfo))	// only when closure is set correctly args are pushed
+				if (DPTR(vm)->PushUserArgumentsAndArgumentsVector(DELTA_SAVED_ENVIRONMENT_SIZE)) // push agruments, since it is a normal program  function.
 					DPTR(vm)->ExecuteCallProgramFunc(
 						vm, 
 						funcInfo->GetAddress(), 
@@ -130,7 +132,10 @@ void DELTAVALUE_OPERATION Callfunc_ProgramFunc (CALLFUNC_ARGS) {
 			DASSERT(funcVM);
 
 			// Pass calling arguments.
-			bool result = DPTR(funcVM)->PushUserArgumentsAndArgumentsVector(DPTR(vm)->actualArguments);
+			bool result =	DPTR(funcVM)->PushUserArgumentsAndArgumentsVector(
+								DPTR(vm)->actualArguments,
+								DELTA_SAVED_ENVIRONMENT_SIZE
+							);
 			DPTR(vm)->ResetTotalActualArgs();
 
 			if (result) {	// no error occured
@@ -153,6 +158,8 @@ void DELTAVALUE_OPERATION Callfunc_ProgramFunc (CALLFUNC_ARGS) {
 }
 
 //************************
+// Stack overflow is detected before the arguments and env are pushed 
+// onto the stack
 
 void DELTAVALUE_OPERATION Callfunc_MethodFunc (CALLFUNC_ARGS) {
  
@@ -172,7 +179,7 @@ void DELTAVALUE_OPERATION Callfunc_MethodFunc (CALLFUNC_ARGS) {
 			DASSERT(!DPTR(vm)->HasProducedError());
 
 			if (DPTR(vm)->SetUserFuncClosure(closure, funcInfo))
-				if (DPTR(vm)->PushUserArgumentsAndArgumentsVector(EXTRA_SELF_ARGUMENT)) {
+				if (DPTR(vm)->PushUserArgumentsAndArgumentsVector(EXTRA_SELF_ARGUMENT + DELTA_SAVED_ENVIRONMENT_SIZE)) {
 					DPTR(vm)->PushSelfArgument(self);
 					DPTR(vm)->ExecuteCallProgramFunc(
 						vm, 
@@ -190,7 +197,7 @@ void DELTAVALUE_OPERATION Callfunc_MethodFunc (CALLFUNC_ARGS) {
 			// Pass calling arguments.
 			bool result =	DPTR(methodVM)->PushUserArgumentsAndArgumentsVector(
 								DPTR(vm)->actualArguments, 
-								EXTRA_SELF_ARGUMENT
+								EXTRA_SELF_ARGUMENT + DELTA_SAVED_ENVIRONMENT_SIZE
 							);
 			DPTR(vm)->ResetTotalActualArgs();
 

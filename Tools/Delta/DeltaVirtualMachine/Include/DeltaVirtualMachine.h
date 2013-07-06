@@ -240,9 +240,6 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 	void				SetRetainPC (void)	{ DASSERT(!retain_pc); retain_pc = true; }
 	void				ResetRetainPC(void) { DASSERT(retain_pc); retain_pc = false; }
 
-	bool				check_top_minusminus (void);	// Check if possible to decrement with overflow check (false returns means overflow).
-	bool				top_minusminus (void);			// Do decrement and overflow check (false returns means overflow).
-	
 	struct				ExecutionTerminationException {};
 
 	///////////////////////////////////////////////////////////////
@@ -545,7 +542,7 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 	bool				PushUserArgumentsAndArgumentsVector (std::list<DeltaValue*>& userArguments, util_ui32 extraTotalArgs = 0);
 
 	void				PushSelfArgument (DeltaTable* self) 
-							{ stack[top].FromTable(self); top_minusminus();	}
+							{ DASSERT(top); stack[top].FromTable(self); --top; }
 
 	const std::list<DeltaValue*>&
 						GetActualArguments (void) const 
@@ -713,10 +710,10 @@ class DVM_CLASS DeltaVirtualMachine : public Validatable {
 							util_ui16				stdCallArguments
 						);
 
-	bool				CallFuncPrepare (
+	void				CallFuncPrepare (
 							DeltaVirtualMachine*	caller,
-							util_ui16				totalActuals, 
-							util_ui16				stdCallArguments
+							util_ui32				totalActuals, 
+							util_ui32				stdCallArguments
 						);
 	void				DoLocalFuncReturnCode (void);
 	void				DoLocalFuncEnterCode (const DeltaStdFuncInfo* funcInfo);

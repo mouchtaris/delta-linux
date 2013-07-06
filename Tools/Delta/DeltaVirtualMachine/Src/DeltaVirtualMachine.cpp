@@ -292,23 +292,6 @@ DeltaVirtualMachine::~DeltaVirtualMachine() {
 }
 
 //-----------------------------------------------------------------
-
-bool DeltaVirtualMachine::check_top_minusminus (void) {
-	DASSERT(top);
-	if (top == 1)
-		{ SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!"); return false; }
-	else
-		return true;
-}
-
-bool DeltaVirtualMachine::top_minusminus (void) {
-	if (!top)
-		{ SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!"); return false; }
-	else
-		{ --top; return true; }
-}
-
-//-----------------------------------------------------------------
 // A saved environment value must be always an unsigned value.
 //
 util_ui32 DeltaVirtualMachine::GetEnvironmentValue (util_i16 offset) const {
@@ -396,8 +379,7 @@ void DeltaVirtualMachine::CallPreboundLibraryFunc (DeltaLibraryFunc func, util_u
 	if (!PushUserArgumentsOnly(DELTA_SAVED_ENVIRONMENT_SIZE))
 		return;
 
-	bool result = CallFuncPrepare(this, totalActuals, 0);
-	DASSERT(result);
+	CallFuncPrepare(this, totalActuals, 0);
 
 	++callingLibraryFunction;
 	DoExternFuncEnterCode(func);			// Callee obligations.
@@ -705,10 +687,10 @@ void DeltaVirtualMachine::ExtCallMethodFunc (DeltaCodeAddress funcAddr, DeltaTab
 	std::map<DeltaCodeAddress, DeltaStdFuncInfo*>::iterator func = funcByAddr.find(funcAddr);
 	DASSERT(func != funcByAddr.end());
 
-	PushUserArgumentsAndArgumentsVector();
-	PushSelfArgument(self);
-
-	DELTA_EXTERNAL_CALL_GLOBAL_FUNC(funcAddr, DELTA_METHOD_STD_ARGUMENTS);
+	if (PushUserArgumentsAndArgumentsVector(1 + DELTA_SAVED_ENVIRONMENT_SIZE)) {
+		PushSelfArgument(self);
+		DELTA_EXTERNAL_CALL_GLOBAL_FUNC(funcAddr, DELTA_METHOD_STD_ARGUMENTS);
+	}
 }
 
 //////////////////////////////////
@@ -906,50 +888,49 @@ void DeltaVirtualMachine::ExtCallGlobalFunc (const char* name) {
 //	4:	PUSHARG TOPSP
 //
 
-#define	TOP_MINUSMINUS()		\
-	if (!top_minusminus())		\
-		return false; 			\
-	else --s_top
+#define	MINUSMINUS_TOP()		\
+	if (true) {					\
+		DASSERT(top); 			\
+		--top;					\
+		--s_top;				\
+	} else
 
-bool DeltaVirtualMachine::CallFuncPrepare (DeltaVirtualMachine* caller, util_ui16 totalActuals, util_ui16 stdCallArguments) {
+void DeltaVirtualMachine::CallFuncPrepare (DeltaVirtualMachine* caller, util_ui32 totalActuals, util_ui32 stdCallArguments) {
 
 	DASSERT(!HasProducedError() && pc <= DELTA_PC_PROGRAM_END);
-
-	if (top < DELTA_SAVED_ENVIRONMENT_SIZE) {
-		SetErrorCode(DELTA_STACK_OVERFLOW_ERROR)->PrimaryError("Stack overflow!");
-		return false;
-	}
+	DASSERT(top >= DELTA_SAVED_ENVIRONMENT_SIZE);	// we should have detected overflow earlier
 
 	DeltaValue* s_top = stack + top;	// For fast access.
 
 	//	1:	PUSHARG #Arguments
 	//
 	s_top->FromNumber((DeltaNumberValueType) totalActuals);
-	TOP_MINUSMINUS();
+	MINUSMINUS_TOP();
 
 	//	2:	PUSHARG PC + DELTA_FUNCCALL_PC_OFFSET
 	//		If the caller is a different vm then we simply store the same PC.
 	//		Else it may be the case that the call is coming from
 	//		C++ code in the form of a forced local function call. In this
 	//		case, if it happens to be at the end of program execution,
-	//		we do not store pc+1, but the program end pc.
+	//		we do not store pc + 1, but the program end pc.
 	//
 	s_top->FromNumber(
 		(DeltaNumberValueType) (pc + (this != caller || DELTA_PC_PROGRAM_END == pc ? 0 : DELTA_FUNCCALL_PC_OFFSET))
 	);
-	TOP_MINUSMINUS();
+	MINUSMINUS_TOP();
 
 	//	3:	PUSHARG TOP + #Arguments + DELTA_PREVIOUS_TOP_EXTRA_OFFSET
 	//
 	s_top->FromNumber(
 		(DeltaNumberValueType) top + totalActuals + stdCallArguments + DELTA_PREVIOUS_TOP_EXTRA_OFFSET
 	);
-	TOP_MINUSMINUS();
+	MINUSMINUS_TOP();
 
 	//	4:	PUSHARG TOPSP
 	//
 	s_top->FromNumber((DeltaNumberValueType) topsp);
-	return top_minusminus();	// Only top, no s_top needed.
+	DASSERT(top);
+	--top;	// Only top, no s_top needed.
 }
 
 //////////////////////////////////
@@ -966,8 +947,7 @@ void DeltaVirtualMachine::ExecuteCallProgramFunc (
 	) {
 
 	//	1:	Prepare call.
-	if (!CallFuncPrepare(caller, totalActuals, stdCallArguments))
-		{ DASSERT(AreRegistersResetDueToError() && HasProducedError()); return; }
+	CallFuncPrepare(caller, totalActuals, stdCallArguments);
 
 	//	2:	PC = Address(F).
 	pc = addr;
