@@ -1,4 +1,5 @@
 // Various examples on the use of closures.
+// A. Savidis, July 2010.
 
 using std;
 
