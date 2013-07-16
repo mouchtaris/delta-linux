@@ -20,6 +20,8 @@
 
 namespace conf {
 
+String ExpandEnvironmentVariables(String path);
+
 ////////////////////////////////////////////////////////////////////////
 
 class PropertyVisitor;
@@ -31,8 +33,8 @@ class PropertyVisitor;
 
 IMPLEMENT_PRIMITIVE_PROPERTY(FontProperty, wxFont, 10);
 IMPLEMENT_PRIMITIVE_PROPERTY(ColorProperty, wxColour, 11);
-IMPLEMENT_PRIMITIVE_PROPERTY(FileProperty, String, 12);
-IMPLEMENT_PRIMITIVE_PROPERTY(DirectoryProperty, String, 13);
+IMPLEMENT_PATH_PROPERTY(FileProperty, String, 12);
+IMPLEMENT_PATH_PROPERTY(DirectoryProperty, String, 13);
 IMPLEMENT_PRIMITIVE_PROPERTY_WITH_DEFAULT_VALUE(DateProperty, wxDateTime, wxDateTime::Now(), 14);
 
 ////////////////////////////////////////////////////////////////////////
@@ -49,6 +51,10 @@ public:
 	FileListProperty& operator= (const FileListProperty& p);
 
 	//******************************************************************
+
+	const String	GetExpandedValue (void) const;
+	const StringVec	GetExpandedValues (void) const;
+	const String	GetExpandedValue (uint pos) const;
 
 	virtual void		Accept (const std::string& propId, PropertyVisitor* visitor);
 	virtual Property*	Clone (void) const { return new FileListProperty(*this); }
@@ -68,6 +74,10 @@ public:
 	DirectoryListProperty& operator= (const DirectoryListProperty& p);
 
 	//******************************************************************
+
+	const String	GetExpandedValue (void) const;
+	const StringVec	GetExpandedValues (void) const;
+	const String	GetExpandedValue (uint pos) const;
 
 	virtual void		Accept (const std::string& propId, PropertyVisitor* visitor);
 	virtual Property*	Clone (void) const { return new DirectoryListProperty(*this); }
@@ -137,7 +147,7 @@ public:
 	virtual void		Decode (comm::decoder& dec);
 	virtual bool		Equal (const Property* prop) const {
 							const MultiChoiceProperty* p;
-							return	GetType() == prop->GetType()												&&
+							return	GetType() == prop->GetType()													&&
 									m_choices == (p = static_cast<const MultiChoiceProperty*>(prop))->m_choices &&
 									m_allowExtraSelections == p->m_allowExtraSelections							&&
 									m_extraSelections == p->m_extraSelections									;

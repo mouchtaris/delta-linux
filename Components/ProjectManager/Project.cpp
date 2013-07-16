@@ -164,7 +164,7 @@ namespace ide
 			Call<void (const String&, const String&)>(this, "Shell", "ShowMessage")
 				(_("Execution Error"), _("Library projects can not be exectued, you should change the type property of the project to execute!"));
 		else if (type == HOST_APPLICATION_ACTIVATOR) {
-			const String host =	get_prop_value<FileProperty>(GetInstanceProperty("host"), String());
+			const String host =	get_path_prop_value<FileProperty>(GetInstanceProperty("host"), String());
 			if (host.empty())
 				Call<void (const String&, const String&)>(this, "Shell", "ShowMessage")
 					(_("Execution Error"), _("No host application has been specified for the activator project!"));
@@ -204,7 +204,7 @@ namespace ide
 			Call<void (const String&, const String&)>(this, "Shell", "ShowMessage")
 				(_("Execution Error"), _("Library projects can not be exectued, you should change the type property of the project to execute!"));
 		else if (type == HOST_APPLICATION_ACTIVATOR) {
-			String hostd = get_prop_value<FileProperty>(GetInstanceProperty("hostd"), String());
+			String hostd = get_path_prop_value<FileProperty>(GetInstanceProperty("hostd"), String());
 			if (hostd.empty())
 				Call<void (const String&, const String&)>(this, "Shell", "ShowMessage")
 					(_("Execution Error"), _("No debug host application has been specified for the extension project!"));
@@ -467,7 +467,7 @@ namespace ide
 
 	const String Project::GetDirectoryProperty(const std::string& property)
 	{
-		String directory = conf::get_prop_value<conf::DirectoryProperty>(GetInstanceProperty(property));		
+		String directory = conf::get_path_prop_value<conf::DirectoryProperty>(GetInstanceProperty(property));		
 		if (directory.empty() || wxFileName(directory).IsRelative())
 			directory = GetPath() + directory;
 		directory = util::normalizepath(directory);

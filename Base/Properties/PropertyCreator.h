@@ -40,7 +40,7 @@ inline bool deserialize<std::string> (const String& str, std::string& value) { v
 ////////////////////////////////////////////////////////////////////////
 // We don't make it a template, because we want to export the type
 //
-#define IMPLEMENT_PRIMITIVE_PROPERTY_WITH_DEFAULT_VALUE(className, type, defaultVal, id)			\
+#define IMPLEMENT_PRIMITIVE_PROPERTY_WITH_DEFAULT_VALUE_EX(className, type, defaultVal, id, getter)	\
 	class _BASE_API className : public Property {													\
 	public:																							\
 		CLASS_TYPE_ID(id);																			\
@@ -66,7 +66,7 @@ inline bool deserialize<std::string> (const String& str, std::string& value) { v
 		virtual bool			Deserialize (const String& str);									\
 																									\
 		void			SetValue (PARAM_T(type) value) { m_value = value; }							\
-		PARAM_T(type)	GetValue (void) const { return m_value; }									\
+		getter																						\
 																									\
 		static Property* CreateProperty (const String& label, const String& desc)					\
 			{ return new className(label, type(), desc); }											\
@@ -74,8 +74,20 @@ inline bool deserialize<std::string> (const String& str, std::string& value) { v
 		type m_value;																				\
 	}
 
+#define IMPLEMENT_PRIMITIVE_PROPERTY_WITH_DEFAULT_VALUE(className, type, defaultVal, id)			\
+	IMPLEMENT_PRIMITIVE_PROPERTY_WITH_DEFAULT_VALUE_EX(												\
+		className, type, defaultVal, id, PARAM_T(type) GetValue (void) const { return m_value; }	\
+	)
+
 #define IMPLEMENT_PRIMITIVE_PROPERTY(className, type, id) \
 	IMPLEMENT_PRIMITIVE_PROPERTY_WITH_DEFAULT_VALUE(className, type, type(), id)
+
+#define IMPLEMENT_PATH_PROPERTY(className, type, id)												\
+	IMPLEMENT_PRIMITIVE_PROPERTY_WITH_DEFAULT_VALUE_EX(												\
+		className, type, type(), id,																\
+		PARAM_T(type) GetValue (void) const { return m_value; }										\
+		const type GetExpandedValue (void) const { return ExpandEnvironmentVariables(m_value); }	\
+	)
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -83,7 +95,7 @@ inline bool deserialize<std::string> (const String& str, std::string& value) { v
 	void className::Accept (const std::string& propId, PropertyVisitor* visitor)	\
 		{ visitor->Visit(propId, this); }											\
 	void className::Encode (comm::encoder& enc)										\
-		{ enc << this->GetValue(); }												\
+		{ enc << this->GetValue(); }													\
 	void className::Decode (comm::decoder& dec)	{									\
 		ValueType value;															\
 		dec >> value;																\

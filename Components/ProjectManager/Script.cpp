@@ -310,7 +310,7 @@ namespace ide
 
 	const String Script::GetDirectoryProperty(const std::string& property) const
 	{
-		String directory = conf::get_prop_value<conf::DirectoryProperty>(GetInstanceProperty(property));		
+		String directory = conf::get_path_prop_value<conf::DirectoryProperty>(GetInstanceProperty(property));		
 		if (directory.empty() || wxFileName(directory).IsRelative()) {
 			Script *self = const_cast<Script*>(this);
 			directory = const_cast<Script*>(this)->GetPath() + directory;
@@ -374,7 +374,7 @@ namespace ide
 			BOOST_FOREACH(const conf::AggregateProperty* aggregate, options->GetPropertyList())
 				if (const conf::Property* prop = aggregate->GetProperty(conf::GetByteCodePathPropertyId())) {
 					const conf::DirectoryListProperty *p = conf::safe_prop_cast<const conf::DirectoryListProperty>(prop);
-					BOOST_FOREACH(const String& value, p->GetValue())
+					BOOST_FOREACH(const String& value, p->GetExpandedValues())
 						paths.push_back(MakeAbsolutePath(value, const_cast<Script*>(this)->GetPath()));
 				}
 		}
@@ -408,7 +408,7 @@ namespace ide
 				conf::safe_prop_cast<const conf::AggregateListProperty>(property)->GetPropertyList();
 			BOOST_FOREACH(const conf::AggregateProperty* p, l)
 				if (conf::get_prop_value<conf::StringProperty>(p->GetProperty("name"), String()) == lib) {
-					String path = conf::get_prop_value<conf::FileProperty>(p->GetProperty("path"), String());
+					String path = conf::get_path_prop_value<conf::FileProperty>(p->GetProperty("path"), String());
 					if (!path.empty())
 						path = MakeAbsolutePath(path, util::std2str(IDECore::GetInstallationDir()));
 					return path;

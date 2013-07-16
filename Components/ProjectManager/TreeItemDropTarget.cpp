@@ -84,7 +84,7 @@ namespace ide
 
 			if (DefaultGUIGenerator().ShowDialogFromProperties(0, table, PropertyIdVec(), _("Import file as..."))) {
 				type = util::str2std(safe_prop_cast<EnumStringProperty>(table.GetProperty("type"))->GetValue());
-				finalUri = safe_prop_cast<FileProperty>(table.GetProperty("file"))->GetValue();
+				finalUri = get_path_prop_value<FileProperty>(table.GetProperty("file"));
 			}
 		}
 		return type.empty() ? false:
@@ -181,7 +181,7 @@ namespace ide
 						gui::displayMessage(0, _("Error"), _("Given name contains forbidden characters!"));
 						return wxDragNone;
 					}
-					uri = dirProp->GetValue() + name;
+					uri = dirProp->GetExpandedValue() + name;
 				}
 				else
 					return wxDragNone;

@@ -14,9 +14,19 @@
 #include "Encoding.h"
 #include "ExtSerialization.h"
 
+#include <wx/filename.h>
+
 ////////////////////////////////////////////////////////////////////////
 
 namespace conf {
+
+////////////////////////////////////////////////////////////////////////
+
+String ExpandEnvironmentVariables(String path) {
+	wxFileName filename(path);
+	filename.Normalize(wxPATH_NORM_ENV_VARS);
+	return filename.GetFullPath();
+}
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -26,6 +36,9 @@ IMPLEMENT_GENERIC_FUNCTIONS(FileProperty);
 IMPLEMENT_GENERIC_FUNCTIONS(DirectoryProperty);
 IMPLEMENT_GENERIC_FUNCTIONS(DateProperty);
 IMPLEMENT_GENERIC_FUNCTIONS(MultiChoiceProperty);
+
+IMPLEMENT_SERIALIZATION_FUNCTIONS(FileProperty);
+IMPLEMENT_SERIALIZATION_FUNCTIONS(DirectoryProperty);
 
 ////////////////////////////////////////////////////////////////////////
 // FontProperty class
@@ -46,24 +59,6 @@ const String ColorProperty::Serialize (void) const { return m_value.GetAsString(
 bool ColorProperty::Deserialize (const String& str) { return m_value.Set(str); }
 
 ////////////////////////////////////////////////////////////////////////
-// FileProperty class
-//
-const String FileProperty::Serialize (void) const { return serialize(m_value); }
-
-//**********************************************************************
-
-bool FileProperty::Deserialize (const String& str) { return deserialize(str, m_value); }
-
-////////////////////////////////////////////////////////////////////////
-// DirectoryProperty class
-//
-const String DirectoryProperty::Serialize (void) const { return serialize(m_value); }
-
-//**********************************************************************
-
-bool DirectoryProperty::Deserialize (const String& str) { return deserialize(str, m_value); }
-
-////////////////////////////////////////////////////////////////////////
 // DateProperty class
 //
 const String DateProperty::Serialize (void) const { return m_value.FormatDate(); }
@@ -73,32 +68,36 @@ const String DateProperty::Serialize (void) const { return m_value.FormatDate();
 bool DateProperty::Deserialize (const String& str) { return m_value.WX_DATE_TIME_PARSE_DATE(str) != NULL; }
 
 ////////////////////////////////////////////////////////////////////////
-// FileListProperty class
+// FileListProperty & DirectoryListProperty classes
 //
-FileListProperty::FileListProperty (const FileListProperty& p) : StringListProperty(p) {}
+#define IMPLEMENT_PATH_LIST_GENERIC_FUNCTIONS(className)									\
+	className::className (const className& p) : StringListProperty(p) {}					\
+	className& className::operator= (const className& p) {									\
+		StringListProperty::operator =(p);													\
+		return *this;																		\
+	}																						\
+	void className::Accept (const std::string& propId, PropertyVisitor* visitor)			\
+		{ visitor->Visit(propId, this); }													\
+	const String className::GetExpandedValue (void) const {									\
+		String result;																		\
+		for (StringVec::const_iterator i = m_values.begin(); i != m_values.end(); ++i) {	\
+			if (!result.empty())															\
+				result.append(_T(";"));														\
+			result.append(ExpandEnvironmentVariables(*i));									\
+		}																					\
+		return result;																		\
+	}																						\
+	const StringVec className::GetExpandedValues (void) const {								\
+		StringVec result;																	\
+		for (StringVec::const_iterator i = m_values.begin(); i != m_values.end(); ++i)		\
+			result.push_back(ExpandEnvironmentVariables(*i));								\
+		return result;																		\
+	}																						\
+	const String className::GetExpandedValue (uint pos) const								\
+		{ return ExpandEnvironmentVariables(StringListProperty::GetValue(pos)); }
 
-FileListProperty& FileListProperty::operator= (const FileListProperty& p)
-{
-	StringListProperty::operator =(p);
-	return *this;
-}
-
-void FileListProperty::Accept (const std::string& propId, PropertyVisitor* visitor)
-	{ visitor->Visit(propId, this); }
-
-////////////////////////////////////////////////////////////////////////
-// DirectoryListProperty class
-//
-DirectoryListProperty::DirectoryListProperty(const DirectoryListProperty& p) : StringListProperty(p) {}
-
-DirectoryListProperty& DirectoryListProperty::operator= (const DirectoryListProperty& p)
-{
-	StringListProperty::operator =(p);
-	return *this;
-}
-
-void DirectoryListProperty::Accept (const std::string& propId, PropertyVisitor* visitor)
-	{ visitor->Visit(propId, this); }
+IMPLEMENT_PATH_LIST_GENERIC_FUNCTIONS(FileListProperty)
+IMPLEMENT_PATH_LIST_GENERIC_FUNCTIONS(DirectoryListProperty)
 
 ////////////////////////////////////////////////////////////////////////
 // AggregateListProperty class

@@ -7,32 +7,10 @@
 // closures for functions with state (could use functor objects too).
 // A. Savidis, July 2013
 
+using #Delta;
+
 const nl = "\n";
 UNDEF 	 = std::undefined();
-
-////////////////////////////////////////////////////////////
-// Turning callables to container-like adapters that allow their
-// use directly in foreach
-
-function Gen(f) {	// f is callable sith sig (void):Value
-	function Iterator {
-		return	[
-			method setbegin (c) { @func = c.func; },
-			method checkend (c) { return std::isundefined(@val = @func()); },
-			method fwd			{},
-			method getval		{ return @val; }
-		];
-	}
-
-	function Container (f) {
-		return [
-			@func : f,
-			method iterator { return Iterator(); }
-		];
-	}
-
-	return Container(f);
-}
 
 ////////////////////////////////////////////////////////////
 // Functions signify end of output with an undefined value.
@@ -69,11 +47,11 @@ function factorial(n) {
 ////////////////////////////////////////////////////////////
 
 std::print("Range test", nl);
-foreach (x, ::Gen(range(0, 23)))
+foreach (x, Delta::Generator(range(0, 23)))
 	std::print(x, nl);
 
 std::print("Factorial test", nl);
-foreach (x, ::Gen(factorial(9)))
+foreach (x, Delta::Generator(factorial(9)))
 	std::print(x, nl);
 
 /*

@@ -12,4 +12,5 @@
     <Child type="Project" name="Client.dproj"/>
     <Child type="Project" name="Tests.dproj"/>
     <Child type="Project" name="C\UsingTest.dproj"/>
+    <Child type="Project" symbolic="Std.dproj" name="%DELTA%\DeltaStdLib\Project\Std.dproj"/>
 </Workspace>

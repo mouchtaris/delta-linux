@@ -85,8 +85,8 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, EnumStringPropert
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, StringListProperty* prop)
 {
 	wxArrayString strings;
-	StringVec::const_iterator iter = prop->GetValues().begin();
-	for (; iter != prop->GetValues().end(); ++iter)
+	const StringVec values = prop->GetValues();
+	for (StringVec::const_iterator iter = values.begin(); iter != values.end(); ++iter)
 		strings.Add(*iter);
 	m_guiProp = PG_CREATE_PROP(wxArrayStringProperty)(prop->GetLabel(), util::std2str(id), strings);
 #if wxCHECK_VERSION(2, 9, 0)
@@ -148,8 +148,8 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, DateProperty* pro
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileListProperty* prop)
 {
 	wxArrayString strings;
-	StringVec::const_iterator iter = prop->GetValues().begin();
-	for (; iter != prop->GetValues().end(); ++iter)
+	const StringVec values = prop->GetValues();
+	for (StringVec::const_iterator iter = values.begin(); iter != values.end(); ++iter)
 		strings.Add(*iter);
 	m_guiProp = PG_CREATE_PROP(wxFileListProperty)(prop->GetLabel(), util::std2str(id), strings);
 #if wxCHECK_VERSION(2, 9, 0)
@@ -163,8 +163,8 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileListProperty*
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryListProperty* prop)
 {
 	wxArrayString strings;
-	StringVec::const_iterator iter = prop->GetValues().begin();
-	for (; iter != prop->GetValues().end(); ++iter)
+	const StringVec values = prop->GetValues();
+	for (StringVec::const_iterator iter = values.begin(); iter != values.end(); ++iter)
 		strings.Add(*iter);
 	m_guiProp = PG_CREATE_PROP(wxDirectoryListProperty)(prop->GetLabel(), util::std2str(id), strings);
 #if wxCHECK_VERSION(2, 9, 0)

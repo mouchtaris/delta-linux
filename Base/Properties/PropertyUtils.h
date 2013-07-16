@@ -48,6 +48,28 @@ inline PARAM(typename TProp::ValueType) get_prop_value (
 //**********************************************************************
 
 template <class TProp>
+inline const typename TProp::ValueType get_path_prop_value (const Property* prop)
+{
+	return safe_prop_cast<const TProp>(prop)->GetExpandedValue();
+}
+
+//**********************************************************************
+
+template <class TProp>
+inline const typename TProp::ValueType get_path_prop_value (
+		const Property*						prop,
+		PARAM(typename TProp::ValueType)	defaultValue
+	)
+{
+	if (prop && prop->GetType() == TProp::Type)
+		return static_cast<const TProp*>(prop)->GetExpandedValue();
+	else
+		return defaultValue;
+}
+
+//**********************************************************************
+
+template <class TProp>
 inline void set_prop_value (Property* prop, PARAM(typename TProp::ValueType) value)
 {
 	safe_prop_cast<TProp>(prop)->SetValue(value);

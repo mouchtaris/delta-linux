@@ -962,7 +962,7 @@ namespace ide
 		template<class T>
 		static void ConvertStringListPropertyTemplate(DeltaTable* table, const conf::Property* prop) {
 			const T* p = conf::safe_prop_cast<const T>(prop);
-			const StringVec& values = p->GetValues();
+			const StringVec values = p->GetValues();
 			DeltaValue data;
 			to_delta<StringList>().convert(&data, StringList(values.begin(), values.end()));
 			table->Set("value", data);

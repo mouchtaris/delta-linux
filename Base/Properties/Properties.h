@@ -235,7 +235,7 @@ public:
 	void Add (const StringListProperty& prop);
 	void Clear (void);
 
-private:
+protected:
 	String		m_value;
 	StringVec	m_values;
 };

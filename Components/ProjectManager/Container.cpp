@@ -283,14 +283,14 @@ namespace ide
 					const_cast<conf::PropertyTable&>(item->GetInstancePropertyTable()).Accept(type + "Properties", &propertyLoader);
 				}
 
-				String path = node[_T("name")];	// Bwd compatibility.
-				if (path.empty())
-					path = node.GetContent();
+				String name = node[_T("name")];	// Bwd compatibility.
+				if (name.empty())
+					name = node.GetContent();
+				Call<void (const String&)>(comp, item, "SetOriginalName")(name);
 
-				wxFileName filename(path);
-				if (!filename.IsAbsolute())
-					path = GetPath() + path;
-				Call<void (const String&)>(comp, item, "Load")(path);
+				wxFileName filename(name);
+				filename.Normalize(wxPATH_NORM_ALL, GetPath());
+				Call<void (const String&)>(comp, item, "Load")(filename.GetFullPath());
 
 				const String symbolic = node[_T("symbolic")];
 				if (symbolic.empty())
@@ -326,11 +326,15 @@ namespace ide
 				}
 
 				if (!Call<bool (void)>(this, child, "HasDefaultSymbolicURI")())
-					node.SetProperty(_T("symbolic"), Call<const String& (void)>(this, child, "GetSymbolicURI")());
+					node.SetProperty(_T("symbolic"), Call<const String (void)>(this, child, "GetSymbolicURI")());
 
 				if (filename.IsAbsolute())
-					filename.MakeRelativeTo(GetPath());	
-				node.SetProperty(_T("name"), filename.GetFullPath());
+					filename.MakeRelativeTo(GetPath());
+
+				String name = Call<const String& (void)>(this, child, "GetOriginalName")();
+				if (name.empty())
+					name = filename.GetFullPath();
+				node.SetProperty(_T("name"), name);
 			}
 			root.InsertChild(node);
 		}

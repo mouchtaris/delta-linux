@@ -333,7 +333,7 @@ namespace ide
 					table.AddProperty("type", new EnumStringProperty(_("Type"), options, 0, _("Type for imported file")));
 					if (DefaultGUIGenerator().ShowDialogFromProperties(0, table, PropertyIdVec(), _("Import file as..."))) {
 						type = util::str2std(safe_prop_cast<EnumStringProperty>(table.GetProperty("type"))->GetValue());
-						uri = safe_prop_cast<FileProperty>(table.GetProperty("file"))->GetValue();
+						uri = get_path_prop_value<FileProperty>(table.GetProperty("file"));
 					}
 				}
 			}

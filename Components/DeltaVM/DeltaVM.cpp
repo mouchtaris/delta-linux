@@ -1048,7 +1048,7 @@ namespace ide
 	{
 		const Handle& script = Call<const Handle& (const String&)>(s_classId, "ProjectManager", "GetResourceByURI")(uri);
 		if (script)
-			return Call<const String& (void)>(s_classId, script, "GetSymbolicURI")();
+			return Call<const String (void)>(s_classId, script, "GetSymbolicURI")();
 		else
 			return util::std2str(DynamicCodeManager::GetSymbolicURI(util::str2std(uri)));
 	}
@@ -1070,7 +1070,7 @@ namespace ide
 			const String& uri = Call<const String& (void)>(s_classId, editor, "GetURI")();
 			script = Call<const Handle& (const String&)>(s_classId, "ProjectManager", "GetResourceByURI")(uri);
 		}
-		return script ? Call<const String& (void)>(s_classId, script, "GetSymbolicURI")() : String();
+		return script ? Call<const String (void)>(s_classId, script, "GetSymbolicURI")() : String();
 	}
 
 	//-----------------------------------------------------------------------
@@ -1233,9 +1233,16 @@ namespace ide
 	const std::string DeltaVM::GetExtensionAndConfigScriptsReservedByteCodeLoadingPath(void)
 	{
 		const std::string sparrowDir = IDECore::GetInstallationDir();
-		return	sparrowDir + "scripts/bin;"					+ 
-				sparrowDir + CONFIG_SCRIPTS_DIRECTORY + ";"	+ 
-				sparrowDir + EXTENSION_SCRIPTS_DIRECTORY;
+		std::string result =	sparrowDir + "scripts/bin;"					+ 
+								sparrowDir + CONFIG_SCRIPTS_DIRECTORY + ";"	+ 
+								sparrowDir + EXTENSION_SCRIPTS_DIRECTORY	;
+
+		//TODO: change this for the deployment version of Sparrow
+		const std::string deltaPath = ugetenvironmentvar("DELTA");
+		if (!deltaPath.empty())
+			result.append(";" + deltaPath + "/DeltaStdLib/Src/ByteCode/");
+
+		return result;
 	}
 
 	//-----------------------------------------------------------------------

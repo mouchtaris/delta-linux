@@ -63,11 +63,13 @@ namespace ide
 
 		DECLARE_EXPORTED_FUNCTION_(const String&, GetName, (void),
 			_("Get component's name"));
+		DECLARE_EXPORTED_FUNCTION_(const String&, GetOriginalName, (void),
+			_("Get component's original name (for storage related components to allow maintaining environment variables)"));
 		DECLARE_EXPORTED_FUNCTION_(const String&, GetURI, (void),
 			_("Get component's URI"));
 		DECLARE_EXPORTED_FUNCTION_(bool, HasDefaultSymbolicURI, (void),
 			_("Check if the symbolic uri is auto-generated"));
-		DECLARE_EXPORTED_FUNCTION_(const String&, GetSymbolicURI, (void),
+		DECLARE_EXPORTED_FUNCTION_(const String, GetSymbolicURI, (void),
 			_("Get component's symbolic URI"));
 		DECLARE_EXPORTED_FUNCTION_(virtual const String, GetPath, (void),
 			_("Get component's directory path"));
@@ -76,6 +78,8 @@ namespace ide
 
 		DECLARE_EXPORTED_FUNCTION_(void, SetName, (const String& name),
 			_("Set component's name"));
+		DECLARE_EXPORTED_FUNCTION_(void, SetOriginalName, (const String& name),
+			_("Set component's original name (for storage related components to allow maintaining environment variables)"));
 		DECLARE_EXPORTED_FUNCTION_(void, SetURI, (const String& uri),
 			_("Set component's URI"));
 		DECLARE_EXPORTED_FUNCTION_(void, SetSymbolicURI, (const String& uri),
@@ -128,9 +132,10 @@ namespace ide
 		///--- private API
 
 		///--- private members
-		String name;
-		String uri;
-		bool hasDefaultSymbolic;
+		String	name;
+		String	originalName;
+		String	uri;
+		bool	hasDefaultSymbolic;
 	};
 }
 

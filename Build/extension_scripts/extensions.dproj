@@ -215,7 +215,7 @@
             <deployment>1</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path>../scripts/bin</bytecode_path>
+            <bytecode_path>../scripts/bin;%DELTA%/DeltaStdLib/Src/ByteCode/</bytecode_path>
             <aspects></aspects>
         </ScriptProperties>
     </Child>
@@ -235,7 +235,7 @@
             <deployment>1</deployment>
             <debug>1</debug>
             <collapsed>0</collapsed>
-            <bytecode_path>../scripts/bin</bytecode_path>
+            <bytecode_path>../scripts/bin;%DELTA%/DeltaStdLib/Src/ByteCode/</bytecode_path>
             <aspects></aspects>
         </ScriptProperties>
     </Child>

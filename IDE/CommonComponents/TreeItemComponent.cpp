@@ -64,7 +64,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	TreeItemComponent::TreeItemComponent(void) : hasDefaultSymbolic(true)
+	TreeItemComponent::TreeItemComponent(void) : name(), originalName(), uri(), hasDefaultSymbolic(true)
 	{
 		conf::BoolProperty *collapsed = new conf::BoolProperty(_("Collapsed"), false);
 		collapsed->SetVisible(false);
@@ -188,6 +188,13 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_FUNCTION(TreeItemComponent, const String&, GetOriginalName, (void))
+	{
+		return originalName;
+	}
+
+	//-----------------------------------------------------------------------
+
 	EXPORTED_FUNCTION(TreeItemComponent, const String&, GetURI, (void))
 	{
 		return uri;
@@ -195,7 +202,7 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_FUNCTION(TreeItemComponent, const String&, GetSymbolicURI, (void))
+	EXPORTED_FUNCTION(TreeItemComponent, const String, GetSymbolicURI, (void))
 	{
 		return conf::get_prop_value<conf::StringProperty>(GetInstanceProperty("symbolic"));
 	}
@@ -231,6 +238,13 @@ namespace ide
 
 		if (treeview.Resolve())
 			Call<bool (const Handle&, const String&)>(this, treeview, "RenameComponent")(this, name);
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(TreeItemComponent, void, SetOriginalName, (const String& name))
+	{
+		originalName = name;
 	}
 
 	//-----------------------------------------------------------------------
@@ -406,7 +420,7 @@ namespace ide
 	EXPORTED_FUNCTION(TreeItemComponent, Handle, GetDirectChildBySymbolicURI, (const String& uri))
 	{
 		BOOST_FOREACH(Component* child, GetChildren())
-			if (util::filepathsequal(Call<const String& (void)>(this, child, "GetSymbolicURI")(), uri))
+			if (util::filepathsequal(Call<const String (void)>(this, child, "GetSymbolicURI")(), uri))
 				return child;
 		return Handle();
 	}

@@ -829,8 +829,8 @@ void BuildServer::OnCompileFinished (Component* script, const UIntList& buildId)
 			std::string binary, bytecodePath, dllimportPath;
 			if (Call<bool (void)>(s_classId, script, "IsByteCodeUpToDate")()) {
 				binary = Call<const std::string (void)>(s_classId, script, "GetProducedByteCodeFileFullPath")();
-				bytecodePath = util::str2std(conf::get_prop_value<conf::DirectoryListProperty>(script->GetInstanceProperty("bytecode_path"), _T("")));
-				dllimportPath = util::str2std(conf::get_prop_value<conf::DirectoryListProperty>(script->GetInstanceProperty("dllimport_path"), _T("")));
+				bytecodePath = util::str2std(conf::get_path_prop_value<conf::DirectoryListProperty>(script->GetInstanceProperty("bytecode_path"), _T("")));
+				dllimportPath = util::str2std(conf::get_path_prop_value<conf::DirectoryListProperty>(script->GetInstanceProperty("dllimport_path"), _T("")));
 			}
 			DoBuildSourceResponse(client, binary, bytecodePath, dllimportPath);
 		}

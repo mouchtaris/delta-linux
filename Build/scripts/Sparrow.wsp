@@ -10,4 +10,5 @@
     <Child type="Project" name="sparrowlib\sparrowlib.dproj"/>
     <Child type="Project" name="..\extension_scripts\extensions.dproj"/>
     <Child type="Project" name="..\profiles\profiles.dproj"/>
+    <Child type="Project" name="%DELTA%\DeltaStdLib\Project\Std.dproj"/>
 </Workspace>

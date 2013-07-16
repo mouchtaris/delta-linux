@@ -11,6 +11,7 @@
 
 using std;
 using #sparrowlib;
+using #Delta;
 spw  = sparrowlib::sparrow();
 
 const classId = "RecentWorkspaces";																			
@@ -96,7 +97,7 @@ function AddRecentWorkspaces()
 					{.flags			: 7						}
 				],
 				"/File/{500}--Recent Workspaces--/{" + no + "}" + no + " " + ReplaceSlashes(uri),
-				sparrowlib::bind(OpenWorkspace, uri),
+				Delta::bind1st(OpenWorkspace, uri),
 				"Loads recent workspace " + no
 			);
 	}

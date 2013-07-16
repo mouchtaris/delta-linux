@@ -533,7 +533,7 @@ EXPORTED_FUNCTION(Script, const HandleList, FindScriptsOfUsedByteCodeFile, (cons
 			if (!s)
 				defaultStage = p;
 			else if (s == stage) {
-				bytecode_path = get_prop_value<const DirectoryListProperty>(
+				bytecode_path = get_path_prop_value<const DirectoryListProperty>(
 					 p->GetProperty(BYTECODE_PATH_PROPERTY_ID),
 					 String()
 				);
@@ -542,7 +542,7 @@ EXPORTED_FUNCTION(Script, const HandleList, FindScriptsOfUsedByteCodeFile, (cons
 			}
 		}
 		if (!found && defaultStage)
-			bytecode_path = get_prop_value<const DirectoryListProperty>(
+			bytecode_path = get_path_prop_value<const DirectoryListProperty>(
 				defaultStage->GetProperty(BYTECODE_PATH_PROPERTY_ID),
 				String()
 			);
@@ -590,7 +590,7 @@ const std::string Script::ProcuceCyclicDependencyPathString (const Script* targe
 /////////////////////////////////////////////////////////////////////////
 
 const String Script::GetByteCodeLoadingPathPropertyValue (void) const 
-	{ return conf::get_prop_value<const conf::DirectoryListProperty>(GetInstanceProperty(BYTECODE_PATH_PROPERTY_ID), String()); }
+	{ return conf::get_path_prop_value<const conf::DirectoryListProperty>(GetInstanceProperty(BYTECODE_PATH_PROPERTY_ID), String()); }
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -2018,7 +2018,7 @@ bool Script::IsUpToDateCalculationWithScriptDependencies (const ScriptPtrSet& de
 
 bool Script::AreExternalDependenciesUpToDate(std::time_t timestamp) {
 	if (const conf::FileListProperty* p = conf::safe_prop_cast<const conf::FileListProperty>(GetInstanceProperty("extra_deps"))) {
-		BOOST_FOREACH(const String& dep, p->GetValues()) {
+		BOOST_FOREACH(const String& dep, p->GetExpandedValues()) {
 			const std::string fullPath = util::str2std(MakeAbsolutePath(dep, GetWorkingDirectory()));
 			try {
 				if (!FileSystemExists(fullPath) || timestamp < boost::filesystem::last_write_time(fullPath))	//bin less recent that dep

@@ -1,18 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 using std;
-
-//-- Helper functions
-//
-function bind(f...) {
-	local t = [
-		@f : f, @args : [],
-		method @operator() 
-			{ return @f(|@args|,...); }
-	];
-	(t.args = arguments).pop_front();
-	return t;
-}
+using #Delta;
 
 //-- overloading function of operator .. in order for a handle
 //	 to dynamically dispatch function calling and propertiis
@@ -41,7 +30,7 @@ function component_dispatcher (handle, funcName) {
 
 	//-- bind the function call and decorate it in order to overload
 	//	 handle's operator .
-	return decorator(::bind(spw::call, handle, funcName));
+	return decorator(Delta::bind1st(spw::call, handle, funcName));
 }
 
 //-- global function, generator of a sparrow object
