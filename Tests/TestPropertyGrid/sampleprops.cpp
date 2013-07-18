@@ -30,7 +30,7 @@
 #include "advprops.h"
 
 // You will *NOT* need to include this in your application.
-#include "extras.h"
+//#include "extras.h"
 
 // This silly condition is required incase these extra properties
 // were already part of the compiled library.

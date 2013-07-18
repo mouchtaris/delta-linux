@@ -24,7 +24,7 @@ namespace conf {
 
 class _BASE_API CreateGUIPropertiesVisitor : public PropertyVisitor {
 public:
-	CreateGUIPropertiesVisitor (void) : m_guiProp(0) {}
+	CreateGUIPropertiesVisitor (const String& basePath = String()) : m_guiProp(0), m_basePath(basePath) {}
 	~CreateGUIPropertiesVisitor (void) {}
 
 	wxPGProperty* GetGeneratedProperty (void) { return m_guiProp; }
@@ -51,8 +51,10 @@ public:
 
 private:
 	void SetBaseProperties (Property* prop);
+	wxPGProperty* AdaptPathProperty(wxPGProperty* prop);
 
-	wxPGProperty* m_guiProp;
+	wxPGProperty*	m_guiProp;
+	String			m_basePath;
 };
 
 ////////////////////////////////////////////////////////////////////////

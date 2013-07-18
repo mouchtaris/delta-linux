@@ -55,8 +55,8 @@ public:
 	// To the "changed" parameters, all the ids of the changed properties are stored.
 	// If changes.empty(), then no changes were performed
 	//
-	wxWindow* CreateGUIFromProperties (wxWindow* parent, const PropertyTable& propTable);
-	wxWindow* CreateGUIFromProperties (wxWindow* parent, const PropTableVec& propTables);
+	wxWindow* CreateGUIFromProperties (wxWindow* parent, const PropertyTable& propTable, const String& basePath = String());
+	wxWindow* CreateGUIFromProperties (wxWindow* parent, const PropTableVec& propTables, const String& basePath = String());
 
 	void SetPropertiesFromGUI (
 			wxWindow*				gui,
@@ -79,21 +79,23 @@ public:
 			wxWindow*				parent,
 			const PropertyTable&	propTable,
 			PropertyIdVec&			changed,
-			const String&			title = String()
+			const String&			title = String(),
+			const String&			basePath = String()
 		);
 
 	bool ShowDialogFromProperties (
 			wxWindow*				parent,
 			const PropTableVec&		propTables,
 			PropertyIdVecVec&		changed,
-			const String&			title = String()
+			const String&			title = String(),
+			const String&			basePath = String()
 		);
 
-	static wxParentPropertyClass *	CreatePGProperty(const AggregateProperty& property, const String& name = String());
+	static wxParentPropertyClass *	CreatePGProperty(const AggregateProperty& property, const String& basePath = String(), const String& name = String());
 private:
-	static void createPGPropertyHelper(const AggregateProperty& property, wxParentPropertyClass* propParent);
+	static void createPGPropertyHelper(const AggregateProperty& property, const String& basePath, wxParentPropertyClass* propParent);
 
-	void generateGUI (const AggregateProperty& table, wxPGProperty* propParent = 0);
+	void generateGUI (const AggregateProperty& table, const String& basePath, wxPGProperty* propParent = 0);
 
 	bool getValuesFromGUI (
 			const AggregateProperty&	table,

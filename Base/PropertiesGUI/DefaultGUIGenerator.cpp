@@ -85,7 +85,8 @@ namespace conf {
 
 wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 		wxWindow*				parent,
-		const PropertyTable&	propTable
+		const PropertyTable&	propTable,
+		const String&			basePath
 	)
 {
 	m_propGrid = new wxPropertyGrid(
@@ -97,7 +98,7 @@ wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 	);
 	m_propGrid->SetExtraStyle(wxPG_EX_HELP_AS_TOOLTIPS);
 
-	this->generateGUI(propTable);
+	this->generateGUI(propTable, basePath);
 	m_propGrid->SetPropertyAttributeAll(wxPG_BOOL_USE_CHECKBOX, (long) 1);
 
 	// The propertyGrid doesn't calculate the size correctly
@@ -113,7 +114,8 @@ wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 
 wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 		wxWindow*				parent,
-		const PropTableVec&		propTables
+		const PropTableVec&		propTables,
+		const String&			basePath
 	)
 {
 	m_propGrid = 0;
@@ -132,7 +134,7 @@ wxWindow* DefaultGUIGenerator::CreateGUIFromProperties (
 	for (; iter != propTables.end(); ++iter) {
 		m_propGridPage = new wxPropertyGridPage;
 		mngr->AddPage(iter->get().GetLabel(), wxNullBitmap, m_propGridPage);
-		this->generateGUI(*iter);
+		this->generateGUI(*iter, basePath);
 	}
 	mngr->SetPropertyAttributeAll(wxPG_BOOL_USE_CHECKBOX, (long) 1);
 
@@ -189,11 +191,12 @@ bool DefaultGUIGenerator::ShowDialogFromProperties (
 		wxWindow*				parent,
 		const PropertyTable&	propTable,
 		PropertyIdVec&			changed,
-		const String&			title
+		const String&			title,
+		const String&			basePath
 	)
 {
 	PropertiesDialog dialog(parent, title);
-	wxWindow* gui = this->CreateGUIFromProperties(&dialog, propTable);
+	wxWindow* gui = this->CreateGUIFromProperties(&dialog, propTable, basePath);
 	dialog.SetGUI(gui);
 	dialog.SetChangeCallback(m_changeCallback);
 
@@ -213,11 +216,12 @@ bool DefaultGUIGenerator::ShowDialogFromProperties (
 		wxWindow*				parent,
 		const PropTableVec&		propTables,
 		PropertyIdVecVec&		changed,
-		const String&			title
+		const String&			title,
+		const String&			basePath
 	)
 {
 	PropertiesDialog dialog(parent, title);
-	wxWindow* gui = this->CreateGUIFromProperties(&dialog, propTables);
+	wxWindow* gui = this->CreateGUIFromProperties(&dialog, propTables, basePath);
 	dialog.SetGUI(gui);
 	dialog.SetChangeCallback(m_changeCallback);
 
@@ -233,25 +237,26 @@ bool DefaultGUIGenerator::ShowDialogFromProperties (
 
 //**********************************************************************
 
-wxParentPropertyClass * DefaultGUIGenerator::CreatePGProperty(const AggregateProperty& property, const String& name)
+wxParentPropertyClass * DefaultGUIGenerator::CreatePGProperty(const AggregateProperty& property, const String& basePath, const String& name)
 {
 	wxParentPropertyClass *pg = new wxParentPropertyClass(name.empty() ? property.GetLabel() : name);
 	pg->SetHelpString(property.GetDescription());
-	createPGPropertyHelper(property, pg);
+	createPGPropertyHelper(property, basePath, pg);
 	return pg;
 }
 
 //**********************************************************************
 
-void DefaultGUIGenerator::createPGPropertyHelper(const AggregateProperty& property, wxParentPropertyClass* parent)
+void DefaultGUIGenerator::createPGPropertyHelper(const AggregateProperty& property, const String& basePath, wxParentPropertyClass* parent)
 {
-	CreateGUIPropertiesVisitor visitor;
+	CreateGUIPropertiesVisitor visitor(basePath);
 	const PropertyMap& props = property.GetPropertyMap();
 	for (PropertyMap::const_iterator iter = props.begin(); iter != props.end(); ++iter) {
 		wxPGProperty *prop;
 		if (iter->second->GetType() == AggregateProperty::Type)
 			prop = CreatePGProperty(
 				*conf::safe_prop_cast<AggregateProperty>(iter->second),
+				basePath,
 				util::std2str(iter->first)
 			);
 		else {
@@ -264,9 +269,9 @@ void DefaultGUIGenerator::createPGPropertyHelper(const AggregateProperty& proper
 
 //**********************************************************************
 
-void DefaultGUIGenerator::generateGUI (const AggregateProperty& table, wxPGProperty* propParent)
+void DefaultGUIGenerator::generateGUI (const AggregateProperty& table, const String& basePath, wxPGProperty* propParent)
 {
-	CreateGUIPropertiesVisitor visitor;
+	CreateGUIPropertiesVisitor visitor(basePath);
 	const PropertyMap& props = table.GetPropertyMap();
 	for (PropertyMap::const_iterator iter = props.begin(); iter != props.end(); ++iter) {
 		iter->second->Accept(iter->first, &visitor);
@@ -275,7 +280,7 @@ void DefaultGUIGenerator::generateGUI (const AggregateProperty& table, wxPGPrope
 		m_propGrid->EnableProperty(prop, iter->second->IsEnabled());
 
 		if (iter->second->GetType() == AggregateProperty::Type) {
-			this->generateGUI(*conf::safe_prop_cast<AggregateProperty>(iter->second), prop);
+			this->generateGUI(*conf::safe_prop_cast<AggregateProperty>(iter->second), basePath, prop);
 			this->collapse(prop);
 		}
 	}

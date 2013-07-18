@@ -694,8 +694,8 @@ namespace ide
 	EXPORTED_CMD_STATIC(Workspace, NewBreakpoint, _("/{110}Debug/{220}New Breakpoint\tCtrl+B"), MT_MAIN, "")
 	{
 		conf::PropertyTable table;
-		conf::FileProperty* uriProp = new conf::FileProperty(_T("Symbolic source"), String(),
-			_("Symbolic source file for the breakpoint"));
+		conf::StringProperty* uriProp = new conf::StringProperty(_T("Symbolic source"), String(),
+			_("Symbolic source uri for the breakpoint"));
 		conf::IntProperty* lineProp = new conf::IntProperty(_T("Line"), int(),
 			_("Line for the breakpoint"));
 		conf::StringProperty* conditionProp = new conf::StringProperty(_T("Condition"), String(),

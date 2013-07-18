@@ -20,7 +20,7 @@ class THIRD_PARTY_API wxPG_PROPCLASS(wxGenericListProperty) : public wxPG_PROPCL
     WX_PG_DECLARE_PROPERTY_CLASS(wxGenericListProperty)
 #endif
 public:
-	wxPG_PROPCLASS(wxGenericListProperty)( const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass* valueCreator);
+	wxPG_PROPCLASS(wxGenericListProperty)(const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass* valueCreator);
 	~wxPG_PROPCLASS(wxGenericListProperty)();
 
 	virtual void GenerateValueAsString();
@@ -32,9 +32,33 @@ public:
     WX_PG_DECLARE_VALIDATOR_METHODS()
 };
 
+class THIRD_PARTY_API wxPG_PROPCLASS(wxExpandedPathProperty) : public wxParentPropertyClass {
+	wxString basePath;
+	wxPGProperty *path;
+	wxPGProperty *expandedPath;
+#ifdef THIRD_PARTY_PROPGRID
+	WX_PG_DECLARE_PROPERTY_CLASS()
+#else
+    WX_PG_DECLARE_PROPERTY_CLASS(wxExpandedPathProperty)
+#endif
+public:
+	wxPG_PROPCLASS(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty *p);
+	~wxPG_PROPCLASS(wxExpandedPathProperty)();
+
+	void SetExpandedPathValue (const wxString& text);
+	virtual wxString GetValueAsString(int argFlags = 0) const;
+	virtual bool SetValueFromString(const wxString& text, int argFlags);
+	virtual bool StringToValue(wxVariant& variant, const wxString& text, int argFlags) const;
+
+	virtual bool OnEvent(wxPropertyGrid* propgrid, wxWindow* wnd_primary, wxEvent& event);
+	WX_PG_DECLARE_VALIDATOR_METHODS()
+};
+
 #ifdef THIRD_PARTY_PROPGRID
 extern WXDLLIMPEXP_PG wxPGProperty* wxGenericListProperty(
 	const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass *valueCreator);
+extern WXDLLIMPEXP_PG wxPGProperty* wxExpandedPathProperty(
+	const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty *p);
 #endif
 
 #endif // _WX_PROPGRID_EXTRAPROPS_H_

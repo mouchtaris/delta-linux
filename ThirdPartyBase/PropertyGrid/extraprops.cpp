@@ -13,7 +13,7 @@
 		m_delimiter = DELIMCHAR;																								\
 	}																															\
 	wxPG_PROPCLASS(PROPNAME)::~wxPG_PROPCLASS(PROPNAME)() {}																	\
-	bool wxPG_PROPCLASS(PROPNAME)::OnEvent( wxPropertyGrid* propgrid, wxWindow* primary, wxEvent& event )						\
+	bool wxPG_PROPCLASS(PROPNAME)::OnEvent(wxPropertyGrid* propgrid, wxWindow* primary, wxEvent& event)							\
 	{																															\
 		if (event.GetEventType() == wxEVT_COMMAND_BUTTON_CLICKED)																\
 			return OnButtonClick(propgrid,primary,(const wxChar*) CUSTBUTTXT);													\
@@ -36,12 +36,12 @@ wxValidator* wxPG_PROPCLASS(wxFileListProperty)::DoGetValidator() const
 
 bool wxPG_PROPCLASS(wxFileListProperty)::OnCustomStringEdit (wxWindow* parent, wxString& value) {
     wxFileDialog dlg(parent, _("Select a file to be added to the list:"), wxString(), value);
-    if ( dlg.ShowModal() == wxID_OK ) {
+    if (dlg.ShowModal() == wxID_OK) {
         value = dlg.GetPath();
-        return TRUE;
+        return true;
     }
 	else
-		return FALSE;
+		return false;
 }
 
 // -----------------------------------------------------------------------
@@ -51,22 +51,21 @@ bool wxPG_PROPCLASS(wxFileListProperty)::OnCustomStringEdit (wxWindow* parent, w
 WX_PG_IMPLEMENT_ARRAYSTRING_PROPERTY_WITH_VALIDATOR(wxDirectoryListProperty,DELIMCHAR,wxT("Browse"))
 
 #if wxUSE_VALIDATORS
-wxValidator* wxPG_PROPCLASS(wxDirectoryListProperty)::DoGetValidator() const
-	{ return wxPG_PROPCLASS(wxFileProperty)::GetClassValidator(); }
+wxValidator* wxPG_PROPCLASS(wxDirectoryListProperty)::DoGetValidator() const { return NULL; }
 #endif
 
 bool wxPG_PROPCLASS(wxDirectoryListProperty)::OnCustomStringEdit (wxWindow* parent, wxString& value) {
     wxDirDialog dlg(parent, _("Select a directory to be added to the list:"), value);
-    if ( dlg.ShowModal() == wxID_OK ) {
+    if (dlg.ShowModal() == wxID_OK) {
         value = dlg.GetPath();
-        return TRUE;
+        return true;
     }
 	else
-		return FALSE;
+		return false;
 }
 
 // -----------------------------------------------------------------------
-// wxGenericListProperty Property
+// GenericList Property
 // -----------------------------------------------------------------------
 
 class PropertiesDialog : public wxDialog {
@@ -129,11 +128,11 @@ public:
 
 
 
-wxPG_PROPCLASS(wxGenericListProperty)::wxPG_PROPCLASS(wxGenericListProperty)( const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass* valueCreator) : 
+wxPG_PROPCLASS(wxGenericListProperty)::wxPG_PROPCLASS(wxGenericListProperty)(const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass* valueCreator) : 
 	wxPG_PROPCLASS(wxArrayStringProperty)(label,name,value), valueCreator(valueCreator)
 {
 	assert(valueCreator && valueCreator->GetCount());
-	wxPG_PROPCLASS(wxGenericListProperty)::GenerateValueAsString();
+	GenerateValueAsString();
 }
 wxPG_PROPCLASS(wxGenericListProperty)::~wxPG_PROPCLASS(wxGenericListProperty)() {
 	assert(valueCreator);
@@ -145,7 +144,7 @@ wxClassInfo* wxPG_PROPCLASS(wxGenericListProperty)::GetClassInfo(void) const { r
 #endif
 
 bool wxPG_PROPCLASS(wxGenericListProperty)::OnEvent(wxPropertyGrid* propgrid, wxWindow* primary, wxEvent& event) {
-	if ( event.GetEventType() == wxEVT_COMMAND_BUTTON_CLICKED )
+	if (event.GetEventType() == wxEVT_COMMAND_BUTTON_CLICKED)
 		return OnButtonClick(propgrid,primary, wxT("Create new"));
 	return false;
 }
@@ -153,12 +152,12 @@ bool wxPG_PROPCLASS(wxGenericListProperty)::OnEvent(wxPropertyGrid* propgrid, wx
 bool wxPG_PROPCLASS(wxGenericListProperty)::OnCustomStringEdit(wxWindow* parent, wxString& value) {
 	bool retval;
 	PropertiesDialog dialog(parent, _("Create new entry"), valueCreator);
-	if ( dialog.ShowModal() == wxID_OK ) {
+	if (dialog.ShowModal() == wxID_OK) {
 		value = valueCreator->GetValueAsString(0);
-		retval = TRUE;
+		retval = true;
 	}
 	else
-		retval = FALSE;
+		retval = false;
 	dialog.RemovePGProperty(valueCreator);
 	return retval;
 }
@@ -207,22 +206,22 @@ bool wxPG_PROPCLASS(wxGenericListProperty)::SetValueFromString(const wxString& t
 	while(pos < lastPos) {
 		a = text[pos];
 
-		if ( tokenStart != 0xFFFFFF ) {
+		if (tokenStart != 0xFFFFFF) {
 			// Token is running
-			if ( a == delimeter || a == 0 ) {
+			if (a == delimeter || a == 0) {
 				token = text.substr(tokenStart,pos-tokenStart);
 				token.Trim(true);
 				value.Add(token);
-				if ( ++curChild >= valueCreator->GetCount() )
+				if (++curChild >= valueCreator->GetCount())
 					curChild = 0;	//wrap for next list item
 				tokenStart = 0xFFFFFF;
 			}
 		}
 		else {
 			// Token is not running
-			if ( a != wxT(' ') ) {
+			if (a != wxT(' ')) {
 				// Is this a group of tokens?
-				if ( a == wxT('[') ) {
+				if (a == wxT('[')) {
 					int depth = 1;
 					pos++;
 					size_t startPos = pos;
@@ -231,21 +230,21 @@ bool wxPG_PROPCLASS(wxGenericListProperty)::SetValueFromString(const wxString& t
 					do {
 						a = text[pos];
 						pos++;
-						if ( a == wxT(']') )
+						if (a == wxT(']'))
 							depth--;
-						else if ( a == wxT('[') )
+						else if (a == wxT('['))
 							depth++;
-					} while ( depth > 0 && a );
+					} while (depth > 0 && a);
 
 					token = text.substr(startPos,pos-startPos-1);
 					value.Add(token);
-					if ( ++curChild >= valueCreator->GetCount() )
+					if (++curChild >= valueCreator->GetCount())
 						curChild = 0;	//wrap for next list item
 					tokenStart = 0xFFFFFF;
 				}
 				else {
 					tokenStart = pos;
-					if ( a == delimeter )
+					if (a == delimeter)
 						pos--;
 				}
 			}
@@ -270,9 +269,9 @@ bool wxPG_PROPCLASS(wxGenericListProperty)::StringToValue(wxVariant& variant, co
 }
 
 #if !wxUSE_PROPGRID
-wxPGProperty* wxPG_CONSTFUNC(wxGenericListProperty)( const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass *valueCreator)
+wxPGProperty* wxPG_CONSTFUNC(wxGenericListProperty)(const wxString& label, const wxString& name, const wxArrayString& value, wxParentPropertyClass *valueCreator)
 	{ return new wxPG_PROPCLASS(wxGenericListProperty)(label,name,value,valueCreator); }
-wxPGProperty* wxPG_CONSTFUNC(wxGenericListProperty)( const wxString& label, const wxString& name)
+wxPGProperty* wxPG_CONSTFUNC(wxGenericListProperty)(const wxString& label, const wxString& name)
 	{ return new wxPG_PROPCLASS(wxGenericListProperty)(label,name,wxArrayString(),0); }
 #endif
 
@@ -281,4 +280,66 @@ WX_PG_IMPLEMENT_PROPERTY_CLASS_PLAIN(wxGenericListProperty,wxArrayString,TextCtr
 
 #if wxUSE_VALIDATORS
 WX_PG_IMPLEMENT_EMPTY_VALIDATOR(wxGenericListProperty)
+#endif
+
+// -----------------------------------------------------------------------
+// ExpandedPath Property
+// -----------------------------------------------------------------------
+
+wxPG_PROPCLASS(wxExpandedPathProperty)::wxPG_PROPCLASS(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty* p) : 
+	wxParentPropertyClass(label,name), basePath(basePath), path(p)
+{
+	expandedPath = PG_CREATE_PROP(wxStringProperty)(_T("Full Path"));
+	expandedPath->SetFlag(wxPG_PROP_DISABLED);
+	AddChild(expandedPath);
+	SetExpandedPathValue(GetValueAsString());
+}
+wxPG_PROPCLASS(wxExpandedPathProperty)::~wxPG_PROPCLASS(wxExpandedPathProperty)() { delete path; }
+
+void wxPG_PROPCLASS(wxExpandedPathProperty)::SetExpandedPathValue (const wxString& text) {
+	wxString expanded;
+	WX_PG_TOKENIZER1_BEGIN(text,DELIMCHAR)
+		if (!expanded.empty())
+			expanded += DELIMCHAR;
+		wxFileName filename(token);
+		filename.Normalize(wxPATH_NORM_ALL, basePath);
+		expanded += filename.GetFullPath();
+	WX_PG_TOKENIZER1_END()
+	expandedPath->SetValueFromString(expanded);
+}
+
+wxString wxPG_PROPCLASS(wxExpandedPathProperty)::GetValueAsString(int argFlags) const
+	{ return path->GetValueAsString(argFlags); }
+
+bool wxPG_PROPCLASS(wxExpandedPathProperty)::SetValueFromString(const wxString& text, int argFlags) {
+	path->SetValueFromString(text, argFlags);
+	SetExpandedPathValue(text);
+	return true;
+}
+
+bool wxPG_PROPCLASS(wxExpandedPathProperty)::StringToValue(wxVariant& variant, const wxString& text, int argFlags) const {
+	const_cast<wxPG_PROPCLASS(wxExpandedPathProperty)*>(this)->SetValueFromString(text, argFlags);
+	variant = path->GetValueAsVariant();
+	return true;
+}
+
+bool wxPG_PROPCLASS(wxExpandedPathProperty)::OnEvent(wxPropertyGrid* propgrid, wxWindow* wnd_primary, wxEvent& event) {
+	if (path->OnEvent(propgrid, wnd_primary, event)) {
+		SetExpandedPathValue(GetValueAsString());
+		return true;
+	}
+	else
+		return false;
+}
+
+#if !wxUSE_PROPGRID
+wxPGProperty* wxPG_CONSTFUNC(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty *p)
+	{ return new wxPG_PROPCLASS(wxExpandedPathProperty)(label,name,basePath,p); }
+#endif
+
+PG_CLASS_INFO* wxPG_PROPCLASS(wxExpandedPathProperty)::GetClassInfo(void) const { return NULL; }
+WX_PG_IMPLEMENT_PROPERTY_CLASS_PLAIN(wxExpandedPathProperty,wxString,TextCtrlAndButton)
+
+#if wxUSE_VALIDATORS
+WX_PG_IMPLEMENT_EMPTY_VALIDATOR(wxExpandedPathProperty)
 #endif

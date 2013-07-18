@@ -36,6 +36,8 @@
 #define PG_GET_VALUE_AS_STRING(p)	(p)->GetValueAsString(0)
 
 #define PG_CREATE_PROP(PROP) PROP
+
+#define PG_CLASS_INFO const wxPGPropertyClassInfo
 #else
 #ifdef WXMAKINGLIB_PROPGRID
     #define WXDLLIMPEXP_PG
@@ -277,6 +279,8 @@ public:
 #define PG_GET_VALUE_AS_STRING(p)	(p)->ValueToString((p)->GetValue(), 0)
 
 #define PG_CREATE_PROP(PROP) new PROP
+
+#define PG_CLASS_INFO wxClassInfo
 
 typedef wxPropertyGridInterface wxPropertyContainerMethods;
 #endif

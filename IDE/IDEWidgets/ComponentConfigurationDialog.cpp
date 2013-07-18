@@ -10,6 +10,8 @@
 #include "CommonGUIUtils.h"
 #include "ComponentRegistry.h"
 #include "Algorithms.h"
+#include "Call.h"
+#include "ComponentHandle.h"
 
 namespace ide {
 
@@ -62,8 +64,7 @@ bool ComponentConfigurationDialog::Configure (ComponentEntry& entry)
 	conf::PropertyIdVec changed;
 	const conf::PropertyTable& table = entry.GetPropertyTable();
 	conf::PropertyTable* old = static_cast<conf::PropertyTable*>(table.Clone());
-	bool retval = m_dgg.ShowDialogFromProperties(m_parent, table, changed,
-		entry.GetMetadata().name);
+	bool retval = m_dgg.ShowDialogFromProperties(m_parent, table, changed, entry.GetMetadata().name);
 
 	if (!changed.empty())
 		entry.NotifyPropertiesChanged(*old, changed);
@@ -86,8 +87,12 @@ bool ComponentConfigurationDialog::ConfigureInstance (Component* component)
 	conf::PropertyIdVec changed;
 	const conf::PropertyTable& table = component->GetInstancePropertyTable();
 	conf::PropertyTable* old = static_cast<conf::PropertyTable*>(table.Clone());
-	bool retval = m_dgg.ShowDialogFromProperties(m_parent, table, changed,
-		component->GetName());
+
+	String basePath;
+	if (ComponentRegistry::Instance().GetComponentEntry(component->GetClassId()).HasFunction("GetPath"))
+		basePath = Call<const String (void)>("ComponentConfigurationDialog", component, "GetPath")();
+
+	bool retval = m_dgg.ShowDialogFromProperties(m_parent, table, changed, component->GetName(), basePath);
 
 	if (!changed.empty())
 		component->ApplyChangedProperties(*old, changed);
