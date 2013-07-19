@@ -286,50 +286,87 @@ WX_PG_IMPLEMENT_EMPTY_VALIDATOR(wxGenericListProperty)
 // ExpandedPath Property
 // -----------------------------------------------------------------------
 
-wxPG_PROPCLASS(wxExpandedPathProperty)::wxPG_PROPCLASS(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty* p) : 
-	wxParentPropertyClass(label,name), basePath(basePath), path(p)
-{
-	expandedPath = PG_CREATE_PROP(wxStringProperty)(_T("Full Path"));
-	expandedPath->SetFlag(wxPG_PROP_DISABLED);
-	AddChild(expandedPath);
-	SetExpandedPathValue(GetValueAsString());
-}
-wxPG_PROPCLASS(wxExpandedPathProperty)::~wxPG_PROPCLASS(wxExpandedPathProperty)() { delete path; }
+DECLARE_LOCAL_EVENT_TYPE(EVENT_UPDATE_CHILDREN, -1);
+DEFINE_EVENT_TYPE(EVENT_UPDATE_CHILDREN);
 
-void wxPG_PROPCLASS(wxExpandedPathProperty)::SetExpandedPathValue (const wxString& text) {
-	wxString expanded;
+BEGIN_EVENT_TABLE(wxPG_PROPCLASS(wxExpandedPathProperty)::CustomHandler, wxEvtHandler)
+	EVT_COMMAND(wxID_ANY, EVENT_UPDATE_CHILDREN, wxPG_PROPCLASS(wxExpandedPathProperty)::CustomHandler::OnExpandChildren)
+END_EVENT_TABLE();
+
+wxPG_PROPCLASS(wxExpandedPathProperty)::wxPG_PROPCLASS(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty* p) : 
+	wxParentPropertyClass(label,name), basePath(basePath), path(p), settingValue(false), handler(new CustomHandler())
+{
+	const wxString text = GetValueAsString();
 	WX_PG_TOKENIZER1_BEGIN(text,DELIMCHAR)
-		if (!expanded.empty())
-			expanded += DELIMCHAR;
 		wxFileName filename(token);
 		filename.Normalize(wxPATH_NORM_ALL, basePath);
-		expanded += filename.GetFullPath();
+		wxPGProperty* p = PG_CREATE_PROP(wxStringProperty)(_T("Full Path"), *((wxString *) 0), filename.GetFullPath());
+#if wxUSE_PROPGRID
+		p->Enable(false);
+#else
+		p->SetFlag(wxPG_PROP_DISABLED);
+#endif
+		AddChild(p);
 	WX_PG_TOKENIZER1_END()
-	expandedPath->SetValueFromString(expanded);
+	path->Hide(true);
+	this->AddChild(path);
+}
+wxPG_PROPCLASS(wxExpandedPathProperty)::~wxPG_PROPCLASS(wxExpandedPathProperty)() {
+	//delete path;
+	delete handler;
+}
+
+void wxPG_PROPCLASS(wxExpandedPathProperty)::UpdateChildren (wxPropertyGrid* pg) {
+	const wxString text = GetValueAsString();
+
+	for (unsigned i = 0; i < m_children.GetCount(); ++i)
+		pg->Delete(wxPGIdGen((wxPGProperty*)m_children.Item(i)));
+	m_children.Clear();
+		
+	WX_PG_TOKENIZER1_BEGIN(text,DELIMCHAR)
+		wxFileName filename(token);
+		filename.Normalize(wxPATH_NORM_ALL, basePath);
+		wxPGProperty* p = PG_CREATE_PROP(wxStringProperty)(_T("Full Path"), *((wxString *) 0), filename.GetFullPath());
+#if wxUSE_PROPGRID
+		p->Enable(false);
+#else
+		p->SetFlag(wxPG_PROP_DISABLED);
+#endif
+		pg->AppendIn(wxPGIdGen(this), p);
+	WX_PG_TOKENIZER1_END()
+	pg->Refresh();
 }
 
 wxString wxPG_PROPCLASS(wxExpandedPathProperty)::GetValueAsString(int argFlags) const
 	{ return path->GetValueAsString(argFlags); }
 
 bool wxPG_PROPCLASS(wxExpandedPathProperty)::SetValueFromString(const wxString& text, int argFlags) {
+	if (settingValue)
+		return true;
+	settingValue = true;
 	path->SetValueFromString(text, argFlags);
-	SetExpandedPathValue(text);
+	handler->SetData(this);
+	handler->AddPendingEvent(wxCommandEvent(EVENT_UPDATE_CHILDREN));
+	settingValue = false;
 	return true;
 }
 
 bool wxPG_PROPCLASS(wxExpandedPathProperty)::StringToValue(wxVariant& variant, const wxString& text, int argFlags) const {
 	const_cast<wxPG_PROPCLASS(wxExpandedPathProperty)*>(this)->SetValueFromString(text, argFlags);
-	variant = path->GetValueAsVariant();
+	variant = path->GetValueAsString();
 	return true;
 }
 
 bool wxPG_PROPCLASS(wxExpandedPathProperty)::OnEvent(wxPropertyGrid* propgrid, wxWindow* wnd_primary, wxEvent& event) {
 	if (path->OnEvent(propgrid, wnd_primary, event)) {
-		SetExpandedPathValue(GetValueAsString());
+		UpdateChildren(propgrid);
 		return true;
 	}
-	else
-		return false;
+	else if (event.GetEventType() == wxEVT_COMMAND_TEXT_ENTER) {
+		handler->SetData(this);
+		handler->AddPendingEvent(wxCommandEvent(EVENT_UPDATE_CHILDREN));
+	}
+	return false;
 }
 
 #if !wxUSE_PROPGRID

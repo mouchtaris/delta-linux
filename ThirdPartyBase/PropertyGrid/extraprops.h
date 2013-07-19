@@ -35,17 +35,29 @@ public:
 class THIRD_PARTY_API wxPG_PROPCLASS(wxExpandedPathProperty) : public wxParentPropertyClass {
 	wxString basePath;
 	wxPGProperty *path;
-	wxPGProperty *expandedPath;
+	bool settingValue;
 #ifdef THIRD_PARTY_PROPGRID
 	WX_PG_DECLARE_PROPERTY_CLASS()
 #else
     WX_PG_DECLARE_PROPERTY_CLASS(wxExpandedPathProperty)
 #endif
+
+	struct CustomHandler : public wxEvtHandler {
+	private:
+		wxPG_PROPCLASS(wxExpandedPathProperty)* p;
+		DECLARE_EVENT_TABLE();
+	public:
+		CustomHandler(void) { SetData(); }
+		void SetData(wxPG_PROPCLASS(wxExpandedPathProperty)* p = 0) { this->p = p; }
+		void OnExpandChildren(wxCommandEvent& event) { if(p) { p->UpdateChildren(p->GetGrid()); SetData(); } }
+	};
+	CustomHandler* handler;
 public:
 	wxPG_PROPCLASS(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty *p);
 	~wxPG_PROPCLASS(wxExpandedPathProperty)();
 
-	void SetExpandedPathValue (const wxString& text);
+	void UpdateChildren (wxPropertyGrid* pg);
+
 	virtual wxString GetValueAsString(int argFlags = 0) const;
 	virtual bool SetValueFromString(const wxString& text, int argFlags);
 	virtual bool StringToValue(wxVariant& variant, const wxString& text, int argFlags) const;

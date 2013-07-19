@@ -70,8 +70,8 @@
 
 class wxParentPropertyClass: public wxPGProperty {
 public:
-	wxParentPropertyClass (const wxString& label) throw():
-		wxPGProperty(label, wxString::FromAscii("")) {}
+	wxParentPropertyClass (const wxString& label, const wxString& name = wxString::FromAscii("")) throw():
+		wxPGProperty(label, name) {}
 	unsigned int GetCount() const { return GetChildCount(); }
 
 	virtual wxVariant ChildChanged(wxVariant& thisValue, int childIndex, wxVariant& childValue) const {
