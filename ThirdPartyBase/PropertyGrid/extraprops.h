@@ -3,12 +3,6 @@
 
 #include "PropertyGridPortability.h"
 
-#ifdef THIRDPARTYBASELIBRARY_EXPORTS
-#	define THIRD_PARTY_API __declspec(dllexport)
-#else
-#	define THIRD_PARTY_API __declspec(dllimport)
-#endif
-
 WX_PG_DECLARE_ARRAYSTRING_PROPERTY_WITH_DECL(wxFileListProperty, EXTRA_PROP_DECL)
 WX_PG_DECLARE_ARRAYSTRING_PROPERTY_WITH_DECL(wxDirectoryListProperty, EXTRA_PROP_DECL)
 
@@ -54,9 +48,15 @@ class THIRD_PARTY_API wxPG_PROPCLASS(wxExpandedPathProperty) : public wxParentPr
 	CustomHandler* handler;
 public:
 	wxPG_PROPCLASS(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty *p);
+	wxPG_PROPCLASS(wxExpandedPathProperty)(void) {}
 	~wxPG_PROPCLASS(wxExpandedPathProperty)();
 
 	void UpdateChildren (wxPropertyGrid* pg);
+
+#if wxUSE_PROPGRID
+	virtual wxVariant DoGetValue (void) const;
+	virtual void OnSetValue (void);
+#endif
 
 	virtual wxString GetValueAsString(int argFlags = 0) const;
 	virtual bool SetValueFromString(const wxString& text, int argFlags);

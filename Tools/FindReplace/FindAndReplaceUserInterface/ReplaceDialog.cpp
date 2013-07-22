@@ -120,7 +120,8 @@ namespace frep {
 		FindAndReplaceUserInterface(_("Find and replace"), parent, pro, com)
 	{
 		//KeyLogger::Init("==========================================koutsop.txt");
-		wxImage::AddHandler( new wxXPMHandler );
+		if (!wxImage::FindHandler(wxBITMAP_TYPE_XPM))
+			wxImage::AddHandler( new wxXPMHandler );
 		FindAndReplaceManager::Initialise();
 		mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 

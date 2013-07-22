@@ -303,26 +303,32 @@ wxPG_PROPCLASS(wxExpandedPathProperty)::wxPG_PROPCLASS(wxExpandedPathProperty)(c
 		wxPGProperty* p = PG_CREATE_PROP(wxStringProperty)(_T("Full Path"), *((wxString *) 0), filename.GetFullPath());
 #if wxUSE_PROPGRID
 		p->Enable(false);
+		AppendChild(p);
 #else
 		p->SetFlag(wxPG_PROP_DISABLED);
-#endif
 		AddChild(p);
+#endif
 	WX_PG_TOKENIZER1_END()
-	path->Hide(true);
-	this->AddChild(path);
+
+#if wxUSE_PROPGRID
+		m_value = DoGetValue();
+#endif
 }
 wxPG_PROPCLASS(wxExpandedPathProperty)::~wxPG_PROPCLASS(wxExpandedPathProperty)() {
-	//delete path;
+	delete path;
 	delete handler;
 }
 
 void wxPG_PROPCLASS(wxExpandedPathProperty)::UpdateChildren (wxPropertyGrid* pg) {
 	const wxString text = GetValueAsString();
 
+#if wxUSE_PROPGRID
+	DeleteChildren();
+#else
 	for (unsigned i = 0; i < m_children.GetCount(); ++i)
 		pg->Delete(wxPGIdGen((wxPGProperty*)m_children.Item(i)));
 	m_children.Clear();
-		
+#endif		
 	WX_PG_TOKENIZER1_BEGIN(text,DELIMCHAR)
 		wxFileName filename(token);
 		filename.Normalize(wxPATH_NORM_ALL, basePath);
@@ -336,6 +342,35 @@ void wxPG_PROPCLASS(wxExpandedPathProperty)::UpdateChildren (wxPropertyGrid* pg)
 	WX_PG_TOKENIZER1_END()
 	pg->Refresh();
 }
+
+#if wxUSE_PROPGRID
+wxVariant wxPG_PROPCLASS(wxExpandedPathProperty)::DoGetValue(void) const {
+	const wxString text = GetValueAsString();
+	wxArrayString strs;
+	WX_PG_TOKENIZER1_BEGIN(text,DELIMCHAR)
+		strs.Add(token);
+	WX_PG_TOKENIZER1_END()
+	return strs;
+}
+
+void wxPG_PROPCLASS(wxExpandedPathProperty)::OnSetValue (void) {
+	wxString text;
+	const wxString type = m_value.GetType();
+	if (type == "string")
+		text = m_value.GetString();
+	else {
+		assert(type == "arrstring");
+		const wxArrayString strs = m_value.GetArrayString();
+	
+		for (unsigned i = 0; i < strs.size(); ++i) {
+			if (!text.empty())
+				text += DELIMCHAR;
+			text += strs.Item(i);
+		}
+	}
+	SetValueFromString(text, 0);
+}
+#endif
 
 wxString wxPG_PROPCLASS(wxExpandedPathProperty)::GetValueAsString(int argFlags) const
 	{ return path->GetValueAsString(argFlags); }
@@ -358,7 +393,15 @@ bool wxPG_PROPCLASS(wxExpandedPathProperty)::StringToValue(wxVariant& variant, c
 }
 
 bool wxPG_PROPCLASS(wxExpandedPathProperty)::OnEvent(wxPropertyGrid* propgrid, wxWindow* wnd_primary, wxEvent& event) {
-	if (path->OnEvent(propgrid, wnd_primary, event)) {
+#if wxUSE_PROPGRID
+	AppendChild(path);
+#endif
+	bool result = path->OnEvent(propgrid, wnd_primary, event);
+#if wxUSE_PROPGRID
+	RemoveChild(path);
+#endif
+
+	if (result) {
 		UpdateChildren(propgrid);
 		return true;
 	}
@@ -374,7 +417,11 @@ wxPGProperty* wxPG_CONSTFUNC(wxExpandedPathProperty)(const wxString& label, cons
 	{ return new wxPG_PROPCLASS(wxExpandedPathProperty)(label,name,basePath,p); }
 #endif
 
-PG_CLASS_INFO* wxPG_PROPCLASS(wxExpandedPathProperty)::GetClassInfo(void) const { return NULL; }
+#if wxUSE_PROPGRID
+IMPLEMENT_DYNAMIC_CLASS(wxExpandedPathProperty, wxParentPropertyClass)
+#else
+const wxPGPropertyClassInfo* wxPG_PROPCLASS(wxExpandedPathProperty)::GetClassInfo(void) const { return NULL; }
+#endif
 WX_PG_IMPLEMENT_PROPERTY_CLASS_PLAIN(wxExpandedPathProperty,wxString,TextCtrlAndButton)
 
 #if wxUSE_VALIDATORS

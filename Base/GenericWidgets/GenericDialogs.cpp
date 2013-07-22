@@ -54,8 +54,7 @@ void DialogBase::RealizeDialog (
 	////////////////////////////////////////////////////////////////////
 	// Initialize dialog
 	//
-	wxBitmap image(s_image);
-	wxStaticBitmap* logo = image.IsOk() ? new wxStaticBitmap(this, wxID_ANY, image) : 0;
+	wxStaticBitmap* logo = s_image.empty() ? 0 : new wxStaticBitmap(this, wxID_ANY, wxBitmap(s_image));
 
 	wxStaticText* messageText = 0;
 	if (!message.empty()) {

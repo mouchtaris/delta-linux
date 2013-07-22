@@ -3,6 +3,12 @@
 
 #include <wx/defs.h>
 
+#ifdef THIRDPARTYBASELIBRARY_EXPORTS
+#	define THIRD_PARTY_API __declspec(dllexport)
+#else
+#	define THIRD_PARTY_API __declspec(dllimport)
+#endif
+
 #if !wxUSE_PROPGRID
 #include <wx/window.h>
 #include <wx/dialog.h>
@@ -17,7 +23,6 @@
 
 #define THIRD_PARTY_PROPGRID
 
-//#define DECL WXDLLIMPEXP_PG
 #define EXTRA_PROP_DECL WXDLLIMPEXP_PG
 #define WX_PG_IMPLEMENT_EMPTY_VALIDATOR(PROP) wxValidator* wxPG_PROPCLASS(PROP)::DoGetValidator() const { return (wxValidator*) NULL; }
 #define REMOVE_PROPERTY(x) Remove(wxPGId(x))
@@ -36,8 +41,6 @@
 #define PG_GET_VALUE_AS_STRING(p)	(p)->GetValueAsString(0)
 
 #define PG_CREATE_PROP(PROP) PROP
-
-#define PG_CLASS_INFO const wxPGPropertyClassInfo
 #else
 #ifdef WXMAKINGLIB_PROPGRID
     #define WXDLLIMPEXP_PG
@@ -55,7 +58,6 @@
 
 #define wxPGId wxPGProperty*
 
-#define DECL class WXDLLIMPEXP_PG
 #define EXTRA_PROP_DECL class THIRD_PARTY_API
 
 #define wxPG_CONSTFUNC(PROP) PROP
@@ -68,9 +70,9 @@
 #define REMOVE_PROPERTY(x) RemoveProperty(x)
 #define APPEND_CATEGORY(x) Append(new wxPropertyCategory(x))
 
-class wxParentPropertyClass: public wxPGProperty {
+class THIRD_PARTY_API wxParentPropertyClass : public wxPGProperty {
 public:
-	wxParentPropertyClass (const wxString& label, const wxString& name = wxString::FromAscii("")) throw():
+	wxParentPropertyClass (const wxString& label = wxString::FromAscii(""), const wxString& name = wxString::FromAscii("")) throw():
 		wxPGProperty(label, name) {}
 	unsigned int GetCount() const { return GetChildCount(); }
 
@@ -279,8 +281,6 @@ public:
 #define PG_GET_VALUE_AS_STRING(p)	(p)->ValueToString((p)->GetValue(), 0)
 
 #define PG_CREATE_PROP(PROP) new PROP
-
-#define PG_CLASS_INFO wxClassInfo
 
 typedef wxPropertyGridInterface wxPropertyContainerMethods;
 #endif

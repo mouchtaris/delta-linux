@@ -71,7 +71,8 @@ namespace frep {
 	) : findInScript(false),
 		FindAndReplaceUserInterface(_("Find"), parent, pro, com)
 	{
-		wxImage::AddHandler( new wxXPMHandler );
+		if (!wxImage::FindHandler(wxBITMAP_TYPE_XPM))
+			wxImage::AddHandler( new wxXPMHandler );
 		FindAndReplaceManager::Initialise();
 		mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 
