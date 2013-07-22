@@ -125,7 +125,7 @@ START_SEC("si_download", "Download")
 		versions or manually building them from source. The libraries required are (we tested
 		only for these, but it should work on other versions too):", NL1,
 		TAB1 "Boost versions 1.34 or 1.45 - 1.47", NL1,
-		TAB1 "wxWidgets versions 2.8.3 or 2.8.11 - 2.8.12 or 2.9.4", NL1,
+		TAB1 "wxWidgets versions 2.8.3 or 2.8.11 - 2.8.12 or 2.9.4 - 2.9.5", NL1,
 
 		bullet "2.1)", 	"If manually building the libraries from source:", NL1,
 

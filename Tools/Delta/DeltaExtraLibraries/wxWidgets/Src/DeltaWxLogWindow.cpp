@@ -98,9 +98,14 @@ WX_FUNC_START(logwindow_destruct, 1, Nil)
 }
 
 WX_FUNC_START(logwindow_onframecreate, 2, Nil)
+#if wxCHECK_VERSION(2, 9, 5)	//OnFrameCreate was removed in 2.9.5
+	DPTR(vm)->Error(ucstringarg(uconstructstr("'%s' is not available in wxWidgets 2.9.5 or newer", CURR_FUNC)));
+	DLIB_RESET_RETURN;
+#else
 	DLIB_WXGET_BASE(logwindow, LogWindow, win)
 	DLIB_WXGET_BASE(frame, Frame, frame)
 	win->OnFrameCreate(frame);
+#endif
 }
 
 static void logwindow_onframecreateadd_LibFunc (DeltaVirtualMachine* vm)
@@ -108,6 +113,10 @@ static void logwindow_onframecreateadd_LibFunc (DeltaVirtualMachine* vm)
 	ISSUE_FUNC("logwindow_onframecreateadd");
 	util_ui32 _argNo = 0;
 	DeltaNilReset reseter(vm);
+#if wxCHECK_VERSION(2, 9, 5)	//OnFrameCreate was removed in 2.9.5
+	DPTR(vm)->Error(ucstringarg(uconstructstr("'%s' is not available in wxWidgets 2.9.5 or newer", CURR_FUNC)));
+	DLIB_RESET_RETURN;
+#else
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
@@ -119,6 +128,7 @@ static void logwindow_onframecreateadd_LibFunc (DeltaVirtualMachine* vm)
 		if (arg->IsCallable())
 			win->AddOnCreate(*arg);
 	}
+#endif
 }
 
 static void logwindow_onframecreateremove_LibFunc (DeltaVirtualMachine* vm)
@@ -126,6 +136,10 @@ static void logwindow_onframecreateremove_LibFunc (DeltaVirtualMachine* vm)
 	ISSUE_FUNC("logwindow_onframecreateremove");
 	util_ui32 _argNo = 0;
 	DeltaNilReset reseter(vm);
+#if wxCHECK_VERSION(2, 9, 5)	//OnFrameCreate was removed in 2.9.5
+	DPTR(vm)->Error(ucstringarg(uconstructstr("'%s' is not available in wxWidgets 2.9.5 or newer", CURR_FUNC)));
+	DLIB_RESET_RETURN;
+#else
 	std::string _sig1, _sig2;
 	DeltaAtLeastTotalArgsCheck(2, CURR_FUNC, RESET_EMPTY)
 	int n = DPTR(vm)->TotalActualArgs();
@@ -145,6 +159,7 @@ static void logwindow_onframecreateremove_LibFunc (DeltaVirtualMachine* vm)
 			}
 		}
 	}
+#endif
 }
 
 
@@ -263,6 +278,7 @@ WX_FUNC_START(logwindow_getframe, 1, Nil)
 
 ////////////////////////////////////////////////////////////////
 
+#if !wxCHECK_VERSION(2, 9, 5)	//OnFrameCreate was removed in 2.9.5
 void wxLogWindowDerived::NotifyCreate(wxFrame *wxframe)
 {
 	wxFrame *frame = wxframe;
@@ -276,6 +292,7 @@ void wxLogWindowDerived::NotifyCreate(wxFrame *wxframe)
 		obj(arg);
 	}
 }
+#endif
 
 bool wxLogWindowDerived::NotifyClose(wxFrame *wxframe)
 {

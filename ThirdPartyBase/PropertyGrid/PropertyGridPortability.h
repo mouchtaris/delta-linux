@@ -21,8 +21,6 @@
 #include "advprops.h"
 #include "manager.h"
 
-#define THIRD_PARTY_PROPGRID
-
 #define EXTRA_PROP_DECL WXDLLIMPEXP_PG
 #define WX_PG_IMPLEMENT_EMPTY_VALIDATOR(PROP) wxValidator* wxPG_PROPCLASS(PROP)::DoGetValidator() const { return (wxValidator*) NULL; }
 #define REMOVE_PROPERTY(x) Remove(wxPGId(x))

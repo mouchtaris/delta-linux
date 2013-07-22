@@ -72,10 +72,10 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, EnumStringPropert
 	StringVec::const_iterator iter = prop->GetOptions().begin();
 	for (; iter != prop->GetOptions().end(); ++iter)
 		options.Add(*iter);
-#ifdef THIRD_PARTY_PROPGRID
-	m_guiProp = PG_CREATE_PROP(wxEnumProperty)(prop->GetLabel(), util::std2str(id), options, (int) prop->GetOption());
-#else
+#if wxUSE_PROPGRID
 	m_guiProp = PG_CREATE_PROP(wxEnumProperty)(prop->GetLabel(), util::std2str(id), options, wxArrayInt(), (int) prop->GetOption());
+#else
+	m_guiProp = PG_CREATE_PROP(wxEnumProperty)(prop->GetLabel(), util::std2str(id), options, (int) prop->GetOption());
 #endif
 	SetBaseProperties(prop);
 }
@@ -123,7 +123,9 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, ColorProperty* pr
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileProperty* prop)
 {
-	m_guiProp = AdaptPathProperty(PG_CREATE_PROP(wxFileProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue()));
+	m_guiProp = AdaptPathProperty<wxExpandedPathProperty>(
+		PG_CREATE_PROP(wxFileProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue())
+	);
 	SetBaseProperties(prop);
 }
 
@@ -131,7 +133,9 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileProperty* pro
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryProperty* prop)
 {
-	m_guiProp = AdaptPathProperty(PG_CREATE_PROP(wxDirProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue()));
+	m_guiProp = AdaptPathProperty<wxExpandedPathProperty>(
+		PG_CREATE_PROP(wxDirProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue())
+	);
 	SetBaseProperties(prop);
 }
 
@@ -151,10 +155,11 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileListProperty*
 	const StringVec values = prop->GetValues();
 	for (StringVec::const_iterator iter = values.begin(); iter != values.end(); ++iter)
 		strings.Add(*iter);
-	m_guiProp = AdaptPathProperty(PG_CREATE_PROP(wxFileListProperty)(prop->GetLabel(), util::std2str(id), strings));
+	wxPGProperty* p = PG_CREATE_PROP(wxFileListProperty)(prop->GetLabel(), util::std2str(id), strings);
 #if wxCHECK_VERSION(2, 9, 0)
-	m_guiProp->SetAttribute(_T("Delimiter"), _T(";"));
+	p->SetAttribute(_T("Delimiter"), _T(";"));
 #endif
+	m_guiProp = AdaptPathProperty<wxExpandedPathListProperty>(p);
 	SetBaseProperties(prop);
 }
 
@@ -166,10 +171,11 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryListProp
 	const StringVec values = prop->GetValues();
 	for (StringVec::const_iterator iter = values.begin(); iter != values.end(); ++iter)
 		strings.Add(*iter);
-	m_guiProp = AdaptPathProperty(PG_CREATE_PROP(wxDirectoryListProperty)(prop->GetLabel(), util::std2str(id), strings));
+	wxPGProperty* p = PG_CREATE_PROP(wxDirectoryListProperty)(prop->GetLabel(), util::std2str(id), strings);
 #if wxCHECK_VERSION(2, 9, 0)
-	m_guiProp->SetAttribute(_T("Delimiter"), _T(";"));
+	p->SetAttribute(_T("Delimiter"), _T(";"));
 #endif
+	m_guiProp = AdaptPathProperty<wxExpandedPathListProperty>(p);
 	SetBaseProperties(prop);
 }
 
@@ -203,10 +209,10 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, AggregateListProp
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, MultiChoiceProperty* prop)
 {
 	wxArrayString choices;
-#ifdef THIRD_PARTY_PROPGRID
-	wxArrayInt values;
-#else
+#if wxUSE_PROPGRID
 	wxArrayString values;
+#else
+	wxArrayInt values;
 #endif
 	const MultiChoiceProperty::ChoiceMap& choiceMap = prop->GetChoiceMap();
 	MultiChoiceProperty::ChoiceMap::const_iterator iter = choiceMap.begin(), end = choiceMap.end();
@@ -214,10 +220,10 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, MultiChoiceProper
 		choices.Add(iter->first);
 		if (iter->second)
 			values.Add(
-#ifdef THIRD_PARTY_PROPGRID
-				count
-#else
+#if wxUSE_PROPGRID
 				iter->first
+#else
+				count
 #endif
 			);
 	}
@@ -234,10 +240,10 @@ void CreateGUIPropertiesVisitor::SetBaseProperties (Property* prop)
 
 //**********************************************************************
 
-
+template<class T>
 wxPGProperty* CreateGUIPropertiesVisitor::AdaptPathProperty (wxPGProperty* prop)
 {
-	return PG_CREATE_PROP(wxExpandedPathProperty)(prop->GetLabel(), prop->GetName(), m_basePath, prop); 
+	return PG_CREATE_PROP(T)(prop->GetLabel(), prop->GetName(), m_basePath, prop); 
 }
 
 ////////////////////////////////////////////////////////////////////////

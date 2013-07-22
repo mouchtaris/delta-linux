@@ -10,11 +10,14 @@
 class wxLogWindowDerived : public wxLogWindow
 {
 private:
+#if !wxCHECK_VERSION(2, 9, 5)	//OnFrameCreate was removed in 2.9.5
 	std::list<DeltaValue> onCreate;
+#endif
 	std::list<DeltaValue> onClose;
 	std::list<DeltaValue> onDelete;
 
 public:
+#if !wxCHECK_VERSION(2, 9, 5)	//OnFrameCreate was removed in 2.9.5
 	void AddOnCreate(const DeltaValue f) { onCreate.push_back(f); }
 	std::list<DeltaValue> *GetOnCreateFuncs() { return &onCreate; }
 	virtual void OnFrameCreate (wxFrame *frame) {
@@ -22,6 +25,7 @@ public:
 		NotifyCreate(frame);
 	}
 	void NotifyCreate(wxFrame *frame);
+#endif
 
 	void AddOnClose(const DeltaValue f) { onClose.push_back(f); }
 	std::list<DeltaValue> *GetOnCloseFuncs() { return &onClose; }

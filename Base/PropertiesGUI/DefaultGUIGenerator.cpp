@@ -334,7 +334,10 @@ bool DefaultGUIGenerator::getValuesFromGUI (
 
 static bool PropertyGridHasCategory(wxPropertyGrid* pg, const String& category)
 {
-#ifdef THIRD_PARTY_PROPGRID
+#if wxUSE_PROPGRID
+	wxPGProperty* p = pg->GetProperty(category);
+	return p && wxDynamicCast(p, wxPropertyCategory);
+#else
 	wxPGId id = pg->GetFirstCategory();
 	while (WX_PG_ID_IS_OK(id)) {
 		if (WX_PG_ID_GET_NAME(id) == category)
@@ -342,9 +345,6 @@ static bool PropertyGridHasCategory(wxPropertyGrid* pg, const String& category)
 		id = pg->GetNextCategory(id);
 	}
 	return false;
-#else
-	wxPGProperty* p = pg->GetProperty(category);
-	return p && wxDynamicCast(p, wxPropertyCategory);
 #endif
 }
 

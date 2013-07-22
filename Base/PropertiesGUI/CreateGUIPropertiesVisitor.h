@@ -51,7 +51,7 @@ public:
 
 private:
 	void SetBaseProperties (Property* prop);
-	wxPGProperty* AdaptPathProperty(wxPGProperty* prop);
+	template<class T> wxPGProperty* AdaptPathProperty(wxPGProperty* prop);
 
 	wxPGProperty*	m_guiProp;
 	String			m_basePath;

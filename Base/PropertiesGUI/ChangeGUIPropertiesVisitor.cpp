@@ -217,7 +217,10 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 {
 	// wxMultiChoiceProperty
 	wxPG_PROPCLASS(wxMultiChoiceProperty)* pg = static_cast<wxPG_PROPCLASS(wxMultiChoiceProperty)*>(m_guiProp);
-#ifdef THIRD_PARTY_PROPGRID
+#if wxUSE_PROPGRID
+	const wxArrayString choices = pg->GetChoices().GetLabels();	
+	const wxArrayString selections = pg->GetValue().GetArrayString();
+#else
 	wxPGChoiceInfo choiceInfo;
 	pg->GetChoiceInfo(&choiceInfo);
 	const wxArrayString& choices = choiceInfo.m_choices->GetLabels();
@@ -225,9 +228,6 @@ void ChangeGUIPropertiesVisitor::Visit (const std::string& PORT_UNUSED_PARAM(id)
 	wxArrayString selections;
 	for (uint i = 0; i < indices.GetCount(); ++i)
 		selections.Add(choices[indices[i]]);
-#else
-	const wxArrayString choices = pg->GetChoices().GetLabels();	
-	const wxArrayString selections = pg->GetValue().GetArrayString();
 #endif
 
 	const StringVec oldChoices = prop->GetAllChoices();
