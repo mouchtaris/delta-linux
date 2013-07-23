@@ -21,24 +21,21 @@
 #include "advprops.h"
 #include "manager.h"
 
-#define EXTRA_PROP_DECL WXDLLIMPEXP_PG
-#define WX_PG_IMPLEMENT_EMPTY_VALIDATOR(PROP) wxValidator* wxPG_PROPCLASS(PROP)::DoGetValidator() const { return (wxValidator*) NULL; }
-#define REMOVE_PROPERTY(x) Remove(wxPGId(x))
-#define APPEND_CATEGORY(x) AppendCategory(x)
-
-#define wxPGIdGen(PTR) wxPGId(PTR)
-#define WX_PG_ID_IS_OK(ID)			ID.IsOk()
-#define WX_PG_ID_GET_NAME(ID)		ID.GetName()
-#define wxPGIdToPtr(ID)				ID.GetPropertyPtr()
-#define GET_NEXT_SIBLING_PROPERTY	GetNextSibling
-
+#define EXTRA_PROP_DECL								WXDLLIMPEXP_PG
+#define WX_PG_IMPLEMENT_EMPTY_VALIDATOR(PROP)		wxValidator* wxPG_PROPCLASS(PROP)::DoGetValidator() const { return (wxValidator*) NULL; }
+#define REMOVE_PROPERTY(x)							Remove(wxPGId(x))
+#define APPEND_CATEGORY(x)							AppendCategory(x)
+#define wxPGIdGen(PTR)								wxPGId(PTR)
+#define WX_PG_ID_IS_OK(ID)							ID.IsOk()
+#define WX_PG_ID_GET_NAME(ID)						ID.GetName()
+#define wxPGIdToPtr(ID)								ID.GetPropertyPtr()
+#define GET_NEXT_SIBLING_PROPERTY					GetNextSibling
 #define WX_PARENT_PROPERTY_ADD_CHILD(PARENT, CHILD)	(PARENT)->AddChild(CHILD);
+#define GET_VALUE_AS_VARIANT						GetValueAsVariant
+#define PG_VARIANT_TYPE								wxPGVariant
+#define PG_GET_VALUE_AS_STRING(p)					(p)->GetValueAsString(0)
+#define PG_CREATE_PROP(PROP)						PROP
 
-#define GET_VALUE_AS_VARIANT GetValueAsVariant
-
-#define PG_GET_VALUE_AS_STRING(p)	(p)->GetValueAsString(0)
-
-#define PG_CREATE_PROP(PROP) PROP
 #else
 #ifdef WXMAKINGLIB_PROPGRID
     #define WXDLLIMPEXP_PG
@@ -267,18 +264,15 @@ public:
 
 };
 
-#define wxPGIdGen(PTR) PTR
-#define WX_PG_ID_IS_OK(ID)			((ID) != NULL)
-#define WX_PG_ID_GET_NAME(ID)		(ID)->GetName()
-#define wxPGIdToPtr(ID)				(ID)
-
+#define wxPGIdGen(PTR)								PTR
+#define WX_PG_ID_IS_OK(ID)							((ID) != NULL)
+#define WX_PG_ID_GET_NAME(ID)						(ID)->GetName()
+#define wxPGIdToPtr(ID)								(ID)
 #define WX_PARENT_PROPERTY_ADD_CHILD(PARENT, CHILD)	(PARENT)->AddPrivateChild(CHILD);
-
-#define GET_VALUE_AS_VARIANT GetValue
-
-#define PG_GET_VALUE_AS_STRING(p)	(p)->ValueToString((p)->GetValue(), 0)
-
-#define PG_CREATE_PROP(PROP) new PROP
+#define GET_VALUE_AS_VARIANT						GetValue
+#define PG_VARIANT_TYPE								wxVariant
+#define PG_GET_VALUE_AS_STRING(p)					(p)->ValueToString((p)->GetValue(), 0)
+#define PG_CREATE_PROP(PROP)						new PROP
 
 typedef wxPropertyGridInterface wxPropertyContainerMethods;
 #endif

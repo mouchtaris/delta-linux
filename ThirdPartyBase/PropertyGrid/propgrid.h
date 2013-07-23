@@ -1927,6 +1927,10 @@ public:
     */
     inline int GetY() const { return m_y; }
 
+	//@@ was not here originally
+	inline void SetY(int val) { m_y = val; }
+	//
+
     void UpdateControl( wxWindow* primary );
 
     inline wxString GetDisplayedString() const

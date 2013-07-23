@@ -44,13 +44,13 @@ class THIRD_PARTY_API wxPG_PROPCLASS(wxExpandedPathProperty) : public wxParentPr
 
 public:
 	wxPG_PROPCLASS(wxExpandedPathProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty *p);
-	wxPG_PROPCLASS(wxExpandedPathProperty)(void) {}
+	wxPG_PROPCLASS(wxExpandedPathProperty)(void) : wxParentPropertyClass(wxPG_LABEL) {}
 	~wxPG_PROPCLASS(wxExpandedPathProperty)();
 
 	void SetExpandedPathValue (const wxString& text);
 
+	virtual PG_VARIANT_TYPE DoGetValue (void) const;
 #if wxUSE_PROPGRID
-	virtual wxVariant DoGetValue (void) const;
 	virtual void OnSetValue (void);
 #endif
 
@@ -70,6 +70,7 @@ class THIRD_PARTY_API wxPG_PROPCLASS(wxExpandedPathListProperty) : public wxPare
 #if wxUSE_PROPGRID
 	WX_PG_DECLARE_PROPERTY_CLASS(wxExpandedPathListProperty)
 #else
+	mutable wxArrayString m_strs;
 	WX_PG_DECLARE_PROPERTY_CLASS()    
 #endif
 
@@ -85,13 +86,13 @@ class THIRD_PARTY_API wxPG_PROPCLASS(wxExpandedPathListProperty) : public wxPare
 	CustomHandler* handler;
 public:
 	wxPG_PROPCLASS(wxExpandedPathListProperty)(const wxString& label, const wxString& name, const wxString& basePath, wxPGProperty *p);
-	wxPG_PROPCLASS(wxExpandedPathListProperty)(void) {}
+	wxPG_PROPCLASS(wxExpandedPathListProperty)(void) : wxParentPropertyClass(wxPG_LABEL) {}
 	~wxPG_PROPCLASS(wxExpandedPathListProperty)();
 
 	void UpdateChildren (wxPropertyGrid* pg);
 
+	virtual PG_VARIANT_TYPE DoGetValue (void) const;
 #if wxUSE_PROPGRID
-	virtual wxVariant DoGetValue (void) const;
 	virtual void OnSetValue (void);
 #endif
 

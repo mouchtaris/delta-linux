@@ -297,6 +297,7 @@ wxPG_PROPCLASS(wxExpandedPathProperty)::wxPG_PROPCLASS(wxExpandedPathProperty)(c
 #else
 	expandedPath->SetFlag(wxPG_PROP_DISABLED);
 	AddChild(expandedPath);
+	path->SetY(0);
 #endif
 	SetExpandedPathValue(GetValueAsString());
 }
@@ -308,9 +309,10 @@ void wxPG_PROPCLASS(wxExpandedPathProperty)::SetExpandedPathValue (const wxStrin
 	expandedPath->SetValueFromString(filename.GetFullPath());
 }
 
-#if wxUSE_PROPGRID
-wxVariant wxPG_PROPCLASS(wxExpandedPathProperty)::DoGetValue(void) const
+PG_VARIANT_TYPE wxPG_PROPCLASS(wxExpandedPathProperty)::DoGetValue(void) const
 	{ return GetValueAsString(); }
+
+#if wxUSE_PROPGRID
 void wxPG_PROPCLASS(wxExpandedPathProperty)::OnSetValue (void)
 	{ SetValueFromString(m_value.GetString(), 0); }
 #endif
@@ -393,6 +395,8 @@ wxPG_PROPCLASS(wxExpandedPathListProperty)::wxPG_PROPCLASS(wxExpandedPathListPro
 
 #if wxUSE_PROPGRID
 		m_value = DoGetValue();
+#else
+		path->SetY(0);
 #endif
 }
 wxPG_PROPCLASS(wxExpandedPathListProperty)::~wxPG_PROPCLASS(wxExpandedPathListProperty)() {
@@ -424,16 +428,18 @@ void wxPG_PROPCLASS(wxExpandedPathListProperty)::UpdateChildren (wxPropertyGrid*
 	pg->Refresh();
 }
 
-#if wxUSE_PROPGRID
-wxVariant wxPG_PROPCLASS(wxExpandedPathListProperty)::DoGetValue(void) const {
+PG_VARIANT_TYPE wxPG_PROPCLASS(wxExpandedPathListProperty)::DoGetValue(void) const {
 	const wxString text = GetValueAsString();
-	wxArrayString strs;
+#if wxUSE_PROPGRID
+	wxArrayString m_strs;
+#endif
 	WX_PG_TOKENIZER1_BEGIN(text,DELIMCHAR)
-		strs.Add(token);
+		m_strs.Add(token);
 	WX_PG_TOKENIZER1_END()
-	return strs;
+	return m_strs;
 }
 
+#if wxUSE_PROPGRID
 void wxPG_PROPCLASS(wxExpandedPathListProperty)::OnSetValue (void) {
 	wxString text;
 	const wxString type = m_value.GetType();
@@ -500,7 +506,7 @@ IMPLEMENT_DYNAMIC_CLASS(wxExpandedPathListProperty, wxParentPropertyClass)
 #else
 const wxPGPropertyClassInfo* wxPG_PROPCLASS(wxExpandedPathListProperty)::GetClassInfo(void) const { return NULL; }
 #endif
-WX_PG_IMPLEMENT_PROPERTY_CLASS_PLAIN(wxExpandedPathListProperty,wxString,TextCtrlAndButton)
+WX_PG_IMPLEMENT_PROPERTY_CLASS_PLAIN(wxExpandedPathListProperty,wxArrayString,TextCtrlAndButton)
 
 #if wxUSE_VALIDATORS
 WX_PG_IMPLEMENT_EMPTY_VALIDATOR(wxExpandedPathListProperty)

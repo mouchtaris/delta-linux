@@ -123,9 +123,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, ColorProperty* pr
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileProperty* prop)
 {
-	m_guiProp = AdaptPathProperty<wxExpandedPathProperty>(
-		PG_CREATE_PROP(wxFileProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue())
-	);
+	m_guiProp = AdaptPathProperty(PG_CREATE_PROP(wxFileProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue()));
 	SetBaseProperties(prop);
 }
 
@@ -133,9 +131,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileProperty* pro
 
 void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryProperty* prop)
 {
-	m_guiProp = AdaptPathProperty<wxExpandedPathProperty>(
-		PG_CREATE_PROP(wxDirProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue())
-	);
+	m_guiProp = AdaptPathProperty(PG_CREATE_PROP(wxDirProperty)(prop->GetLabel(), util::std2str(id), prop->GetValue()));
 	SetBaseProperties(prop);
 }
 
@@ -155,11 +151,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, FileListProperty*
 	const StringVec values = prop->GetValues();
 	for (StringVec::const_iterator iter = values.begin(); iter != values.end(); ++iter)
 		strings.Add(*iter);
-	wxPGProperty* p = PG_CREATE_PROP(wxFileListProperty)(prop->GetLabel(), util::std2str(id), strings);
-#if wxCHECK_VERSION(2, 9, 0)
-	p->SetAttribute(_T("Delimiter"), _T(";"));
-#endif
-	m_guiProp = AdaptPathProperty<wxExpandedPathListProperty>(p);
+	m_guiProp = AdaptPathListProperty(PG_CREATE_PROP(wxFileListProperty)(prop->GetLabel(), util::std2str(id), strings));
 	SetBaseProperties(prop);
 }
 
@@ -171,11 +163,7 @@ void CreateGUIPropertiesVisitor::Visit (const std::string& id, DirectoryListProp
 	const StringVec values = prop->GetValues();
 	for (StringVec::const_iterator iter = values.begin(); iter != values.end(); ++iter)
 		strings.Add(*iter);
-	wxPGProperty* p = PG_CREATE_PROP(wxDirectoryListProperty)(prop->GetLabel(), util::std2str(id), strings);
-#if wxCHECK_VERSION(2, 9, 0)
-	p->SetAttribute(_T("Delimiter"), _T(";"));
-#endif
-	m_guiProp = AdaptPathProperty<wxExpandedPathListProperty>(p);
+	m_guiProp = AdaptPathListProperty(PG_CREATE_PROP(wxDirectoryListProperty)(prop->GetLabel(), util::std2str(id), strings));
 	SetBaseProperties(prop);
 }
 
@@ -240,10 +228,19 @@ void CreateGUIPropertiesVisitor::SetBaseProperties (Property* prop)
 
 //**********************************************************************
 
-template<class T>
 wxPGProperty* CreateGUIPropertiesVisitor::AdaptPathProperty (wxPGProperty* prop)
 {
-	return PG_CREATE_PROP(T)(prop->GetLabel(), prop->GetName(), m_basePath, prop); 
+	return PG_CREATE_PROP(wxExpandedPathProperty)(prop->GetLabel(), prop->GetName(), m_basePath, prop); 
+}
+
+//**********************************************************************
+
+wxPGProperty* CreateGUIPropertiesVisitor::AdaptPathListProperty (wxPGProperty* prop)
+{
+#if wxCHECK_VERSION(2, 9, 0)
+	prop->SetAttribute(_T("Delimiter"), _T(";"));
+#endif
+	return PG_CREATE_PROP(wxExpandedPathListProperty)(prop->GetLabel(), prop->GetName(), m_basePath, prop); 
 }
 
 ////////////////////////////////////////////////////////////////////////
