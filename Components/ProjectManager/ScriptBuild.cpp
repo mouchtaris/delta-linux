@@ -620,6 +620,25 @@ const String Script::GetByteCodeLoadingPath (void) const {
 
 /////////////////////////////////////////////////////////////////////////
 
+const String Script::GetDllImportPath (void) const {
+
+	String path = conf::get_prop_value<const conf::DirectoryListProperty>(
+		GetInstanceProperty(conf::GetDllImportPathPropertyId()), String()
+	);
+
+	if (!path.empty()) {
+		StringList dirs;
+		util::stringtokenizer(dirs, path, _T(";"));
+		path.clear();
+		BOOST_FOREACH(const String& dir, dirs)
+			path += (path.empty() ? _T("") : _T(";")) + MakeAbsolutePath(dir, const_cast<Script*>(this)->GetPath());
+	}
+
+	return path;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 const std::string Script::GetProducedByteCodeFile (void) const {
 	const String output = conf::get_prop_value<conf::StringProperty>(GetInstanceProperty("output"), _T(""));
 	DASSERT(!output.empty());
@@ -1636,12 +1655,16 @@ EXPORTED_FUNCTION(Script, unsigned long, Clean, (const UIntList& workId)) {
 /////////////////////////////////////////////////////////////////////////
 
 static const String AdaptPath(const String& path, const String& originalPath, const String& targetPath) {
-	wxFileName filename(path);
-	if (filename.IsRelative()) {
-		filename.MakeAbsolute(originalPath);
-		filename.MakeRelativeTo(targetPath);
+	if (wxFileName(originalPath).SameAs(targetPath))
+		return path;
+	else {
+		wxFileName filename(path);
+		if (filename.IsRelative()) {
+			filename.MakeAbsolute(originalPath);
+			filename.MakeRelativeTo(targetPath);
+		}
+		return util::normalizeslashes(filename.GetFullPath());
 	}
-	return util::normalizeslashes(filename.GetFullPath());
 }
 
 //********************************
@@ -1762,6 +1785,7 @@ EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const St
 			props.push_back(*p);
 		for (const char** p = conf::GetScriptExecutionPropertyIds(); *p; ++p)
 			props.push_back(*p);
+		props.push_back(conf::GetDeploymentPropertyId());
 		props.push_back("output");
 		props.push_back("aspects");
 
@@ -2253,20 +2277,29 @@ void Script::RunCommit (void) {
 	DASSERT(IsRunAutomaticallyAfterBuild() && IsLegalRunFunction(m_runFunction));
 
 	std::string dbc = GetProducedByteCodeFileFullPath();
-	if (FileSystemExists(dbc))
+	if (FileSystemExists(dbc)) {
+		String options;
+
+		//TODO: Decide the exact semantics of the bytecode path resolution and add byte path in options
+
+		const String dllimportpath = GetDllImportPath();
+		if (!dllimportpath.empty())
+			options += _T(" --dllimport_path=") + util::quotepath(dllimportpath);
+
 		if (m_runFunction == "RunConsole")
 			Call<void (const String&, const String&, const String&)>(this, "DeltaVM",  "RunConsole")(
 				util::std2str(dbc), 
-				_T(""), 
+				options, 
 				GetWorkingDirectory()
 			);
 		else
 			Call<void (const String&, const String&, const String&, const String&)>(this, "DeltaVM", m_runFunction)(
 				util::std2str(dbc), 
 				GetURI(),
-				_T(""), 
+				options, 
 				GetWorkingDirectory()
 			);
+	}
 
 	ResetRunAutomaticallyAfterBuild();
 }

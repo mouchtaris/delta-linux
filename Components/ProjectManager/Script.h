@@ -215,6 +215,7 @@ namespace ide
 		const String						GetProducedBuildInfoFileFullPath (void) const;
 		static const String					MakeAbsolutePath (const String& path, const String& dir);
 		const String						GetByteCodeLoadingPath (void) const;
+		const String						GetDllImportPath (void) const;
 		const String						GetByteCodeLoadingPathPropertyValue (void) const;
 
 		const std::string					GetSource (void) const;

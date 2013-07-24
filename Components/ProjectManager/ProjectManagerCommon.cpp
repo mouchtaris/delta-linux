@@ -197,6 +197,9 @@ namespace conf {
 	_PROJECT_MANAGER_API const char* GetByteCodePathPropertyId (void)
 		{ return BYTECODE_PATH_PROPERTY_ID; }
 
+	_PROJECT_MANAGER_API const char* GetDllImportPathPropertyId (void)
+		{ return DLLIMPORT_PATH_PROPERTY_ID; }
+
 	_PROJECT_MANAGER_API const char* GetDeploymentPropertyId (void)
 		{ return "deployment"; }
 }

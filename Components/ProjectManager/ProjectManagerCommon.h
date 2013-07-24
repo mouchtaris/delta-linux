@@ -53,6 +53,7 @@ namespace conf {
 	_PROJECT_MANAGER_API const char **			GetScriptLastBuildPropertyIds (void);
 	_PROJECT_MANAGER_API const char **			GetScriptExecutionPropertyIds (void);
 	_PROJECT_MANAGER_API const char *			GetByteCodePathPropertyId (void);
+	_PROJECT_MANAGER_API const char *			GetDllImportPathPropertyId (void);
 	_PROJECT_MANAGER_API const char *			GetDeploymentPropertyId (void);
 }
 
