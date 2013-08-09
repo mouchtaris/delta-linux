@@ -4,7 +4,7 @@
         <working_directory>./</working_directory>
         <text>0</text>
         <symbolic>Std.dproj</symbolic>
-        <startup></startup>
+        <startup>..\Src\Delta.dsc</startup>
         <stage_output_path>./</stage_output_path>
         <output_path>./</output_path>
         <libs></libs>

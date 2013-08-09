@@ -26,24 +26,26 @@ function bindlast(f...) {
 //
 
 binder = [
-	function local arg_n(i) { return [ { arg_n : i} ]; },
+	function local arg_n(i) 
+		{ return [ { arg_n : i } ]; },
 	function local extract_argument_number(t)
-		{ return (std::typeof(t) == "Object" ? t[arg_n] : nil); },
-	method arg(i) { assert i >= 0; return arg_n(i); },
+		{ return (std::typeof(t) == std::TYPEOF_OBJECT ? t[arg_n] : nil); },
+	method arg(i) 
+		{ assert i >= 0; return arg_n(i); },
 	method @operator()(f) {
 		return [
 			@f : f, @args : arguments,
 			method @operator() {
 				local t = [];
-				for(local i = 1; i < @args.total(); ++i) {
-					if((local pos = extract_argument_number(@args[i])) != nil) {
+				for (local i = 1; i < @args.total(); ++i) {
+					if ((local pos = extract_argument_number(@args[i])) != nil) {
 						assert pos >= 0 and pos < arguments.total();
 						t[i - 1] = arguments[pos];
 					}
 					else
 						t[i - 1] = @args[i];
 				}
-				for(--i; local i < arguments.total(); ++i)
+				for (--i; local i < arguments.total(); ++i)
 					t[i] = arguments[i];
 				return @f(|t|);
 			}
@@ -51,19 +53,36 @@ binder = [
 	}
 ];
 
-function bind_arg(i) { return binder.arg(i); }
-function bind(...) { return binder(|arguments|); }
+function bind_arg(i) 
+	{ return binder.arg(i); }
+
+function bind(...) 
+	{ return binder(|arguments|); }
 
 //Test for the generic binder
-function local bind_test() {
+function local bind_test {
 	bind(bind)(
 		(function (x, y, z) { std::print(x - y - z, "\n"); }),
 		bind_arg(2),
 		bind_arg(1),
 		bind_arg(0)
 	)(1, 2, 3);
-	bind(std::print, bind_arg(4), bind_arg(0), "hello ", "world ")("hello ", "world ", 0, 0, "test ", "\n");
+	bind(
+		std::print, 
+		bind_arg(0), 
+		bind_arg(1), 
+		"hello ", 
+		"world ",
+		bind_arg(2),
+		"\n"
+	)(
+			"goodbye ", 
+			"universe ", 
+			2013
+		);
 }
+
+//	bind_test();
 
 ////////////////////////////////////////////////////////////
 // Turning callables to container-like adapters that allow their
@@ -88,3 +107,5 @@ function Generator(f) {	// f is callable sith sig (void):Value
 
 	return Container(f);
 }
+
+////////////////////////////////////////////////////////////
