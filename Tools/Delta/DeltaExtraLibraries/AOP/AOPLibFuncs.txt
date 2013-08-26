@@ -1,0 +1,14 @@
+@enter
+aop
+@const
+DLL						"AOP.dll"
+@const
+BEFORE					"BEFORE"
+@const
+AFTER					"AFTER"
+@const
+AROUND					"AROUND"
+aspect					(target : ast, pointcut : String, advice_type : Number, advice : ast)
+match					(target : ast, pointcut : String) : list
+advise					(target : ast, advice_type : Number, advice : ast)
+@exit
