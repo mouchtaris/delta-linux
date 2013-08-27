@@ -7,17 +7,12 @@
 #ifndef	AOP_LIBRARY_H
 #define	AOP_LIBRARY_H
 
+#include "DeltaAOPLib.h"
 #include "TreeNode.h"
 
 /////////////////////////////////////////////////////////
 
-#define BEFORE_STR	"BEFORE"
-#define AFTER_STR	"AFTER"
-#define AROUND_STR	"AROUND"
-
-/////////////////////////////////////////////////////////
-
-class AOPLibrary {
+class DAOPLIB_CLASS AOPLibrary {
 public:
 	enum AdviceType {
 		BEFORE	= 1,

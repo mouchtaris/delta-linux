@@ -10,6 +10,7 @@
 #include <set>
 
 typedef std::set<TreeNode*> ASTSet;
+typedef std::list<std::string> IdList;
 
 /////////////////////////////////////////////////////////
 

@@ -5,7 +5,27 @@
 //
 
 #include "AOPLibrary.h"
+#include "PointcutScanner.h"
+#include "Pointcut.h"
 
+#include <sstream>
+
+/////////////////////////////////////////////////////////
+
+static Pointcut* ParsePointcut(const std::string& pointcut) {
+	Pointcut* p = (Pointcut*) 0;
+	std::istringstream input(pointcut, std::ios::in);
+	if (!input.fail()) {
+		extern int PointcutSyntax_yydebug;
+		extern int PointcutSyntax_yyparse (Pointcut** pointcut, PointcutScannerFlexLexer& lexer);
+		PointcutScannerFlexLexer lexer;
+		lexer.switch_streams(&input, 0);
+		lexer.set_position(0);
+		PointcutSyntax_yydebug = 0;	
+		PointcutSyntax_yyparse(&p, lexer);
+	}
+	return p;
+}
 /////////////////////////////////////////////////////////
 
 bool AOPLibrary::IsValidAdviceType (const std::string& str)
@@ -33,13 +53,16 @@ void AOPLibrary::Aspect(TreeNode* target, const std::string& pointcut, AdviceTyp
 /////////////////////////////////////////////////////////
 
 AOPLibrary::ASTList AOPLibrary::Match(TreeNode* target, const std::string& pointcut) {
-	//Pointcut *p;
-	//list = p->Evaluate(target);
-
-	return ASTList();
+	ASTList result;
+	if (Pointcut *p = ParsePointcut(pointcut)) {
+		const ASTSet matches = p->Evaluate(target);
+		result.insert(result.end(), matches.begin(), matches.end());
+	}
+	return result;
 }
 
 /////////////////////////////////////////////////////////
 
 void AOPLibrary::Advise(TreeNode* target, AdviceType type, TreeNode* advice) {
+
 }

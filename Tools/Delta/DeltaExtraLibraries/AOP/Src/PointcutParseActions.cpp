@@ -25,3 +25,20 @@ Pointcut* Manage_ASCENDANT(Pointcut* pointcut) { return new AscendantPointcut(po
 
 //****************************
 
+Pointcut* Manage_FuncPattern(const std::string& funcClass, const std::string& name, IdList* formals)
+	{ return new ExecutionPointcut(funcClass, name, formals ? *formals : IdList()); }
+
+IdList* Manage_Formals(IdList* l, const char* suffix) {
+	if (suffix) l->push_back(suffix);
+	return l;
+}
+
+IdList* Manage_FormalPatternList(IdList* l, const std::string& pattern) {
+	l->push_back(pattern);
+	return l;
+}
+
+IdList* Manage_FormalPattern(const std::string& pattern) { return new IdList(1, pattern); }
+
+//****************************
+

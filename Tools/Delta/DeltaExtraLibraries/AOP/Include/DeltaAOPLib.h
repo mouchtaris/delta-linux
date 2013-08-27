@@ -9,9 +9,13 @@
 
 #include "utypes.h"
 
+/////////////////////////////////////////////////////////
+
 #if defined(DAOPLIB_EXPORT) && defined(DAOPLIB_IMPORT)
 #error "Can't define both DAOPLIB_EXPORT and DAOPLIB_IMPORT!"
 #endif
+
+/////////////////////////////////////////////////////////
 
 #if	defined(DAOPLIB_EXPORT)
 #define	DAOPLIB_CLASS	UDLL_EXPORT_CPP
@@ -26,5 +30,15 @@
 #define	DAOPLIB_FUNC extern
 #define	DAOPLIB_CFUNC extern "C"
 #endif
+
+/////////////////////////////////////////////////////////
+
+#define BEFORE_STR	"BEFORE"
+#define AFTER_STR	"AFTER"
+#define AROUND_STR	"AROUND"
+
+#define AOP_MATCH_MULTIPLE	".."
+
+/////////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

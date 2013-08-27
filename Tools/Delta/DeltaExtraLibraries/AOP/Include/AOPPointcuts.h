@@ -7,24 +7,20 @@
 #define	AOP_POINTCUTS_H
 
 #include "Pointcut.h"
-#include "UtilVisitors.h"
 
 /////////////////////////////////////////////////////////
 
-class AST2Pointcut : public Pointcut {
+class ExecutionPointcut : public Pointcut {
 private:
-	const std::string type;
-public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const {
-		ASTSet result;
-		if (includeChildren)
-			result = NodeCollector(type)(ast);
-		else if (DPTR(ast)->GetTag() == type)
-			result.insert(ast);
-		return result;
-	}
+	const std::string	funcClassPattern;
+	const std::string	namePattern;
+	IdList				formalsPattern;
 
-	AST2Pointcut(const std::string& type) : type(type) {}
+public:
+	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+
+	ExecutionPointcut(const std::string& funcClass, const std::string& name, const IdList& formals) :
+		funcClassPattern(funcClass), namePattern(name), formalsPattern(formals) {}
 };
 
 /////////////////////////////////////////////////////////

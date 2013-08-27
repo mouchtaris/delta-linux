@@ -1,7 +1,7 @@
-// DeltaXMLParserLib.cpp
-// XML parser library fro Delta.
+// DeltaAOPLib.cpp
+// AOP library for Delta.
 // ScriptFighter Project.
-// A. Savidis, July 2009.
+// Y. Lilis, August 2013.
 //
 
 #include "DeltaAOPLib.h"
@@ -14,6 +14,7 @@
 
 #include "AOPLibrary.h"
 #include "ASTLib.h"
+#include "ListLib.h"
 
 ////////////////////////////////////////////////////////////////
 
@@ -53,7 +54,21 @@ DLIB_FUNC_END
 DLIB_FUNC_START(aop_match, 2, Nil)
 DLIB_GET_AST
 DLIB_ARG(const char*, pointcut)
-AOPLibrary::Match(ast, pointcut.GetValue());
+const AOPLibrary::ASTList matches = AOPLibrary::Match(ast, pointcut.GetValue());
+
+DeltaList_Make(DLIB_RETVAL_REF);
+DLIB_SET_CREATOR_INFORMATION();
+std::list<DeltaValue>*	nativeList	= DeltaList_Get(DLIB_RETVAL_REF);
+void*					listCont	= DeltaList_GetCollectableContainer(DLIB_RETVAL_REF);
+for (AOPLibrary::ASTList::const_iterator i = matches.begin(); i != matches.end(); ++i) {
+	DeltaValue val;
+	DeltaAST_Make(&val, *i);
+	nativeList->push_back(val);
+	nativeList->back().SetResidencyType(
+		DeltaValue::Contained,
+		listCont
+	);
+}
 DLIB_FUNC_END
 
 DLIB_FUNC_START(aop_advise, 3, Empty)

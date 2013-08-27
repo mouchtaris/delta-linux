@@ -86,6 +86,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\AOPLibrary.cpp" />
+    <ClCompile Include="..\Src\AOPPointcuts.cpp" />
+    <ClCompile Include="..\Src\ASTPointcuts.cpp" />
     <ClCompile Include="..\Src\DeltaAOPLib.cpp" />
     <ClCompile Include="..\Src\PointcutScanner.cpp" />
     <ClCompile Include="..\Src\PointcutParseActions.cpp" />

@@ -11,9 +11,12 @@
 
 #include "DDebug.h"
 #include "DeltaStdDefs.h"
+#include "DeltaAOPLib.h"
 #include "Pointcut.h"
 #include "PointcutScanner.h"
 #include "PointcutSyntax.h"
+#include "PointcutParseActions.h"
+#include "ASTTags.h"
 
 #define yyFlexLexer PointcutScannerFlexLexer
 
@@ -40,17 +43,21 @@ static void PointcutSyntax_yyerror (YYLTYPE* yylloc, Pointcut **pointcut, yyFlex
 	double 			numberVal;
 	const char*		stringVal;
 	Pointcut*		pointcut;
+	IdList*			idList;
 }
 
 %start	Pointcut
-%type	<Pointcut>		Pattern ASTPattern AOPPattern Combinator
-%type	<stringVal>		IdentPattern
+%type	<pointcut>		Pattern ASTPattern AOPPattern Combinator FuncPattern
+%type	<stringVal>		IdentPattern FuncClass FuncNamePattern FormalPattern FormalArgsSuffix
+%type	<idList>		FormalsPattern FormalPatternList FormalPatternNonEmptyList
+%type	<stringVal>		IndexOperator AttributeIdent AttributeId
+
+%type	<stringVal>		CallPattern NormalCall MethodCall ObjectPattern
 
 %type	<stringVal>		OperatorMethod UsedKwdIdent
-%token	<numberVal>		BOOLEAN
+%token	<boolVal>		BOOLEAN
 %token	<numberVal>		NUMBER
-%token	<stringVal>		STRING
-%token	<stringVal>		IDENT
+%token	<stringVal>		STRING IDENT ATTRIBUTE_IDENT
 
 %token		AST ATTRIBUTE CHILD PARENT DESCENDANT ASCENDANT
 %token		EXECUTION CALL EXCEPTION CLASS SETTER GETTER
@@ -59,7 +66,7 @@ static void PointcutSyntax_yyerror (YYLTYPE* yylloc, Pointcut **pointcut, yyFlex
 %token		TRUE FALSE
 %token		SELF ARGUMENTS OPERATOR NEWSELF LAMBDA_REF
 %token		DOT DOT_ASSIGN CALLOP CAST
-%token		ADD SUB MUL DIV MOD LT GT LE GE EQ NE ATTRIBUTEOP ATTRIBUTE_IDENT
+%token		ADD SUB MUL DIV MOD LT GT LE GE EQ NE ATTRIBUTEOP
 %token		ASSIGN ADD_A SUB_A MUL_A DIV_A MOD_A  DOUBLE_LB DOUBLE_RB
 %token		ADD_POSTFIX SUB_POSTFIX MUL_POSTFIX DIV_POSTFIX MOD_POSTFIX
 %token		GT_POSTFIX LT_POSTFIX NE_POSTFIX EQ_POSTFIX GE_POSTFIX LE_POSTFIX
@@ -96,7 +103,7 @@ Pattern:					ASTPattern { $$ = $1; }
 
 Combinator:					Pattern AND Pattern	{ $$ = Manage_AND($1, $3); }
 						|	Pattern OR Pattern { $$ = Manage_OR($1, $3); }
-						|	NOT Pattern { $$ = Manage_NOT($1, $3); }
+						|	NOT Pattern { $$ = Manage_NOT($2); }
 						;
 
 ASTPattern:					AST '(' STRING ')' { $$ = Manage_AST($3); }
@@ -109,7 +116,7 @@ ASTPattern:					AST '(' STRING ')' { $$ = Manage_AST($3); }
 						|	ASCENDANT '(' Pattern ')' { $$ = Manage_ASCENDANT($3); }
 						;
 
-AOPPattern:					EXECUTION '(' FuncPattern ')' {}
+AOPPattern:					EXECUTION '(' FuncPattern ')' { $$ = $3; }
 						|	CALL '(' CallPattern ')' {}
 						//|	EXCEPTION '(' ExceptionPattern ')' {}
 						//|	CLASS '(' ClassPattern ')' {}
@@ -121,20 +128,21 @@ AOPPattern:					EXECUTION '(' FuncPattern ')' {}
 /* FuncPattern */
 
 FuncPattern:				FuncClass FuncNamePattern '(' FormalsPattern ')'
+								{ $$ = Manage_FuncPattern($1, $2, $4); }
 						;
 
-FuncClass:					FUNCTION	{}
-						|	ONEVENT		{}
-						|	METHOD		{}
-						|	MUL	/*match all */ {}
+FuncClass:					FUNCTION	{ $$ = AST_VALUE_FUNCCLASS_PROGRAMFUNCTION; }
+						|	ONEVENT		{ $$ = AST_VALUE_FUNCCLASS_ONEVENT; }
+						|	METHOD		{ $$ = AST_VALUE_FUNCCLASS_METHOD; }
+						|	MUL	/*match all */ { $$ = "*"; }
 						;
-FuncNamePattern:			IdentPattern {}
-						|	OPERATOR OperatorMethod {}
-						|	ATTRIBUTEOP {}
-						|	/* anonymous function */ { /*unullify($$);*/ }
+FuncNamePattern:			IdentPattern { $$ = $1; }
+						|	OPERATOR OperatorMethod { $$ = $2; }
+						|	ATTRIBUTEOP { $$ = AST_VALUE_TOSTRING_SYMBOLIC_NAME; }
+						|	/* anonymous function */ { $$ = ""; }
 						;
 
-IdentPattern:				IDENT {}
+IdentPattern:				IDENT { $$ = $1; }
 						;
 
 OperatorMethod:				ADD				{ $$ = "+";			}
@@ -166,32 +174,33 @@ OperatorMethod:				ADD				{ $$ = "+";			}
 						|	DOT_ASSIGN		{ $$ = DELTA_OPERATOR_OBJECT_SET;	}
 						;
 
-FormalsPattern:				FormalPatternList FormalArgsSuffix {}
+FormalsPattern:				FormalPatternList FormalArgsSuffix { $$ = Manage_Formals($1, $2); }
 						;
 
-FormalPatternList:			FormalPatternNonEmptyList {}
-						|	/*empty idlist*/ {}
+FormalPatternList:			FormalPatternNonEmptyList { $$ = $1; }
+						|	/*empty idlist*/ { unullify($$); }
 						;
 
-FormalPatternNonEmptyList:		FormalPatternNonEmptyList ',' FormalPattern
-							|	FormalPattern
+FormalPatternNonEmptyList:		FormalPatternNonEmptyList ',' FormalPattern { $$ = Manage_FormalPatternList($1, $3); }
+							|	FormalPattern { $$ = Manage_FormalPattern($1); }
 							;
 
-FormalPattern:				IdentPattern {}
+FormalPattern:				IdentPattern { $$ = $1; }
 						;
 
-FormalArgsSuffix:			/*exact arguments*/	{}
-						|	DOUBLE_DOT	/*any other arguments*/ {}
-						|	TRIPLE_DOT	/*variable arguments*/ {}
+FormalArgsSuffix:			/*exact arguments*/	{ unullify($$); }
+						|	DOUBLE_DOT	/*any other arguments*/ { $$ = AOP_MATCH_MULTIPLE; }
+						|	TRIPLE_DOT	/*variable arguments*/ { $$ = AST_VALUE_VARARGS_FORMAL_NAME; }
 						;
 
 /**************************************************************************/
 /* CallPattern */
-CallPattern	:				NormalCall	{}
-						|	MethodCall 	{}
+CallPattern	:				NormalCall	{ $$ = $1; }
+						|	MethodCall 	{ $$ = $1; }
 						;
 
 NormalCall:					TargetFunc '(' ArgumentsPattern ')'
+								{ /*$$ = Manage_NormalCall($1, $3);*/ }
 						;
 
 TargetFunc:					ObjectPattern /*functor*/ {}
@@ -201,25 +210,26 @@ TargetFunc:					ObjectPattern /*functor*/ {}
 						;
 
 MethodCall:					ObjectPattern IndexOperator IdentPattern '(' ArgumentsPattern ')'
+								{ /*$$ = Manage_MethodCall($1, $2, $3, $5);*/ }
 						;
 
-ObjectPattern:				IdentPattern {}	
-						|	AttributeId {}
-						|	SELF {}
-						|	NEWSELF {}
-						|	ARGUMENTS
+ObjectPattern:				IdentPattern { $$ = $1; }	
+						|	AttributeId { $$ = $1; }
+						|	SELF { $$ = AST_TAG_SELF; }
+						|	NEWSELF { $$ = AST_TAG_LVALUE_NEWSELF; }
+						|	ARGUMENTS { $$ = AST_TAG_ARGUMENTS; }
 						// [] ctor
 						// () call
 						// [] . dot index
 						// [[]] .. double dot index
 						;
 
-IndexOperator:				DOT {}
-						|	DOUBLE_DOT {}
+IndexOperator:				DOT { $$ = "."; }
+						|	DOUBLE_DOT { $$ = ".."; }
 						;
 
-AttributeIdent:				IDENT {}
-						|	UsedKwdIdent {}
+AttributeIdent:				IDENT { $$ = $1; }
+						|	UsedKwdIdent { $$ = $1; }
 						;
 
 UsedKwdIdent:				FUNCTION		{ $$ = "function";	} 
@@ -234,10 +244,9 @@ UsedKwdIdent:				FUNCTION		{ $$ = "function";	}
 						|	ARGUMENTS		{ $$ = "arguments"; }
 						;
 						
-AttributeId:				ATTRIBUTE_IDENT {}
-						|	ATTRIBUTEOP AttributeIdent {}
+AttributeId:				ATTRIBUTE_IDENT { $$ = $1 + 1; }
+						|	ATTRIBUTEOP AttributeIdent { $$ = $2; }
 						;
-
 
 ArgumentsPattern:			ArgumentPatternList ArgumentsSuffix {}
 						;
