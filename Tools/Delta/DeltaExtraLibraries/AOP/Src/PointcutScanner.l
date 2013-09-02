@@ -46,6 +46,15 @@ attr			[@]
 %option yylineno
 %%
 
+ast				return	AST;
+attribute		return	ATTRIBUTE;
+child			return	CHILD;
+parent			return	PARENT;
+descendant		return	DESCENDANT;
+ascendant		return	ASCENDANT;
+execution		return	EXECUTION;
+call			return	CALL;
+
 function		return  FUNCTION;
 onevent			return	ONEVENT;
 method			return	METHOD;
@@ -90,6 +99,7 @@ or				return	OR;
 @self			return	NEWSELF;
 self			return	SELF;
 arguments		return	ARGUMENTS;
+
 true			return	TRUE;
 false			return	FALSE;
 

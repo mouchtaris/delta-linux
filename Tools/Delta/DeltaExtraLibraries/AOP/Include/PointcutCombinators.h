@@ -17,13 +17,15 @@ private:
 	Pointcut* right;
 public:
 	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const {
-		ASTSet result = DPTR(left)->Evaluate(ast, includeChildren);
-		for (ASTSet::iterator i = result.begin(); i != result.end(); /*empty*/)
-			if (DPTR(right)->Evaluate(*i, false).empty())
-				i = result.erase(i);
+		ASTSet leftResult = DPTR(left)->Evaluate(ast, includeChildren);
+		const ASTSet rightResult = DPTR(right)->Evaluate(ast, includeChildren);
+		
+		for (ASTSet::iterator i = leftResult.begin(); i != leftResult.end(); /*empty*/)
+			if (rightResult.find(*i) == rightResult.end())
+				i = leftResult.erase(i);
 			else
 				++i;
-		return result;
+		return leftResult;
 	}
 
 	AndPointcut(Pointcut* left, Pointcut* right) : left(left), right(right) {}

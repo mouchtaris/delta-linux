@@ -54,7 +54,7 @@ AST::Creator::Creator (ucomponentdirectory* directory) :
 AST::Creator::~Creator () {}
 
 void AST::Creator::SetSyntaxTree (AST::Node* _ast)
-	{ DASSERT(!ast); ast = _ast; }
+	{ ast = _ast; }
 
 AST::Node* AST::Creator::GetSyntaxTree (void)
 	{ return DNULLCHECK(ast); }

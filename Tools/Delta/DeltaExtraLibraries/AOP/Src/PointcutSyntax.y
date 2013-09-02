@@ -17,6 +17,7 @@
 #include "PointcutSyntax.h"
 #include "PointcutParseActions.h"
 #include "ASTTags.h"
+#include "ustrings.h"
 
 #define yyFlexLexer PointcutScannerFlexLexer
 
@@ -31,9 +32,8 @@ extern int PointcutSyntax_yylex (YYSTYPE* yylval, YYLTYPE* yylloc, yyFlexLexer& 
 ///////////////////////////////////////////////////////////
 
 static void PointcutSyntax_yyerror (YYLTYPE* yylloc, Pointcut **pointcut, yyFlexLexer& lexer, const char* msg) {
-	//void yyerror (DecisionMaker *dm, Statement**, const char *msg) {
-	//extern char *DMSL_yytext;
-	//dm->SetError(util::MakeString("Line %d : %s: before token: %s\n", DMSL_yylineno, msg, DMSL_yytext));
+	const std::string error = uconstructstr("%s : before token %s", msg, lexer.YYText());
+	printf("%s\n", error.c_str());
 }
 
 %}
@@ -47,10 +47,10 @@ static void PointcutSyntax_yyerror (YYLTYPE* yylloc, Pointcut **pointcut, yyFlex
 }
 
 %start	Pointcut
-%type	<pointcut>		Pattern ASTPattern AOPPattern Combinator FuncPattern
+%type	<pointcut>		Pattern SubPattern ASTPattern AOPPattern Combinator FuncPattern
 %type	<stringVal>		IdentPattern FuncClass FuncNamePattern FormalPattern FormalArgsSuffix
 %type	<idList>		FormalsPattern FormalPatternList FormalPatternNonEmptyList
-%type	<stringVal>		IndexOperator AttributeIdent AttributeId
+%type	<stringVal>		IndexOperator AttributeIdent AttributeId AOPKwd
 
 %type	<stringVal>		CallPattern NormalCall MethodCall ObjectPattern
 
@@ -96,9 +96,10 @@ static void PointcutSyntax_yyerror (YYLTYPE* yylloc, Pointcut **pointcut, yyFlex
 Pointcut:					Pattern	{ *pointcut = $1; }
 						;
 
-Pattern:					ASTPattern { $$ = $1; }
-						|	AOPPattern { $$ = $1; }
-						|	Combinator { $$ = $1; }
+Pattern:					ASTPattern		{ $$ = $1; }
+						|	AOPPattern		{ $$ = $1; }
+						|	Combinator		{ $$ = $1; }
+						|	'(' Pattern ')' { $$ = $2; }
 						;
 
 Combinator:					Pattern AND Pattern	{ $$ = Manage_AND($1, $3); }
@@ -108,12 +109,16 @@ Combinator:					Pattern AND Pattern	{ $$ = Manage_AND($1, $3); }
 
 ASTPattern:					AST '(' STRING ')' { $$ = Manage_AST($3); }
 						|	ATTRIBUTE '(' STRING ')' { $$ = Manage_ATTRIBUTE(); }
-						|	CHILD '(' Pattern ')' { $$ = Manage_CHILD($3); }
-						|	CHILD '(' Pattern ',' STRING ')' { $$ = Manage_CHILD($3, $5); }
-						|	PARENT '(' Pattern ')' { $$ = Manage_PARENT($3); }
-						|	PARENT '(' Pattern ',' STRING ')' { $$ = Manage_PARENT($3, $5); }
-						|	DESCENDANT '(' Pattern ')' { $$ = Manage_DESCENDANT($3); }
-						|	ASCENDANT '(' Pattern ')' { $$ = Manage_ASCENDANT($3); }
+						|	CHILD '(' SubPattern ')' { $$ = Manage_CHILD($3); }
+						|	CHILD '(' SubPattern ',' STRING ')' { $$ = Manage_CHILD($3, $5); }
+						|	PARENT '(' SubPattern ')' { $$ = Manage_PARENT($3); }
+						|	PARENT '(' SubPattern ',' STRING ')' { $$ = Manage_PARENT($3, $5); }
+						|	DESCENDANT '(' SubPattern ')' { $$ = Manage_DESCENDANT($3); }
+						|	ASCENDANT '(' SubPattern ')' { $$ = Manage_ASCENDANT($3); }
+						;
+
+SubPattern:					Pattern		{ $$ = $1; }
+						|	FuncPattern { $$ = $1; }
 						;
 
 AOPPattern:					EXECUTION '(' FuncPattern ')' { $$ = $3; }
@@ -142,7 +147,23 @@ FuncNamePattern:			IdentPattern { $$ = $1; }
 						|	/* anonymous function */ { $$ = ""; }
 						;
 
-IdentPattern:				IDENT { $$ = $1; }
+IdentPattern:				IDENT	{ $$ = $1; }
+						|	MUL		{ $$ = "*"; }
+						|	AOPKwd	{ $$ = $1; }
+						;
+
+AOPKwd:						AST				{ $$ = "ast";		}
+						|	ATTRIBUTE		{ $$ = "attribute";	}
+						|	CHILD			{ $$ = "child";		}
+						|	PARENT			{ $$ = "parent";	}
+						|	DESCENDANT		{ $$ = "descendant";}
+						|	ASCENDANT		{ $$ = "ascendant"; }
+						|	EXECUTION		{ $$ = "execution";	}
+						|	CALL			{ $$ = "call";		}
+						//|	EXCEPTION		{ $$ = "exception";	}
+						//|	CLASS			{ $$ = "class";		}
+						//|	SETTER			{ $$ = "setter";	}
+						//|	GETTER			{ $$ = "getter";	}
 						;
 
 OperatorMethod:				ADD				{ $$ = "+";			}
@@ -178,7 +199,7 @@ FormalsPattern:				FormalPatternList FormalArgsSuffix { $$ = Manage_Formals($1, 
 						;
 
 FormalPatternList:			FormalPatternNonEmptyList { $$ = $1; }
-						|	/*empty idlist*/ { unullify($$); }
+						|	/*empty idlist*/ { $$ = Manage_FormalsEmpty(); }
 						;
 
 FormalPatternNonEmptyList:		FormalPatternNonEmptyList ',' FormalPattern { $$ = Manage_FormalPatternList($1, $3); }

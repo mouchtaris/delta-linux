@@ -18,7 +18,7 @@ static Regex MakeRegex(const std::string& pattern) {
 	std::string p;
 	for (std::string::const_iterator i = pattern.begin(); i != pattern.end(); ++i)
 		if (*i == '*') {
-			if (pattern.empty() || pattern.back() != '*')
+			if (p.empty() || p.back() != '*')
 				p.append(".*");
 		}
 		else if (*i == '.')
@@ -68,7 +68,7 @@ const ASTSet ExecutionPointcut::Evaluate(TreeNode* ast, bool includeChildren) co
 			}
 		}
 		if (match)
-			result.insert(DPTR(*i)->GetChild(AST_CHILD_BODY));
+			result.insert(DPTR(*i));
 	}
 
 	return result;

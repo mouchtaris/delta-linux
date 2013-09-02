@@ -81,25 +81,30 @@ public:
 
 		int i;
 		int iMax = m_children.GetCount();
-		int iMaxMinusOne = iMax-1;
 
-		wxPGProperty* curChild = (wxPGProperty*) m_children.Item(0);
+		if (iMax) {
+			int iMaxMinusOne = iMax-1;
 
-		for (i = 0; i < iMax; i++) {
-			wxString s = curChild->ValueToString(curChild->GetValue(), argFlags|wxPG_COMPOSITE_FRAGMENT);
-			if (curChild->GetChildCount() || s.Contains(wxT(";")))
-				text += wxT("[") + s + wxT("]");
-			else
-				text += s;
+			wxPGProperty* curChild = (wxPGProperty*) m_children.Item(0);
 
-			if (i < iMaxMinusOne) {
-				curChild = (wxPGProperty*) m_children.Item(i+1);
-				if (curChild->GetChildCount())
-					text += wxT(" ");
+			for (i = 0; i < iMax; i++) {
+				wxString s = curChild->ValueToString(curChild->GetValue(), argFlags|wxPG_COMPOSITE_FRAGMENT);
+				if (curChild->GetChildCount() || s.Contains(wxT(";")))
+					text += wxT("[") + s + wxT("]");
 				else
-					text += wxT("; ");
+					text += s;
+
+				if (i < iMaxMinusOne) {
+					curChild = (wxPGProperty*) m_children.Item(i+1);
+					if (curChild->GetChildCount())
+						text += wxT(" ");
+					else
+						text += wxT("; ");
+				}
 			}
 		}
+		else
+			text = wxPGProperty::ValueToString(value, argFlags);
 
 		return text;
 	}

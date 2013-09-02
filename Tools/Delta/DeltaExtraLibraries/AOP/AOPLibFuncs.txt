@@ -8,7 +8,7 @@ BEFORE					"BEFORE"
 AFTER					"AFTER"
 @const
 AROUND					"AROUND"
-aspect					(target : ast, pointcut : String, advice_type : Number, advice : ast)
-match					(target : ast, pointcut : String) : list
-advise					(target : ast, advice_type : Number, advice : ast)
+aspect					(target : std::ast, pointcut : String, advice_type : Number, advice : std::ast)
+match					(target : std::ast, pointcut : String) : std::list
+advise					(target : std::ast, advice_type : Number, advice : std::ast)
 @exit

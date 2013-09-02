@@ -70,9 +70,10 @@ const ASTSet AscendantPointcut::Evaluate(TreeNode* ast, bool includeChildren) co
 	ASTSet result;
 	for (ASTSet::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
 		TreeNode* parent = DPTR(*i)->GetParent();
-		while (parent) {
+		while (parent != ast) {	//do not go beyond the original root
 			result.insert(parent);
 			parent = DPTR(*i)->GetParent();
+			DASSERT(parent);
 		}
 	}
 	return result;

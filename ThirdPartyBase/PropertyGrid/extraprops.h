@@ -54,6 +54,7 @@ public:
 	virtual void OnSetValue (void);
 #endif
 
+	virtual wxString ValueToString(wxVariant& value, int argFlags) const { return GetValueAsString(argFlags); }
 	virtual wxString GetValueAsString(int argFlags = 0) const;
 	virtual bool SetValueFromString(const wxString& text, int argFlags);
 	virtual bool StringToValue(wxVariant& variant, const wxString& text, int argFlags) const;
@@ -96,6 +97,7 @@ public:
 	virtual void OnSetValue (void);
 #endif
 
+	virtual wxString ValueToString(wxVariant& value, int argFlags) const { return GetValueAsString(argFlags); }
 	virtual wxString GetValueAsString(int argFlags = 0) const;
 	virtual bool SetValueFromString(const wxString& text, int argFlags);
 	virtual bool StringToValue(wxVariant& variant, const wxString& text, int argFlags) const;

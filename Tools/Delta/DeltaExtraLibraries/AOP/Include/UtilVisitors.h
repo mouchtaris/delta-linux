@@ -7,6 +7,8 @@
 #define	UTIL_VISITORS_H
 
 #include "TreeVisitor.h"
+#include "ASTTags.h"
+#include "ASTMetaTags.h"
 
 /////////////////////////////////////////////////////////
 
@@ -29,5 +31,21 @@ struct NodeCollector : public TreeVisitor {
 
 /////////////////////////////////////////////////////////
 
+struct EscapeLocator : public TreeVisitor {
+	TreeNode* node;
+	static void Handle_Escape (AST_VISITOR_ARGS) {
+		if (entering) {
+			EscapeLocator* visitor = (EscapeLocator*) closure;
+			if (CARDINALITY(node) == 1) {
+				visitor->node = node;
+				visitor->Stop();
+			}
+		}
+	}
+	TreeNode* operator()(TreeNode* root) { if (root) DPTR(root)->AcceptPreOrder(this); return node; }
+	EscapeLocator(void) : node((TreeNode*) 0) { SetHandler(AST_TAG_ESCAPE, &Handle_Escape, this); }
+};
+
+/////////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

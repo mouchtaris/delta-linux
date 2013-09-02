@@ -25,6 +25,7 @@ Pointcut* Manage_ASCENDANT(Pointcut* pointcut);
 
 Pointcut* Manage_FuncPattern(const std::string& funcClass, const std::string& name, IdList* formals);
 IdList* Manage_Formals(IdList* l, const char* suffix);
+IdList* Manage_FormalsEmpty(void);
 IdList* Manage_FormalPatternList(IdList* l, const std::string& pattern);
 IdList* Manage_FormalPattern(const std::string& pattern);
 
