@@ -708,7 +708,7 @@ void StatementListConversion::operator() (TreeNode* target, TreeNode* node, Tree
 		if (DPTR(node)->GetTotalChildren()) {
 			TreeNode* current = stmt;
 			parent = grandParent;
-			while (DPTR(parent)->GetTag() != AST_TAG_STMTS) {
+			while (DPTR(parent)->GetTag() != AST_TAG_STMTS && DPTR(parent)->GetTag() != AST_TAG_PROGRAM) {
 				const std::string tag = DPTR(parent)->GetTag();
 				const TreeNode::Index index = DPTR(parent)->GetChildIndex(current);
 				bool ifElseIfStmt = tag == AST_TAG_IF_ELSE && index.second == AST_CHILD_IF;

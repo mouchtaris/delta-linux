@@ -54,6 +54,8 @@ descendant		return	DESCENDANT;
 ascendant		return	ASCENDANT;
 execution		return	EXECUTION;
 call			return	CALL;
+exception		return	EXCEPTION;
+class			return	CLASS;
 
 function		return  FUNCTION;
 onevent			return	ONEVENT;

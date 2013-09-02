@@ -49,7 +49,7 @@ const ASTSet ExecutionPointcut::Evaluate(TreeNode* ast) const {
 			continue;
 
 		TreeNode* formals = DPTR(*i)->GetChild(AST_CHILD_FORMALS);
-		const util_ui32 totalArgs = DPTR(*i)->GetTotalChildren();
+		const util_ui32 totalArgs = DPTR(formals)->GetTotalChildren();
 		if (formalsPattern.empty() && totalArgs > 0)
 			continue;
 		bool match = true;

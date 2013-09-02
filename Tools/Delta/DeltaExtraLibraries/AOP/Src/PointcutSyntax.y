@@ -123,8 +123,8 @@ SubPattern:					Pattern		{ $$ = $1; }
 
 AOPPattern:					EXECUTION '(' FuncPattern ')' { $$ = $3; }
 						|	CALL '(' CallPattern ')' {}
-						//|	EXCEPTION '(' ExceptionPattern ')' {}
-						//|	CLASS '(' ClassPattern ')' {}
+						|	EXCEPTION '(' IdentPattern ')' { $$ = Manage_EXCEPTION($3); }
+						|	CLASS '(' IdentPattern ')' { $$ = Manage_CLASS($3); }
 						//|	SETTER '(' Field ')' {}
 						//|	GETTER '(' Field ')' {}
 						;
@@ -160,8 +160,8 @@ AOPKwd:						AST				{ $$ = "ast";		}
 						|	ASCENDANT		{ $$ = "ascendant"; }
 						|	EXECUTION		{ $$ = "execution";	}
 						|	CALL			{ $$ = "call";		}
-						//|	EXCEPTION		{ $$ = "exception";	}
-						//|	CLASS			{ $$ = "class";		}
+						|	EXCEPTION		{ $$ = "exception";	}
+						|	CLASS			{ $$ = "class";		}
 						//|	SETTER			{ $$ = "setter";	}
 						//|	GETTER			{ $$ = "getter";	}
 						;

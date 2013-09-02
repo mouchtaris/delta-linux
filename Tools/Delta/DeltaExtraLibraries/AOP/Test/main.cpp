@@ -11,13 +11,16 @@ static void onerror (const char* error, void*) {
 
 #define FUNCTION			1
 #define OBJECT_CONSTRUCTOR	2
+#define CLASS1				3
+#define CLASS2				4
+#define PROGRAM				5
 
-#define TEST OBJECT_CONSTRUCTOR
+#define TEST PROGRAM
 
 int main(int argc, char** argv) {
 #if TEST == FUNCTION
 	const char* text = "function add(x, y) { return x + y; }\nfunction id(x) { return x; }\nstd::print(add(1, id(2)), \"\\n\");";
-	const std::string pointcut = "execution(function *(..))";
+	const std::string pointcut = "execution(function *(*))";
 	const char* beforeAdviceText = "std::print(\"BEFORE\")";
 	const char* afterAdviceText = "std::print(\"AFTER\")";
 	const char* aroundAdviceText = "std::print(\"AROUND(before)\"); ~proceed; std::print(\"AROUND(after)\");";
@@ -27,9 +30,27 @@ int main(int argc, char** argv) {
 	const char* beforeAdviceText = "method before{}";
 	const char* afterAdviceText = "method after{}";
 	const char* aroundAdviceText = "[]";
+#elif TEST == CLASS1
+	const char* text = "function RemoteObject() { return [ method m() { throw 123; } ]; }";
+	const std::string pointcut = "execution(method *(..)) and descendant(class(RemoteObject))";
+	const char* beforeAdviceText = "";
+	const char* afterAdviceText = "";
+	const char* aroundAdviceText = "try { ~proceed; } trap e { std::print(e); }";
+#elif TEST == CLASS2
+	const char* text = "function SharedObject() { return [ method m() { std::print(123); } ]; }";
+	const std::string pointcut = "descendant(class(SharedObject)) and execution(method *(..))";
+	const char* beforeAdviceText = "@mutex.lock();";
+	const char* afterAdviceText = "@mutex.unlock();";
+	const char* aroundAdviceText = "@mutex.lock(); ~proceed; @mutex.unlock();";
+#elif TEST == PROGRAM
+	const char* text = "function SharedObject() { return [ method m() { std::print(123); } ]; }";
+	const std::string pointcut = "ast(\"Program\")";
+	const char* beforeAdviceText = "function f(){} function g(){}";
+	const char* afterAdviceText = "@mutex.unlock();";
+	const char* aroundAdviceText = "@mutex.lock(); ~proceed; @mutex.unlock();";
 #endif
 
-	AOPLibrary::AdviceType adviceType = AOPLibrary::AROUND;
+	AOPLibrary::AdviceType adviceType = AOPLibrary::BEFORE;
 
 	const char* adviceText;
 	if (adviceType == AOPLibrary::BEFORE)
