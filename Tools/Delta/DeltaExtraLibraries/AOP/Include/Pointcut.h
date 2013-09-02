@@ -16,7 +16,7 @@ typedef std::list<std::string> IdList;
 
 class Pointcut {
 public:
-	virtual const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const = 0;
+	virtual const ASTSet Evaluate(TreeNode* ast) const = 0;
 };
 
 /////////////////////////////////////////////////////////

@@ -33,21 +33,21 @@ static inline bool MatchRegex(const std::string& val, const std::string& pattern
 
 /////////////////////////////////////////////////////////
 
-const ASTSet ExecutionPointcut::Evaluate(TreeNode* ast, bool includeChildren) const {
+const ASTSet ExecutionPointcut::Evaluate(TreeNode* ast) const {
 	ASTSet result;
 	const ASTSet nodes = NodeCollector(AST_TAG_FUNCTION)(ast);
 	for (ASTSet::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
 		const std::string funcClass = DPTR(*i)->GetAttribute(AST_ATTRIBUTE_CLASS)->GetString();
 		if (funcClassPattern != "*" && funcClass != funcClassPattern)
 			continue;
-			
+
 		TreeNode* nameNode = DPTR(*i)->GetChild(AST_CHILD_NAME);
 		if (nameNode && DPTR(nameNode)->GetTag() != AST_TAG_NAME)
 			continue;
 		const std::string name = nameNode ? NAME(nameNode) : "";
 		if (!MatchRegex(name, namePattern))
 			continue;
-			
+
 		TreeNode* formals = DPTR(*i)->GetChild(AST_CHILD_FORMALS);
 		const util_ui32 totalArgs = DPTR(*i)->GetTotalChildren();
 		if (formalsPattern.empty() && totalArgs > 0)

@@ -81,12 +81,12 @@ DLIB_FUNC_END
 ////////////////////////////////////////////////////////////////
 
 static void Install_DeltaAOP_Lib (void) {
-	//AOPLibrary::SingletonCreate();
+	AOPLibrary::Initialise();
 	DELTA_LIBRARY_INSTALL(funcs);
 }
 
 static void CleanUp_DeltaAOP_Lib (void) {
-	//AOPLibrary::SingletonDestroy();
+	AOPLibrary::CleanUp();
 	DELTA_LIBRARY_UNINSTALL(funcs);
 }
 

@@ -9,6 +9,7 @@
 #include "TreeVisitor.h"
 #include "ASTTags.h"
 #include "ASTMetaTags.h"
+#include "Pointcut.h"
 
 /////////////////////////////////////////////////////////
 

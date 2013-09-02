@@ -1017,7 +1017,6 @@ void AST::ValidationVisitor::Handle_NaryNode (
 		for (StringList::const_iterator i = stringAttributes.begin(); i != stringAttributes.end(); ++i) {
 			VALIDATE(DPTR(node)->HasAttribute(*i), MISSING_ATTRIBUTE(*i));
 			VALIDATE(DPTR(node)->GetAttribute(*i)->IsString(), ATTRIBUTE_TYPE_MISMATCH(*i, "string"));
-
 		}
 	}
 }

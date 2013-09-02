@@ -15,7 +15,7 @@ class ASTPointcut : public Pointcut {
 private:
 	const std::string type;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+	const ASTSet Evaluate(TreeNode* ast) const;
 	ASTPointcut(const std::string& type) : type(type) {}
 };
 
@@ -25,7 +25,7 @@ class AttributePointcut : public Pointcut {
 private:
 	//TODO
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+	const ASTSet Evaluate(TreeNode* ast) const;
 	AttributePointcut() {}
 };
 
@@ -36,7 +36,7 @@ private:
 	Pointcut* pointcut;
 	const std::string index;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+	const ASTSet Evaluate(TreeNode* ast) const;
 	ChildPointcut(Pointcut* pointcut, const std::string childIndex = "") : pointcut(pointcut), index(childIndex) {}
 };
 
@@ -47,7 +47,7 @@ private:
 	Pointcut* pointcut;
 	const std::string index;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+	const ASTSet Evaluate(TreeNode* ast) const;
 	ParentPointcut(Pointcut* pointcut, const std::string childIndex = "") : pointcut(pointcut), index(childIndex) {}
 };
 
@@ -57,7 +57,7 @@ class DescendantPointcut : public Pointcut {
 private:
 	Pointcut* pointcut;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+	const ASTSet Evaluate(TreeNode* ast) const;
 	DescendantPointcut(Pointcut* pointcut) : pointcut(pointcut) {}
 };
 
@@ -67,7 +67,7 @@ class AscendantPointcut : public Pointcut {
 private:
 	Pointcut* pointcut;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+	const ASTSet Evaluate(TreeNode* ast) const;
 	AscendantPointcut(Pointcut* pointcut) : pointcut(pointcut) {}
 };
 

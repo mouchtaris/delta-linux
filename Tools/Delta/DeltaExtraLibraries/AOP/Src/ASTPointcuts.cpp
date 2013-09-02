@@ -8,25 +8,19 @@
 
 /////////////////////////////////////////////////////////
 
-const ASTSet ASTPointcut::Evaluate(TreeNode* ast, bool includeChildren) const {
-	ASTSet result;
-	if (includeChildren)
-		result = NodeCollector(type)(ast);
-	else if (DPTR(ast)->GetTag() == type)
-		result.insert(ast);
-	return result;
-}
+const ASTSet ASTPointcut::Evaluate(TreeNode* ast) const { return NodeCollector(type)(ast); }
 
 /////////////////////////////////////////////////////////
 
-const ASTSet AttributePointcut::Evaluate(TreeNode* ast, bool includeChildren) const {
+const ASTSet AttributePointcut::Evaluate(TreeNode* ast) const {
+	//TODO
 	return ASTSet();
 }
 
 /////////////////////////////////////////////////////////
 
-const ASTSet ChildPointcut::Evaluate(TreeNode* ast, bool includeChildren) const {
-	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast, includeChildren);
+const ASTSet ChildPointcut::Evaluate(TreeNode* ast) const {
+	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast);
 	ASTSet result;
 	for (ASTSet::const_iterator i = nodes.begin(); i != nodes.end(); ++i)
 		if (index.empty()) {
@@ -40,8 +34,8 @@ const ASTSet ChildPointcut::Evaluate(TreeNode* ast, bool includeChildren) const 
 
 /////////////////////////////////////////////////////////
 
-const ASTSet ParentPointcut::Evaluate(TreeNode* ast, bool includeChildren) const {
-	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast, includeChildren);
+const ASTSet ParentPointcut::Evaluate(TreeNode* ast) const {
+	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast);
 	ASTSet result;
 	for (ASTSet::const_iterator i = nodes.begin(); i != nodes.end(); ++i)
 		if (TreeNode* parent = DPTR(*i)->GetParent()) {
@@ -53,8 +47,8 @@ const ASTSet ParentPointcut::Evaluate(TreeNode* ast, bool includeChildren) const
 
 /////////////////////////////////////////////////////////
 
-const ASTSet DescendantPointcut::Evaluate(TreeNode* ast, bool includeChildren) const {
-	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast, includeChildren);
+const ASTSet DescendantPointcut::Evaluate(TreeNode* ast) const {
+	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast);
 	ASTSet result;
 	for (ASTSet::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
 		const ASTSet subtree = Linearizer()(*i);
@@ -65,8 +59,8 @@ const ASTSet DescendantPointcut::Evaluate(TreeNode* ast, bool includeChildren) c
 
 /////////////////////////////////////////////////////////
 
-const ASTSet AscendantPointcut::Evaluate(TreeNode* ast, bool includeChildren) const {
-	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast, includeChildren);
+const ASTSet AscendantPointcut::Evaluate(TreeNode* ast) const {
+	const ASTSet nodes = DPTR(pointcut)->Evaluate(ast);
 	ASTSet result;
 	for (ASTSet::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
 		TreeNode* parent = DPTR(*i)->GetParent();

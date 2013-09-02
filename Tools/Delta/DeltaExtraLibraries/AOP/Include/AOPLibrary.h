@@ -12,7 +12,12 @@
 
 /////////////////////////////////////////////////////////
 
+class AdviceHandler;
+
 class DAOPLIB_CLASS AOPLibrary {
+private:
+	typedef std::map<std::string, AdviceHandler*> HandlerMap;
+	static HandlerMap handlers;
 public:
 	enum AdviceType {
 		BEFORE	= 1,
@@ -27,6 +32,9 @@ public:
 	static void Aspect(TreeNode* target, const std::string& pointcut, AdviceType type, TreeNode* advice);
 	static ASTList Match(TreeNode* target, const std::string& pointcut);
 	static void Advise(TreeNode* target, AdviceType type, TreeNode* advice);
+
+	static void Initialise (void);
+	static void CleanUp (void);
 };
 
 /////////////////////////////////////////////////////////

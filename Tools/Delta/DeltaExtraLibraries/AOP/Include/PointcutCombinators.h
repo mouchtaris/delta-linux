@@ -16,9 +16,9 @@ private:
 	Pointcut* left;
 	Pointcut* right;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const {
-		ASTSet leftResult = DPTR(left)->Evaluate(ast, includeChildren);
-		const ASTSet rightResult = DPTR(right)->Evaluate(ast, includeChildren);
+	const ASTSet Evaluate(TreeNode* ast) const {
+		ASTSet leftResult = DPTR(left)->Evaluate(ast);
+		const ASTSet rightResult = DPTR(right)->Evaluate(ast);
 		
 		for (ASTSet::iterator i = leftResult.begin(); i != leftResult.end(); /*empty*/)
 			if (rightResult.find(*i) == rightResult.end())
@@ -38,9 +38,9 @@ private:
 	Pointcut* left;
 	Pointcut* right;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const {
-		ASTSet leftResult = DPTR(left)->Evaluate(ast, includeChildren);
-		const ASTSet rightResult = DPTR(right)->Evaluate(ast, includeChildren);
+	const ASTSet Evaluate(TreeNode* ast) const {
+		ASTSet leftResult = DPTR(left)->Evaluate(ast);
+		const ASTSet rightResult = DPTR(right)->Evaluate(ast);
 		leftResult.insert(rightResult.begin(), rightResult.end());
 		return leftResult;
 	}
@@ -54,25 +54,13 @@ class NotPointcut : public Pointcut {
 private:
 	Pointcut* pointcut;
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const {
-		ASTSet result = DPTR(pointcut)->Evaluate(ast, includeChildren);
-
-		if (includeChildren) {
-			ASTSet all = Linearizer()(ast);
-			for (ASTSet::const_iterator i = result.begin(); i != result.end(); ++i) {
-				DASSERT(all.find(*i) != all.end());
-				all.erase(*i);
-			}
+	const ASTSet Evaluate(TreeNode* ast) const {
+		ASTSet complement = DPTR(pointcut)->Evaluate(ast);
+		ASTSet result = Linearizer()(ast);
+		for (ASTSet::const_iterator i = complement.begin(); i != complement.end(); ++i) {
+			DASSERT(result.find(*i) != result.end());
+			result.erase(*i);
 		}
-		else {
-			if (result.empty())
-				result.insert(ast);
-			else {
-				DASSERT(result.size() == 1 && *result.begin() == ast);
-				result.clear();
-			}
-		}
-
 		return result;
 	}
 

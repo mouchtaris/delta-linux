@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Src\AdviceHandler.cpp" />
     <ClCompile Include="..\Src\AOPLibrary.cpp" />
     <ClCompile Include="..\Src\AOPPointcuts.cpp" />
     <ClCompile Include="..\Src\ASTPointcuts.cpp" />
@@ -100,6 +101,7 @@
     <None Include="..\AOPLibFuncs.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\AdviceHandler.h" />
     <ClInclude Include="..\Include\AOPLibrary.h" />
     <ClInclude Include="..\Include\AOPPointcuts.h" />
     <ClInclude Include="..\Include\ASTPointcuts.h" />

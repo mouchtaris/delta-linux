@@ -17,7 +17,7 @@ private:
 	IdList				formalsPattern;
 
 public:
-	const ASTSet Evaluate(TreeNode* ast, bool includeChildren = true) const;
+	const ASTSet Evaluate(TreeNode* ast) const;
 
 	ExecutionPointcut(const std::string& funcClass, const std::string& name, const IdList& formals) :
 		funcClassPattern(funcClass), namePattern(name), formalsPattern(formals) {}
