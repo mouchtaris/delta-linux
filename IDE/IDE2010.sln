@@ -258,11 +258,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JSON", "JSON", "{DF9F940F-3
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeltaConsoleDebugger", "%DELTA%\DeltaConsoleDebugger\Project\DeltaConsoleDebugger.vcxproj", "{1A34B8F6-5EA7-4B9F-B68E-0D764721E8D1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AOP", "..\Tools\Delta\DeltaExtraLibraries\AOP\Project\AOP.vcxproj", "{3C63496F-C2B4-40AF-918C-23D61F658288}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AOP", "%DELTA%\DeltaExtraLibraries\AOP\Project\AOP.vcxproj", "{3C63496F-C2B4-40AF-918C-23D61F658288}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AOP", "AOP", "{C065ABEC-1768-4B51-AD94-8475A3ADB952}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AOPTest", "..\Tools\Delta\DeltaExtraLibraries\AOP\Test\AOPTest.vcxproj", "{3727CD58-852A-49AC-8BA7-27EB5584E99E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AOPTest", "%DELTA%\DeltaExtraLibraries\AOP\Test\AOPTest.vcxproj", "{3727CD58-852A-49AC-8BA7-27EB5584E99E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
