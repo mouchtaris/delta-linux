@@ -26,27 +26,48 @@ Pointcut* Manage_ASCENDANT (Pointcut* pointcut) { return DNEWCLASS(AscendantPoin
 
 //****************************
 
+IdList* Manage_IdList (IdList* l, const char* id) {
+	if (!l) l = DNEW(IdList);
+	if (id) DPTR(l)->push_back(id);
+	return l;
+}
+
+//****************************
+
+IdList* Manage_Arguments (IdList* l, const char* suffix) {
+	if (suffix) DPTR(l)->push_back(suffix);
+	return l;
+}
+
+IdList* Manage_ArgumentsEmpty (void) { return DNEW(IdList); }
+
+IdList* Manage_ArgumentPatternList (IdList* l, const std::string& pattern) {
+	DPTR(l)->push_back(pattern);
+	return l;
+}
+
+IdList* Manage_ArgumentPattern (const std::string& pattern) { return DNEWCLASS(IdList, (1, pattern)); }
+
+//****************************
+
 Pointcut* Manage_FuncPattern (const std::string& funcClass, const std::string& name, IdList* formals) {
 	Pointcut* p = DNEWCLASS(ExecutionPointcut, (funcClass, name, *DPTR(formals)));
 	DDELETE(formals);
 	return p;
 }
 
-IdList* Manage_Formals (IdList* l, const char* suffix) {
-	if (suffix) DPTR(l)->push_back(suffix);
-	return l;
+Pointcut* Manage_NormalCall (IdList* qualifiedName, IdList* args) {
+	Pointcut* p = DNEWCLASS(NormalCallPointcut, (*DPTR(qualifiedName), *DPTR(args)));
+	DDELETE(qualifiedName);
+	DDELETE(args);
+	return p;
 }
 
-IdList* Manage_FormalsEmpty (void) { return DNEW(IdList); }
-
-IdList* Manage_FormalPatternList (IdList* l, const std::string& pattern) {
-	DPTR(l)->push_back(pattern);
-	return l;
+Pointcut* Manage_MethodCall (const std::string& object, bool localLookup, const std::string& name, IdList* args) {
+	Pointcut* p = DNEWCLASS(MethodCallPointcut, (object, name, *DPTR(args), localLookup));
+	DDELETE(args);
+	return p;
 }
-
-IdList* Manage_FormalPattern (const std::string& pattern) { return DNEWCLASS(IdList, (1, pattern)); }
-
-//****************************
 
 Pointcut* Manage_EXCEPTION (const std::string pattern) {
 	//exception(id) is a shortcut

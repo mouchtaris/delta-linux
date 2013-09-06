@@ -887,7 +887,6 @@ class EscapeCardinalityHandler : public TreeVisitor {
 				else
 					cardinality->SetUInt(val - 1);
 			}
-			((EscapeCardinalityHandler*) closure)->Leave();
 		}
 	}
 	public:

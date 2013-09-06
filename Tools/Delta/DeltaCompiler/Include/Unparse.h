@@ -87,7 +87,7 @@ extern _CS_ Unparse_FunctionCall (_CS_& func, _CS_& args);
 extern _CS_ Unparse_FunctionParenthesisForm (_CS_& func);
 extern _CS_	Unparse_NewAttributeSet (_CS_& id, _CS_& set, _CS_& get);
 
-extern _CS_	Unparse_Escape (util_ui32 cardinality, _CS_& expr);
+extern _CS_	Unparse_Escape (util_ui32 cardinality, _CS_& expr, bool isEscapeIdent);
 extern _CS_ Unparse_QuotedElements (_CS_& elems, _CS_& elem);
 extern _CS_ Unparse_QuasiQuotes (_CS_& prefix, _CS_& value, _CS_& suffix);
 extern _CS_ Unparse_Inline (_CS_& expr);

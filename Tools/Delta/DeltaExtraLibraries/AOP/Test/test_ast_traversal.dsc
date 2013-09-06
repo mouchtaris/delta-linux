@@ -7,7 +7,7 @@
 
 	visitor = std::astvisitor_new();
 	visitor.set_handler("Function", function(node, id, entering){
-		std::print((entering ? "Entering" : "Exiting"), " node ", utility::GetFuncName(node), "\n");
+		std::print((entering ? "Entering" : "Exiting"), " node ", utility::GetName(node), "\n");
 	});
 	ast.accept_preorder(visitor);
 }

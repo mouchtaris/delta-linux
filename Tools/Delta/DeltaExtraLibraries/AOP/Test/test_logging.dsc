@@ -1,3 +1,4 @@
+//complex staged code that may require tracing its execution at compile-time
 &&function generic_func_generator(name, args, body)
 	{ return <<function ~name(~args) { ~body; }>>; }	
 &!(generic_func_generator(

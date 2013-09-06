@@ -14,7 +14,8 @@
 
 /////////////////////////////////////////////////////////
 
-AOPLibrary::HandlerMap AOPLibrary::handlers;
+AOPLibrary::HandlerMap	AOPLibrary::handlers;
+AdviceHandler*			AOPLibrary::defaultHandler;
 
 /////////////////////////////////////////////////////////
 
@@ -32,6 +33,7 @@ static Pointcut* ParsePointcut (const std::string& pointcut) {
 	}
 	return p;
 }
+
 /////////////////////////////////////////////////////////
 
 bool AOPLibrary::IsValidAdviceType (const std::string& str)
@@ -72,23 +74,26 @@ AOPLibrary::ASTList AOPLibrary::Match (TreeNode* target, const std::string& poin
 
 void AOPLibrary::Advise (TreeNode* target, AdviceType type, TreeNode* advice) {
 	DASSERT(target);
-	if (AdviceHandler* handler = handlers[DPTR(target)->GetTag()]) {
-		void (AdviceHandler::*func)(TreeNode* ast, TreeNode* advice) const;
-		switch (type) {
-			case BEFORE:	func = &AdviceHandler::before;	break;
-			case AFTER:		func = &AdviceHandler::after;	break;
-			case AROUND:	func = &AdviceHandler::around;	break;
-			default:		DASSERT(false);
-		}
-		(DPTR(handler)->*func)(target, advice);
+	HandlerMap::const_iterator i = handlers.find(DPTR(target)->GetTag());
+	AdviceHandler* handler = i == handlers.end() ? defaultHandler : i->second;
+	void (AdviceHandler::*func)(TreeNode* ast, TreeNode* advice) const;
+	switch (type) {
+		case BEFORE:	func = &AdviceHandler::before;	break;
+		case AFTER:		func = &AdviceHandler::after;	break;
+		case AROUND:	func = &AdviceHandler::around;	break;
+		default:		DASSERT(false);
 	}
+	(DPTR(handler)->*func)(target, advice);
 }
 
 /////////////////////////////////////////////////////////
 
 void AOPLibrary::Initialise (void) {
+	defaultHandler						= DNEW(AdviceHandler);
 	handlers[AST_TAG_PROGRAM]			= DNEW(ProgramAdviceHandler);
-	handlers[AST_TAG_STMTS]				= DNEW(AdviceHandler);
+	handlers[AST_TAG_STMTS]				= DNEW(StmtsAdviceHandler);
+	handlers[AST_TAG_STMT]				= DNEW(StmtAdviceHandler);
+	handlers[AST_TAG_FUNCTION_STMT]		= DNEW(FunctionStmtAdviceHandler);
 	handlers[AST_TAG_FUNCTION]			= DNEW(FunctionAdviceHandler);
 	handlers[AST_TAG_TABLE_CONSTRUCTOR]	= DNEW(ObjectConstructorHandler);
 }
@@ -99,4 +104,5 @@ void AOPLibrary::CleanUp (void) {
 	for (HandlerMap::const_iterator i = handlers.begin(); i != handlers.end(); ++i)
 		DDELETE(i->second);
 	handlers.clear();
+	DDELETE(defaultHandler);
 }

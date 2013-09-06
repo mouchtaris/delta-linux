@@ -47,21 +47,26 @@ static void PointcutSyntax_yyerror (YYLTYPE* yylloc, Pointcut **pointcut, yyFlex
 }
 
 %start	Pointcut
-%type	<pointcut>		Pattern SubPattern ASTPattern AOPPattern Combinator FuncPattern
+
+%type	<pointcut>		Pattern SubPattern ASTPattern AOPPattern Combinator
+%type	<pointcut>		FuncPattern CallPattern NormalCall MethodCall
 %type	<stringVal>		IdentPattern FuncClass FuncNamePattern FormalPattern FormalArgsSuffix
-%type	<idList>		FormalsPattern FormalPatternList FormalPatternNonEmptyList
-%type	<stringVal>		IndexOperator AttributeIdent AttributeId AOPKwd
-
-%type	<stringVal>		CallPattern NormalCall MethodCall ObjectPattern
-
+%type	<stringVal>		ArgumentPattern ArgumentsSuffix
+%type	<idList>		Formals FormalsPattern FormalPatternList FormalPatternNonEmptyList
+%type	<idList>		Arguments ArgumentsPattern ArgumentPatternList ArgumentPatternNonEmptyList
+%type	<idList>		NamespacePath TargetFunc
+%type	<stringVal>		AttributeIdent AttributeId AOPKwd
+%type	<stringVal>		ObjectPattern
 %type	<stringVal>		OperatorMethod UsedKwdIdent
+%type	<boolVal>		IndexOperator
+
 %token	<boolVal>		BOOLEAN
 %token	<numberVal>		NUMBER
 %token	<stringVal>		STRING IDENT ATTRIBUTE_IDENT
 
 %token		AST ATTRIBUTE CHILD PARENT DESCENDANT ASCENDANT
 %token		EXECUTION CALL EXCEPTION CLASS SETTER GETTER
-%token		FUNCTION ONEVENT METHOD DOUBLE_DOT TRIPLE_DOT
+%token		FUNCTION ONEVENT METHOD DOUBLE_DOT TRIPLE_DOT GLOBAL_SCOPE
 %token		AND NOT OR
 %token		TRUE FALSE
 %token		SELF ARGUMENTS OPERATOR NEWSELF LAMBDA_REF
@@ -121,10 +126,10 @@ SubPattern:					Pattern		{ $$ = $1; }
 						|	FuncPattern { $$ = $1; }
 						;
 
-AOPPattern:					EXECUTION '(' FuncPattern ')' { $$ = $3; }
-						|	CALL '(' CallPattern ')' {}
-						|	EXCEPTION '(' IdentPattern ')' { $$ = Manage_EXCEPTION($3); }
-						|	CLASS '(' IdentPattern ')' { $$ = Manage_CLASS($3); }
+AOPPattern:					EXECUTION '(' FuncPattern ')'	{ $$ = $3; }
+						|	CALL '(' CallPattern ')'		{ $$ = $3; }
+						|	EXCEPTION '(' IdentPattern ')'	{ $$ = Manage_EXCEPTION($3); }
+						|	CLASS '(' IdentPattern ')'		{ $$ = Manage_CLASS($3); }
 						//|	SETTER '(' Field ')' {}
 						//|	GETTER '(' Field ')' {}
 						;
@@ -132,8 +137,8 @@ AOPPattern:					EXECUTION '(' FuncPattern ')' { $$ = $3; }
 /**************************************************************************/
 /* FuncPattern */
 
-FuncPattern:				FuncClass FuncNamePattern '(' FormalsPattern ')'
-								{ $$ = Manage_FuncPattern($1, $2, $4); }
+FuncPattern:				FuncClass FuncNamePattern Formals
+								{ $$ = Manage_FuncPattern($1, $2, $3); }
 						;
 
 FuncClass:					FUNCTION	{ $$ = AST_VALUE_FUNCCLASS_PROGRAMFUNCTION; }
@@ -195,15 +200,19 @@ OperatorMethod:				ADD				{ $$ = "+";			}
 						|	DOT_ASSIGN		{ $$ = DELTA_OPERATOR_OBJECT_SET;	}
 						;
 
-FormalsPattern:				FormalPatternList FormalArgsSuffix { $$ = Manage_Formals($1, $2); }
+Formals:					'(' FormalsPattern ')'	{ $$ = $2; }
+						|	CALLOP					{ $$ = Manage_IdList(); }
+						;
+
+FormalsPattern:				FormalPatternList FormalArgsSuffix { $$ = Manage_IdList($1, $2); }
 						;
 
 FormalPatternList:			FormalPatternNonEmptyList { $$ = $1; }
-						|	/*empty idlist*/ { $$ = Manage_FormalsEmpty(); }
+						|	/*empty idlist*/ { $$ = Manage_IdList(); }
 						;
 
-FormalPatternNonEmptyList:		FormalPatternNonEmptyList ',' FormalPattern { $$ = Manage_FormalPatternList($1, $3); }
-							|	FormalPattern { $$ = Manage_FormalPattern($1); }
+FormalPatternNonEmptyList:		FormalPatternNonEmptyList ',' FormalPattern { $$ = Manage_IdList($1, $3); }
+							|	FormalPattern { $$ = Manage_IdList(0, $1); }
 							;
 
 FormalPattern:				IdentPattern { $$ = $1; }
@@ -220,33 +229,40 @@ CallPattern	:				NormalCall	{ $$ = $1; }
 						|	MethodCall 	{ $$ = $1; }
 						;
 
-NormalCall:					TargetFunc '(' ArgumentsPattern ')'
-								{ /*$$ = Manage_NormalCall($1, $3);*/ }
+NormalCall:					TargetFunc Arguments
+								{ $$ = Manage_NormalCall($1, $2); }
 						;
 
-TargetFunc:					ObjectPattern /*functor*/ {}
-						|	LAMBDA_REF {}
-						|	STRING {}
-						// namespace :: IdentPattern
+TargetFunc:					NamespacePath IdentPattern	{ $$ = Manage_IdList($1, $2); }
+						|	NamespacePath DOUBLE_DOT	{ $$ = Manage_IdList($1, AOP_MATCH_MULTIPLE); }
+						|	IdentPattern				{ $$ = Manage_IdList(0, $1); }
+						|	DOUBLE_DOT					{ $$ = Manage_IdList(0, AOP_MATCH_MULTIPLE); }
+						//|	ObjectPattern /*functor*/ {}
+						//|	LAMBDA_REF {}
 						;
 
-MethodCall:					ObjectPattern IndexOperator IdentPattern '(' ArgumentsPattern ')'
-								{ /*$$ = Manage_MethodCall($1, $2, $3, $5);*/ }
+NamespacePath:				GLOBAL_SCOPE	{ $$ = Manage_IdList(0, DELTA_LIBRARYNAMESPACE_SEPARATOR); }
+						|	IdentPattern GLOBAL_SCOPE 				{ $$ = Manage_IdList(0, $1); }
+						|	NamespacePath IdentPattern GLOBAL_SCOPE { $$ = Manage_IdList($1, $2); }
 						;
 
-ObjectPattern:				IdentPattern { $$ = $1; }	
-						|	AttributeId { $$ = $1; }
-						|	SELF { $$ = AST_TAG_SELF; }
-						|	NEWSELF { $$ = AST_TAG_LVALUE_NEWSELF; }
-						|	ARGUMENTS { $$ = AST_TAG_ARGUMENTS; }
+MethodCall:					ObjectPattern IndexOperator IdentPattern Arguments
+								{ $$ = Manage_MethodCall($1, $2, $3, $4); }
+						;
+
+ObjectPattern:				IdentPattern	{ $$ = $1; }
+						|	AttributeId		{ $$ = $1; }
+						|	SELF			{ $$ = AST_TAG_SELF; }
+						|	NEWSELF			{ $$ = AST_TAG_LVALUE_NEWSELF; }
+						|	ARGUMENTS		{ $$ = AST_TAG_ARGUMENTS; }
 						// [] ctor
 						// () call
 						// [] . dot index
 						// [[]] .. double dot index
 						;
 
-IndexOperator:				DOT { $$ = "."; }
-						|	DOUBLE_DOT { $$ = ".."; }
+IndexOperator:				DOT { $$ = false; }
+						|	DOUBLE_DOT { $$ = true; }
 						;
 
 AttributeIdent:				IDENT { $$ = $1; }
@@ -269,24 +285,28 @@ AttributeId:				ATTRIBUTE_IDENT { $$ = $1 + 1; }
 						|	ATTRIBUTEOP AttributeIdent { $$ = $2; }
 						;
 
-ArgumentsPattern:			ArgumentPatternList ArgumentsSuffix {}
+Arguments:					'(' ArgumentsPattern ')'	{ $$ = $2; }
+						|	CALLOP						{ $$ = Manage_ArgumentsEmpty(); }
 						;
 
-ArgumentPatternList:		ArgumentPatternNonEmptyList {}
-						|	/*empty arglist*/ {}
+ArgumentsPattern:			ArgumentPatternList ArgumentsSuffix { $$ = Manage_Arguments($1, $2); }
+						;
+
+ArgumentPatternList:		ArgumentPatternNonEmptyList { $$ = $1; }
+						|	/*empty arglist*/ { $$ = Manage_ArgumentsEmpty(); }
 						;
 
 ArgumentPatternNonEmptyList:	ArgumentPatternNonEmptyList ',' ArgumentPattern
-							|	ArgumentPattern
+									{ $$ = Manage_ArgumentPatternList($1, $3); }
+							|	ArgumentPattern { $$ = Manage_ArgumentPattern($1); }
 							;
 
-ArgumentPattern:			IdentPattern {}
-						|	TRIPLE_DOT	{}
+ArgumentPattern:			MUL		{ $$ = "*"; }
 						//|	DYNAMIC_ARGUMENTS {}
 						//TODO: all other possible arguments: vars, funcs, consts
 						;
 
-ArgumentsSuffix:			/*exact arguments*/	{ /*unullify($$);*/ }
-						|	DOUBLE_DOT	/*any other arguments*/ {}
+ArgumentsSuffix:			/*exact arguments*/	{ unullify($$); }
+						|	DOUBLE_DOT	/*any other arguments*/ { $$ = AOP_MATCH_MULTIPLE; }
 						//|	TODO: dynamic arguments
 						;

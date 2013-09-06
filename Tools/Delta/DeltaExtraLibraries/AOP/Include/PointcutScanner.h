@@ -13,8 +13,7 @@
 	void IgnoreCStyleComments (void);						\
 	const std::string ReadQuotedString (void);				\
 	static char yyinput_wrapper(void* closure);				\
-	static void yyunput_wrapper(char c, void *closure);		\
-	std::string yy_id_buffer;
+	static void yyunput_wrapper(char c, void *closure);
 
 UFLEX_LEXER_SUBCLASS_DEF(PointcutScannerFlexLexer, FLEX_LEXER_PROTECTED_USER_DEFS, UEMPTY)
 

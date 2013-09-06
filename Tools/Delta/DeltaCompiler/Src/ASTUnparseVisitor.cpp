@@ -952,13 +952,26 @@ void AST::UnparseVisitor::Handle_Exception (AST_VISITOR_ARGS) {
 ///////////////////////////////////////////////////////////
 // Meta
 //
+
+bool AST::UnparseVisitor::IsEscapeIdent (const TreeNode* node) {
+	DASSERT(node && DPTR(node)->GetTag() == AST_TAG_ESCAPE);
+	if (const TreeNode* primary = DPTR(node)->GetChild(AST_CHILD_EXPR))
+		if (DPTR(primary)->GetTag() == AST_TAG_PRIMARY_EXPRESSION)
+			if (const TreeNode* ident = DPTR(primary)->GetChild(AST_CHILD_EXPR))
+				if (DPTR(ident)->GetTag() == AST_TAG_LVALUE_IDENT)
+					if (const TreeNode* name = DPTR(ident)->GetChild(AST_CHILD_NAME))
+						if (DPTR(name)->GetTag() == AST_TAG_NAME)
+							return true;
+	return false;
+}
+
 void AST::UnparseVisitor::Handle_Escape (AST_VISITOR_ARGS) {
 	yysetline();
 	if (!entering) {
 		yyrule(1);
 		util_ui32 cardinality = CARDINALITY(node);
 		DASSERT(cardinality >= 1);
-		yv = Unparse_Escape(cardinality, yy[1]);
+		yv = Unparse_Escape(cardinality, yy[1], IsEscapeIdent(node));
 	}
 	TreeNode* parent = node->GetParent();
 	DASSERT(parent);
@@ -1315,7 +1328,7 @@ const std::string AST::UnparseVisitor::Unparse(const TreeNode* node) {
 	}
 	else if (tag == AST_TAG_ESCAPE) {
 		if ((attr = DPTR(node)->GetAttribute(AST_ATTRIBUTE_CARDINALITY)) && DPTR(attr)->IsUInt())
-			result = Unparse_Escape(DPTR(attr)->GetUInt(), Unparse(DPTR(node)->GetChild(AST_CHILD_EXPR)));
+			result = Unparse_Escape(DPTR(attr)->GetUInt(), Unparse(DPTR(node)->GetChild(AST_CHILD_EXPR)), IsEscapeIdent(node));
 	}
 	else if (tag == AST_TAG_QUOTED_ELEMENTS) {
 		const util_ui32 n = DPTR(node)->GetTotalChildren();

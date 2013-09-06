@@ -1,26 +1,24 @@
+using aop;
+
 std::dllimportdeltalib(aop::DLL);
 
 function transform (ast) {
-	local quasiquotes = aop::match(ast,"ast(quasiquote)"); //find all AST creations
+	local quasiquotes = match(ast,"ast(\"QuasiQuotes\")"); //find all AST creations
 	foreach(local quote, quasiquotes) {
-		if (quote.GetChild().GetType() == "class")
-			aop::advise(quote, aop::AROUND, <<[		//AST creations are replaced with objects 
-					@ast : ~~proceed,				//the original AST is stored as normal data
-					method GetMethods	(){},		//custom methods added
-					method GetAttributes(){},
-					method BaseClasses	(){}
-			]>>);
-		else if (quote.GetChild().GetType() == "function")
-			aop::advise(quote, AROUND, <<[
+		local tag = quote.get_child("expr").get_child(0).get_tag();
+		if (tag == "Function")
+			advise(quote, AROUND, <<[
 					@ast : ~~proceed,
-					method GetName	() {},
-					method GetActual(n){},
-					method GetLocals() {}
+					method GetName	() { return @ast.get_child(0).get_child("name").get_attribute("name"); },
+					//the remaining weaved methods have little actual functionality; they just print for demonstraction purposes
+					method GetActual(n){ std::print("Function::GetActuals\n");},
+					method GetLocals() { std::print("Function::GetLocals\n"); }
 			]>>);
+		//else if (...) perform similar handling for other quoted language elements
 		else
-			;	//perform similar handling for other quoted language elements
+			advise(quote, AROUND, <<[@ast : ~~proceed]>>);
 	}
-	aop::aspect(ast, "child(escape)", aop::AROUND, <<~~proceed.ast>>);
-	aop::aspect(ast, "child(inline)", aop::AROUND, <<~~proceed.ast>>);
+	aspect(ast, "child(ast(\"Escape\"))", AROUND, <<~~proceed.ast>>);
+	aspect(ast, "ast(\"PrimaryExpression\") and descendant(call(std::inline(*)))", AROUND, <<~~proceed.ast>>);
 	return ast;
 }

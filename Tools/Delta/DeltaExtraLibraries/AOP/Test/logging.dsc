@@ -1,8 +1,9 @@
 using std;
+using aop;
 const USE_AOP_LIB = true;
 
 if (USE_AOP_LIB)
-	dllimportdeltalib(aop::DLL);
+	std::dllimportdeltalib(aop::DLL);	//import AOP library
 
 //////////////////////////////////////////////////////////////////////////////////
 // Transformation using only AST manipulation
@@ -55,11 +56,11 @@ function transform_with_ast_library(ast) {
 // AOP transformation
 //
 function transform_with_aop_library(ast) {
-	local funcs = aop::match(ast, "execution(function *(..))");
+	local funcs = match(ast, "execution(function *(..))");
 	foreach(local f, funcs) {
 		local name = f.get_child("name").get_attribute("name");
-		aop::advise(f, aop::BEFORE, <<std::print("Entering " + ~name + "\n");>>);
-		aop::advise(f, aop::AFTER,  <<std::print("Exiting "  + ~name + "\n");>>);
+		advise(f, BEFORE, <<std::print("Entering " + ~name + "\n");>>);
+		advise(f, AFTER,  <<std::print("Exiting "  + ~name + "\n");>>);
 	}
 	return ast;	
 }

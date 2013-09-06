@@ -23,13 +23,21 @@ Pointcut*	Manage_ASCENDANT	(Pointcut* pointcut);
 
 //****************************
 
-Pointcut*	Manage_FuncPattern		(const std::string& funcClass, const std::string& name, IdList* formals);
-IdList*		Manage_Formals			(IdList* l, const char* suffix);
-IdList*		Manage_FormalsEmpty		(void);
-IdList*		Manage_FormalPatternList(IdList* l, const std::string& pattern);
-IdList*		Manage_FormalPattern	(const std::string& pattern);
+IdList*		Manage_IdList (IdList* l = (IdList*) 0, const char* id = (const char*) 0);
 
 //****************************
+
+IdList*		Manage_Arguments			(IdList* l, const char* suffix);
+IdList*		Manage_ArgumentsEmpty		(void);
+IdList*		Manage_ArgumentPatternList	(IdList* l, const std::string& pattern);
+IdList*		Manage_ArgumentPattern		(const std::string& pattern);
+
+//****************************
+
+Pointcut*	Manage_FuncPattern		(const std::string& funcClass, const std::string& name, IdList* formals);
+
+Pointcut*	Manage_NormalCall		(IdList* qualifiedName, IdList* args);
+Pointcut*	Manage_MethodCall		(const std::string& object, bool localLookup, const std::string& name, IdList* args);
 
 Pointcut*	Manage_EXCEPTION		(const std::string pattern);
 Pointcut*	Manage_CLASS			(const std::string pattern);

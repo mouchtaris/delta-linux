@@ -113,6 +113,8 @@ class DCOMPLIB_CLASS UnparseVisitor : public TreeVisitor {
 	static void Handle_Execute (AST_VISITOR_ARGS);
 	static void Handle_IncLineOnExit (AST_VISITOR_ARGS);
 
+	static bool IsEscapeIdent (const TreeNode* node);
+
 	/////////////////////////////////////////////////////////
 
 	struct IsUndefFunctor {

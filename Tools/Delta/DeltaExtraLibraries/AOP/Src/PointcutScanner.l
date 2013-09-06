@@ -78,7 +78,7 @@ or				return	OR;
 ">="			return	GE;
 "<="			return	LE;
 "="				return	ASSIGN;
-"()"			return	CALL;
+"()"			return	CALLOP;
 "=()"			return	CAST;
 "+_"			return	ADD_POSTFIX;
 "-_"				return	SUB_POSTFIX;
@@ -96,6 +96,7 @@ or				return	OR;
 
 ".."			return	DOUBLE_DOT;
 "..."			return	TRIPLE_DOT;
+"::"			return	GLOBAL_SCOPE;
 
 @lambda			return	LAMBDA_REF;
 @self			return	NEWSELF;
@@ -115,9 +116,9 @@ false			return	FALSE;
 					return NUMBER;
 				}
 
-{ident}			{	yylval->stringVal = usaveidstr(yytext, &yy_id_buffer); return IDENT; }
+{ident}			{	yylval->stringVal = ucopystr(yytext); return IDENT; }
 
-{attr}{ident}	{	yylval->stringVal = usaveidstr(yytext, &yy_id_buffer); return ATTRIBUTE_IDENT; }
+{attr}{ident}	{	yylval->stringVal = ucopystr(yytext); return ATTRIBUTE_IDENT; }
 				
 \"				{	
 					//yylval->stringVal = GET_STRINGHOLDER.StringWithLateDestruction(ucopystr(ReadQuotedString()));

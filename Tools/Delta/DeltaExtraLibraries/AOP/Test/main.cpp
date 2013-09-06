@@ -43,14 +43,14 @@ int main(int argc, char** argv) {
 	const char* afterAdviceText = "@mutex.unlock();";
 	const char* aroundAdviceText = "@mutex.lock(); ~proceed; @mutex.unlock();";
 #elif TEST == PROGRAM
-	const char* text = "function SharedObject() { return [ method m() { std::print(123); } ]; }";
-	const std::string pointcut = "ast(\"Program\")";
-	const char* beforeAdviceText = "function f(){} function g(){}";
-	const char* afterAdviceText = "@mutex.unlock();";
-	const char* aroundAdviceText = "@mutex.lock(); ~proceed; @mutex.unlock();";
+	const char* text = "function f() {}";
+	const std::string pointcut = "ast(\"FunctionStmt\")";
+	const char* beforeAdviceText = "std::print(123);";
+	const char* afterAdviceText = "std::print(~retval)";
+	const char* aroundAdviceText = "&~proceed;";
 #endif
 
-	AOPLibrary::AdviceType adviceType = AOPLibrary::BEFORE;
+	AOPLibrary::AdviceType adviceType = AOPLibrary::AROUND;
 
 	const char* adviceText;
 	if (adviceType == AOPLibrary::BEFORE)

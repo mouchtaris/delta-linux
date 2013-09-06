@@ -18,6 +18,7 @@ class DAOPLIB_CLASS AOPLibrary {
 private:
 	typedef std::map<std::string, AdviceHandler*> HandlerMap;
 	static HandlerMap handlers;
+	static AdviceHandler* defaultHandler;
 public:
 	enum AdviceType {
 		BEFORE	= 1,

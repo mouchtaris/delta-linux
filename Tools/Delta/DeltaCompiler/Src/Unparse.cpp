@@ -449,11 +449,11 @@ _CS_ Unparse_UsingByteCodeLibrary (_CS_& id)
 
 //////////////////////////////////////////////////////
 
-_CS_ Unparse_Escape (util_ui32 cardinality, _CS_& expr) {
+_CS_ Unparse_Escape (util_ui32 cardinality, _CS_& expr, bool isEscapeIdent) {
 	std::string s;
 	for(util_ui32 i = 0; i < cardinality; ++i)
 		s += Unparse_Token(META_ESCAPE);
-	return s + SCHAR("(") + expr + SCHAR(")");
+	return isEscapeIdent ? s + expr : s + SCHAR("(") + expr + SCHAR(")");
 }
 
 _CS_ Unparse_QuotedElements (_CS_& elems, _CS_& elem)

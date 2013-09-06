@@ -8,6 +8,7 @@
 #include "ASTAlphaRenamer.h"
 #include "ASTTags.h"
 #include "UtilVisitors.h"
+#include "ASTValidationVisitor.h"
 
 #define AST_TAG_DUMMY	"_"
 
@@ -30,9 +31,9 @@ TreeNode* AdviceHandler::Extend (TreeNode* child, const std::string& tag, const 
 
 //***********************
 
-void AdviceHandler::HandleProceed (TreeNode* advice, TreeNode* original) const {
+void AdviceHandler::HandleEscape (TreeNode* advice, TreeNode* original, const std::string& id) const {
 	DASSERT(advice && (!original || !DPTR(original)->GetParent()));
-	if (TreeNode* escape = EscapeLocator()(advice))
+	if (TreeNode* escape = EscapeLocator(id)(advice))	//TODO: assumes a single ~proceed
 		injector(escape, original);
 	else if (original)
 		TreeNode::Delete(original);
@@ -40,10 +41,11 @@ void AdviceHandler::HandleProceed (TreeNode* advice, TreeNode* original) const {
 
 //***********************
 
-void AdviceHandler::HandleRetval (TreeNode* advice, TreeNode* original) const {
-	HandleProceed(advice, original);
-	//TODO: fix this if the injection is different for ~~proceed or ~~retval
-}
+void AdviceHandler::HandleProceed (TreeNode* advice, TreeNode* original) const
+	{ HandleEscape(advice, original, "proceed"); }
+
+void AdviceHandler::HandleRetval (TreeNode* ast, TreeNode* original) const
+	{ HandleEscape(ast, original, "retval"); }
 
 /////////////////////////////////////////////////////////
 
@@ -72,9 +74,20 @@ void AdviceHandler::around (TreeNode* ast, TreeNode* advice) const {
 	if (advice) {
 		advice = DPTR(advice)->Clone();
 		TreeNode* dummy = TreeNode::New(AST_TAG_DUMMY);
-		DPTR(parent)->Replace(ast, dummy);
+		DPTR(parent)->Replace(ast, extendAroundEscapes ? (*escapeExtender)(dummy) : dummy);
 		HandleProceed(advice, ast);
 		injector(dummy, advice);
+
+		//TODO: ugly fix, do this better somehow
+		if (DPTR(parent)->GetTag() == AST_TAG_PRIMARY_EXPRESSION &&
+			AST::ValidationVisitor::IsMetaGeneratedCode(DPTR(parent)->GetChild(AST_CHILD_EXPR))
+		) {
+			
+			TreeNode* meta = DPTR(parent)->GetChild(AST_CHILD_EXPR);
+			DPTR(meta)->RemoveFromParent();
+			DPTR(DPTR(parent)->GetParent())->Replace(parent, meta);
+			TreeNode::Delete(parent);
+		}
 	}
 	else {
 		DPTR(ast)->RemoveFromParent();
@@ -95,6 +108,55 @@ void ProgramAdviceHandler::around (TreeNode* ast, TreeNode* advice) const {
 	TreeNode* dummy = TreeNode::New(AST_TAG_DUMMY);
 	DPTR(ast)->PushFront(dummy);	
 	injector(dummy, advice);
+}
+
+/////////////////////////////////////////////////////////
+
+void StmtAdviceHandler::insert (
+	TreeNode*		ast,
+	TreeNode*		advice,
+	void (TreeNode::*inserter)(TreeNode*, TreeNode*, const std::string&)
+) const {
+	DASSERT(ast && advice);
+	if (TreeNode* parent = DPTR(ast)->GetParent()) {
+		TreeNode* dummy = TreeNode::New(AST_TAG_DUMMY);
+		(DPTR(parent)->*inserter)(ast, (*escapeExtender)(dummy), "");
+		injector(dummy, DPTR(advice)->Clone());
+	}
+}
+
+//***********************
+
+void StmtAdviceHandler::before (TreeNode* ast, TreeNode* advice) const
+	{ insert(ast, advice, &TreeNode::InsertBefore); }
+
+//***********************
+
+void StmtAdviceHandler::after (TreeNode* ast, TreeNode* advice) const
+	{ insert(ast, advice, &TreeNode::InsertAfter); }
+
+/////////////////////////////////////////////////////////
+
+void FunctionStmtAdviceHandler::before (TreeNode* ast, TreeNode* advice) const {
+	TreeNode* stmt = DPTR(ast)->GetParent();
+	if (stmt && DPTR(stmt)->GetTag() == AST_TAG_STMT)
+		StmtAdviceHandler::before(stmt, advice);
+}
+
+//***********************
+
+void FunctionStmtAdviceHandler::after (TreeNode* ast, TreeNode* advice) const {
+	TreeNode* stmt = DPTR(ast)->GetParent();
+	if (stmt && DPTR(stmt)->GetTag() == AST_TAG_STMT)
+		StmtAdviceHandler::after(stmt, advice);
+}
+
+//***********************
+
+void FunctionStmtAdviceHandler::around (TreeNode* ast, TreeNode* advice) const {
+	TreeNode* stmt = DPTR(ast)->GetParent();
+	if (stmt && DPTR(stmt)->GetTag() == AST_TAG_STMT)
+		StmtAdviceHandler::around(stmt, advice);
 }
 
 /////////////////////////////////////////////////////////
@@ -228,8 +290,8 @@ void FunctionAdviceHandler::after (TreeNode* ast, TreeNode* advice) const {
 			DPTR(returnExpr)->RemoveFromParent();
 			TreeNode::Delete((TreeNode*&)*i);
 			injector(retvalEscape, returnExpr);
+			HandleRetval(adviceCopy, DPTR(expr)->Clone());
 			injector(exitEscape, adviceCopy);
-			//TODO: also inject any ~~retval within the result
 			AST::AlphaRenamer()(ast);
 		}
 		else {	//return; -> <<{ ~exit; return; }>>
@@ -242,7 +304,8 @@ void FunctionAdviceHandler::after (TreeNode* ast, TreeNode* advice) const {
 			injector(escape, adviceCopy);
 		}
 	}
-	AdviceHandler::after(GetAndCreateCompoundStmts(ast), advice);
+	if (!EscapeLocator("retval")(advice))	//only add the ending advice for code not containing ~retval
+		AdviceHandler::after(GetAndCreateCompoundStmts(ast), advice);
 }
 
 //***********************

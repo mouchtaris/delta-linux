@@ -1,11 +1,13 @@
-std::dllimportdeltalib(aop::DLL);
+using aop;
+
+std::dllimportdeltalib(aop::DLL);	//import AOP library
 
 function transform (ast) {
 	local class = "class(SharedObject)"; //class for synchronization
 	local pointcut = "descendant(" + class + ") and execution(method *(..))";
-	aop::aspect(ast, pointcut,	aop::BEFORE, <<@mutex.lock()>>);
-	aop::aspect(ast, pointcut,	aop::AFTER,	 <<@mutex.unlock()>>);
-	aop::aspect(ast, class,		aop::BEFORE, <<@mutex : mutex_new()>>); //insert mutex member
-	aop::advise(ast, aop::BEFORE, <<function mutex_new() { return []; }>>);
+	aspect(ast, pointcut,	BEFORE, <<@mutex.lock()>>);
+	aspect(ast, pointcut,	AFTER,	 <<@mutex.unlock()>>);
+	aspect(ast, class,		BEFORE, <<@mutex : mutex_new()>>); //insert mutex member
+	advise(ast, BEFORE, <<function mutex_new() { return []; }>>);
 	return ast;
 }

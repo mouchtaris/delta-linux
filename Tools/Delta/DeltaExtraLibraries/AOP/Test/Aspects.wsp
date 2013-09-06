@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Workspace name="Aspects" version="alpha">
-  <WorkspaceProperties>
-    <symbolic>Aspects.wsp</symbolic>
-    <startup></startup>
-    <config>0</config>
-    <collapsed>0</collapsed>
-    <breakpoints>break.dat</breakpoints>
-  </WorkspaceProperties>
-  <Child type="AspectProject" name="logging.aproj"/>
-  <Child type="Project" name="tests.dproj"/>
-  <Child type="AspectProject" name="memoization.aproj"/>
-  <Child type="AspectProject" name="locking.aproj"/>
-  <Child type="AspectProject" name="ast_decoration.aproj"/>
-  <Child type="AspectProject" name="ast_validation.aproj"/>
-  <Child type="AspectProject" name="ast_traversal.aproj"/>
-  <Child type="AspectProject" name="static_analysis.aproj"/>
-  <Child type="AspectProject" name="exceptions.aproj"/>
-  <Child type="Project" name="utility.dproj"/>
-  <Child type="AspectProject" name="add_staging.aproj"/>
+    <WorkspaceProperties>
+        <symbolic>Aspects.wsp</symbolic>
+        <startup></startup>
+        <config>0</config>
+        <collapsed>0</collapsed>
+        <breakpoints>break.dat</breakpoints>
+    </WorkspaceProperties>
+    <Child type="AspectProject" name="logging.aproj"/>
+    <Child type="Project" name="tests.dproj"/>
+    <Child type="AspectProject" name="memoization.aproj"/>
+    <Child type="AspectProject" name="locking.aproj"/>
+    <Child type="AspectProject" name="ast_decoration.aproj"/>
+    <Child type="AspectProject" name="ast_validation.aproj"/>
+    <Child type="AspectProject" name="ast_traversal.aproj"/>
+    <Child type="AspectProject" name="static_analysis.aproj"/>
+    <Child type="AspectProject" name="exceptions.aproj"/>
+    <Child type="Project" name="utility.dproj"/>
+    <Child type="AspectProject" name="add_staging.aproj"/>
 </Workspace>

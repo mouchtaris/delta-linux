@@ -66,7 +66,7 @@ const ASTSet AscendantPointcut::Evaluate(TreeNode* ast) const {
 		TreeNode* parent = DPTR(*i)->GetParent();
 		while (parent != ast) {	//do not go beyond the original root
 			result.insert(parent);
-			parent = DPTR(*i)->GetParent();
+			parent = DPTR(parent)->GetParent();
 			DASSERT(parent);
 		}
 	}
