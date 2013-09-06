@@ -96,9 +96,9 @@ public:
 
 				if (i < iMaxMinusOne) {
 					curChild = (wxPGProperty*) m_children.Item(i+1);
-					if (curChild->GetChildCount())
-						text += wxT(" ");
-					else
+					//if (curChild->GetChildCount())
+						//text += wxT(" ");
+					//else
 						text += wxT("; ");
 				}
 			}

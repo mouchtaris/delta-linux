@@ -18,4 +18,5 @@
     <Child type="AspectProject" name="exceptions.aproj"/>
     <Child type="Project" name="utility.dproj"/>
     <Child type="AspectProject" name="add_staging.aproj"/>
+    <Child type="TextFile" name="README.txt"/>
 </Workspace>

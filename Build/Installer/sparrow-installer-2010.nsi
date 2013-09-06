@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Sparrow"
-!define PRODUCT_VERSION "1.0-rev-423"
+!define PRODUCT_VERSION "1.0-rev-543"
 !define PRODUCT_WEB_SITE "http://www.ics.forth.gr/hci/files/plang/Delta/Delta.html"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Sparrow.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -129,6 +129,7 @@ Section "Delta Support" SEC03
   File "..\SyntaxTree.dll"
   File "..\UtilAndDefensiveHeap.dll"
   File "..\VirtualMachineComponents.dll"
+  File "..\JSONParser.dll"
 
   SetOutPath "$INSTDIR\scripts"
   File "..\scripts\Sparrow.wsp"
@@ -169,7 +170,7 @@ Section "Delta Support" SEC03
   File "..\extension_scripts\*.dbc"
 
   SetOutPath "$INSTDIR\extension_dlls"
-  File "..\extension_dlls\*.dll"
+  File /r /x "*D.dll" "..\extension_dlls\*.dll"
 
   SetOutPath "$INSTDIR\config_scripts"
   File "..\config_scripts\*.dbc"
@@ -232,17 +233,23 @@ Section "Extra Delta Libraries" SEC05
   File /r "..\..\Tools\Delta\Manuals\Examples\ALADIN\ALADIN.dll"
   File /r "..\..\Tools\Delta\Manuals\Examples\ALADIN\ALADINLibFuncs.txt"
 
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\lib\release\AOP.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\AOPLibFuncs.txt"
+  
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaCommon\Release\DeltaCorbaCommon.dll"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaClient\Release\DeltaCorbaClient.dll"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\DeltaCorbaServer\Release\DeltaCorbaServer.dll"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\CorbaLibfuncManual.txt"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\CORBAGateway\CorbaLibfuncs.txt"
 
-  File /r "..\..\Tools\Delta\DeltaExtraLibraries\XMLParser\lib\release\XMLParser.dll"
-  File /r "..\..\Tools\Delta\DeltaExtraLibraries\XMLParser\XMLParserLibFuncs.txt"
-
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\JSONParser\lib\release\JSONParser.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\JSONParser\JSONParserLibFuncs.txt"
+  
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\wxWidgets\lib\release\WxWidgets.dll"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\wxWidgets\WxWidgetsLibFuncs.txt"
+  
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\XMLParser\lib\release\XMLParser.dll"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\XMLParser\XMLParserLibFuncs.txt"  
 SectionEnd
 
 Section "Test Workspaces" SEC06
@@ -263,6 +270,14 @@ Section "Test Workspaces" SEC06
   File /r "..\..\Tools\Delta\Manuals\Examples\ALADIN\*.bmp"
   File /r "..\..\Tools\Delta\Manuals\Examples\ALADIN\*.dll"
 
+  SetOutPath "$PROFILE\Sparrow\Workspaces\DeltaAOP"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\Test\*.wsp"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\Test\*.dproj"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\Test\*.aproj"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\Test\*.dsc"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\Test\README.txt"
+  File /r "..\..\Tools\Delta\DeltaExtraLibraries\AOP\lib\release\AOP.dll"
+  
   SetOutPath "$PROFILE\Sparrow\Workspaces\DeltaWxWidgets"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\wxWidgets\sample\*.wsp"
   File /r "..\..\Tools\Delta\DeltaExtraLibraries\wxWidgets\sample\*.dproj"
@@ -333,7 +348,7 @@ Section "Test Workspaces" SEC06
   Pop $1
   FileWrite $0 "$\t<workspace5>$1</workspace5>$\n"
 
-  StrCpy $1 "$PROFILE\Sparrow\Workspaces\DeltaUIGenerator\UIGenerator.wsp"
+  StrCpy $1 "$PROFILE\Sparrow\Workspaces\DeltaAOP\Aspects.wsp"
   Push $1
   Push "\"
   Call StrSlash
@@ -369,6 +384,15 @@ Section "Test Workspaces" SEC06
   FileWrite $0 `<?xml version="1.0" encoding="utf-8"?>$\n`
   FileWrite $0 `<PropertyTable>$\n`
   FileWrite $0 `$\t<vm>$\n$\t$\t<libdefs>$\n`
+
+  FileWrite $0 `$\t$\t$\t<value6>$\n$\t$\t$\t$\t`
+  StrCpy $1 "$INSTDIR\DeltaExtraLibraries\AOPLibFuncs.txt"
+  Push $1
+  Push "\"
+  Call StrSlash
+  Pop $1
+  FileWrite $0 "<path>$1</path>$\n"
+  FileWrite $0 `$\t$\t$\t$\t<name>aop</name>$\n$\t$\t$\t</value6>$\n`
 
   FileWrite $0 `$\t$\t$\t<value5>$\n$\t$\t$\t$\t`
   StrCpy $1 "$INSTDIR\DeltaExtraLibraries\JSONParserLibFuncs.txt"
@@ -487,6 +511,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\RemoteDeployment"
   RMDir /r "$APPDATA\Sparrow"
   RMDir /r "$PROFILE\Sparrow\Workspaces\DeltaTests"
+  RMDir /r "$PROFILE\Sparrow\Workspaces\DeltaAOP"
   RMDir /r "$PROFILE\Sparrow\Workspaces\DeltaWxWidgets"
   RMDir /r "$PROFILE\Sparrow\Workspaces\DeltaCORBA"
   RMDir /r "$PROFILE\Sparrow\Workspaces\DeltaUIGenerator"

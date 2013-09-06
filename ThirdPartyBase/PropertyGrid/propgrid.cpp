@@ -1616,10 +1616,10 @@ wxString wxPGPropertyWithChildren::GetValueAsString( int argFlags ) const
         {
             curChild = (wxPGProperty*) m_children.Item(i+1);
 
-            if ( curChild->GetParentingType() == 0 )
+            //if ( curChild->GetParentingType() == 0 )
                 text += wxT("; ");
-            else
-                text += wxT(" ");
+            //else
+              //  text += wxT(" ");
         }
     }
 

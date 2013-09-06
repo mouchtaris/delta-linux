@@ -266,20 +266,20 @@ START_SEC("si_reports", "Reports")
 		[
 			TEXT_START
 			"Lilis, Y., Savidis, A. (2013). ", !italic "An Integrated Approach to Source Level Debugging and Compile Error Reporting in Metaprograms.",
-			" Journal of Object Technology. To appear.",
-			NL2 TEXT_END
+			" Journal of Object Technology. Journal of Object Technology 12(3): 1: 1-26."
+			TEXT_END, DOI(10.5381/jot.2013.12.3.a2)
 		],
 		[
 			TEXT_START
 			"Lilis, Y., Savidis, A., Valsamakis, Y. (2013). ", !italic "Self Model-Driven Engineering Through Metaprograms.",
-			" In Proceedings of the 17th Panhellenic Conference on Informatics (PCI 2013), 19-21 September. To appear.",
-			NL2 TEXT_END
+			" In Proceedings of the 17th Panhellenic Conference on Informatics (PCI 2013), 19-21 September. ACM, New York, NY, USA, 136-143."
+			TEXT_END, DOI(10.1145/2491845.2491872)
 		],
 		[
 			TEXT_START
-			"Savidis, A., Koutsopoulos, N. (2013). ", !italic "A Programmer-Centric and Task-Optimized Object Graph Visualizer for Debuggers.",
-			" In M. Huang and W. Huang (ed.) Innovative Approaches of Data Visualization and Visual Analytics, 1st Edition, IGI Global. To appear.",
-			NL2 TEXT_END
+			"Savidis, A., Koutsopoulos, N. (2014). ", !italic "A Programmer-Centric and Task-Optimized Object Graph Visualizer for Debuggers.",
+			" In M. Huang and W. Huang (ed.) Innovative Approaches of Data Visualization and Visual Analytics, 1st Edition, IGI Global, pp. 385-396."
+			TEXT_END, DOI(10.4018/978-1-4666-4309-3.ch018)
 		],
 		[
 			TEXT_START
