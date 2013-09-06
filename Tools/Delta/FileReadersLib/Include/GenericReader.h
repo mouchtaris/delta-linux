@@ -266,6 +266,113 @@ USINGLETON_INLINE_ACCESS_HELPER(_class)
 	}
 
 ///////////////////////////////////////////////////////////
+
+class userialisable {
+	public:
+	UCLASSID_STD_ABSTRACT_METHOD
+	virtual userialisable*			Clone (void) const = 0;
+	virtual const std::string		ToString (void) const = 0;		
+	virtual bool					Read (GenericReader& reader) = 0;
+	virtual void					Write (GenericWriter& writer) const
+										{ writer.write(GetClassId()); }
+	void							WriteText (FILE* fp) const
+										{ fprintf(fp, "%s\n", ToString().c_str()); }	
+	virtual ~userialisable(){}
+};
+
+///////////////////////////////////////////////////////////
+
+template <typename T> class userialisable_factory {
+
+	public:
+	typedef T*			(*FactoryFunc)(void);
+
+	protected:
+	typedef std::map<std::string, FactoryFunc> Factories;
+	Factories			factories;
+
+	public:
+	void				Initialise (void)
+							{ DASSERT(factories.empty()); }
+	void				CleanUp (void)
+							{ factories.clear(); }
+	void				Install (
+							const std::string&	classId, 
+							FactoryFunc			f
+						) {
+							DASSERT(factories.find(classId) == factories.end());
+							factories[classId] = f;
+						}
+
+	T*					New (GenericReader& reader) {
+
+							std::string	classId("<unknown class>");
+							UCHECK_ERROR_FORMAT_DEFINE(
+								uconstructstr("Loading %s: error in reading '%%s'!", classId.c_str())
+							);
+
+							T* elem = (T*) 0;
+							Factories::const_iterator i;
+
+							UCHECK_PRIMARY_ERROR_REPORT(
+								reader.read(classId, false), 
+								"class id"
+							);
+							i = factories.find(classId);
+							UCHECK_PRIMARY_ERROR_REPORT(
+								i != factories.end(), 
+								"unknown class id"
+							);
+
+							elem = (*i->second)();
+							UCHECK_DOMINO_ERROR_REPORT(
+								DPTR(elem)->Read(reader), 
+								"serialized state"
+							);
+
+							return elem;
+							FAIL: udeleteunlessnull(elem); return (T*) 0;
+						}
+
+	T*					New (const std::string& classId) const {
+							Factories::const_iterator i = factories.find(classId);
+							DASSERT(i != factories.end());
+							return (*i->second)();
+						}
+	userialisable_factory (void){}
+	virtual ~userialisable_factory(){}
+};
+
+///////////////////////////////////////////////////////////
+
+#define	USERIALISABLE_FACTORY_SINGLETON_DEF(_class,_base)						\
+class _class : public userialisable_factory<_base> {							\
+	DFRIENDDESTRUCTOR()															\
+	protected:																	\
+	_class (void){}																\
+	virtual ~_class(){}															\
+	USINGLETON_APISTYLE_DECLARE_PRIVATEINSTANCE(_class)							\
+	public:																		\
+	USINGLETON_APISTYLE_DECLARE_PUBLICSTDMETHODS								\
+	USINGLETON_APISTYLE_DECLARE_GETTER(_class)									\
+};
+
+// requires copy constructor
+#define USERIALISABLE_DERIVED_PUBLIC_COMMON(_factory,_super,_class,_classid)	\
+	protected:																	\
+	static _super*	New (void)													\
+						{ return DNEW(_class); }								\
+	public:																		\
+	UCLASSID_STD_DERIVED_METHODS(_classid)										\
+	UCLONE_VIRTUAL_VIA_COPY_CONSTRUCTOR(_class, Clone)							\
+	UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(_class)								\
+	static void		Install (void) 												\
+						{ _factory##Get().Install(_classid, &New); }			\
+	virtual bool	Read (GenericReader& reader);								\
+	virtual void	Write (GenericWriter& writer) const;						\
+	virtual const std::string ToString (void) const;
+
+///////////////////////////////////////////////////////////
 // Do not export as having only inline members.
 
 class TextFileReader : public GenericReader {
