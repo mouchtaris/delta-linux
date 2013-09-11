@@ -200,9 +200,11 @@ void AST::StageAssembler::Handle_FormalArgs (AST_VISITOR_ARGS) {
 		for (util_ui32 i = 0; i < n; ++i) {
 			TreeNode* child = DPTR(node)->GetChild(i);
 			DASSERT(child);
-			const std::string name = NAME(child);
-			if (name != AST_VALUE_VARARGS_FORMAL_NAME)
-				SYMBOLS.Install(SYMBOLS.NewSymbol(name, SymbolType_Variable, STARTLINE(child)));
+			if (DPTR(child)->GetTag() == AST_TAG_NAME) {		//ignore generated names
+				const std::string name = NAME(child);
+				if (name != AST_VALUE_VARARGS_FORMAL_NAME)
+					SYMBOLS.Install(SYMBOLS.NewSymbol(name, SymbolType_Variable, STARTLINE(child)));
+			}
 		}
 		SYMBOLS.ExitScope(false);
 	}
