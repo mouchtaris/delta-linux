@@ -86,10 +86,13 @@ void DeltaExceptionHandling::Throw (DeltaVirtualMachine* vm, const DeltaValue& e
 
 void DeltaExceptionHandling::PopExecutionLoop (DeltaVirtualMachine* vm) {
 
-	CallContext& call(callStack.front());
-	DASSERT(call.first == vm && call.second == InExecutionLoop);
+	if (!DPTR(vm)->HasProducedError()) {
 
-	PopFunc();
+		CallContext& call(callStack.front());
+		DASSERT(call.first == vm && call.second == InExecutionLoop);
+
+		PopFunc();
+	}
 }
 
 //////////////////////////////////////////////////////////////
