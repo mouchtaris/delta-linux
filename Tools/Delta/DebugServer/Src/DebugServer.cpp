@@ -15,12 +15,12 @@
 #include "DebugBreakPointHolder.h"
 #include "DebugExprParserAPI.h"
 #include "uthreadlib.h"
+#include "ufiles.h"
+#include "ugeometry.h"
 #include "usystem.h"
 #include "DeltaDebugExtensions.h"
 #include "DeltaDebugMessageEncoding.h"
 #include "DeltaDebugServerBreakPoints.h"
-#include "ufiles.h"
-#include "ugeometry.h"
 #include "DeltaDebugDynamicActivator.h"
 
 using namespace DebugMessages;
@@ -98,40 +98,11 @@ bool DeltaDebugServer::IsClientDisconnectedAndStartedRetryingReconnection (void)
 
 ////////////////////////////////////////////////////////////
 
-struct AdaptiveSleep {
-
-	util_ui32	delay;
-	util_ui32	t_min;
-	util_ui32	t_max;
-	util_ui32	t_add;
-
-	util_ui32	bedtime (void) const 
-					{ return delay;  }
-
-	void		action (void) 
-					{ delay = t_min; }
-
-	void		wait (void) {
-					if (delay < (t_max - t_add))
-						delay += t_add;
-					else
-						delay = t_max;
-				}
-
-	AdaptiveSleep (util_ui32 _min, util_ui32 _max, util_ui32 _add) :
-		delay(_min), 
-		t_min(_min), 
-		t_max(_max), 
-		t_add(_add){}
-};
-
-////////////////////////////////////////////////////////////
-
 void DeltaDebugServer::DebugServiceLoopThread (void* unused) {
 
 	uprocesssleep(TRYCLIENT_CONNECTION_SLEEPTIME);
 
-	AdaptiveSleep	sleeper(
+	uadaptivesleep	sleeper(
 						SERVICELOOP_MIN_SLEEPTIME,
 						SERVICELOOP_MAX_SLEEPTIME,
 						SERVICELOOP_ADD_SLEEPTIME
