@@ -6,7 +6,7 @@
 #include "BuildServer.h"
 #include "SocketPacketNetLink.h"
 #include "DDebug.h"
-
+#include "usystem.h"
 #include <boost/thread.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
@@ -23,6 +23,60 @@
 #include <windows.h>
 
 namespace ide {
+
+/*
+FIXME: changes for genericity
+
+1) pendingStageSources	->	pendingSources
+
+2) HandleBuildSource accept only STAGE_SOURCE_CLASS_ID
+
+3) BuildClient::DoAddSource	BuildClient::DoAttachSource
+
+	SourceInfo				->	struct SourceLineOriginInfo { line, symbolicURI }
+	SourceInfoReferences	->  ChainOfSourceLineOriginInfo typedef list<>
+	decouple from AST::Node
+
+	typedef util_ui32 NodeSerialNo;
+	map<NodeSerialNo, ChainOfSourceLineOriginInfo> NodeToChainOfSourceLineOriginInfo and use util_ui32 in code
+
+	#define	STAGE_SOURCE_CLASS_ID	"StageSource"
+	#define	STAGE_RESULT_CLASS_ID	"StageResult"
+	#define	ASPECT_RESULT_CLASS_ID	"AspectResult"
+
+	static void			DoAttachSource (
+							const std::string&		originalSource,	->	primarySymbolicURI
+							const std::string&		stageSource,	->	attachedSourceText
+							const LineMappings&		lineMappings,
+							const SourceReferences&	sourceRefs,		-> NodeToChainOfSourceLineOriginInfo& info
+							const std::string&		classId,	
+							util_ui32				index,		MEANING OF THIS? AUTO APPEND?
+							bool					isResultFinal	// applicable onyl for result sources
+						);
+
+4)	
+	Build_AddSource				->	as below
+	extra typed messages:
+	BuildSystem_AddStageSource
+	BuildSystem_AddStageResult
+	BuildSystem_AddAspectResult
+
+	Build_GetTransformations	->	BuildSystem_GetAspects
+	Build_GetLineMappings		->	BuildSystem_GetSourceLineMappings
+	Build_GetSourceReferences	->	BuildSystem_GetNodeToChainOfSourceLineOriginInfo
+	Build_RequestInvalid		
+};
+
+enum ServerToClientResponse {
+	Build_SourceAdded			= 0,	BuildSystem_SourceIsAttached
+	Build_StageBinary			= 1,	BuildSystem_StageBinaryInfo
+	Build_Transformations		= 2,
+	Build_LineMappings			= 3,
+	Build_SourceReferences		= 4,
+	Build_ResponseInvalid		= 5
+
+	HandleSource -> RegisterSource
+*/
 
 ////////////////////////////////////////////////////////////
 
@@ -337,38 +391,9 @@ bool									shouldExitServiceLoop	= false;
 
 ////////////////////////////////////////////////////////////
 
-struct AdaptiveSleep {
-
-	util_ui32	delay;
-	util_ui32	t_min;
-	util_ui32	t_max;
-	util_ui32	t_add;
-
-	util_ui32	bedtime (void) const 
-					{ return delay;  }
-
-	void		action (void) 
-					{ delay = t_min; }
-
-	void		wait (void) {
-					if (delay < (t_max - t_add))
-						delay += t_add;
-					else
-						delay = t_max;
-				}
-
-	AdaptiveSleep (util_ui32 _min, util_ui32 _max, util_ui32 _add) :
-		delay(_min), 
-		t_min(_min), 
-		t_max(_max), 
-		t_add(_add){}
-};
-
-////////////////////////////////////////////////////////////
-
 void BuildServer::ServiceLoop (void) {
 
-	AdaptiveSleep	sleeper(
+	uadaptivesleep	sleeper(
 						SERVICELOOP_MIN_SLEEPTIME,
 						SERVICELOOP_MAX_SLEEPTIME,
 						SERVICELOOP_ADD_SLEEPTIME
@@ -377,7 +402,7 @@ void BuildServer::ServiceLoop (void) {
 	while (!shouldExitServiceLoop) {
 		Sleep(sleeper.bedtime());
 		TryAcceptNewClients();
-		if (HandleIncommingMessages())
+		if (HandleIncomingMessages())
 			sleeper.action();
 		else
 			sleeper.wait();
@@ -398,7 +423,7 @@ void BuildServer::TryAcceptNewClients(void) {
 
 ////////////////////////////////////////////////////////////
 
-bool BuildServer::HandleIncommingMessages(void) {
+bool BuildServer::HandleIncomingMessages(void) {
 	bool retval = false;
 	for (ClientMap::iterator i = clients.begin(); i != clients.end(); /*empty*/) {
 		Client* client = i->first;

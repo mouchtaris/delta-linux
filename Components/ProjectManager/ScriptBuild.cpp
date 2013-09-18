@@ -983,6 +983,20 @@ EXPORTED_FUNCTION(Script, const ScriptDependencies, GetDependencies, (void)) {
 
 /////////////////////////////////////////////////////////////////////////
 
+static const StringList& RemoveReplicateDeps (StringList& deps) {
+	std::set<String> uris;
+	for (StringList::iterator i = deps.begin(); i != deps.end(); /*empty*/)
+		if (uris.find(*i) == uris.end()) {
+			uris.insert(*i++); // add uri
+			++i;	//skip status
+		}
+		else
+			i = deps.erase(deps.erase(i));	//erase uri and status
+	return deps;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 EXPORTED_FUNCTION(Script, const StringList, ExtractDependencies, (void)) {
 	StringList deps;
 	{
@@ -992,19 +1006,9 @@ EXPORTED_FUNCTION(Script, const StringList, ExtractDependencies, (void)) {
 			GetByteCodeLoadingPath()
 		);
 	}
+
 	DASSERT(deps.size() % 2 == 0);
-	std::set<String> uris;
-	for (StringList::iterator i = deps.begin(); i != deps.end(); /*empty*/)
-		if (uris.find(*i) == uris.end()) {
-			uris.insert(*i);
-			++i;	//skip uri
-			++i;	//skip status
-		}
-		else {
-			i = deps.erase(i);	//erase uri
-			i = deps.erase(i);	//erase status
-		}
-	return deps;
+	return RemoveReplicateDeps(deps);
 }
 
 /////////////////////////////////////////////////////////////////////////

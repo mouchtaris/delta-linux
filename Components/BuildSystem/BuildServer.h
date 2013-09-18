@@ -28,8 +28,8 @@ enum ClientToServerRequest {
 };
 
 enum ServerToClientResponse {
-	Build_SourceAdded			= 0,
-	Build_StageBinary			= 1,
+	Build_SourceAdded			= 0,	
+	Build_StageBinary			= 1,	// FIXME: is it
 	Build_Transformations		= 2,
 	Build_LineMappings			= 3,
 	Build_SourceReferences		= 4,
@@ -110,7 +110,7 @@ class BuildServer {
 	static void		TryEstablishClientConnection (void* unused = (void*) 0);
 
 	static void		TryAcceptNewClients(void);
-	static bool		HandleIncommingMessages(void);
+	static bool		HandleIncomingMessages(void);
 	static void		CleanUpClients (void);
 
 	/////////////////////////////////////////////////////////////
