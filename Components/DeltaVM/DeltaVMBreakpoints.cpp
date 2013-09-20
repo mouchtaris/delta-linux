@@ -486,7 +486,7 @@ namespace ide
 			bool stageResult = classId == "StageResult";
 			bool stageTransformation = classId == "AspectResult" && script.GetClassId() == "StageSource";
 			bool isScript = script.GetClassId() == "Script" || script.GetClassId() == "Aspect";
-			bool originalTransformation = isScript && classId == _T("AspectResult");
+			bool originalTransformation = isScript && classId == "AspectResult";
 
 			if (stageSource || stageResult || stageTransformation || originalTransformation) {
 				Component* originalTarget;
