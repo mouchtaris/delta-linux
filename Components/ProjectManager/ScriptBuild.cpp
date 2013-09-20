@@ -289,7 +289,7 @@ namespace ide {
 
 /////////////////////////////////////////////////////////////////////////
 	
-	EXPORTED_SIGNAL(Script, ScriptSourceAdded, (const Handle& stageSource, const StringList& lineMappings, const String& type, uint index));
+	EXPORTED_SIGNAL(Script, ScriptSourceAttached, (const Handle& attachedSource, const StringList& lineMappings, uint index));
 	EXPORTED_STATIC_SIGNAL(Script, CompileFinished, (const Handle& script));
 
 /////////////////////////////////////////////////////////////////////////
@@ -390,7 +390,7 @@ void Script::SaveLastBuildProperties (void) {
 	m_lastBuildProperties.Accept(LAST_BUILT_PROPERTIES_TAG, &propertySaver);
 	
 	uint count = 0;
-	BOOST_FOREACH(conf::PropertyTable& table, m_stageSources)
+	BOOST_FOREACH(conf::PropertyTable& table, m_attachedScripts)
 		table.Accept(std::string(STAGE_SOURCES_PROPERTY_TAG) + boost::lexical_cast<std::string>(count++), &propertySaver);
 	root.SetProperty(_T("StageSources"), boost::lexical_cast<String>(count));
 
@@ -425,7 +425,6 @@ void Script::LoadLastBuildProperties (void) {
 		source.Accept(std::string(STAGE_SOURCES_PROPERTY_TAG) + boost::lexical_cast<std::string>(i), &propertyLoader);
 		const String name = conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
 		const String type = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
-		uint index = conf::get_prop_value<conf::IntProperty>(source.GetProperty("index"));
 		bool final = conf::get_prop_value<conf::BoolProperty>(source.GetProperty("final"));
 
 		StringList lineMappings;
@@ -436,7 +435,7 @@ void Script::LoadLastBuildProperties (void) {
 			lineMappings.push_back(original + _T(":") + mapped);
 		}
 
-		AddSource(name, lineMappings, StringList(), type, index, final); //source refs not stored in prop file
+		AttachSource(name, lineMappings, StringList(), type, final); //source refs not stored in prop file
 	}
 	GenerateFinalLineMappings();
 }
@@ -457,10 +456,6 @@ EXPORTED_FUNCTION(Script, bool, Load, (const String& uri)) {
 	LoadLastBuildProperties();
 	return result;
 }
-
-/////////////////////////////////////////////////////////////////////////
-
-EXPORTED_FUNCTION(Script, const std::string, GetType, (void)) { return GetClassId(); }
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -764,26 +759,24 @@ void Script::ResolveAspectTransformations (void) {
 		return;
 
 	std::string func;
-	const std::string type = GetType();
-	if (type == "Script" || type == "Aspect")	//normal script entry
+	const std::string classId = GetClassId();
+	if (classId == "Script" || classId == "Aspect")	//normal script entry
 		func = "GetPreTransformations";
-	else if (type == "stage")					//else check for stage sources
+	else if (classId == "StageSource")				//else check for stage sources
 		func = "GetInterimTransformations";
-	else if (type == "result")
+	else if (classId == "StageResult")
 		func = "GetPostTransformations";
-	else {
-		DASSERT(type == "aspect");
-		return;
-	}
-
-	const Handle& wsp = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
-	BOOST_FOREACH(const String& project, projects) {
-		const Handle proj = Call<Handle (const String&)>(this, wsp, "GetChild")(project);
-		if (proj && proj.GetClassId() == "AspectProject") {
-			const HandleList aspects = Call<const HandleList (void)>(this, proj, func)();
-			BOOST_FOREACH(const Handle& handle, aspects) {
-				DASSERT(handle.GetClassId() == "Aspect");
-				m_aspectTransformations.insert(static_cast<Script*>(handle.Resolve()));
+	
+	if (!func.empty()) {
+		const Handle& wsp = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
+		BOOST_FOREACH(const String& project, projects) {
+			const Handle proj = Call<Handle (const String&)>(this, wsp, "GetChild")(project);
+			if (proj && proj.GetClassId() == "AspectProject") {
+				const HandleList aspects = Call<const HandleList (void)>(this, proj, func)();
+				BOOST_FOREACH(const Handle& handle, aspects) {
+					DASSERT(handle.GetClassId() == "Aspect");
+					m_aspectTransformations.insert(static_cast<Script*>(handle.Resolve()));
+				}
 			}
 		}
 	}
@@ -793,10 +786,11 @@ void Script::ResolveAspectTransformations (void) {
 
 void Script::BuildSelf (void) {
 	bool upToDate = IsByteCodeUpToDate();
-	if (upToDate && !m_stageSources.empty())
+	if (upToDate && !m_attachedScripts.empty())
 		BOOST_FOREACH(const Handle& source, CollectChildren(_T("StageSource"))) {
 			Script* s = static_cast<Script*>(source.Resolve());
-			bool shouldCheck =	s->GetType() != "result" && s->GetType() != "aspect" ||
+			const std::string classId = s->GetClassId();
+			bool shouldCheck =	classId != "StageResult" && classId != "AspectResult" ||
 								conf::get_prop_value<conf::BoolProperty>(s->GetInstanceProperty("final"), false);
 			s_upToDate->clear();
 			if (shouldCheck && !s->IsUpToDateCalculation()) {
@@ -857,9 +851,7 @@ void Script::LaunchCompiler (void) {
 	//Select the first one to place stage sources under the original source 
 	//and the second one to place them under the transformed aspect files.
 	//TODO: for the first to be correct a new original (parent) source is required in the compiler launch
-	//Script* original = GetClassId() == "StageSource" && 
-	//	conf::get_prop_value<conf::EnumStringProperty>(GetInstanceProperty("treeCtrl_icon"), String()) == _T("aspect") ?
-	//	static_cast<Script*>(GetParent().Resolve()) : this;
+	//Script* original = GetClassId() == "AspectResult" ? static_cast<Script*>(GetParent().Resolve()) : this;
 	Script* original = this;
 
 	options += _T(" --symbolic_names=\"") + original->GetSymbolicURI() + _T("\"");
@@ -1710,17 +1702,13 @@ static conf::Property* AdaptFileOrDirectoryProperty(conf::Property* p, const Str
 
 /////////////////////////////////////////////////////////////////////////
 
-EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const StringList& lineMappings, 
-	const StringList& sourceRefs, const String& type, uint index, bool isFinal))
+EXPORTED_FUNCTION(Script, const Handle, AttachSource, (const String& file, const StringList& lineMappings, 
+	const StringList& sourceRefs, const String& classId, bool isFinal))
 {
-	Component* item = ComponentFactory::Instance().CreateComponent("StageSource");
-	DASSERT(item);
+	Component* item = ComponentFactory::Instance().CreateComponent(util::str2std(classId));
+	if (!item)
+		return Handle();
 	item->SetParent(this);
-
-	conf::EnumStringProperty* iconProp = static_cast<conf::EnumStringProperty*>(item->GetClassProperty("treeCtrl_icon")->Clone());
-	iconProp->SetValue(type);
-	iconProp->SetVisible(false);
-	item->AddInstanceProperty("treeCtrl_icon", iconProp);
 
 	conf::StringListProperty* p = new conf::StringListProperty(_T("sourceRefs"), _T("Source References"));
 	p->SetValues(StringVec(sourceRefs.begin(), sourceRefs.end()));
@@ -1739,8 +1727,7 @@ EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const St
 	conf::PropertyTable source;
 	conf::AddScriptStageSourceProperties(&source);
 	conf::set_prop_value<conf::StringProperty>(source.GetProperty("name"), file);
-	conf::set_prop_value<conf::StringProperty>(source.GetProperty("type"), type);
-	conf::set_prop_value<conf::IntProperty>(source.GetProperty("index"), index);
+	conf::set_prop_value<conf::StringProperty>(source.GetProperty("type"), classId);
 	conf::set_prop_value<conf::BoolProperty>(source.GetProperty("final"), isFinal);
 	conf::AggregateListProperty* prop = static_cast<conf::AggregateListProperty*>(source.GetProperty("lineMappings"));
 
@@ -1752,11 +1739,12 @@ EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const St
 		conf::set_prop_value<conf::IntProperty>(p->GetProperty("original"), atoi(util::str2std(split[0]).c_str()));
 		conf::set_prop_value<conf::StringListProperty>(p->GetProperty("mapped"), split[1]);
 	}
-	m_stageSources.push_back(source);
+	m_attachedScripts.push_back(source);
+	const uint index = m_attachedScripts.size();	//starts from 1
 
 	const String path = GetDirectoryProperty("stage_output_path");
 
-	if (type == _T("stage")) {	//generate stage properties
+	if (classId == _T("StageSource")) {	//generate stage properties
 		using namespace conf;
 		const AggregateListProperty* stageSourcesOptions = safe_prop_cast<const AggregateListProperty>(
 			GetInstanceProperty("stage_sources_options")
@@ -1804,7 +1792,7 @@ EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const St
 	Call<void (const String&)>(this, item, "SetSymbolicURI")(file);
 	Call<void (const Handle&)>(this, treeview, "SortChildren")(this);
 
-	sigScriptSourceAdded(this, item, lineMappings, type, index);
+	sigScriptSourceAttached(this, item, lineMappings, index);
 	return Handle(item);
 }
 
@@ -1812,12 +1800,12 @@ EXPORTED_FUNCTION(Script, const Handle, AddSource, (const String& file, const St
 
 Script::ScriptPtrList Script::GetAllIntermediateSources (void) {
 	ScriptPtrList result;
-	BOOST_FOREACH(const conf::PropertyTable& source, m_stageSources) {
-		const String type = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
-		if (type == _T("aspect") || type == _T("result")) {
+	BOOST_FOREACH(const conf::PropertyTable& source, m_attachedScripts) {
+		const String classId = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
+		if (classId == _T("StageResult") || classId == _T("AspectResult")) {
 			const String symbolic = conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
 			Component* child = GetChildBySymbolicURI(symbolic).Resolve();
-			DASSERT(child && child->GetClassId() == "StageSource");
+			DASSERT(child && child->GetClassId() == classId);
 			Script *s = static_cast<Script*>(child);
 			result.push_back(s);
 			if (conf::get_prop_value<conf::BoolProperty>(source.GetProperty("final")))
@@ -1891,12 +1879,12 @@ void Script::CleanStageSources (void) {
 		RemoveIfExists(dbi);
 	}
 
-	BOOST_FOREACH(const conf::PropertyTable& source, m_stageSources) {
+	BOOST_FOREACH(const conf::PropertyTable& source, m_attachedScripts) {
 		const String uri = GetDirectoryProperty("stage_output_path") +
 			conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
 		const std::string curi = util::str2std(uri);
 		RemoveIfExists(curi);
-		if (conf::get_prop_value<conf::StringProperty>(source.GetProperty("type")) == _T("stage")) {
+		if (conf::get_prop_value<conf::StringProperty>(source.GetProperty("type")) == _T("StageSource")) {
 			const std::string binary = curi.substr(0, curi.find_last_of(".")) + ".dbc";
 			RemoveIfExists(binary);
 		}
@@ -1904,7 +1892,7 @@ void Script::CleanStageSources (void) {
 		timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Script::DestroyStageSource, this, uri));
 	}
 	m_finalLineMappings.clear();
-	m_stageSources.clear();
+	m_attachedScripts.clear();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -1919,9 +1907,9 @@ void Script::DestroyStageSource (const String& uri) {
 
 const Script::ScriptPtrSet Script::ExtractStageDependencies (void) const {
 	ScriptPtrSet deps;
-	BOOST_FOREACH(const conf::PropertyTable& table, m_stageSources) {
-		const String type = conf::get_prop_value<conf::StringProperty>(table.GetProperty("type"));
-		if (type == _T("stage")) {
+	BOOST_FOREACH(const conf::PropertyTable& table, m_attachedScripts) {
+		const String classId = conf::get_prop_value<conf::StringProperty>(table.GetProperty("type"));
+		if (classId == _T("StageSource")) {
 			const String symbolic = conf::get_prop_value<conf::StringProperty>(table.GetProperty("name"));
 			const Handle script = const_cast<Script*>(this)->GetDirectChildBySymbolicURI(symbolic);
 			DASSERT(script);
@@ -1995,7 +1983,7 @@ bool Script::IsUpToDateCalculation (void) {
 			try { lastBinWrite = boost::filesystem::last_write_time(GetProducedByteCodeFileFullPath()); }
 			catch(...) { /*ignore filesystem errors */ }
 
-			if (GetType() == "stage" && !AreExternalDependenciesUpToDate(lastBinWrite))
+			if (GetClassId() == "StageSource" && !AreExternalDependenciesUpToDate(lastBinWrite))
 				result = false;
 			else {
 				ResolveAspectTransformations();

@@ -248,8 +248,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IViews", "..\Components\IVi
 		{799F7EFE-0656-4D56-B888-96EBBB90BF5C} = {799F7EFE-0656-4D56-B888-96EBBB90BF5C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuildSystem", "..\Components\BuildSystem\BuildSystem.vcxproj", "{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AspectCompiler", "..\Tools\AspectCompiler\AspectCompiler.vcxproj", "{F1CD58C7-4E23-4492-A4F3-0EE34D7092B4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSONParser", "%DELTA%\DeltaExtraLibraries\JSONParser\Project\JSONParser.vcxproj", "{38C43571-8CC7-4BAA-94DA-81A0DD64732C}"
@@ -263,6 +261,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AOP", "AOP", "{C065ABEC-1768-4B51-AD94-8475A3ADB952}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AOPTest", "%DELTA%\DeltaExtraLibraries\AOP\Test\AOPTest.vcxproj", "{3727CD58-852A-49AC-8BA7-27EB5584E99E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetaBuildSystem", "..\Components\MetaBuildSystem\MetaBuildSystem.vcxproj", "{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -544,10 +544,6 @@ Global
 		{5853E2FD-44DD-4CD6-B63D-C6B563771F2A}.Debug|Win32.Build.0 = Debug|Win32
 		{5853E2FD-44DD-4CD6-B63D-C6B563771F2A}.Release|Win32.ActiveCfg = Release|Win32
 		{5853E2FD-44DD-4CD6-B63D-C6B563771F2A}.Release|Win32.Build.0 = Release|Win32
-		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Debug|Win32.Build.0 = Debug|Win32
-		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Release|Win32.ActiveCfg = Release|Win32
-		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Release|Win32.Build.0 = Release|Win32
 		{F1CD58C7-4E23-4492-A4F3-0EE34D7092B4}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F1CD58C7-4E23-4492-A4F3-0EE34D7092B4}.Debug|Win32.Build.0 = Debug|Win32
 		{F1CD58C7-4E23-4492-A4F3-0EE34D7092B4}.Release|Win32.ActiveCfg = Release|Win32
@@ -568,6 +564,10 @@ Global
 		{3727CD58-852A-49AC-8BA7-27EB5584E99E}.Debug|Win32.Build.0 = Debug|Win32
 		{3727CD58-852A-49AC-8BA7-27EB5584E99E}.Release|Win32.ActiveCfg = Release|Win32
 		{3727CD58-852A-49AC-8BA7-27EB5584E99E}.Release|Win32.Build.0 = Release|Win32
+		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Debug|Win32.Build.0 = Debug|Win32
+		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Release|Win32.ActiveCfg = Release|Win32
+		{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

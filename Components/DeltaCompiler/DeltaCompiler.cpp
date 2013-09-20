@@ -217,7 +217,7 @@ namespace ide
 
 		std::string allOptions = util::str2std(options);
 
-		uint port = Call<uint (void)>(s_classId, "BuildSystem", "GetServerPort")();
+		uint port = Call<uint (void)>(s_classId, "MetaBuildSystem", "GetServerPort")();
 		allOptions += " --build_server_port=" + boost::lexical_cast<std::string>(port);
 		
 		sigCompileStarted(script, buildId);
@@ -252,7 +252,7 @@ namespace ide
 			aspects += (aspects.empty() ? _T("\"") : _T(" \"")) + aspect + _T("\"");
 		allOptions += " --aspects=" + util::str2std(aspects);
 
-		uint port = Call<uint (void)>(s_classId, "BuildSystem", "GetServerPort")();
+		uint port = Call<uint (void)>(s_classId, "MetaBuildSystem", "GetServerPort")();
 		allOptions += " --build_server_port=" + boost::lexical_cast<std::string>(port);
 		
 		sigCompileStarted(script, buildId);

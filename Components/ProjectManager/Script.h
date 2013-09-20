@@ -46,7 +46,6 @@ namespace ide
 
 		DECLARE_EXPORTED_FUNCTION_(virtual bool, Load, (const String& uri),
 			_("Load file from disk"));
-		DECLARE_EXPORTED_FUNCTION(virtual const std::string, GetType, (void));
 
 		DECLARE_EXPORTED_STATIC(const std::string&, GetDebuggerId, (void));
 
@@ -61,8 +60,8 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION(void, CleanCtx, (void));
 		DECLARE_EXPORTED_FUNCTION(unsigned long, Clean, (const UIntList& workId));
 
-		DECLARE_EXPORTED_FUNCTION(const Handle, AddSource, (const String& file, const StringList& lineMappings, 
-			const StringList& sourceRefs, const String& type, uint index, bool isFinal));
+		DECLARE_EXPORTED_FUNCTION(const Handle, AttachSource, (const String& file, const StringList& lineMappings, 
+			const StringList& sourceRefs, const String& type, bool isFinal));
 
 		DECLARE_EXPORTED_FUNCTION(void, EnableWorkCommands, (void));
 		DECLARE_EXPORTED_FUNCTION(void, DisableWorkCommands, (void));
@@ -126,7 +125,7 @@ namespace ide
 		static boost::mutex							s_allScriptsMutex;
 
 		typedef std::list<conf::PropertyTable>		PropertyTableList;
-		PropertyTableList							m_stageSources;
+		PropertyTableList							m_attachedScripts;
 		StringList									m_finalLineMappings;
 
 		// For handling build dependencies.

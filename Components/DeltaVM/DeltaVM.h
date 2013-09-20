@@ -199,8 +199,7 @@ namespace ide
 			_("Upon changing the symbolic uri of a script make the appropriate changes for it's breakpoints"));
 		DECLARE_EXPORTED_STATIC_(void, OnEditLinesChangedBy, (const Handle& editor, int fromLine, int offset),
 			_("Upon changing lines during editing move breakpoints accordingly"));
-		DECLARE_EXPORTED_STATIC_(void, OnScriptSourceAdded, (const Handle& script, const Handle& addedSource,
-			const StringList& encodedLineMappings, const String& type, uint index),
+		DECLARE_EXPORTED_STATIC_(void, OnScriptSourceAttached, (const Handle& script, const Handle& attachedSource, const StringList& encodedLineMappings, uint index),
 			_("Upon addition of a script intermediate source"));
 		DECLARE_EXPORTED_STATIC_(void, OnUserListSelected, (const Handle& editor, int listType, const String& selection),
 			_("Notification about the user list selection (used for the selective step in)"));

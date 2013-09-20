@@ -18,17 +18,19 @@ std::string	StagedCompilationHandler::outputPath;
 
 ///////////////////////////////////////////////////////////////
 
-void StagedCompilationHandler::AddSource(
-	const std::string&		source,
-	const std::string&		text,
-	unsigned				stage,
-	const LineMappings&		lineMappings,
-	const SourceReferences&	sourceRefs,
-	bool					isStage,
-	bool					isFinal
+void StagedCompilationHandler::AttachSource (
+	const std::string&								source,
+	const std::string&								text,
+	const LineMappings&								lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	info,
+	bool											isStage,
+	bool											isFinal
 ) {
 	DeltaMetaCompiler::DumpSource(outputPath + source, text);
-	BuildClient::DoAddSource(originalSource, source, lineMappings, sourceRefs, isStage ? "stage" : "result", stage, isFinal);
+	if (isStage)
+		BuildClient::DoAttachStageSource(originalSource, source, lineMappings, info);
+	else
+		BuildClient::DoAttachStageResult(originalSource, source, lineMappings, info, isFinal);
 	BuildClient::WaitAnyMessage();
 	if (!BuildClient::IsConnectionBroken())
 		BuildClient::ResponseProcessed();
@@ -36,36 +38,36 @@ void StagedCompilationHandler::AddSource(
 
 ///////////////////////////////////////////////////////////////
 
-void StagedCompilationHandler::BuildSource(const std::string& source, std::string* binary, std::string* bytecodePath, std::string* dllimportPath) {
-	BuildClient::DoBuildSource(source);
+void StagedCompilationHandler::BuildSource (const std::string& source, std::string* binary, std::string* bytecodePath, std::string* dllimportPath) {
+	BuildClient::DoBuildStageSource(source);
 	BuildClient::WaitAnyMessage();
-	if (BuildClient::GetResponseType() == Build_StageBinary)	//ignore unrecognized messages
-		BuildClient::GetStageBinaryData(binary, bytecodePath, dllimportPath);
+	if (BuildClient::GetResponseType() == MetaBuildSystem_StageBinaryInfo)	//ignore unrecognized messages
+		BuildClient::GetStageBinaryInfo(binary, bytecodePath, dllimportPath);
 	if (!BuildClient::IsConnectionBroken())
 		BuildClient::ResponseProcessed();
 }
 
 ///////////////////////////////////////////////////////////////
 
-const StagedCompilationHandler::StringList StagedCompilationHandler::GetTransformations(const std::string& source) {
-	StringList transformations;
-	BuildClient::DoGetTransformations(source);
+const StagedCompilationHandler::StringList StagedCompilationHandler::GetAspectResultsForSource (const std::string& source) {
+	StringList aspectResults;
+	BuildClient::DoGetAspectResults(source);
 	BuildClient::WaitAnyMessage();
-	if (BuildClient::GetResponseType() == Build_Transformations)
-		BuildClient::GetTransformations(transformations);
+	if (BuildClient::GetResponseType() == MetaBuildSystem_AspectResults)
+		BuildClient::GetAspectResults(aspectResults);
 	if (!BuildClient::IsConnectionBroken())
 		BuildClient::ResponseProcessed();
-	return transformations;
+	return aspectResults;
 }
 
 ///////////////////////////////////////////////////////////////
 
-const StagedCompilationHandler::LineMappings StagedCompilationHandler::GetLineMappings(const std::string& source) {
+const StagedCompilationHandler::LineMappings StagedCompilationHandler::GetSourceLineMappingsForSource (const std::string& source) {
 	LineMappings lineMappings;
-	BuildClient::DoGetLineMappings(source);
+	BuildClient::DoGetSourceLineMappings(source);
 	BuildClient::WaitAnyMessage();
-	if (BuildClient::GetResponseType() == Build_LineMappings)
-		BuildClient::GetLineMappings(lineMappings);
+	if (BuildClient::GetResponseType() == MetaBuildSystem_SourceLineMappings)
+		BuildClient::GetSourceLineMappings(lineMappings);
 	if (!BuildClient::IsConnectionBroken())
 		BuildClient::ResponseProcessed();
 	return lineMappings;
@@ -73,29 +75,31 @@ const StagedCompilationHandler::LineMappings StagedCompilationHandler::GetLineMa
 
 ///////////////////////////////////////////////////////////////
 
-const StagedCompilationHandler::SourceReferences StagedCompilationHandler::GetSourceReferences(const std::string& source) {
-	SourceReferences sourceRefs;
-	BuildClient::DoGetSourceReferences(source);
+const AST::NodeToChainOfSourceLineOriginInfo StagedCompilationHandler::GetNodeToChainOfSourceLineOriginInfoForSource (const std::string& source) {
+	AST::NodeToChainOfSourceLineOriginInfo info;
+	BuildClient::DoGetNodeToChainOfSourceLineOriginInfo(source);
 	BuildClient::WaitAnyMessage();
-	if (BuildClient::GetResponseType() == Build_SourceReferences)
-		BuildClient::GetSourceReferences(sourceRefs);
+	if (BuildClient::GetResponseType() == MetaBuildSystem_NodeToChainOfSourceLineOriginInfo)
+		BuildClient::GetNodeToChainOfSourceLineOriginInfo(info);
 	if (!BuildClient::IsConnectionBroken())
 		BuildClient::ResponseProcessed();
-	return sourceRefs;
+	return info;
 }
 
 ///////////////////////////////////////////////////////////////
 
-void StagedCompilationHandler::UpdateInlineReferences(const std::string& source, DeltaMetaCompiler* compiler) {
+void StagedCompilationHandler::UpdateInlineReferences (const std::string& source, DeltaMetaCompiler* compiler) {
 	DeltaMetaCompiler::InlineReferences& inlineRefs = compiler->GetInlineReferences();
 	if (!inlineRefs.empty()) {
-		const StringList transformations = GetTransformations(source);
-		for (StringList::const_iterator i = transformations.begin(); i != transformations.end(); ++i) {
-			const LineMappings lineMappings = GetLineMappings(*i);				
+		// Check if any aspect transformations were involved so as to update the
+		// line mappings from the original source across all aspect result sources.
+		const StringList aspectResults = GetAspectResultsForSource(source);
+		for (StringList::const_iterator i = aspectResults.begin(); i != aspectResults.end(); ++i) {
+			const LineMappings lineMappings = GetSourceLineMappingsForSource(*i);				
 			for (DeltaMetaCompiler::InlineReferences::iterator j = inlineRefs.begin(); j != inlineRefs.end(); ++j) {
-				DeltaMetaCompiler::LineMappings::const_iterator iter = lineMappings.find(j->back().second);
+				DeltaMetaCompiler::LineMappings::const_iterator iter = lineMappings.find(j->back().line);
 				DASSERT(iter != lineMappings.end());
-				j->push_back(AST::Node::SourceInfo(*i, *iter->second.begin()));
+				j->push_back(AST::SourceLineOriginInfo(*i, *iter->second.begin()));
 			}
 		}
 	}
@@ -104,28 +108,27 @@ void StagedCompilationHandler::UpdateInlineReferences(const std::string& source,
 ///////////////////////////////////////////////////////////////
 
 void StagedCompilationHandler::OnParse (AST::Node* ast, void* closure) {
-	SourceReferences sourceRefs = GetSourceReferences(originalSource);
-	(AST::SourceReferenceSetter(sourceRefs))(ast);
+	AST::NodeToChainOfSourceLineOriginInfo info = GetNodeToChainOfSourceLineOriginInfoForSource(originalSource);
+	(AST::ChainOfSourceLineOriginInfoSetter(info))(ast);
 }
 
 ///////////////////////////////////////////////////////////////
 
 DeltaVirtualMachine* StagedCompilationHandler::OnStageSource (
-	const std::string&		source,
-	const std::string&		text,
-	util_ui32				stage,
-	const LineMappings&		lineMappings,
-	const SourceReferences&	sourceRefs,
-	void*					closure
+	const std::string&								source,
+	const std::string&								text,
+	const LineMappings&								lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	sourceRefs,
+	void*											closure
 ) {
-	AddSource(source, text, stage, lineMappings, sourceRefs, true, false);
+	AttachSource(source, text, lineMappings, sourceRefs, true, false);
 
 	DeltaVirtualMachine* vm = (DeltaVirtualMachine*) 0;
 	std::string error;
 	DeltaMetaCompiler* compiler = (DeltaMetaCompiler*) closure;
 
 	if (BuildClient::IsConnectionBroken())
-		error = "Could not build the stage source because the connection to the BuildServer was broken";
+		error = "Could not build the stage source because the connection to the MetaBuildServer was broken";
 	else {
 		std::string stageBinary, bytecodePath, dllimportPath;
 		BuildSource(source, &stageBinary, &bytecodePath, &dllimportPath);
@@ -147,7 +150,7 @@ DeltaVirtualMachine* StagedCompilationHandler::OnStageSource (
 	}
 	if (!error.empty()) {
 		DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(compiler->GET_COMPONENT_DIRECTORY());
-		messenger.SetSourceReferences();
+		messenger.SetChainOfSourceLineOriginInfo();
 		messenger.Error("Stage execution failed: %s", error.c_str());
 	}
 	return vm;
@@ -156,19 +159,18 @@ DeltaVirtualMachine* StagedCompilationHandler::OnStageSource (
 ///////////////////////////////////////////////////////////////
 
 bool StagedCompilationHandler::OnStageResult(
-	const std::string&		source,
-	const std::string&		text,
-	util_ui32				stage,
-	const LineMappings&		lineMappings,
-	const SourceReferences&	sourceRefs,
-	bool					final,
-	void*					closure
+	const std::string&								source,
+	const std::string&								text,
+	const LineMappings&								lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	sourceRefs,
+	bool											final,
+	void*											closure
 ) {
-	AddSource(source, text, stage, lineMappings, sourceRefs, false, final);
+	AttachSource(source, text, lineMappings, sourceRefs, false, final);
 	if (final) {
 		std::string error;
 		if (BuildClient::IsConnectionBroken())
-			error = "Could not build the final program because the connection to the BuildServer was broken";
+			error = "Could not build the final program because the connection to the MetaBuildServer was broken";
 		else {
 			std::string binary, unused;
 			BuildSource(source, &binary, &unused, &unused);
@@ -177,7 +179,7 @@ bool StagedCompilationHandler::OnStageResult(
 		}
 		if (!error.empty()) {
 			DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(((DeltaMetaCompiler*) closure)->GET_COMPONENT_DIRECTORY());
-			messenger.SetSourceReferences();
+			messenger.SetChainOfSourceLineOriginInfo();
 			messenger.Error(error.c_str());
 		}
 		return false;
@@ -188,7 +190,7 @@ bool StagedCompilationHandler::OnStageResult(
 
 ///////////////////////////////////////////////////////////////
 
-void StagedCompilationHandler::HandleSource (const std::string& source, const std::string& stageOutputPath, DeltaMetaCompiler* compiler) {
+void StagedCompilationHandler::RegisterSource (const std::string& source, const std::string& stageOutputPath, DeltaMetaCompiler* compiler) {
 	BuildClient::Connect(host, port);
 	originalSource = source;
 	outputPath = stageOutputPath;
@@ -197,12 +199,12 @@ void StagedCompilationHandler::HandleSource (const std::string& source, const st
 	DPTR(compiler)->SetStageResultCallback(umakecallback(&OnStageResult, compiler));
 }
 
-void StagedCompilationHandler::Initialise(const std::string& host, util_ui32 port) {
+void StagedCompilationHandler::Initialise (const std::string& host, util_ui32 port) {
 	StagedCompilationHandler::host = host;
 	StagedCompilationHandler::port = port;
 	BuildClient::Initialise();
 }
 
-void StagedCompilationHandler::CleanUp() {
+void StagedCompilationHandler::CleanUp (void) {
 	BuildClient::CleanUp();
 }

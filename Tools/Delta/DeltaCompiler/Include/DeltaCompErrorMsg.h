@@ -11,6 +11,7 @@
 #include "utypes.h"
 #include "ucallbacks.h"
 #include "DeltaCompilerDefs.h"
+#include "ASTChainOfSourceLineOriginInfo.h"
 
 ///////////////////////////////////////////////////////////////
 
@@ -18,16 +19,14 @@ class DCOMPLIB_CLASS DeltaCompilerMessenger : public ucomponentdirectoryclient {
 
 	public:
 	typedef ucallbackwithclosure<void (*)(const char*, void*)>	ErrorCallback;
-	typedef std::pair<std::string, util_ui32>					SourceReference;
-	typedef std::list<SourceReference>							SourceReferenceList;
 
 	private:
-	std::string			srcFile;
-	util_ui32			nodeId;			//0 means no node information
-	SourceReferenceList	srcReferences;
-	ErrorCallback		notifyError;
-	util_ui32			errors;
-	util_ui32			warnings;
+	std::string							srcFile;
+	util_ui32							nodeId;			//0 means no node information
+	AST::ChainOfSourceLineOriginInfo	sourceOriginChain;
+	ErrorCallback						notifyError;
+	util_ui32							errors;
+	util_ui32							warnings;
 
 	public:
 	void				Error (const char* format,...);
@@ -44,9 +43,9 @@ class DCOMPLIB_CLASS DeltaCompilerMessenger : public ucomponentdirectoryclient {
 	ErrorCallback		GetErrorCallback (void) const;
 
 	void				SetCurrentFile (const std::string& file);
-	void				SetSourceReferences (const SourceReferenceList& references = SourceReferenceList());
+	void				SetChainOfSourceLineOriginInfo (const AST::ChainOfSourceLineOriginInfo& references = AST::ChainOfSourceLineOriginInfo());
 
-	static const std::string ReferencesStr (const SourceReferenceList& srcReferences);
+	static const std::string OriginChainStr (const AST::ChainOfSourceLineOriginInfo& srcReferences);
 
 	DeltaCompilerMessenger (ucomponentdirectory* directory) : 
 		ucomponentdirectoryclient	(directory),

@@ -10,6 +10,7 @@
 #include "CompilerAPI.h"
 #include "ucallbacks.h"
 #include "ASTUnparseVisitor.h"
+#include "ASTChainOfSourceLineOriginInfo.h"
 
 ///////////////////////////////////////////////////////////////
 
@@ -17,13 +18,14 @@ class ASTInjector;
 class DeltaVirtualMachine;
 class DeltaValue;
 
-/////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 
 class DCOMPLIB_CLASS DeltaMetaCompiler : public DeltaCompiler {
 	public:
-	typedef std::list<AST::Node::SourceInfoReferences>				InlineReferences;
-	typedef AST::UnparseVisitor::LineMappings						LineMappings;
-	typedef std::map<util_ui32, AST::Node::SourceInfoReferences>	SourceReferences;
+	typedef std::list<AST::ChainOfSourceLineOriginInfo>					InlineReferences;
+	typedef AST::UnparseVisitor::LineMappings							LineMappings;
+	typedef util_ui32 NodeSerialNo;
+	typedef std::map<NodeSerialNo, AST::ChainOfSourceLineOriginInfo>	NodeToChainOfSourceLineOriginInfo;
 
 	private:
 	typedef std::map<DeltaVirtualMachine*, DeltaMetaCompiler*> VMCompilerMap;
@@ -35,10 +37,23 @@ class DCOMPLIB_CLASS DeltaMetaCompiler : public DeltaCompiler {
 	AST::ValidationVisitor* validator;
 	std::string				mainSource;
 
-	typedef ucallbackwithclosure<DeltaVirtualMachine* (*)(const std::string&, const std::string&, util_ui32, const LineMappings&, const SourceReferences&, void*)> StageCallback;
+	typedef ucallbackwithclosure<DeltaVirtualMachine* (*)(
+		const std::string&,
+		const std::string&,
+		const LineMappings&,
+		const NodeToChainOfSourceLineOriginInfo&,
+		void*
+	)> StageCallback;
 	StageCallback			stageCallback;
 
-	typedef ucallbackwithclosure<bool (*)(const std::string&, const std::string&, util_ui32, const LineMappings&, const SourceReferences&, bool, void*)> StageResultCallback;
+	typedef ucallbackwithclosure<bool (*)(
+		const std::string&,
+		const std::string&,
+		const LineMappings&,
+		const NodeToChainOfSourceLineOriginInfo&,
+		bool,
+		void*
+	)> StageResultCallback;
 	StageResultCallback		stageResultCallback;
 
 	virtual bool			IntermediateCode			(void);
@@ -69,6 +84,6 @@ public:
 	~DeltaMetaCompiler ();
 };
 
-/////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 
 #endif	// Do not add stuff beyond this point.

@@ -1,11 +1,11 @@
 /**
- *	BuildSystem.h
- *	IDE Build System Component
+ *	MetaBuildSystem.h
+ *	IDE Meta Build System Component
  *	Ioannis Lilis <lilis@ics.forth.gr>
  *	February 2012
  */
-#ifndef IDE_BUILD_SYSTEM_COMPONENT_H_
-#define IDE_BUILD_SYSTEM_COMPONENT_H_
+#ifndef IDE_META_BUILD_SYSTEM_COMPONENT_H_
+#define IDE_META_BUILD_SYSTEM_COMPONENT_H_
 
 #include "Common.h"
 
@@ -16,20 +16,20 @@
 namespace ide
 {
 	//----------------------------
-	//-- class BuildSystem
+	//-- class MetaBuildSystem
 
-	class BuildSystem :
+	class MetaBuildSystem :
 		public Component
 	{
-		DECLARE_IDE_COMPONENT(BuildSystem);
+		DECLARE_IDE_COMPONENT(MetaBuildSystem);
 
 	public:
 		///--- type definitions
 		typedef std::map<Component*, UIntList> ScriptBuildInfo;
 
 		///--- constructors / destructor
-		BuildSystem(void);
-		~BuildSystem(void);
+		MetaBuildSystem(void);
+		~MetaBuildSystem(void);
 
 		///--- public API
 
@@ -50,4 +50,4 @@ namespace ide
 	};
 }
 
-#endif	//IDE_BUILD_SYSTEM_COMPONENT_H_
+#endif	//IDE_META_BUILD_SYSTEM_COMPONENT_H_

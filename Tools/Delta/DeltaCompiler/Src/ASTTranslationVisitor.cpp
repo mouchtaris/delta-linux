@@ -5,6 +5,7 @@
 //
 
 #include "ASTTranslationVisitor.h"
+#include "ASTChainOfSourceLineOriginInfo.h"
 #include "ASTValidationVisitor.h"
 #include "ASTCreationActions.h"
 #include "ParseActions.h"
@@ -253,7 +254,7 @@ AST::TranslationVisitor::TranslationVisitor (ucomponentdirectory* directory) :
 void AST::TranslationVisitor::operator()(AST::Node* root){
 	if (root) {
 		DPTR(root)->AcceptPreOrder(this);
-		COMPMESSENGER_EX(GET_COMPONENT_DIRECTORY()).SetSourceReferences();
+		COMPMESSENGER_EX(GET_COMPONENT_DIRECTORY()).SetChainOfSourceLineOriginInfo();
 	}
 }
 
@@ -1744,10 +1745,10 @@ void AST::TranslationVisitor::Handle_Execute (AST_VISITOR_ARGS)
 void AST::TranslationVisitor::SetSourceInfo (AST_VISITOR_ARGS) {
 	AST::Node* n = (AST::Node*) node;
 	PARSEPARMS.SetLine(DPTR(n)->GetStartLine());
-	if (const AST::Node::SourceInfoReferences* refs = DPTR(n)->GetSourceReferences())
-		COMPMESSENGER.SetSourceReferences(*refs);
+	if (const AST::ChainOfSourceLineOriginInfo* info = GetChainOfSourceLineOrigin(n))
+		COMPMESSENGER.SetChainOfSourceLineOriginInfo(*info);
 	else
-		COMPMESSENGER.SetSourceReferences();
+		COMPMESSENGER.SetChainOfSourceLineOriginInfo();
 }
 
 ///////////////////////////////////////////////////////////

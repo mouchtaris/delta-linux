@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files\Meta">
+      <UniqueIdentifier>{63adc9d1-9c7b-4d0f-8078-c48b89d8edb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Meta">
+      <UniqueIdentifier>{4375729b-e95f-4e82-8653-e1761ef822a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Container.cpp">
@@ -48,14 +54,23 @@
     <ClCompile Include="Workspace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StageSource.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Aspect.cpp">
+      <Filter>Source Files\Meta</Filter>
     </ClCompile>
     <ClCompile Include="AspectProject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Meta</Filter>
     </ClCompile>
-    <ClCompile Include="Aspect.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="AspectResult.cpp">
+      <Filter>Source Files\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="AttachedScript.cpp">
+      <Filter>Source Files\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="StageResult.cpp">
+      <Filter>Source Files\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="StageSource.cpp">
+      <Filter>Source Files\Meta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,17 +104,26 @@
     <ClInclude Include="Workspace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StageSource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectManagerFuncReturnTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AspectProject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Aspect.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="AspectProject.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="AspectResult.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="AttachedScript.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="StageResult.h">
+      <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="StageSource.h">
+      <Filter>Header Files\Meta</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

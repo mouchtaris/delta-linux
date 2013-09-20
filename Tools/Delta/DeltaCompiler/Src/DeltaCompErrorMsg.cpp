@@ -36,18 +36,18 @@ util_ui32 DeltaCompilerMessenger::WarningsExist (void) const
 void DeltaCompilerMessenger::SetCurrentFile (const std::string& file)
 	{ srcFile = file; }
 
-void DeltaCompilerMessenger::SetSourceReferences (const SourceReferenceList& references)
-	{ srcReferences = references; }
+void DeltaCompilerMessenger::SetChainOfSourceLineOriginInfo (const AST::ChainOfSourceLineOriginInfo& info)
+	{ sourceOriginChain = info; }
 
 /////////////////////////////////////////////////////////////
 
-const std::string DeltaCompilerMessenger::ReferencesStr (const SourceReferenceList& srcReferences) {
+const std::string DeltaCompilerMessenger::OriginChainStr (const AST::ChainOfSourceLineOriginInfo& srcReferences) {
 	std::string result;
-	for (SourceReferenceList::const_iterator i = srcReferences.begin(); i != srcReferences.end(); ++i)
+	for (AST::ChainOfSourceLineOriginInfo::const_iterator i = srcReferences.begin(); i != srcReferences.end(); ++i)
 		result += uconstructstr(
 			DELTA_COMPILER_REFERENCE_PREFIX ", file '%s', line %d.\n",
-			i->first.c_str(),
-			i->second
+			i->symbolicURI.c_str(),
+			i->line
 		);
 	return result;
 }
@@ -66,7 +66,7 @@ const std::string DeltaCompilerMessenger::ReferencesStr (const SourceReferenceLi
 				_prefix ", file '%s', line %d: ",	\
 				srcFile.c_str(),					\
 				PARSEPARMS.GetLine()				\
-			) +	 report	+ ".\n" + ReferencesStr(srcReferences))
+			) +	 report	+ ".\n" + OriginChainStr(sourceOriginChain))
 
 /////////////////////////////////////////////////////////////
 

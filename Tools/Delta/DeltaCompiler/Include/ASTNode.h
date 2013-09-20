@@ -28,9 +28,7 @@
 #define	DELTA_AST_ENDLINE_ATTRIBUTE				"endline"
 #define	DELTA_AST_STARTPOS_ATTRIBUTE			"startpos"
 #define	DELTA_AST_ENDPOS_ATTRIBUTE				"endpos"
-
 #define DELTA_AST_SOURCE_ATTRIBUTE				"source"
-#define DELTA_AST_SOURCE_REFERENCES_ATTRIBUTE	"sourceReferences"
 
 /////////////////////////////////////////////////////////
 
@@ -82,19 +80,10 @@ class DCOMPLIB_CLASS Node : public TreeNode, public AutoCollectable {
 		) : startLine(startLine), endLine(endLine), startPos(startPos), endPos(endPos) {}
 	};
 
-	typedef std::pair<std::string, util_ui32>	SourceInfo;
-	typedef std::list<SourceInfo>				SourceInfoReferences;
-
-
 	protected:
 	virtual void				Delete (void) { DDELETE(this); }
 
 	public:
-
-	void						AddSourceReference	(const SourceInfo& info, bool front = true);
-	void						AddSourceReferences	(const SourceInfoReferences& refs, bool front = true);
-	const SourceInfoReferences*	GetSourceReferences	(void) const;
-
 	void						SetLocation (const Location& location);
 	const Location				GetLocation (void) const;
 

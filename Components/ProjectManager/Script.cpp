@@ -95,7 +95,7 @@ namespace ide
 		s_visitMapProduceCyclicPath	= new VisitMap;
 		s_upToDateVisitMap			= new VisitMap;
 
-		ComponentLoader::Instance().LoadComponent("BuildSystem");
+		ComponentLoader::Instance().LoadComponent("MetaBuildSystem");
 	}
 
 	//-----------------------------------------------------------------------

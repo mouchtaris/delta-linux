@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTChainOfSourceLineOriginInfo.cpp" />
     <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTEscapeTranslationVisitor.cpp" />
     <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTStageAssembler.cpp" />
     <ClCompile Include="..\..\..\DeltaCompiler\Src\ASTStageDepthCalculator.cpp" />
@@ -154,6 +155,7 @@
     <None Include="Deps.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTChainOfSourceLineOriginInfo.h" />
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTCreationHelpers.h" />
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTEscapeTranslationVisitor.h" />
     <ClInclude Include="..\..\..\DeltaCompiler\Include\ASTStackValue.h" />

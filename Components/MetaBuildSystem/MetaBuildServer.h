@@ -1,12 +1,13 @@
-// BuildServer.h
-// Build server and thread implementation.
+// MetaBuildServer.h
+// Meta build server and thread implementation.
 // Y.Lilis, February 2012.
 //
 
-#ifndef	BUILDSERVER_H
-#define	BUILDSERVER_H
+#ifndef	METABUILDSERVER_H
+#define	METABUILDSERVER_H
 
 #include "Common.h"
+#include "MetaBuildCommands.h"
 #include "utypes.h"
 #include "ufunctors.h"
 #include <map>
@@ -18,26 +19,6 @@
 
 /////////////////////////////////////////////////////////////
 
-enum ClientToServerRequest {
-	Build_AddSource				= 0,
-	Build_BuildSource			= 1,
-	Build_GetTransformations	= 2,
-	Build_GetLineMappings		= 3,
-	Build_GetSourceReferences	= 4,
-	Build_RequestInvalid		= 5
-};
-
-enum ServerToClientResponse {
-	Build_SourceAdded			= 0,	
-	Build_StageBinary			= 1,	// FIXME: is it
-	Build_Transformations		= 2,
-	Build_LineMappings			= 3,
-	Build_SourceReferences		= 4,
-	Build_ResponseInvalid		= 5
-};
-
-/////////////////////////////////////////////////////////////
-
 class SocketPacketNetLink;
 
 namespace ide
@@ -45,14 +26,14 @@ namespace ide
 
 class Component;
 class Client;
-class BuildServer {
+class MetaBuildServer {
 
 	/////////////////////////////////////////////////////////////
 
 	public:
 
 	typedef std::map< util_ui32, std::set<util_ui32> > LineMappings;
-	typedef std::map< util_ui32, std::list< std::pair<std::string, util_ui32> > > SourceReferences;
+	typedef std::map< util_ui32, std::list< std::pair<std::string, util_ui32> > > NodeToChainOfSourceLineOriginInfo;
 
 	private:
 
@@ -67,41 +48,45 @@ class BuildServer {
 	static void	DispatchRequest (Client* client);
 	static ClientToServerRequest GetRequestType (void* data);
 
-	static void HandleAddSource (Client* client);
-	static void HandleBuildSource (Client* client);
-	static void HandleGetTransformations (Client* client);
-	static void HandleGetLineMappings (Client* client);
-	static void HandleGetSourceReferences (Client* client);
+	static void HandleAttachSource (ClientToServerRequest request, Client* client);
+
+	static void HandleAttachStageSource (Client* client);
+	static void HandleAttachStageResult (Client* client);
+	static void HandleAttachAspectResult (Client* client);
+	static void HandleBuildStageSource (Client* client);
+	static void HandleGetAspectResults (Client* client);
+	static void HandleGetSourceLineMappings (Client* client);
+	static void HandleGetNodeToChainOfSourceLineOriginInfo (Client* client);
 
 	//************************
 	// Request processing functions.
 	//
-	static bool		GetAddSource (
-						void*				data,
-						char**				origin,
-						char**				target,						
-						LineMappings*		lineMappings,
-						SourceReferences*	sourceRefs,
-						char**				type,
-						util_ui32*			index,
-						bool*				isFinal
+	static bool		GetAttachSourceData (
+						ClientToServerRequest				request,
+						void*								data,
+						char**								origin,
+						char**								target,						
+						LineMappings*						lineMappings,
+						NodeToChainOfSourceLineOriginInfo*	info,
+						char**								classId,
+						bool*								isFinal
 					);
 
 	static bool		GetString (ClientToServerRequest request, void* data, char **str);
 
-	static bool		GetBuildSource (void* data, char** source);
-	static bool		GetTransformationsSource (void* data, char** source);
-	static bool		GetLineMappingsSource (void* data, char** source);
-	static bool		GetSourceReferencesSource (void* data, char** source);
+	static bool		GetSourceFromBuildStageSourceRequest (void* data, char** source);
+	static bool		GetSourceFromGetAspectResultsRequest (void* data, char** source);
+	static bool		GetSourceFromGetSourceLineMappingsRequest (void* data, char** source);
+	static bool		GetSourceFromNodeToChainOfSourceLineOriginInfoRequest (void* data, char** source);
 
 	//************************
 	// Response functions.
 	//
-	static void		DoStageSourceResponse (Client* client);
-	static void		DoBuildSourceResponse (Client* client, const std::string& binary, const std::string& bytecodePath, const std::string& dllimportPath);
-	static void		DoTransformationsResponse (Client* client, const StdStringList& transformations);
-	static void		DoLineMappingsResponse (Client* client, const LineMappings& lineMappings);
-	static void		DoSourceReferencesResponse (Client* client, const SourceReferences& sourceRefs);
+	static void		DoSourceIsAttachedResponse (Client* client);
+	static void		DoBuildStageSourceResponse (Client* client, const std::string& binary, const std::string& bytecodePath, const std::string& dllimportPath);
+	static void		DoAspectResultsResponse (Client* client, const StdStringList& transformations);
+	static void		DoSourceLineMappingsResponse (Client* client, const LineMappings& lineMappings);
+	static void		DoNodeToChainOfSourceLineOriginInfoResponse (Client* client, const NodeToChainOfSourceLineOriginInfo& info);
 
 	//************************
 	// Mischellaneous functions.
@@ -115,14 +100,13 @@ class BuildServer {
 
 	/////////////////////////////////////////////////////////////
 
-	static void		AddSource(
+	static void		AttachSource(
 						Client*				client,
 						Component*			script,
 						const std::string&	source,
 						const StringList&	lineMappings,
 						const StringList&	sourceRefs,
 						const std::string&	type,
-						util_ui32			index,
 						bool				isFinal
 					);
 	static Client*	GetClientFromStageSource(Component* script);

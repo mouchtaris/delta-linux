@@ -13,35 +13,19 @@
 #define PROJECT_MANAGER_STAGE_SOURCE_H_
 
 #include "Common.h"
-#include "Script.h"
+#include "AttachedScript.h"
 
 namespace ide
 {
 	class StageSource :
-		public Script
+		public AttachedScript
 	{
 		DECLARE_IDE_COMPONENT(StageSource);
 
 	public:
-		///--- type definitions
-
 		///--- constructors / destructor
 		StageSource(void);
 		~StageSource(void);
-
-		///--- public API
-
-		///--- exported API
-		DECLARE_EXPORTED_STATIC(void, Initialize, (void));
-		DECLARE_EXPORTED_STATIC(void, CleanUp, (void));
-
-		DECLARE_EXPORTED_FUNCTION(virtual const std::string, GetType, (void));
-
-		DECLARE_EXPORTED_FUNCTION(void, Open, (void));
-
-	protected:
-		///--- protected API
-		virtual void ComponentAddedProperty (const std::string& id, conf::Property* prop);
 	};
 }
 

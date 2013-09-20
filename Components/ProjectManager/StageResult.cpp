@@ -1,36 +1,36 @@
 /**
- *	StageSource.cpp
+ *	StageResult.cpp
  *
- *	-- IDE StageSource Component --
+ *	-- IDE StageResult Component --
  *
- *	StageSource component represents
- *  the source of a compilation stage.
+ *	StageResult component represents the
+ *  result produced by a compilation stage.
  *
  *	Ioannis Lilis <lilis@ics.forth.gr>
- *	September 2011
+ *	September 2013
  */
-#include "StageSource.h"
+#include "StageResult.h"
 
 namespace ide
 {
 	//-------------------------------------------------------//
-	//---- class StageSource --------------------------------//
+	//---- class StageResult -------------------------------//
 
 	COMPONENT_METADATA(
-		StageSource,
-		_("Stage Source"),
-		_("A component representing the source of a compilation stage"),
+		StageResult,
+		_("Aspect Result"),
+		_("A component representing the result produced by a compilation stage"),
 		_T("Ioannis Lilis <lilis@ics.forth.gr>"),
 		_T("alpha")
 		);
-	IMPLEMENT_COMPONENT_(StageSource, AttachedScript);
+	IMPLEMENT_COMPONENT_(StageResult, AttachedScript);
 
 	//-----------------------------------------------------------------------
 
-	COMPONENT_SET_PROPERTIES_FUNCTION(StageSource, table)
+	COMPONENT_SET_PROPERTIES_FUNCTION(StageResult, table)
 	{
 		StringVec options;
-		options.push_back(_T("StageSource"));
+		options.push_back(_T("StageResult"));
 
 		table.AddProperty("treeCtrl_icon", new conf::EnumStringProperty(_("Icon"), options, 0,
 			_("Icon representation of script in Project Manager's tree-view"))
@@ -39,13 +39,13 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	StageSource::StageSource(void)
+	StageResult::StageResult(void)
 	{
 	}
 
 	//-----------------------------------------------------------------------
 
-	StageSource::~StageSource(void)
+	StageResult::~StageResult(void)
 	{
 	}
 

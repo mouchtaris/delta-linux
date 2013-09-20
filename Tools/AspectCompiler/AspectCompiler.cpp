@@ -46,14 +46,21 @@ static void UpdateSourceLocationFromUnparsed (AST::Node* original, AST::Node* un
 	DASSERT(original && unparsed);
 	std::list<AST::Node*> originalNodes = AST::Linearizer()(original);
 	std::list<AST::Node*> unparsedNodes = AST::Linearizer()(unparsed);
-	DASSERT(originalNodes.size() == unparsedNodes.size());
+
+	//FIXME: the aspect library introduces some erroneous AST nodes, so this may fail
+	//DASSERT(originalNodes.size() == unparsedNodes.size());
+	if(originalNodes.size() != unparsedNodes.size()) return;
+
 	std::list<AST::Node*>::iterator i, j;
 	for (i = originalNodes.begin(), j = unparsedNodes.begin(); i != originalNodes.end(); ++i, ++j) {
-		DASSERT((*i)->GetTag() == (*j)->GetTag());
+		//FIXME: the aspect library introduces some erroneous AST nodes, so this may fail
+		//DASSERT((*i)->GetTag() == (*j)->GetTag());
+		if ((*i)->GetTag() != (*j)->GetTag()) break;
+
 		AST::Node* node = *i;
 		std::string source;
 		if (!(source = DPTR(node)->GetSource()).empty() && source != currentSource)
-			DPTR(node)->AddSourceReference(AST::Node::SourceInfo(source, DPTR(node)->GetStartLine()));
+			AddSourceLineOrigin(node, AST::SourceLineOriginInfo(source, DPTR(node)->GetStartLine()));
 		DPTR(node)->SetLocation(DPTR(*j)->GetLocation());
 		DPTR(node)->SetSource(currentSource);
 	}
@@ -152,8 +159,8 @@ bool AspectCompiler::ApplyTransformations(const StringList& aspects) {
 		
 		if (onTransformation) {
 			AST::SerialProducer()(ast);
-			const SourceReferences sourceRefs = AST::SourceReferenceGetter()(ast);
-			onTransformation(source, text, lineMappings, sourceRefs, count, count == aspects.size());
+			const AST::NodeToChainOfSourceLineOriginInfo info = AST::ChainOfSourceLineOriginInfoGetter()(ast);
+			onTransformation(source, text, lineMappings, info, count == aspects.size());
 		}
 
 		DPTR(autoCollector)->CleanUp();
@@ -168,13 +175,12 @@ bool AspectCompiler::ApplyTransformations(const StringList& aspects) {
 ///////////////////////////////////////////////////////////////////////////
 
 static void DefaultTransformationCallback(
-	const std::string&						source,
-	const std::string&						text,
-	const AspectCompiler::LineMappings&		lineMappings,
-	const AspectCompiler::SourceReferences&	sourceRefs,
-	util_ui32								index,
-	bool									final,
-	void*									closure
+	const std::string&								source,
+	const std::string&								text,
+	const AspectCompiler::LineMappings&				lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	info,
+	bool											final,
+	void*											closure
 ) {
 	DeltaMetaCompiler::DumpSource(source, text);
 }

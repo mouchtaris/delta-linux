@@ -3,7 +3,6 @@
 	<component path="AdaptationManager.xdf"/>
 	<component path="ASTView.xdf"/>
 	<component path="AutoAdjustDebugTools.xdf"/>
-	<component path="BuildSystem.xdf"/>
 	<component path="BuildTreeListView.xdf"/>
 	<component path="BreakpointsView.xdf"/>
 	<component path="CommonComponents.xdf"/>
@@ -25,6 +24,7 @@
 	<component path="HTMLViewer.xdf"/>
 	<component path="IViews.xdf"/>
 	<component path="LineCounter.xdf"/>
+	<component path="MetaBuildSystem.xdf"/>
 	<component path="Monitors.xdf"/>
 	<component path="Output.xdf"/>
 	<component path="ProjectManager.xdf"/>

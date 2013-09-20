@@ -151,7 +151,6 @@ namespace conf {
 
 	_PROJECT_MANAGER_API void AddScriptStageSourceProperties (PropertyTable* props) {
 		props->AddProperty("name", new StringProperty(_("name")));
-		props->AddProperty("index", new IntProperty(_("index")));
 		props->AddProperty("type", new StringProperty(_("type")));
 		props->AddProperty("final", new BoolProperty(_("final")));
 		props->AddProperty("lineMappings", GenerateLineMappingsProperty());

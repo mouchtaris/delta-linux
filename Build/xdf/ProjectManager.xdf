@@ -37,7 +37,19 @@
 		<dependency>Script</dependency>
 	</component>
 
+	<component id="AttachedScript"	type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>Script</dependency>
+	</component>
+
 	<component id="StageSource"		type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>Script</dependency>
+	</component>
+	
+	<component id="StageResult"		type="DynamicLib"  uri="./extensions/ProjectManager.dll">
+		<dependency>Script</dependency>
+	</component>
+
+	<component id="AspectResult"	type="DynamicLib"  uri="./extensions/ProjectManager.dll">
 		<dependency>Script</dependency>
 	</component>
 </extension>

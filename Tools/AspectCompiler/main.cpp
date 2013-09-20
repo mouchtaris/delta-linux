@@ -49,30 +49,28 @@ static std::string originalSource;
 static std::string output_path;
 
 static void OnParse(AST::Node* ast, void* closure) {
-	BuildClient::DoGetSourceReferences(originalSource);
+	BuildClient::DoGetNodeToChainOfSourceLineOriginInfo(originalSource);
 	BuildClient::WaitAnyMessage();
-	if (!BuildClient::IsConnectionBroken() && BuildClient::GetResponseType() == Build_SourceReferences) {
-		typedef std::map<util_ui32, AST::Node::SourceInfoReferences> InitialSourceReferences;
-		InitialSourceReferences sourceRefs;
-		BuildClient::GetSourceReferences(sourceRefs);
+	if (!BuildClient::IsConnectionBroken() && BuildClient::GetResponseType() == MetaBuildSystem_NodeToChainOfSourceLineOriginInfo) {
+		AST::NodeToChainOfSourceLineOriginInfo info;
+		BuildClient::GetNodeToChainOfSourceLineOriginInfo(info);
 		BuildClient::ResponseProcessed();
-		(AST::SourceReferenceSetter(sourceRefs))(ast);
+		(AST::ChainOfSourceLineOriginInfoSetter(info))(ast);
 	}
 }
 
 static void OnTransformation(
-	const std::string&						source,
-	const std::string&						text,
-	const AspectCompiler::LineMappings&		lineMappings,
-	const AspectCompiler::SourceReferences&	sourceRefs,
-	util_ui32								index,
-	bool									final,
-	void*									closure
+	const std::string&								source,
+	const std::string&								text,
+	const AspectCompiler::LineMappings&				lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	info,
+	bool											final,
+	void*											closure
 ) {
 	DeltaMetaCompiler::DumpSource(output_path + source, text);
-	BuildClient::DoAddSource(originalSource, source, lineMappings, sourceRefs, "aspect", index, final);
+	BuildClient::DoAttachAspectResult(originalSource, source, lineMappings, info, final);
 	BuildClient::WaitAnyMessage();
-	DASSERT(BuildClient::IsConnectionBroken() || BuildClient::GetResponseType() == Build_SourceAdded);
+	DASSERT(BuildClient::IsConnectionBroken() || BuildClient::GetResponseType() == MetaBuildSystem_SourceIsAttached);
 	BuildClient::ResponseProcessed();
 }
 

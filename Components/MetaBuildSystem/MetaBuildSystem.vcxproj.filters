@@ -15,18 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BuildSystem.cpp">
+    <ClCompile Include="MetaBuildSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BuildServer.cpp">
+    <ClCompile Include="MetaBuildServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BuildSystem.h">
+    <ClInclude Include="MetaBuildSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BuildServer.h">
+    <ClInclude Include="MetaBuildServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaBuildCommands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

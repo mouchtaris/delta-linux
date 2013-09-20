@@ -5,51 +5,9 @@
 //
 
 #include "ASTNode.h"
+#include "ASTChainOfSourceLineOriginInfo.h"
 #include "ParseParms.h"
 #include "ucallbacks.h"
-
-/////////////////////////////////////////////////////////
-
-void AST::Node::AddSourceReference (const SourceInfo& info, bool front) {
-	DASSERT(!info.first.empty() && info.second);
-	struct SourceInfoReferencesTraits {
-		static void* Copier(void* val) {
-			SourceInfoReferences* refs = (SourceInfoReferences*) val;
-			return DNEWCLASS(SourceInfoReferences, (DPTR(refs)->begin(), DPTR(refs)->end()));
-		}
-		static void Cleaner(void* val) {
-			SourceInfoReferences* refs = (SourceInfoReferences*) val;
-			DPTR(refs);
-			DDELETE(refs);
-		}
-	};
-	if (TreeAttribute* attr = GetAttribute(DELTA_AST_SOURCE_REFERENCES_ATTRIBUTE)) {
-		SourceInfoReferences* l = (SourceInfoReferences*) DPTR(attr)->GetPointer();
-		if (front)
-			DPTR(l)->push_front(info);
-		else
-			DPTR(l)->push_back(info);
-	}
-	else {
-		attr = DNEWCLASS(
-			TreeAttribute,
-			(DNEWCLASS(SourceInfoReferences, (1, info)), SourceInfoReferencesTraits::Copier, SourceInfoReferencesTraits::Cleaner)
-		);
-		SetAttribute(DELTA_AST_SOURCE_REFERENCES_ATTRIBUTE, attr);
-	}
-}
-
-void AST::Node::AddSourceReferences (const SourceInfoReferences& refs, bool front) {
-	std::for_each(
-		refs.begin(),
-		refs.end(),
-		ubind2nd(ubind1st(umemberfunctionpointer(&Node::AddSourceReference), this), front)
-	);
-}
-const AST::Node::SourceInfoReferences* AST::Node::GetSourceReferences (void) const {
-	const TreeAttribute* attr = GetAttribute(DELTA_AST_SOURCE_REFERENCES_ATTRIBUTE);
-	return (const SourceInfoReferences*)(attr ? attr->GetPointer() : 0);
-}
 
 /////////////////////////////////////////////////////////
 
@@ -100,8 +58,8 @@ AST::Node* AST::Node::Extend (Node* child, const std::string& tag, const std::st
 	const std::string source = DPTR(child)->GetSource();
 	if (!source.empty())
 		DPTR(node)->SetSource(source);
-	if (const SourceInfoReferences* refs = DPTR(child)->GetSourceReferences())
-		DPTR(node)->AddSourceReferences(*refs);
+	if (const ChainOfSourceLineOriginInfo* info = GetChainOfSourceLineOrigin(child))
+		AddChainOfSourceLineOrigin(node, *info);
 	return node;
 }
 

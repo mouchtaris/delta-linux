@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A13E5AFF-8A6A-49DC-8899-1CE1BAC47629}</ProjectGuid>
-    <RootNamespace>BuildSystem</RootNamespace>
+    <RootNamespace>MetaBuildSystem</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -61,7 +61,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(Delta)\DebugLib\Include;$(Delta)\DebugLib\Include;$(Delta)\UtilLib\Include;$(Delta)\SocketLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDSYSTEM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;METABUILDSYSTEM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -81,7 +81,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(Delta)\DebugLib\Include;$(Delta)\DebugLib\Include;$(Delta)\UtilLib\Include;$(Delta)\SocketLib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;BUILDSYSTEM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;METABUILDSYSTEM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -98,12 +98,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BuildServer.cpp" />
-    <ClCompile Include="BuildSystem.cpp" />
+    <ClCompile Include="MetaBuildServer.cpp" />
+    <ClCompile Include="MetaBuildSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BuildServer.h" />
-    <ClInclude Include="BuildSystem.h" />
+    <ClInclude Include="MetaBuildCommands.h" />
+    <ClInclude Include="MetaBuildServer.h" />
+    <ClInclude Include="MetaBuildSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Base\BaseLibrary\BaseLibrary.vcxproj">

@@ -1,5 +1,5 @@
 /* XPM */
-static char *aspect_transformation_xpm[] = {
+static char *aspect_result_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "16 16 169 2",
 "   c #2C6D27",

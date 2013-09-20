@@ -477,22 +477,23 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
-	EXPORTED_SLOT_STATIC(DeltaVM, void, OnScriptSourceAdded, (const Handle& script, const Handle& addedSource, 
-		const StringList& encodedLineMappings, const String& type, uint index), "ScriptSourceAdded")
+	EXPORTED_SLOT_STATIC(DeltaVM, void, OnScriptSourceAttached, (const Handle& script, const Handle& attachedSource,
+		const StringList& encodedLineMappings, uint index), "ScriptSourceAttached")
 	{
 		if (debugRunningState == DEBUG_RUNNING && !encodedLineMappings.empty()) {
-			bool stageSource = type == _T("stage");
-			bool stageResult = type == _T("result");
-			bool stageTransformation =	type == _T("aspect") && script.GetClassId() == "StageSource" &&
-										Call<const std::string (void)>(s_classId, script, "GetType")() == "stage";
+			const std::string classId = attachedSource->GetClassId();
+			bool stageSource = classId == "StageSource";
+			bool stageResult = classId == "StageResult";
+			bool stageTransformation = classId == "AspectResult" && script.GetClassId() == "StageSource";
 			bool isScript = script.GetClassId() == "Script" || script.GetClassId() == "Aspect";
-			bool originalTransformation = isScript && type == _T("aspect");
+			bool originalTransformation = isScript && classId == _T("AspectResult");
+
 			if (stageSource || stageResult || stageTransformation || originalTransformation) {
 				Component* originalTarget;
 				Component* generatedTarget;
 				if (index == 1) {
 					originalTarget = script.Resolve();
-					generatedTarget = addedSource.Resolve();
+					generatedTarget = attachedSource.Resolve();
 				}
 				else {
 					DASSERT(index > 1);

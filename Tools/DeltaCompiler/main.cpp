@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
 		BOOST_FOREACH(const std::string& file, vars["input"].as<StdStringVec>()) {
 			const std::string symbolic = i < symbolicNames.size() ? symbolicNames[i++] : file;
 			if (!host.empty() && port)
-				StagedCompilationHandler::HandleSource(symbolic, stage_output_path, compiler);
+				StagedCompilationHandler::RegisterSource(symbolic, stage_output_path, compiler);
 			if (DPTR(compiler)->Compile(file.c_str(), symbolic.c_str()) && !DPTR(compiler)->ErrorsExist()) {
 				
 				if (output.empty()) {

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-
-<extension version="alpha">
-	<component id="BuildSystem"  type="DynamicLib"  uri="./extensions/BuildSystem.dll"/>
-</extension>

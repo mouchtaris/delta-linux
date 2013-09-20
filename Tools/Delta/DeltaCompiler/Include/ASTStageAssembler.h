@@ -10,6 +10,7 @@
 #include "TreeVisitor.h"
 #include "CompilerComponentDirectory.h"
 #include "ASTNode.h"
+#include "ASTChainOfSourceLineOriginInfo.h"
 #include "DeltaStdDefs.h"
 #include "unestedstate.h"
 #include "StagedSymbolTable.h"
@@ -54,7 +55,7 @@ class StageAssembler :	public ucomponentdirectoryclient,
 	unsigned									targetStage;
 	AST::Node*									stmts;
 
-	typedef std::list<AST::Node::SourceInfoReferences> InlineReferences;
+	typedef std::list<AST::ChainOfSourceLineOriginInfo> InlineReferences;
 	InlineReferences inlineReferences;
 	
 	void		Initialise	(unsigned depth);

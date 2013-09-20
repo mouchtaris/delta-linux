@@ -45,7 +45,7 @@
 
 #include "Icons/stage_source.xpm"
 #include "Icons/stage_result.xpm"
-#include "Icons/aspect_transformation.xpm"
+#include "Icons/aspect_result.xpm"
 
 #include "Icons/open.xpm"
 #include "Icons/save.xpm"
@@ -67,21 +67,18 @@ _PROJECT_MANAGER_C_API void Initialize(void)
 	ide::BitmapRegistry::Instance().Insert(_T("TextFile"),		text_file_xpm);
 	ide::BitmapRegistry::Instance().Insert(_T("Script"),		script_xpm);
 	ide::BitmapRegistry::Instance().Insert(_T("Aspect"),		aspect_xpm);
-
-	//Sub-types of StageSource
-	ide::BitmapRegistry::Instance().Insert(_T("stage"),			stage_source_xpm);
-	ide::BitmapRegistry::Instance().Insert(_T("result"),		stage_result_xpm);
-	ide::BitmapRegistry::Instance().Insert(_T("aspect"),		aspect_transformation_xpm);
+	ide::BitmapRegistry::Instance().Insert(_T("StageSource"),	stage_source_xpm);
+	ide::BitmapRegistry::Instance().Insert(_T("StageResult"),	stage_result_xpm);
+	ide::BitmapRegistry::Instance().Insert(_T("AspectResult"),	aspect_result_xpm);
 }
 
 //-----------------------------------------------------------------------
 
 _PROJECT_MANAGER_C_API void CleanUp(void)
 {
-	ide::BitmapRegistry::Instance().Remove(_T("stage"));
-	ide::BitmapRegistry::Instance().Remove(_T("result"));
-	ide::BitmapRegistry::Instance().Remove(_T("aspect"));
-
+	ide::BitmapRegistry::Instance().Remove(_T("AspectResult"));
+	ide::BitmapRegistry::Instance().Remove(_T("StageResult"));
+	ide::BitmapRegistry::Instance().Remove(_T("StageSource"));
 	ide::BitmapRegistry::Instance().Remove(_T("Aspect"));
 	ide::BitmapRegistry::Instance().Remove(_T("Script"));
 	ide::BitmapRegistry::Instance().Remove(_T("TextFile"));

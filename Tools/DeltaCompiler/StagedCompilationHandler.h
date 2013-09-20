@@ -11,7 +11,6 @@
 class StagedCompilationHandler {
 public:
 	typedef DeltaMetaCompiler::LineMappings	LineMappings;
-	typedef DeltaMetaCompiler::SourceReferences	SourceReferences;
 	typedef std::list<std::string> StringList;
 private:
 	static std::string	host;
@@ -19,14 +18,13 @@ private:
 	static std::string	originalSource;
 	static std::string	outputPath;
 
-	static void						AddSource(
-										const std::string&		source,
-										const std::string&		text,
-										unsigned				stage,
-										const LineMappings&		lineMappings,
-										const SourceReferences& sourceRefs,
-										bool					isStage,
-										bool					isFinal
+	static void						AttachSource(
+										const std::string&								source,
+										const std::string&								text,
+										const LineMappings&								lineMappings,
+										const AST::NodeToChainOfSourceLineOriginInfo&	info,
+										bool											isStage,
+										bool											isFinal
 									);
 
 	static void						BuildSource (
@@ -36,33 +34,31 @@ private:
 										std::string*		dllimportPath
 									);
 
-	static const StringList			GetTransformations (const std::string& source);
-	static const LineMappings		GetLineMappings (const std::string& source);
-	static const SourceReferences	GetSourceReferences (const std::string& source);
+	static const StringList								GetAspectResultsForSource (const std::string& source);
+	static const LineMappings							GetSourceLineMappingsForSource (const std::string& source);
+	static const AST::NodeToChainOfSourceLineOriginInfo	GetNodeToChainOfSourceLineOriginInfoForSource (const std::string& source);
 
 	static void						UpdateInlineReferences (const std::string& source, DeltaMetaCompiler* compiler);
 public:
 	static void						OnParse (AST::Node* ast, void* closure);
 	static DeltaVirtualMachine*		OnStageSource(
-										const std::string&		source,
-										const std::string&		text,
-										util_ui32				stage,
-										const LineMappings&		lineMappings,
-										const SourceReferences& sourceRefs,
-										void*					closure
+										const std::string&								source,
+										const std::string&								text,
+										const LineMappings&								lineMappings,
+										const AST::NodeToChainOfSourceLineOriginInfo&	sourceRefs,
+										void*											closure
 									);
 
 	static bool						OnStageResult(
-										const std::string&		source,
-										const std::string&		text,
-										util_ui32				stage,
-										const LineMappings&		lineMappings,
-										const SourceReferences& sourceRefs,
-										bool					final,
-										void*					closure
+										const std::string&								source,
+										const std::string&								text,
+										const LineMappings&								lineMappings,
+										const AST::NodeToChainOfSourceLineOriginInfo&	sourceRefs,
+										bool											final,
+										void*											closure
 									);
 
-	static void HandleSource (const std::string& soure, const std::string& stageOutputPath, DeltaMetaCompiler* compiler);
+	static void RegisterSource (const std::string& soure, const std::string& stageOutputPath, DeltaMetaCompiler* compiler);
 
 	static void Initialise (const std::string& host, util_ui32 port);
 	static void CleanUp (void);

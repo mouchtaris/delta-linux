@@ -142,7 +142,7 @@ function SetProperties
 					
 	//=====================================
 	//-------- Workspaces & Items --------//
-	local items = list_new("Workspace", "Project", "AspectProject", "Filter", "Script", "Aspect", "StageSource");
+	local items = list_new("Workspace", "Project", "AspectProject", "Filter", "Script", "StageSource", "StageResult", "Aspect", "AspectResult");
 	foreach(local item, items) {
 		local plural = item + "s";
 		AddColorProperty(

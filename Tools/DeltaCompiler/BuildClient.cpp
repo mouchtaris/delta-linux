@@ -114,37 +114,37 @@ char* ReadLineMappings(char* buffer, std::map< util_ui32, std::set<util_ui32> >*
 
 //*****************************
 
-util_ui32 SizeSourceReferences (const std::map< util_ui32, std::list< std::pair<std::string, util_ui32> > >& sourceRefs) {
+util_ui32 SizeNodeToChainOfSourceLineOriginInfo (const AST::NodeToChainOfSourceLineOriginInfo& info) {
 	const util_ui32 uintSize = ubinaryio::SizeInteger<util_ui32>();
 	util_ui32 size = uintSize;
-	for (std::map< util_ui32, std::list< std::pair<std::string, util_ui32> > >::const_iterator i = sourceRefs.begin(); i != sourceRefs.end(); ++i) {
+	for (AST::NodeToChainOfSourceLineOriginInfo::const_iterator i = info.begin(); i != info.end(); ++i) {
 		size += 2 * uintSize;
-		for (std::list< std::pair<std::string, util_ui32> >::const_iterator j = i->second.begin(); j != i->second.end(); ++j)
-			size += SizeString(j->first) + uintSize;
+		for (AST::ChainOfSourceLineOriginInfo::const_iterator j = i->second.begin(); j != i->second.end(); ++j)
+			size += SizeString(j->symbolicURI) + uintSize;
 	}
 	return size;
 }
 
-const char* WriteSourceReferences (const char* buffer, const std::map< util_ui32, std::list< std::pair<std::string, util_ui32> > >& sourceRefs) {
-	const char* buf = WriteUnsignedInt(buffer, (util_ui32) sourceRefs.size());	//map size
-	for (std::map< util_ui32, std::list< std::pair<std::string, util_ui32> > >::const_iterator i = sourceRefs.begin(); i != sourceRefs.end(); ++i) {
+const char* WriteNodeToChainOfSourceLineOriginInfo (const char* buffer, const AST::NodeToChainOfSourceLineOriginInfo& info) {
+	const char* buf = WriteUnsignedInt(buffer, (util_ui32) info.size());	//map size
+	for (AST::NodeToChainOfSourceLineOriginInfo::const_iterator i = info.begin(); i != info.end(); ++i) {
 		buf = WriteUnsignedInt(buf, (util_ui32) i->first);			//serial
 		buf = WriteUnsignedInt(buf, (util_ui32) i->second.size());	//list size
-		for (std::list< std::pair<std::string, util_ui32> >::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
-			buf = WriteString(buf, j->first);						//source
-			buf = WriteUnsignedInt(buf, j->second);					//line
+		for (AST::ChainOfSourceLineOriginInfo::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
+			buf = WriteString(buf, j->symbolicURI);					//source
+			buf = WriteUnsignedInt(buf, j->line);					//line
 		}
 	}
 	return buf;
 }
 
-char* ReadSourceReferences(char* buffer, std::map< util_ui32, std::list< std::pair<std::string, util_ui32> > >* sourceRefs) {
+char* ReadNodeToChainOfSourceLineOriginInfo (char* buffer, AST::NodeToChainOfSourceLineOriginInfo* info) {
 	util_ui32 size;
 	char* buf = ReadUnsignedInt(buffer, &size);
 	for (util_ui32 i = 0; i < size; ++i) {
 		util_ui32 serial;
 		buf = ReadUnsignedInt(buf, &serial);
-		(*sourceRefs)[serial];	//insert serial in the map
+		(*info)[serial];	//insert serial in the map
 
 		util_ui32 listSize;
 		buf = ReadUnsignedInt(buf, &listSize);
@@ -152,7 +152,7 @@ char* ReadSourceReferences(char* buffer, std::map< util_ui32, std::list< std::pa
 			char* source;
 			util_ui32 line;
 			buf = ReadUnsignedInt(ReadString(buf, &source), &line);
-			(*sourceRefs)[serial].push_back(std::make_pair(std::string(source), line));
+			(*info)[serial].push_back(AST::SourceLineOriginInfo(std::string(source), line));
 		}
 	}
 	return buf;
@@ -265,7 +265,7 @@ bool BuildClient::ReceiveResponse (void) {
 
 ServerToClientResponse BuildClient::GetResponseType (void) {
 	if (!receivedData)
-		return Build_ResponseInvalid;
+		return MetaBuildSystem_ResponseInvalid;
 	else {
 		util_ui32 command;
 		ReadUnsignedInt((char*) receivedData, &command);
@@ -292,54 +292,6 @@ bool BuildClient::IsConnectionBroken (void) {
 
 ////////////////////////////////////////////////////////////
 
-void BuildClient::DoAddSource (
-	const std::string&		originalSource,
-	const std::string&		stageSource,
-	const LineMappings&		lineMappings,
-	const SourceReferences& sourceRefs,
-	const std::string&		type,
-	util_ui32				index,
-	bool					isFinal
-) {
-	util_ui32 size =	3 * SizeUnsignedInt() +
-						SizeString(originalSource) +
-						SizeString(stageSource) + 						
-						SizeLineMappings(lineMappings) +
-						SizeSourceReferences(sourceRefs) +
-						SizeString(type);
-	DPTR(buffer)->Prepare(size);
-
-	WriteUnsignedInt(
-		WriteUnsignedInt(
-			WriteString(
-				WriteSourceReferences(
-					WriteLineMappings(
-						WriteString(
-							WriteString(
-								WriteUnsignedInt(
-									DPTR(buffer)->Get(), 
-									Build_AddSource
-								),
-								originalSource
-							),
-							stageSource
-						),
-						lineMappings
-					),
-					sourceRefs
-				),
-				type
-			),
-			index
-		),
-		isFinal ? 1 : 0
-	);
-
-	DPTR(clientLink)->SendMsg(DPTR(buffer)->Get(), size);
-}
-
-////////////////////////////////////////////////////////////
-
 void BuildClient::SendString (ClientToServerRequest request, const std::string& str) {
 	util_ui32 size = SizeUnsignedInt() + SizeString(str);
 	DPTR(buffer)->Prepare(size);
@@ -357,28 +309,101 @@ void BuildClient::SendString (ClientToServerRequest request, const std::string& 
 
 ////////////////////////////////////////////////////////////
 
-void BuildClient::DoBuildSource (const std::string& source)
-	{ SendString(Build_BuildSource, source); }
+void BuildClient::DoAttachSource (
+	const std::string&								primarySymbolicURI,
+	const std::string&								symbolicURI,							
+	const LineMappings&								lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	info,
+	const std::string&								classId,
+	bool											isResultFinal	// applicable only for result sources
+) {
+	util_ui32 size =	2 * SizeUnsignedInt()						+
+						SizeString(primarySymbolicURI)				+
+						SizeString(symbolicURI)						+
+						SizeLineMappings(lineMappings)				+
+						SizeNodeToChainOfSourceLineOriginInfo(info) +
+						SizeString(classId);
+	DPTR(buffer)->Prepare(size);
+
+	WriteUnsignedInt(
+		WriteString(
+			WriteNodeToChainOfSourceLineOriginInfo(
+				WriteLineMappings(
+					WriteString(
+						WriteString(
+							WriteUnsignedInt(
+								DPTR(buffer)->Get(),
+								MetaBuildSystem_AttachStageSource
+							),
+							primarySymbolicURI
+						),
+						symbolicURI
+					),
+					lineMappings
+				),
+				info
+			),
+			classId
+		),
+		isResultFinal ? 1 : 0
+	);
+
+	DPTR(clientLink)->SendMsg(DPTR(buffer)->Get(), size);
+}
 
 ////////////////////////////////////////////////////////////
 
-void BuildClient::DoGetTransformations (const std::string& source)
-	{ SendString(Build_GetTransformations, source); }
+void BuildClient::DoAttachStageSource (
+	const std::string&								primarySymbolicURI,
+	const std::string&								sourceText,							
+	const LineMappings&								lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	info
+) { DoAttachSource(primarySymbolicURI, sourceText, lineMappings, info, STAGE_SOURCE_CLASS_ID); }
 
 ////////////////////////////////////////////////////////////
 
-void BuildClient::DoGetLineMappings (const std::string& source)
-	{ SendString(Build_GetLineMappings, source); }
+void BuildClient::DoAttachStageResult (
+	const std::string&								primarySymbolicURI,
+	const std::string&								sourceText,							
+	const LineMappings&								lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	info,
+	bool											isFinal
+) { DoAttachSource(primarySymbolicURI, sourceText, lineMappings, info, STAGE_RESULT_CLASS_ID, isFinal); }
 
 ////////////////////////////////////////////////////////////
 
-void BuildClient::DoGetSourceReferences (const std::string& source)
-	{ SendString(Build_GetSourceReferences, source); }
+void BuildClient::DoAttachAspectResult (
+	const std::string&								primarySymbolicURI,
+	const std::string&								sourceText,							
+	const LineMappings&								lineMappings,
+	const AST::NodeToChainOfSourceLineOriginInfo&	info,
+	bool											isFinal
+) { DoAttachSource(primarySymbolicURI, sourceText, lineMappings, info, ASPECT_RESULT_CLASS_ID, isFinal); }
 
 ////////////////////////////////////////////////////////////
 
-bool BuildClient::GetStageBinaryData (std::string* stageBinary, std::string* bytecodePath, std::string* dllimportPath) {
-	if (!receivedData || GetResponseType() != Build_StageBinary)
+void BuildClient::DoBuildStageSource (const std::string& symbolicURI)
+	{ SendString(MetaBuildSystem_BuildStageSource, symbolicURI); }
+
+////////////////////////////////////////////////////////////
+
+void BuildClient::DoGetAspectResults (const std::string& symbolicURI)
+	{ SendString(MetaBuildSystem_GetAspectResults, symbolicURI); }
+
+////////////////////////////////////////////////////////////
+
+void BuildClient::DoGetSourceLineMappings (const std::string& symbolicURI)
+	{ SendString(MetaBuildSystem_GetSourceLineMappings, symbolicURI); }
+
+////////////////////////////////////////////////////////////
+
+void BuildClient::DoGetNodeToChainOfSourceLineOriginInfo (const std::string& symbolicURI)
+	{ SendString(MetaBuildSystem_GetNodeToChainOfSourceLineOriginInfo, symbolicURI); }
+
+////////////////////////////////////////////////////////////
+
+bool BuildClient::GetStageBinaryInfo (std::string* stageBinary, std::string* bytecodePath, std::string* dllimportPath) {
+	if (!receivedData || GetResponseType() != MetaBuildSystem_StageBinaryInfo)
 		return false;
 
 	char* binary;
@@ -403,21 +428,21 @@ bool BuildClient::GetStageBinaryData (std::string* stageBinary, std::string* byt
 
 ////////////////////////////////////////////////////////////
 
-bool BuildClient::GetTransformations (StringList& transformations) {
+bool BuildClient::GetAspectResults (StringList& results) {
 
-	if (!receivedData || GetResponseType()!= Build_Transformations)
+	if (!receivedData || GetResponseType()!= MetaBuildSystem_AspectResults)
 		return false;
 
-	transformations.clear();
-	ReadStringList(ForwardHeader((char*) receivedData), &transformations);
+	results.clear();
+	ReadStringList(ForwardHeader((char*) receivedData), &results);
 	return true;
 }
 
 ////////////////////////////////////////////////////////////
 
-bool BuildClient::GetLineMappings (LineMappings& lineMappings) {
+bool BuildClient::GetSourceLineMappings (LineMappings& lineMappings) {
 
-	if (!receivedData || GetResponseType()!= Build_LineMappings)
+	if (!receivedData || GetResponseType()!= MetaBuildSystem_SourceLineMappings)
 		return false;
 
 	lineMappings.clear();
@@ -427,12 +452,12 @@ bool BuildClient::GetLineMappings (LineMappings& lineMappings) {
 
 ////////////////////////////////////////////////////////////
 
-bool BuildClient::GetSourceReferences (SourceReferences& sourceRefs) {
+bool BuildClient::GetNodeToChainOfSourceLineOriginInfo (AST::NodeToChainOfSourceLineOriginInfo& info) {
 
-	if (!receivedData || GetResponseType()!= Build_SourceReferences)
+	if (!receivedData || GetResponseType()!= MetaBuildSystem_NodeToChainOfSourceLineOriginInfo)
 		return false;
 
-	sourceRefs.clear();
-	ReadSourceReferences(ForwardHeader((char*) receivedData), &sourceRefs);
+	info.clear();
+	ReadNodeToChainOfSourceLineOriginInfo(ForwardHeader((char*) receivedData), &info);
 	return true;
 }

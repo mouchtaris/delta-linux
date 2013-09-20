@@ -111,7 +111,7 @@ static void UpdateSourceLocationFromUnparsed (AST::Node* original, AST::Node* un
 		AST::Node* node = *i;
 		std::string source;
 		if (addSourceReference && !(source = DPTR(node)->GetSource()).empty() && source != currentSource)
-			DPTR(node)->AddSourceReference(AST::Node::SourceInfo(source, DPTR(node)->GetStartLine()));
+			AddSourceLineOrigin(node, AST::SourceLineOriginInfo(source, DPTR(node)->GetStartLine()));
 		DPTR(node)->SetLocation(DPTR(*j)->GetLocation());
 		DPTR(node)->SetSource(DPTR(*j)->GetSource());
 		if (unsigned line = DPTR(*j)->GetLine())
@@ -150,10 +150,10 @@ static void PatchInlineSourceLocations (
 	const DeltaMetaCompiler::LineMappings&	lineMappings
 ) {
 	for (DeltaMetaCompiler::InlineReferences::iterator i = inlineReferences.begin(); i != inlineReferences.end(); ++i) {
-		i->back().first = file;
-		DeltaMetaCompiler::LineMappings::const_iterator iter = lineMappings.find(i->back().second);
+		i->back().symbolicURI = file;
+		DeltaMetaCompiler::LineMappings::const_iterator iter = lineMappings.find(i->back().line);
 		DASSERT(iter != lineMappings.end());
-		i->back().second = *iter->second.begin();
+		i->back().line = *iter->second.begin();
 	}
 }
 
@@ -209,10 +209,10 @@ bool DeltaMetaCompiler::StagedCompilation (AST::Node* ast) {
 		const std::string stageText = GenerateSource(stage, stageSource, &lineMappings);
 		PatchInlineSourceLocations(inlineReferences, stageSource, lineMappings);
 		AST::SerialProducer()(stage);
-		SourceReferences sourceRefs = AST::SourceReferenceGetter()(stage);
+		NodeToChainOfSourceLineOriginInfo info = AST::ChainOfSourceLineOriginInfoGetter()(stage);
 
 		DASSERT(stageCallback);
-		DeltaVirtualMachine* vm = stageCallback(stageSource, stageText, currentStage, lineMappings, sourceRefs);
+		DeltaVirtualMachine* vm = stageCallback(stageSource, stageText, lineMappings, info);
 		TreeNode::Delete((TreeNode*&) stage);
 		if (!vm)
 			return false;
@@ -228,13 +228,13 @@ bool DeltaMetaCompiler::StagedCompilation (AST::Node* ast) {
 		PARSEPARMS.SetLine(1);
 		depth = AST::StageDepthCalculator()(ast);
 		lineMappings.clear();
-		sourceRefs.clear();
+		info.clear();
 		const std::string mainText = GenerateSource(ast, mainSource, &lineMappings);
 		AST::SerialProducer()(ast);	// node get new serials after stage execution
-		sourceRefs = AST::SourceReferenceGetter()(ast);
+		info = AST::ChainOfSourceLineOriginInfoGetter()(ast);
 
 		DASSERT(stageResultCallback);
-		if (!stageResultCallback(mainSource, mainText, currentStage, lineMappings, sourceRefs, !depth))
+		if (!stageResultCallback(mainSource, mainText, lineMappings, info, !depth))
 			return false;
 		//COMPMESSENGER.SetCurrentFile(mainSource);
 	}
@@ -261,7 +261,7 @@ void DeltaMetaCompiler::Inline (DeltaValue* value) {
 	// Overall, it is possible that a given std::inline call does not correspond to a valid inline node, so check here.
 	if (target) {
 		DASSERT(!inlineReferences.empty());
-		AST::Node::SourceInfoReferences refs = inlineReferences.front();
+		AST::ChainOfSourceLineOriginInfo info = inlineReferences.front();
 		inlineReferences.pop_front();
 
 		AST::ValidationVisitor* validator = NewValidator(true);
@@ -271,7 +271,7 @@ void DeltaMetaCompiler::Inline (DeltaValue* value) {
 			error = uconstructstr("Invalid inline value: invalid AST given: %s", DPTR(validator)->GetValidationError().c_str());
 		else {
 			if (node)
-				AST::LocationSetter(target->GetLocation(), target->GetLine(), mainSource, refs)(DPTR(node));
+				AST::LocationSetter(target->GetLocation(), target->GetLine(), mainSource, info)(DPTR(node));
 			(*astInjector)(target, node);
 
 			AST::SanitiseVisitor()(ast);
@@ -322,13 +322,12 @@ static TreeNode* CreateASTNode(const std::string& tag, void* closure)
 	{ return ASTFACTORY_EX(((DeltaMetaCompiler*)closure)->GET_COMPONENT_DIRECTORY()).NewNode(tag); }
 
 static bool DefaultStageResultCallback(
-	const std::string&							source,
-	const std::string&							text,
-	util_ui32									stage,
-	const DeltaMetaCompiler::LineMappings&		lineMappings,
-	const DeltaMetaCompiler::SourceReferences&	sourceRefs, 
-	bool										final,
-	void*										closure
+	const std::string&											source,
+	const std::string&											text,
+	const DeltaMetaCompiler::LineMappings&						lineMappings,
+	const DeltaMetaCompiler::NodeToChainOfSourceLineOriginInfo&	info, 
+	bool														final,
+	void*														closure
 ) {
 	DeltaMetaCompiler* compiler = (DeltaMetaCompiler*) closure;
 	if (!COMPOPTIONS_EX(DPTR(compiler)->GET_COMPONENT_DIRECTORY()).IsDynamicCode())
@@ -339,14 +338,13 @@ static bool DefaultStageResultCallback(
 }
 
 static DeltaVirtualMachine* DefaultStageCallback(
-	const std::string&							stageSource,
-	const std::string&							stageText,
-	util_ui32									stage,
-	const DeltaMetaCompiler::LineMappings&		lineMappings,
-	const DeltaMetaCompiler::SourceReferences&	sourceRefs, 
-	void*										closure
+	const std::string&											source,
+	const std::string&											text,
+	const DeltaMetaCompiler::LineMappings&						lineMappings,
+	const DeltaMetaCompiler::NodeToChainOfSourceLineOriginInfo&	info, 
+	void*														closure
 ) {
-	DeltaMetaCompiler::DumpSource(stageSource, stageText);
+	DeltaMetaCompiler::DumpSource(source, text);
 	ucomponentdirectory* directory = DPTR((DeltaMetaCompiler*) closure)->GET_COMPONENT_DIRECTORY();
 
 	DeltaCompiler* compiler = DNEW(DeltaCompiler);	//stage source has no meta tags, so no need for a metacompiler
@@ -355,16 +353,16 @@ static DeltaVirtualMachine* DefaultStageCallback(
 		for (DeltaCompiler::FuncList::const_iterator i = externFuncs->begin(); i != externFuncs->end(); ++i)
 			DPTR(compiler)->AddExternFuncs(*i);
 	if (COMPOPTIONS_EX(directory).IsDynamicCode())
-		DPTR(compiler)->CompileText(stageText.c_str());
+		DPTR(compiler)->CompileText(text.c_str());
 	else
-		DPTR(compiler)->Compile(stageSource.c_str());
+		DPTR(compiler)->Compile(source.c_str());
 
 	DeltaVirtualMachine* vm = (DeltaVirtualMachine*) 0;
 	std::string error;
 	if (DPTR(compiler)->ErrorsExist())
 		error = "There were build errors in the stage compilation";
 	else {
-		const std::string vmId = stageSource;	//TODO: uconstructstr("%s%s", compilerSerial, ucstringarg(stageSource));
+		const std::string vmId = source;	//TODO: uconstructstr("%s%s", compilerSerial, ucstringarg(source));
 		if (COMPOPTIONS_EX(directory).IsDynamicCode()) {
 			ubinaryio::OutputBuffer* ob = DNEW(ubinaryio::OutputBuffer);
 			DPTR(compiler)->DumpBinaryCode(utempobj(PortableBufferWriter(*DPTR(ob))));
@@ -379,7 +377,7 @@ static DeltaVirtualMachine* DefaultStageCallback(
 			DDELETE(ib);
 		}
 		else {
-			const std::string stageBinary = BaseName(stageSource) + ".dbc";
+			const std::string stageBinary = BaseName(source) + ".dbc";
 			DPTR(compiler)->DumpBinaryCode(stageBinary.c_str());
 			vm = DNEWCLASS(DeltaVirtualMachine, (vmId.c_str()));
 			if (!DPTR(vm)->Load(stageBinary.c_str())) {
@@ -391,7 +389,7 @@ static DeltaVirtualMachine* DefaultStageCallback(
 	}
 	if (!error.empty()) {
 		DeltaCompilerMessenger& messenger = COMPMESSENGER_EX(compiler->GET_COMPONENT_DIRECTORY());
-		messenger.SetSourceReferences();
+		messenger.SetChainOfSourceLineOriginInfo();
 		messenger.Error("Stage execution failed: %s", error.c_str());
 	}
 

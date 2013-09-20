@@ -355,17 +355,19 @@ namespace ide
 
 	void Container::OnFileModification(void)
 	{
-		boost::mutex::scoped_lock lock(m_changeWatcherMutex);
-		if (m_changeWatcher) 
-			if (m_internalSaveCounter)
-				--m_internalSaveCounter;
-			else {
-				boost::mutex::scoped_lock lock(m_reloadMutex);
-				if (!m_reloadPending) {
-					m_reloadPending = true;
-					timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Container::AskForReload, this));
-				}	
-			}
+		if (!GetInDestruction()) {
+			boost::mutex::scoped_lock lock(m_changeWatcherMutex);
+			if (m_changeWatcher) 
+				if (m_internalSaveCounter)
+					--m_internalSaveCounter;
+				else {
+					boost::mutex::scoped_lock lock(m_reloadMutex);
+					if (!m_reloadPending) {
+						m_reloadPending = true;
+						timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Container::AskForReload, this));
+					}	
+				}
+		}
 	}
 
 	//-----------------------------------------------------------------------

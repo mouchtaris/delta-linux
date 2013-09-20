@@ -10,6 +10,7 @@
 #include "TreeVisitor.h"
 #include "ASTTags.h"
 #include "ASTNode.h"
+#include "ASTChainOfSourceLineOriginInfo.h"
 
 namespace AST {
 
@@ -34,10 +35,10 @@ struct DCOMPLIB_CLASS SourceSetter : public TreeVisitor {
 /////////////////////////////////////////////////////////
 
 struct DCOMPLIB_CLASS LocationSetter : public TreeVisitor {
-	AST::Node::Location				location;
-	util_ui32						line;
-	const std::string				source;
-	AST::Node::SourceInfoReferences	references;
+	AST::Node::Location					location;
+	util_ui32							line;
+	const std::string					source;
+	AST::ChainOfSourceLineOriginInfo	info;
 	static void Handle_All (AST_VISITOR_ARGS) {
 		if (entering) {
 			AST::Node* n = (AST::Node*) node;
@@ -45,16 +46,16 @@ struct DCOMPLIB_CLASS LocationSetter : public TreeVisitor {
 			n->SetLocation(instance->location);
 			n->SetLine(instance->line);
 			n->SetSource(instance->source);
-			n->AddSourceReferences(instance->references);
+			AddChainOfSourceLineOrigin(n, instance->info);
 		}
 	}
 	void operator()(AST::Node* root) { if (root) DPTR(root)->AcceptPreOrder(this); }
 	LocationSetter (
-		const AST::Node::Location& location,
-		util_ui32 line,
-		const std::string& source,
-		const AST::Node::SourceInfoReferences& references				
-	) : location(location), line(line), source(source), references(references)
+		const AST::Node::Location&				location,
+		util_ui32								line,
+		const std::string&						source,
+		const AST::ChainOfSourceLineOriginInfo& info
+	) : location(location), line(line), source(source), info(info)
 		{ DASSERT(line); SetDefaultHandler(&Handle_All, this); }
 };
 
@@ -110,42 +111,42 @@ struct DCOMPLIB_CLASS SerialMapper : public TreeVisitor {
 
 /////////////////////////////////////////////////////////
 
-struct DCOMPLIB_CLASS SourceReferenceSetter {
-	typedef std::map<util_ui32, AST::Node::SourceInfoReferences> SourceReferences;
-	SourceReferences sourceRefs;
+struct DCOMPLIB_CLASS ChainOfSourceLineOriginInfoSetter {
+	typedef std::map<util_ui32, AST::ChainOfSourceLineOriginInfo> NodeToChainOfSourceLineOriginInfo;
+	NodeToChainOfSourceLineOriginInfo info;
 
 	void operator()(AST::Node* root) {
 		DASSERT(root);
-		if (!sourceRefs.empty()) {
+		if (!info.empty()) {
 			AST::SerialProducer()(root);
 			const AST::SerialMapper::Map nodes = AST::SerialMapper()(root);
-			for (SourceReferences::const_iterator i = sourceRefs.begin(); i != sourceRefs.end(); ++i) {
+			for (NodeToChainOfSourceLineOriginInfo::const_iterator i = info.begin(); i != info.end(); ++i) {
 				AST::SerialMapper::Map::const_iterator iter = nodes.find(i->first);
 				DASSERT(iter != nodes.end());
-				DPTR(iter->second)->AddSourceReferences(i->second, false);
+				AddChainOfSourceLineOrigin(iter->second, i->second, false);
 			}
 		}
 	}
 
-	SourceReferenceSetter(const SourceReferences& sourceRefs) : sourceRefs(sourceRefs) {}
+	ChainOfSourceLineOriginInfoSetter(const NodeToChainOfSourceLineOriginInfo& info) : info(info) {}
 };
 
 //*****************************
 
-struct DCOMPLIB_CLASS SourceReferenceGetter {
-	typedef std::map<util_ui32, AST::Node::SourceInfoReferences> SourceReferences;
+struct DCOMPLIB_CLASS ChainOfSourceLineOriginInfoGetter {
+	typedef std::map<util_ui32, AST::ChainOfSourceLineOriginInfo> NodeToChainOfSourceLineOriginInfo;
 
-	const SourceReferences operator()(AST::Node* root) {
+	const NodeToChainOfSourceLineOriginInfo operator()(AST::Node* root) {
 		DASSERT(root);
-		SourceReferences sourceRefs;
+		NodeToChainOfSourceLineOriginInfo info;
 		const AST::SerialMapper::Map nodes = AST::SerialMapper()(root);
 		for (AST::SerialMapper::Map::const_iterator i = nodes.begin(); i != nodes.end(); ++i)
-			if (const AST::Node::SourceInfoReferences* refs = DPTR(i->second)->GetSourceReferences())
-				sourceRefs[i->first] = *refs;
-		return sourceRefs;
+			if (const AST::ChainOfSourceLineOriginInfo* chain = GetChainOfSourceLineOrigin(i->second))
+				info[i->first] = *chain;
+		return info;
 	}
 
-	SourceReferenceGetter(void) {}
+	ChainOfSourceLineOriginInfoGetter(void) {}
 };
 
 } // namespace AST

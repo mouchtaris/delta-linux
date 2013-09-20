@@ -19,11 +19,10 @@
 class AspectCompiler {
 public:
 	typedef DeltaMetaCompiler::LineMappings	LineMappings;
-	typedef DeltaMetaCompiler::SourceReferences	SourceReferences;
 
 	typedef std::list<std::string> StringList;
 	typedef ucallbackwithclosure<void (*)(const char*, void*)> ErrorCallback;
-	typedef ucallbackwithclosure<void (*)(const std::string&, const std::string&, const LineMappings&,const SourceReferences&, util_ui32, bool, void*)> TransformationCallback;
+	typedef ucallbackwithclosure<void (*)(const std::string&, const std::string&, const LineMappings&, const AST::NodeToChainOfSourceLineOriginInfo&, bool, void*)> TransformationCallback;
 	typedef ucallbackwithclosure<void (*)(AST::Node*, void*)> ParseCallback;
 
 private:

@@ -378,9 +378,9 @@ AST::Node* AST::StageAssembler::GenerateInlineCode(AST::Node* target, AST::Node*
 				else {
 					AST::Node* original = visitor->original;
 					AST::Node* n = (AST::Node*) node;
-					DPTR(n)->AddSourceReference(AST::Node::SourceInfo(DPTR(original)->GetSource(), DPTR(original)->GetStartLine()));
-					if (const AST::Node::SourceInfoReferences* refs = DPTR(original)->GetSourceReferences())
-						DPTR(n)->AddSourceReferences(*refs);
+					AddSourceLineOrigin(n, AST::SourceLineOriginInfo(DPTR(original)->GetSource(), DPTR(original)->GetStartLine()));
+					if (const AST::ChainOfSourceLineOriginInfo* info = GetChainOfSourceLineOrigin(original))
+						AddChainOfSourceLineOrigin(n, *info);
 				}
 			}
 		}
@@ -390,12 +390,11 @@ AST::Node* AST::StageAssembler::GenerateInlineCode(AST::Node* target, AST::Node*
 	};
 	(ReferenceSetter(original, target))(DPTR(stmt));
 
-	AST::Node::SourceInfoReferences references;
-	const AST::Node::SourceInfoReferences* refs = DPTR(stmt)->GetSourceReferences();
-	DASSERT(refs);
-	references = *refs;
-	references.push_back(AST::Node::SourceInfo("", DPTR(original)->GetStartLine()));
-	inlineReferences.push_back(references);
+	const AST::ChainOfSourceLineOriginInfo* info = GetChainOfSourceLineOrigin(stmt);
+	DASSERT(info);
+	AST::ChainOfSourceLineOriginInfo chain = *info;
+	chain.push_back(AST::SourceLineOriginInfo("", DPTR(original)->GetStartLine()));
+	inlineReferences.push_back(chain);
 
 	return AddSourceInfo(stmt, original);
 }
@@ -544,8 +543,8 @@ void AST::StageAssembler::GlobalizeConst(AST_VISITOR_ARGS, Symbol* constant) {
 void AST::StageAssembler::SetSourceInfo (AST_VISITOR_ARGS) {
 	AST::Node* n = (AST::Node*) node;
 	PARSEPARMS.SetLine(DPTR(n)->GetStartLine());
-	if (const AST::Node::SourceInfoReferences* refs = DPTR(n)->GetSourceReferences())
-		COMPMESSENGER.SetSourceReferences(*refs);
+	if (const AST::ChainOfSourceLineOriginInfo* refs = GetChainOfSourceLineOrigin(n))
+		COMPMESSENGER.SetChainOfSourceLineOriginInfo(*refs);
 	else
-		COMPMESSENGER.SetSourceReferences();
+		COMPMESSENGER.SetChainOfSourceLineOriginInfo();
 }
