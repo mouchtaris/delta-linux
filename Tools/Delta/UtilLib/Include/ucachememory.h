@@ -163,6 +163,62 @@ template <
 };
 
 //---------------------------------------------------------------
+// Caching of items using tags that are checked on-demand.
+// Appropriate if the frequency of demands is smaller
+// compared to the frequency of evens, thus rendering a
+// callback mechanism for cache updates less preferrable.
+// T: T(void); T(const T&); void operator=(const T&);
+
+template <typename T> class utagged_cached_item {
+
+	protected:
+	T			val;
+	util_ui32	tag;
+
+	public:
+	class proxy {
+		protected:
+		const utagged_cached_item*	item;
+		util_ui32					accessTag;
+
+		public:
+		UOVERLOADED_ASSIGN_VIA_COPY_CONSTRUCTOR(proxy)
+		bool				IsDirty (void) const
+								{ DASSERT(item); return item->IsDirty(accessTag); }
+		void				Update (void)
+								{ DASSERT(item); accessTag = item->GetTag(); }		
+		void				Set (const utagged_cached_item& _item)
+								{ item = &_item; accessTag = _item.GetTag(); }
+		void				operator=(const utagged_cached_item& _item) 
+								{ Set(_item); }
+		proxy (void) : 
+			item		((const utagged_cached_item*) 0), 
+			accessTag	(0)
+			{}
+		proxy (const utagged_cached_item& _item) : 
+			item		(&_item), 
+			accessTag	(_item.GetTag())
+			{}
+		proxy (const proxy& p) : 
+			item		(p.item), 
+			accessTag	(p.accessTag)
+			{}
+		virtual ~proxy(){}
+	};
+
+	void		Set (const T& _val) 
+					{ val = _val; ++tag; }
+	const T&	Get (void) const
+					{ return val; }
+	util_ui32	GetTag (void) const 
+					{ return tag; }
+	bool		IsDirty (util_ui32 _tag) const
+					{ return tag != _tag; }	
+	utagged_cached_item (void) : tag(1){}
+	virtual ~utagged_cached_item(){}
+};
+
+//---------------------------------------------------------------
 
 #endif	// Do not add stuff beyond this point.
 
