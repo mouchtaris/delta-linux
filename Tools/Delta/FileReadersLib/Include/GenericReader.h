@@ -312,7 +312,7 @@ template <typename T> class userialisable_factory {
 							);
 
 							T* elem = (T*) 0;
-							Factories::const_iterator i;
+							typename Factories::const_iterator i;
 
 							UCHECK_PRIMARY_ERROR_REPORT(
 								reader.read(classId, false), 
@@ -335,7 +335,7 @@ template <typename T> class userialisable_factory {
 						}
 
 	T*					New (const std::string& classId) const {
-							Factories::const_iterator i = factories.find(classId);
+							typename Factories::const_iterator i = factories.find(classId);
 							DASSERT(i != factories.end());
 							return (*i->second)();
 						}

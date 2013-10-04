@@ -98,7 +98,7 @@ template <
 
 	Tval&		Refer (const Tkey& key) { 
 
-					std::map<Tkey, CacheEntry*>::iterator i = used.find(key);
+					typename std::map<Tkey, CacheEntry*>::iterator i = used.find(key);
 					CacheEntry* p = (CacheEntry*) 0;
 
 					if (i == used.end()) { // Not in used? then it should be in unused.
@@ -117,7 +117,7 @@ template <
 
 	void		Unrefer (const Tkey& key) {
 
-					std::map<Tkey, CacheEntry*>::iterator i = used.find(key);
+					typename std::map<Tkey, CacheEntry*>::iterator i = used.find(key);
 					DASSERT(i != used.end());
 
 					CacheEntry* p = i->second;
@@ -128,7 +128,7 @@ template <
 				}
 
 	void		HandleExpirations (util_ui32 currTime) {
-					std::map<Tkey, CacheEntry*>::iterator i = unused.begin();
+					typename std::map<Tkey, CacheEntry*>::iterator i = unused.begin();
 					while (i != unused.end()) {
 						CacheEntry* p = i->second;
 						if (DPTR(p)->HasExpired(currTime)) {
