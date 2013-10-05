@@ -575,8 +575,8 @@ template <class T> class ubag {
 													std::bind2nd(list_remover<C>(), this)
 												  );								}
 	void			remove (const T& x)			{ bag.erase(x);						}
-	void			remove (const iterator& i)	{ bag.erase(i);						}
-	void			remove (const_iterator& i) 	{ bag.erase(i);						}
+	const iterator	remove (const iterator& i)	{ return bag.erase(i);				}
+	const iterator	remove (const_iterator& i) 	{ return bag.erase(i);				}
 	bool			empty (void) const			{ return bag.empty();				}
 	util_ui32		size (void) const			{ return (util_ui32) bag.size();	}
 	iterator		find (const T& x)			{ return bag.find(x); 				}
