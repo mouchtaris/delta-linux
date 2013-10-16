@@ -271,6 +271,17 @@ T*&	_DPTRLVALUE (T*& p) {
 
 #endif	// DDEBUG_USE
 
+// requires assignment overloading if class
+template <typename T> T* ucopyunlessnull (const T* p) {
+	if (p) {
+		T* result = DNEW(T);
+		*result = *p;
+		return result;
+	}
+	else
+		return (T*) 0;
+}
+
 template <class T> void udelete (T*& p) 
 	{ DASSERT(p); DDELETE((T*) p); unullify(p); }
 
