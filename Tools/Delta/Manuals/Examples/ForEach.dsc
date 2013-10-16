@@ -88,18 +88,95 @@ ff(11,22,33,44);
 
 
 //////////////////////////////////////////////////
-/*
+
+print("Self generating program....\n");
+& ast = nil;
+& {
 tokens=[
-"\n",
-"\"",
-"\\",
-",",
-"n",
-"tokens=[",
-"];\nindices=[",
-"for (i=0; i <N; ++i) print(tokens[ indices[i] ]);"
+"\n", 		// 0
+"\"", 		// 1
+"\\", 		// 2
+",",  		// 3 
+"n",  		// 4
+"tokens=[",	// 5
+"indices=[
+	5,0,
+	1,2,4,1,3,0, 	// 0   
+	1,2,1,1,3,0, 	// 1 
+	1,2,2,1,3,0, 	// 2
+	1,3,1,3,0, 		// 3
+	1,3,4,3,0, 		// 4
+	1,3,5,3,0, 		// 5
+	1,3,6,3,0, 		// 6
+	1,3,7,3,0, 		// 7
+	1,3,8,3,0, 		// 8
+	8,0,
+	6,0,
+	7,0
+", 		// 6
+"for (i=0, N=std::tablength(indices); i <N; ++i) 
+	std::print(tokens[ indices[i] ]);
+", 		// 7
+"];" 	// 8
 ];
-indices=[5,0,1,2,0,4,   6,4,7];
-for (i=0, N=tablen(indices); i <N; ++i) print(tokens[ indices[i] ]);
+
+indices=[
+	5,0,
+	1,2,4,1,3,0,	// 0   
+	1,2,1,1,3,0, 	// 1 
+	1,2,2,1,3,0, 	// 2
+	1,3,1,3,0, 		// 3
+	1,4,1,3,0, 		// 4
+	1,5,1,3,0, 		// 5
+	1,6,1,3,0, 		// 6
+	1,7,1,3,0, 		// 7
+	1,8,1,0, 		// 8
+	8,0,
+	6,0,
+	8,0,
+	7,0
+];
+
+/*
+// slightly modified to verify self reproduction
+s = "";
+for (i=0, N=tablength(indices); i < N; ++i) 
+	s += tokens[ indices[i] ];
 */
+
+/*
+vmrun(											// Run VM
+	vmloadfromreader(							// Load VM
+		reader_frominputbuffer(					// Make binary reader
+			inputbuffer_new(					// Turn it to an input buffer
+				vmcompstringtooutputbuffer(		// Compile to byte code buffer
+					s, 
+					function(s){ print(s, nl); }, 
+					false
+				)
+			)
+		),
+		"SelfGenerator"
+	)
+);
+*/
+function h_ { 
+	local s = "";
+	for (local i = 0, local N = std::tablength(indices); i < N; ++i) 
+		s += tokens[ indices[i] ];
+	return s;
+}
+function g_ { return std::vmparsestring(h_(), function(s){ std::print(s, nl); }); }
+function f_ {
+	local ast = g_();
+	return << & { ~(ast); } >>;
+}
+ast = f_();
+} // staged block
+
+!(ast);
+
 //////////////////////////////////////////////////
+
+function f() { return <<!(f())>>;}
+!(f());
