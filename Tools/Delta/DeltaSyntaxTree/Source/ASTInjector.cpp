@@ -641,6 +641,7 @@ bool StatementListConversion::IsValid (TreeNode* target, TreeNode* node) const {
 	return	DPTR(parent)->GetTotalChildren() == 1	&&	//ExprListStmt as a single stmt
 			(
 				!node									||
+				DPTR(node)->GetTag() == AST_TAG_PROGRAM	||
 				DPTR(node)->GetTag() == AST_TAG_STMTS	||
 				IsConvertibleToStatement(node)			||
 				IsList(node, &IsConvertibleToStatement)
@@ -697,7 +698,15 @@ void StatementListConversion::operator() (TreeNode* target, TreeNode* node, Tree
 		DPTR(grandParent)->Replace(parent, ToStatement(node));
 		Delete(parent);
 	}
-	else {	//STMTS or list of convertible statements
+	else {
+		if (DPTR(node)->GetTag() == AST_TAG_PROGRAM) {
+			TreeNode* stmts = DPTR(node)->GetChild(0);
+			DASSERT(stmts);
+			DPTR(stmts)->RemoveFromParent();
+			Delete(node);
+			node = stmts;
+		}
+		//STMTS or list of convertible statements
 		TreeNode* stmt = DPTR(node)->GetChild(0);
 		DASSERT(stmt);
 		DPTR(stmt)->RemoveFromParent();
