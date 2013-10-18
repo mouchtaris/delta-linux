@@ -89,38 +89,40 @@ ff(11,22,33,44);
 
 //////////////////////////////////////////////////
 
-print("Self generating program....\n");
-& ast = nil;
-& {
-tokens=[
-"\n", 		// 0
-"\"", 		// 1
-"\\", 		// 2
-",",  		// 3 
-"n",  		// 4
-"tokens=[",	// 5
-"indices=[
-	5,0,
-	1,2,4,1,3,0, 	// 0   
-	1,2,1,1,3,0, 	// 1 
-	1,2,2,1,3,0, 	// 2
-	1,3,1,3,0, 		// 3
-	1,3,4,3,0, 		// 4
-	1,3,5,3,0, 		// 5
-	1,3,6,3,0, 		// 6
-	1,3,7,3,0, 		// 7
-	1,3,8,3,0, 		// 8
-	8,0,
-	6,0,
-	7,0
-", 		// 6
-"for (i=0, N=std::tablength(indices); i <N; ++i) 
-	std::print(tokens[ indices[i] ]);
-", 		// 7
-"];" 	// 8
-];
+print("Self generating normal program....\n");
 
-indices=[
+function tokens_f {
+return [
+	"\n", 		// 0
+	"\"", 		// 1
+	"\\", 		// 2
+	",",  		// 3 
+	"n",  		// 4
+	"tokens=[",	// 5
+	"indices=[
+		5,0,
+		1,2,4,1,3,0, 	// 0   
+		1,2,1,1,3,0, 	// 1 
+		1,2,2,1,3,0, 	// 2
+		1,3,1,3,0, 		// 3
+		1,3,4,3,0, 		// 4
+		1,3,5,3,0, 		// 5
+		1,3,6,3,0, 		// 6
+		1,3,7,3,0, 		// 7
+		1,3,8,3,0, 		// 8
+		8,0,
+		6,0,
+		7,0
+	", 		// 6
+	"{ for (local i=0, local N=std::tablength(indices); i < N; ++i) 
+		std::print(tokens[ indices[i] ]); }
+	", 		// 7
+	"];" 	// 8
+];
+}
+
+function indices_f {
+return [
 	5,0,
 	1,2,4,1,3,0,	// 0   
 	1,2,1,1,3,0, 	// 1 
@@ -136,22 +138,28 @@ indices=[
 	8,0,
 	7,0
 ];
+}
 
-/*
+function H {
+return <<
+	(function { 
+		local s = "";
+		for (local i=0, local I=indices_f(), local T=tokens_f(), local N=std::tablength(I); i < N; ++i) 
+			s += T[ I[i] ];
+		return s;
+	})()
+>>;
+}
+
 // slightly modified to verify self reproduction
-s = "";
-for (i=0, N=tablength(indices); i < N; ++i) 
-	s += tokens[ indices[i] ];
-*/
-
-/*
+	
 vmrun(											// Run VM
 	vmloadfromreader(							// Load VM
 		reader_frominputbuffer(					// Make binary reader
 			inputbuffer_new(					// Turn it to an input buffer
 				vmcompstringtooutputbuffer(		// Compile to byte code buffer
-					s, 
-					function(s){ print(s, nl); }, 
+					!(H()), 
+					lambda(s){ print(s, nl) }, 
 					false
 				)
 			)
@@ -159,24 +167,23 @@ vmrun(											// Run VM
 		"SelfGenerator"
 	)
 );
-*/
-function h_ { 
-	local s = "";
-	for (local i = 0, local N = std::tablength(indices); i < N; ++i) 
-		s += tokens[ indices[i] ];
-	return s;
-}
-function g_ { return std::vmparsestring(h_(), function(s){ std::print(s, nl); }); }
-function f_ {
-	local ast = g_();
-	return << & { ~(ast); } >>;
-}
-ast = f_();
+
+// self-generator is now produced
+& ast = nil;
+& {
+std::print("Self generating stage program....\n");
+ast = std::vmparsestring(!(H()), lambda(s){ std::print(s, nl) });
+ast = << & { ~(ast); } >>;
 } // staged block
 
 !(ast);
 
 //////////////////////////////////////////////////
+// self generating stage program made easier, but never terminates
+
+/*
 
 function f() { return <<!(f())>>;}
 !(f());
+
+*/
