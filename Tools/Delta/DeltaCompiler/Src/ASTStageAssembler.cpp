@@ -263,7 +263,7 @@ static bool IsGlobalLvalue(TreeNode* node, std::string* name) {
 }
 
 static bool IsStdNamespace(TreeNode* node) {
-	TreeNode* path, *id;
+	TreeNode* path;
 	return DPTR(node)->GetTotalChildren() == 2	&&
 		(path = DPTR(node)->GetChild(0))			&&
 		DPTR(path)->GetTag() == AST_TAG_NAME		&&
