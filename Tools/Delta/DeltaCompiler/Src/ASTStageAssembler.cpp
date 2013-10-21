@@ -262,6 +262,14 @@ static bool IsGlobalLvalue(TreeNode* node, std::string* name) {
 		return false;
 }
 
+static bool IsStdNamespace(TreeNode* node) {
+	TreeNode* path, *id;
+	return DPTR(node)->GetTotalChildren() == 2	&&
+		(path = DPTR(node)->GetChild(0))			&&
+		DPTR(path)->GetTag() == AST_TAG_NAME		&&
+		NAME(path) == DELTA_STDLIB_NAMESPACE	;
+}
+
 void AST::StageAssembler::Handle_NamespaceLvalue (AST_VISITOR_ARGS) {
 	std::string name;
 	if (!VISITOR->quotes.inside() && !entering) {
@@ -274,9 +282,12 @@ void AST::StageAssembler::Handle_NamespaceLvalue (AST_VISITOR_ARGS) {
 			}
 			HandleSymbolUsage(AST_VISITOR_ACTUALS, symbol);
 		}
-		else if (Symbol* function = SYMBOLS.CurrFunction()) {	//using some external namespace or bytecodepath, so impure
-			function->AddDependency(Symbol::NonLocal, (Symbol*) 0);
-			function->SetPure(false);
+		else if (!IsStdNamespace(node)) {	//allow std library functions to be used freely (pure)
+			//any other namespace path or bytecodepath may involve execution stage, so consider it impure
+			if (Symbol* function = SYMBOLS.CurrFunction()) {
+				function->AddDependency(Symbol::NonLocal, (Symbol*) 0);
+				function->SetPure(false);
+			}
 		}
 	}
 }
