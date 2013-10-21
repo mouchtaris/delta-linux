@@ -1801,8 +1801,8 @@ EXPORTED_FUNCTION(Script, const Handle, AttachSource, (const String& file, const
 Script::ScriptPtrList Script::GetAllIntermediateSources (void) {
 	ScriptPtrList result;
 	BOOST_FOREACH(const conf::PropertyTable& source, m_attachedScripts) {
-		const String classId = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
-		if (classId == _T("StageResult") || classId == _T("AspectResult")) {
+		const std::string classId = util::str2std(conf::get_prop_value<conf::StringProperty>(source.GetProperty("type")));
+		if (classId == "StageResult" || classId == "AspectResult") {
 			const String symbolic = conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
 			Component* child = GetChildBySymbolicURI(symbolic).Resolve();
 			DASSERT(child && child->GetClassId() == classId);
