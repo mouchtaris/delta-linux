@@ -30,7 +30,7 @@ TASK				|	FUNCTION_NAME
 --------------------------------------------------
 constructor			|	Constructor
 destructor			|	Destructor
-gui generation		|	GenerateWindow
+gui generation		|	CreateWindow
 member functions	|	(user defined)
 dynamic functions	|	(user defined)
 member handlers		|	(user defined)
@@ -51,7 +51,7 @@ initializations.
 The class is loaded and initialized and instances of it can be created.
 When creating an instance, the Constructor fuction is invoked to register the member functions
 and possibly perform any instance initialization (non-gui instances).
-For gui instances, the GenerateWindows function is invoked after the constructor to handle all
+For gui instances, the CreateWindow function is invoked after the constructor to handle all
 remaining instance initialization (member function registration should still be performed
 at the Constructor function)
 
@@ -62,8 +62,8 @@ then the ClassUnload function is invoked to unload the class.
 
 Gui Generation:
 A DeltaComponent may have a gui either by inheriting from a native gui component or by using the
-wxWidgets library and explicitly creating and returning a window in the GenerateWindow function.
-The following code provides a sample for properly writing the GenerateWindow function in each case.
+wxWidgets library and explicitly creating and returning a window in the CreateWindow function.
+The following code provides a sample for properly writing the CreateWindow function in each case.
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //	Inheriting from native gui component
@@ -74,7 +74,7 @@ window = nil;
 base = nil;
 mostbase = nil;
 
-function GenerateWindow(parent)
+function CreateWindow(parent)
 {
 	base = spw.decorate(spw::basecomponent());
 	local nativeWindow = spw::generatewindow(base, parent);	
@@ -86,12 +86,12 @@ function GenerateWindow(parent)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//	Inheriting from native gui component
+//	Explicitly creating a GUI component through the wxWidgets library
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 window = nil;
 
-function GenerateWindow(parent)
+function CreateWindow(parent)
 {
 	//requires that the wx::DLL has already been loaded, e.g. in the ClassLoad function
 	window = wx::treectrl_construct(wx::window_towxinstance(parent));
