@@ -233,6 +233,21 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 						DASSERT(invariant()); 
 					}
 
+	const uvector&	operator=(const std::list<T>& l) {
+						resize(l.size());
+						util_ui32 j = 0;
+						for (typename std::list<T>::const_iterator i = l.begin(); i != l.end(); ++i, ++j)
+							(*this)[j] = *i;
+						return *this;
+					}
+	const uvector&	operator=(const std::list<const T*>& l) {
+						resize(l.size());
+						util_ui32 j = 0;
+						for (typename std::list<const T*>::const_iterator i = l.begin(); i != l.end(); ++i, ++j)
+							(*this)[j] = **i;
+						return *this;
+					}
+
 	uvector (const uvector& v)  {
 		DASSERT(v.invariant()); 
 		if (v.size()) {
