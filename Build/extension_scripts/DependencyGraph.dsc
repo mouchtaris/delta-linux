@@ -1474,9 +1474,9 @@ function Interact1()
 			{
 				selected.Highlight();
 				local nodes	= Data.Nodes;
-				spw::print(nodes.total(),nl);
-				spw::print(nodes.remove(selected),nl);
-				spw::print(nodes.total(),nl);
+				//spw::print(nodes.total(),nl);
+				//spw::print(nodes.remove(selected),nl);
+				//spw::print(nodes.total(),nl);
 
 				nodes.push_back(selected);
 			}
