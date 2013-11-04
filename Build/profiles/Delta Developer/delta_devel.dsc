@@ -26,6 +26,12 @@ spw.components.DeltaComponentDirectory.CreateComponent("AutoAdjustDebugTools");
 	spw.components.Shell.AddComponent("BreakpointsView", SHELL_BOTTOM_RIGHT);
 })();
 
+function DependencyGraph {
+    local result = spw.components.DeltaComponentDirectory.LoadComponent("DependencyGraph");
+    assert result;
+    spw.components.Shell.AddComponent("DependencyGraph", SHELL_CENTER);
+}
+
 //-- load several utilities
 (function LineCounter { spw.components.DeltaComponentDirectory.CreateComponent("LineCounter"); })();
 

@@ -12,6 +12,7 @@
 	<component path="DeltaComponentDirectory.xdf"/>
 	<component path="DeltaDebugElements.xdf"/>
 	<component path="DeltaVM.xdf"/>
+	<component path="DependencyGraph.xdf"/>
 	<component path="DeploymentAPI.xdf"/>
 	<component path="DMSLCompiler.xdf"/>
 	<component path="Editor.xdf"/>

@@ -26,10 +26,11 @@ namespace conf {
 #define EXTRACT_VALUE_AS_VARIANT(type, method) \
 	EXTRACT_VALUE(type, m_guiProp->GET_VALUE_AS_VARIANT().method())
 
-#define EXTRACT_VALUE_AS_VARIANT_CAST(type)									\
-	type* __v = wxGetVariantCast(m_guiProp->GET_VALUE_AS_VARIANT(), type);	\
-	if (!__v) return;														\
-	EXTRACT_VALUE(type, *__v)
+//We do not store the result as it is temporary, so we first call to check, and then call again to apply
+#define EXTRACT_VALUE_AS_VARIANT_CAST(type)													\
+	if (wxGetVariantCast(m_guiProp->GET_VALUE_AS_VARIANT(), type)) {							\
+		EXTRACT_VALUE(type, (*wxGetVariantCast(m_guiProp->GET_VALUE_AS_VARIANT(), type)));	\
+	}
 
 ////////////////////////////////////////////////////////////////////////
 

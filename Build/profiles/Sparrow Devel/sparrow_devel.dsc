@@ -35,9 +35,14 @@ spw.components.Shell.AddComponent("IViews", SHELL_NOWHERE);
 	spw.components.Shell.AddComponent("BuildTreeListView", SHELL_BOTTOM_LEFT);
 })();	
 
+function DependencyGraph {
+    local result = spw.components.DeltaComponentDirectory.LoadComponent("DependencyGraph");
+    assert result;
+    spw.components.Shell.AddComponent("DependencyGraph", SHELL_CENTER);
+}
+
 //-- load several utilities
 (function LineCounter { spw.components.DeltaComponentDirectory.CreateComponent("LineCounter"); })();
-(function MyGraph { spw.components.DeltaComponentDirectory.CreateComponent("MyGraph"); })();
 
 //-- restore last workspace
 spw.components.DeltaComponentDirectory.LoadComponent("RecentWorkspaces");
