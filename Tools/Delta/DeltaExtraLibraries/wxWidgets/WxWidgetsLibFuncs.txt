@@ -4604,6 +4604,11 @@ initallimagehandlers						()
 artprovider_getbitmap						(id:String):bitmap (id:String,client:String):bitmap (id:String,client:String,size:+{size,String}):bitmap
 artprovider_geticon							(id:String):icon (id:String,client:String):icon (id:String,client:String,size:+{size,String}):icon
 artprovider_getsizehint						(client:String):size (client:String,platformDependent:Bool):size
+getmajorversion								() : Number
+getminorversion								() : Number
+getreleasenumber							() : Number
+getversionstring							() : String
+getversionnumber							() : Number
 #group(wxabout)
 aboutdialoginfo_construct					() : aboutdialoginfo
 aboutdialoginfo_destruct					(info:aboutdialoginfo)

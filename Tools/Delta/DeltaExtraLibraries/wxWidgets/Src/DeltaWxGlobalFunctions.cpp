@@ -65,6 +65,11 @@ WX_FUNC_DEF(initallimagehandlers)
 WX_FUNC_DEF(artprovider_getbitmap)
 WX_FUNC_DEF(artprovider_geticon)
 WX_FUNC_DEF(artprovider_getsizehint)
+WX_FUNC_DEF(getmajorversion)
+WX_FUNC_DEF(getminorversion)
+WX_FUNC_DEF(getreleasenumber)
+WX_FUNC_DEF(getversionstring)
+WX_FUNC_DEF(getversionnumber)
 
 WX_FUNCS_START
 	WX_FUNC(flags),
@@ -93,7 +98,12 @@ WX_FUNCS_START
 	WX_FUNC(initallimagehandlers),
 	WX_FUNC(artprovider_getbitmap),
 	WX_FUNC(artprovider_geticon),
-	WX_FUNC(artprovider_getsizehint)
+	WX_FUNC(artprovider_getsizehint),
+	WX_FUNC(getmajorversion),
+	WX_FUNC(getminorversion),
+	WX_FUNC(getreleasenumber),
+	WX_FUNC(getversionstring),
+	WX_FUNC(getversionnumber)
 WX_FUNCS_END
 
 ////////////////////////////////////////////////////////////////
@@ -411,4 +421,25 @@ WX_FUNC_ARGRANGE_START(wx_artprovider_getsizehint, 1, 2, Nil)
 		client = client.Prepend(_T("wx"));
 	wxART_MAKE_CLIENT_ID_FROM_STR(client);
 	WX_SETOBJECT_COLLECTABLE_NATIVE_INSTANCE(Size, new wxSize(wxArtProvider::GetSizeHint(client, platform_dependent)))
+}
+
+WX_FUNC_START(wx_getmajorversion, 0, Nil)
+	WX_SETNUMBER(wxMAJOR_VERSION);
+}
+
+WX_FUNC_START(wx_getminorversion, 0, Nil)
+	WX_SETNUMBER(wxMINOR_VERSION);
+}
+
+WX_FUNC_START(wx_getreleasenumber, 0, Nil)
+	WX_SETNUMBER(wxRELEASE_NUMBER);
+}
+
+WX_FUNC_START(wx_getversionstring, 0, Nil)
+	wxString retval(wxVERSION_STRING);
+	WX_SETSTRING(retval);
+}
+
+WX_FUNC_START(wx_getversionnumber, 0, Nil)
+	WX_SETNUMBER(wxVERSION_NUMBER);
 }
