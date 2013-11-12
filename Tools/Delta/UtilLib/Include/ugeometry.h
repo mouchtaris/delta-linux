@@ -286,7 +286,7 @@ inline double ufractionalpart (double val)
 	{ return modf(val, &val); }
 
 inline double uintegerpart (double val)
-	{ return val - ufractionalpart(val); }
+	{ modf(val, &val); return val; }
 
 /////////////////////////////////////////////////////////////////
 
