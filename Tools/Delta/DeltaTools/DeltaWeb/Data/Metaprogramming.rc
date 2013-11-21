@@ -476,7 +476,7 @@ TEXT_END
 
 END_SEC,	// si_stage_assembly
 
-START_SEC("si_metaprogramming_examples", "Examples (integrated metaprograms)")
+START_SEC("si_metaprogramming_examples", "Examples")
 
 TEXT_START
 
@@ -837,9 +837,58 @@ x = !(mm.alloc(<<10>>));	//x = mm.Allocate(10);
 the mm code generator object, allowing matching definition and usage pairs to be automatically
 produced without requiring any additional information. The latter allows updating the generation
 parameters, possibly affecting names or calling styles, however, without having to change anything
-regarding the use of the generated class."
+regarding the use of the generated class.", NL2,
 
-TEXT_END
+!emphatic "Staged Model-Driven Generators", NL1,
+
+"Generative model-driven engineering (MDE) tools rely on modeling the entities of a system and then
+using code generators to automatically produce source code for their implementation. The generated
+model code can be extended or linked with custom application code to deliver the final application.
+The practice of extending the automatically generated code involves maintenance issues as any
+manually introduced code will be overwritten once the model code is regenerated.", NL2,
+
+"These maintenance issues can be addressed by adopting metaprogramming practices for combining
+model code and custom application code as follows. The outcome of the MDE tool should be produced
+not as editable source files but as read-only ASTs. Then a metaprogram can load these ASTs,
+combine them with custom application functionality or maybe with ASTs produced by other MDE tools
+and finally insert the result directly in the source being compiled. In this sense, the application
+directly deploys and manipulates generated code fragments instead of being built around them.", NL2,
+
+"The following code demonstrates the improved MDE process by loading, combining and generating
+the model code for a paint application. In particular, the user interface is derived by two models
+(a general paint interface and an additional toolbar for shapes), while there is an additional
+model for a class hierarchy used in the application (shapes like circles, rectangles, etc.
+implementing the shape toolbar functionality). The models are assumed to be already created by
+third party modeling tools and their corresponding source code has been stored as binary AST
+files (through custom code generators).", NL2,
+
+CODE_BLOCK "
+using wx; 		        			    //normal code, directive for importing the wxWidgets GUI toolkit
+&paintUI = load_ast(\"paint.ast\");       //load the AST of the paint application user-interface code
+&shapesUI = load_ast(\"shapes.ast\");     //load the AST of the shapes toolbar user-interface code
+&classes = load_ast(\"classes.ast\");     //load the AST of the class hierarchy for the toolset
+&function MergeGUI(main, toolbar){...}  //compile-time function to integrate an interface containing
+&MergeGUI(paintUI, shapesUI);	        //a toolbar UI to the main program UI
+classes.Geometry.Circle.draw.body =     //insert custom implementation for method Circle::draw(dc)
+  <<dc.drawcircle(@center, @radius);>>; //dc: argument, @center and @radius: circle attributes
+//other shape method implementations
+//custom functionality and event handling code inserted here as well
+//any other meta-code or normal code may be freely inserted before, between or after the inline directives
+!(classes);    //inline the transformed classes AST at this source location
+!(paintUI);    //inline the transformed paintUI AST at this source location - this generates function CreateGUI
+wx::app_start(CreateGUI); //normal code, uses the generated CreateGUI function to launch the GUI",
+
+"The complete source code for the above example, as well as additional case studies regarding
+model-driven staged generators are available from " TEXT_END,
+
+LINK(
+	"StagedModelDrivenGenerators/CaseStudies.zip",
+	"here"
+),
+
+TEXT(", while a video demonstrating the entire MDE process is provided below."),
+
+[_video url "StagedModelDrivenGenerators/MDEDemo.mp4", videotype "video/mp4", width 640, height 480]
 
 END_SEC	// si_metaprogramming_examples
 

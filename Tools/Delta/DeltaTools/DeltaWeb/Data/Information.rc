@@ -265,6 +265,18 @@ START_SEC("si_reports", "Reports")
 	LIST_START
 		[
 			TEXT_START
+			"Lilis, Y., Savidis, A. ", !italic "An Integrated Implementation Framework for Compile-Time Metaprogramming.",
+			" Softw: Pract. Exper. To appear."
+			TEXT_END, SL2
+		],
+		[
+			TEXT_START
+			"Lilis, Y., Savidis, A., Valsamakis, Y. ", !italic "Staged Model-Driven Generators: Shifting Responsibility for Code Emission to Embedded Metaprograms.",
+			" In Proceedings of the 2nd International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2014), 7-9 January, Lisbon, Portugal. To appear."
+			TEXT_END, SL2
+		],
+		[
+			TEXT_START
 			"Lilis, Y., Savidis, A. (2013). ", !italic "An Integrated Approach to Source Level Debugging and Compile Error Reporting in Metaprograms.",
 			" Journal of Object Technology. Journal of Object Technology 12(3): 1: 1-26."
 			TEXT_END, DOI(10.5381/jot.2013.12.3.a2)

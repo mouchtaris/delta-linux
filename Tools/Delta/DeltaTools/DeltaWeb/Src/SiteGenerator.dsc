@@ -1212,26 +1212,35 @@ function DocumentItem {  	// Provides methods to print SectionItems and SimpleIt
 		},
 			
 		method video (video) {
-			local embed 	= "";
-			local length 	= strlen(video.url);
-			local index	 	= strsub(video.url, "watch?v=");
-			if(index != -1)
-				embed =	strslice(video.url, 0, index-1) 		+ 
-						"v/"									+
-						strslice(video.url, index+8, length-1) 	+ 
-						"&hl=en&fs=1"
-						;
-			else 
-				embed = video.url;
-			html(
-				"<p><center><object width=\"" + VIDEO_WIDTH + "\" height=\"" + VIDEO_HEIGHT + "344\">
-				<param name=\"movie\" value=\"" + embed + "\">
-				</param><param name=\"allowFullScreen\" value=\"true\">
-				</param><param name=\"allowscriptaccess\" value=\"always\">
-				</param><embed src="+ embed + 
-				"type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" width=\"425\" height=\"344\">
-				</embed></object></center></p>\n"
-			);
+			local videoObj = nil;
+			local size =	"width=\"" + (video.width ? video.width : VIDEO_WIDTH) +
+							"\" height=\"" + (video.height ? video.height : VIDEO_HEIGHT) + "\"";
+			if (local type = video.videotype)
+				videoObj = "<video " + size + " controls>
+							<source src=\"" + video.url + "\" type=\"" + type +"\">
+							Your browser does not support the video tag.
+							</video>";
+			else {	//original code for youtube videos
+				local embed 	= "";
+				local length 	= strlen(video.url);
+				local index	 	= strsub(video.url, "watch?v=");
+				if(index != -1)
+					embed =	strslice(video.url, 0, index-1) 		+ 
+							"v/"									+
+							strslice(video.url, index+8, length-1) 	+ 
+							"&hl=en&fs=1"
+							;
+				else 
+					embed = video.url;				
+				videoObj = "<object " + size + ">
+					<param name=\"movie\" value=\"" + embed + "\">
+					</param><param name=\"allowFullScreen\" value=\"true\">
+					</param><param name=\"allowscriptaccess\" value=\"always\">
+					</param><embed src="+ embed + "
+					type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" " + size + ">
+					</embed>";
+			}
+			html("<p><center>" + videoObj + "</center></p>\n");
 		},
 			
 		method text (text) {
