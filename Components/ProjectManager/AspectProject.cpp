@@ -59,6 +59,11 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_STATIC_SIGNAL(AspectProject, AspectProjectAdded, (const Handle& project));
+	EXPORTED_STATIC_SIGNAL(AspectProject, AspectProjectRemoved, (const Handle& project));
+
+	//-----------------------------------------------------------------------
+
 	AspectProject::AspectProject(void)
 	{
 		conf::AddScriptExecutionProperties(this);
@@ -93,6 +98,14 @@ namespace ide
 			Unregister(s_classId, "TreeItemComponent", "UnregisterChildType");
 		BOOST_FOREACH(const char* child, defaultChildren)
 			Unregister(s_classId, child);
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(AspectProject, void, SetName, (const String& name))
+	{
+		Container::SetName(name);
+		sigAspectProjectAdded(this);
 	}
 
 	//-----------------------------------------------------------------------
@@ -229,6 +242,43 @@ namespace ide
 				p->AddChoice(def);
 			this->ComponentAppliedChangedProperties(old, PropertyIdVec(1, "libs"));
 		}
+	}
+
+	//-----------------------------------------------------------------------
+	
+	EXPORTED_SLOT_MEMBER(AspectProject, void, OnAspectProjectAdded,
+		(const std::string& classId, const Handle& project), "AspectProjectAdded")
+	{
+		Component* comp = project.Resolve();
+		if (comp && comp != this) {
+			using namespace conf;
+			if (const Property *property = GetInstanceProperty("aspects")) {
+				MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
+				p->AddChoice(Call<const String& (void)>(this, comp, "GetName")());
+			}
+		}
+	}
+
+	//-----------------------------------------------------------------------
+	
+	EXPORTED_SLOT_MEMBER(AspectProject, void, OnAspectProjectRemoved,
+		(const std::string& classId, const Handle& project), "AspectProjectRemoved")
+	{
+		Component* comp = project.Resolve();
+		if (comp && comp != this) {
+			using namespace conf;
+			if (const Property *property = GetInstanceProperty("aspects")) {
+				MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
+				p->RemoveChoice(Call<const String& (void)>(this, comp, "GetName")());
+			}
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	void AspectProject::ComponentDestroyed (void)
+	{
+		sigAspectProjectRemoved(this);
 	}
 
 	//-----------------------------------------------------------------------

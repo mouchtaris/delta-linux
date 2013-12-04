@@ -80,6 +80,8 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION(void, OnCompileFinished, (const std::string& invoker, const Handle& script));
 		DECLARE_EXPORTED_FUNCTION(void, OnTransformationFinished, (const std::string& invoker, const Handle& script));
 		DECLARE_EXPORTED_FUNCTION(void, OnLibraryDefinitionsChanged, (const std::string& classId, const StringList newDefinitions));
+		DECLARE_EXPORTED_FUNCTION(void, OnAspectProjectAdded, (const std::string& classId, const Handle& project));
+		DECLARE_EXPORTED_FUNCTION(void, OnAspectProjectRemoved, (const std::string& classId, const Handle& project));
 
 		DECLARE_EXPORTED_FUNCTION(void, OnWorkStarted, (const std::string& caller, const Handle& root, const String& task));
 		DECLARE_EXPORTED_FUNCTION(void, OnWorkCanceled, (const std::string& caller, const Handle& root, const String& task));

@@ -61,30 +61,30 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION_(virtual const StdStringList, GetChildrenTypes, (void),
 			_("Retrieve a list with the classIds of components that are acceptable children for this item"));
 
-		DECLARE_EXPORTED_FUNCTION_(const String&, GetName, (void),
+		DECLARE_EXPORTED_FUNCTION_(virtual const String&, GetName, (void),
 			_("Get component's name"));
-		DECLARE_EXPORTED_FUNCTION_(const String&, GetOriginalName, (void),
+		DECLARE_EXPORTED_FUNCTION_(virtual const String&, GetOriginalName, (void),
 			_("Get component's original name (for storage related components to allow maintaining environment variables)"));
-		DECLARE_EXPORTED_FUNCTION_(const String&, GetURI, (void),
+		DECLARE_EXPORTED_FUNCTION_(virtual const String&, GetURI, (void),
 			_("Get component's URI"));
-		DECLARE_EXPORTED_FUNCTION_(bool, HasDefaultSymbolicURI, (void),
+		DECLARE_EXPORTED_FUNCTION_(virtual bool, HasDefaultSymbolicURI, (void),
 			_("Check if the symbolic uri is auto-generated"));
-		DECLARE_EXPORTED_FUNCTION_(const String, GetSymbolicURI, (void),
+		DECLARE_EXPORTED_FUNCTION_(virtual const String, GetSymbolicURI, (void),
 			_("Get component's symbolic URI"));
 		DECLARE_EXPORTED_FUNCTION_(virtual const String, GetPath, (void),
 			_("Get component's directory path"));
 		DECLARE_EXPORTED_FUNCTION_(virtual const String, GetLeafURI, (void),
 			_("Get component's leaf node of the URI"));
 
-		DECLARE_EXPORTED_FUNCTION_(void, SetName, (const String& name),
+		DECLARE_EXPORTED_FUNCTION_(virtual void, SetName, (const String& name),
 			_("Set component's name"));
-		DECLARE_EXPORTED_FUNCTION_(void, SetOriginalName, (const String& name),
+		DECLARE_EXPORTED_FUNCTION_(virtual void, SetOriginalName, (const String& name),
 			_("Set component's original name (for storage related components to allow maintaining environment variables)"));
-		DECLARE_EXPORTED_FUNCTION_(void, SetURI, (const String& uri),
+		DECLARE_EXPORTED_FUNCTION_(virtual void, SetURI, (const String& uri),
 			_("Set component's URI"));
-		DECLARE_EXPORTED_FUNCTION_(void, SetSymbolicURI, (const String& uri),
+		DECLARE_EXPORTED_FUNCTION_(virtual void, SetSymbolicURI, (const String& uri),
 			_("Set component's symbolic URI"));
-		DECLARE_EXPORTED_FUNCTION_(void, SetTreeView, (const Handle& handle),
+		DECLARE_EXPORTED_FUNCTION_(virtual void, SetTreeView, (const Handle& handle),
 			_("Set component's parent tree view"));
 
 		DECLARE_EXPORTED_FUNCTION_(void, SetExpanded, (bool value),

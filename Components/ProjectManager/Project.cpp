@@ -382,6 +382,34 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_SLOT_MEMBER(Project, void, OnAspectProjectAdded,
+		(const std::string& classId, const Handle& project), "AspectProjectAdded")
+	{
+		if (Component* comp = project.Resolve()) {
+			using namespace conf;
+			if (const Property *property = GetInstanceProperty("aspects")) {
+				MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
+				p->AddChoice(Call<const String& (void)>(this, comp, "GetName")());
+			}
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_SLOT_MEMBER(Project, void, OnAspectProjectRemoved,
+		(const std::string& classId, const Handle& project), "AspectProjectRemoved")
+	{
+		if (Component* comp = project.Resolve()) {
+			using namespace conf;
+			if (const Property *property = GetInstanceProperty("aspects")) {
+				MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
+				p->RemoveChoice(Call<const String& (void)>(this, comp, "GetName")());
+			}
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
 	void Project::ComponentAppliedChangedProperties(const conf::PropertyTable& old, const conf::PropertyIdVec& changed)
 	{
 		bool allPropsChanged = std::find(changed.begin(), changed.end(), "*") != changed.end();

@@ -270,6 +270,14 @@
 		_found + "'!"																				\
 	)
 
+//********************************
+
+#define	BUILD_WARNING_RECURSIVE_ASPECT()						\
+	PostBuildWarning(											\
+		m_workId,												\
+		std::string("Resursive aspect transformation ignored.")	\
+	);
+
 //-----------------------------------------------------------------------
 
 namespace ide {
@@ -755,7 +763,7 @@ Script* Script::GetScriptWithMostRecentSource (const ScriptPtrList& scripts) {
 void Script::ResolveAspectTransformations (void) {
 	StringVec projects;
 	const conf::Property* p = GetInstanceProperty("aspects");
-	if (!p || (projects = static_cast<const conf::StringListProperty*>(p)->GetValues()).empty())
+	if (!p || (projects = static_cast<const conf::MultiChoiceProperty*>(p)->GetSelectedChoices()).empty())
 		return;
 
 	std::string func;
@@ -775,7 +783,11 @@ void Script::ResolveAspectTransformations (void) {
 				const HandleList aspects = Call<const HandleList (void)>(this, proj, func)();
 				BOOST_FOREACH(const Handle& handle, aspects) {
 					DASSERT(handle.GetClassId() == "Aspect");
-					m_aspectTransformations.insert(static_cast<Script*>(handle.Resolve()));
+					Script* script = static_cast<Script*>(handle.Resolve());
+					if (script != this)
+						m_aspectTransformations.insert(script);
+					else
+						BUILD_WARNING_RECURSIVE_ASPECT();
 				}
 			}
 		}
@@ -1609,6 +1621,34 @@ EXPORTED_SLOT_MEMBER(Script, void, OnLibraryDefinitionsChanged,
 		BOOST_FOREACH(const String& def, newDefinitions)			//Add new choices
 			p->AddChoice(def);
 		this->ComponentAppliedChangedProperties(old, PropertyIdVec(1, "libs"));
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_SLOT_MEMBER(Script, void, OnAspectProjectAdded,
+	(const std::string& classId, const Handle& project), "AspectProjectAdded")
+{
+	if (Component* comp = project.Resolve()) {
+		using namespace conf;
+		if (const Property *property = GetInstanceProperty("aspects")) {
+			MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
+			p->AddChoice(Call<const String& (void)>(this, comp, "GetName")());
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+EXPORTED_SLOT_MEMBER(Script, void, OnAspectProjectRemoved,
+	(const std::string& classId, const Handle& project), "AspectProjectRemoved")
+{
+	if (Component* comp = project.Resolve()) {
+		using namespace conf;
+		if (const Property *property = GetInstanceProperty("aspects")) {
+			MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
+			p->RemoveChoice(Call<const String& (void)>(this, comp, "GetName")());
+		}
 	}
 }
 

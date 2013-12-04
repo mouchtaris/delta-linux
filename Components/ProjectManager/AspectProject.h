@@ -41,6 +41,9 @@ namespace ide
 		DECLARE_EXPORTED_STATIC(void, Initialize, (void));
 		DECLARE_EXPORTED_STATIC(void, CleanUp, (void));
 
+		DECLARE_EXPORTED_FUNCTION_(virtual void, SetName, (const String& name),
+			_("Set component's name"));
+
 		DECLARE_EXPORTED_FUNCTION_(void, DefaultAction, (void), _("Execute aspect project's default action (configure)"));
 
 		DECLARE_EXPORTED_FUNCTION(const HandleList, GetPreTransformations, (void));
@@ -56,9 +59,12 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION(void, SetChildProperties, (const Handle& handle));
 		DECLARE_EXPORTED_FUNCTION(int, OnCompareItems, (const Handle& handle1, const Handle& handle2));
 		DECLARE_EXPORTED_FUNCTION(void, OnLibraryDefinitionsChanged, (const std::string& classId, const StringList newDefinitions));
+		DECLARE_EXPORTED_FUNCTION(void, OnAspectProjectAdded, (const std::string& classId, const Handle& project));
+		DECLARE_EXPORTED_FUNCTION(void, OnAspectProjectRemoved, (const std::string& classId, const Handle& project));
 
 	protected:
 		///--- protected API
+		virtual void ComponentDestroyed (void);
 		virtual void ChildAdded (Component* component);
 		virtual void ChildRemoved (Component* component);
 		virtual void ChildDestroyed (Component* component);

@@ -34,6 +34,20 @@ namespace conf {
 
 	///////////////////////////////////////////////////////////////////////
 
+	_PROJECT_MANAGER_API Property* GenerateAspectsProperty (void) {
+		ComponentEntry& compEntry = ComponentRegistry::Instance().GetComponentEntry("AspectProject");
+
+		MultiChoiceProperty::ChoiceMap choices;
+		BOOST_FOREACH(Component* comp, compEntry.GetInstances())
+			choices[Call<const String& (void)>(comp, comp, "GetName")()] = false;
+		MultiChoiceProperty* p = new MultiChoiceProperty(_("Aspect Transformations"), choices,
+			_("Aspect transformation script binaries"), _("Compilation"));
+		p->SetAllowExtraSelections(true);
+		return p;
+	}
+
+	///////////////////////////////////////////////////////////////////////
+
 	_PROJECT_MANAGER_API Property* GenerateLineMappingsProperty (void) {
 		AggregateProperty *listType = new AggregateProperty(_("Stage Source Options"), _("Single stage source option"));
 		listType->AddProperty("original", new IntProperty(_("Original Line")));
@@ -104,10 +118,8 @@ namespace conf {
 			_("Target name for the output files"), _("Compilation"))
 		);
 		comp->AddInstanceProperty(GetDeploymentPropertyId(), GenerateScriptDeploymentProperty());
-		comp->AddInstanceProperty("stage_sources_options", GenerateStageSourcesProperty());
-		comp->AddInstanceProperty("aspects", new StringListProperty(_("Aspect Transformations"),
-			_("Aspect transformation script binaries"), _("Compilation"))
-		);
+		comp->AddInstanceProperty("stage_sources_options", GenerateStageSourcesProperty());		
+		comp->AddInstanceProperty("aspects", GenerateAspectsProperty());
 
 		Property* p = new FileListProperty(_("External Dependencies"),
 			_("Files dependencies for transformation scripts (stages or aspects)"), _("Compilation"));
@@ -143,10 +155,8 @@ namespace conf {
 				_("produce debug symbols"), 
 				_("Compilation")
 			)
-		);
-		props->AddProperty("aspects", new StringListProperty(_("Aspect Transformations"),
-			_("Aspect transformation script binaries"), _("Compilation"))
-		);
+		);		
+		props->AddProperty("aspects", GenerateAspectsProperty());
 	}
 
 	_PROJECT_MANAGER_API void AddScriptStageSourceProperties (PropertyTable* props) {

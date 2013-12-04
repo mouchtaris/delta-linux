@@ -58,6 +58,8 @@ namespace ide
 		DECLARE_EXPORTED_FUNCTION(void, SetChildProperties, (const Handle& handle));
 		DECLARE_EXPORTED_FUNCTION(int, OnCompareItems, (const Handle& handle1, const Handle& handle2));
 		DECLARE_EXPORTED_FUNCTION(void, OnLibraryDefinitionsChanged, (const std::string& classId, const StringList newDefinitions));
+		DECLARE_EXPORTED_FUNCTION(void, OnAspectProjectAdded, (const std::string& classId, const Handle& project));
+		DECLARE_EXPORTED_FUNCTION(void, OnAspectProjectRemoved, (const std::string& classId, const Handle& project));
 
 	protected:
 		///--- protected API
