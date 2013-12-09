@@ -798,18 +798,25 @@ void Script::ResolveAspectTransformations (void) {
 
 void Script::BuildSelf (void) {
 	bool upToDate = IsByteCodeUpToDate();
-	if (upToDate && !m_attachedScripts.empty())
-		BOOST_FOREACH(const Handle& source, CollectChildren(_T("StageSource"))) {
+	if (upToDate && !m_attachedScripts.empty()) {
+		HandleList attached = CollectChildren(_T("StageSource"));
+		attached.splice(attached.end(), CollectChildren(_T("StageResult")));
+		attached.splice(attached.end(), CollectChildren(_T("AspectResult")));
+		BOOST_FOREACH(const Handle& source, attached) {
 			Script* s = static_cast<Script*>(source.Resolve());
 			const std::string classId = s->GetClassId();
 			bool shouldCheck =	classId != "StageResult" && classId != "AspectResult" ||
 								conf::get_prop_value<conf::BoolProperty>(s->GetInstanceProperty("final"), false);
-			s_upToDate->clear();
-			if (shouldCheck && !s->IsUpToDateCalculation()) {
-				upToDate = false;
-				break;
+			if (shouldCheck) {
+				s_upToDate->clear();
+				s_upToDateVisitMap->clear();
+				if (!s->IsUpToDateCalculation()) {
+					upToDate = false;
+					break;
+				}
 			}
 		}
+	}
 
 	if (!upToDate)
 		BuildSelfImpl();
@@ -1631,9 +1638,10 @@ EXPORTED_SLOT_MEMBER(Script, void, OnAspectProjectAdded,
 {
 	if (Component* comp = project.Resolve()) {
 		using namespace conf;
-		if (const Property *property = GetInstanceProperty("aspects")) {
-			MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
-			p->AddChoice(Call<const String& (void)>(this, comp, "GetName")());
+		const Property* properties[2] = {GetInstanceProperty("aspects"), m_lastBuildProperties.GetProperty("aspects")};
+		for (unsigned i = 0; i < 2; ++i) {
+			MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(properties[i]));
+			p->AddChoice(Call<const String& (void)>(this, comp, "GetName")());			
 		}
 	}
 }
@@ -1645,9 +1653,10 @@ EXPORTED_SLOT_MEMBER(Script, void, OnAspectProjectRemoved,
 {
 	if (Component* comp = project.Resolve()) {
 		using namespace conf;
-		if (const Property *property = GetInstanceProperty("aspects")) {
-			MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(property));
-			p->RemoveChoice(Call<const String& (void)>(this, comp, "GetName")());
+		const Property* properties[2] = {GetInstanceProperty("aspects"), m_lastBuildProperties.GetProperty("aspects")};
+		for (unsigned i = 0; i < 2; ++i) {
+			MultiChoiceProperty* p = safe_prop_cast<MultiChoiceProperty>(const_cast<Property*>(properties[i]));
+			p->RemoveChoice(Call<const String& (void)>(this, comp, "GetName")());			
 		}
 	}
 }
@@ -2037,6 +2046,7 @@ bool Script::IsUpToDateCalculation (void) {
 						result = false;
 						break;
 					}
+					result = IsUpToDateCalculationWithScriptDependencies(m_aspectTransformations);
 				}
 
 				m_aspectTransformations.clear();

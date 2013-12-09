@@ -1729,8 +1729,9 @@ bool wxPGPropertyWithChildren::SetValueFromString( const wxString& text, int )
 
                     token = text.substr(startPos,pos-startPos-1);
 
-                    if ( !token.length() )
-                        break;
+					//accept [] for an empty container
+                    //if ( !token.length() )
+                    //    break;
 
                     wxPGProperty* child = Item(curChild);
 
