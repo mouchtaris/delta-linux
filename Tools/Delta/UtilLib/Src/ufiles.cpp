@@ -93,14 +93,10 @@ UTILLIB_FUNC const std::string ufileresolvewithpaths (const std::string& file, c
 
 #ifdef	_UNIX_
 #define	HOME_DIRECTORY_WILDCARD		"~"
-#define	DIR_SEPARATOR_CHAR			'/'
-#define	DIR_SEPARATOR_STR			"/"
 #endif
 
-#ifdef	_WIN32_
-#define	DIR_SEPARATOR_CHAR			'\\'
-#define	DIR_SEPARATOR_STR			"\\"
-#endif
+#define	DIR_SEPARATOR_CHAR			'/'
+#define	DIR_SEPARATOR_STR			"/"
 
 #define	IS_DIR_SEPARATOR_CHAR(c)	((c) == '/' || (c) == '\\')
 
