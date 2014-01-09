@@ -12,7 +12,7 @@
 #define	DSMALLOBJECTALLOCATOR_H
 
 #ifdef	_MAC_
-#include <alloc.h>
+#include <malloc/malloc.h>
 #else
 #include <malloc.h>
 #endif
