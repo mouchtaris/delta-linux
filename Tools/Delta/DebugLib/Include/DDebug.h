@@ -29,7 +29,7 @@ T* _DNOTNULL (T* p) {
 #if	!defined(DDEBUG_USE)
 
 #ifdef	_MAC_
-#include <alloc.h>
+#include <malloc/malloc.h>
 #else
 #include <malloc.h>
 #endif
