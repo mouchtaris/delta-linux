@@ -13,6 +13,7 @@
 
 #include "Component.h"
 #include "ComponentHandle.h"
+#include "ComponentRegistry.h"
 #include "Call.h"
 #include "DelayedCaller.h"
 #include "StringUtils.h"
@@ -505,7 +506,7 @@ void MetaBuildServer::HandleBuildStageSource (Client* client) {
 			Call<Handle (const String&)>(s_classId, "ProjectManager", "GetResourceBySymbolicURI")(util::std2str(source));
 		if (handle) {
 			Component* comp = handle.Resolve();
-			DASSERT(comp->GetClassId() == "StageSource" || comp->GetClassId() == "StageResult" || comp->GetClassId() == "AspectResult");		//stage or final result
+			DASSERT(ComponentRegistry::Instance().GetComponentEntry("AttachedScript").HasInstance(comp, true));
 			Component* parent = comp->GetParent();
 			UIntList buildId = Call<const UIntList (void)>(s_classId, parent, "GetWorkId")();
 			buildId.push_back(Call<uint (void)>(s_classId, parent, "NextWorkSerial")());
@@ -802,7 +803,7 @@ void MetaBuildServer::CleanUp (void) {
 ////////////////////////////////////////////////////////////
 
 void MetaBuildServer::OnCompileFinished (Component* script, const UIntList& buildId) {
-	DASSERT(script->GetClassId() == "StageSource" || script->GetClassId() == "StageResult" || script->GetClassId() == "AspectResult");
+	DASSERT(ComponentRegistry::Instance().GetComponentEntry("AttachedScript").HasInstance(script, true));
 	ComponentSet::iterator iter = pendingSources.find(script);
 	if (iter != pendingSources.end()) {
 		pendingSources.erase(iter);

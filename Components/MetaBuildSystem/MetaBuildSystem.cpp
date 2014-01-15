@@ -6,6 +6,7 @@
  */
 #include "MetaBuildSystem.h"
 #include "MetaBuildServer.h"
+#include "ComponentRegistry.h"
 
 #ifndef NO_VLD
 #include <vld.h>
@@ -66,8 +67,8 @@ namespace ide
 
 	EXPORTED_SLOT_STATIC(MetaBuildSystem, void, OnResourceWorkCompleted, (const Handle& resource, const String& task, const UIntList& workId), "ResourceWorkCompleted")
 	{
-		const std::string classId = resource.GetClassId();
-		if (task == _T("Build") && (classId == "StageSource" || classId == "StageResult" || classId == "AspectResult"))
+		Component *comp = resource.Resolve();
+		if (task == _T("Build") && comp && ComponentRegistry::Instance().GetComponentEntry("AttachedScript").HasInstance(comp, true))
 			MetaBuildServer::OnCompileFinished(resource.Resolve(), workId);
 	}
 

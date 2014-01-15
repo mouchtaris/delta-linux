@@ -109,7 +109,7 @@ public:
 	bool IsConst	(void) const { return type == SymbolType_Const;		}
 
 	Symbol* MyFunction		(void) const { return myFunction; }
-	void	SetMyFunction	(Symbol* f) { DASSERT(f && f->IsFunction()); myFunction = f; }
+	void	SetMyFunction	(Symbol* f) { DASSERT(!f || f->IsFunction()); myFunction = f; }
 
 	//******************************************************************
 	// Functions

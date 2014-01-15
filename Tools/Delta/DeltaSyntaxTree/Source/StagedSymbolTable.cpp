@@ -94,7 +94,7 @@ void Symbol::AddDependency(DependencyType type, Symbol* symbol)
 
 bool Symbol::DependsOnlyOnFunctionClosures(Symbol* function) {
 	for (DependencyList::const_iterator i = dependencies.begin(); i != dependencies.end(); ++i) {
-		DASSERT(i->second || i->first == NonLocal);
+		DASSERT(i->second || i->first == NonLocal || i->first == Inline);
 		if (i->first != Closure || i->second->MyFunction() != function)
 			return false;
 	}

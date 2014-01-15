@@ -497,7 +497,7 @@ static yyconst short int yy_chk[311] =
 
 #ifndef	_MSC_VER
 extern "C" {
-int isatty YY_PROTO(( int )) { return 0; }
+static int isatty YY_PROTO(( int )) { return 0; }
 }
 #endif
 

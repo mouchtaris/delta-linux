@@ -20,6 +20,7 @@
 #include "ProjectManagerFuncReturnTypes.h"
 #include "TextFile.h"
 
+#include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <set>
 #include <list>
@@ -125,6 +126,7 @@ namespace ide
 		uint										m_currentWorkSerial;
 		static boost::mutex							s_componentCallMutex;
 		static boost::mutex							s_allScriptsMutex;
+		static boost::mutex							s_dependencyMutex;
 
 		typedef std::list<conf::PropertyTable>		PropertyTableList;
 		PropertyTableList							m_attachedScripts;
@@ -236,6 +238,7 @@ namespace ide
 		void								LoadLastBuildProperties (void);
 
 		void								BuildSelf (void);
+		void								BuildSelfThread (void);
 		void								BuildSelfImpl (void);
 		void								LaunchCompiler (void);
 		ScriptPtrList						GetAllIntermediateSources (void);

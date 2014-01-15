@@ -284,6 +284,7 @@ namespace ide {
 
 	boost::mutex			Script::s_componentCallMutex;
 	boost::mutex			Script::s_allScriptsMutex;
+	boost::mutex			Script::s_dependencyMutex;
 	Script::ScriptPtrList*	Script::s_allScripts					= (ScriptPtrList*) 0;
 	Script::UpToDateMap*	Script::s_upToDate						= (UpToDateMap*) 0;
 
@@ -431,6 +432,13 @@ void Script::LoadLastBuildProperties (void) {
 		conf::PropertyTable source;
 		conf::AddScriptStageSourceProperties(&source);
 		source.Accept(std::string(STAGE_SOURCES_PROPERTY_TAG) + boost::lexical_cast<std::string>(i), &propertyLoader);
+		// Backward compatibility code.
+		conf::StringProperty* p = conf::safe_prop_cast<conf::StringProperty>(source.GetProperty("type"));
+		if (p->GetValue() == _T("stage"))
+			p->SetValue(_T("StageSource"));
+		else if (p->GetValue() == _T("result"))
+			p->SetValue(_T("StageResult"));
+		//
 		const String name = conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
 		const String type = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
 		bool final = conf::get_prop_value<conf::BoolProperty>(source.GetProperty("final"));
@@ -492,7 +500,7 @@ bool Script::DirectlyDependsOn (const Script* script) const {
 
 bool Script::DependsOnRecursion (const Script* from, const Script* to) {
 
-	if (from->DirectlyDependsOn(to))
+	if (from->m_buildDepsResolved && from->DirectlyDependsOn(to))
 		return true;
 
 	(*s_visitMap)[const_cast<Script*>(from)] = true;
@@ -734,8 +742,10 @@ void Script::GetAllScriptsProducingUnknownUsedByteCodeFile (
 
 void Script::GetAllScriptsProducingByteCodeFileFullPath (const std::string& fullPath, ScriptPtrList* putHere) {
 	boost::mutex::scoped_lock lock(s_allScriptsMutex);
-	for (ScriptPtrList::iterator i = s_allScripts->begin(); i != s_allScripts->end(); ++i)
-		if ((*i)->GetClassId() != "StageSource" && wxFileName(util::std2str((*i)->GetProducedByteCodeFileFullPath())).SameAs(util::std2str(fullPath)))
+	for (ScriptPtrList::iterator i = s_allScripts->begin(); i != s_allScripts->end(); ++i)		
+		if (!ComponentRegistry::Instance().GetComponentEntry("AttachedScript").HasInstance(*i, true) &&
+			wxFileName(util::std2str((*i)->GetProducedByteCodeFileFullPath())).SameAs(util::std2str(fullPath))
+		)
 			putHere->push_back(*i);
 }
 
@@ -774,6 +784,7 @@ void Script::ResolveAspectTransformations (void) {
 		func = "GetInterimTransformations";
 	else if (classId == "StageResult")
 		func = "GetPostTransformations";
+	//for classId == "AspectResult" we need no further aspect transformations
 	
 	if (!func.empty()) {
 		const Handle& wsp = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
@@ -799,9 +810,9 @@ void Script::ResolveAspectTransformations (void) {
 void Script::BuildSelf (void) {
 	bool upToDate = IsByteCodeUpToDate();
 	if (upToDate && !m_attachedScripts.empty()) {
-		HandleList attached = CollectChildren(_T("StageSource"));
-		attached.splice(attached.end(), CollectChildren(_T("StageResult")));
-		attached.splice(attached.end(), CollectChildren(_T("AspectResult")));
+		HandleList attached;
+		BOOST_FOREACH(const std::string classId, ComponentRegistry::Instance().GetComponentEntry("AttachedScript").GetDerivedClasses(true))		
+			attached.splice(attached.end(), CollectChildren(util::std2str(classId)));
 		BOOST_FOREACH(const Handle& source, attached) {
 			Script* s = static_cast<Script*>(source.Resolve());
 			const std::string classId = s->GetClassId();
@@ -831,6 +842,10 @@ void Script::BuildSelf (void) {
 		SetBuildCompleted(true, false);
 	}
 }
+
+/////////////////////////////////////////////////////////////////////////
+
+void Script::BuildSelfThread (void) { boost::thread(boost::bind(&Script::BuildSelf, this)); }
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -1057,11 +1072,11 @@ bool Script::ResolveDependencies (
 					outDeps->insert(newDep = GetScriptWithMostRecentSource(producers));
 					BUILD_WARNING_MULTIPLE_SOURCES(dbc, newDep->GetSource());
 				}
-				else {
-					outDeps->insert(newDep = producers.front());
-					newDep->m_buildDepsResolved = true;
-				}
-
+				else
+					outDeps->insert(newDep = producers.front());	
+				
+				boost::mutex::scoped_lock lock(s_dependencyMutex);
+				newDep->m_buildDepsResolved = true;
 				if (newDep == this)
 					BUILD_ERROR_CYCLIC_SELF_DEPENDENCY(GetSource());
 				else
@@ -1193,8 +1208,12 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 		SetBuildCompleted(false, false);
 		m_upToDate = true;						// We artificially set it up-to-date so that we do not rebuilt in this session.
 	}
-	else 
-		BuildWithScriptDependencies(m_buildDeps);
+	else {
+		if (m_buildDeps.empty())
+			BuildSelf();
+		else
+			BuildWithScriptDependencies(m_buildDeps);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -1487,8 +1506,8 @@ void Script::SetInitiatedBuildIsCompleted (Script* script, unsigned long pid, bo
 				BUILD_ERROR_FAILED_WHILE_COPYING_DEPENDENCIES(GetSource());
 				SetBuildCompleted(false, false);
 			}
-			else
-				timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Script::BuildSelf, this));	//Delayed so as to release any dependency mutexes
+			else				
+				timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(&Script::BuildSelfThread, this));	//Delayed so as to release any dependency mutexes
 		else {
 			BUILD_ERROR_FAILED_WHILE_BUILDING_DEPENDENCIES(GetSource());
 			SetBuildCompleted(false, false);
@@ -2015,7 +2034,10 @@ bool Script::IsUpToDateCalculation (void) {
 	bool result;
 	{
 		boost::mutex::scoped_lock lock(m_buildDepsMutex);
-		DASSERT(m_buildDeps.empty());
+
+		ScriptPtrSet oldBuildDeps = m_buildDeps;
+		m_buildDeps.clear();
+		bool oldBuildDepsResolved = m_buildDepsResolved;
 
 		// If already visited assume it is up-to-date, since the actual 
 		// up-to-date calculation will get us the correct results
@@ -2050,8 +2072,8 @@ bool Script::IsUpToDateCalculation (void) {
 				}
 
 				m_aspectTransformations.clear();
-				m_buildDeps.clear();
-				m_buildDepsResolved = false;
+				m_buildDeps = oldBuildDeps;
+				m_buildDepsResolved = oldBuildDepsResolved;
 			}
 		}
 	}

@@ -727,12 +727,17 @@ StringIdent:				IDENT		{ $$ = $1; }
 						|	KwdIdent	{ $$ = $1; }
 						;
 
-StringifyDottedIdents:		Stringify StringIdent
-								{ PE(T_IDENT); $$ = ASTCREATOR_BY_CONTEXT.MakeNode_StringifyDottedIdents($2); }
+StringifyDottedIdents:		Stringify StringIdent {
+								PE(T_IDENT);
+								$$ = ASTCREATOR_BY_CONTEXT.MakeNode_StringifyDottedIdents($2);
+								SET_LOCATION($$, @1, @2);
+							}
 						|	StringifyDottedIdents DOT 
 								{ PE2(T_DOT, T_IDENT); }
-							StringIdent
-								{ $$ = ASTCREATOR_BY_CONTEXT.MakeNode_StringifyDottedIdents($1, $4); }
+							StringIdent {
+								$$ = ASTCREATOR_BY_CONTEXT.MakeNode_StringifyDottedIdents($1, $4);
+								SET_LOCATION($$, @1, @4);
+							}
 						;
 						
 StringifyNamespaceIdent:	Stringify NamespacePath Ident {
