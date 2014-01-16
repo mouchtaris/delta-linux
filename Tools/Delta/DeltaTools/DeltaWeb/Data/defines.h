@@ -96,6 +96,7 @@
 #define	LIST_START		[ _list
 #define	LIST_END		]
 #define	LINK(url, t)	[_link _url(url) text  t ]
+#define	LINK_IN_TEXT(url, t)	TEXT_END, LINK(url, t), TEXT_START
 
 ///////////////////////////////////////////////////////////////////
 // Code fragments

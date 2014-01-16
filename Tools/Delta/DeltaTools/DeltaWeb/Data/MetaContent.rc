@@ -15,12 +15,4 @@ COMMA
 COMMA	
 #include 	"StdLib.rc"
 
-/*
-#include	"IDE.rc"		// TODO
-COMMA
-#include	"Reports.rc"	// TODO
-COMMA
-#include	"Download.rc"	// TODO
-*/
-
 ]

@@ -56,10 +56,10 @@ START_SEC("sl_impl", "Language implementation")
 index ["Implementation", "Research objectives"],
 [_text [
 	"The Delta language has a full-fledged multi-platform implementation in C++, with the current source-code base being 
-	approximately 200 KLOCs. The language and its tools are all implemented from scratch, meaning they do not rely 
-	on third-party language tools or technologies (like DLR, Eclipse or Visual Studio). Overall, our
+	approximately 330 KLOCs (excluding third party libraries). The language and its tools are all implemented from scratch,
+	meaning they do not rely on third-party language tools or technologies (like DLR, Eclipse or Visual Studio). Overall, our
 	implementation includes: compiler, virtual machine, debugger backend and frontend, standard runtime library, 
-	extra libraries (XML, Corba, wxWidgets), and an IDE with self-extensibility, syntax highlighting and 
+	extra libraries (AOP, CORBA, JSON, wxWidgets, XML), and an IDE with self-extensibility, syntax highlighting and 
 	two source-level debuggers.",
 	
 	NL2,
@@ -461,73 +461,7 @@ FIGURE(
 	"images/content/closures_in_debugger.jpg", 
 	center,  
 	"***The closure shown during debug inspection***"
-),
-
-TEXT_START
-	!definition "Nested functions with closures", 		NL1,
-	"Nested functions are supported that normally provide access to global
-	variables, and all functions visible at the point of their definition. Additionally,
-	via closures, access is granted to local variables and formal arguments 
-	of the outer, i.e. directly enclosing, function and to local variables of any outer block 
-	of the main program only if the current function is a top-level function. The latter constitute the
-	closure for an inner function, and are called closure vars, and upvalues of its closure. Additionally, 
-	in the Delta language access is provided to all closure vars of the outer function (thus an inner 
-	function has access to closure of its outer function).",
-
-	NL2,
-
-	"Although closures are supported in the Delta language, all their goodies can be
-	effectively emulated through ", !italic !emphatic "functors", " which essentially prescribe 
-	functions with state. The choice depends on your preference in using either a function object with 
-	a whitebox state where all facilities of the object system directly apply (functor) or a function with
-	a blackbox state (closure)."
-	]
-],
-
-TEXT("For more information on functors you you may refer to the  "), 
-DOC_REF("d_overloading", "operator overloading"),
-
-[ _text	[
-		" document for more details. Simple examples showing use of nested functions
-		and closures are provided below.",
-
-CODE_BLOCK "
-function f {
-	const N = 10;			// a constant local to 'f'
-	function f(x,y) {
-		function g { 
-			local v = N;	// non-local constants are visible
-			const N = 20;	// but can be redefined (shadowed)
-			return f(x, y); // 'x' and 'y' visible, closure vars for 'g'
-			return f(0,0);	// outer 'f' is visible
-			local x;		// this is local 'x' declaration
-		}
-		local x;			// this will shadow the 'x' arg
-		function 
-			{ x = 20; }		// 'x' visible, closure var for anonymous func
-		function
-			{ ::f(); }		// global 'f' function visible
-	}
-}
-
-y;							// implicit declaration of global 'y'
-{							// a block at global space
-	local x;				// 'x' is a local var (block scope)
-	function {
-		x = 20; 			// 'x' visible, clsoure var for anonymous func
-		y = 20;				// but can access directly global 'y'
-	}
-}
-
-function bind1st(f, x) 		// A simple binder using closures.
-	{ return lambda { f(x, |arguments|) }; }
-",
-	NL1,
-	"It should be noted that, debugging-wise, closures are always whitebox 
-	in the Delta language due to the powerful debugger inspection 
-	features which allow view closure contents (see figure below)."
-	]
-]
+)
 
 END_SEC,	// sl_stdfeatures
 

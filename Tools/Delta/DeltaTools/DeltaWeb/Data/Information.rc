@@ -14,77 +14,70 @@ index ["Information", "Credits", "Download"],
 
 START_SEC("si_credits", "Credits")
 	
-	TEXT(
+	TEXT_START
 		"The Delta language, its Sparrow IDE, and all accompanying tools 
 		or libraries, have been developed at the "
-	),
-	
-	LINK(
-		"http://www.ics.forth.gr/",
-		"Institute of Computer Science, FORTH"
-	),
 
-	[_text [
+		LINK_IN_TEXT("http://www.ics.forth.gr/", "Institute of Computer Science, FORTH")
 		".", NL2,
 
 		"The Delta language is designed, developed, extended and maintained by ", !green "Anthony Savidis", 
 		!italic " (2004-present)", ". The latter includes the compiler, virtual machine, standard library, debugger 
 		backend / frontend and the Disco console debugger. He is also the chief architect and development supervisor of all
 		implementation activities related to the Delta language.",
-		NL2,
-		
-		!green "Yannis Georgalis", " and ", !green "Themistoklis Bourdenas", " co-developed the initial 
+		NL2
+
+		LINK_IN_TEXT("https://www.researchgate.net/profile/Yannis_Georgalis2/", "Yannis Georgalis")
+		" and "
+		LINK_IN_TEXT("https://www.researchgate.net/profile/Themistoklis_Bourdenas/", "Themistoklis Bourdenas")
+		" co-developed the initial 
 		version of the Sparrow IDE as part of their Masters work ", !italic "(2006-2007)", ".",
-		NL2,
-	
-		!green "Yannis Lilis", ": (i) enhanced the project manager and debugger user-interface of the Sparrow IDE, 
+		NL2
+			
+		LINK_IN_TEXT("https://www.researchgate.net/profile/Yannis_Lilis/", "Yannis Lilis")
+		": (i) enhanced the project manager and debugger user-interface of the Sparrow IDE, 
 		while he fixed numerous bugs of the initial version ", !italic "(2007)", "; (ii) implemented in the Delta language
 		an extension component of the Sparrow IDE to support tree views for expression watches ", !italic "(2008)", "; (iii) 
 		implemented the linkage with Corba, enabling build Corba clients or servers directly in the Delta language ",
 		!italic "(2009)", "; and (iv) implemented the metaprogramming extensions for the Delta language and all related
 		metaprogramming and aspect-oriented programming extensions and facilities of the Sparrow IDE (compile-time debugging,
 		debugging of aspect programs, AST inspection, etc.) as part of his PhD work ", !italic "(2010-2013)", ".",
-		NL2,
+		NL2
 
-		!green "Nikos Koutsopoulos", " implemented: (i) the search and replace facility of the editor
+		LINK_IN_TEXT("http://www.linkedin.com/pub/nikolaos-koutsopoulos/44/8b9/163", "Nikos Koutsopoulos")
+		" implemented: (i) the search and replace facility of the editor
 		as part of his Diploma work ", !italic "(2009)", "; and (ii) the i-views component (interactive object 
 		graph for the source-level debugger) as part of his Masters work ", !italic "(2009-2011)", ".",
 		NL2,
 
-		!green "Andreas Maragudakis", ": (i) implemented a parser which loads XML files into Delta objects
+		!blue "Andreas Maragudakis", ": (i) implemented a parser which loads XML files into Delta objects
 		as part of his Diploma work ", !italic "(2009)", "; and (ii) implemented the porting of wxWidgets as a dynamically-loaded
 		Delta library ", !italic "(2010)", ".",
-		NL2,
-
-		!green "Irini Papakwnstantinou", " implemented in the Delta language the source browser of the Sparrow IDE 
+		NL2
+		
+		LINK_IN_TEXT("http://www.linkedin.com/in/irpap", "Irini Papakwnstantinou")
+		" implemented in the Delta language the source browser of the Sparrow IDE 
 		(an extension component) as part of her Diploma work ", !italic "(2009)", ".",
-		NL2,
-
-		!green "Nikos Muhtaris ", "implemented the porting of the Delta language under Linux (by implementing 
-		in Delta a converter from Visual Studio .sln and .vcproj files to Makefiles) as part of his 
-		pre-Master's work ", !italic "(2010)", ".",
-		NL2,
-
-		!green "Kostantinos Mousikos", " implemented in the Delta language a generator of interactive web documents
-		 as part of his Diploma work. The latter has been used to produce the (entire) current site ", !italic "(2009)", ".",
-		
-		NL2,
-
-		!green "Christos Despotakis", " implemented in the Delta language the build tree view of the Sparrow IDE
-		 (an extension component) as part of his pre-Diploma work ", !italic "(2010)", ".",
-		
-		NL2,
-
-		!green "Yannis Apostolidis", " as part of his Diploma work implemented: (i) a parser which loads JSON files 
-		into Delta objects; and (ii) an encoder of aggregates to JSON for the Delta debugger backend ", 
-		!italic "(2013)", ".",
-		
 		NL2
 
-		]
-	],
-	
-	TEXT("Site development, maintainence and contact person: "), 
+		LINK_IN_TEXT("http://www.linkedin.com/pub/kostis-mousikos/20/678/1a5", "Kostantinos Mousikos")
+		" implemented in the Delta language a generator of interactive web documents
+		 as part of his Diploma work. The latter has been used to produce the (entire) current site ", !italic "(2009)", ".",		
+		NL2
+		
+		LINK_IN_TEXT("http://www.linkedin.com/in/despotak", "Christos Despotakis")
+		" implemented in the Delta language the build tree view of the Sparrow IDE
+		 (an extension component) as part of his pre-Diploma work ", !italic "(2010)", ".",		
+		NL2
+		
+		LINK_IN_TEXT("http://www.linkedin.com/in/giannisapostolidis", "Yannis Apostolidis")
+		" as part of his Diploma work implemented: (i) a parser which loads JSON files 
+		into Delta objects; and (ii) an encoder of aggregates to JSON for the Delta debugger backend ", 
+		!italic "(2013)", ".",		
+		NL2,
+
+		"Site development, maintainence and contact person: "
+	TEXT_END,
 	LINK("http://www.ics.forth.gr/hci/people/as.html", "Anthony Savidis")
 
 END_SEC,	// si_credits
@@ -257,7 +250,7 @@ START_SEC("si_download", "Download")
 
 END_SEC,	// si_download
 
-START_SEC("si_reports", "Reports")
+START_SEC("si_pubs", "Publications")
 
 #define DOI(x)	TEXT("doi:"), LINK("http://dx.doi.org/" #x, #x), SL2
 
@@ -265,33 +258,39 @@ START_SEC("si_reports", "Reports")
 	LIST_START
 		[
 			TEXT_START
-			"Lilis, Y., Savidis, A. ", !italic "An Integrated Implementation Framework for Compile-Time Metaprogramming.",
+			"Lilis, Y., Savidis, A. (2014)", !italic "An Integrated Implementation Framework for Compile-Time Metaprogramming.",
 			" Softw: Pract. Exper. To appear."
-			TEXT_END, SL2
+			TEXT_END, DOI(10.1002/spe.2241)
 		],
 		[
 			TEXT_START
-			"Lilis, Y., Savidis, A., Valsamakis, Y. ", !italic "Staged Model-Driven Generators: Shifting Responsibility for Code Emission to Embedded Metaprograms.",
-			" In Proceedings of the 2nd International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2014), 7-9 January, Lisbon, Portugal. To appear."
+			"Lilis, Y., Savidis, A. (2014)", !italic "Aspects for Stages: Cross Cutting Concerns for Metaprograms.",
+			" Journal of Object Technology. To appear."
 			TEXT_END, SL2
 		],
 		[
 			TEXT_START
 			"Lilis, Y., Savidis, A. (2013). ", !italic "An Integrated Approach to Source Level Debugging and Compile Error Reporting in Metaprograms.",
-			" Journal of Object Technology. Journal of Object Technology 12(3): 1: 1-26."
+			" Journal of Object Technology 12(3): 1: 1-26."
 			TEXT_END, DOI(10.5381/jot.2013.12.3.a2)
 		],
 		[
 			TEXT_START
-			"Lilis, Y., Savidis, A., Valsamakis, Y. (2013). ", !italic "Self Model-Driven Engineering Through Metaprograms.",
-			" In Proceedings of the 17th Panhellenic Conference on Informatics (PCI 2013), 19-21 September. ACM, New York, NY, USA, 136-143."
-			TEXT_END, DOI(10.1145/2491845.2491872)
+			"Lilis, Y., Savidis, A., Valsamakis, Y. (2014)", !italic "Staged Model-Driven Generators: Shifting Responsibility for Code Emission to Embedded Metaprograms.",
+			" In Proceedings of the 2nd International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2014), 7-9 January, Lisbon, Portugal."
+			TEXT_END, SL2
 		],
 		[
 			TEXT_START
 			"Savidis, A., Koutsopoulos, N. (2014). ", !italic "A Programmer-Centric and Task-Optimized Object Graph Visualizer for Debuggers.",
 			" In M. Huang and W. Huang (ed.) Innovative Approaches of Data Visualization and Visual Analytics, 1st Edition, IGI Global, pp. 385-396."
 			TEXT_END, DOI(10.4018/978-1-4666-4309-3.ch018)
+		],
+		[
+			TEXT_START
+			"Lilis, Y., Savidis, A., Valsamakis, Y. (2013). ", !italic "Self Model-Driven Engineering Through Metaprograms.",
+			" In Proceedings of the 17th Panhellenic Conference on Informatics (PCI 2013), 19-21 September. ACM, New York, NY, USA, 136-143."
+			TEXT_END, DOI(10.1145/2491845.2491872)
 		],
 		[
 			TEXT_START
@@ -379,6 +378,6 @@ START_SEC("si_reports", "Reports")
 
 #undef DOI
 
-END_SEC	// si_reports
+END_SEC	// si_pubs
 
 END_DOC

@@ -80,9 +80,8 @@ mainmenu	[
 		_submenu _title("Information")			documentref "d_information",
 		[
 			[_simpleitem _title("Credits") 		sectionref "si_credits"		],
-			[_simpleitem _title("License") 		sectionref "si_license"		],
 			[_simpleitem _title("Download")		sectionref "si_download"	],
-			[_simpleitem _title("Reports") 		sectionref "si_reports"		]
+			[_simpleitem _title("Publications") sectionref "si_pubs"		]
 		]
 	]
 ]
