@@ -180,7 +180,7 @@ template <class T,  class TCmp = ucmpdefaultfunc<T> > class usmartlist {
 
 		void		setcurr (ulistitem* p) {
 						DASSERT(Invariant()); 
-						if (curr = p) 
+						if (curr = p)
 							DASSERT(curr->Invariant()); 
 					}
 
