@@ -154,7 +154,7 @@
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
-            <collapsed>1</collapsed>
+            <collapsed>0</collapsed>
             <bytecode_path></bytecode_path>
             <aspects></aspects>
         </ScriptProperties>
