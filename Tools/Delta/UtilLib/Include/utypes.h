@@ -75,7 +75,7 @@
 #pragma warning (disable : 4312)	// conversion from '<this>' to '<that>' of greater size
 #pragma warning (disable : 4275)	// non dll-interface struct '<this>' used as base for dll-interface struct '<that>'
 #pragma warning (disable : 4355)	// 'this' : used in base member initializer list
-
+#pragma warning (disable : 4503)	// 'template class' : decorated name length exceeded, name was truncated
 #endif
 
 //---------------------------------------------------------------
