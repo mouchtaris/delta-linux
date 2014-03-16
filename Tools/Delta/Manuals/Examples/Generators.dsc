@@ -66,3 +66,51 @@ foreach (x, factorial(9))
 */
 
 ////////////////////////////////////////////////////////////
+// retrofitting with untyped attributes
+
+std::print("Redtrofgitting with traits via untyped attribute pattern:\n");
+
+// Point3d ctor; fields as x,y,z
+function Point3d (x,y,z){ 
+	return [ @x :x, @y : y, @z : z ];
+}
+// Vector3d ctor; an array of values
+function Vector3d (x,y,z){ 
+	return [ x, y, z];
+}
+
+// retrofitting Vector3 using untyped attribute pattern 
+function Vector3d_point_traits (v) {
+	return [
+		@x {	
+			@set method(v) 	{ v[0] = v; }
+			@get method 	{ return v[0]; } 
+		},
+		@y {	
+			@set method(v) 	{ v[1] = v; }
+			@get method 	{ return v[1]; } 
+		},
+		@z {	
+			@set method(v) 	{ v[2] = v; }
+			@get method 	{ return v[2]; } 
+		}
+	];
+}
+
+function move (a, b) {
+	a.x += b.x;
+	a.y += b.y;
+	a.z += b.z;
+}
+
+p1 = Point3d(1,2,3);
+v1 = Vector3d(-1,-2,-3);
+move(
+	p1, 
+	Vector3d_point_traits(v1)	// retrofitting manually applied
+);
+
+std::print(p1, nl);
+
+////////////////////////////////////////////////////////////
+
