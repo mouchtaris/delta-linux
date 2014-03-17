@@ -68,16 +68,7 @@ foreach (x, factorial(9))
 ////////////////////////////////////////////////////////////
 // retrofitting with untyped attributes
 
-std::print("Redtrofgitting with traits via untyped attribute pattern:\n");
-
-// Point3d ctor; fields as x,y,z
-function Point3d (x,y,z){ 
-	return [ @x :x, @y : y, @z : z ];
-}
-// Vector3d ctor; an array of values
-function Vector3d (x,y,z){ 
-	return [ x, y, z];
-}
+std::print("Retro-fitting with traits via untyped attribute pattern:\n");
 
 // retrofitting Vector3 using untyped attribute pattern 
 function Vector3d_point_traits (v) {
@@ -97,18 +88,33 @@ function Vector3d_point_traits (v) {
 	];
 }
 
+// Point3d ctor; fields as x,y,z with identity as traits
+function Point3d (x,y,z){ 
+	return [ 
+		@x :x, @y : y, @z : z, 
+		@point_traits : lambda(p){p} 
+	];
+}
+
+// Vector3d ctor; an array of values
+function Vector3d (x,y,z){ 
+	return [ 
+		x, y, z, 
+		@point_traits : Vector3d_point_traits 
+	];
+}
+
 function move (a, b) {
-	a.x += b.x;
-	a.y += b.y;
-	a.z += b.z;
+	local t1 = a.point_traits(a);
+	local t2 = b.point_traits(b);
+	t1.x += t2.x;
+	t1.y += t2.y;
+	t1.z += t2.z;
 }
 
 p1 = Point3d(1,2,3);
 v1 = Vector3d(-1,-2,-3);
-move(
-	p1, 
-	Vector3d_point_traits(v1)	// retrofitting manually applied
-);
+move(p1, v1);
 
 std::print(p1, nl);
 
