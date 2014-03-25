@@ -66,7 +66,7 @@ foreach (x, factorial(9))
 */
 
 ////////////////////////////////////////////////////////////
-// retrofitting with untyped attributes
+// Retrofitting with untyped attributes
 
 std::print("Retro-fitting with traits via untyped attribute pattern:\n");
 
