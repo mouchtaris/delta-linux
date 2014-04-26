@@ -596,6 +596,8 @@ template <class T> class ubag {
 	~ubag(){}
 };
 
+typedef ubag<std::string> ustrbag;
+
 //---------------------------------------------------------------
 
 #define	UDISABLE_ASSIGN_OPERATOR_AND_COPY_CONSTRUCTOR_PRIVATE(_class)				\
