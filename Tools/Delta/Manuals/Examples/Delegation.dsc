@@ -48,16 +48,17 @@ Circle = [
 		], 
 	method @operator()(r, x, y) {
 		delegate(
-			local c = [ 
+			local result = [ 
 				@r : r, @x : x, @y : y,
-				method destroy { undelegate(self, getdelegates(self)[0]); }
+				method destroy 
+					{ undelegate(self, getdelegates(self)[0]); }
 			],
 			self.prototype
 		);
-		return c;
-	},
-	function GlobalInsideTable { print("GlobalInsideTable\n"); }
+		return result;
+	}
 ];
+
 c1 = Circle(10, 0, 0);
 c2 = Circle(20, 10, -10);
 print(c1.area(), nl, c2.perimeter(), nl);
