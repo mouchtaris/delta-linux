@@ -68,6 +68,7 @@ UTILLIB_FUNC time_t					ufilechangetime (const std::string& path);
 UTILLIB_FUNC bool					ustorebinaryfile (const char* path, void* buffer, util_ui32 size);
 UTILLIB_FUNC void*					uloadbinaryfile (const char* path, util_ui32* size);	// Loads a file into memory. Delete via VPDEL().
 UTILLIB_FUNC bool					uloadtextfile (const std::string& path, std::string* at);
+UTILLIB_FUNC bool					ustoretextfile (const std::string& path, const std::string& text);
 UTILLIB_FUNC FILE*					ubinaryfileopen (const std::string& path, const char* mode);
 UTILLIB_FUNC bool					ufilepathsequal (const std::string& path1, const std::string& path2);
 UTILLIB_FUNC const std::string		ugetcwd (void);

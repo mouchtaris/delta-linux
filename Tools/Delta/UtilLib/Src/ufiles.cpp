@@ -356,6 +356,16 @@ UTILLIB_FUNC bool uloadtextfile (const std::string& path, std::string* at) {
 		return false;
 }
 
+UTILLIB_FUNC bool ustoretextfile (const std::string& path, const std::string& text) {
+	if (FILE* fp = fopen(path.c_str(), "wt")) {
+		fputs(text.c_str(), fp);
+		fclose(fp);
+		return true;
+	}
+	else
+		return false;
+}
+
 ///////////////////////////////////////////////////////////////
 
 UTILLIB_FUNC const std::string ufileext (const char* fname) {
