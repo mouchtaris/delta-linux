@@ -72,8 +72,15 @@ UTILLIB_FUNC bool					ustoretextfile (const std::string& path, const std::string
 UTILLIB_FUNC FILE*					ubinaryfileopen (const std::string& path, const char* mode);
 UTILLIB_FUNC bool					ufilepathsequal (const std::string& path1, const std::string& path2);
 UTILLIB_FUNC const std::string		ugetcwd (void);
+
 inline bool							uisdirseparator (char c)
 										{  return c == '/' || c == '\\'; }
+inline void							uadddirseparator (std::string& s) {
+										DASSERT(!s.empty());
+										char c = s[s.length() - 1];
+										if (!uisdirseparator(c))
+											s.push_back('/');
+									}
 inline bool							uisabsolutepath (const std::string& path)
 										{ char c = path[0]; return c == '~' || uisdirseparator(c); }
 
