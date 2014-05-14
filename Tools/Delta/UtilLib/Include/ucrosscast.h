@@ -29,6 +29,15 @@ class UTILLIB_CLASS CrossCastable {
 	virtual ~CrossCastable(){}
 };
 
+#define	CROSS_CASTABLE_WITH_DELETE_SUBCLASS_METHOD_IMPL		\
+	virtual void*	BottomInstance (void) { return this; }	\
+	virtual void	Delete (void) { DDELETE(this); }
+
+class UTILLIB_CLASS CrossCastableWithDelete : public  CrossCastable {
+	public:
+	virtual void	Delete (void) = 0;
+};
+
 //---------------------------------------------------------------
 // Safe dynamic casting (extra to C++) using class names. Can use
 // any typed subobject pointer in a polymorphic object. It will not work
