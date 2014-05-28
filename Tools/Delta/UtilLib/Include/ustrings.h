@@ -45,6 +45,14 @@ UTILLIB_FUNC const std::string 	unum2string (double val);	// Only the characters
 UTILLIB_FUNC const std::string 	uint2hexstring (util_ui32 val);
 UTILLIB_FUNC void				usupresswhitespace (const std::string& inputPath);
 
+inline void						uappend_with_newline (std::string& dest, const std::string& src) {
+									if (!src.empty()) {
+										if (!dest.empty())
+											dest += "\n";
+										dest += src;
+									}
+								}
+
 // Leaves a "..." after the 'n' characters.
 UTILLIB_FUNC const std::string	ucopymaxwithsuffix (const std::string& s, util_ui32 n);
 
