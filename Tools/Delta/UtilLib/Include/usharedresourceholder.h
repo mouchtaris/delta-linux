@@ -96,7 +96,8 @@ template <class RcTraits> class usharedresourceholder {
 		return rc;
 	}
 
-	void unuse (T* rc) { 
+	void unuse (T* rc) {
+
 		typename std::map<T*, rc_entry>::iterator i = byRc.find(rc);
 		DASSERT(i != byRc.end() && i->second.second);
 		
