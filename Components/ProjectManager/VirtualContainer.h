@@ -81,6 +81,7 @@ namespace ide
 	private:
 
 		///--- private API
+		bool AreChildrenUpToDate(Component* container);
 		void WorkThread(const std::string& task, const UIntList& workId);
 		void ClearWorkingChildren(void);
 		

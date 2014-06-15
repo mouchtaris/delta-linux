@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <functional>
 
+#include "BuildLog.h"
 //-----------------------------------------------------------------------
 
 #define	DASSERT								assert
@@ -412,7 +413,6 @@ void Script::SaveLastBuildProperties (void) {
 /////////////////////////////////////////////////////////////////////////
 
 void Script::LoadLastBuildProperties (void) {
-
 	const String file = GetProducedBuildInfoFileFullPath(); 
 	wxXmlDocument doc;
 	if (!wxFileName::FileExists(file)	|| 
@@ -808,6 +808,7 @@ void Script::ResolveAspectTransformations (void) {
 /////////////////////////////////////////////////////////////////////////
 
 void Script::BuildSelf (void) {
+	
 	bool upToDate = IsByteCodeUpToDate();
 	if (upToDate && !m_attachedScripts.empty()) {
 		HandleList attached;
@@ -850,6 +851,8 @@ void Script::BuildSelfThread (void) { boost::thread(boost::bind(&Script::BuildSe
 /////////////////////////////////////////////////////////////////////////
 
 void Script::BuildSelfImpl (void) {
+
+
 	if (m_aspectTransformations.empty())
 		LaunchCompiler();
 	else
@@ -1209,6 +1212,14 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 		m_upToDate = true;						// We artificially set it up-to-date so that we do not rebuilt in this session.
 	}
 	else {
+		for (ide::Script::ScriptPtrSet::iterator it = m_buildDeps.begin();it!=m_buildDeps.end();){
+			if ( __BL.isScriptUpToDate( (*it)->GetProducedByteCodeFileFullPath() )){
+				it = m_buildDeps.erase(it);
+			}
+			else{
+				++it;
+			}
+		}
 		if (m_buildDeps.empty())
 			BuildSelf();
 		else
@@ -1414,6 +1425,7 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 
 	ClearBuildInformation();
 	m_upToDate = succeeded;
+	if (succeeded)__BL.updateBytecode(this->GetProducedByteCodeFileFullPath());
 
 	// Is it scheduled to run automatically ?
 	if (IsRunAutomaticallyAfterBuild())
@@ -2245,9 +2257,20 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSe
 /////////////////////////////////////////////////////////////////////////
 
 unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script* initiator) {
+	
 
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 
+	ScriptPtrSet outDeps;
+	StdStringList externalDeps;
+	StringList deps;
+	bool ok = ResolveDependencies(ExtractDependencies(), &outDeps, &externalDeps, false);
+
+	for (ScriptPtrSet::iterator it = outDeps.begin(); it != outDeps.end(); ++it){
+		deps.push_back( util::std2str((*it)->GetProducedByteCodeFileFullPath()) );
+	}
+
+	__BL.add(this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps);
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
 	if (m_upToDate) {
@@ -2289,7 +2312,13 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	InitialiseNewBuildProcess(workId);
 	m_debugBuild = debugBuild;
 
+
+	deps.clear();
 	ResolveAspectTransformations();
+	for (ide::Script::ScriptPtrSet::iterator it = m_aspectTransformations.begin(); it!=m_aspectTransformations.end(); ++it){
+		deps.push_back( util::std2str( (*it)->GetProducedByteCodeFileFullPath() ) );
+	}
+	__BL.addAspects(this->GetProducedByteCodeFileFullPath(),deps);
 	if (!m_aspectTransformations.empty())
 		BuildWithScriptDependencies(m_aspectTransformations);
 	else {

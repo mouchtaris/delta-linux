@@ -12,7 +12,6 @@
  */
 
 #include "Script.h"
-
 #include "StringUtils.h"
 #include "Properties.h"
 #include "ExtProperties.h"
@@ -49,6 +48,7 @@
 #include "Icons/delete.xpm"
 #include "Icons/properties.xpm"
 #include <algorithm>
+#include "BuildLog.h"
 
 #define MAX_LIBRARY_FUNC_DESCRIPTION		1024
 
@@ -154,6 +154,7 @@ namespace ide
 	{
 		const Handle& workspace = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
 		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")()) {
+//			if (__BL.isScriptUpToDate(this->GetProducedByteCodeFileFullPath()))return;/////////////////////////////////////////////////////////////////////////////////
 			Call<void (const Handle&, const String&)>(this, workspace, "StartWorking")(this, _T("Build"));
 			Build(UIntList(1, 1));
 		}

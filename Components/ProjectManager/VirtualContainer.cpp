@@ -48,6 +48,8 @@
 #include "Icons/add_existing_item.xpm"
 #include "Icons/add_filter.xpm"
 
+#include "BuildLog.h"
+
 namespace ide
 {
 	///--- Functor DescendingCaller
@@ -500,6 +502,7 @@ namespace ide
 	EXPORTED_SLOT_MEMBER(VirtualContainer, void, OnResourceWorkCompleted, (const Handle& resource,
 		const String& task, const UIntList& workId), "ResourceWorkCompleted")
 	{
+
 		Component *comp = resource.Resolve();
 		if (comp && comp->GetParent() == this) {
 			bool lastResourceBuilt = false;
@@ -576,14 +579,41 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+
+	bool VirtualContainer::AreChildrenUpToDate(Component* container){
+		VirtualContainer* con = static_cast<VirtualContainer*>(container);
+		BOOST_FOREACH(Component* child, GetChildren())
+			if (ComponentRegistry::Instance().GetComponentEntry(child->GetClassId()).HasFunction("Build")) {
+				std::string type = child->GetClassId();
+				if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect" )){
+					Script* tmp = static_cast<Script*>(child);
+					if (!__BL.isScriptUpToDate(tmp->GetProducedByteCodeFileFullPath()))return false;
+				}
+				else if ( type=="Project" || type == "Workspace"){
+					return con->AreChildrenUpToDate(child);
+				}
+			}
+		return true;
+	}
+
+
+	//-----------------------------------------------------------------------
+
 	void VirtualContainer::WorkThread(const std::string& task, const UIntList& workId)
 	{
 		m_workId = workId;
 		timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, util::std2str(task), m_workId));
-
 		List childrenForWork;
 		BOOST_FOREACH(Component* child, GetChildren())
 			if (ComponentRegistry::Instance().GetComponentEntry(child->GetClassId()).HasFunction(task)) {
+				std::string type = child->GetClassId();
+				if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect") && task=="Build"){
+					Script* tmp = static_cast<Script*>(child);
+					if (__BL.isScriptUpToDate(tmp->GetProducedByteCodeFileFullPath()))continue;
+				}
+				else if (( type=="Project" || type=="Workspace") && task=="Build" ){
+					if (AreChildrenUpToDate(child))continue;
+				}
 				boost::recursive_mutex::scoped_lock lock(m_workingChildrenMutex);
 				m_workingChildren[child] = WorkInfo(0, UIntList());
 				childrenForWork.push_back(child);

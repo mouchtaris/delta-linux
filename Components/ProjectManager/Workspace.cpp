@@ -61,6 +61,7 @@
 #include "Icons/step_over.xpm"
 #include "Icons/step_out.xpm"
 #include "Icons/run_to_cursor.xpm"
+#include "BuildLog.h"
 
 namespace ide
 {
@@ -545,7 +546,9 @@ namespace ide
 
 	EXPORTED_FUNCTION(Workspace, void, StartWorking, (const Handle& root, const String& task))
 	{
+
 		if (!m_rootWorkingResource) {
+			if (util::str2std(task)=="Build")__BL.read();
 			m_rootWorkingResource = root;
 			m_task = task;
 			SetWorkspaceWorkCommandsStatus(false);
@@ -827,6 +830,7 @@ namespace ide
 
 	void Workspace::OnWorkCompleted(const Handle& root, const String& task)
 	{
+		__BL.save();
 		sigWorkCompleted(root, task);
 	}
 
