@@ -364,18 +364,33 @@ UTILLIB_FUNC char* ustrreverse (char* src) {
 	if (!src || !*src)
 		return src;
 
-	static char text[256];
-	util_ui16 len = (util_ui16) strlen(src);
-	DASSERT(len  < 256);
+	util_ui32 len = (util_ui32) strlen(src);
+	util_ui32 n   = (util_ui32) len >> 1;		// half length
 
-	char* s1 = text;
-	char* s2 = src + --len;
+	char* s1 = src;	// first char
+	char* s2 = src + len - 1;	// last char
 
-	while (len--)
-		*s1++ = *s2--;
-	*s1 = '\0';
+	while (n--)
+		uswap(*s1++, *s2--);
 
-	return text;
+	return src;
+}
+
+/////////////////////////////////////////////////////////////////
+
+UTILLIB_FUNC std::string& ustrreverse (std::string& src) {
+
+	if (!src.empty()) {
+
+		util_ui32	j	= src.length();
+		util_ui32	i	= 0;
+		util_ui32	n	= j >> 1;
+
+		while (n--)
+			uswap(src[i++], src[--j]);
+	}
+
+	return src;
 }
 
 //------------------------------------------------------------------

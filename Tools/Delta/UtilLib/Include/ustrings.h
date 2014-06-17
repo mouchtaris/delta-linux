@@ -145,13 +145,22 @@ UTILLIB_FUNC char*				ustrnmaxcpy (char* dest, const char* src, util_ui16 maxLen
 UTILLIB_FUNC void				ustrnmaxcpy (std::string& dest, const char* src, util_ui16 maxLen);
 UTILLIB_FUNC char*				umaxstrcat (char* dest, const char* src, util_ui16 maxLen);
 UTILLIB_FUNC char*				ucopystr (const char* str, util_ui16 maxLen);
-UTILLIB_FUNC char*				ustrreverse (char* src);
-UTILLIB_FUNC char*				ustrupper (char* s);
-UTILLIB_FUNC char*				ustrlower (char* s);
+UTILLIB_FUNC char*				ustrreverse (char* src);	// modifies and returns arg
+UTILLIB_FUNC std::string&		ustrreverse (std::string& src);
+inline const std::string		ustrreverse (const std::string& src)
+									{ return ustrreverse(utempobj(std::string(src))); }
+inline const std::string		ustrreverse (const char* src)
+									{ return ustrreverse(utempobj(std::string(src))); }
+UTILLIB_FUNC char*				ustrupper (char* s);		// modifies and returns arg
+UTILLIB_FUNC char*				ustrlower (char* s);		// modifies and returns arg
 UTILLIB_FUNC std::string&		ustrupper (std::string& s);
 UTILLIB_FUNC std::string&		ustrlower (std::string& s);
 UTILLIB_FUNC const std::string	ustrupper (const std::string& s);
 UTILLIB_FUNC const std::string	ustrlower (const std::string& s);
+inline const std::string		ustrupper (const char* s) 
+									{ return ustrupper(std::string(s)); }
+inline const std::string		ustrlower (const char* s) 
+									{ return ustrlower(std::string(s)); }
 UTILLIB_FUNC util_ui16			ustrpos (const char** arr, util_ui16 total, const char* s);
 UTILLIB_FUNC char*				ureadquotedstring (FILE* fp, char* buffer, util_ui16 maxLen);
 UTILLIB_FUNC bool				ureadquotedstring (FILE* fp, std::string& s);
