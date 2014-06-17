@@ -254,7 +254,9 @@ template <class F, class D = ucallbackwithclosure<F> > class ucallbacklist {
 	void	AddOn##_name(_type f, void* c = (void*) 0) const			\
 				{ _list.add(f, c); }									\
 	void	RemoveOn##_name (_type f, void* c = (void*) 0) const		\
-				{ _list.remove(f, c); }
+				{ _list.remove(f, c); }									\
+	void	ClearOn##_name (void)										\
+				{ _list.clear(); }
 
 /////////////////////////////////////////////////////////////////
 // This class can be used as a base for classes that aim to provide
