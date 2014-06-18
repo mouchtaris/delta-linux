@@ -592,6 +592,8 @@ namespace ide
 				else if ( type=="Project" || type == "Workspace"){
 					return con->AreChildrenUpToDate(child);
 				}
+				else
+					assert(false);
 			}
 		return true;
 	}

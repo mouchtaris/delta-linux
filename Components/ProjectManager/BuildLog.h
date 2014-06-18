@@ -65,20 +65,42 @@ namespace bl{
 
 	};
 //----------------------------
+
 	class script{
 
 	public:
-		script();
-		string type;
-		string dsc;
-		string dbc;
-		time_t m_dsc;
-		time_t m_dbc;
-		map<string,bool> uses;
-		map<string,bool> usedby;
-		bool dirty;
-	private:		
-		
+
+		string				type;
+		string				dsc;
+		string				dbc;
+		time_t				m_dsc;
+		time_t				m_dbc;
+		map<string,bool>	uses;
+		map<string,bool>	usedby;
+		bool				dirty;
+
+		bool	Inv (void) const;
+
+		const script& operator=(const script& s) 
+				{ new (this) script(s); return *this; }
+
+		script (void) :
+			m_dsc	(0),
+			m_dbc	(0),
+			dirty	(true)
+			{}
+
+		script (const script& s) :
+			type	(s.type),
+			dsc		(s.dsc),
+			dbc		(s.dbc),
+			m_dsc	(s.m_dsc),
+			m_dbc	(s.m_dbc),
+			uses	(s.uses),
+			usedby	(s.usedby),
+			dirty	(s.dirty)
+			{}
+				
 	};
 
 	template <typename T> BuildLog& operator <<(BuildLog& log, T const& value) {

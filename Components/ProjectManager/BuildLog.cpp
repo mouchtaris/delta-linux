@@ -5,11 +5,12 @@
 #include "VirtualContainer.h"
 #include <sys/stat.h>
 #include <assert.h>
-	
+#include <ctype.h>
+
 #include <time.h>
 #include "Script.h"
 
-#define LOG_ENABLED false
+#define LOG_ENABLED true
 
 using namespace std;
 using ide::Script;
@@ -39,32 +40,51 @@ namespace bl{
 		}
 	}
 
+	static bool IsValidPath (const std::string& s) {
+		if (s.empty())
+			return false;
+		for (unsigned i = 0, n = s.length(); i < n; ++i)
+			if (!isprint(s[i]))
+				return false;
+		return true;
+	}
+
+	bool script::Inv (void) const {
+		return	IsValidPath(dbc) &&
+				IsValidPath(dsc);
+	}
+
 	void BuildLog::add(String name,string byte,string type,StringList deps){
+
 		assert(!byte.empty());
 		assert(!type.empty());
 		assert(!name.empty());
 
-		string bt = Canonicalize(byte);
-		script_map[bt].dsc =  Canonicalize(util::str2std(name));
-		script_map[bt].dbc = bt;
-		script_map[bt].type = type;
+		string dbc	= Canonicalize(byte);
+		string dsc	= Canonicalize(util::str2std(name));
+		assert(IsValidPath(dbc) && IsValidPath(dsc));
+
+		script_map[dbc].dsc	= dsc;
+		script_map[dbc].dbc	= dbc;
+		script_map[dbc].type = type;
+
 		for (StringList::iterator it = deps.begin(); it!=deps.end();++it){
 			
 			string dep = Canonicalize(util::str2std(*it));
 			if (dep=="one_found" || dep=="many_found" || dep=="not_found")continue;
-			script_map[dep].usedby[bt]=true;
-			script_map[bt].uses[dep]=true;
+			script_map[dep].usedby[dbc]=true;
+			script_map[dbc].uses[dep]=true;
 		}
 		struct stat fileinfo;			// create a file attribute structure  
 		memset(&fileinfo, 0, sizeof(struct stat));
-		stat(script_map[bt].dsc.c_str(), &fileinfo);	
-		script_map[bt].m_dsc = fileinfo.st_mtime;
+		stat(script_map[dbc].dsc.c_str(), &fileinfo);	
+		script_map[dbc].m_dsc = fileinfo.st_mtime;
 	}
 
 	void BuildLog::order(){
 		build_order = vector<string>();
 		debugStream << "-----ORDER-------" << std::endl;
-		for (map<string,script>::iterator it = script_map.begin();it!=script_map.end();++it){
+		for (map<string,script>::iterator it = script_map.begin(); it != script_map.end(); ++it){
 			if(it->second.dirty==false)continue;
 			int max=-1;
 			for (map<string,bool>::iterator used = it->second.uses.begin();used!=it->second.uses.end();++used){
@@ -89,20 +109,25 @@ namespace bl{
 	}
 
 	void BuildLog::save_log_text(){
+
 		ofstream txt(logText);
-		for (map<string,script>::iterator it=script_map.begin();it!=script_map.end();++it){
-			script s = it->second;
+
+		for (map<string,script>::const_iterator it=script_map.begin();it!=script_map.end();++it){
+
+			const script& s = it->second;
+			assert(IsValidPath(s.dbc) && IsValidPath(dsc));
+
 			txt << s.dbc << std::endl;
 			txt << "\t" <<  s.dsc << std::endl;
 			txt << "\t" <<  s.type << std::endl;
 			txt << "\tm_source: " <<  s.m_dsc << std::endl;
 			txt << "\tm_byte: " <<  s.m_dbc << std::endl;
 			txt << "\tused by: " <<  endl;
-			for (map<string,bool>::iterator tt = s.usedby.begin(); tt!=s.usedby.end();++tt){
+			for (map<string,bool>::const_iterator tt = s.usedby.begin(); tt!=s.usedby.end();++tt){
 				txt << "\t\t" <<  tt->first << std::endl;
 			}
 			txt << "\tuses: " << std::endl;
-			for (map<string,bool>::iterator tt = s.uses.begin(); tt!=s.uses.end();++tt){
+			for (map<string,bool>::const_iterator tt = s.uses.begin(); tt!=s.uses.end();++tt){
 				txt << "\t\t" <<  tt->first << std::endl;
 			}
 		}
@@ -111,19 +136,19 @@ namespace bl{
 	}
 
 	void BuildLog::print_map(){
-		for (map<string,script>::iterator it=script_map.begin();it!=script_map.end();++it){
-			script s = it->second;
+		for (map<string,script>::const_iterator it=script_map.begin();it!=script_map.end();++it){
+			const script& s = it->second;
 			debugStream << s.dbc << std::endl;
 			debugStream << "\t" <<  s.dsc << std::endl;
 			debugStream << "\t" <<  s.type << std::endl;
 			debugStream << "\tm_source: " <<  s.m_dsc << std::endl;
 			debugStream << "\tm_byte: " <<  s.m_dbc << std::endl;
 			debugStream << "\tused by: " <<  endl;
-			for (map<string,bool>::iterator tt = s.usedby.begin(); tt!=s.usedby.end();++tt){
+			for (map<string,bool>::const_iterator tt = s.usedby.begin(); tt!=s.usedby.end();++tt){
 				debugStream << "\t\t" <<  tt->first << std::endl;
 			}
 			debugStream << "\tuses: " << std::endl;
-			for (map<string,bool>::iterator tt = s.uses.begin(); tt!=s.uses.end();++tt){
+			for (map<string,bool>::const_iterator  tt = s.uses.begin(); tt!=s.uses.end();++tt){
 				debugStream << "\t\t" <<  tt->first << std::endl;
 			}
 		}
@@ -207,17 +232,6 @@ namespace bl{
 		print_map();		
 	}
 
-	script::script(){
-		m_dbc = 0;
-		m_dsc = 0;
-		dbc = "";
-		dsc = "";
-		type = "";
-		dirty = true;
-		uses = map<string,bool>();
-		usedby = map<string,bool>();
-	}
-
 	string Canonicalize(string str){
 		while (true){
 			size_t index = str.find("/./");
@@ -294,6 +308,20 @@ namespace bl{
 		sanity.close();
 	}
 
+	static const std::string ReadString (ifstream& bin) {
+
+		size_t n = 0;
+		bin.read((char*)&n, sizeof(size_t));
+
+		char* s = (char*) malloc(n);
+		bin.read((char*) s, n);
+
+		std::string result = s;
+		free(s);
+
+		return result;
+	}
+
 	void BuildLog::read_log(){
 
 		ifstream sanity;
@@ -312,59 +340,36 @@ namespace bl{
 
 		ifstream bin;
 		bin.open(logFile, ios_base::in || ios_base::binary);
+
 		size_t no_scripts = 0;
 		bin.read((char*)&no_scripts,sizeof(size_t));
-		char* s;
-		for (size_t i=0;i<no_scripts;i++){
 
-			string tmp;
+		for (size_t i = 0; i < no_scripts; ++i){
 
-			size_t l=0;
-			bin.read((char*)&l,sizeof(size_t));
-			s = (char*)malloc(sizeof(char)*l);
-			bin.read((char*)s,sizeof(char)*l);
-			string name = string(s);
-			script_map[name];
-			script_map[name].dbc = name;
+			std::string dbc (ReadString(bin));
+			script& newScript = script_map[dbc];
 
-			bin.read((char*)&script_map[name].m_dbc,sizeof(time_t));
-			bin.read((char*)&script_map[name].m_dsc,sizeof(time_t));
+			newScript.dbc = dbc; 
 
-			bin.read((char*)&l,sizeof(size_t));
-			s = (char*)malloc(sizeof(char)*l);
-			bin.read((char*)s,sizeof(char)*l);
-			tmp = string(s);
-			script_map[name].type = tmp;
+			bin.read((char*)&newScript.m_dbc,sizeof(time_t));
+			bin.read((char*)&newScript.m_dsc,sizeof(time_t));
 
-			bin.read((char*)&l,sizeof(size_t));
-			s = (char*)malloc(sizeof(char)*l);
-			bin.read((char*)s,sizeof(char)*l);
-			tmp = string(s);
-			script_map[name].dsc = tmp;
+			newScript.type	= ReadString(bin);
+			newScript.dsc	= ReadString(bin);
 
-			size_t used=0;
-			bin.read((char*)&used,sizeof(size_t));
+			size_t n = 0;
+			bin.read((char*)&n, sizeof(size_t));
 
-			for (size_t j=0;j<used;j++){
-				bin.read((char*)&l,sizeof(size_t));
-				s = (char*)malloc(sizeof(char)*l);
-				bin.read((char*)s,sizeof(char)*l);
-				tmp = string(s);
-				script_map[name].usedby[tmp]=true;
-			}
-
+			for (size_t j = 0; j < n; ++j)
+				newScript.usedby[ReadString(bin)] = true;
 			
-			size_t uses=0;
-			bin.read((char*)&uses,sizeof(size_t));
+			bin.read((char*)&n, sizeof(size_t));
+			for (size_t j = 0; j < n; ++j)
+				newScript.uses[ReadString(bin)] = true;
 
-			for (size_t f=0;f<uses;f++){
-				bin.read((char*)&l,sizeof(size_t));
-				s = (char*)malloc(sizeof(char)*l);
-				bin.read((char*)s,sizeof(char)*l);
-				tmp = string(s);
-				script_map[name].uses[tmp]=true;
-			}
+			assert(newScript.Inv());
 		}
+
 		bin.close();
 	}
 }

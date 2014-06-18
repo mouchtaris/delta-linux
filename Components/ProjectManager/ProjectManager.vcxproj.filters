@@ -72,6 +72,9 @@
     <ClCompile Include="StageSource.cpp">
       <Filter>Source Files\Meta</Filter>
     </ClCompile>
+    <ClCompile Include="BuildLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Container.h">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="StageSource.h">
       <Filter>Header Files\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildLog.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

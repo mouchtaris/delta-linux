@@ -100,6 +100,7 @@
     <ClCompile Include="AspectProject.cpp" />
     <ClCompile Include="AspectResult.cpp" />
     <ClCompile Include="AttachedScript.cpp" />
+    <ClCompile Include="BuildLog.cpp" />
     <ClCompile Include="Container.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="Project.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="AspectProject.h" />
     <ClInclude Include="AspectResult.h" />
     <ClInclude Include="AttachedScript.h" />
+    <ClInclude Include="BuildLog.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="Filter.h" />
     <ClInclude Include="Project.h" />
