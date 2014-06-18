@@ -30,6 +30,7 @@
             <output>DesignByContract</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -49,6 +50,7 @@
             <output>cascading</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -68,6 +70,7 @@
             <output>architectural</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -87,6 +90,7 @@
             <output>policies</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -106,6 +110,7 @@
             <output>alternatives</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -125,6 +130,7 @@
             <output>fixing</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>

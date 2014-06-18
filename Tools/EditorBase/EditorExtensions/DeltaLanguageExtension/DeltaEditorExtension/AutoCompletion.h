@@ -289,7 +289,7 @@ class DeltaAutoCompletion {
 									const std::string&	libName, 
 									const std::string&	funcName
 								);
-	static void					HandleSourceCodeUpdate (
+	static void					HandleSourceCodeUpdate (	// handles editing changes
 									void*				langModule,
 									EditorWindow*		editor, 
 									DeltaASTNode*		node

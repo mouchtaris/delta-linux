@@ -30,6 +30,7 @@
             <output>diagnostics</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -49,6 +50,7 @@
             <output>main</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -68,6 +70,7 @@
             <output>optimizations</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -87,6 +90,7 @@
             <output>func_generation</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -106,6 +110,7 @@
             <output>object_factories</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -125,6 +130,7 @@
             <output>library_creation</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -144,6 +150,7 @@
             <output>error</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -163,6 +170,7 @@
             <output>power</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -180,6 +188,7 @@
                 <value0>
                     <stage>0</stage>
                     <libs>wx</libs>
+                    <extra_deps></extra_deps>
                     <dllimport_path></dllimport_path>
                     <bytecode_path></bytecode_path>
                 </value0>
@@ -189,6 +198,7 @@
             <output>compile_time_gui</output>
             <libs>wx</libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -206,6 +216,7 @@
                 <value0>
                     <stage>0</stage>
                     <libs></libs>
+                    <extra_deps></extra_deps>
                     <dllimport_path></dllimport_path>
                     <bytecode_path>.</bytecode_path>
                 </value0>
@@ -215,6 +226,7 @@
             <output>vmcomp</output>
             <libs>xml</libs>
             <icode>1</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -234,6 +246,7 @@
             <output>context</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>

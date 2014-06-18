@@ -1343,8 +1343,10 @@ void DeltaAutoCompletion::ExtractGlobalFunctionsAndVariablesRecursion (
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// TODO: staged conde introduce new requirements for auto completion that are
+// not yet fulfilled!
 
-uint DeltaAutoCompletion::GetStagingDepth(const DeltaASTNode* node) {
+uint DeltaAutoCompletion::GetStagingDepth (const DeltaASTNode* node) {
 	uint counter = 0;
 	for (const DeltaASTNode* current = node; current; current = current->GetParent())
 		if (current->GetType() == UnaryOpASTNodeType) {

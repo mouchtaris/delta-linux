@@ -30,6 +30,7 @@
             <output>undo_redo</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -49,6 +50,7 @@
             <output>singleton</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -68,6 +70,7 @@
             <output>flyweight</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -87,6 +90,7 @@
             <output>decorator</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>0</deployment>
             <debug>1</debug>
@@ -106,6 +110,7 @@
             <output>adapter</output>
             <libs></libs>
             <icode>0</icode>
+            <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
             <deployment>1</deployment>
             <debug>1</debug>
