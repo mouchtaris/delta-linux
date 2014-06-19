@@ -841,7 +841,7 @@ namespace ide
 
 	void Workspace::OnWorkCompleted(const Handle& root, const String& task)
 	{
-		__BL.save();
+		if (task==util::std2str("Build"))__BL.save();
 		sigWorkCompleted(root, task);
 	}
 
