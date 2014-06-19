@@ -101,6 +101,9 @@ namespace ide
 		
 		DECLARE_EXPORTED_FUNCTION(const String, GetFinalSourceURI, (void));
 		DECLARE_EXPORTED_FUNCTION(const StringList, GetFinalLineMappings, (void));
+
+		DECLARE_EXPORTED_FUNCTION(void, updateLogDirectoryInformation, (void));
+		DECLARE_EXPORTED_FUNCTION(const std::string, GetLogName, (void));
 		
 	protected:
 		///--- protected API

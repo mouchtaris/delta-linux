@@ -1,375 +1,325 @@
 #include "BuildLog.h"
 #include <boost/range.hpp>
+#include <boost/filesystem/path.hpp>
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 #include <wx/utils.h>
 #include "VirtualContainer.h"
 #include <sys/stat.h>
 #include <assert.h>
-#include <ctype.h>
-
+	
 #include <time.h>
 #include "Script.h"
 
 #define LOG_ENABLED true
 
-using namespace std;
-using ide::Script;
+#define _SS util::str2std
+#define _ss util::std2str
 
 namespace bl{
 
-	BuildLog buildLogSingleton;
+
+	//////////////////////////////////////////////////////////////////
+
+	static const int			getFileInfo			(const string &file, struct stat &fileinfo);
+	static const std::string	getStringAttribute	(const wxXmlNode* node, const string name);
+	static const time_t			getTimeAttribute	(const wxXmlNode* node, const string name);
+	static KeyMap				getChildNodes		(const wxXmlNode* node, const string name, const string type);
+	static const string			getDbcFromPath		(const string &source);
+	//////////////////////////////////////////////////////////////////
+
+	BuildLog buildLog;
 	string endl = "\n";
+
+	//////////////////////////////////////////////////////////////////
 
 	BuildLog::BuildLog(){
 		debugFile = "debug.txt";
-		logFile = "log.bin";
-		logText = "log.txt";
-		sanityFile = "logSanity";
+		logFile = "buildLog.xml";
 		debugStream = ofstream(debugFile);
 	}
 
-	void BuildLog::addAspects(string byte,StringList deps){
-		assert(!byte.empty());
+	//////////////////////////////////////////////////////////////////
 
-		string bt = Canonicalize(byte);
-		script_map[bt];
-		for (StringList::iterator it = deps.begin(); it!=deps.end();++it){		
-			string dep = Canonicalize(util::str2std(*it));
-			script_map[dep].usedby[bt]=true;
-			script_map[bt].uses[dep]=true;
+	void BuildLog::addAspects (const string &name ,const StringList &deps){
+		assert(!name.empty());
+
+		for (StringList::const_iterator it = deps.begin(); it!=deps.end();++it){		
+			const string dep = getDbcFromPath(util::str2std(*it));
+			assert(!dep.empty());
+			script_map[dep].usedby[name]=true;
+			script_map[name].uses[dep]=true;
 		}
 	}
 
-	static bool IsValidPath (const std::string& s) {
-		if (s.empty())
-			return false;
-		for (unsigned i = 0, n = s.length(); i < n; ++i)
-			if (!isprint(s[i]))
-				return false;
-		return true;
-	}
+	//////////////////////////////////////////////////////////////////
 
-	bool script::Inv (void) const {
-		return	IsValidPath(dbc) &&
-				IsValidPath(dsc);
-	}
-
-	void BuildLog::add(String name,string byte,string type,StringList deps){
-
+	void BuildLog::add (const string &name,const String &dsc, const string &byte, const string &type, const StringList &deps){
 		assert(!byte.empty());
 		assert(!type.empty());
 		assert(!name.empty());
 
-		string dbc	= Canonicalize(byte);
-		string dsc	= Canonicalize(util::str2std(name));
-		assert(IsValidPath(dbc) && IsValidPath(dsc));
+		script_map[name].name = name;
+		script_map[name].dsc =  _SS(dsc);
+		script_map[name].dbc = byte;
+		script_map[name].type = type;
 
-		script_map[dbc].dsc	= dsc;
-		script_map[dbc].dbc	= dbc;
-		script_map[dbc].type = type;
-
-		for (StringList::iterator it = deps.begin(); it!=deps.end();++it){
-			
-			string dep = Canonicalize(util::str2std(*it));
-			if (dep=="one_found" || dep=="many_found" || dep=="not_found")continue;
-			script_map[dep].usedby[dbc]=true;
-			script_map[dbc].uses[dep]=true;
+		for (StringList::const_iterator it = deps.begin(); it!=deps.end(); ++it){
+			const string dep = getDbcFromPath(util::str2std(*it));
+			script_map[dep].usedby[name]=true;
+			script_map[name].uses[dep]=true;
 		}
-		struct stat fileinfo;			// create a file attribute structure  
-		memset(&fileinfo, 0, sizeof(struct stat));
-		stat(script_map[dbc].dsc.c_str(), &fileinfo);	
-		script_map[dbc].m_dsc = fileinfo.st_mtime;
+
+		struct stat info;
+		getFileInfo(script_map[name].dsc,info);
+		script_map[name].m_dsc = info.st_mtime;
 	}
 
-	void BuildLog::order(){
-		build_order = vector<string>();
-		debugStream << "-----ORDER-------" << std::endl;
-		for (map<string,script>::iterator it = script_map.begin(); it != script_map.end(); ++it){
-			if(it->second.dirty==false)continue;
-			int max=-1;
-			for (map<string,bool>::iterator used = it->second.uses.begin();used!=it->second.uses.end();++used){
-				vector<string>::iterator index = std::find(build_order.begin(), build_order.end(), used->first);
-				if (index!=build_order.end()){
-					int at = std::distance(build_order.begin(),index);
-					max = at>max?at:max;
-				}
-			}
-			if (max>-1){
-				//debugStream << it->first << " is needed at pos " << max << std::endl;
-				build_order.insert(build_order.begin()+max,it->first);
-			}
-			else{
-				build_order.insert(build_order.begin(),it->first);
-			}
-		}
-		int i=0;
-		for (vector<string>::iterator it = build_order.begin(); it != build_order.end(); ++it,++i){
-			debugStream << i << ": " << (*it) << std::endl;
-		}
-	}
+	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::save_log_text(){
+	bool BuildLog::isScriptUpToDate(const string &name){
 
-		ofstream txt(logText);
 
-		for (map<string,script>::const_iterator it=script_map.begin();it!=script_map.end();++it){
-
-			const script& s = it->second;
-			assert(IsValidPath(s.dbc) && IsValidPath(dsc));
-
-			txt << s.dbc << std::endl;
-			txt << "\t" <<  s.dsc << std::endl;
-			txt << "\t" <<  s.type << std::endl;
-			txt << "\tm_source: " <<  s.m_dsc << std::endl;
-			txt << "\tm_byte: " <<  s.m_dbc << std::endl;
-			txt << "\tused by: " <<  endl;
-			for (map<string,bool>::const_iterator tt = s.usedby.begin(); tt!=s.usedby.end();++tt){
-				txt << "\t\t" <<  tt->first << std::endl;
-			}
-			txt << "\tuses: " << std::endl;
-			for (map<string,bool>::const_iterator tt = s.uses.begin(); tt!=s.uses.end();++tt){
-				txt << "\t\t" <<  tt->first << std::endl;
-			}
-		}
-		txt.flush();
-		txt.close();
-	}
-
-	void BuildLog::print_map(){
-		for (map<string,script>::const_iterator it=script_map.begin();it!=script_map.end();++it){
-			const script& s = it->second;
-			debugStream << s.dbc << std::endl;
-			debugStream << "\t" <<  s.dsc << std::endl;
-			debugStream << "\t" <<  s.type << std::endl;
-			debugStream << "\tm_source: " <<  s.m_dsc << std::endl;
-			debugStream << "\tm_byte: " <<  s.m_dbc << std::endl;
-			debugStream << "\tused by: " <<  endl;
-			for (map<string,bool>::const_iterator tt = s.usedby.begin(); tt!=s.usedby.end();++tt){
-				debugStream << "\t\t" <<  tt->first << std::endl;
-			}
-			debugStream << "\tuses: " << std::endl;
-			for (map<string,bool>::const_iterator  tt = s.uses.begin(); tt!=s.uses.end();++tt){
-				debugStream << "\t\t" <<  tt->first << std::endl;
-			}
-		}
-		debugStream.flush();
-	}
-
-	bool BuildLog::isScriptUpToDate(string str){
 		assert(!str.empty());
-		string tmp =  Canonicalize(str);
-		if (tmp.empty())return false;
-		if (script_map.count(tmp)==0)return false;
-		return LOG_ENABLED && !script_map[tmp].dirty && isScriptUpToDate(script_map[tmp]);
+		string path = name;
+		if (path.empty())return false;
+		if (script_map.count(path)==0)return false;
+
+		return LOG_ENABLED && !script_map[path].dirty && isScriptUpToDate(script_map[path]);
 	}
 
-	bool BuildLog::isScriptUpToDate(script sc){
-		string name = sc.dbc;
-		//debugStream << name << std::endl;
-		struct stat at;			// create a file attribute structure       
-		int err = stat(sc.dbc.c_str(), &at);
+	//////////////////////////////////////////////////////////////////
+
+	bool BuildLog::isScriptUpToDate(const script &sc){
+
+		string path = sc.dbc;
+		assert(!path.empty());
+
+		struct stat at;     
+		int err = getFileInfo(sc.dbc, at);
+
 		if (err!=0)return false;
-		bool res = (at.st_mtime==script_map[name].m_dbc);
-	//	debugStream << at.st_mtime << "---" << script_map[name].m_dbc << std::endl;
-		err = stat(sc.dsc.c_str(), &at);
+		bool res = (at.st_mtime==sc.m_dbc);
+
+		err = getFileInfo(sc.dsc, at);
 		if (err!=0)return false;
-		res = res && (at.st_mtime==script_map[name].m_dsc);
+		res = res && (at.st_mtime==sc.m_dsc);
 		return LOG_ENABLED && res;
 	}
 
-	void BuildLog::save(){
-		debugStream << "-----SAVING-----" << std::endl;
-		save_log();
-		save_log_text();
-	//	print_map();
-		debugStream.flush();
+	//////////////////////////////////////////////////////////////////
 
+	void BuildLog::save(){
+		saveLog();
 	}
 
-	void BuildLog::updateBytecode(string n){
+	//////////////////////////////////////////////////////////////////
+
+	void BuildLog::updateBytecode(const string &name){
 		assert(!n.empty());
-		string name = Canonicalize(n);
-		struct stat attrib;			// create a file attribute structure       
-		int res = stat(name.c_str(), &attrib);
-		script_map[name];
+		assert(!name.empty());
+		assert(script_map.count(name));
+		if (!script_map.count(name))return;
+
+		string path = script_map[name].dbc;
+		struct stat info;     
+		int res = getFileInfo(path, info);
+
 		if (res==0){
-			script_map[name].m_dbc = attrib.st_mtime;
+			script_map[name].m_dbc = info.st_mtime;
 			script_map[name].dirty = false;
 		}
 	}
 
-	void BuildLog::propagateDirty(map<string,bool> deps){
-		for (map<string,bool>::iterator used = deps.begin(); used!=deps.end();++used){
+	//////////////////////////////////////////////////////////////////
+
+	void BuildLog::markOutOfDateRecursively (const KeyMap &deps){
+		for (KeyMap::const_iterator used = deps.begin(); used!=deps.end();++used){
 			script_map[used->first].dirty = true;
-			propagateDirty(script_map[used->first].usedby);
+			markOutOfDateRecursively (script_map[used->first].usedby);
 		}
 	}
 
+	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::getDirty(){
-		for (map<string,script>::iterator it=script_map.begin();it!=script_map.end();++it){
-			script s = it->second;
+	void BuildLog::markOutOfDate(){
+		for (ScriptMap::iterator it=script_map.begin();it!=script_map.end();++it){
+			const script s = it->second;
 			if (!isScriptUpToDate(s)){
-				propagateDirty(s.usedby);
+				markOutOfDateRecursively(s.usedby);
 				it->second.dirty = true;
 			}
 			else{
 				it->second.dirty = false;
 			}
 		}
-		for (map<string,script>::iterator it=script_map.begin();it!=script_map.end();++it){
-			if ( it->second.dirty)debugStream << "x: " << it->second.dbc << std::endl;
-		}
 	}
 
-	void BuildLog::read(){
-		debugStream << "-----READING-----" << std::endl;
+	//////////////////////////////////////////////////////////////////
+
+	void BuildLog::updateDirectoryInformation(const string &name, const String &sourcePath, const string &bytecodePath){
+		assert(!name.empty());
+		if (script_map.count(name)==0)return;
+		script_map[name].dbc = bytecodePath;
+		script_map[name].dsc = _SS(sourcePath);
+	}
+
+	//////////////////////////////////////////////////////////////////
+
+	void BuildLog::read(const String &path, const String &name){
+		const string wpath= _SS(path);
+		currentWorkspaceLogPath = logFile;
+		currentWorkspace = _SS(name);
+		currentWorkspaceLogPath = logFile;
+		if (boost::filesystem::is_directory(wpath)){
+			boost::filesystem::path p(wpath);
+			p /= boost::filesystem::path(logFile);
+			currentWorkspaceLogPath = p.string();
+		}
+		debugStream << currentWorkspaceLogPath << std::endl;
+		build_order.clear();
 		script_map.clear();
-		build_map.clear();
-		read_log();
-		getDirty();
-		order();
-		print_map();		
+		readLog();
+		markOutOfDate();
+		//order();
 	}
 
-	string Canonicalize(string str){
-		while (true){
-			size_t index = str.find("/./");
-			if (index==string::npos)break;		
-			str.replace(index,3,"/");
+	//////////////////////////////////////////////////////////////////
+
+	static const string getDbcFromPath(const string &source){
+		string str = source;
+		size_t found = str.rfind('/');
+		if (found!=std::string::npos){
+			return str.substr(found+1,str.length());
 		}
-		transform(str.begin(), str.end(), str.begin(), ::tolower);
 		return str;
 	}
+	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::save_log(){
-		ofstream bin;
-		bin.open(logFile, ios_base::out | ios_base::binary);
-		size_t x;
-		char* ss;
-		x=script_map.size();
-		bin.write((char*)&x,sizeof(size_t));///total scripts;
+	void BuildLog::readLog(){
+		wxXmlDocument doc;
 
-		for (map<string,script>::iterator it=script_map.begin();it!=script_map.end();++it){
-			script s = it->second;
-			x = (s.dbc.size()+1);
-			bin.write((char*)(&x),sizeof(uint));
-			ss = (char*)s.dbc.c_str();
-			bin.write((char*)ss,sizeof(char)*s.dbc.size()+1);
-			time_t xx;
-			xx=s.m_dbc;
-			bin.write((char*)&xx,sizeof(time_t));
-			xx=s.m_dsc;
-			bin.write((char*)&xx,sizeof(time_t));
+		if ( !boost::filesystem::exists(currentWorkspaceLogPath))return;
+		if (!doc.Load(_ss(currentWorkspaceLogPath)))return;
 
-			x=(s.type.size()+1);
-			bin.write((char*)&x,sizeof(size_t));
-			ss = (char*)s.type.c_str();
-			bin.write((char*)ss,sizeof(char)*s.type.size()+1);
+		if (doc.GetRoot()->GetName() != _ss(currentWorkspace))return;
 
-			
-			x = (s.dsc.size()+1);
-			bin.write((char*)(&x),sizeof(size_t));
-			ss = (char*)s.dsc.c_str();
-			bin.write((char*)ss,sizeof(char)*s.dsc.size()+1);
+		wxXmlNode *root = doc.GetRoot();
+		String name = root->GetName();
+		wxXmlNode *child = root->GetChildren();
+		while(child){
+			string name =  _SS(child->GetAttribute(_T("name"),_T("")));
+			assert(!name.empty());
+			if (name.empty())return;
+			script_map[name].name = name;
 
-			x=s.usedby.size();
-			bin.write((char*)&x,sizeof(size_t));///total scripts;
+			wxXmlNode* info = child->GetChildren();
 
-			for (map<string,bool>::iterator used = s.usedby.begin();used!=s.usedby.end();++used){
-				x=used->first.size()+1;
-				bin.write((char*)&x,sizeof(size_t));
-				ss = (char*)used->first.c_str();
-				bin.write((char*)ss,sizeof(char)*used->first.size()+1);
+			while (info){
+				if (info->GetName() == _ss("Information")){
+					script_map[name].dbc = getStringAttribute(info,"dbc");
+					script_map[name].dsc = getStringAttribute(info,"dsc");
+					script_map[name].type = getStringAttribute(info,"type");
+
+					script_map[name].m_dbc = getTimeAttribute(info,"m_dbc");
+					script_map[name].m_dsc = getTimeAttribute(info,"m_dsc");
+					break;
+				}
+				info = info->GetNext();
 			}
 
-			size_t ffs  = s.uses.size();
-			bin.write((char*)&ffs,sizeof(size_t));
+			script_map[name].usedby = getChildNodes(child,"UsedBy","name");
+			script_map[name].uses = getChildNodes(child,"Uses","name");
 
-			for (map<string,bool>::iterator uses = s.uses.begin();uses!=s.uses.end();++uses){
-				ffs = uses->first.size()+1;
-				bin.write((char*)&ffs,sizeof(size_t));
-				char* omg = (char*)uses->first.c_str();
-				bin.write(omg,ffs*sizeof(char));
-			}
+			child = child->GetNext();
 		}
-		bin.close();
-
-		ofstream sanity;
-
-		sanity.open(sanityFile, ios_base::out | ios_base::binary);
-
-		struct stat fileinfo;
-		memset(&fileinfo, 0, sizeof(struct stat));
 		
-		stat(logFile.c_str(), &fileinfo);
-		size_t log_size = fileinfo.st_size;
-		sanity.write((char*)&log_size,sizeof(size_t));
-		sanity.close();
 	}
 
-	static const std::string ReadString (ifstream& bin) {
-
-		size_t n = 0;
-		bin.read((char*)&n, sizeof(size_t));
-
-		char* s = (char*) malloc(n);
-		bin.read((char*) s, n);
-
-		std::string result = s;
-		free(s);
-
-		return result;
+	static xml::Node createChildNodes(const KeyMap &children, const string type,const string name){
+		xml::Node parent;
+		parent.Create(_ss(name));
+		for (KeyMap::const_iterator tt = children.begin(); tt!=children.end();++tt){
+			xml::Node tmp;
+			tmp.Create(_T("Script"));
+			tmp.SetProperty(_ss(type),_ss(tt->first));
+			parent.InsertChild(tmp);
+		}
+		return parent;
 	}
 
-	void BuildLog::read_log(){
+	//////////////////////////////////////////////////////////////////
 
-		ifstream sanity;
-		size_t log_size=0;
-		sanity.open(sanityFile, ios_base::in || ios_base::binary);
-		sanity.read((char*)&log_size,sizeof(size_t));
-		struct stat fileinfo;
+	void BuildLog::saveLog(){
+		wxXmlDocument doc;
+		xml::Node	root;
+		root.Create(_ss(currentWorkspace));
+		doc.SetRoot(root.NativeType());
+		xml::Node	child;
+		for (ScriptMap::const_iterator it=script_map.begin();it!=script_map.end();++it){
+			xml::Node child;
+			const script& s = it->second;
+			child.Create(_T("Script"));
+			child.SetProperty(_T("name"),_ss(s.name));
+			xml::Node info;
+			info.Create(_T("Information"));
+			info.SetProperty(_T("type"),_ss(s.type));
+			info.SetProperty(_T("dbc"),_ss(s.dbc));
+			info.SetProperty(_T("dsc"),_ss(s.dsc));			
+			info.SetProperty(_T("m_dbc"),_ss(boost::lexical_cast<std::string>(s.m_dbc)));
+			info.SetProperty(_T("m_dsc"),_ss(boost::lexical_cast<std::string>(s.m_dsc)));
+			child.InsertChild(info);
+			child.InsertChild(createChildNodes (s.usedby,"name","UsedBy"));
+			child.InsertChild(createChildNodes (s.uses,"name","Uses"));
+			root.InsertChild(child);
+		}
+		doc.SetFileEncoding(_T("utf-8"));
+		bool ok = doc.Save(_ss(currentWorkspaceLogPath),2);
+		assert(ok);
+	}
+
+	//////////////////////////////////////////////////////////////////
+
+	static const int getFileInfo(const string &file, struct stat &fileinfo){	
 		memset(&fileinfo, 0, sizeof(struct stat));
-		stat(logFile.c_str(), &fileinfo);
-		assert(log_size == fileinfo.st_size);
-		if (log_size != fileinfo.st_size){
-			debugStream << "Log file is corrupt: " << log_size << " ---- " << fileinfo.st_size << std::endl;
-			return;
+		return stat(file.c_str(), &fileinfo);
+	}
+
+	//////////////////////////////////////////////////////////////////
+
+	static const std::string getStringAttribute(const wxXmlNode* node,const std::string name){
+		String tmp = (node->GetAttribute(_ss(name),_T("")));
+		assert(!tmp.empty());
+		return _SS(tmp);
+	}
+
+	//////////////////////////////////////////////////////////////////
+
+	static const time_t getTimeAttribute(const wxXmlNode* node,const std::string name){
+			String tmp = (node->GetAttribute(_ss(name),_T("0")));
+			assert(!tmp.empty());
+			time_t mod_time =  boost::lexical_cast<time_t>(tmp);
+			return mod_time;
+	}
+
+	//////////////////////////////////////////////////////////////////
+
+	static KeyMap getChildNodes(const wxXmlNode* node, const string name, const string type){
+		wxXmlNode* children = node->GetChildren();
+		KeyMap tmp;
+		while (children){
+			if (children->GetName() == _ss(name)){
+				children = children->GetChildren();
+				while(children){
+					String element = children->GetAttribute(_ss(type),_T(""));
+					if (element.empty())continue;
+					tmp[_SS(element)] = true;
+					children = children->GetNext();
+				}
+				break;
+			}
+			children = children->GetNext();
 		}
-		sanity.close();
-
-		ifstream bin;
-		bin.open(logFile, ios_base::in || ios_base::binary);
-
-		size_t no_scripts = 0;
-		bin.read((char*)&no_scripts,sizeof(size_t));
-
-		for (size_t i = 0; i < no_scripts; ++i){
-
-			std::string dbc (ReadString(bin));
-			script& newScript = script_map[dbc];
-
-			newScript.dbc = dbc; 
-
-			bin.read((char*)&newScript.m_dbc,sizeof(time_t));
-			bin.read((char*)&newScript.m_dsc,sizeof(time_t));
-
-			newScript.type	= ReadString(bin);
-			newScript.dsc	= ReadString(bin);
-
-			size_t n = 0;
-			bin.read((char*)&n, sizeof(size_t));
-
-			for (size_t j = 0; j < n; ++j)
-				newScript.usedby[ReadString(bin)] = true;
-			
-			bin.read((char*)&n, sizeof(size_t));
-			for (size_t j = 0; j < n; ++j)
-				newScript.uses[ReadString(bin)] = true;
-
-			assert(newScript.Inv());
-		}
-
-		bin.close();
+		return tmp;
 	}
 }

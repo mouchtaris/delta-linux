@@ -403,7 +403,6 @@ void Script::SaveLastBuildProperties (void) {
 	BOOST_FOREACH(conf::PropertyTable& table, m_attachedScripts)
 		table.Accept(std::string(STAGE_SOURCES_PROPERTY_TAG) + boost::lexical_cast<std::string>(count++), &propertySaver);
 	root.SetProperty(_T("StageSources"), boost::lexical_cast<String>(count));
-
 	wxXmlDocument doc;
 	doc.SetFileEncoding(_T("utf-8"));
 	doc.SetRoot(root.NativeType());
@@ -1213,7 +1212,7 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 	}
 	else {
 		for (ide::Script::ScriptPtrSet::iterator it = m_buildDeps.begin();it!=m_buildDeps.end();){
-			if ( __BL.isScriptUpToDate( (*it)->GetProducedByteCodeFileFullPath() )){
+			if ( __BL.isScriptUpToDate( (*it)->GetLogName() )){
 				it = m_buildDeps.erase(it);
 			}
 			else{
@@ -1425,7 +1424,7 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 
 	ClearBuildInformation();
 	m_upToDate = succeeded;
-	if (succeeded)__BL.updateBytecode(this->GetProducedByteCodeFileFullPath());
+	if (succeeded)__BL.updateBytecode(this->GetLogName());
 
 	// Is it scheduled to run automatically ?
 	if (IsRunAutomaticallyAfterBuild())
@@ -2255,6 +2254,15 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSe
 }
 
 /////////////////////////////////////////////////////////////////////////
+EXPORTED_FUNCTION(Script, void, updateLogDirectoryInformation, (void)) {
+	__BL.updateDirectoryInformation(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath());
+}
+
+EXPORTED_FUNCTION(Script, const std::string, GetLogName, (void))
+{
+	return this->GetProducedByteCodeFile();
+}
+/////////////////////////////////////////////////////////////////////////
 
 unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script* initiator) {
 	
@@ -2265,12 +2273,10 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	StdStringList externalDeps;
 	StringList deps;
 	bool ok = ResolveDependencies(ExtractDependencies(), &outDeps, &externalDeps, false);
-
 	for (ScriptPtrSet::iterator it = outDeps.begin(); it != outDeps.end(); ++it){
 		deps.push_back( util::std2str((*it)->GetProducedByteCodeFileFullPath()) );
 	}
-
-	__BL.add(this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps);
+	__BL.add(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps);
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
 	if (m_upToDate) {
@@ -2318,7 +2324,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	for (ide::Script::ScriptPtrSet::iterator it = m_aspectTransformations.begin(); it!=m_aspectTransformations.end(); ++it){
 		deps.push_back( util::std2str( (*it)->GetProducedByteCodeFileFullPath() ) );
 	}
-	__BL.addAspects(this->GetProducedByteCodeFileFullPath(),deps);
+	__BL.addAspects(this->GetLogName() ,deps);
 	if (!m_aspectTransformations.empty())
 		BuildWithScriptDependencies(m_aspectTransformations);
 	else {

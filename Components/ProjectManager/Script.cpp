@@ -154,7 +154,10 @@ namespace ide
 	{
 		const Handle& workspace = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
 		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")()) {
-//			if (__BL.isScriptUpToDate(this->GetProducedByteCodeFileFullPath()))return;/////////////////////////////////////////////////////////////////////////////////
+			if (__BL.isScriptUpToDate(this->GetProducedByteCodeFile())){
+				PostBuildMessage(m_workId,std::string("Script '")+	util::str2std(GetName())	+"' (is upToDate!");
+				return;/////////////////////////////////////////////////////////////////////////////////
+			}
 			Call<void (const Handle&, const String&)>(this, workspace, "StartWorking")(this, _T("Build"));
 			Build(UIntList(1, 1));
 		}

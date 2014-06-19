@@ -11,17 +11,20 @@
 #include "VirtualContainer.h"
 
 
-#define __BL bl::buildLogSingleton
+#define __BL bl::buildLog
 
 using namespace std;
-using ide::Script;
 
 namespace bl{
 
 	class BuildLog;
 	class script;
 
-	extern BuildLog buildLogSingleton;
+	typedef map<string,bool> KeyMap;
+	typedef map<string,script> ScriptMap;
+
+
+	extern BuildLog buildLog;
 	extern string endl;
 
 //----------------------------
@@ -34,38 +37,39 @@ namespace bl{
 		
 		BuildLog();
 		
-		void add(String name,string byte,string,StringList deps);
-		void addAspects(string byte,StringList deps);
-		
-		void save();
-		void read();
-		void updateBytecode(string);
-		bool isScriptUpToDate(string file);
+		void				add							(const string &name, const String &dsc, const string &dbc, const string &type, const StringList &deps);
+		void				addAspects					(const string &byte, const StringList &deps);
+		void				updateDirectoryInformation	(const string &name, const String &sourcePath, const string &bytecodePath);
+		void				save						(void);
+		void				read						(const String &path, const String &name);
+		void				updateBytecode				(const string &name);
+		bool				isScriptUpToDate			(const string &name);
 
 	private:
 
-		void print_map();
-		map<string,script> script_map;		
-		vector<string> build_order;
-		bool isFileUpToDate(string file);
-		bool isScriptUpToDate(script sc);
-		string debugFile;
-		string logText;
-		string sanityFile;
-		string logFile;
-		void getDirty();
-		map<int,map<string,bool> > build_map;
-		void save_log();
-		void save_log_text();
-		void read_log();
-		void order();
-		void propagateDirty(map<string,bool>);
+		string				currentWorkspaceLogPath;
+		string				currentWorkspace;
+		ScriptMap			script_map;		
+		vector<string>		build_order;
+		string				debugFile;
+		string				logFile;
+
+
+		void				print_map							(void);
+		
+		bool				isFileUpToDate						(const string &file);
+		bool				isScriptUpToDate					(const script &sc);
+		
+		void				markOutOfDate						(void);
+		void				saveLog								(void);
+		void				readLog								(void);
+		void				order								(void);
+		void				markOutOfDateRecursively			(const KeyMap &children);
 
 	protected:
 
 	};
 //----------------------------
-
 	class script{
 
 	public:
@@ -73,13 +77,16 @@ namespace bl{
 		string				type;
 		string				dsc;
 		string				dbc;
+		string				outputDirectory;
+		string				workingDirectory;
+		string				name;
+		string				test_dsc;
+		string				test_dbc;
 		time_t				m_dsc;
 		time_t				m_dbc;
-		map<string,bool>	uses;
-		map<string,bool>	usedby;
+		KeyMap				uses;
+		KeyMap				usedby;
 		bool				dirty;
-
-		bool	Inv (void) const;
 
 		const script& operator=(const script& s) 
 				{ new (this) script(s); return *this; }
@@ -91,14 +98,19 @@ namespace bl{
 			{}
 
 		script (const script& s) :
-			type	(s.type),
-			dsc		(s.dsc),
-			dbc		(s.dbc),
-			m_dsc	(s.m_dsc),
-			m_dbc	(s.m_dbc),
-			uses	(s.uses),
-			usedby	(s.usedby),
-			dirty	(s.dirty)
+			type				(s.type),
+			dsc					(s.dsc),
+			dbc					(s.dbc),
+			m_dsc				(s.m_dsc),
+			m_dbc				(s.m_dbc),
+			uses				(s.uses),
+			usedby				(s.usedby),
+			dirty				(s.dirty),
+			outputDirectory		(s.outputDirectory),
+			workingDirectory	(s.workingDirectory),
+			name				(s.name),
+			test_dsc			(s.test_dsc),
+			test_dbc			(s.test_dbc)
 			{}
 				
 	};
@@ -107,10 +119,7 @@ namespace bl{
 		log.debugStream << value << std::flush;
 		return log;
 	}
-	string Canonicalize(string str);
+	
 }
-
-
-
 
 #endif

@@ -587,13 +587,15 @@ namespace ide
 				std::string type = child->GetClassId();
 				if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect" )){
 					Script* tmp = static_cast<Script*>(child);
-					if (!__BL.isScriptUpToDate(tmp->GetProducedByteCodeFileFullPath()))return false;
+					if (!__BL.isScriptUpToDate(tmp->GetLogName()))return false;
 				}
 				else if ( type=="Project" || type == "Workspace"){
-					return con->AreChildrenUpToDate(child);
+					bool res = con->AreChildrenUpToDate(child);
+					if (res){
+						//PostBuildMessage(m_workId,type + "'"+	GetName()	+"' (is upToDate!");
+					}
+					return res;
 				}
-				else
-					assert(false);
 			}
 		return true;
 	}
@@ -611,7 +613,7 @@ namespace ide
 				std::string type = child->GetClassId();
 				if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect") && task=="Build"){
 					Script* tmp = static_cast<Script*>(child);
-					if (__BL.isScriptUpToDate(tmp->GetProducedByteCodeFileFullPath()))continue;
+					if (__BL.isScriptUpToDate(tmp->GetLogName()))continue;
 				}
 				else if (( type=="Project" || type=="Workspace") && task=="Build" ){
 					if (AreChildrenUpToDate(child))continue;
