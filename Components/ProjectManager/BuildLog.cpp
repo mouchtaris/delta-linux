@@ -11,6 +11,8 @@
 #include <time.h>
 #include "Script.h"
 
+#include <wx/log.h>
+
 #define LOG_ENABLED true
 
 #define _SS util::str2std
@@ -35,7 +37,7 @@ namespace bl{
 
 	BuildLog::BuildLog(){
 		debugFile = "debug.txt";
-		logFile = "buildLog.xml";
+		logFile = "_BuildLog.xml";
 		debugStream = ofstream(debugFile);
 	}
 
@@ -173,7 +175,7 @@ namespace bl{
 		currentWorkspaceLogPath = logFile;
 		if (boost::filesystem::is_directory(wpath)){
 			boost::filesystem::path p(wpath);
-			p /= boost::filesystem::path(logFile);
+			p /= boost::filesystem::path(_SS(name)+logFile);
 			currentWorkspaceLogPath = p.string();
 		}
 		debugStream << currentWorkspaceLogPath << std::endl;
@@ -198,7 +200,7 @@ namespace bl{
 
 	void BuildLog::readLog(){
 		wxXmlDocument doc;
-
+		wxLogNull disableErrorPopup;
 		if ( !boost::filesystem::exists(currentWorkspaceLogPath))return;
 		if (!doc.Load(_ss(currentWorkspaceLogPath)))return;
 
