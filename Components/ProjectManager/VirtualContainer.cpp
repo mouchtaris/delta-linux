@@ -610,14 +610,18 @@ namespace ide
 		List childrenForWork;
 		BOOST_FOREACH(Component* child, GetChildren())
 			if (ComponentRegistry::Instance().GetComponentEntry(child->GetClassId()).HasFunction(task)) {
-				std::string type = child->GetClassId();
-				if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect") && task=="Build"){
-					Script* tmp = static_cast<Script*>(child);
-					if (__BL.IsScriptUpToDate(tmp->GetLogName()))continue;
+				//-----Build Log Operations--------------
+				if (__BL.IsEnabled()){
+					std::string type = child->GetClassId();
+					if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect") && task=="Build"){
+						Script* tmp = static_cast<Script*>(child);
+						if (__BL.IsScriptUpToDate(tmp->GetLogName()))continue;
+					}
+					else if (( type=="Project" || type=="Workspace") && task=="Build" ){
+						if (AreChildrenUpToDate(child))continue;
+					}
 				}
-				else if (( type=="Project" || type=="Workspace") && task=="Build" ){
-					if (AreChildrenUpToDate(child))continue;
-				}
+				//---------------------------------------
 				boost::recursive_mutex::scoped_lock lock(m_workingChildrenMutex);
 				m_workingChildren[child] = WorkInfo(0, UIntList());
 				childrenForWork.push_back(child);

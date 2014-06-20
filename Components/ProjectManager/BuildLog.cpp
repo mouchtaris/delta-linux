@@ -13,10 +13,18 @@
 
 #include <wx/log.h>
 
-#define LOG_ENABLED true
-
 #define _SS util::str2std
 #define _ss util::std2str
+
+
+/*bugs noticed
+
+	threads do not close
+	too many ..
+
+
+
+*/
 
 namespace bl{
 
@@ -39,11 +47,15 @@ namespace bl{
 		debugFile = "debug.txt";
 		logFile = "_BuildLog.xml";
 		debugStream = ofstream(debugFile);
+		enabled = false;
 	}
 
 	//////////////////////////////////////////////////////////////////
 
 	void BuildLog::AddAspects (const string &name ,const StringList &deps){
+		boost::mutex::scoped_lock lock(resourceMutex);
+		if (!enabled)return;
+
 		assert(!name.empty());
 
 		for (StringList::const_iterator it = deps.begin(); it!=deps.end();++it){		
@@ -57,6 +69,9 @@ namespace bl{
 	//////////////////////////////////////////////////////////////////
 
 	void BuildLog::Add (const string &name,const String &dsc, const string &byte, const string &type, const StringList &deps){
+		boost::mutex::scoped_lock lock(resourceMutex);
+		if (!enabled)return;
+
 		assert(!byte.empty());
 		assert(!type.empty());
 		assert(!name.empty());
@@ -79,15 +94,22 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	bool BuildLog::IsScriptUpToDate(const string &name){
+	bool BuildLog::IsEnabled(void){
+		return enabled;
+	}
 
+	//////////////////////////////////////////////////////////////////
+
+	bool BuildLog::IsScriptUpToDate(const string &name){
+		boost::mutex::scoped_lock lock(resourceMutex);
+		if (!enabled)return false;
 
 		assert(!str.empty());
 		string path = name;
 		if (path.empty())return false;
 		if (logScriptMap.count(path)==0)return false;
 
-		return LOG_ENABLED && !logScriptMap[path].dirty && IsScriptUpToDate(logScriptMap[path]);
+		return !logScriptMap[path].dirty && IsScriptUpToDate(logScriptMap[path]);
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -106,18 +128,23 @@ namespace bl{
 		err = GetFileInfo(sc.dsc, at);
 		if (err!=0)return false;
 		res = res && (at.st_mtime==sc.m_dsc);
-		return LOG_ENABLED && res;
+		return res;
 	}
 
 	//////////////////////////////////////////////////////////////////
 
 	void BuildLog::Save(){
+		boost::mutex::scoped_lock lock(resourceMutex);
+		if (!enabled)return;
 		SaveLog();
 	}
 
 	//////////////////////////////////////////////////////////////////
 
 	void BuildLog::UpdateBytecode(const string &name){
+		boost::mutex::scoped_lock lock(resourceMutex);
+		if (!enabled)return;
+
 		assert(!n.empty());
 		assert(!name.empty());
 		assert(logScriptMap.count(name));
@@ -160,6 +187,9 @@ namespace bl{
 	//////////////////////////////////////////////////////////////////
 
 	void BuildLog::UpdateDirectoryInformation(const string &name, const String &sourcePath, const string &bytecodePath){
+		boost::mutex::scoped_lock lock(resourceMutex);
+		if (!enabled)return;
+
 		assert(!name.empty());
 		if (logScriptMap.count(name)==0)return;
 		logScriptMap[name].dbc = bytecodePath;
@@ -169,6 +199,9 @@ namespace bl{
 	//////////////////////////////////////////////////////////////////
 
 	void BuildLog::Read(const String &path, const String &name){
+		boost::mutex::scoped_lock lock(resourceMutex);
+		if (!enabled)return;
+
 		const string wpath= _SS(path);
 		currentWorkspaceLogPath = logFile;
 		currentWorkspace = _SS(name);

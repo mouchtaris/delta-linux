@@ -9,7 +9,7 @@
 #include <windows.h>
 #include "Common.h"
 #include "VirtualContainer.h"
-
+#include <boost/thread/mutex.hpp>
 
 #define __BL bl::buildLog
 
@@ -44,12 +44,15 @@ namespace bl{
 		void				Read						(const String &path, const String &name);
 		void				UpdateBytecode				(const string &name);
 		bool				IsScriptUpToDate			(const string &name);
+		bool				IsEnabled					(void);
 
 		//----------------------------------
 		//for future gui delete log action. arguments same as Read() on file Workspace.cpp
 		//----------------------------------
 		string				GetLastWorkspaceLogPath		(void);
 		void				DeleteBuildLog				(const String &path, const String &name);
+		void				EnableBuildLog				(void);
+		void				DisableBuildLog				(void);
 		//----------------------------------
 
 	private:
@@ -60,7 +63,8 @@ namespace bl{
 		vector<string>		buildOrder;
 		string				debugFile;
 		string				logFile;
-
+		boost::mutex		resourceMutex;
+		bool				enabled;
 
 		void				PrintMap							(void);
 		

@@ -1211,14 +1211,18 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 		m_upToDate = true;						// We artificially set it up-to-date so that we do not rebuilt in this session.
 	}
 	else {
-		for (ide::Script::ScriptPtrSet::iterator it = m_buildDeps.begin();it!=m_buildDeps.end();){
-			if ( __BL.IsScriptUpToDate( (*it)->GetLogName() )){
-				it = m_buildDeps.erase(it);
-			}
-			else{
-				++it;
+		//-----Build Log Operations--------------
+		if (__BL.IsEnabled()){
+			for (ide::Script::ScriptPtrSet::iterator it = m_buildDeps.begin();it!=m_buildDeps.end();){
+				if ( __BL.IsScriptUpToDate( (*it)->GetLogName() )){
+					it = m_buildDeps.erase(it);
+				}
+				else{
+					++it;
+				}
 			}
 		}
+		//---------------------------------------
 		if (m_buildDeps.empty())
 			BuildSelf();
 		else
@@ -1424,7 +1428,9 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 
 	ClearBuildInformation();
 	m_upToDate = succeeded;
-	if (succeeded)__BL.UpdateBytecode(this->GetLogName());
+	//-----Build Log Operations--------------
+	if (__BL.IsEnabled() && succeeded)__BL.UpdateBytecode(this->GetLogName());
+	//---------------------------------------
 
 	// Is it scheduled to run automatically ?
 	if (IsRunAutomaticallyAfterBuild())
@@ -2268,17 +2274,20 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	
 
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
-
-	ScriptPtrSet outDeps;
-	StdStringList externalDeps;
-	StringList deps;
-	bool ok = ResolveDependencies(ExtractDependencies(), &outDeps, &externalDeps, false);
-	for (ScriptPtrSet::iterator it = outDeps.begin(); it != outDeps.end(); ++it){
-		deps.push_back( util::std2str((*it)->GetProducedByteCodeFileFullPath()) );
-	}
-	__BL.Add(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps);
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
+	//-----Build Log Operations--------------
+	if (__BL.IsEnabled()){
+		ScriptPtrSet outDeps;
+		StdStringList externalDeps;
+		StringList deps;
+		bool ok = ResolveDependencies(ExtractDependencies(), &outDeps, &externalDeps, false);
+		for (ScriptPtrSet::iterator it = outDeps.begin(); it != outDeps.end(); ++it){
+			deps.push_back( util::std2str((*it)->GetProducedByteCodeFileFullPath()) );
+		}
+		__BL.Add(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps);
+	}
+	//---------------------------------------
 	if (m_upToDate) {
 		m_workId = workId;
 		SetIsBeingBuilt();
@@ -2318,13 +2327,16 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	InitialiseNewBuildProcess(workId);
 	m_debugBuild = debugBuild;
 
-
-	deps.clear();
 	ResolveAspectTransformations();
-	for (ide::Script::ScriptPtrSet::iterator it = m_aspectTransformations.begin(); it!=m_aspectTransformations.end(); ++it){
-		deps.push_back( util::std2str( (*it)->GetProducedByteCodeFileFullPath() ) );
+	//-----Build Log Operations--------------
+	if (__BL.IsEnabled()){
+		StringList deps;
+		for (ide::Script::ScriptPtrSet::iterator it = m_aspectTransformations.begin(); it!=m_aspectTransformations.end(); ++it){
+			deps.push_back( util::std2str( (*it)->GetProducedByteCodeFileFullPath() ) );
+		}
+		__BL.AddAspects(this->GetLogName() ,deps);
 	}
-	__BL.AddAspects(this->GetLogName() ,deps);
+	//---------------------------------------
 	if (!m_aspectTransformations.empty())
 		BuildWithScriptDependencies(m_aspectTransformations);
 	else {

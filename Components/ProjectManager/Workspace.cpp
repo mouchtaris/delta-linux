@@ -548,7 +548,8 @@ namespace ide
 	{
 
 		if (!m_rootWorkingResource) {
-			if (util::str2std(task)=="Build"){
+			//-----Build Log Operations--------------
+			if (__BL.IsEnabled() && util::str2std(task)=="Build"){
 				__BL.Read(this->GetPath(),this->GetName());
 				ide::Component::List children;
 				this->GetChildrenRecursively(children);
@@ -560,6 +561,7 @@ namespace ide
 					}
 				}			
 			}
+			//---------------------------------------
 			m_rootWorkingResource = root;
 			m_task = task;
 			SetWorkspaceWorkCommandsStatus(false);
@@ -841,7 +843,7 @@ namespace ide
 
 	void Workspace::OnWorkCompleted(const Handle& root, const String& task)
 	{
-		if (task==util::std2str("Build"))__BL.Save();
+		if (__BL.IsEnabled() && task==util::std2str("Build"))__BL.Save();
 		sigWorkCompleted(root, task);
 	}
 
