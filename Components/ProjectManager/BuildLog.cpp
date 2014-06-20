@@ -23,11 +23,11 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	static const int			getFileInfo			(const string &file, struct stat &fileinfo);
-	static const std::string	getStringAttribute	(const wxXmlNode* node, const string name);
-	static const time_t			getTimeAttribute	(const wxXmlNode* node, const string name);
-	static KeyMap				getChildNodes		(const wxXmlNode* node, const string name, const string type);
-	static const string			getDbcFromPath		(const string &source);
+	static const int			GetFileInfo			(const string &file, struct stat &fileinfo);
+	static const std::string	GetStringAttribute	(const wxXmlNode* node, const string name);
+	static const time_t			GetTimeAttribute	(const wxXmlNode* node, const string name);
+	static KeyMap				GetChildNodes		(const wxXmlNode* node, const string name, const string type);
+	static const string			GetDbcFromPath		(const string &source);
 	//////////////////////////////////////////////////////////////////
 
 	BuildLog buildLog;
@@ -43,67 +43,67 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::addAspects (const string &name ,const StringList &deps){
+	void BuildLog::AddAspects (const string &name ,const StringList &deps){
 		assert(!name.empty());
 
 		for (StringList::const_iterator it = deps.begin(); it!=deps.end();++it){		
-			const string dep = getDbcFromPath(util::str2std(*it));
+			const string dep = GetDbcFromPath(util::str2std(*it));
 			assert(!dep.empty());
-			script_map[dep].usedby[name]=true;
-			script_map[name].uses[dep]=true;
+			logScriptMap[dep].usedby[name]=true;
+			logScriptMap[name].uses[dep]=true;
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::add (const string &name,const String &dsc, const string &byte, const string &type, const StringList &deps){
+	void BuildLog::Add (const string &name,const String &dsc, const string &byte, const string &type, const StringList &deps){
 		assert(!byte.empty());
 		assert(!type.empty());
 		assert(!name.empty());
 
-		script_map[name].name = name;
-		script_map[name].dsc =  _SS(dsc);
-		script_map[name].dbc = byte;
-		script_map[name].type = type;
+		logScriptMap[name].name = name;
+		logScriptMap[name].dsc =  _SS(dsc);
+		logScriptMap[name].dbc = byte;
+		logScriptMap[name].type = type;
 
 		for (StringList::const_iterator it = deps.begin(); it!=deps.end(); ++it){
-			const string dep = getDbcFromPath(util::str2std(*it));
-			script_map[dep].usedby[name]=true;
-			script_map[name].uses[dep]=true;
+			const string dep = GetDbcFromPath(util::str2std(*it));
+			logScriptMap[dep].usedby[name]=true;
+			logScriptMap[name].uses[dep]=true;
 		}
 
 		struct stat info;
-		getFileInfo(script_map[name].dsc,info);
-		script_map[name].m_dsc = info.st_mtime;
+		GetFileInfo(logScriptMap[name].dsc,info);
+		logScriptMap[name].m_dsc = info.st_mtime;
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	bool BuildLog::isScriptUpToDate(const string &name){
+	bool BuildLog::IsScriptUpToDate(const string &name){
 
 
 		assert(!str.empty());
 		string path = name;
 		if (path.empty())return false;
-		if (script_map.count(path)==0)return false;
+		if (logScriptMap.count(path)==0)return false;
 
-		return LOG_ENABLED && !script_map[path].dirty && isScriptUpToDate(script_map[path]);
+		return LOG_ENABLED && !logScriptMap[path].dirty && IsScriptUpToDate(logScriptMap[path]);
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	bool BuildLog::isScriptUpToDate(const script &sc){
+	bool BuildLog::IsScriptUpToDate(const LogScript &sc){
 
 		string path = sc.dbc;
 		assert(!path.empty());
 
 		struct stat at;     
-		int err = getFileInfo(sc.dbc, at);
+		int err = GetFileInfo(sc.dbc, at);
 
 		if (err!=0)return false;
 		bool res = (at.st_mtime==sc.m_dbc);
 
-		err = getFileInfo(sc.dsc, at);
+		err = GetFileInfo(sc.dsc, at);
 		if (err!=0)return false;
 		res = res && (at.st_mtime==sc.m_dsc);
 		return LOG_ENABLED && res;
@@ -111,64 +111,64 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::save(){
-		saveLog();
+	void BuildLog::Save(){
+		SaveLog();
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::updateBytecode(const string &name){
+	void BuildLog::UpdateBytecode(const string &name){
 		assert(!n.empty());
 		assert(!name.empty());
-		assert(script_map.count(name));
-		if (!script_map.count(name))return;
+		assert(logScriptMap.count(name));
+		if (!logScriptMap.count(name))return;
 
-		string path = script_map[name].dbc;
+		string path = logScriptMap[name].dbc;
 		struct stat info;     
-		int res = getFileInfo(path, info);
+		int res = GetFileInfo(path, info);
 
 		if (res==0){
-			script_map[name].m_dbc = info.st_mtime;
-			script_map[name].dirty = false;
+			logScriptMap[name].m_dbc = info.st_mtime;
+			logScriptMap[name].dirty = false;
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::markOutOfDateRecursively (const KeyMap &deps){
+	void BuildLog::MarkOutOfDateRecursively (const KeyMap &deps){
 		for (KeyMap::const_iterator used = deps.begin(); used!=deps.end();++used){
-			script_map[used->first].dirty = true;
-			markOutOfDateRecursively (script_map[used->first].usedby);
+			logScriptMap[used->first].dirty = true;
+			MarkOutOfDateRecursively (logScriptMap[used->first].usedby);
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::markOutOfDate(){
-		for (ScriptMap::iterator it=script_map.begin();it!=script_map.end();++it){
-			const script s = it->second;
-			if (!isScriptUpToDate(s)){
-				markOutOfDateRecursively(s.usedby);
-				it->second.dirty = true;
+	void BuildLog::MarkOutOfDate(){
+		for (ScriptMap::iterator it=logScriptMap.begin(); it!=logScriptMap.end(); ++it){
+			LogScript& s = it->second;
+			if (!IsScriptUpToDate(s)){
+				MarkOutOfDateRecursively(s.usedby);
+				s.dirty = true;
 			}
 			else{
-				it->second.dirty = false;
+				s.dirty = false;
 			}
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::updateDirectoryInformation(const string &name, const String &sourcePath, const string &bytecodePath){
+	void BuildLog::UpdateDirectoryInformation(const string &name, const String &sourcePath, const string &bytecodePath){
 		assert(!name.empty());
-		if (script_map.count(name)==0)return;
-		script_map[name].dbc = bytecodePath;
-		script_map[name].dsc = _SS(sourcePath);
+		if (logScriptMap.count(name)==0)return;
+		logScriptMap[name].dbc = bytecodePath;
+		logScriptMap[name].dsc = _SS(sourcePath);
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::read(const String &path, const String &name){
+	void BuildLog::Read(const String &path, const String &name){
 		const string wpath= _SS(path);
 		currentWorkspaceLogPath = logFile;
 		currentWorkspace = _SS(name);
@@ -179,16 +179,39 @@ namespace bl{
 			currentWorkspaceLogPath = p.string();
 		}
 		debugStream << currentWorkspaceLogPath << std::endl;
-		build_order.clear();
-		script_map.clear();
-		readLog();
-		markOutOfDate();
+		buildOrder.clear();
+		logScriptMap.clear();
+		ReadLog();
+		MarkOutOfDate();
 		//order();
 	}
 
+	///////////////////////////////////////////////////////////////////
+
+	string BuildLog::GetLastWorkspaceLogPath(void){
+		return currentWorkspaceLogPath;
+	}
+
+	///////////////////////////////////////////////////////////////////
+
+	void BuildLog::DeleteBuildLog(const String &path, const String &name){
+		const string wpath= _SS(path);
+		currentWorkspaceLogPath = logFile;
+		currentWorkspace = _SS(name);
+		currentWorkspaceLogPath = logFile;
+		if (boost::filesystem::is_directory(wpath)){
+			boost::filesystem::path p(wpath);
+			p /= boost::filesystem::path(_SS(name)+logFile);
+			currentWorkspaceLogPath = p.string();
+		}
+
+		boost::filesystem::wpath file(currentWorkspaceLogPath);
+		if(boost::filesystem::exists(file))
+            boost::filesystem::remove(file);
+	}
 	//////////////////////////////////////////////////////////////////
 
-	static const string getDbcFromPath(const string &source){
+	static const string GetDbcFromPath(const string &source){
 		string str = source;
 		size_t found = str.rfind('/');
 		if (found!=std::string::npos){
@@ -198,8 +221,9 @@ namespace bl{
 	}
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::readLog(){
+	void BuildLog::ReadLog(){
 		wxXmlDocument doc;
+		doc.SetFileEncoding(_T("utf-8"));
 		wxLogNull disableErrorPopup;
 		if ( !boost::filesystem::exists(currentWorkspaceLogPath))return;
 		if (!doc.Load(_ss(currentWorkspaceLogPath)))return;
@@ -212,26 +236,26 @@ namespace bl{
 		while(child){
 			string name =  _SS(child->GetAttribute(_T("name"),_T("")));
 			assert(!name.empty());
-			if (name.empty())return;
-			script_map[name].name = name;
+			//if (name.empty())return;
+			logScriptMap[name].name = name;
 
 			wxXmlNode* info = child->GetChildren();
 
 			while (info){
 				if (info->GetName() == _ss("Information")){
-					script_map[name].dbc = getStringAttribute(info,"dbc");
-					script_map[name].dsc = getStringAttribute(info,"dsc");
-					script_map[name].type = getStringAttribute(info,"type");
+					logScriptMap[name].dbc = GetStringAttribute(info,"dbc");
+					logScriptMap[name].dsc = GetStringAttribute(info,"dsc");
+					logScriptMap[name].type = GetStringAttribute(info,"type");
 
-					script_map[name].m_dbc = getTimeAttribute(info,"m_dbc");
-					script_map[name].m_dsc = getTimeAttribute(info,"m_dsc");
+					logScriptMap[name].m_dbc = GetTimeAttribute(info,"m_dbc");
+					logScriptMap[name].m_dsc = GetTimeAttribute(info,"m_dsc");
 					break;
 				}
 				info = info->GetNext();
 			}
 
-			script_map[name].usedby = getChildNodes(child,"UsedBy","name");
-			script_map[name].uses = getChildNodes(child,"Uses","name");
+			logScriptMap[name].usedby = GetChildNodes(child,"UsedBy","name");
+			logScriptMap[name].uses = GetChildNodes(child,"Uses","name");
 
 			child = child->GetNext();
 		}
@@ -252,15 +276,15 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::saveLog(){
+	void BuildLog::SaveLog(){
 		wxXmlDocument doc;
 		xml::Node	root;
 		root.Create(_ss(currentWorkspace));
 		doc.SetRoot(root.NativeType());
 		xml::Node	child;
-		for (ScriptMap::const_iterator it=script_map.begin();it!=script_map.end();++it){
+		for (ScriptMap::const_iterator it=logScriptMap.begin();it!=logScriptMap.end();++it){
 			xml::Node child;
-			const script& s = it->second;
+			const LogScript& s = it->second;
 			child.Create(_T("Script"));
 			child.SetProperty(_T("name"),_ss(s.name));
 			xml::Node info;
@@ -282,14 +306,14 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	static const int getFileInfo(const string &file, struct stat &fileinfo){	
+	static const int GetFileInfo(const string &file, struct stat &fileinfo){	
 		memset(&fileinfo, 0, sizeof(struct stat));
 		return stat(file.c_str(), &fileinfo);
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	static const std::string getStringAttribute(const wxXmlNode* node,const std::string name){
+	static const std::string GetStringAttribute(const wxXmlNode* node,const std::string name){
 		String tmp = (node->GetAttribute(_ss(name),_T("")));
 		assert(!tmp.empty());
 		return _SS(tmp);
@@ -297,7 +321,7 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	static const time_t getTimeAttribute(const wxXmlNode* node,const std::string name){
+	static const time_t GetTimeAttribute(const wxXmlNode* node,const std::string name){
 			String tmp = (node->GetAttribute(_ss(name),_T("0")));
 			assert(!tmp.empty());
 			time_t mod_time =  boost::lexical_cast<time_t>(tmp);
@@ -306,7 +330,7 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	static KeyMap getChildNodes(const wxXmlNode* node, const string name, const string type){
+	static KeyMap GetChildNodes(const wxXmlNode* node, const string name, const string type){
 		wxXmlNode* children = node->GetChildren();
 		KeyMap tmp;
 		while (children){

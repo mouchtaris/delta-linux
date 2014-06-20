@@ -18,10 +18,10 @@ using namespace std;
 namespace bl{
 
 	class BuildLog;
-	class script;
+	class LogScript;
 
 	typedef map<string,bool> KeyMap;
-	typedef map<string,script> ScriptMap;
+	typedef map<string,LogScript> ScriptMap;
 
 
 	extern BuildLog buildLog;
@@ -37,67 +37,70 @@ namespace bl{
 		
 		BuildLog();
 		
-		void				add							(const string &name, const String &dsc, const string &dbc, const string &type, const StringList &deps);
-		void				addAspects					(const string &byte, const StringList &deps);
-		void				updateDirectoryInformation	(const string &name, const String &sourcePath, const string &bytecodePath);
-		void				save						(void);
-		void				read						(const String &path, const String &name);
-		void				updateBytecode				(const string &name);
-		bool				isScriptUpToDate			(const string &name);
+		void				Add							(const string &name, const String &dsc, const string &dbc, const string &type, const StringList &deps);
+		void				AddAspects					(const string &byte, const StringList &deps);
+		void				UpdateDirectoryInformation	(const string &name, const String &sourcePath, const string &bytecodePath);
+		void				Save						(void);
+		void				Read						(const String &path, const String &name);
+		void				UpdateBytecode				(const string &name);
+		bool				IsScriptUpToDate			(const string &name);
+
+		//----------------------------------
+		//for future gui delete log action. arguments same as Read() on file Workspace.cpp
+		//----------------------------------
+		string				GetLastWorkspaceLogPath		(void);
+		void				DeleteBuildLog				(const String &path, const String &name);
+		//----------------------------------
 
 	private:
 
 		string				currentWorkspaceLogPath;
 		string				currentWorkspace;
-		ScriptMap			script_map;		
-		vector<string>		build_order;
+		ScriptMap			logScriptMap;		
+		vector<string>		buildOrder;
 		string				debugFile;
 		string				logFile;
 
 
-		void				print_map							(void);
+		void				PrintMap							(void);
 		
-		bool				isFileUpToDate						(const string &file);
-		bool				isScriptUpToDate					(const script &sc);
+		bool				IsFileUpToDate						(const string &file);
+		bool				IsScriptUpToDate					(const LogScript &sc);
 		
-		void				markOutOfDate						(void);
-		void				saveLog								(void);
-		void				readLog								(void);
-		void				order								(void);
-		void				markOutOfDateRecursively			(const KeyMap &children);
+		void				MarkOutOfDate						(void);
+		void				SaveLog								(void);
+		void				ReadLog								(void);
+		void				Order								(void);
+		void				MarkOutOfDateRecursively			(const KeyMap &children);
 
 	protected:
 
 	};
 //----------------------------
-	class script{
+	class LogScript{
 
 	public:
 
 		string				type;
 		string				dsc;
 		string				dbc;
-		string				outputDirectory;
-		string				workingDirectory;
 		string				name;
-		string				test_dsc;
-		string				test_dbc;
 		time_t				m_dsc;
 		time_t				m_dbc;
 		KeyMap				uses;
 		KeyMap				usedby;
 		bool				dirty;
 
-		const script& operator=(const script& s) 
-				{ new (this) script(s); return *this; }
+		const LogScript& operator=(const LogScript& s) 
+				{ new (this) LogScript(s); return *this; }
 
-		script (void) :
+		LogScript (void) :
 			m_dsc	(0),
 			m_dbc	(0),
 			dirty	(true)
 			{}
 
-		script (const script& s) :
+		LogScript (const LogScript& s) :
 			type				(s.type),
 			dsc					(s.dsc),
 			dbc					(s.dbc),
@@ -106,11 +109,7 @@ namespace bl{
 			uses				(s.uses),
 			usedby				(s.usedby),
 			dirty				(s.dirty),
-			outputDirectory		(s.outputDirectory),
-			workingDirectory	(s.workingDirectory),
-			name				(s.name),
-			test_dsc			(s.test_dsc),
-			test_dbc			(s.test_dbc)
+			name				(s.name)
 			{}
 				
 	};

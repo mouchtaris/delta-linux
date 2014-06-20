@@ -154,7 +154,7 @@ namespace ide
 	{
 		const Handle& workspace = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
 		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")()) {
-			if (__BL.isScriptUpToDate(this->GetProducedByteCodeFile())){
+			if (__BL.IsScriptUpToDate(this->GetProducedByteCodeFile())){
 				PostBuildMessage(m_workId,std::string("Script '")+	util::str2std(GetName())	+"' (is upToDate!");
 				return;/////////////////////////////////////////////////////////////////////////////////
 			}

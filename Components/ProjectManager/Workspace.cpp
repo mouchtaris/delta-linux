@@ -549,14 +549,14 @@ namespace ide
 
 		if (!m_rootWorkingResource) {
 			if (util::str2std(task)=="Build"){
-				__BL.read(this->GetPath(),this->GetName());
+				__BL.Read(this->GetPath(),this->GetName());
 				ide::Component::List children;
 				this->GetChildrenRecursively(children);
 				BOOST_FOREACH(Component* child, children){
 					std::string type = child->GetClassId();
 					if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect")){
 						Script* tmp = static_cast<Script*>(child);
-						tmp->updateLogDirectoryInformation();
+						tmp->UpdateLogDirectoryInformation();
 					}
 				}			
 			}
@@ -841,7 +841,7 @@ namespace ide
 
 	void Workspace::OnWorkCompleted(const Handle& root, const String& task)
 	{
-		if (task==util::std2str("Build"))__BL.save();
+		if (task==util::std2str("Build"))__BL.Save();
 		sigWorkCompleted(root, task);
 	}
 
