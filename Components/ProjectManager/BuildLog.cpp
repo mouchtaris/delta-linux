@@ -20,9 +20,7 @@
 /*bugs noticed
 
 	threads do not close
-	too many ..
-
-
+	too many ".."
 
 */
 
@@ -48,7 +46,6 @@ namespace bl{
 	BuildLog::BuildLog(){
 		debugFile = "debug.txt";
 		logFile = ".buildlog";
-		debugStream = ofstream(debugFile);
 		enabled = false;
 	}
 

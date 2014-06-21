@@ -32,9 +32,6 @@ namespace bl{
 
 	public:
 
-		ofstream debugStream;
-
-		
 		BuildLog();
 		
 		void				Add							(const string &name, const String &dsc, const string &dbc, const string &type, const StringList &deps, const StdStringList &external);
@@ -122,11 +119,6 @@ namespace bl{
 				
 	};
 
-	template <typename T> BuildLog& operator <<(BuildLog& log, T const& value) {
-		log.debugStream << value << std::flush;
-		return log;
-	}
-	
 }
 
 #endif
