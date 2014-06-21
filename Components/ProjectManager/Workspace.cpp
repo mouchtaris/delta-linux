@@ -51,6 +51,9 @@
 #include "Icons/cancel_work.xpm"
 #include "Icons/debug_attach.xpm"
 #include "Icons/debug_executable.xpm"
+#include "Icons/buildlog_enable.xpm"
+#include "Icons/buildlog_disable.xpm"
+#include "Icons/buildlog_delete.xpm"
 
 #include "Icons/go.xpm"
 #include "Icons/break.xpm"
@@ -142,6 +145,9 @@ namespace ide
 		BitmapRegistry::Instance().Insert(_T("cancel_work"), cancel_work_xpm);
 		BitmapRegistry::Instance().Insert(_T("debug_attach"), debug_attach_xpm);
 		BitmapRegistry::Instance().Insert(_T("debug_executable"), debug_executable_xpm);
+		BitmapRegistry::Instance().Insert(_T("buildlog_enable"), buildlog_enable_xpm);
+		BitmapRegistry::Instance().Insert(_T("buildlog_disable"), buildlog_disable_xpm);
+		BitmapRegistry::Instance().Insert(_T("buildlog_delete"), buildlog_delete_xpm);
 
 		BitmapRegistry::Instance().Insert(_T("go"), go_xpm);
 		BitmapRegistry::Instance().Insert(_T("break"), break_xpm);
@@ -170,6 +176,13 @@ namespace ide
 		AddCommand(
 			_("/{100}Build/{15}Clean Workspace\tCtrl+Shift+F7"),
 			UserCommandDesc(UserCommandDesc::Callback("Workspace", "CleanCtx"), false, UC_MAIN, false, true, _T("clean_workspace"))
+		);
+
+		AddLogCommands();
+
+		AddCommand(
+			_("/{100}Build/{19}Delete Log"),
+			UserCommandDesc(UserCommandDesc::Callback("Workspace", "DeleteWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_delete"))
 		);
 
 		AddCommand(
@@ -222,6 +235,9 @@ namespace ide
 		RemoveCommand(_("/Build/Build Script\tCtrl+F7"));
 		RemoveCommand(_("/Build/Build Script with Debugging\tCtrl+Alt+F7"));
 		RemoveCommand(_("/Build/Clean Workspace\tCtrl+Shift+F7"));
+		RemoveCommand(_("/Build/Disable Log"));
+		RemoveCommand(_("/Build/Enable Log"));
+		RemoveCommand(_("/Build/Delete Log"));
 		RemoveCommand(_("/Debug/Run\tCtrl+F5"));
 		RemoveCommand(_("/Debug/Debug (Zen, graphical)\tF5"));
 		RemoveCommand(_("/Debug/Debug (Disco, console)\tCtrl+Shift+F5"));
@@ -318,6 +334,64 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_STATIC(Workspace, void, AddLogCommands, (void))
+	{
+		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
+		if (__BL.IsEnabled()){
+			AddCommand(
+				_("/{100}Build/{18}Disable Log"),
+				UserCommandDesc(UserCommandDesc::Callback("Workspace", "DisableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_disable"))
+			);
+		}
+		else{
+			AddCommand(
+				_("/{100}Build/{18}Enable Log"),
+				UserCommandDesc(UserCommandDesc::Callback("Workspace", "EnableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_enable"))
+			);
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(Workspace, void, DisableWorkspaceBuildLog, (void))
+	{
+		__BL.DisableBuildLog();
+
+		Call<void (const String& path), SafeCall> RemoveCommand("DeltaVM", "Shell", "RemoveCommand");
+		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
+
+		RemoveCommand(_("/Build/Disable Log"));
+		AddCommand(
+			_("/{100}Build/{18}Enable Log"),
+			UserCommandDesc(UserCommandDesc::Callback("Workspace", "EnableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_enable"))
+		);
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(Workspace, void, EnableWorkspaceBuildLog, (void))
+	{
+		__BL.EnableBuildLog();
+
+		Call<void (const String& path), SafeCall> RemoveCommand("DeltaVM", "Shell", "RemoveCommand");
+		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
+		RemoveCommand(_("/Build/Enable Log"));
+		AddCommand(
+			_("/{100}Build/{18}Disable Log"),
+			UserCommandDesc(UserCommandDesc::Callback("Workspace", "DisableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_disable"))
+		);
+	}
+
+	//-----------------------------------------------------------------------
+
+	EXPORTED_FUNCTION(Workspace, void, DeleteWorkspaceBuildLog, (void))
+	{
+		//string message = __BL.LogExists(GetPath(),GetName())?"Build log successfully deleted.":"Build log does not exist.";
+		__BL.DeleteBuildLog(this->GetPath(),this->GetName());
+	}
+
+	//-----------------------------------------------------------------------
+
 	EXPORTED_FUNCTION(Workspace, void, Debug, (void))
 	{
 		Debug(_("Debugging Workspace...\n"), "Debug");
@@ -374,6 +448,9 @@ namespace ide
 		EnableCommand(_("/Build/Build Script\tCtrl+F7"));
 		EnableCommand(_("/Build/Build Script with Debugging\tCtrl+Alt+F7"));
 		EnableCommand(_("/Build/Clean Workspace\tCtrl+Shift+F7"));
+		EnableCommand(_("/Build/Enable Log"));
+		EnableCommand(_("/Build/Disable Log"));
+		EnableCommand(_("/Build/Delete Log"));
 		EnableCommand(_("/Debug/Run\tCtrl+F5"));
 		EnableCommand(_("/Debug/Debug (Zen, graphical)\tF5"));
 		EnableCommand(_("/Debug/Debug (Disco, console)\tCtrl+Shift+F5"));
@@ -396,6 +473,9 @@ namespace ide
 		DisableCommand(_("/Build/Build Script\tCtrl+F7"));
 		DisableCommand(_("/Build/Build Script with Debugging\tCtrl+Alt+F7"));
 		DisableCommand(_("/Build/Clean Workspace\tCtrl+Shift+F7"));
+		DisableCommand(_("/Build/Disable Log"));
+		DisableCommand(_("/Build/Enable Log"));
+		DisableCommand(_("/Build/Delete Log"));
 		DisableCommand(_("/Debug/Run\tCtrl+F5"));
 		DisableCommand(_("/Debug/Debug (Zen, graphical)\tF5"));
 		DisableCommand(_("/Debug/Debug (Disco, console)\tCtrl+Shift+F5"));

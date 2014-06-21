@@ -45,7 +45,7 @@ namespace ide
 		///-- exported API
 		DECLARE_EXPORTED_STATIC(void, Initialize, (void));
 		DECLARE_EXPORTED_STATIC(void, CleanUp, (void));
-
+		DECLARE_EXPORTED_STATIC( void, AddLogCommands, (void));
 		DECLARE_EXPORTED_FUNCTION(bool, CanDestroy, (void));
 
 		DECLARE_EXPORTED_FUNCTION_(bool, Load, (const String& uri), _("Load workspace from disk"));
@@ -54,11 +54,16 @@ namespace ide
 
 		DECLARE_EXPORTED_FUNCTION_(void, BuildScript, (void), _("Build Current Script"));
 		DECLARE_EXPORTED_FUNCTION_(void, BuildScriptWithDebugging, (void), _("Build Current Script with Debugging"));
+		DECLARE_EXPORTED_FUNCTION_(void, EnableWorkspaceBuildLog, (void), _("Enable Workspace Buildlog"));
+		DECLARE_EXPORTED_FUNCTION_(void, DisableWorkspaceBuildLog, (void), _("Disable Workspace Buildlog"));
+		DECLARE_EXPORTED_FUNCTION_(void, DeleteWorkspaceBuildLog, (void), _("Delete Workspace Buildlog"));
 
 		DECLARE_EXPORTED_FUNCTION_(void, Debug, (void),	_("Debug Workspace"));
 		DECLARE_EXPORTED_FUNCTION_(void, DebugWithConsoleDebugger, (void),	_("Debug Workspace (console)"));
 		DECLARE_EXPORTED_STATIC_(void, DebugAttach, (void),	_("Attach to a remote debugger"));
 		DECLARE_EXPORTED_STATIC_(void, DebugExecutable, (void),	_("Debug an executable"));
+
+		
 
 		DECLARE_EXPORTED_FUNCTION(virtual void, EnableWorkCommands, (void));
 		DECLARE_EXPORTED_FUNCTION(virtual void, DisableWorkCommands, (void));

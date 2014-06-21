@@ -17,15 +17,15 @@ using namespace std;
 
 namespace bl{
 
-	class BuildLog;
-	class LogScript;
+	class		BuildLog;
+	class		LogScript;
 
-	typedef map<string,bool> KeyMap;
-	typedef map<string,LogScript> ScriptMap;
+	typedef		map<string,bool> KeyMap;
+	typedef		map<string,LogScript> ScriptMap;
 
 
-	extern BuildLog buildLog;
-	extern string endl;
+	extern		BuildLog buildLog;
+	extern		string endl;
 
 //----------------------------
 	class BuildLog{
@@ -37,14 +37,15 @@ namespace bl{
 		
 		BuildLog();
 		
-		void				Add							(const string &name, const String &dsc, const string &dbc, const string &type, const StringList &deps);
-		void				AddAspects					(const string &byte, const StringList &deps);
+		void				Add							(const string &name, const String &dsc, const string &dbc, const string &type, const StringList &deps, const StdStringList &external);
+		void				AddAspects					(const string &name, const StringList &deps);
 		void				UpdateDirectoryInformation	(const string &name, const String &sourcePath, const string &bytecodePath);
 		void				Save						(void);
 		void				Read						(const String &path, const String &name);
 		void				UpdateBytecode				(const string &name);
 		bool				IsScriptUpToDate			(const string &name);
 		bool				IsEnabled					(void);
+		bool				LogExists					(const String &path, const String &name);
 
 		//----------------------------------
 		//for future gui delete log action. arguments same as Read() on file Workspace.cpp
@@ -57,6 +58,7 @@ namespace bl{
 
 	private:
 
+		
 		string				currentWorkspaceLogPath;
 		string				currentWorkspace;
 		ScriptMap			logScriptMap;		
@@ -67,7 +69,7 @@ namespace bl{
 		bool				enabled;
 
 		void				PrintMap							(void);
-		
+		string				GenerateWorkspaceLogFullFilename	(const String &path, const String &name);
 		bool				IsFileUpToDate						(const string &file);
 		bool				IsScriptUpToDate					(const LogScript &sc);
 		
@@ -93,6 +95,7 @@ namespace bl{
 		time_t				m_dbc;
 		KeyMap				uses;
 		KeyMap				usedby;
+		StdStringList		external;
 		bool				dirty;
 
 		const LogScript& operator=(const LogScript& s) 
@@ -113,7 +116,8 @@ namespace bl{
 			uses				(s.uses),
 			usedby				(s.usedby),
 			dirty				(s.dirty),
-			name				(s.name)
+			name				(s.name),
+			external			(s.external)
 			{}
 				
 	};

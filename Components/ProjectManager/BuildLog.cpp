@@ -7,7 +7,7 @@
 #include "VirtualContainer.h"
 #include <sys/stat.h>
 #include <assert.h>
-	
+
 #include <time.h>
 #include "Script.h"
 
@@ -31,11 +31,13 @@ namespace bl{
 
 	//////////////////////////////////////////////////////////////////
 
-	static const int			GetFileInfo			(const string &file, struct stat &fileinfo);
-	static const std::string	GetStringAttribute	(const wxXmlNode* node, const string name);
-	static const time_t			GetTimeAttribute	(const wxXmlNode* node, const string name);
-	static KeyMap				GetChildNodes		(const wxXmlNode* node, const string name, const string type);
-	static const string			GetDbcFromPath		(const string &source);
+	static const int			GetFileInfo					(const string &file, struct stat &fileinfo);
+	static const std::string	GetStringAttribute			(const wxXmlNode* node, const string name);
+	static const time_t			GetTimeAttribute			(const wxXmlNode* node, const string name);
+	static KeyMap				GetChildNodes				(const wxXmlNode* node, const string name, const string type);
+	static StdStringList		GetChildExternalNodes		(const wxXmlNode* node, const string name, const string type);
+	static const string			GetDbcFromPath				(const string &source);
+	static xml::Node			createChildNodes			(const StdStringList &children, const string type,const string name);
 	//////////////////////////////////////////////////////////////////
 
 	BuildLog buildLog;
@@ -45,7 +47,7 @@ namespace bl{
 
 	BuildLog::BuildLog(){
 		debugFile = "debug.txt";
-		logFile = "_BuildLog.xml";
+		logFile = ".buildlog";
 		debugStream = ofstream(debugFile);
 		enabled = false;
 	}
@@ -65,10 +67,10 @@ namespace bl{
 			logScriptMap[name].uses[dep]=true;
 		}
 	}
-
+	
 	//////////////////////////////////////////////////////////////////
 
-	void BuildLog::Add (const string &name,const String &dsc, const string &byte, const string &type, const StringList &deps){
+	void BuildLog::Add (const string &name,const String &dsc, const string &byte, const string &type, const StringList &deps, const StdStringList &external){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
 
@@ -80,6 +82,7 @@ namespace bl{
 		logScriptMap[name].dsc =  _SS(dsc);
 		logScriptMap[name].dbc = byte;
 		logScriptMap[name].type = type;
+		logScriptMap[name].external = external;
 
 		for (StringList::const_iterator it = deps.begin(); it!=deps.end(); ++it){
 			const string dep = GetDbcFromPath(util::str2std(*it));
@@ -96,6 +99,14 @@ namespace bl{
 
 	bool BuildLog::IsEnabled(void){
 		return enabled;
+	}
+
+	//////////////////////////////////////////////////////////////////
+
+	bool BuildLog::LogExists (const String &path, const String &name){
+		string wpath = GenerateWorkspaceLogFullFilename(path,name);
+		boost::filesystem::wpath file(wpath);
+		return boost::filesystem::exists(file);	
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -201,17 +212,8 @@ namespace bl{
 	void BuildLog::Read(const String &path, const String &name){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
-
-		const string wpath= _SS(path);
-		currentWorkspaceLogPath = logFile;
 		currentWorkspace = _SS(name);
-		currentWorkspaceLogPath = logFile;
-		if (boost::filesystem::is_directory(wpath)){
-			boost::filesystem::path p(wpath);
-			p /= boost::filesystem::path(_SS(name)+logFile);
-			currentWorkspaceLogPath = p.string();
-		}
-		debugStream << currentWorkspaceLogPath << std::endl;
+		currentWorkspaceLogPath = GenerateWorkspaceLogFullFilename(path,name);
 		buildOrder.clear();
 		logScriptMap.clear();
 		ReadLog();
@@ -227,18 +229,32 @@ namespace bl{
 
 	///////////////////////////////////////////////////////////////////
 
-	void BuildLog::DeleteBuildLog(const String &path, const String &name){
+	string BuildLog::GenerateWorkspaceLogFullFilename(const String &path, const String &name){
 		const string wpath= _SS(path);
-		currentWorkspaceLogPath = logFile;
-		currentWorkspace = _SS(name);
-		currentWorkspaceLogPath = logFile;
+		string tmpPath = _SS(name)+logFile;
 		if (boost::filesystem::is_directory(wpath)){
 			boost::filesystem::path p(wpath);
 			p /= boost::filesystem::path(_SS(name)+logFile);
-			currentWorkspaceLogPath = p.string();
+			tmpPath = p.string();
 		}
+		return tmpPath;
+	}
 
-		boost::filesystem::wpath file(currentWorkspaceLogPath);
+	///////////////////////////////////////////////////////////////////
+
+	void BuildLog::EnableBuildLog (void){
+		enabled = true;
+	}
+
+	void BuildLog::DisableBuildLog (void){
+		enabled = false;
+	}
+
+	/////////////////////////////////////////////////////////////////
+
+	void BuildLog::DeleteBuildLog(const String &path, const String &name){
+		string tmp = GenerateWorkspaceLogFullFilename(path,name);
+		boost::filesystem::wpath file(tmp);
 		if(boost::filesystem::exists(file))
             boost::filesystem::remove(file);
 	}
@@ -289,7 +305,7 @@ namespace bl{
 
 			logScriptMap[name].usedby = GetChildNodes(child,"UsedBy","name");
 			logScriptMap[name].uses = GetChildNodes(child,"Uses","name");
-
+			logScriptMap[name].external = GetChildExternalNodes(child,"External","name");
 			child = child->GetNext();
 		}
 		
@@ -302,6 +318,20 @@ namespace bl{
 			xml::Node tmp;
 			tmp.Create(_T("Script"));
 			tmp.SetProperty(_ss(type),_ss(tt->first));
+			parent.InsertChild(tmp);
+		}
+		return parent;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////
+
+	static xml::Node createChildNodes(const StdStringList &children, const string type,const string name){
+		xml::Node parent;
+		parent.Create(_ss(name));
+		for (StdStringList::const_iterator tt = children.begin(); tt!=children.end();++tt){
+			xml::Node tmp;
+			tmp.Create(_T("Script"));
+			tmp.SetProperty(_ss(type),_ss(*tt));
 			parent.InsertChild(tmp);
 		}
 		return parent;
@@ -330,6 +360,7 @@ namespace bl{
 			child.InsertChild(info);
 			child.InsertChild(createChildNodes (s.usedby,"name","UsedBy"));
 			child.InsertChild(createChildNodes (s.uses,"name","Uses"));
+			child.InsertChild(createChildNodes (s.external,"name","External"));
 			root.InsertChild(child);
 		}
 		doc.SetFileEncoding(_T("utf-8"));
@@ -373,6 +404,25 @@ namespace bl{
 					String element = children->GetAttribute(_ss(type),_T(""));
 					if (element.empty())continue;
 					tmp[_SS(element)] = true;
+					children = children->GetNext();
+				}
+				break;
+			}
+			children = children->GetNext();
+		}
+		return tmp;
+	}
+
+	static StdStringList GetChildExternalNodes(const wxXmlNode* node, const string name, const string type){
+		wxXmlNode* children = node->GetChildren();
+		StdStringList tmp;
+		while (children){
+			if (children->GetName() == _ss(name)){
+				children = children->GetChildren();
+				while(children){
+					String element = children->GetAttribute(_ss(type),_T(""));
+					if (element.empty())continue;
+					tmp.push_back(_SS(element));
 					children = children->GetNext();
 				}
 				break;

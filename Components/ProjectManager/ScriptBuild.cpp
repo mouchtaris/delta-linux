@@ -2285,7 +2285,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 		for (ScriptPtrSet::iterator it = outDeps.begin(); it != outDeps.end(); ++it){
 			deps.push_back( util::std2str((*it)->GetProducedByteCodeFileFullPath()) );
 		}
-		__BL.Add(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps);
+		__BL.Add(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps,externalDeps);
 	}
 	//---------------------------------------
 	if (m_upToDate) {
