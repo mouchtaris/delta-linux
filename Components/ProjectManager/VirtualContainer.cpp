@@ -577,8 +577,12 @@ namespace ide
 		TreeItemComponent::ChildDestroyed(component);
 	}
 
-	//-----------------------------------------------------------------------
-
+	/*****************************************************************
+	**	We recursively check if a container's children are up to date.
+	**	If they are the whole container is considered also up to date
+	**  and is skipped on the build proccess.
+	**
+	******************************************************************/
 
 	bool VirtualContainer::AreChildrenUpToDate(Component* container){
 		VirtualContainer* con = static_cast<VirtualContainer*>(container);
@@ -610,7 +614,9 @@ namespace ide
 		List childrenForWork;
 		BOOST_FOREACH(Component* child, GetChildren())
 			if (ComponentRegistry::Instance().GetComponentEntry(child->GetClassId()).HasFunction(task)) {
-				//-----Build Log Operations--------------
+				/*
+				**  We check each child skipping those that are uptodate.
+				*/
 				if (__BL.IsEnabled()){
 					std::string type = child->GetClassId();
 					if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect") && task=="Build"){
@@ -621,7 +627,7 @@ namespace ide
 						if (AreChildrenUpToDate(child))continue;
 					}
 				}
-				//---------------------------------------
+				//************************************************************
 				boost::recursive_mutex::scoped_lock lock(m_workingChildrenMutex);
 				m_workingChildren[child] = WorkInfo(0, UIntList());
 				childrenForWork.push_back(child);

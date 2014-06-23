@@ -1211,7 +1211,11 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 		m_upToDate = true;						// We artificially set it up-to-date so that we do not rebuilt in this session.
 	}
 	else {
-		//-----Build Log Operations--------------
+		/*  
+		**  We remove from the build list dependencies
+		**  that are already up-to-date. Build reissues
+		**  still exist if a scripts is not up-to-date
+		*/
 		if (__BL.IsEnabled()){
 			for (ide::Script::ScriptPtrSet::iterator it = m_buildDeps.begin();it!=m_buildDeps.end();){
 				if ( __BL.IsScriptUpToDate( (*it)->GetLogName() )){
@@ -1222,7 +1226,8 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 				}
 			}
 		}
-		//---------------------------------------
+		//********************************************
+
 		if (m_buildDeps.empty())
 			BuildSelf();
 		else
@@ -1428,9 +1433,12 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 
 	ClearBuildInformation();
 	m_upToDate = succeeded;
-	//-----Build Log Operations--------------
+	/*
+	**  We wanna make sure that the script succeeded before updating the log
+	*/
 	if (__BL.IsEnabled() && succeeded)__BL.UpdateBytecode(this->GetLogName());
-	//---------------------------------------
+
+	//************************************************
 
 	// Is it scheduled to run automatically ?
 	if (IsRunAutomaticallyAfterBuild())
@@ -2259,15 +2267,56 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSe
 	}
 }
 
-/////////////////////////////////////////////////////////////////////////
+//************************************************
+//Inform the log about possible changes in file/project/workspace directory changes
+
 EXPORTED_FUNCTION(Script, void, UpdateLogDirectoryInformation, (void)) {
-	__BL.UpdateDirectoryInformation(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath());
+	__BL.UpdateDirectoryInformation(this->GetLogName(),this->GetLogSource(),this->GetProducedByteCodeFileFullPath());
 }
 
-EXPORTED_FUNCTION(Script, const std::string, GetLogName, (void))
+//************************************************
+//Key for log use
+
+const std::string Script::GetLogName (void)
 {
 	return this->GetProducedByteCodeFile();
 }
+
+//************************************************
+//Key for log use
+
+
+const std::string Script::GetParentLogName (void)
+{ 
+	std::string name = GetProducedByteCodeFile();
+	if (this->GetClassId() == "StageResult" || this->GetClassId() == "StageSource"){
+		Handle parent = this->GetParent();
+		while (parent.GetClassId() == "StageResult" || parent.GetClassId() == "StageSource" || parent.GetClassId() == "Script"){
+			if (parent.GetClassId() == "Script"){
+				Script* script = static_cast<Script*>(parent.Resolve());
+				name = script->GetProducedByteCodeFile();
+			}
+			parent = parent->GetParent();
+		}
+	}
+	return name;
+}
+
+//************************************************
+//Returns scripts source path, or its parent source if its a stage result
+
+const std::string Script::GetLogSource (void)
+{
+	if (this->GetClassId() == "StageResult"){
+		Handle parent = this->GetParent();
+		if (parent.GetClassId() == "Script"){
+			Script* script = static_cast<Script*>(parent.Resolve());
+			return script->GetSource();
+		}
+	}
+	return GetSource();
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script* initiator) {
@@ -2276,18 +2325,34 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
-	//-----Build Log Operations--------------
+	__BL << this->GetName() << "\n" << this->GetSource() << "\n" << "\n" << this->GetFinalSourceURI() << "\n" << this->GetSymbolicURI()  << "\n" << this->GetURI() << "\n--------\n" << bl::endl;
+
+	/*
+	**	Adds the script to the build log along 
+	**  with its dependencies and the externals.
+	**  In case of a stage source/result, the
+	**  dependencies are added to its parent
+	**  and original source file.
+	*/
+	string cid = this->GetClassId();
 	if (__BL.IsEnabled()){
 		ScriptPtrSet outDeps;
 		StdStringList externalDeps;
-		StringList deps;
+		StdStringList deps;
 		bool ok = ResolveDependencies(ExtractDependencies(), &outDeps, &externalDeps, false);
 		for (ScriptPtrSet::iterator it = outDeps.begin(); it != outDeps.end(); ++it){
-			deps.push_back( util::std2str((*it)->GetProducedByteCodeFileFullPath()) );
+			deps.push_back( (*it)->GetProducedByteCodeFileFullPath() );
 		}
-		__BL.Add(this->GetLogName(),this->GetURI(),this->GetProducedByteCodeFileFullPath(),this->GetClassId(),deps,externalDeps);
+		if (cid=="StageSource" || cid=="StageResult"){
+			__BL.AddDependencies(GetParentLogName(),deps);
+			__BL.AddDependencies(GetParentLogName(),externalDeps);
+			deps.clear();
+			externalDeps.clear();
+		}
+		__BL.Add(GetLogName(), GetLogSource() , GetProducedByteCodeFileFullPath(), GetClassId() ,deps, externalDeps);
 	}
-	//---------------------------------------
+	//********************************************
+
 	if (m_upToDate) {
 		m_workId = workId;
 		SetIsBeingBuilt();
@@ -2328,15 +2393,28 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	m_debugBuild = debugBuild;
 
 	ResolveAspectTransformations();
-	//-----Build Log Operations--------------
+
+	/*  
+	**  Adds Aspect scripts as dependencies to the
+	**  log. In case the script is a stage source
+	**  or result, the dependencies are added to
+	**  its parent and original script.
+	*/
+
 	if (__BL.IsEnabled()){
-		StringList deps;
+		StdStringList deps;
 		for (ide::Script::ScriptPtrSet::iterator it = m_aspectTransformations.begin(); it!=m_aspectTransformations.end(); ++it){
-			deps.push_back( util::std2str( (*it)->GetProducedByteCodeFileFullPath() ) );
+			deps.push_back(  (*it)->GetProducedByteCodeFileFullPath()  );
 		}
-		__BL.AddAspects(this->GetLogName() ,deps);
+		string name = GetLogName();
+		if (cid=="StageSource" || cid=="StageResult"){
+			name = GetParentLogName();
+		}
+		__BL.AddDependencies(name ,deps);
 	}
-	//---------------------------------------
+
+	//********************************************
+
 	if (!m_aspectTransformations.empty())
 		BuildWithScriptDependencies(m_aspectTransformations);
 	else {

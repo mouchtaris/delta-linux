@@ -54,6 +54,7 @@ namespace ide
 
 		DECLARE_EXPORTED_FUNCTION_(void, BuildScript, (void), _("Build Current Script"));
 		DECLARE_EXPORTED_FUNCTION_(void, BuildScriptWithDebugging, (void), _("Build Current Script with Debugging"));
+
 		DECLARE_EXPORTED_FUNCTION_(void, EnableWorkspaceBuildLog, (void), _("Enable Workspace Buildlog"));
 		DECLARE_EXPORTED_FUNCTION_(void, DisableWorkspaceBuildLog, (void), _("Disable Workspace Buildlog"));
 		DECLARE_EXPORTED_FUNCTION_(void, DeleteWorkspaceBuildLog, (void), _("Delete Workspace Buildlog"));
@@ -79,6 +80,8 @@ namespace ide
 		DECLARE_EXPORTED_STATIC(void, OnNoBreakpointsDisabled, (void));
 
 		DECLARE_EXPORTED_FUNCTION(const Handle&, GetRootWorkingResource, (void));
+
+		DECLARE_EXPORTED_FUNCTION(void, ReadWorkspaceLog, (void));
 		DECLARE_EXPORTED_FUNCTION(void, StartWorking, (const Handle& root, const String& task));
 
 		DECLARE_EXPORTED_FUNCTION(void, OnResourceWorkCompleted, (const Handle& resource, const String& task, const UIntList& workId));

@@ -1,12 +1,11 @@
-#ifndef SCRIPT_UTILS_H
-#define SCRIPT_UTILS_H
+#ifndef BUILD_LOG_H
+#define BUILD_LOG_H
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
 #include <map>
 #include "Script.h"
-#include <windows.h>
 #include "Common.h"
 #include "VirtualContainer.h"
 #include <boost/thread/mutex.hpp>
@@ -32,11 +31,14 @@ namespace bl{
 
 	public:
 
+		ofstream debugStream;
+
+		
 		BuildLog();
 		
-		void				Add							(const string &name, const String &dsc, const string &dbc, const string &type, const StringList &deps, const StdStringList &external);
-		void				AddAspects					(const string &name, const StringList &deps);
-		void				UpdateDirectoryInformation	(const string &name, const String &sourcePath, const string &bytecodePath);
+		void				Add							(const string &name, const string &dsc, const string &dbc, const string &type, const StdStringList &deps, const StdStringList &external);
+		void				AddDependencies					(const string &name, const StdStringList &deps);
+		void				UpdateDirectoryInformation	(const string &name, const string &sourcePath, const string &bytecodePath);
 		void				Save						(void);
 		void				Read						(const String &path, const String &name);
 		void				UpdateBytecode				(const string &name);
@@ -119,6 +121,11 @@ namespace bl{
 				
 	};
 
+	template <typename T> BuildLog& operator <<(BuildLog& log, T const& value) {
+		log.debugStream << value << std::flush;
+		return log;
+	}
+	
 }
 
 #endif

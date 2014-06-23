@@ -300,6 +300,9 @@ namespace ide
 		void								PostBuildError (const UIntList& workId, const std::string& error);
 		void								PostBuildWarning (const UIntList& workId, const std::string& warning);
 		void								PostBuildMessage (const UIntList& workId, const std::string& message);
+
+		const std::string					GetParentLogName	(void);
+		const std::string					GetLogSource		(void);
 	};
 }
 

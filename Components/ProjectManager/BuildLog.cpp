@@ -17,17 +17,15 @@
 #define _ss util::std2str
 
 
-/*bugs noticed
+/*	TODO
 
-	threads do not close
-	too many ".."
+	save last enable/disable state somewhere in workspace properties
 
 */
 
 namespace bl{
 
-
-	//////////////////////////////////////////////////////////////////
+	//********************************************************
 
 	static const int			GetFileInfo					(const string &file, struct stat &fileinfo);
 	static const std::string	GetStringAttribute			(const wxXmlNode* node, const string name);
@@ -36,38 +34,54 @@ namespace bl{
 	static StdStringList		GetChildExternalNodes		(const wxXmlNode* node, const string name, const string type);
 	static const string			GetDbcFromPath				(const string &source);
 	static xml::Node			createChildNodes			(const StdStringList &children, const string type,const string name);
-	//////////////////////////////////////////////////////////////////
+
+	/*
+	**  the build log is only one, but on each
+	**  read it empties itself and gets
+	**  initialized with workspace specific
+	**  information.
+	*/
 
 	BuildLog buildLog;
 	string endl = "\n";
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*
+	**	default and only constructor
+	*/
 	BuildLog::BuildLog(){
 		debugFile = "debug.txt";
 		logFile = ".buildlog";
-		enabled = false;
+		debugStream = ofstream(debugFile);
+		enabled = true;
 	}
 
-	//////////////////////////////////////////////////////////////////
-
-	void BuildLog::AddAspects (const string &name ,const StringList &deps){
+	//********************************************************
+	/*
+	**	Add dependencies to the *name* entry.
+	*/
+	void BuildLog::AddDependencies (const string &name ,const StdStringList &deps){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
 
 		assert(!name.empty());
 
-		for (StringList::const_iterator it = deps.begin(); it!=deps.end();++it){		
-			const string dep = GetDbcFromPath(util::str2std(*it));
+		for (StdStringList::const_iterator it = deps.begin(); it!=deps.end();++it){		
+			const string dep = GetDbcFromPath(*it);
 			assert(!dep.empty());
 			logScriptMap[dep].usedby[name]=true;
 			logScriptMap[name].uses[dep]=true;
 		}
 	}
 	
-	//////////////////////////////////////////////////////////////////
-
-	void BuildLog::Add (const string &name,const String &dsc, const string &byte, const string &type, const StringList &deps, const StdStringList &external){
+	//********************************************************
+	/*
+	**	Add a script to the log. The key used is its bytecode
+	**	name. On the dependencies part, we update both the
+	**	scripts and the depenency's uses/usedby entries along
+	**	with the script's source file last modification stamp
+	*/
+	void BuildLog::Add (const string &name,const string &dsc, const string &byte, const string &type, const StdStringList &deps, const StdStringList &external){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
 
@@ -76,13 +90,13 @@ namespace bl{
 		assert(!name.empty());
 
 		logScriptMap[name].name = name;
-		logScriptMap[name].dsc =  _SS(dsc);
+		logScriptMap[name].dsc =  dsc;
 		logScriptMap[name].dbc = byte;
 		logScriptMap[name].type = type;
 		logScriptMap[name].external = external;
 
-		for (StringList::const_iterator it = deps.begin(); it!=deps.end(); ++it){
-			const string dep = GetDbcFromPath(util::str2std(*it));
+		for (StdStringList::const_iterator it = deps.begin(); it!=deps.end(); ++it){
+			const string dep = GetDbcFromPath(*it);
 			logScriptMap[dep].usedby[name]=true;
 			logScriptMap[name].uses[dep]=true;
 		}
@@ -92,22 +106,25 @@ namespace bl{
 		logScriptMap[name].m_dsc = info.st_mtime;
 	}
 
-	//////////////////////////////////////////////////////////////////
+	//********************************************************
 
 	bool BuildLog::IsEnabled(void){
 		return enabled;
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Returns whether the particural workspace log exists
+	*/
 	bool BuildLog::LogExists (const String &path, const String &name){
 		string wpath = GenerateWorkspaceLogFullFilename(path,name);
 		boost::filesystem::wpath file(wpath);
 		return boost::filesystem::exists(file);	
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Proxy script uptodate calculation by name. False is it does
+	**	not exist or on error.
+	*/
 	bool BuildLog::IsScriptUpToDate(const string &name){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return false;
@@ -116,12 +133,13 @@ namespace bl{
 		string path = name;
 		if (path.empty())return false;
 		if (logScriptMap.count(path)==0)return false;
-
 		return !logScriptMap[path].dirty && IsScriptUpToDate(logScriptMap[path]);
 	}
-
-	//////////////////////////////////////////////////////////////////
-
+	
+	//********************************************************
+	/*	Actual script uptodate calculation by object. False
+	**	on error.
+	*/
 	bool BuildLog::IsScriptUpToDate(const LogScript &sc){
 
 		string path = sc.dbc;
@@ -132,23 +150,26 @@ namespace bl{
 
 		if (err!=0)return false;
 		bool res = (at.st_mtime==sc.m_dbc);
-
 		err = GetFileInfo(sc.dsc, at);
 		if (err!=0)return false;
 		res = res && (at.st_mtime==sc.m_dsc);
 		return res;
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Save log information
+	*/
 	void BuildLog::Save(){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
 		SaveLog();
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*
+	**	Called upon build completion of a script. Updates dbc
+	**	timestamp or returns on error.
+	*/
 	void BuildLog::UpdateBytecode(const string &name){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
@@ -168,8 +189,10 @@ namespace bl{
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Sets scripts *dirty* bit for itself and recursively
+	**	does the same for anyone using that script.
+	*/
 	void BuildLog::MarkOutOfDateRecursively (const KeyMap &deps){
 		for (KeyMap::const_iterator used = deps.begin(); used!=deps.end();++used){
 			logScriptMap[used->first].dirty = true;
@@ -177,8 +200,10 @@ namespace bl{
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Marks clean all the scripts that are uptodate using the
+	**	above function.
+	*/
 	void BuildLog::MarkOutOfDate(){
 		for (ScriptMap::iterator it=logScriptMap.begin(); it!=logScriptMap.end(); ++it){
 			LogScript& s = it->second;
@@ -192,43 +217,51 @@ namespace bl{
 		}
 	}
 
-	//////////////////////////////////////////////////////////////////
-
-	void BuildLog::UpdateDirectoryInformation(const string &name, const String &sourcePath, const string &bytecodePath){
+	//********************************************************
+	/*	Updates a script's dbc and dsc paths in case it moved.
+	*/
+	void BuildLog::UpdateDirectoryInformation(const string &name, const string &sourcePath, const string &bytecodePath){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
 
 		assert(!name.empty());
 		if (logScriptMap.count(name)==0)return;
 		logScriptMap[name].dbc = bytecodePath;
-		logScriptMap[name].dsc = _SS(sourcePath);
+		logScriptMap[name].dsc = sourcePath;
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Constructs workspace path information and calls the
+	**	reader.
+	*/
 	void BuildLog::Read(const String &path, const String &name){
 		boost::mutex::scoped_lock lock(resourceMutex);
 		if (!enabled)return;
+		assert(!name.empty());
 		currentWorkspace = _SS(name);
 		currentWorkspaceLogPath = GenerateWorkspaceLogFullFilename(path,name);
-		buildOrder.clear();
 		logScriptMap.clear();
 		ReadLog();
 		MarkOutOfDate();
 		//order();
 	}
 
-	///////////////////////////////////////////////////////////////////
+	//********************************************************
 
 	string BuildLog::GetLastWorkspaceLogPath(void){
 		return currentWorkspaceLogPath;
 	}
 
-	///////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Generates the log path depending on the current
+	**	workspace name, in the form of *name*.buildlog. If path
+	**	is not a path, the name generated is general.buildlog
+	**	in the .exe directory.
+	*/
 	string BuildLog::GenerateWorkspaceLogFullFilename(const String &path, const String &name){
+
 		const string wpath= _SS(path);
-		string tmpPath = _SS(name)+logFile;
+		string tmpPath = "general" +logFile;
 		if (boost::filesystem::is_directory(wpath)){
 			boost::filesystem::path p(wpath);
 			p /= boost::filesystem::path(_SS(name)+logFile);
@@ -237,36 +270,61 @@ namespace bl{
 		return tmpPath;
 	}
 
-	///////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	
 	void BuildLog::EnableBuildLog (void){
 		enabled = true;
 	}
 
+	//********************************************************
 	void BuildLog::DisableBuildLog (void){
 		enabled = false;
 	}
 
-	/////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Deletes workspace log.
+	*/
 	void BuildLog::DeleteBuildLog(const String &path, const String &name){
 		string tmp = GenerateWorkspaceLogFullFilename(path,name);
 		boost::filesystem::wpath file(tmp);
 		if(boost::filesystem::exists(file))
             boost::filesystem::remove(file);
 	}
-	//////////////////////////////////////////////////////////////////
 
+	//********************************************************
+	/*	Extracts a name of the form name.dbc out of a string.
+	**	Used to get script names out of dependencies.
+	*/
 	static const string GetDbcFromPath(const string &source){
 		string str = source;
+		if (*str.rbegin() == '/'){
+			str = str.substr(0, str.size()-1);
+		}
 		size_t found = str.rfind('/');
 		if (found!=std::string::npos){
 			return str.substr(found+1,str.length());
 		}
 		return str;
 	}
-	//////////////////////////////////////////////////////////////////
-
+	
+	//********************************************************
+	/*	Reads the log. The log is in XML format, and uses
+	**	wxXML elements and functions. On error it returns
+	**	with empty maps. Example log of a workspace *foo*.
+	**
+	**	<foo>
+	**		<Script name="bar.dbc">
+	**			<Information type="Script" dbc="path_to_bar.dbc" dsc="path_to_bar.dsc" m_dbc="12342150" m_dsc="1235215"/>
+	**			<UsedBy>
+	**				<Script name="barbarbar.dbc"/>
+	**			</UsedBy>
+	**			<Uses>
+	**				<Script name="barbar.dbc"/>
+	**			</Uses>
+	**			<External/>
+	**		</Script>
+	**	</foo>
+	*/
 	void BuildLog::ReadLog(){
 		wxXmlDocument doc;
 		doc.SetFileEncoding(_T("utf-8"));
@@ -282,7 +340,10 @@ namespace bl{
 		while(child){
 			string name =  _SS(child->GetAttribute(_T("name"),_T("")));
 			assert(!name.empty());
-			//if (name.empty())return;
+			if (name.empty()){
+				logScriptMap.clear();
+				return;
+			}
 			logScriptMap[name].name = name;
 
 			wxXmlNode* info = child->GetChildren();
@@ -307,7 +368,11 @@ namespace bl{
 		}
 		
 	}
-
+	
+	//********************************************************
+	/*	Constructs a node containing children with *name*
+	**	attributes. Used to fill usedby/uses nodes.
+	*/
 	static xml::Node createChildNodes(const KeyMap &children, const string type,const string name){
 		xml::Node parent;
 		parent.Create(_ss(name));
@@ -320,8 +385,10 @@ namespace bl{
 		return parent;
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Constructs a node containing children with *name*
+	**	attributes. Used to fill external nodes.
+	*/
 	static xml::Node createChildNodes(const StdStringList &children, const string type,const string name){
 		xml::Node parent;
 		parent.Create(_ss(name));
@@ -334,8 +401,9 @@ namespace bl{
 		return parent;
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Saves the log in the form given above.
+	*/
 	void BuildLog::SaveLog(){
 		wxXmlDocument doc;
 		xml::Node	root;
@@ -365,23 +433,29 @@ namespace bl{
 		assert(ok);
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Constructs and returns a stat struct containing given
+	**	file information. stat is (i think) cross-platform
+	**	and thus suitable for this task. Could have used boost
+	**	too. Maybe later.
+	*/
 	static const int GetFileInfo(const string &file, struct stat &fileinfo){	
 		memset(&fileinfo, 0, sizeof(struct stat));
 		return stat(file.c_str(), &fileinfo);
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Gets attribute *name* of an xml node.
+	*/
 	static const std::string GetStringAttribute(const wxXmlNode* node,const std::string name){
 		String tmp = (node->GetAttribute(_ss(name),_T("")));
 		assert(!tmp.empty());
 		return _SS(tmp);
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Same as above returning time_t timestamp data.
+	*/
 	static const time_t GetTimeAttribute(const wxXmlNode* node,const std::string name){
 			String tmp = (node->GetAttribute(_ss(name),_T("0")));
 			assert(!tmp.empty());
@@ -389,8 +463,9 @@ namespace bl{
 			return mod_time;
 	}
 
-	//////////////////////////////////////////////////////////////////
-
+	//********************************************************
+	/*	Gets usedby/uses data out of an xml node.
+	*/
 	static KeyMap GetChildNodes(const wxXmlNode* node, const string name, const string type){
 		wxXmlNode* children = node->GetChildren();
 		KeyMap tmp;
@@ -410,6 +485,9 @@ namespace bl{
 		return tmp;
 	}
 
+	//********************************************************
+	/*	Gets external data out of an xml node.
+	*/
 	static StdStringList GetChildExternalNodes(const wxXmlNode* node, const string name, const string type){
 		wxXmlNode* children = node->GetChildren();
 		StdStringList tmp;

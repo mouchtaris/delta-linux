@@ -332,7 +332,11 @@ namespace ide
 			Call<void (void), SafeCall>(this, resource, "DebugBuildCtx")();
 	}
 
-	//-----------------------------------------------------------------------
+
+
+	/*****************************************************
+	**  We add a menu button depending the log's existance.
+	******************************************************/
 
 	EXPORTED_STATIC(Workspace, void, AddLogCommands, (void))
 	{
@@ -351,7 +355,9 @@ namespace ide
 		}
 	}
 
-	//-----------------------------------------------------------------------
+	/*********************************************************
+	**  Callback for disabling the buildlog for the workspace
+	**********************************************************/
 
 	EXPORTED_FUNCTION(Workspace, void, DisableWorkspaceBuildLog, (void))
 	{
@@ -367,7 +373,9 @@ namespace ide
 		);
 	}
 
-	//-----------------------------------------------------------------------
+	/*********************************************************
+	**  Callback for enabling the buildlog for the workspace
+	**********************************************************/
 
 	EXPORTED_FUNCTION(Workspace, void, EnableWorkspaceBuildLog, (void))
 	{
@@ -382,11 +390,16 @@ namespace ide
 		);
 	}
 
-	//-----------------------------------------------------------------------
+	/*********************************************************
+	**  Callback for deleting the buildlog for the workspace
+	**********************************************************/
 
 	EXPORTED_FUNCTION(Workspace, void, DeleteWorkspaceBuildLog, (void))
 	{
-		//string message = __BL.LogExists(GetPath(),GetName())?"Build log successfully deleted.":"Build log does not exist.";
+		string message = __BL.LogExists(GetPath(),GetName())?"Build log successfully deleted.":"Build log does not exist.";
+		Call<void (const String&, const String&)>(this, "Shell", "ShowMessage")(
+				_("Delete Log"), util::std2str(message)
+			);
 		__BL.DeleteBuildLog(this->GetPath(),this->GetName());
 	}
 
@@ -624,24 +637,33 @@ namespace ide
 
 	//-----------------------------------------------------------------------
 
+	EXPORTED_FUNCTION(Workspace, void, ReadWorkspaceLog, (void))
+	{			
+		/*
+		**  We must read and update each script's directory
+		**  information in case the user moved the
+		**  workspace's location.
+		*/
+
+		if (__BL.IsEnabled()){
+			__BL.Read( GetPath(), GetName() );
+			ide::Component::List children;
+			GetChildrenRecursively(children);
+			BOOST_FOREACH(Component* child, children){
+				std::string type = child->GetClassId();
+				if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect")){
+					Script* tmp = static_cast<Script*>(child);
+					tmp->UpdateLogDirectoryInformation();
+				}
+			}			
+		}
+	}
+	//-----------------------------------------------------------------------
+
 	EXPORTED_FUNCTION(Workspace, void, StartWorking, (const Handle& root, const String& task))
 	{
-
 		if (!m_rootWorkingResource) {
-			//-----Build Log Operations--------------
-			if (__BL.IsEnabled() && util::str2std(task)=="Build"){
-				__BL.Read(this->GetPath(),this->GetName());
-				ide::Component::List children;
-				this->GetChildrenRecursively(children);
-				BOOST_FOREACH(Component* child, children){
-					std::string type = child->GetClassId();
-					if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect")){
-						Script* tmp = static_cast<Script*>(child);
-						tmp->UpdateLogDirectoryInformation();
-					}
-				}			
-			}
-			//---------------------------------------
+			if (util::str2std(task)=="Build")ReadWorkspaceLog();
 			m_rootWorkingResource = root;
 			m_task = task;
 			SetWorkspaceWorkCommandsStatus(false);
@@ -923,6 +945,10 @@ namespace ide
 
 	void Workspace::OnWorkCompleted(const Handle& root, const String& task)
 	{
+		/* 
+		**  We save the log upon completion of the build proccess.
+		**  Cleaning does not affect the log.                   
+		*/
 		if (__BL.IsEnabled() && task==util::std2str("Build"))__BL.Save();
 		sigWorkCompleted(root, task);
 	}
