@@ -24,7 +24,7 @@
 
 struct LoggedScript {
 
-	typedef	std::map<std::string, bool>	StringBag;
+	typedef	std::map<std::string, bool>	StdStringBag;
 
 	std::string				type;
 	std::string				dsc;
@@ -32,8 +32,8 @@ struct LoggedScript {
 	std::string				name;
 	time_t					dscTimeStamp;
 	time_t					dbcTimeStamp;
-	StringBag				uses;
-	StringBag				usedby;
+	StdStringBag			uses;
+	StdStringBag			usedby;
 	StdStringList			external;
 	bool					dirty;
 
@@ -68,7 +68,7 @@ class BuildLog {	// singleton
 	BuildLog (void);
 	~BuildLog(){}
 
-	typedef LoggedScript::StringBag					StringBag;
+	typedef LoggedScript::StdStringBag				StdStringBag;
 	typedef	 std::map<std::string, LoggedScript>	ScriptMap;
 
 	static BuildLog*			inst;
@@ -84,14 +84,14 @@ class BuildLog {	// singleton
 	mutable boost::mutex		resourceMutex;
 	bool						enabled;
 
-	std::string					GenerateWorkspaceLogFullFilename	(const String& path, const String& name) const;
+	const std::string			GenerateWorkspaceLogFullFilename	(const String& path, const String& name) const;
 	bool						IsScriptUpToDate					(const LoggedScript& sc) const;
 	
 	void						MarkOutOfDate						(void);
-	void						SaveLog								(void) const;
-	void						ReadLog								(void);
+	void						SavePriv							(void) const;
+	void						LoadPriv							(void);
 	void						Order								(void);
-	void						MarkOutOfDateRecursively			(const StringBag& children);
+	void						MarkOutOfDateRecursively			(const StdStringBag& children);
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -102,6 +102,7 @@ class BuildLog {	// singleton
 	}
 
 	static BuildLog&	GetSingleton (void);
+
 	void				Add (
 							const std::string&		name, 
 							const std::string&		dsc, 
@@ -119,18 +120,20 @@ class BuildLog {	// singleton
 							const std::string&		sourcePath, 
 							const std::string&		bytecodePath
 						);
-	void				Save						(void) const;
-	void				Read						(const String& path, const String& name);
 	void				UpdateBytecode				(const std::string& name);
+
 	bool				IsScriptUpToDate			(const std::string& name) const;
 	bool				IsEnabled					(void) const;
 	bool				LogExists					(const String& path, const String& name) const;
+
+	void				Save						(void) const;
+	void				Load						(const String& path, const String& name);
 
 	//----------------------------------
 	//for future gui delete log action. arguments same as Read() on file Workspace.cpp
 	//----------------------------------
 
-	std::string			GetLastWorkspaceLogPath		(void);
+	const std::string&	GetLastWorkspaceLogPath		(void) const;
 	void				DeleteBuildLog				(const String& path, const String& name);
 	void				EnableBuildLog				(void);
 	void				DisableBuildLog				(void);

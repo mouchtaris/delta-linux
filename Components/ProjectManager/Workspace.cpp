@@ -645,8 +645,8 @@ namespace ide
 		**  workspace's location.
 		*/
 
-		if (BuildLog::GetSingleton().IsEnabled()){
-			BuildLog::GetSingleton().Read( GetPath(), GetName() );
+		if (BuildLog::GetSingleton().IsEnabled()) {
+			BuildLog::GetSingleton().Load(GetPath(), GetName());
 			ide::Component::List children;
 			GetChildrenRecursively(children);
 			BOOST_FOREACH(Component* child, children){
