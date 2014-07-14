@@ -37,6 +37,8 @@
 #include <functional>
 
 #include "BuildLog.h"
+
+#define	BL	BuildLog::GetSingleton()
 //-----------------------------------------------------------------------
 
 #define	DASSERT								assert
@@ -1216,9 +1218,9 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 		**  that are already up-to-date. Build reissues
 		**  still exist if a scripts is not up-to-date
 		*/
-		if (__BL.IsEnabled()){
+		if (BL.IsEnabled()){
 			for (ide::Script::ScriptPtrSet::iterator it = m_buildDeps.begin();it!=m_buildDeps.end();){
-				if ( __BL.IsScriptUpToDate( (*it)->GetLogName() )){
+				if ( BL.IsScriptUpToDate( (*it)->GetLogName() )){
 					it = m_buildDeps.erase(it);
 				}
 				else{
@@ -1436,7 +1438,7 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 	/*
 	**  We wanna make sure that the script succeeded before updating the log
 	*/
-	if (__BL.IsEnabled() && succeeded)__BL.UpdateBytecode(this->GetLogName());
+	if (BL.IsEnabled() && succeeded)BL.UpdateBytecode(this->GetLogName());
 
 	//************************************************
 
@@ -2271,7 +2273,7 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSe
 //Inform the log about possible changes in file/project/workspace directory changes
 
 EXPORTED_FUNCTION(Script, void, UpdateLogDirectoryInformation, (void)) {
-	__BL.UpdateDirectoryInformation(this->GetLogName(),this->GetLogSource(),this->GetProducedByteCodeFileFullPath());
+	BL.UpdateDirectoryInformation(this->GetLogName(),this->GetLogSource(),this->GetProducedByteCodeFileFullPath());
 }
 
 //************************************************
@@ -2325,7 +2327,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
-	__BL << this->GetName() << "\n" << this->GetSource() << "\n" << "\n" << this->GetFinalSourceURI() << "\n" << this->GetSymbolicURI()  << "\n" << this->GetURI() << "\n--------\n" << bl::endl;
+	BL << this->GetName() << "\n" << this->GetSource() << "\n" << "\n" << this->GetFinalSourceURI() << "\n" << this->GetSymbolicURI()  << "\n" << this->GetURI() << "\n--------\n\n" ;
 
 	/*
 	**	Adds the script to the build log along 
@@ -2334,8 +2336,8 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	**  dependencies are added to its parent
 	**  and original source file.
 	*/
-	string cid = this->GetClassId();
-	if (__BL.IsEnabled()){
+	std::string cid = this->GetClassId();
+	if (BL.IsEnabled()){
 		ScriptPtrSet outDeps;
 		StdStringList externalDeps;
 		StdStringList deps;
@@ -2344,12 +2346,12 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 			deps.push_back( (*it)->GetProducedByteCodeFileFullPath() );
 		}
 		if (cid=="StageSource" || cid=="StageResult"){
-			__BL.AddDependencies(GetParentLogName(),deps);
-			__BL.AddDependencies(GetParentLogName(),externalDeps);
+			BL.AddDependencies(GetParentLogName(),deps);
+			BL.AddDependencies(GetParentLogName(),externalDeps);
 			deps.clear();
 			externalDeps.clear();
 		}
-		__BL.Add(GetLogName(), GetLogSource() , GetProducedByteCodeFileFullPath(), GetClassId() ,deps, externalDeps);
+		BL.Add(GetLogName(), GetLogSource() , GetProducedByteCodeFileFullPath(), GetClassId() ,deps, externalDeps);
 	}
 	//********************************************
 
@@ -2401,16 +2403,16 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	**  its parent and original script.
 	*/
 
-	if (__BL.IsEnabled()){
+	if (BL.IsEnabled()){
 		StdStringList deps;
 		for (ide::Script::ScriptPtrSet::iterator it = m_aspectTransformations.begin(); it!=m_aspectTransformations.end(); ++it){
 			deps.push_back(  (*it)->GetProducedByteCodeFileFullPath()  );
 		}
-		string name = GetLogName();
+		std::string name = GetLogName();
 		if (cid=="StageSource" || cid=="StageResult"){
 			name = GetParentLogName();
 		}
-		__BL.AddDependencies(name ,deps);
+		BL.AddDependencies(name ,deps);
 	}
 
 	//********************************************

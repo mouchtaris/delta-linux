@@ -1,131 +1,143 @@
-#ifndef BUILD_LOG_H
-#define BUILD_LOG_H
+// BuildLog.cpp
+// Script build filtering supporting logged dependencies.
+// George Diakostavrianos, 2014
+// Dimploma project under Anthony Savidis (with severe refactoring too)/
+// 
+
+#ifndef PROJECT_MANAGER_BUILD_LOG_H
+#define PROJECT_MANAGER_BUILD_LOG_H
+
+///////////////////////////////////////////////////////////////////////
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
 #include <map>
+
 #include "Script.h"
 #include "Common.h"
 #include "VirtualContainer.h"
 #include <boost/thread/mutex.hpp>
 
-#define __BL bl::buildLog
+///////////////////////////////////////////////////////////////////////
 
-using namespace std;
+struct LoggedScript {
 
-namespace bl{
+	typedef	std::map<std::string, bool>	StringBag;
 
-	class		BuildLog;
-	class		LogScript;
+	std::string				type;
+	std::string				dsc;
+	std::string				dbc;
+	std::string				name;
+	time_t					dscTimeStamp;
+	time_t					dbcTimeStamp;
+	StringBag				uses;
+	StringBag				usedby;
+	StdStringList			external;
+	bool					dirty;
 
-	typedef		map<string,bool> KeyMap;
-	typedef		map<string,LogScript> ScriptMap;
+	const LoggedScript& operator=(const LoggedScript& s) 
+			{ new (this) LoggedScript(s); return *this; }
 
+	LoggedScript (void) :
+		dscTimeStamp	(0),
+		dbcTimeStamp	(0),
+		dirty			(true)
+		{}
 
-	extern		BuildLog buildLog;
-	extern		string endl;
+	LoggedScript (const LoggedScript& s) :
+		type			(s.type),
+		dsc				(s.dsc),
+		dbc				(s.dbc),
+		dscTimeStamp	(s.dscTimeStamp),
+		dbcTimeStamp	(s.dbcTimeStamp),
+		uses			(s.uses),
+		usedby			(s.usedby),
+		dirty			(s.dirty),
+		name			(s.name),
+		external		(s.external)
+		{}
+};
 
-//----------------------------
-	class BuildLog{
+///////////////////////////////////////////////////////////////////////
 
-	public:
-
-		ofstream debugStream;
-
-		
-		BuildLog();
-		
-		void				Add							(const string &name, const string &dsc, const string &dbc, const string &type, const StdStringList &deps, const StdStringList &external);
-		void				AddDependencies					(const string &name, const StdStringList &deps);
-		void				UpdateDirectoryInformation	(const string &name, const string &sourcePath, const string &bytecodePath);
-		void				Save						(void);
-		void				Read						(const String &path, const String &name);
-		void				UpdateBytecode				(const string &name);
-		bool				IsScriptUpToDate			(const string &name);
-		bool				IsEnabled					(void);
-		bool				LogExists					(const String &path, const String &name);
-
-		//----------------------------------
-		//for future gui delete log action. arguments same as Read() on file Workspace.cpp
-		//----------------------------------
-		string				GetLastWorkspaceLogPath		(void);
-		void				DeleteBuildLog				(const String &path, const String &name);
-		void				EnableBuildLog				(void);
-		void				DisableBuildLog				(void);
-		//----------------------------------
+class BuildLog {	// singleton
 
 	private:
+	BuildLog (void);
+	~BuildLog(){}
 
-		
-		string				currentWorkspaceLogPath;
-		string				currentWorkspace;
-		ScriptMap			logScriptMap;		
-		vector<string>		buildOrder;
-		string				debugFile;
-		string				logFile;
-		boost::mutex		resourceMutex;
-		bool				enabled;
+	typedef LoggedScript::StringBag					StringBag;
+	typedef	 std::map<std::string, LoggedScript>	ScriptMap;
 
-		void				PrintMap							(void);
-		string				GenerateWorkspaceLogFullFilename	(const String &path, const String &name);
-		bool				IsFileUpToDate						(const string &file);
-		bool				IsScriptUpToDate					(const LogScript &sc);
-		
-		void				MarkOutOfDate						(void);
-		void				SaveLog								(void);
-		void				ReadLog								(void);
-		void				Order								(void);
-		void				MarkOutOfDateRecursively			(const KeyMap &children);
+	static BuildLog*			inst;
+	std::ofstream				debugStream;
 
-	protected:
+	private:
+	std::string					currentWorkspaceLogPath;
+	std::string					currentWorkspace;
+	ScriptMap					logScriptMap;		
+	std::vector<std::string>	buildOrder;
+	std::string					debugFile;
+	std::string					logFile;
+	mutable boost::mutex		resourceMutex;
+	bool						enabled;
 
-	};
-//----------------------------
-	class LogScript{
-
-	public:
-
-		string				type;
-		string				dsc;
-		string				dbc;
-		string				name;
-		time_t				m_dsc;
-		time_t				m_dbc;
-		KeyMap				uses;
-		KeyMap				usedby;
-		StdStringList		external;
-		bool				dirty;
-
-		const LogScript& operator=(const LogScript& s) 
-				{ new (this) LogScript(s); return *this; }
-
-		LogScript (void) :
-			m_dsc	(0),
-			m_dbc	(0),
-			dirty	(true)
-			{}
-
-		LogScript (const LogScript& s) :
-			type				(s.type),
-			dsc					(s.dsc),
-			dbc					(s.dbc),
-			m_dsc				(s.m_dsc),
-			m_dbc				(s.m_dbc),
-			uses				(s.uses),
-			usedby				(s.usedby),
-			dirty				(s.dirty),
-			name				(s.name),
-			external			(s.external)
-			{}
-				
-	};
-
-	template <typename T> BuildLog& operator <<(BuildLog& log, T const& value) {
-		log.debugStream << value << std::flush;
-		return log;
-	}
+	std::string					GenerateWorkspaceLogFullFilename	(const String& path, const String& name) const;
+	bool						IsScriptUpToDate					(const LoggedScript& sc) const;
 	
-}
+	void						MarkOutOfDate						(void);
+	void						SaveLog								(void) const;
+	void						ReadLog								(void);
+	void						Order								(void);
+	void						MarkOutOfDateRecursively			(const StringBag& children);
 
-#endif
+	///////////////////////////////////////////////////////////////////////
+
+	public:	
+	template <typename T>  BuildLog& operator <<(T const& value) {
+		debugStream << value << std::flush;
+		return *this;
+	}
+
+	static BuildLog&	GetSingleton (void);
+	void				Add (
+							const std::string&		name, 
+							const std::string&		dsc, 
+							const std::string&		dbc, 
+							const std::string&		type, 
+							const StdStringList&	deps, 
+							const StdStringList&	external
+						);
+	void				AddDependencies	(
+							const std::string&		name, 
+							const StdStringList&	deps
+						);
+	void				UpdateDirectoryInformation (
+							const std::string&		name, 
+							const std::string&		sourcePath, 
+							const std::string&		bytecodePath
+						);
+	void				Save						(void) const;
+	void				Read						(const String& path, const String& name);
+	void				UpdateBytecode				(const std::string& name);
+	bool				IsScriptUpToDate			(const std::string& name) const;
+	bool				IsEnabled					(void) const;
+	bool				LogExists					(const String& path, const String& name) const;
+
+	//----------------------------------
+	//for future gui delete log action. arguments same as Read() on file Workspace.cpp
+	//----------------------------------
+
+	std::string			GetLastWorkspaceLogPath		(void);
+	void				DeleteBuildLog				(const String& path, const String& name);
+	void				EnableBuildLog				(void);
+	void				DisableBuildLog				(void);
+
+	//----------------------------------
+};
+
+///////////////////////////////////////////////////////////////////////
+
+#endif	// PROJECT_MANAGER_BUILD_LOG_H

@@ -158,9 +158,9 @@ namespace ide
 			**  single script build
 			**  exits function alltogether if script is uptodate, no build is initiated.
 			*/
-			if (__BL.IsEnabled()){
+			if (BuildLog::GetSingleton().IsEnabled()){
 				Call<void (void)>(this, workspace, "ReadWorkspaceLog")();
-				if(__BL.IsScriptUpToDate(this->GetProducedByteCodeFile())){
+				if(BuildLog::GetSingleton().IsScriptUpToDate(this->GetProducedByteCodeFile())){
 					PostBuildMessage(m_workId,std::string("Script '")+	util::str2std(GetName())	+"' is upToDate!");
 					return; //we plainly return.
 				}

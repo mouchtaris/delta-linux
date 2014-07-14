@@ -341,7 +341,7 @@ namespace ide
 	EXPORTED_STATIC(Workspace, void, AddLogCommands, (void))
 	{
 		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
-		if (__BL.IsEnabled()){
+		if (BuildLog::GetSingleton().IsEnabled()){
 			AddCommand(
 				_("/{100}Build/{18}Disable Log"),
 				UserCommandDesc(UserCommandDesc::Callback("Workspace", "DisableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_disable"))
@@ -361,7 +361,7 @@ namespace ide
 
 	EXPORTED_FUNCTION(Workspace, void, DisableWorkspaceBuildLog, (void))
 	{
-		__BL.DisableBuildLog();
+		BuildLog::GetSingleton().DisableBuildLog();
 
 		Call<void (const String& path), SafeCall> RemoveCommand("DeltaVM", "Shell", "RemoveCommand");
 		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
@@ -379,7 +379,7 @@ namespace ide
 
 	EXPORTED_FUNCTION(Workspace, void, EnableWorkspaceBuildLog, (void))
 	{
-		__BL.EnableBuildLog();
+		BuildLog::GetSingleton().EnableBuildLog();
 
 		Call<void (const String& path), SafeCall> RemoveCommand("DeltaVM", "Shell", "RemoveCommand");
 		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
@@ -396,11 +396,11 @@ namespace ide
 
 	EXPORTED_FUNCTION(Workspace, void, DeleteWorkspaceBuildLog, (void))
 	{
-		string message = __BL.LogExists(GetPath(),GetName())?"Build log successfully deleted.":"Build log does not exist.";
+		std::string message = BuildLog::GetSingleton().LogExists(GetPath(),GetName())?"Build log successfully deleted.":"Build log does not exist.";
 		Call<void (const String&, const String&)>(this, "Shell", "ShowMessage")(
 				_("Delete Log"), util::std2str(message)
 			);
-		__BL.DeleteBuildLog(this->GetPath(),this->GetName());
+		BuildLog::GetSingleton().DeleteBuildLog(this->GetPath(),this->GetName());
 	}
 
 	//-----------------------------------------------------------------------
@@ -645,8 +645,8 @@ namespace ide
 		**  workspace's location.
 		*/
 
-		if (__BL.IsEnabled()){
-			__BL.Read( GetPath(), GetName() );
+		if (BuildLog::GetSingleton().IsEnabled()){
+			BuildLog::GetSingleton().Read( GetPath(), GetName() );
 			ide::Component::List children;
 			GetChildrenRecursively(children);
 			BOOST_FOREACH(Component* child, children){
@@ -949,7 +949,7 @@ namespace ide
 		**  We save the log upon completion of the build proccess.
 		**  Cleaning does not affect the log.                   
 		*/
-		if (__BL.IsEnabled() && task==util::std2str("Build"))__BL.Save();
+		if (BuildLog::GetSingleton().IsEnabled() && task==util::std2str("Build"))BuildLog::GetSingleton().Save();
 		sigWorkCompleted(root, task);
 	}
 
