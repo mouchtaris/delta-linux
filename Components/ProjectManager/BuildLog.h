@@ -92,6 +92,10 @@ class BuildLog {	// singleton
 	void						LoadPriv							(void);
 	void						Order								(void);
 	void						MarkOutOfDateRecursively			(const StdStringBag& children);
+	void						AddDependenciesPriv	(
+									const std::string&		name, 
+									const StdStringList&	deps
+								);
 
 	///////////////////////////////////////////////////////////////////////
 

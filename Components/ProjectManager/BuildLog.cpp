@@ -71,19 +71,28 @@ BuildLog::BuildLog (void) {
 /*
 **	Add dependencies to the *name* entry.
 */
-void BuildLog::AddDependencies (const std::string& name, const StdStringList& deps) {
+void BuildLog::AddDependenciesPriv (const std::string& name, const StdStringList& deps) {
 
-	IF_NOT_ENABLED_RETURN();
 	DASSERT(!name.empty());
+
+	DASSERT(logScriptMap.find(name) != logScriptMap.end());
+	LoggedScript& script (logScriptMap[name]);
 
 	for (StdStringList::const_iterator i = deps.begin(); i != deps.end(); ++i) {
 
 		const std::string dep = GetDbcFromPath(*i);
 		DASSERT(!dep.empty());
 
-		logScriptMap[dep].usedby[name] = true;
-		logScriptMap[name].uses[dep]   = true;
+		logScriptMap[dep].usedby[name]  = true;
+		script.uses[dep]				= true;
 	}
+}
+
+//********************************************************
+
+void BuildLog::AddDependencies (const std::string& name, const StdStringList& deps) {
+	IF_NOT_ENABLED_RETURN();
+	AddDependenciesPriv(name, deps);
 }
 
 //********************************************************
@@ -106,26 +115,19 @@ void BuildLog::Add (
 
 	DASSERT(!name.empty() && !dbc.empty() && !type.empty());
 	DASSERT(logScriptMap.find(name) == logScriptMap.end());
-
 	LoggedScript& script (logScriptMap[name]);
+
 	script.name		= name;
 	script.dsc		= dsc;
 	script.dbc		= dbc;
 	script.type		= type;
 	script.external = external;
 
-	for (StdStringList::const_iterator i = deps.begin(); i != deps.end(); ++i){
-
-		const std::string dep = GetDbcFromPath(*i);
-		DASSERT(!dep.empty());
-
-		logScriptMap[dep].usedby[name]  = true;
-		logScriptMap[name].uses[dep]	= true;
-	}
+	AddDependenciesPriv(name, deps);
 
 	struct stat info;
-	GetFileInfo(logScriptMap[name].dsc, &info);
-	logScriptMap[name].dscTimeStamp = info.st_mtime;
+	GetFileInfo(script.dsc, &info);
+	script.dscTimeStamp = info.st_mtime;
 }
 
 //********************************************************
@@ -182,9 +184,8 @@ bool BuildLog::IsScriptUpToDate (const LoggedScript& script) const {
 //********************************************************
 
 void BuildLog::Save (void) const {
-	boost::mutex::scoped_lock lock(resourceMutex);
-	if (enabled)
-		SavePriv();
+	IF_NOT_ENABLED_RETURN();
+	SavePriv();
 }
 
 //********************************************************
@@ -194,15 +195,12 @@ void BuildLog::Save (void) const {
 */
 void BuildLog::UpdateBytecode (const std::string& name) {
 
-	boost::mutex::scoped_lock lock(resourceMutex);
-	if (!enabled)
-		return;
+	IF_NOT_ENABLED_RETURN();
 
 	DASSERT(!name.empty());
-	ScriptMap::iterator i = logScriptMap.find(name);
-	DASSERT(i != logScriptMap.end());
+	DASSERT(logScriptMap.find(name) != logScriptMap.end());
+	LoggedScript&	script (logScriptMap[name]);
 
-	LoggedScript&	script (i->second);
 	struct stat		info;
 
 	if (!GetFileInfo(script.dbc, &info)) {
@@ -219,10 +217,9 @@ void BuildLog::MarkOutOfDateRecursively (const StdStringBag& deps) {
 
 	for (StdStringBag::const_iterator i = deps.begin(); i != deps.end(); ++i) {
 
-		ScriptMap::iterator j = logScriptMap.find(i->first);
-		DASSERT(j != logScriptMap.end());
+		DASSERT(logScriptMap.find(i->first) != logScriptMap.end());
 
-		LoggedScript& script (j->second);
+		LoggedScript& script (logScriptMap[i->first]);
 		script.dirty = true;
 		MarkOutOfDateRecursively(script.usedby);	
 	}
@@ -254,15 +251,12 @@ void BuildLog::UpdateDirectoryInformation (
 		const std::string& bytecodePath
 	) {
 
-	boost::mutex::scoped_lock lock(resourceMutex);
-	if (!enabled)
-		return;
+	IF_NOT_ENABLED_RETURN();
 
 	DASSERT(!name.empty());
-	ScriptMap::iterator i = logScriptMap.find(name);
-	DASSERT(i != logScriptMap.end());
+	DASSERT(logScriptMap.find(name) != logScriptMap.end());
+	LoggedScript& script (logScriptMap[name]);
 
-	LoggedScript& script (i->second);
 	script.dbc = bytecodePath;
 	script.dsc = sourcePath;
 }
@@ -490,8 +484,8 @@ void BuildLog::SavePriv (void) const {
 		info.SetProperty(_T("type"), util::std2str(s.type));
 		info.SetProperty(_T("dbc"), util::std2str(s.dbc));
 		info.SetProperty(_T("dsc"), util::std2str(s.dsc));			
-		info.SetProperty(_T("dbcTimeStamp"), util::std2str(boost::lexical_cast<std::string>(s.dbcTimeStamp)));
-		info.SetProperty(_T("dscTimeStamp"), util::std2str(boost::lexical_cast<std::string>(s.dscTimeStamp)));
+		info.SetProperty(_T("m_dbc"), util::std2str(boost::lexical_cast<std::string>(s.dbcTimeStamp)));
+		info.SetProperty(_T("m_dsc"), util::std2str(boost::lexical_cast<std::string>(s.dscTimeStamp)));
 
 		child.InsertChild(info);
 		child.InsertChild(CreateChildNodes (s.usedby, "name", "UsedBy"));
