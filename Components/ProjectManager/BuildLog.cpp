@@ -75,7 +75,6 @@ void BuildLog::AddDependenciesPriv (const std::string& name, const StdStringList
 
 	DASSERT(!name.empty());
 
-	DASSERT(logScriptMap.find(name) != logScriptMap.end());
 	LoggedScript& script (logScriptMap[name]);
 
 	for (StdStringList::const_iterator i = deps.begin(); i != deps.end(); ++i) {
@@ -114,7 +113,6 @@ void BuildLog::Add (
 	IF_NOT_ENABLED_RETURN();
 
 	DASSERT(!name.empty() && !dbc.empty() && !type.empty());
-	DASSERT(logScriptMap.find(name) == logScriptMap.end());
 	LoggedScript& script (logScriptMap[name]);
 
 	script.name		= name;
@@ -198,9 +196,7 @@ void BuildLog::UpdateBytecode (const std::string& name) {
 	IF_NOT_ENABLED_RETURN();
 
 	DASSERT(!name.empty());
-	DASSERT(logScriptMap.find(name) != logScriptMap.end());
 	LoggedScript&	script (logScriptMap[name]);
-
 	struct stat		info;
 
 	if (!GetFileInfo(script.dbc, &info)) {
@@ -216,8 +212,6 @@ void BuildLog::UpdateBytecode (const std::string& name) {
 void BuildLog::MarkOutOfDateRecursively (const StdStringBag& deps) {
 
 	for (StdStringBag::const_iterator i = deps.begin(); i != deps.end(); ++i) {
-
-		DASSERT(logScriptMap.find(i->first) != logScriptMap.end());
 
 		LoggedScript& script (logScriptMap[i->first]);
 		script.dirty = true;
@@ -254,7 +248,6 @@ void BuildLog::UpdateDirectoryInformation (
 	IF_NOT_ENABLED_RETURN();
 
 	DASSERT(!name.empty());
-	DASSERT(logScriptMap.find(name) != logScriptMap.end());
 	LoggedScript& script (logScriptMap[name]);
 
 	script.dbc = bytecodePath;

@@ -1438,7 +1438,8 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 	/*
 	**  We wanna make sure that the script succeeded before updating the log
 	*/
-	if (BL.IsEnabled() && succeeded)BL.UpdateBytecode(this->GetLogName());
+	if (BL.IsEnabled() && succeeded)
+		BL.UpdateBytecode(this->GetLogName());
 
 	//************************************************
 
@@ -2055,6 +2056,9 @@ bool Script::IsBuildInProgressQuery (void) {
 
 bool Script::IsUpToDateCalculation (void) {
 
+	if (BL.IsEnabled())
+		return BL.IsScriptUpToDate(GetLogName());
+		 
 	UpToDateMap::iterator i = s_upToDate->find(this);
 	if (i != s_upToDate->end())
 		return i->second;
@@ -2273,7 +2277,11 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSe
 //Inform the log about possible changes in file/project/workspace directory changes
 
 EXPORTED_FUNCTION(Script, void, UpdateLogDirectoryInformation, (void)) {
-	BL.UpdateDirectoryInformation(this->GetLogName(),this->GetLogSource(),this->GetProducedByteCodeFileFullPath());
+	BL.UpdateDirectoryInformation(
+		this->GetLogName(),
+		this->GetLogSource(),
+		this->GetProducedByteCodeFileFullPath()
+	);
 }
 
 //************************************************
@@ -2327,7 +2335,14 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
-	BL << this->GetName() << "\n" << this->GetSource() << "\n" << "\n" << this->GetFinalSourceURI() << "\n" << this->GetSymbolicURI()  << "\n" << this->GetURI() << "\n--------\n\n" ;
+	BL	<< this->GetName() 
+		<< "\n" << this->GetSource() 
+		<< "\n" << "\n" 
+		<< this->GetFinalSourceURI() 
+		<< "\n" 
+		<< this->GetSymbolicURI()  
+		<< "\n" << this->GetURI() 
+		<< "\n--------\n\n" ;
 
 	/*
 	**	Adds the script to the build log along 
@@ -2351,7 +2366,14 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 			deps.clear();
 			externalDeps.clear();
 		}
-		BL.Add(GetLogName(), GetLogSource() , GetProducedByteCodeFileFullPath(), GetClassId() ,deps, externalDeps);
+		BL.Add(
+			GetLogName(), 
+			GetLogSource() , 
+			GetProducedByteCodeFileFullPath(), 
+			GetClassId() ,
+			deps, 
+			externalDeps
+		);
 	}
 	//********************************************
 
