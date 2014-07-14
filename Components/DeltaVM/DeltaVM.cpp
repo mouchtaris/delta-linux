@@ -675,8 +675,10 @@ namespace ide
 			const String source = _T("remote script");
 			debugRunningState = DEBUG_TRYING;
 			onDebugStarted(source);
-			DebugServer server(0, util::str2std(host), uint(port), source, String());
-			boost::thread debugClient(boost::bind(&DeltaVM::DebugClientThread, server));
+			debugServers.push(
+				currDebugServer = DebugServer(0, util::str2std(host), uint(port), source, String())
+			);
+			boost::thread debugClient(boost::bind(&DeltaVM::DebugClientThread, currDebugServer));
 			while (debugRunningState == DEBUG_TRYING)	// Busy wait.
 				Sleep(100);
 		}
@@ -1673,7 +1675,7 @@ namespace ide
 
 	bool DeltaVM::ActivateMostRecentDebugServer(bool previousFinished) {
 		CleanUpDebugClient(currDebugServer, debugServers.size() == 1);
-		currDebugServer = DebugServer(0, std::string(), 0, String(), String(), false);
+		Reset(currDebugServer);
 		if (previousFinished) {
 			DASSERT(!debugServers.empty());
 			debugServers.pop();
@@ -1693,6 +1695,7 @@ namespace ide
 	void DeltaVM::DebugClientThread(const DebugServer& server)
 	{
 		if (!InitializeDebugClient(server, true)) {
+			debugServers.pop();
 			Call<void (const String&), SafeCall>(s_classId, "Output", "Append")
 				(_("Can not connect with the debug server.\n"));
 			return;
@@ -1713,7 +1716,7 @@ namespace ide
 					if (!DeltaDebugClient::IsResponsePending()) {
 						uprocesssleep(100);
 						DebugServer& top = debugServers.top();
-						if (top.get<1>() != currDebugServer.get<1>() || top.get<2>() != currDebugServer.get<2>()) {
+						if (!HaveSameHostAndPort(top, currDebugServer)) {
 							DASSERT(debugServers.size() > 1);
 							if (!ActivateMostRecentDebugServer(false)) {
 								SPARROW_OUTPUT_MESSAGE("Stopping debugging since unable to connect to any available debugger!");

@@ -222,6 +222,13 @@ namespace ide
 		typedef boost::function<void (void)> EvaluationFunction;
 
 		typedef boost::tuple<unsigned long, std::string, uint, String, String, bool> DebugServer;	//<pid, host, port, source, directory, isCompilation>
+
+		static bool	HaveSameHostAndPort (const DebugServer& s1, const DebugServer& s2)
+			{ return s1.get<1>() == s2.get<1>() && s1.get<2>() == s2.get<2>(); }
+
+		static void Reset (DebugServer& s)
+			{ s = DebugServer(0, std::string(), 0, String(), String(), false); }
+
 		typedef std::stack<DebugServer> DebugServerStack;
 
 		enum DebugState {
