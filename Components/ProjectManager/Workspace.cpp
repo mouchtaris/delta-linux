@@ -290,6 +290,8 @@ namespace ide
 			if(!Call<bool (const String&)>(this, "DeltaVM", "LoadBreakpoints")(GetPath() + breakpoints))
 				Call<bool (const String&)>(this, "DeltaVM", "SaveBreakpoints")(GetPath() + breakpoints);
 
+		ReadWorkspaceLog();
+
 		//-- trigger signal
 		sigWorkspaceLoaded(this, GetURI());
 		return true;

@@ -373,7 +373,11 @@ void BuildLog::LoadPriv (void) {
 	while (children) {
 
 		std::string name = util::str2std(children->GetAttribute(_T("name"), _T("")));
-		DASSERT(!name.empty());
+		if (name.empty()) {
+			logScriptMap.clear();
+			// FIXME(AS): ::Clear() to initialise
+			return;
+		}
 
 		LoggedScript& script (logScriptMap[name]);
 
