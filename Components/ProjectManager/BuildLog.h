@@ -1,7 +1,7 @@
 // BuildLog.cpp
 // Script build filtering supporting logged dependencies.
 // George Diakostavrianos, 2014
-// Dimploma project under Anthony Savidis (with severe refactoring too)/
+// Dimploma project under Anthony Savidis (with severe refactoring too)
 // 
 
 #ifndef PROJECT_MANAGER_BUILD_LOG_H
@@ -22,7 +22,7 @@
 
 ///////////////////////////////////////////////////////////////////////
 
-struct LoggedScript {
+struct LoggedScript {	// POD
 
 	typedef	std::map<std::string, bool>	StdStringBag;
 
@@ -139,8 +139,6 @@ class BuildLog {	// singleton
 
 	const std::string&	GetLastWorkspaceLogPath		(void) const;
 	void				DeleteBuildLog				(const String& path, const String& name);
-	void				EnableBuildLog				(void);
-	void				DisableBuildLog				(void);
 
 	//----------------------------------
 };

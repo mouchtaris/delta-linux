@@ -343,53 +343,6 @@ namespace ide
 	EXPORTED_STATIC(Workspace, void, AddLogCommands, (void))
 	{
 		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
-		if (BuildLog::GetSingleton().IsEnabled()){
-			AddCommand(
-				_("/{100}Build/{18}Disable Log"),
-				UserCommandDesc(UserCommandDesc::Callback("Workspace", "DisableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_disable"))
-			);
-		}
-		else{
-			AddCommand(
-				_("/{100}Build/{18}Enable Log"),
-				UserCommandDesc(UserCommandDesc::Callback("Workspace", "EnableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_enable"))
-			);
-		}
-	}
-
-	/*********************************************************
-	**  Callback for disabling the buildlog for the workspace
-	**********************************************************/
-
-	EXPORTED_FUNCTION(Workspace, void, DisableWorkspaceBuildLog, (void))
-	{
-		BuildLog::GetSingleton().DisableBuildLog();
-
-		Call<void (const String& path), SafeCall> RemoveCommand("DeltaVM", "Shell", "RemoveCommand");
-		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
-
-		RemoveCommand(_("/Build/Disable Log"));
-		AddCommand(
-			_("/{100}Build/{18}Enable Log"),
-			UserCommandDesc(UserCommandDesc::Callback("Workspace", "EnableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_enable"))
-		);
-	}
-
-	/*********************************************************
-	**  Callback for enabling the buildlog for the workspace
-	**********************************************************/
-
-	EXPORTED_FUNCTION(Workspace, void, EnableWorkspaceBuildLog, (void))
-	{
-		BuildLog::GetSingleton().EnableBuildLog();
-
-		Call<void (const String& path), SafeCall> RemoveCommand("DeltaVM", "Shell", "RemoveCommand");
-		Call<void (const String& path, const UserCommandDesc& desc)> AddCommand("DeltaVM", "Shell", "AddCommand");
-		RemoveCommand(_("/Build/Enable Log"));
-		AddCommand(
-			_("/{100}Build/{18}Disable Log"),
-			UserCommandDesc(UserCommandDesc::Callback("Workspace", "DisableWorkspaceBuildLog"), false, UC_MAIN, false, true, _T("buildlog_disable"))
-		);
 	}
 
 	/*********************************************************
@@ -641,23 +594,18 @@ namespace ide
 
 	EXPORTED_FUNCTION(Workspace, void, ReadWorkspaceLog, (void))
 	{			
-		/*
-		**  We must read and update each script's directory
-		**  information in case the user moved the
-		**  workspace's location.
-		*/
-
 		if (BuildLog::GetSingleton().IsEnabled()) {
+
 			BuildLog::GetSingleton().Load(GetPath(), GetName());
+
 			ide::Component::List children;
 			GetChildrenRecursively(children);
-			BOOST_FOREACH(Component* child, children){
-				std::string type = child->GetClassId();
-				if (( type=="Script" || type=="StageResult" || type=="StageSource" || type=="Aspect")){
+
+			BOOST_FOREACH(Component* child, children)
+				if (IS_SCRIPT_COMPONENT_ID(child->GetClassId())){
 					Script* tmp = static_cast<Script*>(child);
 					tmp->UpdateLogDirectoryInformation();
 				}
-			}			
 		}
 	}
 	//-----------------------------------------------------------------------
@@ -665,7 +613,6 @@ namespace ide
 	EXPORTED_FUNCTION(Workspace, void, StartWorking, (const Handle& root, const String& task))
 	{
 		if (!m_rootWorkingResource) {
-			if (util::str2std(task)=="Build")ReadWorkspaceLog();
 			m_rootWorkingResource = root;
 			m_task = task;
 			SetWorkspaceWorkCommandsStatus(false);

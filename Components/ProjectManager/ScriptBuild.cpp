@@ -38,7 +38,6 @@
 
 #include "BuildLog.h"
 
-#define	BL	BuildLog::GetSingleton()
 //-----------------------------------------------------------------------
 
 #define	DASSERT								assert
@@ -433,16 +432,18 @@ void Script::LoadLastBuildProperties (void) {
 		conf::PropertyTable source;
 		conf::AddScriptStageSourceProperties(&source);
 		source.Accept(std::string(STAGE_SOURCES_PROPERTY_TAG) + boost::lexical_cast<std::string>(i), &propertyLoader);
+
 		// Backward compatibility code.
 		conf::StringProperty* p = conf::safe_prop_cast<conf::StringProperty>(source.GetProperty("type"));
 		if (p->GetValue() == _T("stage"))
 			p->SetValue(_T("StageSource"));
-		else if (p->GetValue() == _T("result"))
+		else 
+			if (p->GetValue() == _T("result"))
 			p->SetValue(_T("StageResult"));
-		//
-		const String name = conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
-		const String type = conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
-		bool final = conf::get_prop_value<conf::BoolProperty>(source.GetProperty("final"));
+
+		const String name	= conf::get_prop_value<conf::StringProperty>(source.GetProperty("name"));
+		const String type	= conf::get_prop_value<conf::StringProperty>(source.GetProperty("type"));
+		bool final			= conf::get_prop_value<conf::BoolProperty>(source.GetProperty("final"));
 
 		StringList lineMappings;
 		conf::AggregateListProperty* prop = static_cast<conf::AggregateListProperty*>(source.GetProperty("lineMappings"));
@@ -777,15 +778,21 @@ void Script::ResolveAspectTransformations (void) {
 	if (!p || (projects = static_cast<const conf::MultiChoiceProperty*>(p)->GetSelectedChoices()).empty())
 		return;
 
-	std::string func;
-	const std::string classId = GetClassId();
-	if (classId == "Script" || classId == "Aspect")	//normal script entry
+	std::string			func;
+	const std::string	classId = GetClassId();
+
+	if (IS_EXPLICIT_SCRIPT_SOURCE_COMPONENT_ID(classId))
 		func = "GetPreTransformations";
-	else if (classId == "StageSource")				//else check for stage sources
+	else 
+	if (classId == SPW_COMPONENT_ID_STAGE_SOURCE)
 		func = "GetInterimTransformations";
-	else if (classId == "StageResult")
+	else 
+	if (classId == SPW_COMPONENT_ID_STAGE_RESULT)
 		func = "GetPostTransformations";
-	//for classId == "AspectResult" we need no further aspect transformations
+	else {
+		//we need no further aspect transformations here
+		DASSERT(classId == SPW_COMPONENT_ID_ASPECT_RESULT);
+	}
 	
 	if (!func.empty()) {
 		const Handle& wsp = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
@@ -794,7 +801,7 @@ void Script::ResolveAspectTransformations (void) {
 			if (proj && proj.GetClassId() == "AspectProject") {
 				const HandleList aspects = Call<const HandleList (void)>(this, proj, func)();
 				BOOST_FOREACH(const Handle& handle, aspects) {
-					DASSERT(handle.GetClassId() == "Aspect");
+					DASSERT(handle.GetClassId() == SPW_COMPONENT_ID_ASPECT);
 					Script* script = static_cast<Script*>(handle.Resolve());
 					if (script != this)
 						m_aspectTransformations.insert(script);
@@ -817,8 +824,7 @@ void Script::BuildSelf (void) {
 			attached.splice(attached.end(), CollectChildren(util::std2str(classId)));
 		BOOST_FOREACH(const Handle& source, attached) {
 			Script* s = static_cast<Script*>(source.Resolve());
-			const std::string classId = s->GetClassId();
-			bool shouldCheck =	classId != "StageResult" && classId != "AspectResult" ||
+			bool shouldCheck =	!IS_RESULTING_SCRIPT_SOURCE_COMPONENT_ID(s->GetClassId()) ||
 								conf::get_prop_value<conf::BoolProperty>(s->GetInstanceProperty("final"), false);
 			if (shouldCheck) {
 				s_upToDate->clear();
@@ -1218,9 +1224,9 @@ void Script::BuildWithUsingDependencies (const StringList& usingDeps) {
 		**  that are already up-to-date. Build reissues
 		**  still exist if a scripts is not up-to-date
 		*/
-		if (BL.IsEnabled()){
+		if (BuildLog::GetSingleton().IsEnabled()){
 			for (ide::Script::ScriptPtrSet::iterator it = m_buildDeps.begin();it!=m_buildDeps.end();){
-				if ( BL.IsScriptUpToDate( (*it)->GetLogName() )){
+				if ( BuildLog::GetSingleton().IsScriptUpToDate( (*it)->GetLogName() )){
 					it = m_buildDeps.erase(it);
 				}
 				else{
@@ -1438,8 +1444,8 @@ void Script::SetBuildCompleted (bool succeeded, bool wasCompiled) {
 	/*
 	**  We wanna make sure that the script succeeded before updating the log
 	*/
-	if (BL.IsEnabled() && succeeded)
-		BL.UpdateBytecode(this->GetLogName());
+	if (BuildLog::GetSingleton().IsEnabled() && succeeded)
+		BuildLog::GetSingleton().UpdateBytecode(this->GetLogName());
 
 	//************************************************
 
@@ -2056,9 +2062,16 @@ bool Script::IsBuildInProgressQuery (void) {
 
 bool Script::IsUpToDateCalculation (void) {
 
-	if (BL.IsEnabled())
-		return BL.IsScriptUpToDate(GetLogName());
-		 
+	if (BuildLog::GetSingleton().IsEnabled()) {
+		SaveSource();
+		return	BuildLog::GetSingleton().IsScriptUpToDate(GetLogName()) &&
+				AreLastBuildPropertiesSameAsCurrent();
+	}
+
+	// TODO: code below including s_upToDate scripts will have to be
+	// removed
+
+#if 1
 	UpToDateMap::iterator i = s_upToDate->find(this);
 	if (i != s_upToDate->end())
 		return i->second;
@@ -2109,6 +2122,7 @@ bool Script::IsUpToDateCalculation (void) {
 		}
 	}
 	return (*s_upToDate)[this] = result;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -2277,7 +2291,7 @@ void Script::RecursiveDeleteByteCodeFilesFromWorkingDirectory (const ScriptPtrSe
 //Inform the log about possible changes in file/project/workspace directory changes
 
 EXPORTED_FUNCTION(Script, void, UpdateLogDirectoryInformation, (void)) {
-	BL.UpdateDirectoryInformation(
+	BuildLog::GetSingleton().UpdateDirectoryInformation(
 		this->GetLogName(),
 		this->GetLogSource(),
 		this->GetProducedByteCodeFileFullPath()
@@ -2335,7 +2349,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	boost::mutex::scoped_lock buildLock(m_buildMutex);
 	timer::DelayedCaller::Instance().PostDelayedCall(boost::bind(OnResourceWorkStarted, this, BUILD_TASK_ID, workId));
 
-	BL	<< this->GetName() 
+	BuildLog::GetSingleton()	<< this->GetName() 
 		<< "\n" << this->GetSource() 
 		<< "\n" << "\n" 
 		<< this->GetFinalSourceURI() 
@@ -2352,7 +2366,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	**  and original source file.
 	*/
 	std::string cid = this->GetClassId();
-	if (BL.IsEnabled()){
+	if (BuildLog::GetSingleton().IsEnabled()){
 		ScriptPtrSet outDeps;
 		StdStringList externalDeps;
 		StdStringList deps;
@@ -2361,12 +2375,12 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 			deps.push_back( (*it)->GetProducedByteCodeFileFullPath() );
 		}
 		if (cid=="StageSource" || cid=="StageResult"){
-			BL.AddDependencies(GetParentLogName(),deps);
-			BL.AddDependencies(GetParentLogName(),externalDeps);
+			BuildLog::GetSingleton().AddDependencies(GetParentLogName(),deps);
+			BuildLog::GetSingleton().AddDependencies(GetParentLogName(),externalDeps);
 			deps.clear();
 			externalDeps.clear();
 		}
-		BL.Add(
+		BuildLog::GetSingleton().Add(
 			GetLogName(), 
 			GetLogSource() , 
 			GetProducedByteCodeFileFullPath(), 
@@ -2425,7 +2439,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 	**  its parent and original script.
 	*/
 
-	if (BL.IsEnabled()){
+	if (BuildLog::GetSingleton().IsEnabled()){
 		StdStringList deps;
 		for (ide::Script::ScriptPtrSet::iterator it = m_aspectTransformations.begin(); it!=m_aspectTransformations.end(); ++it){
 			deps.push_back(  (*it)->GetProducedByteCodeFileFullPath()  );
@@ -2434,7 +2448,7 @@ unsigned long Script::BuildImpl (const UIntList& workId, bool debugBuild, Script
 		if (cid=="StageSource" || cid=="StageResult"){
 			name = GetParentLogName();
 		}
-		BL.AddDependencies(name ,deps);
+		BuildLog::GetSingleton().AddDependencies(name ,deps);
 	}
 
 	//********************************************

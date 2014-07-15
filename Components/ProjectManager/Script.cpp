@@ -153,21 +153,15 @@ namespace ide
 	EXPORTED_CMD_FUNCTION(Script, BuildCtx, _("/{25}--Build"), MT_NMAIN, "build")
 	{
 		const Handle& workspace = Call<const Handle& (void)>(this, treeview, "GetWorkspace")();
-		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")()) {
-			/*
-			**  single script build
-			**  exits function alltogether if script is uptodate, no build is initiated.
-			*/
-			if (BuildLog::GetSingleton().IsEnabled()){
-				if(BuildLog::GetSingleton().IsScriptUpToDate(this->GetProducedByteCodeFile())){
-					PostBuildMessage(m_workId,std::string("Script '")+	util::str2std(GetName())	+"' is upToDate!");
-					return;
-				}
+		if (!Call<const Handle& (void)>(this, workspace, "GetRootWorkingResource")())
+			if (IsUpToDateCalculation())
+				PostBuildMessage(
+					m_workId,
+					std::string("Script '") + util::str2std(GetName()) + "' is up-to-date!");
+			else {
+				Call<void (const Handle&, const String&)>(this, workspace, "StartWorking")(this, _T("Build"));
+				Build(UIntList(1, 1));
 			}
-			//***************
-			Call<void (const Handle&, const String&)>(this, workspace, "StartWorking")(this, _T("Build"));
-			Build(UIntList(1, 1));
-		}
 	}
 
 	//-----------------------------------------------------------------------

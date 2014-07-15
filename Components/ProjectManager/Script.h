@@ -1,14 +1,14 @@
 /**
  *	Script.h
  *
- *	-- IDE Profile Manager Component --
- *
  *	Script component is the component representing
  *	a script files in the Project Manager's tree view.
  *
- *	Themistoklis Bourdenas <themis@ics.forth.gr>
- *	April 2007
+ *	Themistoklis Bourdenas, April 2007
+ *  Anthony Savidis, updates and extensions for the build system.
+ *	2007 - 2012
  */
+
 #ifndef PROJECT_MANAGER_SCRIPT_H_
 #define PROJECT_MANAGER_SCRIPT_H_
 
@@ -17,6 +17,7 @@
 #include "Component.h"
 #include "ComponentBuilder.h"
 #include "ComponentHandle.h"
+#include "ScriptComponentIds.h"
 #include "ProjectManagerFuncReturnTypes.h"
 #include "TextFile.h"
 

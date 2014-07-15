@@ -128,6 +128,7 @@
     <ClInclude Include="ProjectManagerCommon.h" />
     <ClInclude Include="ProjectManagerFuncReturnTypes.h" />
     <ClInclude Include="Script.h" />
+    <ClInclude Include="ScriptComponentIds.h" />
     <ClInclude Include="StageResult.h" />
     <ClInclude Include="StageSource.h" />
     <ClInclude Include="TreeItemDataObject.h" />
