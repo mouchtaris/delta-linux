@@ -4,10 +4,10 @@
         <working_directory>.</working_directory>
         <text>1</text>
         <symbolic>Tests.dproj</symbolic>
-        <startup>Delegation.dsc</startup>
+        <startup>Generators.dsc</startup>
         <stage_output_path>./</stage_output_path>
         <output_path>./Out</output_path>
-        <libs></libs>
+        <libs>aadui</libs>
         <icode>0</icode>
         <hostd></hostd>
         <host></host>
@@ -28,7 +28,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Backtrace</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -48,7 +48,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Client</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -68,7 +68,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Delegation</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -88,7 +88,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>DynamicClasses</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -108,7 +108,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>DynamicCompilation</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -128,7 +128,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Exceptions</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -148,7 +148,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>ForEach</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>1</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -168,7 +168,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>OperatorOverloading</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -188,7 +188,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Server</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -208,7 +208,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>SubobjectTrees</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -228,7 +228,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>VariousFeatures</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -248,7 +248,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Libs</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -268,7 +268,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Closures</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>1</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -288,7 +288,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>.</output_path>
             <output>Algorithms</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>
@@ -308,7 +308,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>./Out</output_path>
             <output>Generators</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>

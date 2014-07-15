@@ -7,7 +7,7 @@
         <startup>..\Src\Delta.dsc</startup>
         <stage_output_path>./</stage_output_path>
         <output_path>./</output_path>
-        <libs></libs>
+        <libs>aadui</libs>
         <icode>0</icode>
         <hostd></hostd>
         <host></host>
@@ -28,7 +28,7 @@
             <stage_output_path>./</stage_output_path>
             <output_path>./ByteCode/</output_path>
             <output>Delta</output>
-            <libs></libs>
+            <libs>aadui</libs>
             <icode>0</icode>
             <extra_deps></extra_deps>
             <dllimport_path></dllimport_path>

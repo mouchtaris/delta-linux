@@ -6483,9 +6483,8 @@ singlechoicedialog_getselectionclientdata	(singlechoicedialog:singlechoicedialog
 singlechoicedialog_getstringselection		(singlechoicedialog:singlechoicedialog) : String
 singlechoicedialog_setselection				(singlechoicedialog:singlechoicedialog,selection:Number)
 singlechoicedialog_showmodal				(singlechoicedialog:singlechoicedialog) : Number
-#group(wxsizer)
+#group(wxsize)
 size_construct								():size (width:+{Number,String},height:+{Number,String}):size (define:String):size
-size_destruct								(size:size)
 size_decby									(size:size,other:+{size,String}) (size:size,d:Number) (size:size,dx:Number,dy:Number)
 size_decto									(size:size,other:+{size,String})
 size_isfullyspecified						(size:size) : Bool
@@ -6507,7 +6506,6 @@ size_divide									(size:size,factor:Number) : size
 size_multiply								(size:size,factor:Number) : size
 #group(wxevent)
 sizeevent_construct							():sizeevent (size:size):sizeevent (size:size,id:+{Number,String}):sizeevent (rect:rect):sizeevent (rect:rect,id:+{Number,String}):sizeevent
-sizeevent_destruct							(sizeevent:sizeevent)
 sizeevent_getsize							(sizeevent:sizeevent) : size
 sizeevent_getrect							(sizeevent:sizeevent) : rect
 sizeevent_setrect							(sizeevent:sizeevent,rect:rect)
