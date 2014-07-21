@@ -2,7 +2,7 @@
 <Workspace name="Sparrow" version="alpha">
     <WorkspaceProperties>
         <symbolic>Sparrow.wsp</symbolic>
-        <startup>..\..\..\..\UnderGo\ScriptFighter\DeltaStdLib\Project\Std.dproj</startup>
+        <startup>sparrowlib\sparrowlib.dproj</startup>
         <config>0</config>
         <collapsed>0</collapsed>
         <breakpoints>break.dat</breakpoints>
