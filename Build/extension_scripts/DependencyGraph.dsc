@@ -19,7 +19,7 @@ projectGeometry = nil;
 
 window	= nil;
 
-function NewNode(file,Nodes)
+function NewNode (file,Nodes)
 {	
 	local tmp =
 	[
@@ -129,7 +129,7 @@ function NewNode(file,Nodes)
 
 //-------------------- SCRIPT ---------------------
 
-function NewFile()
+function NewFile
 {
 	return [
 		@type			: "" ,
@@ -380,9 +380,9 @@ function CheckIfUniqueName(s,List)
 	}
 }
 
-function CollectData()
+function CollectData
 {
-	function AddScript()
+	function AddScript
 	{
 		return 
 		[
@@ -793,7 +793,7 @@ function G1(Data)
 		return temp_array;
 	}
 	
-	function PutRoots()
+	function PutRoots
 	{
 		foreach(s,roots)
 		{
@@ -809,7 +809,7 @@ function G1(Data)
 		}
 	}
 
-	function CheckCommons()
+	function CheckCommons
 	{
 		if(commons.total()==0)
 			return false;
@@ -1060,7 +1060,7 @@ return [
 		return nil;
 	},
 
-	method FitSpace()
+	method FitSpace
 	{
 		local l = MaxLevel(levels);
 		
@@ -1384,7 +1384,7 @@ function Zoomin(window)
 	window.refresh();
 	//Renderer.Repaint(window);
 }
-function Interact1()
+function Interact1
 {
 	local selected	= nil;
 	local lastX	= 0;
@@ -1535,7 +1535,7 @@ function Interact1()
 //------------------------------------------------
 
 //~~~~~~~ RENDERER ~~~~~~~~~
-function wxRenderer() {
+function wxRenderer {
 	
 
 	return [
@@ -1756,7 +1756,7 @@ function wxRenderer() {
 				@DrawPointer(dc,Points[tablength(Points)-2],Points[tablength(Points)-1]);
 			}
 		},
-		method PrepareGraph()
+		method PrepareGraph
 		{
 			@message	= nil;
 		},
@@ -1766,7 +1766,7 @@ function wxRenderer() {
 			@Lines	= Data.Lines;
 			@Other	= Data.Other;
 		},
-		method ViewProjects()
+		method ViewProjects
 		{
 			currGeometry	= projectGeometry;
 			projectGeometry.DisplayProjects();
@@ -1774,14 +1774,14 @@ function wxRenderer() {
 			window.refresh();
 			//Renderer.Repaint(window);
 		},
-		method ViewScripts()
+		method ViewScripts
 		{
 			Geometry.ApplyScripts();
 			Renderer.PrepareGraph();
 			window.refresh();
 			//Renderer.Repaint(window);
 		},
-		method Init()
+		method Init
 		{
 			window.setscrollrate(10, 10);
 			window.scrollX	= 0;
@@ -1843,7 +1843,7 @@ function CreateWindow(parent)
 	return  window.tonativeinstance();
 }
 
-function SPVisual() {
+function SPVisual {
 	Renderer	= wxRenderer();
 	Renderer.Init();
 	
@@ -2213,7 +2213,7 @@ onevent ClassLoad
     spw::registercomponent(classId);
     spw::setcomponentmetadata(
         classId, "Dependencies between Projects and Scripts",
-        "A utility for visualization dependencies in opened workspace",
+        "A utility for visualization of dependencies in the current workspace",
         "Koutsouroumpis Georgios <gkutsur@csd.uoc.gr>",
         "alpha"
     );
@@ -2221,12 +2221,12 @@ onevent ClassLoad
     spw::registerimage("dependency", spw::installationdir() + "/resources/dependency.png");
 
     spw::class_decl_required_member_function(classId, "SPVisual", "uint (void)",
-        "Visualize the Dependency Graph");
+        "Visualize the dependency graph");
    spw::class_decl_required_member_command(
         [
             {.class            : "UserCommandDesc"	},
             {.class_id        : classId				},
-            {.function_name    : "CountLinesCmd"	},
+            {.function_name    : "BuildDepsCmd"	},
             {.flags            : 7					},
             {.image            : "dependency"		}
         ],
@@ -2287,7 +2287,7 @@ onevent ClassUnload {}
 onevent Constructor
 {
     spw::inst_impl_required_member_function(classId, "SPVisual", SPVisual);
-    spw::inst_impl_required_member_command(classId, "CountLinesCmd", SPVisual);
+    spw::inst_impl_required_member_command(classId, "BuildDepsCmd", SPVisual);
 }
 
 //-----------------------------------------------------------------------
