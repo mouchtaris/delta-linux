@@ -1843,7 +1843,7 @@ function CreateWindow(parent)
 	return  window.tonativeinstance();
 }
 
-function SPVisual {
+function Visualize {
 	Renderer	= wxRenderer();
 	Renderer.Init();
 	
@@ -2212,7 +2212,7 @@ onevent ClassLoad
 {
     spw::registercomponent(classId);
     spw::setcomponentmetadata(
-        classId, "Dependencies between Projects and Scripts",
+        classId, "Dependencies",
         "A utility for visualization of dependencies in the current workspace",
         "Koutsouroumpis Georgios <gkutsur@csd.uoc.gr>",
         "alpha"
@@ -2220,7 +2220,7 @@ onevent ClassLoad
 
     spw::registerimage("dependency", spw::installationdir() + "/resources/dependency.png");
 
-    spw::class_decl_required_member_function(classId, "SPVisual", "uint (void)",
+    spw::class_decl_required_member_function(classId, "Visualize", "uint (void)",
         "Visualize the dependency graph");
    spw::class_decl_required_member_command(
         [
@@ -2241,7 +2241,7 @@ onevent ClassLoad
 				{.function_name	: "ConfigureDependenciesGraph"	},
 				{.flags			: 1								}
 			],
-			"/{2}Configure/DependencyGraph...",
+			"/{2}Configure/Dependency Graph...",
 			(function Configure {spw.components.Shell.ConfigureComponent(classId); }),
 			"Configure the Dependency Graph"
 		);
@@ -2286,8 +2286,8 @@ onevent ClassUnload {}
 
 onevent Constructor
 {
-    spw::inst_impl_required_member_function(classId, "SPVisual", SPVisual);
-    spw::inst_impl_required_member_command(classId, "BuildDepsCmd", SPVisual);
+    spw::inst_impl_required_member_function(classId, "Visualize", Visualize);
+    spw::inst_impl_required_member_command(classId, "BuildDepsCmd", Visualize);
 }
 
 //-----------------------------------------------------------------------
