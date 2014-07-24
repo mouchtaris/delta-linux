@@ -249,10 +249,14 @@ void BuildLog::UpdateDirectoryInformation (
 	IF_NOT_ENABLED_RETURN();
 
 	DASSERT(!name.empty());
-	LoggedScript& script (logScriptMap[name]);
+	
+	ScriptMap::iterator i = logScriptMap.find(name);
+	if (i != logScriptMap.end()) {	// only update existing entries
+		LoggedScript& script (i->second);
 
-	script.dbc = bytecodePath;
-	script.dsc = sourcePath;
+		script.dbc = bytecodePath;
+		script.dsc = sourcePath;
+	}
 }
 
 //********************************************************
