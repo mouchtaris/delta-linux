@@ -24,10 +24,18 @@
 template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 	
 	private:
-	T**			data;
-	util_ui32	total;
-	util_ui32	left, right;	// interval is actually [left, right)
-	
+	T**				data;
+	util_ui32		total;
+	util_ui32		left, right;		// interval is actually [left, right)
+
+	void			reset (void)		// for construction only
+						{ data = (T**) 0; total = left = right = 0; }
+
+	void			create (util_ui32 n) {	// for construction only
+						left = right = 0;
+						data = DNEWARR(T*, total = n);
+					}
+
 	bool			invariant (void) const {
 						return	(!data == !total)			&&
 								(left <= right)				&&
@@ -233,34 +241,47 @@ template <class T, class TAssign = uassigndefaultfunc<T> > class uvector {
 						DASSERT(invariant()); 
 					}
 
-	const uvector&	operator=(const std::list<T>& l) {
-						resize(l.size());
-						util_ui32 j = 0;
-						for (typename std::list<T>::const_iterator i = l.begin(); i != l.end(); ++i, ++j)
-							(*this)[j] = *i;
-						return *this;
-					}
-	const uvector&	operator=(const std::list<const T*>& l) {
-						resize(l.size());
-						util_ui32 j = 0;
-						for (typename std::list<const T*>::const_iterator i = l.begin(); i != l.end(); ++i, ++j)
-							(*this)[j] = **i;
-						return *this;
-					}
+	const uvector&	operator=(const std::list<const T*>& l) 
+						{ clear(); new (this) uvector(l); return *this; }
+
+	const uvector&	operator=(const std::list<T>& l) 
+						{ clear(); new (this) uvector(l); return *this; }
+
+	uvector (const std::list<const T*>& l)  {
+		if (l.size()) {
+			create(l.size());
+			for (typename std::list<const T*>::const_iterator i = l.begin(); i != l.end(); ++i)
+				data[right++] = DNEWCLASS(T, (**i));
+			DASSERT(invariant());
+		}
+		else
+			reset();
+	}
+
+	uvector (const std::list<T>& l)  {
+		if (l.size()) {
+			create(l.size());
+			for (typename std::list<T>::const_iterator i = l.begin(); i != l.end(); ++i)
+				data[right++] = DNEWCLASS(T, (*i));
+			DASSERT(invariant());
+		}
+		else
+			reset();
+	}
 
 	uvector (const uvector& v)  {
 		DASSERT(v.invariant()); 
 		if (v.size()) {
-			left = right = 0;
-			data = DNEWARR(T*, total = v.size());
+			create(v.size());
 			for (util_ui32 i = 0; i < total; ++i)
 				data[right++] = DNEWCLASS(T, (*DPTR(v.data[i])));
 			DASSERT(invariant());
 		}
 		else
-			new (this) uvector();
+			reset();
 	}
-	uvector (void) : data((T**) 0), total(0), left(0), right(0) { DASSERT(invariant()); }
+
+	uvector (void) { reset(); DASSERT(invariant()); }
 	~uvector() { clear(); }
 };
 
