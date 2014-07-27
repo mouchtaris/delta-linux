@@ -74,6 +74,15 @@ START_SEC("si_credits", "Credits")
 		" as part of his Diploma work implemented: (i) a parser which loads JSON files 
 		into Delta objects; and (ii) an encoder of aggregates to JSON for the Delta debugger backend ", 
 		!italic "(2013)", ".",		
+		NL2
+
+		LINK_IN_TEXT("http://www.linkedin.com/in/giorgos-koutsouroumpis", "Giorgos Koutsouroumpis")
+		" as part of his Diploma work has implemented the build dependecies visualizer 
+		in the Delta language", !italic "(2013)", ".",		
+		NL2,
+
+		!blue "Giorgos Diakostavrianos", " as part of his Diploma work has significantly improved the 
+		performance of the Delta build system in the Sparrow IDE by supporting (cached) build logs", !italic "(2014)", ".",		
 		NL2,
 
 		"Site development, maintainence and contact person: "

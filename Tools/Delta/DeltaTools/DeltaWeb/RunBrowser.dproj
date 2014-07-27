@@ -10,7 +10,7 @@
         <libs></libs>
         <icode>0</icode>
         <hostd></hostd>
-        <host>../../../../../../../../../Program Files/Internet Explorer/iexplore.exe</host>
+        <host>C:/Program Files/Internet Explorer/iexplore.exe</host>
         <dllimport_path></dllimport_path>
         <deployment>2</deployment>
         <debug>0</debug>
