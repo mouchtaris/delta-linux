@@ -23,7 +23,8 @@ bool uconfig::Restart (const std::string& path) {
 		values.clear();
 		error.clear();
 		eof = false;
-		lookAhead = line = col = 0;
+		lookAhead = 0;
+		line = col = 1;
 		return true;
 	}	
 }
@@ -67,6 +68,17 @@ char uconfig::Input (void) {
 
 ///////////////////////////////////////////////////////////
 
+void uconfig::SkipRestOfLine (void) {
+	char c = '$'; 
+	while (!eof && c != '\n')
+		if ((c = fgetc(fp)) == EOF)
+			eof = true;
+	++line;
+	lookAhead = 0;
+}
+
+///////////////////////////////////////////////////////////
+
 void uconfig::SkipWhitespace (void) {
 
 	DASSERT(!lookAhead);
@@ -90,17 +102,20 @@ bool uconfig::ParseItem (std::string& s) {
 
 		char c = Input();
 		if (eof)
-			return false;
+			return !s.empty();
+		else
+		if (isspace(c)) {
+			DASSERT(!s.empty());
+			return true;
+		}
 		else
 		if (!isprint(c)) {
 			SetError("Non printable character!");
 			return false;
 		}
 		else
-		if (isspace(c)) {
-			DASSERT(!s.empty());
-			return true;
-		}
+		if (s.empty() && c == '#')
+			{ SkipRestOfLine(); SkipWhitespace(); }
 		else
 			s += c;
 	}

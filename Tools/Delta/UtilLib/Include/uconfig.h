@@ -31,6 +31,7 @@ class UTILLIB_CLASS uconfig {
 	bool				Restart (const std::string& path);
 	bool				ParseItem (std::string& s);
 	void				SkipWhitespace (void);
+	void				SkipRestOfLine (void);
 	char				Input (void);
 	void				SetError (const std::string& s);
 
@@ -43,7 +44,7 @@ class UTILLIB_CLASS uconfig {
 							{ return error; }
 
 	// key or content is any sequence of non-space 
-	// printable characters
+	// printable characters; use #<comment> skipping at end of line
 
 	bool				GetBool (const std::string& id) const;
 	util_i32			GetInt (const std::string& id) const;
