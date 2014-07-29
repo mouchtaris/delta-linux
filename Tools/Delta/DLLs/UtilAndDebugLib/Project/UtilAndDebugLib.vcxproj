@@ -94,6 +94,7 @@
     <ClCompile Include="..\..\..\DebugLib\Src\DMemoryManager.cpp" />
     <ClCompile Include="..\..\..\DebugLib\Src\DSmallObjectAllocator.cpp" />
     <ClCompile Include="..\..\..\UtilLib\Src\ubinaryio.cpp" />
+    <ClCompile Include="..\..\..\UtilLib\Src\uconfig.cpp" />
     <ClCompile Include="..\..\..\UtilLib\Src\udynamiclibloader.cpp" />
     <ClCompile Include="..\..\..\UtilLib\Src\ueditormixin.cpp" />
     <ClCompile Include="..\..\..\UtilLib\Src\uerrorclass.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\..\..\UtilLib\Include\ucachememory.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\ucallbacks.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\ucomponentdirectory.h" />
+    <ClInclude Include="..\..\..\UtilLib\Include\uconfig.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\ucrosscast.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\ucycliceval.h" />
     <ClInclude Include="..\..\..\UtilLib\Include\udebugsupport.h" />

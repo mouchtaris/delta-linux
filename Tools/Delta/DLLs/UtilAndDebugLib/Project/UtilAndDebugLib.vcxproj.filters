@@ -91,6 +91,9 @@
     <ClCompile Include="..\..\..\UtilLib\Src\uinstanceidgenerator.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\UtilLib\Src\uconfig.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\DebugLib\Include\DAllocationStats.h">
@@ -241,6 +244,9 @@
       <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\UtilLib\Include\ucomponentdirectory.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UtilLib\Include\uconfig.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
