@@ -23,9 +23,12 @@
 // In case we want to ensure C string is passed to typical
 // C library functions.
 //
+#define	UBOOL_CONST_STRING_TRUE		"TRUE"
+#define	UBOOL_CONST_STRING_FALSE	"FALSE"
+
 inline 		 const char*		ucstringarg (const char* s) { return s; }
 inline 		 const char*		ucstringarg (const std::string& s) { return s.c_str(); }
-inline 		 const char*		ubool2conststr (bool val) { return val ? "TRUE" : "FALSE"; }
+inline 		 const char*		ubool2conststr (bool val) { return val ? UBOOL_CONST_STRING_TRUE : UBOOL_CONST_STRING_FALSE; }
 UTILLIB_FUNC bool				ureadbool (FILE* fp, bool* val);
 
 /////////////////////////////////////////////////////////////////
@@ -36,10 +39,10 @@ UTILLIB_FUNC char*				uconcatstr (const char* s1, const char* s2);
 UTILLIB_FUNC void				usubstitutechars (std::string& s, const char* from, char to);	// Change any 
 UTILLIB_FUNC const std::list<std::string>
 								utokenizestr (const std::string& s, const char* tokens);
-UTILLIB_FUNC char*				uloadstr (FILE* fp);
-UTILLIB_FUNC bool				uloadstrex (FILE* fp, std::string& at);
-UTILLIB_FUNC util_ui32			ustorestrsize (const std::string& s);
-UTILLIB_FUNC void				ustorestr (FILE* fp, const std::string& s);
+UTILLIB_FUNC char*				uloadstr (FILE* fp);						// binary
+UTILLIB_FUNC bool				uloadstrex (FILE* fp, std::string& at);		// binary
+UTILLIB_FUNC util_ui32			ustorestrsize (const std::string& s);		// binary
+UTILLIB_FUNC void				ustorestr (FILE* fp, const std::string& s);	// binary
 UTILLIB_FUNC char*				udeleoln (char* s);	// Returns original pointer.
 UTILLIB_FUNC const std::string 	unum2string (double val);	// Only the characters needed!
 UTILLIB_FUNC const std::string 	uint2hexstring (util_ui32 val);
