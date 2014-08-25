@@ -420,7 +420,7 @@ using namespace wxWidgets;
 	DeltaExternIdFieldGetter* wxclass##Utils::GetGetter() { return getter; }
 
 #define DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS(wxclass, wxclassid, baseclass)	\
-	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"wxclassid)					\
+	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::" wxclassid)					\
 	DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)				\
 	void wxclass##Utils::InstallAll(DeltaTable *methods)						\
 	{																			\
@@ -429,7 +429,7 @@ using namespace wxWidgets;
 	}
 
 #define DLIB_WX_TOEXTERNID_AND_INSTALLALL_FUNCS_BASE(wxclass, wxclassid)		\
-	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::"wxclassid)					\
+	VCLASSID_IMPL(DeltaWx##wxclass##ClassId, "wx::" wxclassid)					\
 	DLIB_WXMAKE_GETTER_CHECKER_METHODS_TABLE(wxclass, wxclassid)				\
 	void wxclass##Utils::InstallAll(DeltaTable *methods)						\
 	{																			\

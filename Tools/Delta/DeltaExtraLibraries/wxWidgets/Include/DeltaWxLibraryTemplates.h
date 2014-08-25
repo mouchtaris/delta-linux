@@ -31,7 +31,7 @@ template<class ClassId, class WrapperT, class Native>
 WrapperT*		GetWrapperFromNativeInstance (Native* nativeInstance)
 {
 	DASSERT(wxWidgets::NativeInstanceToWrapperMapGet().HasKey(nativeInstance));
-	wxWidgets::WrapperInfo info	= NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
+	wxWidgets::WrapperInfo info	= wxWidgets::NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
 	WrapperT* wrapper	= VGET_INST(WrapperT, info.serialNo, ClassId::ID);
 	DASSERT(wrapper);
 	return wrapper;
@@ -181,101 +181,25 @@ bool			GetNativeInstanceFromArgument
 	return !hasError;
 }
 
-template<class ClassId, class WrapperT, class Native>
-bool			SetValueFromNativeInstance
-	(
-		Native* nativeInstance, DeltaValue* at,
-		void (*destructor)(void*),
-		DeltaExternIdFieldGetter* (*getGetter)(void),
-		DeltaObject* (*getMethods)(void),
-		DeltaLibraryFunctionContext* context
-	)
-{
-	WX_CREATE_LIBFUNC_LOCALS
-	if (context)
-		context->UpdateLocals(&vm, &CURR_FUNC, &_argNo, &_sig1, &_sig2);
-
-	if (nativeInstance) {
-		bool hasEntry			= NativeInstanceToWrapperMapGet().HasKey(nativeInstance);
-		WrapperT* wrapper;
-		if (hasEntry) {
-			WrapperInfo info	= NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
-			wrapper				= VGET_INST(WrapperT, info.serialNo, ClassId::ID);
-			Wrapper* oldWrapper = VGET_INST(Wrapper, info.serialNo, info.classId);
-			if (!wrapper && oldWrapper)
-			{
-				DASSERT(oldWrapper->GetCastToNativeInstance() == nativeInstance);
-				// nativeInstance destroyed without destroying the appropriate wrapper
-				// since the wrapper is valid, but cannot be downcasted to the correct class
-				DDELETE(oldWrapper);
-				wrapper			= DNEWCLASS(WrapperT, (nativeInstance));
-				DASSERT(!NativeInstanceToWrapperMapGet().HasKey(nativeInstance));
-				NativeInstanceToWrapperMapGet().AddEntry
-					(nativeInstance, DPTR(wrapper)->GetSerialNo(), ClassId::ID);
-			}
-			if (!wrapper ||
-				!DPTR(wrapper)->IsValid() ||
-				DPTR(wrapper)->GetNativeInstance() != nativeInstance)
-			{
-				NativeInstanceToWrapperMapGet().RemoveEntry(nativeInstance);
-				DASSERT(!VGET_INST(Wrapper, info.serialNo, info.classId));
-
-				DPTR(vm)->PrimaryError("%s(%s): %s!",
-					CURR_FUNC, _sig1.c_str(),
-					ucstringarg(
-						uconstructstr(
-							"invalid %s handle 0x%x, probably destroyed",
-							info.classId.c_str(), info.serialNo
-						)
-					)
-				);
-				at->FromNil();
-				return false;
-			}
-		} else {
-			wrapper				= DNEWCLASS(WrapperT, (nativeInstance));
-			NativeInstanceToWrapperMapGet().AddEntry
-				(nativeInstance, DPTR(wrapper)->GetSerialNo(), ClassId::ID);
-		}
-
-		SetValueFromWrapper<ClassId, WrapperT>(wrapper, at, destructor, getGetter, getMethods);
-	} else { at->FromNil(); return false; }
-	return true;
-}
-
-template<class ChildClassId, class ChildWrapper, class ChildNative>
-void			SetWrapperChild (ChildNative* nativeInst)
-{
-	DASSERT(nativeInst);
-	SetDependencyBetweenNativeInstances
-		<DeltaWxWindowClassId, DeltaWxWindow, wxWindow,
-		ChildClassId, ChildWrapper, ChildNative>
-		(nativeInst->GetParent(), nativeInst);
-}
-
-template<class ParentClassId, class ParentWrapper, class ParentNative,
-		class ChildClassId, class ChildWrapper, class ChildNative>
-void			SetDependencyBetweenNativeInstances
-(
-	ParentNative* parent, ChildNative* child
-)
-{
-	ParentWrapper*	parentWrapper	= NULL;
-	ChildWrapper*	childWrapper	= NULL;
-	if (parent) {
-		parentWrapper	=
-			GetWrapperFromNativeInstance
-				<ParentClassId, ParentWrapper, ParentNative>(parent);
+template<class ClassId, class WrapperT>
+void			ToString (DeltaString* at, void* val) {
+	util_ui32 serialNo	= (util_ui32)DELTA_EGC_SIMPLE_GETVALUE(val);
+	WrapperT* wrapper	= VGET_INST(WrapperT, serialNo, ClassId::ID);
+	if (!wrapper)
+		DPTR(at)->Add(
+			uconstructstr("%s(handle 0x%x, destroyed!)",
+				ClassId::ID, (util_ui32) val)
+		);
+	else {
+		DASSERT(serialNo == DPTR(wrapper)->GetSerialNo());
+		DPTR(at)->Add(
+			uconstructstr(
+				"%s(0x%x)",
+				DPTR(wrapper)->GetExtClassString(),
+				DPTR(wrapper)->GetSerialNo()
+			)
+		);
 	}
-	if (child) {
-		childWrapper	=
-			GetWrapperFromNativeInstance
-				<ChildClassId, ChildWrapper, ChildNative>(child);
-	}
-	if (parentWrapper)
-		static_cast<Wrapper*>(parentWrapper)->AddChild(static_cast<Wrapper*>(childWrapper));
-	else if (childWrapper)
-		static_cast<Wrapper*>(childWrapper)->SetParent(static_cast<Wrapper*>(parentWrapper));
 }
 
 template<class ClassId, class WrapperT>
@@ -289,10 +213,10 @@ bool			SetValueFromWrapper
 {
 	if (wrapper) {
 		util_ui32 wrapperSerialNo		=	DPTR(wrapper)->GetSerialNo();
-		bool hasEntry					=	WrapperToExternIdMapGet().HasKey
+		bool hasEntry					=	wxWidgets::WrapperToExternIdMapGet().HasKey
 												(wrapperSerialNo);
 		if (hasEntry) {
-			util_ui32 externIdSerialNo	=	WrapperToExternIdMapGet().GetValue
+			util_ui32 externIdSerialNo	=	wxWidgets::WrapperToExternIdMapGet().GetValue
 												(wrapperSerialNo);
 			at->FromExternIdBySerialNo(externIdSerialNo);
 		} else {
@@ -317,25 +241,101 @@ bool			SetValueFromWrapper
 	return true;
 }
 
-template<class ClassId, class WrapperT>
-void			ToString (DeltaString* at, void* val) {
-	util_ui32 serialNo	= (util_ui32)DELTA_EGC_SIMPLE_GETVALUE(val);
-	WrapperT* wrapper	= VGET_INST(WrapperT, serialNo, ClassId::ID);
-	if (!wrapper)
-		DPTR(at)->Add(
-			uconstructstr("%s(handle 0x%x, destroyed!)",
-				ClassId::ID, (util_ui32) val)
-		);
-	else {
-		DASSERT(serialNo == DPTR(wrapper)->GetSerialNo());
-		DPTR(at)->Add(
-			uconstructstr(
-				"%s(0x%x)",
-				DPTR(wrapper)->GetExtClassString(),
-				DPTR(wrapper)->GetSerialNo()
-			)
-		);
+template<class ClassId, class WrapperT, class Native>
+bool			SetValueFromNativeInstance
+	(
+		Native* nativeInstance, DeltaValue* at,
+		void (*destructor)(void*),
+		DeltaExternIdFieldGetter* (*getGetter)(void),
+		DeltaObject* (*getMethods)(void),
+		DeltaLibraryFunctionContext* context
+	)
+{
+	WX_CREATE_LIBFUNC_LOCALS
+	if (context)
+		context->UpdateLocals(&vm, &CURR_FUNC, &_argNo, &_sig1, &_sig2);
+
+	if (nativeInstance) {
+		bool hasEntry			= wxWidgets::NativeInstanceToWrapperMapGet().HasKey(nativeInstance);
+		WrapperT* wrapper;
+		if (hasEntry) {
+			wxWidgets::WrapperInfo info	= wxWidgets::NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
+			wrapper				= VGET_INST(WrapperT, info.serialNo, ClassId::ID);
+			wxWidgets::Wrapper* oldWrapper = VGET_INST(wxWidgets::Wrapper, info.serialNo, info.classId);
+			if (!wrapper && oldWrapper)
+			{
+				DASSERT(oldWrapper->GetCastToNativeInstance() == nativeInstance);
+				// nativeInstance destroyed without destroying the appropriate wrapper
+				// since the wrapper is valid, but cannot be downcasted to the correct class
+				DDELETE(oldWrapper);
+				wrapper			= DNEWCLASS(WrapperT, (nativeInstance));
+				DASSERT(!wxWidgets::NativeInstanceToWrapperMapGet().HasKey(nativeInstance));
+				wxWidgets::NativeInstanceToWrapperMapGet().AddEntry
+					(nativeInstance, DPTR(wrapper)->GetSerialNo(), ClassId::ID);
+			}
+			if (!wrapper ||
+				!DPTR(wrapper)->IsValid() ||
+				DPTR(wrapper)->GetNativeInstance() != nativeInstance)
+			{
+				wxWidgets::NativeInstanceToWrapperMapGet().RemoveEntry(nativeInstance);
+				DASSERT(!VGET_INST(wxWidgets::Wrapper, info.serialNo, info.classId));
+
+				DPTR(vm)->PrimaryError("%s(%s): %s!",
+					CURR_FUNC, _sig1.c_str(),
+					ucstringarg(
+						uconstructstr(
+							"invalid %s handle 0x%x, probably destroyed",
+							info.classId.c_str(), info.serialNo
+						)
+					)
+				);
+				at->FromNil();
+				return false;
+			}
+		} else {
+			wrapper				= DNEWCLASS(WrapperT, (nativeInstance));
+			wxWidgets::NativeInstanceToWrapperMapGet().AddEntry
+				(nativeInstance, DPTR(wrapper)->GetSerialNo(), ClassId::ID);
+		}
+
+		SetValueFromWrapper<ClassId, WrapperT>(wrapper, at, destructor, getGetter, getMethods);
+	} else { at->FromNil(); return false; }
+	return true;
+}
+
+template<class ParentClassId, class ParentWrapper, class ParentNative,
+		class ChildClassId, class ChildWrapper, class ChildNative>
+void			SetDependencyBetweenNativeInstances
+(
+	ParentNative* parent, ChildNative* child
+)
+{
+	ParentWrapper*	parentWrapper	= NULL;
+	ChildWrapper*	childWrapper	= NULL;
+	if (parent) {
+		parentWrapper	=
+			GetWrapperFromNativeInstance
+				<ParentClassId, ParentWrapper, ParentNative>(parent);
 	}
+	if (child) {
+		childWrapper	=
+			GetWrapperFromNativeInstance
+				<ChildClassId, ChildWrapper, ChildNative>(child);
+	}
+	if (parentWrapper)
+		static_cast<wxWidgets::Wrapper*>(parentWrapper)->AddChild(static_cast<wxWidgets::Wrapper*>(childWrapper));
+	else if (childWrapper)
+		static_cast<wxWidgets::Wrapper*>(childWrapper)->SetParent(static_cast<wxWidgets::Wrapper*>(parentWrapper));
+}
+
+template<class ChildClassId, class ChildWrapper, class ChildNative>
+void			SetWrapperChild (ChildNative* nativeInst)
+{
+	DASSERT(nativeInst);
+	SetDependencyBetweenNativeInstances
+		<DeltaWxWindowClassId, DeltaWxWindow, wxWindow,
+		ChildClassId, ChildWrapper, ChildNative>
+		(nativeInst->GetParent(), nativeInst);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -345,15 +345,15 @@ struct TopLevelWrapperDestroyEventHandler : public wxEvtHandler {
 	void		OnDestroy (wxWindowDestroyEvent& e)
 	{
 		Native* nativeInstance		= static_cast<Native*>(e.GetWindow());
-		if (NativeInstanceToWrapperMapGet().HasKey(nativeInstance)) {
-			WrapperInfo info			= NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
+		if (wxWidgets::NativeInstanceToWrapperMapGet().HasKey(nativeInstance)) {
+			wxWidgets::WrapperInfo info			= wxWidgets::NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
 			DASSERT(info.classId == ClassId::ID);
 			WrapperT* wrapper			= VGET_INST(WrapperT, info.serialNo, info.classId);
 			DASSERT(wrapper && DPTR(wrapper)->IsValid());
 			util_ui32 wrapperSerialNo	= DPTR(wrapper)->GetSerialNo();
 
-			if (WrapperToExternIdMapGet().HasKey(wrapperSerialNo)) {
-				util_ui32 externIdSerialNo	= WrapperToExternIdMapGet().GetValue(wrapperSerialNo);
+			if (wxWidgets::WrapperToExternIdMapGet().HasKey(wrapperSerialNo)) {
+				util_ui32 externIdSerialNo	= wxWidgets::WrapperToExternIdMapGet().GetValue(wrapperSerialNo);
 				if (VALIDATABLE_VGET_INST(externIdSerialNo)) {
 					DeltaValue externId;
 					externId.FromExternIdBySerialNo(externIdSerialNo);
