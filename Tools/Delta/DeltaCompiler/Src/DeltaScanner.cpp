@@ -501,7 +501,7 @@ static yyconst short int yy_chk[319] =
 
 #ifndef	_MSC_VER
 extern "C" {
-static int isatty YY_PROTO(( int )) { return 0; }
+//static int isatty YY_PROTO(( int )) { return 0; }
 }
 #endif
 
@@ -1738,7 +1738,7 @@ void yyFlexLexer::yy_delete_buffer( YY_BUFFER_STATE b )
 	}
 
 
-extern "C" int isatty YY_PROTO(( int ));
+//extern "C" int isatty YY_PROTO(( int ));
 void yyFlexLexer::yy_init_buffer( YY_BUFFER_STATE b, istream* file )
 
 	{

@@ -31,7 +31,7 @@ template<class ClassId, class WrapperT, class Native>
 WrapperT*		GetWrapperFromNativeInstance (Native* nativeInstance)
 {
 	DASSERT(wxWidgets::NativeInstanceToWrapperMapGet().HasKey(nativeInstance));
-	WrapperInfo info	= NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
+	wxWidgets::WrapperInfo info	= NativeInstanceToWrapperMapGet().GetValue(nativeInstance);
 	WrapperT* wrapper	= VGET_INST(WrapperT, info.serialNo, ClassId::ID);
 	DASSERT(wrapper);
 	return wrapper;

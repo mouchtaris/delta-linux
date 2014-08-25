@@ -11,7 +11,7 @@
 #include <list>
 #include "DeltaObject.h"
 #include "DeltaValue.h"
-#include "DeltaJsonParserLib.h"
+#include "DeltaJSONParserLib.h"
 
 #define JSON_NULL_TYPE_STR	"json::null"
 #define JSON_NULL			(void*) 0     
