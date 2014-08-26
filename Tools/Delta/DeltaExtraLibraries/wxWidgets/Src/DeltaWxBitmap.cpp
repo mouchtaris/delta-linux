@@ -100,7 +100,7 @@ WX_FUNC_ARGRANGE_START(bitmap_construct, 0, 3, Nil)
 #if defined (__WXMSW__)
 			long type = wxBITMAP_TYPE_BMP_RESOURCE;
 			if (n >= 2) { WX_GETDEFINE_DEFINED(type) }
-#else if defined (__WXGTK__) || defined (__WXGET20__)
+#elif defined (__WXGTK__) || defined (__WXGET20__)
 			wxBitmapType type = wxBITMAP_TYPE_XPM;
 			if (n >= 2) { WX_GETDEFINE(def) type = (wxBitmapType) def; }
 #endif
@@ -212,7 +212,7 @@ WX_FUNC_ARGRANGE_START(bitmap_loadfile, 2, 3, Nil)
 #if defined (__WXMSW__)
 	int type = wxBITMAP_TYPE_BMP_RESOURCE;
 	if (n >= 3) { WX_GETDEFINE_DEFINED(type) }
-#else if defined (__WXGTK__) || defined (__WXGET20__)
+#elif defined (__WXGTK__) || defined (__WXGET20__)
 	wxBitmapType type = wxBITMAP_TYPE_XPM;
 	if (n >= 3) { WX_GETDEFINE(def) type = (wxBitmapType) def; }
 #endif
