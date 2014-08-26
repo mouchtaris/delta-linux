@@ -328,16 +328,6 @@ void			SetDependencyBetweenNativeInstances
 		static_cast<wxWidgets::Wrapper*>(childWrapper)->SetParent(static_cast<wxWidgets::Wrapper*>(parentWrapper));
 }
 
-template<class ChildClassId, class ChildWrapper, class ChildNative>
-void			SetWrapperChild (ChildNative* nativeInst)
-{
-	DASSERT(nativeInst);
-	SetDependencyBetweenNativeInstances
-		<DeltaWxWindowClassId, DeltaWxWindow, wxWindow,
-		ChildClassId, ChildWrapper, ChildNative>
-		(nativeInst->GetParent(), nativeInst);
-}
-
 ////////////////////////////////////////////////////////////////
 
 struct TopLevelWrapperDestroyEventHandler : public wxEvtHandler {
