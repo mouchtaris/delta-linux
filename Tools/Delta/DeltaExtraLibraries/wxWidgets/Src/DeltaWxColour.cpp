@@ -114,7 +114,7 @@ void DeltaWxColourInitFunc()
 	DPTR(methods)->Set(DeltaValue("!="), DeltaValue(&colour_notequal_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Colour, colour, DeltaWxColourInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Colour, colour, DeltaWxColourInitFunc();, )
 
 ////////////////////////////////////////////////////////////////
 

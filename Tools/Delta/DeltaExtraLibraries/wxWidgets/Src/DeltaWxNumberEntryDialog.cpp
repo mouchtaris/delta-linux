@@ -11,6 +11,7 @@
 #include "DeltaLibraryObjectCreator.h"
 #include "udynamiclibloader.h"
 #include "wxWrapperUtilFunctions.h"
+#include "DeltaWxLibraryTemplates_SetWrapperChild.h" // FIXME SetWrapperChild
 //
 
 ////////////////////////////////////////////////////////////////

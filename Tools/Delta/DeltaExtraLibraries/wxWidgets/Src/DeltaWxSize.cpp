@@ -127,7 +127,7 @@ bool DeltaWxSizeSearch(std::string str, wxSize *sz)
 
 WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Size, size,
 								   DeltaWxSizeInitFunc();,
-								   DeltaWxSizeCleanUpFunc(););
+								   DeltaWxSizeCleanUpFunc();)
 
 ////////////////////////////////////////////////////////////////
 

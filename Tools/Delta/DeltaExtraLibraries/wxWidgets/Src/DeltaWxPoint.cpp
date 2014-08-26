@@ -108,7 +108,7 @@ bool DeltaWxPointSearch(std::string str, wxPoint *pt)
 
 WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Point, point,
 								   DeltaWxPointInitFunc();,
-								   DeltaWxPointCleanUpFunc(););
+								   DeltaWxPointCleanUpFunc();)
 
 ////////////////////////////////////////////////////////////////
 

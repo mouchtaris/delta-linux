@@ -10,6 +10,7 @@
 
 #include "DeltaWxWrapperToExternIdMap.h"
 #include "DeltaWxNativeInstanceToWrapperMap.h"
+#include "uvalidatable.h"
 
 ////////////////////////////////////////////////////////////////
 

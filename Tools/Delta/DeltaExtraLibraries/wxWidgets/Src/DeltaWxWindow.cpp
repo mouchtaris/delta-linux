@@ -26,6 +26,7 @@
 #include "udynamiclibloader.h"
 #include "ListLib.h"
 #include "wxWrapperUtilFunctions.h"
+#include "DeltaWxLibraryTemplates_SetWrapperChild.h" // FIXME SetWrapperChild
 //
 
 using namespace wxWidgets;

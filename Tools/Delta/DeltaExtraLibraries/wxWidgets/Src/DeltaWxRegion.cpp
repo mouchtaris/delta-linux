@@ -86,7 +86,7 @@ void DeltaWxRegionInitFunc()
 	DPTR(methods)->Set(DeltaValue("!="), DeltaValue(&region_notequal_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Region, region, DeltaWxRegionInitFunc();, UEMPTY);
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Region, region, DeltaWxRegionInitFunc();, UEMPTY)
 
 ////////////////////////////////////////////////////////////////
 

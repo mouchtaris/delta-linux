@@ -142,7 +142,7 @@ void DeltaWxRectInitFunc()
 	DPTR(methods)->Set(DeltaValue("!="), DeltaValue(&rect_notequal_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Rect, rect, DeltaWxRectInitFunc();, UEMPTY);
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Rect, rect, DeltaWxRectInitFunc();, UEMPTY)
 
 ////////////////////////////////////////////////////////////////
 

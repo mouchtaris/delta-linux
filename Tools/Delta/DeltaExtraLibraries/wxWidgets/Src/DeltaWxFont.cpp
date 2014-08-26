@@ -141,7 +141,7 @@ bool DeltaWxFontSearch(std::string str, wxFont *font)
 
 WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Font, font,
 								   DeltaWxFontInitFunc();,
-								   DeltaWxFontCleanUpFunc(););
+								   DeltaWxFontCleanUpFunc();)
 
 ////////////////////////////////////////////////////////////////
 

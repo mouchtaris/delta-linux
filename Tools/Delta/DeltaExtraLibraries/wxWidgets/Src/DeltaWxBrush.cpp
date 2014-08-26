@@ -76,7 +76,7 @@ void DeltaWxBrushInitFunc()
 	DPTR(methods)->Set(DeltaValue("!="), DeltaValue(&brush_notequal_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Brush, brush, DeltaWxBrushInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Brush, brush, DeltaWxBrushInitFunc();, )
 
 ////////////////////////////////////////////////////////////////
 

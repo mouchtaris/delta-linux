@@ -185,7 +185,7 @@ void DeltaWxTimeSpanInitFunc()
 	DPTR(methods)->Set(DeltaValue("*"), DeltaValue(&timespan_multiply_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(TimeSpan, timespan, DeltaWxTimeSpanInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(TimeSpan, timespan, DeltaWxTimeSpanInitFunc();, )
 
 ////////////////////////////////////////////////////////////////
 

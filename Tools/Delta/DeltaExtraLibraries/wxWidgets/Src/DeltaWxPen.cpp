@@ -95,7 +95,7 @@ void DeltaWxPenInitFunc()
 	DPTR(methods)->Set(DeltaValue("!="), DeltaValue(&pen_notequal_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Pen, pen, DeltaWxPenInitFunc();, );
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(Pen, pen, DeltaWxPenInitFunc();, )
 
 ////////////////////////////////////////////////////////////////
 

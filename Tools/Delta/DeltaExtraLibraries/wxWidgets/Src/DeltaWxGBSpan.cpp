@@ -76,7 +76,7 @@ void DeltaWxGBSpanInitFunc()
 
 WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(GBSpan, gbspan,
 								   DeltaWxGBSpanInitFunc();,
-								   );
+								   )
 
 ////////////////////////////////////////////////////////////////
 

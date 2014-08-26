@@ -348,7 +348,7 @@ void DeltaWxDateTimeInitFunc()
 	DPTR(methods)->Set(DeltaValue("<="), DeltaValue(&datetime_lessequalthan_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateTime, datetime, DeltaWxDateTimeInitFunc();, UEMPTY);
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateTime, datetime, DeltaWxDateTimeInitFunc();, UEMPTY)
 
 ////////////////////////////////////////////////////////////////
 

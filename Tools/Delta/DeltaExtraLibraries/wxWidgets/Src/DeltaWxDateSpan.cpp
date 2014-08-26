@@ -134,7 +134,7 @@ void DeltaWxDateSpanInitFunc()
 	DPTR(methods)->Set(DeltaValue("="), DeltaValue(&datespan_assign_LibFunc, binder));
 }
 
-WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateSpan, datespan, DeltaWxDateSpanInitFunc();, UEMPTY);
+WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(DateSpan, datespan, DeltaWxDateSpanInitFunc();, UEMPTY)
 
 ////////////////////////////////////////////////////////////////
 

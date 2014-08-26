@@ -76,7 +76,7 @@ void DeltaWxGBPositionInitFunc()
 
 WX_LIBRARY_FUNCS_IMPLEMENTATION_EX(GBPosition, gbposition,
 								   DeltaWxGBPositionInitFunc();,
-								   );
+								   )
 
 ////////////////////////////////////////////////////////////////
 
