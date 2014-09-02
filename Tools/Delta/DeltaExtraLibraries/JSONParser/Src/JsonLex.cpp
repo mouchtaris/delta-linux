@@ -428,9 +428,9 @@ goto find_rule; \
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "..\\JsonLex.l"
+// #line 1 "..\\JsonLex.l"
 #define INITIAL 0
-#line 2 "..\\JsonLex.l"
+// #line 2 "..\\JsonLex.l"
 // Lexical analyser of the json format.
 // Giannhs Apostolidhs, january 2013.
 //
@@ -465,11 +465,11 @@ void JsonLoaderCleanUpScannerFromString (void) {
 	bufferState = (void*) 0;
 }
 
-const std::string ReadQuotedString (void);
+static const std::string ReadQuotedString (void);
 
 /* Flex options */
 /* Flex macros */
-#line 473 "lex.JsonLex_yy.c"
+// #line 473 "lex.JsonLex_yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -620,10 +620,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 55 "..\\JsonLex.l"
+// #line 55 "..\\JsonLex.l"
 
 
-#line 627 "lex.JsonLex_yy.c"
+// #line 627 "lex.JsonLex_yy.c"
 
 	if ( yy_init )
 		{
@@ -716,57 +716,57 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 57 "..\\JsonLex.l"
+// #line 57 "..\\JsonLex.l"
 return BLOCK_L;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 58 "..\\JsonLex.l"
+// #line 58 "..\\JsonLex.l"
 return BLOCK_R;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 59 "..\\JsonLex.l"
+// #line 59 "..\\JsonLex.l"
 return BRACKET_L;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 60 "..\\JsonLex.l"
+// #line 60 "..\\JsonLex.l"
 return BRACKET_R;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 61 "..\\JsonLex.l"
+// #line 61 "..\\JsonLex.l"
 return COMMA;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 62 "..\\JsonLex.l"
+// #line 62 "..\\JsonLex.l"
 return COLON;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 63 "..\\JsonLex.l"
+// #line 63 "..\\JsonLex.l"
 return TRUE;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 64 "..\\JsonLex.l"
+// #line 64 "..\\JsonLex.l"
 return FALSE;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 65 "..\\JsonLex.l"
+// #line 65 "..\\JsonLex.l"
 return NIL;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 67 "..\\JsonLex.l"
+// #line 67 "..\\JsonLex.l"
 { /*do nothing*/ }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 69 "..\\JsonLex.l"
+// #line 69 "..\\JsonLex.l"
 {
 				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(ReadQuotedString()));
 				return STRING;
@@ -774,7 +774,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 74 "..\\JsonLex.l"
+// #line 74 "..\\JsonLex.l"
 {
 				yylval.numberValue = atof(yytext); 
 				return INTEGER;
@@ -782,7 +782,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 79 "..\\JsonLex.l"
+// #line 79 "..\\JsonLex.l"
 {
 				yylval.numberValue = atof(yytext); 
 				return FLOAT;
@@ -790,7 +790,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 84 "..\\JsonLex.l"
+// #line 84 "..\\JsonLex.l"
 {
 				std::string s(yytext);
 				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
@@ -799,7 +799,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 90 "..\\JsonLex.l"
+// #line 90 "..\\JsonLex.l"
 {
 				std::string s(yytext);
 				yylval.stringValue = JsonParserLoaderActions::Manage_StringWithLateDestruction(ucopystr(s));
@@ -808,7 +808,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 96 "..\\JsonLex.l"
+// #line 96 "..\\JsonLex.l"
 {
 				JsonParserLoaderErrorMsg::JsonLoaderError("Did not recognize token %s", yytext);
 				return yytext[0];
@@ -816,10 +816,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 101 "..\\JsonLex.l"
+// #line 101 "..\\JsonLex.l"
 ECHO;
 	YY_BREAK
-#line 823 "lex.JsonLex_yy.c"
+// #line 823 "lex.JsonLex_yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -1703,7 +1703,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 101 "..\\JsonLex.l"
+// #line 101 "..\\JsonLex.l"
 
 
 static char input_wrapper(void) { return yyinput(); }
